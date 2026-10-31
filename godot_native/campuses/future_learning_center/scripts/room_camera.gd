@@ -24,6 +24,9 @@ func update(dt:float,anchor:Vector2,space:RefCounted,snap:=false,overview:=false
 	var target_bounds:Rect2=space.focus_bounds(room)
 	var target_zoom:=.82
 	if not room.is_empty():target_zoom=maxf(VIEW.x/target_bounds.size.x,VIEW.y/target_bounds.size.y)*1.02
+	# A furnished room may request a closer view; the same bounds, deadzone and
+	# foot-anchored follow still apply. Other rooms keep their original framing.
+	if room.has("cameraZoom"):target_zoom=maxf(target_zoom,float(room.cameraZoom))
 	if overview:
 		target_bounds=space.world_bounds;target_zoom=minf(VIEW.x/target_bounds.size.x,VIEW.y/target_bounds.size.y)*.94
 	if not initialized or snap:

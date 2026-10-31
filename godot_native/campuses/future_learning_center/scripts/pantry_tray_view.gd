@@ -183,10 +183,8 @@ func _draw() -> void:
 	if model.phase == "table": ApparatusStyle.grip(self,handle_at(),"vertical",gesture=="handle")
 	if model.earned and model.editable(): ApparatusStyle.grip(self,support_at(),"horizontal",gesture=="support")
 	draw_cues()
-	if feedback_seconds > 0:
-		draw_rect(Rect2(16,486,928,46),Color("253e46"))
-		ink(feedback,Vector2(28,516),20,Color("f5f1e4"))
 	draw_book()
+	draw_feedback()
 
 func draw_room_prop(canvas: CanvasItem, box: Rect2, served := false) -> void:
 	# Small independent state prop on the existing tabletop, inside its silhouette.

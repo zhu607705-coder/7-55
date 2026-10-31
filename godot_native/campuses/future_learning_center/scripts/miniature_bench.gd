@@ -12,6 +12,7 @@ const ORANGE:=Color("db8248")
 const BLUE:=Color("244967")
 const Props=preload("res://campuses/future_learning_center/scripts/motion_prop_metrics.gd")
 const Pantry=preload("res://campuses/future_learning_center/scripts/pantry_miniature.gd")
+const Coupling=preload("res://campuses/future_learning_center/scripts/coupling_miniature.gd")
 var viewport:SubViewport
 var scene:Node3D
 var camera:Camera3D
@@ -155,6 +156,7 @@ func present(v:Control,mode:String)->void:
  if mode!="pantry":common(v)
  lamp.light_energy=0
  if mode=="pantry":Pantry.draw(self,v)
+ elif mode=="coupling":Coupling.draw(self,v)
  elif mode=="solar":solar(v)
  elif mode=="robotics":robotics(v)
  elif mode=="signal":signal_scene(v)
