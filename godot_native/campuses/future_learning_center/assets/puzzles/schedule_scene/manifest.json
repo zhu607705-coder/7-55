@@ -1,0 +1,258 @@
+{
+  "generation_channel": "ChatGPT web UI",
+  "generation_date": "2026-10-31",
+  "original_pixels_preserved": true,
+  "private_provenance": "Retained locally; private session references are not published.",
+  "assets": [
+    {
+      "name": "tabletop",
+      "file": "tabletop.png",
+      "sha256": "486db3c9dda5e771bb000c7062a07f6ae450565704dad9e9aea96697bb48b548",
+      "source_size": [
+        1844,
+        853
+      ],
+      "source_region": [
+        64,
+        87,
+        1718,
+        690
+      ],
+      "logical_box": [
+        1049,
+        420
+      ],
+      "visible_alpha_128_bbox": [
+        66,
+        89,
+        1780,
+        775
+      ]
+    },
+    {
+      "name": "board",
+      "file": "board.png",
+      "sha256": "7972f207278e2fd7f2fa9495adc15f33972cebb0fe921aaa304a4b6b0cf21844",
+      "source_size": [
+        1619,
+        971
+      ],
+      "source_region": [
+        54,
+        67,
+        1510,
+        835
+      ],
+      "logical_box": [
+        574,
+        320
+      ],
+      "visible_alpha_128_bbox": [
+        56,
+        69,
+        1562,
+        900
+      ]
+    },
+    {
+      "name": "tray",
+      "file": "tray.png",
+      "sha256": "cd515210f31272a83df8cc81668f3a42eead58a7bb596494829a00cc022f9510",
+      "source_size": [
+        1350,
+        1165
+      ],
+      "source_region": [
+        62,
+        95,
+        1226,
+        974
+      ],
+      "logical_box": [
+        220,
+        190
+      ],
+      "visible_alpha_128_bbox": [
+        64,
+        97,
+        1286,
+        1067
+      ]
+    },
+    {
+      "name": "cradle",
+      "file": "cradle.png",
+      "sha256": "456bcefc8cc5f928d4549f9ef04c9054b6e16de7a799b51a4956a7628c9d3c43",
+      "source_size": [
+        1619,
+        971
+      ],
+      "source_region": [
+        120,
+        169,
+        1379,
+        639
+      ],
+      "logical_box": [
+        86,
+        40
+      ],
+      "visible_alpha_128_bbox": [
+        122,
+        171,
+        1497,
+        806
+      ]
+    },
+    {
+      "name": "card",
+      "file": "card.png",
+      "sha256": "87a72434c0a6488d22a4b275227775ae413704dd3fa930b8015c32d07128b6c9",
+      "source_size": [
+        1858,
+        846
+      ],
+      "source_region": [
+        94,
+        126,
+        1666,
+        591
+      ],
+      "logical_box": [
+        164,
+        62
+      ],
+      "visible_alpha_128_bbox": [
+        96,
+        128,
+        1758,
+        715
+      ]
+    },
+    {
+      "name": "cover",
+      "file": "cover.png",
+      "sha256": "ec7d4b149e4acb907246f0567bc85e6dfd300e8c57742748ac4a9e44edaf009e",
+      "source_size": [
+        1823,
+        863
+      ],
+      "source_region": [
+        153,
+        113,
+        1519,
+        642
+      ],
+      "logical_box": [
+        150,
+        70
+      ],
+      "visible_alpha_128_bbox": [
+        155,
+        115,
+        1670,
+        753
+      ]
+    },
+    {
+      "name": "page",
+      "file": "page.png",
+      "sha256": "234cf4a1d5fb99df5879fc15b83d0a209ffaa1137ade32f04d234472f9cd1109",
+      "source_size": [
+        1087,
+        1447
+      ],
+      "source_region": [
+        78,
+        92,
+        938,
+        1255
+      ],
+      "logical_box": [
+        235,
+        315
+      ],
+      "visible_alpha_128_bbox": [
+        80,
+        94,
+        1014,
+        1345
+      ]
+    },
+    {
+      "name": "starter_base",
+      "file": "starter_base.png",
+      "sha256": "2d0d8788dce572e7c9820a6357e8db7274bcd8c5f80afed6be544b0ed1e15730",
+      "source_size": [
+        1122,
+        1402
+      ],
+      "source_region": [
+        57,
+        158,
+        1008,
+        1085
+      ],
+      "logical_box": [
+        64,
+        72
+      ],
+      "visible_alpha_128_bbox": [
+        59,
+        160,
+        1063,
+        1241
+      ]
+    },
+    {
+      "name": "starter_cap",
+      "file": "starter_cap.png",
+      "sha256": "bad7ac1326b383bcccb0547d842e52a961e85e0e8099251107d7e46d44e6ec2d",
+      "source_size": [
+        1402,
+        1122
+      ],
+      "source_region": [
+        206,
+        247,
+        991,
+        641
+      ],
+      "logical_box": [
+        26,
+        17
+      ],
+      "visible_alpha_128_bbox": [
+        208,
+        249,
+        1195,
+        886
+      ]
+    },
+    {
+      "name": "wrench",
+      "file": "wrench.png",
+      "sha256": "089e5b70fb5ec8790cf255e48f9b7b9a3f198fd42ccc2fa6e3aca91dca5c4086",
+      "source_size": [
+        1448,
+        1086
+      ],
+      "source_region": [
+        278,
+        170,
+        965,
+        738
+      ],
+      "logical_box": [
+        48,
+        48
+      ],
+      "visible_alpha_128_bbox": [
+        280,
+        172,
+        1241,
+        906
+      ]
+    }
+  ]
+}

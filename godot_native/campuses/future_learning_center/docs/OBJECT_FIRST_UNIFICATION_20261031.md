@@ -26,3 +26,34 @@ Actual OpenGL/llvmpipe native captures cover Formula, Schedule, Focus and Koala 
 The existing fixed 960×540 apparatus composition still makes some secondary labels about 9–10 screen pixels at 844×390. Host return controls remain 44 screen pixels tall. This is not a complete responsive-layout redesign, physical-device acceptance, all-25-room manual playthrough, or all-25-room 3D conversion.
 
 Production Web loading and durable reload acceptance must be checked by exact-head CI after publication. The previously known Wenli GPU failures are unrelated and must not be described as an all-green native baseline. No merge or deployment is part of this change.
+
+## User correction: actual web-generated objects (2026-10-31)
+
+The initial procedural artifact pictograms were not accepted as completed art.
+Schedule now uses seven original PNGs generated through the ChatGPT web page:
+camera, worktable, gloves, photo A, assembled B, photo B, and comparison photos.
+`assets/puzzles/schedule_generated/` records source SHA256s, dimensions, transparency,
+web-session provenance and known art-bible limitations. No pixels were redrawn or
+filtered; the view crops transparent source padding and uniformly contains each
+sprite. A/B/tool numbers remain readable engine text. The same images identify
+tray/held/assigned tools and task/output artifacts. Other rooms and inherited
+crank/notebook/board geometry are NOT claimed to be web-generated.
+
+The model/input/lifecycle block is byte-identical to the previous head. Independent
+frozen checks: generated-art50, Schedule27, upper-touch132, object-mapping66,
+root-scaled33, formal-host38, file-save19: **365 checks, zero failures** on Godot4.7.1.
+Root-scaled coverage includes1280×720,844×390,390×844; this is not physical-device QA.
+Actual GL/llvmpipe captures at1280×720 and844×390 show initial and completed boards.
+The capture harness sent root touch events through the formal host: move photoB to
+beat2, comparison to beat3, press crank; both sizes completed with all4outputs.
+An initial harness used incorrect SubViewport coordinates and produced no action;
+those mislabeled completed captures were isolated, the harness corrected, and both
+flows rerun successfully. No game input change was needed.
+
+A full-root import attempt was bounded before unrelated media import completed;
+a standard isolated import of all7sprite PNGs passed with isolated writable user
+storage. One unisolated startup failed before gameplay; the standard isolated
+runner then passed all365 checks. These setup attempts are not counted as passes.
+Exact new-head production CI is separate. Previous f508e6d Web/cross/Web-export
+checks and desktop902/touch904 acceptance passed; its unchanged Wenli GPU29/3
+baseline remains a known failure, not an all-green result.

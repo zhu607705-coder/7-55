@@ -22,7 +22,7 @@ function copy(relative){
  if(relative.endsWith('.gd'))for(const [,dep] of fs.readFileSync(source,'utf8').matchAll(/["']res:\/\/([^"'\n]+)["']/g))if(!dep.includes('%')&&(fs.existsSync(path.join(native,dep))||dep.startsWith('assets/rpg/')))copy(dep);
 }
 const campus='campuses/future_learning_center';
-const suites=['electrical','koala','machinery','solid_projection','platform','robotics','signal_sync','formula','flex','collab','focus','storage','assembly','rail','rules','projection','projection_placement','2f_placement','fold','logic','balance','schedule','recording','access','sync','perspective','coupled','puzzles_integration','floor','motion_puzzles','pantry_tray','signal_bench','upper_object_mapping','upper_touch_actions','2f_touch_actions'];
+const suites=['electrical','koala','machinery','solid_projection','platform','robotics','signal_sync','formula','flex','collab','focus','storage','assembly','rail','rules','projection','projection_placement','2f_placement','fold','logic','balance','schedule','recording','access','sync','perspective','coupled','puzzles_integration','floor','motion_puzzles','pantry_tray','signal_bench','upper_object_mapping','upper_touch_actions','2f_touch_actions','schedule_generated_art','schedule_object_sprite','schedule_scene_states'];
 const entry=suite=>suite==='electrical'?'tests/test_future_learning_center_workbench.gd':`${campus}/tests/test_${suite}.gd`;
 for(const suite of suites)copy(entry(suite));
 for(const name of fs.readdirSync(path.join(native,campus,'scripts/puzzles')))if(name.endsWith('.gd'))copy(`${campus}/scripts/puzzles/${name}`);

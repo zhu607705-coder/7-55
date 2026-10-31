@@ -4,14 +4,36 @@ signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/schedule_model.gd")
 const INK=ApparatusStyle.INK
 const PAPER=ApparatusStyle.PAPER
+const CAMERA_TEXTURE=preload("res://campuses/future_learning_center/assets/puzzles/schedule_generated/camera.png")
+const CAMERA_REGION=Rect2(105,356,1052,649)
+const WORKTABLE_TEXTURE=preload("res://campuses/future_learning_center/assets/puzzles/schedule_generated/worktable.png")
+const WORKTABLE_REGION=Rect2(156,405,943,586)
+const GLOVES_TEXTURE=preload("res://campuses/future_learning_center/assets/puzzles/schedule_generated/gloves.png")
+const GLOVES_REGION=Rect2(284,75,1105,845)
+const ARTIFACT_TEXTURES=[
+ preload("res://campuses/future_learning_center/assets/puzzles/schedule_generated/photo_a.png"),
+ preload("res://campuses/future_learning_center/assets/puzzles/schedule_generated/assembled_b.png"),
+ preload("res://campuses/future_learning_center/assets/puzzles/schedule_generated/photo_b.png"),
+ preload("res://campuses/future_learning_center/assets/puzzles/schedule_generated/comparison.png")]
+const ARTIFACT_REGIONS=[Rect2(121,125,1227,889),Rect2(166,165,1030,958),Rect2(117,108,1237,916),Rect2(46,252,1334,660)]
+const ARTIFACT_BOXES=[Vector2(54,40),Vector2(42,38),Vector2(54,40),Vector2(64,36)]
+const Visuals=preload("res://campuses/future_learning_center/scripts/puzzles/schedule_scene_visuals.gd")
+const SceneArt=preload("res://campuses/future_learning_center/scripts/puzzles/schedule_scene_art.gd")
+const CARD_SIZE=Vector2(164,62)
+const BOARD_DROP=Rect2(258,88,574,317)
 const NAMES=["拍 A","装 B","拍 B","比较"]
-const XS=[370.0,545.0,720.0]
+const XS=[363.0,545.0,728.0]
 var model=Model.new()
+var visuals:Node2D
+var reduced_motion:=false
+var snap_visuals:=true
 var font:Font
 var held_task:=-1
 var held_tool:=-2
 var selected_task:=-1
 var pointer:=Vector2.ZERO
+var task_grab_offset:=Vector2.ZERO
+var tool_grab_offset:=Vector2.ZERO
 var touch_id:=-1
 var paper_open:=false
 var pending_tap:=""
@@ -20,16 +42,24 @@ var mouse_owned:=false
 func _ready()->void:
  ApparatusStyle.configure_exit(self,close)
  font=ApparatusStyle.font()
+ visuals=Visuals.new();visuals.art=SceneArt.PARTS;add_child(visuals)
+ var state=get_node_or_null("/root/State")
+ if state!=null:reduced_motion=bool(state.d.get("native",{}).get("settings",{}).get("reduced_motion",false))
  mouse_filter=Control.MOUSE_FILTER_STOP;hide()
-func open()->void:show();queue_redraw()
+func open()->void:show();snap_visuals=true;_sync_visuals(0);queue_redraw()
 func close()->void:
  _cancel_drag();model.cancel();hide();closed.emit()
 func _notification(what:int)->void:
  if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:_cancel_drag();model.pause()
 func _process(dt:float)->void:
- if visible:model.step(dt);queue_redraw()
+ if visible:model.step(dt);_sync_visuals(dt);queue_redraw()
+func _sync_visuals(dt:float)->void:
+ if visuals==null:return
+ visuals.reduced_motion=reduced_motion;visuals.sync(self,dt,snap_visuals);snap_visuals=false
+func card_visual_point(task:int)->Vector2:
+ return visuals.object_at("TaskCard%d"%task,card_point(task)) if visuals!=null else card_point(task)
 func card_point(task:int)->Vector2:return Vector2(XS[model.slots[task]],142+task*70)
-func _cancel_drag()->void:held_task=-1;held_tool=-2;selected_task=-1;touch_id=-1;pending_tap="";mouse_owned=false;queue_redraw()
+func _cancel_drag()->void:held_task=-1;held_tool=-2;selected_task=-1;touch_id=-1;pending_tap="";mouse_owned=false;task_grab_offset=Vector2.ZERO;tool_grab_offset=Vector2.ZERO;snap_visuals=true;queue_redraw()
 func _input(event:InputEvent)->void:
  if ApparatusStyle.navigation_event(self,event):return
  if not is_visible_in_tree():return
@@ -64,6 +94,10 @@ func _pointer_release(at:Vector2)->void:
  else:release_at(at)
 func press_at(at:Vector2)->void:
  pointer=at
+ if visuals!=null:
+  var settling:int=visuals.settling_pickup(at)
+  if settling>=-1:
+   held_tool=settling;tool_grab_offset=visuals.object_at("SettlingTool",at)-at;return
  if Rect2(42,427,150,74).has_point(at):paper_open=not paper_open;queue_redraw();return
  if at.distance_to(Vector2(238,471))<30:model.undo();return
  if at.distance_to(Vector2(870,340))<39:
@@ -72,20 +106,23 @@ func press_at(at:Vector2)->void:
    else:model.pause()
   else:model.start()
   return
- if Rect2(816,440,110,60).has_point(at):held_tool=3;return
+ if Rect2(816,440,110,60).has_point(at):held_tool=3;tool_grab_offset=Vector2(870,470)-at;return
  for task:int in 4:
-  if Rect2(card_point(task)-Vector2(68,26),Vector2(136,52)).has_point(at):
+  if Rect2(card_visual_point(task)-CARD_SIZE*.5,CARD_SIZE).has_point(at):
    if held_tool>=-1 and held_tool<3:model.connect_tool(task,held_tool);held_tool=-2
-   else:held_task=task;selected_task=task
+   else:held_task=task;selected_task=task;task_grab_offset=card_visual_point(task)-at
    return
  for tool:int in 3:
   if tool==1 and model.cameras<2:continue
-  if at.distance_to(Vector2(70+tool*75,220))<30:held_tool=tool;return
+  if at.distance_to(Vector2(70+tool*75,220))<30:held_tool=tool;tool_grab_offset=Vector2(70+tool*75,220)-at;return
  # Hands are a physical glove pair beside the tool rack.
- if at.distance_to(Vector2(145,300))<30:held_tool=-1;return
+ if at.distance_to(Vector2(145,300))<30:held_tool=-1;tool_grab_offset=Vector2(145,300)-at;return
 func release_at(at:Vector2)->void:
+ var released_tool:=held_tool
+ var assigned_task:=-1
+ at+=task_grab_offset if held_task>=0 else tool_grab_offset
  if held_task>=0:
-  if Rect2(284,95,523,300).has_point(at):
+  if BOARD_DROP.has_point(at):
    var slot:=0
    for index:int in 3:
     if absf(at.x-XS[index])<absf(at.x-XS[slot]):slot=index
@@ -96,91 +133,56 @@ func release_at(at:Vector2)->void:
   held_tool=-2
  elif held_tool>=-1:
   for task:int in 4:
-   if Rect2(card_point(task)-Vector2(68,26),Vector2(136,52)).has_point(at):model.connect_tool(task,held_tool);break
+   if Rect2(card_visual_point(task)-CARD_SIZE*.5,CARD_SIZE).has_point(at):model.connect_tool(task,held_tool);assigned_task=task;break
   held_tool=-2
+ if released_tool>=-1 and visuals!=null:
+  var destination:=Vector2(145,300) if released_tool==-1 else Vector2(70+released_tool*75,220)
+  if released_tool==3:destination=Vector2(145,220) if model.cameras==2 else Vector2(870,470)
+  if assigned_task>=0:destination=card_visual_point(assigned_task)+Vector2(33,10)
+  visuals.settle_tool(self,released_tool,at,destination,assigned_task)
  queue_redraw()
 func _text(value:String,at:Vector2,sz:=16,color:=INK)->void:draw_string(font,at,value,HORIZONTAL_ALIGNMENT_LEFT,-1,sz,color)
-func _camera(at:Vector2,color:=PAPER)->void:
- draw_rect(Rect2(at-Vector2(24,15)+Vector2(0,5),Vector2(48,30)),INK)
- draw_rect(Rect2(at-Vector2(24,15),Vector2(48,30)),color)
- draw_circle(at,11,INK);draw_circle(at,5,Color("7c9695"))
- draw_rect(Rect2(at+Vector2(-18,-20),Vector2(13,8)),color)
-func _tool(tool:int,at:Vector2)->void:
- if tool in [0,1]:_camera(at);_text(str(tool+1),at+Vector2(27,5),12)
- elif tool==2:
-  draw_rect(Rect2(at-Vector2(23,9),Vector2(46,14)),PAPER)
-  for x:int in [-18,18]:draw_line(at+Vector2(x,5),at+Vector2(x,23),INK,5)
- else:
-  draw_circle(at+Vector2(-9,0),9,PAPER);draw_circle(at+Vector2(9,0),9,PAPER)
-func _artifact(task:int,at:Vector2)->void:
- # The same artifact silhouette identifies the task and the completed rack item.
- if task in [0,2]:
-  draw_rect(Rect2(at-Vector2(22,17),Vector2(44,34)),PAPER)
-  draw_rect(Rect2(at-Vector2(18,13),Vector2(36,23)),INK,false,2)
-  draw_circle(at+Vector2(-9,-5),4,INK)
-  draw_polyline(PackedVector2Array([at+Vector2(-17,8),at+Vector2(-4,-2),at+Vector2(6,7),at+Vector2(16,-5)]),INK,2)
-  draw_rect(Rect2(at+Vector2(5,-1),Vector2(17,18)),PAPER)
-  _text("A" if task==0 else "B",at+Vector2(7,14),16)
- elif task==1:
-  draw_rect(Rect2(at-Vector2(21,11),Vector2(42,23)),INK,false,3)
-  draw_line(at-Vector2(18,11),at-Vector2(18,19),INK,3)
-  draw_line(at+Vector2(18,-11),at+Vector2(18,-19),INK,3)
-  _text("B",at+Vector2(-5,6),14)
- else:
-  for x:int in [-12,12]:draw_rect(Rect2(at+Vector2(x-9,-15),Vector2(18,30)),PAPER);draw_rect(Rect2(at+Vector2(x-9,-15),Vector2(18,30)),INK,false,2)
-  draw_line(at+Vector2(-5,-3),at+Vector2(5,-3),INK,2);draw_line(at+Vector2(-5,3),at+Vector2(5,3),INK,2)
-func _card(task:int,at:Vector2)->void:
- draw_rect(Rect2(at-Vector2(68,26)+Vector2(0,5),Vector2(136,52)),INK)
- var face:=Color("d2cbb6")
- if model.artifacts[task]:face=Color("a3b6a1")
- elif model.errors[task]!="":face=Color("bd9582")
- draw_rect(Rect2(at-Vector2(68,26),Vector2(136,52)),face)
- _artifact(task,at+Vector2(-35,0))
- ApparatusStyle.grip(self,at+Vector2(0,21),"drag",held_task==task)
- _tool(model.tools[task],at+Vector2(33,0))
- if model.current_tasks.has(task):draw_line(at+Vector2(-62,21),at+Vector2(-62+124*model.progress,21),INK,3)
+func _sprite_rect(region:Rect2,at:Vector2,box:Vector2)->Rect2:
+ var factor:float=minf(box.x/region.size.x,box.y/region.size.y)
+ var extent:Vector2=region.size*factor
+ return Rect2(at-extent*.5,extent)
+func _feedback()->String:
+ if model.running:return ""
+ var errors={"tool_busy":"同一拍不能共用工具","missing_input":"前置产物尚未完成","camera_missing":"需要相机","bench_missing":"需要操作台","hands_needed":"请换成手套"}
+ var task:int=selected_task
+ if task<0 or model.errors[task].is_empty():
+  task=-1
+  for i:int in 4:
+   if not model.errors[i].is_empty():task=i;break
+ if task>=0:return NAMES[task]+"："+str(errors.get(model.errors[task],model.errors[task]))
+ return "照片与装配件已齐备" if model.completed else ""
 func _draw()->void:
  if font==null:return
- draw_rect(Rect2(0,0,960,540),Color("253236"))
  _text("开放研讨",Vector2(32,39),23,PAPER)
- draw_rect(Rect2(25,85,910,420),Color("4d5652"));draw_rect(Rect2(25,77,910,420),Color("a89b80"))
- draw_rect(Rect2(283,95,525,303),Color("cbc6b3"))
- for slot:int in 3:
-  draw_line(Vector2(XS[slot]-87,95),Vector2(XS[slot]-87,398),Color("969988"),1)
-  _text(str(slot+1),Vector2(XS[slot]-5,91),15,PAPER)
- draw_rect(Rect2(35,154,220,112),Color("717c71"));_text("工具托盘",Vector2(85,180),16,PAPER)
- _tool(0,Vector2(70,220));_tool(2,Vector2(220,220))
- if model.cameras==2:_tool(1,Vector2(145,220))
- else:draw_arc(Vector2(145,220),26,0,TAU,32,Color("9b9f8d"),1)
- _tool(-1,Vector2(145,300))
+ for slot:int in 3:_text("第 %d 拍"%(slot+1),Vector2(XS[slot]-26,76),16,PAPER)
+ if visuals==null or visuals.page_amount<.01:
+  _text("工具托盘",Vector2(85,150),16,INK)
+  _text("1",Vector2(97,225),12)
+  if model.cameras==2:_text("2",Vector2(172,225),12)
  for task:int in 4:
+  var center:=card_visual_point(task)
+  _text(NAMES[task],center+Vector2(-70,-11),18)
+  if model.tools[task] in [0,1]:_text(str(model.tools[task]+1),center+Vector2(60,17),12)
+  if model.current_tasks.has(task):draw_line(center+Vector2(-62,27),center+Vector2(-62+124*model.progress,27),INK,3)
   if held_task==task:
-   for slot:int in 3:ApparatusStyle.target(self,Rect2(Vector2(XS[slot]-68,116+task*70),Vector2(136,52)),true)
-  if held_tool>=-1 and held_tool<3:ApparatusStyle.target(self,Rect2(card_point(task)-Vector2(68,26),Vector2(136,52)),true)
-  _card(task,pointer if held_task==task else card_point(task))
- # A clockwork handle advances the physical production board, not a Run button.
- draw_circle(Vector2(870,340),35,INK)
- var angle:float=model.progress*TAU if model.running else -.8
- draw_line(Vector2(870,340),Vector2(870,340)+Vector2.from_angle(angle)*27,PAPER,7)
- draw_circle(Vector2(870,340)+Vector2.from_angle(angle)*27,9,Color("7b6253"))
- ApparatusStyle.grip(self,Vector2(870,340),"press",model.running)
- for i:int in 3:draw_circle(Vector2(847+i*23,395),5,Color("c3cbb0") if model.beat>i else INK)
- # Actual output rack: photos, assembled B and the comparison sheet appear only
- # after their beat finishes; same-beat consumers cannot see them prematurely.
- for task:int in 4:
-  var at:=Vector2(350+task*105,451)
-  draw_rect(Rect2(at-Vector2(35,21),Vector2(70,42)),Color("667468"))
-  if model.artifacts[task]:
-   draw_rect(Rect2(at-Vector2(25,17),Vector2(50,34)),PAPER)
-   _artifact(task,at)
- draw_rect(Rect2(42,429,150,70),PAPER);draw_line(Vector2(53,429),Vector2(53,499),Color("9b9c89"),2);_text("排期笔记",Vector2(65,466),16)
- draw_arc(Vector2(238,471),18,.4,5.8,20,PAPER,6);draw_line(Vector2(223,484),Vector2(209,498),PAPER,7)
- if model.cameras<2:_camera(Vector2(870,470),Color("aebbaa"))
-
- if held_tool>=-1 and held_tool<3:_tool(held_tool,pointer)
- elif held_tool==3:_camera(pointer)
- if model.completed:_text("照片与装配件已齐备",Vector2(332,525),16,PAPER)
- if paper_open:
-  draw_rect(Rect2(42,92,235,315),PAPER)
+   for slot:int in 3:ApparatusStyle.target(self,Rect2(Vector2(XS[slot],142+task*70)-CARD_SIZE*.5,CARD_SIZE),true)
+  if held_tool>=-1 and held_tool<3:ApparatusStyle.target(self,Rect2(center-CARD_SIZE*.5,CARD_SIZE),true)
+ _text("试运行",Vector2(845,294),16,INK)
+ var status:="暂停" if model.paused else ("第 %d 拍"%(model.beat+1) if model.running else "就绪")
+ _text(status,Vector2(848,402),14,INK)
+ _text("产物",Vector2(295,424),14,INK)
+ for task:int in 3:
+  if model.artifacts[task]:_text("A" if task==0 else "B",Vector2(373+task*105,458),16)
+ _text("排期笔记",Vector2(65,466),16)
+ _text("撤回",Vector2(222,506),14,PAPER)
+ _text("备用相机 2",Vector2(827,433),14,INK)
+ var feedback:=_feedback()
+ if not feedback.is_empty():_text(feedback,Vector2(332,525),16,PAPER)
+ if visuals!=null and visuals.page_amount>.98:
   var lines=["拍 A：相机", "装 B：操作台", "拍 B：先有装好的 B", "比较：先有两张照片", "", "同一件工具一拍只用一次。", "本拍产物从下一拍才能用。", "", "拖任务磁片到拍位。", "从托盘把工具接到任务上。"]
   for i:int in lines.size():_text(lines[i],Vector2(54,121+i*25),14)

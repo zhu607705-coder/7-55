@@ -1,0 +1,148 @@
+{
+  "generation_method": "ChatGPT web UI",
+  "generation_date": "2026-10-31",
+  "model_version": "not exposed",
+  "source_uploads": false,
+  "processing": "No pixel modifications. Runtime source region plus uniform contain.",
+  "limitations": [
+    "Not strict32color palette compliant",
+    "Antialiasing includes intermediate alpha",
+    "Some edges use slight perspective"
+  ],
+  "assets": [
+    {
+      "file": "assembled_b.png",
+      "sha256": "a41bcca157c469df4dab10f7811584de69767cad4d9cf8f37fecdef0f0bbf59c",
+      "size": [
+        1319,
+        1193
+      ],
+      "mode": "RGBA",
+      "alpha_zero_pixels": 995244,
+      "alpha_255_pixels": 1633,
+      "alpha_intermediate_pixels": 576690,
+      "visible_alpha_128_bbox": [
+        168,
+        167,
+        1194,
+        1121
+      ],
+      "original_bytes_preserved": true
+    },
+    {
+      "file": "camera.png",
+      "sha256": "20f921bb0fd97d8c2a4565d6ea5ad29e095085b50beac82bf9872425d46d2c57",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_zero_pixels": 1027666,
+      "alpha_255_pixels": 1335,
+      "alpha_intermediate_pixels": 543515,
+      "visible_alpha_128_bbox": [
+        106,
+        357,
+        1156,
+        1002
+      ],
+      "original_bytes_preserved": true
+    },
+    {
+      "file": "comparison.png",
+      "sha256": "c6cd7aee51a11c84b31af3b3eeee858b8be859e0759d31c45c69b7cc92242e2f",
+      "size": [
+        1427,
+        1102
+      ],
+      "mode": "RGBA",
+      "alpha_zero_pixels": 928821,
+      "alpha_255_pixels": 787,
+      "alpha_intermediate_pixels": 642946,
+      "visible_alpha_128_bbox": [
+        48,
+        254,
+        1378,
+        910
+      ],
+      "original_bytes_preserved": true
+    },
+    {
+      "file": "gloves.png",
+      "sha256": "23eb08e2642ca9bdba18c09bb724275d265eff4afe7002d94d71d661b3bc3c7b",
+      "size": [
+        1619,
+        971
+      ],
+      "mode": "RGBA",
+      "alpha_zero_pixels": 1020698,
+      "alpha_255_pixels": 928,
+      "alpha_intermediate_pixels": 550423,
+      "visible_alpha_128_bbox": [
+        286,
+        77,
+        1387,
+        918
+      ],
+      "original_bytes_preserved": true
+    },
+    {
+      "file": "photo_a.png",
+      "sha256": "6392706e6c66c9fbeb3bf45e6bfe517e016c4fa4cf2f141012fd9e787f32a4ab",
+      "size": [
+        1427,
+        1102
+      ],
+      "mode": "RGBA",
+      "alpha_zero_pixels": 738753,
+      "alpha_255_pixels": 936,
+      "alpha_intermediate_pixels": 832865,
+      "visible_alpha_128_bbox": [
+        123,
+        127,
+        1346,
+        1012
+      ],
+      "original_bytes_preserved": true
+    },
+    {
+      "file": "photo_b.png",
+      "sha256": "12ffe46f24d95b5be0c6b61e354a757b901222ccd119c50d737aff4cc53233bb",
+      "size": [
+        1427,
+        1102
+      ],
+      "mode": "RGBA",
+      "alpha_zero_pixels": 706020,
+      "alpha_255_pixels": 894,
+      "alpha_intermediate_pixels": 865640,
+      "visible_alpha_128_bbox": [
+        119,
+        110,
+        1352,
+        1022
+      ],
+      "original_bytes_preserved": true
+    },
+    {
+      "file": "worktable.png",
+      "sha256": "d3561917ccb134881ea5d6d9bf1c97bdf401462cb15cecfc203281d620b05592",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_zero_pixels": 1188247,
+      "alpha_255_pixels": 1682,
+      "alpha_intermediate_pixels": 382587,
+      "visible_alpha_128_bbox": [
+        158,
+        407,
+        1097,
+        989
+      ],
+      "original_bytes_preserved": true
+    }
+  ],
+  "provenance_record": "Private web-session audit retained in local task handoff; not published."
+}
