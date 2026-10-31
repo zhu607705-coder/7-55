@@ -12,6 +12,12 @@ const MotionLab=preload("res://campuses/future_learning_center/scripts/motion_la
 const PantryTray=preload("res://campuses/future_learning_center/scripts/pantry_tray_view.gd")
 var pantry_tray:Control
 var pantry_pending:=false
+const CouplingTray=preload("res://campuses/future_learning_center/scripts/coupling_tray_view.gd")
+var coupling_tray:Control
+var coupling_pending:=false
+const LockerCipher=preload("res://campuses/future_learning_center/scripts/locker_cipher_view.gd")
+var locker_cipher:Control
+var locker_pending:=false
 const TouchStick=preload("res://campuses/future_learning_center/scripts/touch_stick.gd")
 const MOTION_ANCHORS:={"solar":"formula_workbench_0","robotics":"robotics_workbench_30"}
 var motion_lab:Control
@@ -107,6 +113,10 @@ func _ready()->void:
 	motion_lab.closed.connect(func()->void:ui.show();route.clear();motion_pending="";_commit_room("2:solar_bench",motion_lab.solar);_commit_room("2:robot_delivery",motion_lab.robot))
 	pantry_tray=PantryTray.new();pantry_tray.size=Vector2(960,540);bench_layer.add_child(pantry_tray)
 	pantry_tray.closed.connect(func()->void:ui.show();route.clear();pantry_pending=false;_commit_room("3:pantry_water",pantry_tray.model))
+	coupling_tray=CouplingTray.new();coupling_tray.size=Vector2(960,540);bench_layer.add_child(coupling_tray)
+	coupling_tray.closed.connect(func()->void:ui.show();route.clear();coupling_pending=false)
+	locker_cipher=LockerCipher.new();locker_cipher.size=Vector2(960,540);bench_layer.add_child(locker_cipher)
+	locker_cipher.closed.connect(func()->void:ui.show();route.clear();locker_pending=false)
 	stairs=Stairs.new();stairs.size=Vector2(960,540);bench_layer.add_child(stairs)
 	stairs.cancelled.connect(func()->void:stair_destination.clear();ui.show();route.clear())
 	stairs.finished.connect(_finish_stairs)
@@ -130,11 +140,15 @@ func load_floor(floor_number:int,arrival:Vector2=Vector2.INF)->bool:
 	if is_instance_valid(signal_sync) and signal_sync.visible:signal_sync.close()
 	if is_instance_valid(motion_lab) and motion_lab.visible:motion_lab.close()
 	if is_instance_valid(pantry_tray) and pantry_tray.visible:pantry_tray.close()
+	if is_instance_valid(coupling_tray) and coupling_tray.visible:coupling_tray.close()
+	if is_instance_valid(locker_cipher) and locker_cipher.visible:locker_cipher.close()
 	if is_instance_valid(stairs):stairs.model.cancel();stairs.hide();stair_destination.clear();ui.show()
 	workbench_pending=false
 	signal_sync_pending=false
 	motion_pending=""
 	pantry_pending=false
+	coupling_pending=false
+	locker_pending=false
 	data=next;space=next_space;route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
 	for item:Dictionary in data.modules:_texture(item.path)
 	for item:Dictionary in data.get("objects",[]):_texture(item.path)
@@ -196,6 +210,8 @@ func _process(dt:float)->void:
 	if is_instance_valid(signal_sync) and signal_sync.visible:return
 	if is_instance_valid(motion_lab) and motion_lab.visible:return
 	if is_instance_valid(pantry_tray) and pantry_tray.visible:return
+	if is_instance_valid(coupling_tray) and coupling_tray.visible:return
+	if is_instance_valid(locker_cipher) and locker_cipher.visible:return
 	if is_instance_valid(stairs) and stairs.visible:return
 	var direction:=Vector2.ZERO
 	if user_control and not overview:
@@ -227,6 +243,10 @@ func _process(dt:float)->void:
 		var pending:=motion_pending;motion_pending="";open_motion_lab(pending)
 	if pantry_pending and route.is_empty():
 		pantry_pending=false;open_pantry()
+	if coupling_pending and route.is_empty():
+		coupling_pending=false;open_coupling()
+	if locker_pending and route.is_empty():
+		locker_pending=false;open_locker()
 	if is_instance_valid(place_label):
 		var room:Dictionary=space.room_at(player+Body.FOOT_CENTER_OFFSET)
 		var landing:Dictionary=transit.nearby(data,player)
@@ -253,13 +273,15 @@ func _unhandled_input(event:InputEvent)->void:
 	if is_instance_valid(signal_sync) and signal_sync.visible:return
 	if is_instance_valid(motion_lab) and motion_lab.visible:return
 	if is_instance_valid(pantry_tray) and pantry_tray.visible:return
+	if is_instance_valid(coupling_tray) and coupling_tray.visible:return
+	if is_instance_valid(locker_cipher) and locker_cipher.visible:return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode==KEY_TAB:toggle_overview();get_viewport().set_input_as_handled()
 		elif event.keycode==KEY_F2:geometry_visible=not geometry_visible
 		elif event.keycode==KEY_L:_cycle_time()
 		elif event.keycode==KEY_E:open_transit()
 		elif event.keycode==KEY_SPACE:
-			if not open_pantry() and not open_workbench() and not open_signal_sync() and not open_motion_lab("solar") and not open_motion_lab("robotics"):
+			if not open_locker() and not open_coupling() and not open_pantry() and not open_workbench() and not open_signal_sync() and not open_motion_lab("solar") and not open_motion_lab("robotics"):
 				var opened:=false
 				for key:String in PuzzleAnchors:
 					if open_puzzle(key):opened=true;break
@@ -280,7 +302,58 @@ func request_walk(foot:Vector2)->void:
 	signal_sync_pending=false
 	motion_pending=""
 	pantry_pending=false
+	coupling_pending=false
+	locker_pending=false
 	route=space.route(player,foot-Body.FOOT_CENTER_OFFSET)
+func locker_cabinet()->Dictionary:
+	if int(data.floor)!=3:return {}
+	for item:Dictionary in data.objects:
+		if item.id=="studio_2_wall_cabinet_4":return item
+	return {}
+func locker_approach()->Vector2:
+	var item:=locker_cabinet()
+	if item.is_empty():return Vector2.INF
+	var box:Rect2=Space.rect(item.footprint)
+	for distance:float in [45.0,60.0,80.0]:
+		var point:=Vector2(box.get_center().x,box.end.y+distance)
+		if space.can_stand(point-Body.FOOT_CENTER_OFFSET):return point
+	return Vector2.INF
+func can_open_locker()->bool:
+	var item:=locker_cabinet()
+	if item.is_empty() or overview:return false
+	var foot:=player+Body.FOOT_CENTER_OFFSET;var box:Rect2=Space.rect(item.footprint)
+	return foot.distance_to(foot.clamp(box.position,box.end))<=105
+func open_locker()->bool:
+	if _has_open_station():return false
+	if not can_open_locker():return false
+	if is_instance_valid(joystick):joystick.cancel()
+	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
+	puzzle_pending="";locker_pending=false;coupling_pending=false;pantry_pending=false;motion_pending="";signal_sync_pending=false;workbench_pending=false
+	locker_cipher.open();ui.hide();return true
+func coupling_desk()->Dictionary:
+	if int(data.floor)!=3:return {}
+	for item:Dictionary in data.objects:
+		if item.id=="studio_2_desk_59":return item
+	return {}
+func coupling_approach()->Vector2:
+	var item:=coupling_desk()
+	if item.is_empty():return Vector2.INF
+	var box:Rect2=Space.rect(item.footprint)
+	for point:Vector2 in [Vector2(box.position.x-55,box.get_center().y),Vector2(box.end.x+55,box.get_center().y),Vector2(box.get_center().x,box.end.y+80)]:
+		if space.can_stand(point-Body.FOOT_CENTER_OFFSET):return point
+	return Vector2.INF
+func can_open_coupling()->bool:
+	var item:=coupling_desk()
+	if item.is_empty() or overview:return false
+	var foot:=player+Body.FOOT_CENTER_OFFSET;var box:Rect2=Space.rect(item.footprint)
+	return foot.distance_to(foot.clamp(box.position,box.end))<=105
+func open_coupling()->bool:
+	if _has_open_station():return false
+	if not can_open_coupling():return false
+	if is_instance_valid(joystick):joystick.cancel()
+	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
+	puzzle_pending="";coupling_pending=false;locker_pending=false;pantry_pending=false;motion_pending="";signal_sync_pending=false;workbench_pending=false
+	coupling_tray.open();ui.hide();return true
 func pantry_desk()->Dictionary:
 	if int(data.floor)!=3:return {}
 	for item:Dictionary in data.objects:
@@ -303,7 +376,7 @@ func open_pantry()->bool:
 	if not can_open_pantry():return false
 	if is_instance_valid(joystick):joystick.cancel()
 	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
-	pantry_pending=false;motion_pending="";signal_sync_pending=false;workbench_pending=false
+	pantry_pending=false;locker_pending=false;coupling_pending=false;motion_pending="";signal_sync_pending=false;workbench_pending=false
 	pantry_tray.open();ui.hide();return true
 func motion_desk(mode:String)->Dictionary:
 	if int(data.floor)!=2 or not MOTION_ANCHORS.has(mode):return {}
@@ -313,6 +386,10 @@ func motion_desk(mode:String)->Dictionary:
 func motion_approach(mode:String)->Vector2:
 	var item:=motion_desk(mode)
 	if item.is_empty():return Vector2.INF
+	if mode=="robotics" and data.has("roboticsReference"):
+		var at:Array=data.roboticsReference.approach
+		var point:=Vector2(at[0],at[1])
+		if space.can_stand(point-Body.FOOT_CENTER_OFFSET):return point
 	var box:Rect2=Space.rect(item.footprint)
 	for point:Vector2 in [Vector2(box.position.x-55,box.get_center().y),Vector2(box.end.x+55,box.get_center().y),Vector2(box.get_center().x,box.end.y+80)]:
 		if space.can_stand(point-Body.FOOT_CENTER_OFFSET):return point
@@ -326,7 +403,7 @@ func open_motion_lab(mode:String)->bool:
 	if _has_open_station():return false
 	if not can_open_motion_lab(mode):return false
 	if is_instance_valid(joystick):joystick.cancel()
-	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();motion_pending="";signal_sync_pending=false;workbench_pending=false
+	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();motion_pending="";locker_pending=false;signal_sync_pending=false;workbench_pending=false
 	motion_lab.open(mode);ui.hide();return true
 func signal_sync_desk()->Dictionary:
 	if int(data.floor)!=2:return {}
@@ -350,7 +427,7 @@ func open_signal_sync()->bool:
 	if _has_open_station():return false
 	if not can_open_signal_sync():return false
 	if is_instance_valid(joystick):joystick.cancel()
-	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();signal_sync_pending=false;workbench_pending=false
+	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();signal_sync_pending=false;locker_pending=false;workbench_pending=false
 	signal_sync.open();ui.hide();return true
 func workshop_bench()->Dictionary:
 	if not data.has("workshopReference"):return {}
@@ -366,11 +443,22 @@ func open_workbench()->bool:
 	if _has_open_station():return false
 	if not can_open_workbench():return false
 	if is_instance_valid(joystick):joystick.cancel()
-	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();workbench_pending=false
-	if is_instance_valid(joystick):joystick.cancel()
+	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();workbench_pending=false;locker_pending=false
 	workbench.open();ui.hide();return true
 func point_action(at:Vector2)->void:
 	if _has_open_station():return
+	var cabinet:=locker_cabinet()
+	if not cabinet.is_empty() and Space.rect(cabinet.bounds).has_point(at):
+		if open_locker():return
+		var approach:=locker_approach()
+		if approach.is_finite():request_walk(approach);locker_pending=not route.is_empty()
+		return
+	var coupling:=coupling_desk()
+	if not coupling.is_empty() and Space.rect(coupling.bounds).has_point(at):
+		if open_coupling():return
+		var approach:=coupling_approach()
+		if approach.is_finite():request_walk(approach);coupling_pending=not route.is_empty()
+		return
 	var pantry:=pantry_desk()
 	if not pantry.is_empty() and Space.rect(pantry.bounds).has_point(at):
 		if open_pantry():return
@@ -407,7 +495,7 @@ func point_action(at:Vector2)->void:
 	else:request_walk(at)
 func toggle_overview()->void:
 	if is_instance_valid(joystick):joystick.cancel()
-	overview=not overview;route.clear();touch_vector=Vector2.ZERO
+	overview=not overview;route.clear();touch_vector=Vector2.ZERO;locker_pending=false
 
 func _notification(what:int)->void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:suspend_activity()
@@ -513,6 +601,8 @@ func _draw()->void:
 		else:
 			_draw_prop(item)
 			if int(data.floor)==3:
+				if item.id=="studio_2_desk_59":coupling_tray.draw_room_prop(self,Space.rect(item.bounds))
+				if item.id=="studio_2_wall_cabinet_4":locker_cipher.draw_room_prop(self,Space.rect(item.bounds))
 				if item.id=="pantry_pantry_island_250" and not pantry_tray.model.earned:pantry_tray.draw_room_prop(self,Space.rect(item.bounds))
 				elif item.id=="pantry_lounge_coffee_table_249" and pantry_tray.model.earned:pantry_tray.draw_room_prop(self,Space.rect(item.bounds),true)
 			if int(data.floor)==2:
@@ -745,10 +835,10 @@ func suspend_activity()->void:
 	if _suspending:return
 	_suspending=true
 	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
-	puzzle_pending="";workbench_pending=false;signal_sync_pending=false;motion_pending="";pantry_pending=false
+	puzzle_pending="";workbench_pending=false;signal_sync_pending=false;motion_pending="";pantry_pending=false;coupling_pending=false;locker_pending=false
 	if is_instance_valid(joystick):joystick.cancel()
 	if is_instance_valid(active_puzzle):active_puzzle.close()
-	for view:Control in [workbench,signal_sync,motion_lab,pantry_tray]:
+	for view:Control in [workbench,signal_sync,motion_lab,pantry_tray,coupling_tray,locker_cipher]:
 		if is_instance_valid(view) and view.visible:view.close()
 	if is_instance_valid(stairs):stairs.model.cancel();stairs.hide()
 	stair_destination.clear()
@@ -759,6 +849,6 @@ func _exit_tree()->void:
 	if persistence_enabled:suspend_activity()
 
 func _has_open_station()->bool:
-	for view in [active_puzzle,workbench,signal_sync,motion_lab,pantry_tray,stairs]:
+	for view in [active_puzzle,workbench,signal_sync,motion_lab,pantry_tray,coupling_tray,locker_cipher,stairs]:
 		if is_instance_valid(view) and view.visible:return true
 	return false

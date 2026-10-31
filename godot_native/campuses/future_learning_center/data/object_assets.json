@@ -553,5 +553,140 @@
     ],
     "sha256": "4a6bbfe8ff8fd5a77e67993a873b017308265355c9f6b95b91118cbe141fee78",
     "production": "builtin imagegen; independent transparent master; original bytes preserved; review draft"
+  },
+  "robotics_assembly_table": {
+    "path": "res://campuses/future_learning_center/assets/objects/robotics_assembly_table.png",
+    "size": [
+      2138,
+      735
+    ],
+    "opaqueBounds": [
+      34,
+      57,
+      2104,
+      686
+    ],
+    "sha256": "4f089fd16f11f1463bfc886ebc84aca87909195d1554fcb15ec14b1684724cc4",
+    "production": "Builtin imagegen original RGBA; source bytes unchanged; independent runtime crop; visual review required"
+  },
+  "robotics_hardware": {
+    "path": "res://campuses/future_learning_center/assets/objects/robotics_components_atlas.png",
+    "size": [
+      1740,
+      904
+    ],
+    "opaqueBounds": [
+      44,
+      113,
+      430,
+      431
+    ],
+    "sha256": "e1e87f5899b019b6a12851284e3721ef65386fef87ffccbb6428df04fd419f5b",
+    "production": "Builtin imagegen original RGBA; source bytes unchanged; independent runtime crop; visual review required"
+  },
+  "robotics_wheels": {
+    "path": "res://campuses/future_learning_center/assets/objects/robotics_components_atlas.png",
+    "size": [
+      1740,
+      904
+    ],
+    "opaqueBounds": [
+      496,
+      162,
+      863,
+      435
+    ],
+    "sha256": "e1e87f5899b019b6a12851284e3721ef65386fef87ffccbb6428df04fd419f5b",
+    "production": "Builtin imagegen original RGBA; source bytes unchanged; independent runtime crop; visual review required"
+  },
+  "robotics_motors": {
+    "path": "res://campuses/future_learning_center/assets/objects/robotics_components_atlas.png",
+    "size": [
+      1740,
+      904
+    ],
+    "opaqueBounds": [
+      937,
+      159,
+      1292,
+      453
+    ],
+    "sha256": "e1e87f5899b019b6a12851284e3721ef65386fef87ffccbb6428df04fd419f5b",
+    "production": "Builtin imagegen original RGBA; source bytes unchanged; independent runtime crop; visual review required"
+  },
+  "robotics_wires": {
+    "path": "res://campuses/future_learning_center/assets/objects/robotics_components_atlas.png",
+    "size": [
+      1740,
+      904
+    ],
+    "opaqueBounds": [
+      1344,
+      159,
+      1707,
+      435
+    ],
+    "sha256": "e1e87f5899b019b6a12851284e3721ef65386fef87ffccbb6428df04fd419f5b",
+    "production": "Builtin imagegen original RGBA; source bytes unchanged; independent runtime crop; visual review required"
+  },
+  "robotics_controller": {
+    "path": "res://campuses/future_learning_center/assets/objects/robotics_components_atlas.png",
+    "size": [
+      1740,
+      904
+    ],
+    "opaqueBounds": [
+      50,
+      560,
+      413,
+      795
+    ],
+    "sha256": "e1e87f5899b019b6a12851284e3721ef65386fef87ffccbb6428df04fd419f5b",
+    "production": "Builtin imagegen original RGBA; source bytes unchanged; independent runtime crop; visual review required"
+  },
+  "robotics_chassis": {
+    "path": "res://campuses/future_learning_center/assets/objects/robotics_components_atlas.png",
+    "size": [
+      1740,
+      904
+    ],
+    "opaqueBounds": [
+      477,
+      525,
+      906,
+      815
+    ],
+    "sha256": "e1e87f5899b019b6a12851284e3721ef65386fef87ffccbb6428df04fd419f5b",
+    "production": "Builtin imagegen original RGBA; source bytes unchanged; independent runtime crop; visual review required"
+  },
+  "robotics_tools": {
+    "path": "res://campuses/future_learning_center/assets/objects/robotics_components_atlas.png",
+    "size": [
+      1740,
+      904
+    ],
+    "opaqueBounds": [
+      973,
+      526,
+      1284,
+      818
+    ],
+    "sha256": "e1e87f5899b019b6a12851284e3721ef65386fef87ffccbb6428df04fd419f5b",
+    "production": "Builtin imagegen original RGBA; source bytes unchanged; independent runtime crop; visual review required"
+  },
+  "robotics_brackets": {
+    "path": "res://campuses/future_learning_center/assets/objects/robotics_components_atlas.png",
+    "size": [
+      1740,
+      904
+    ],
+    "opaqueBounds": [
+      1331,
+      527,
+      1702,
+      811
+    ],
+    "sha256": "e1e87f5899b019b6a12851284e3721ef65386fef87ffccbb6428df04fd419f5b",
+    "production": "Builtin imagegen original RGBA; source bytes unchanged; independent runtime crop; visual review required"
   }
 }

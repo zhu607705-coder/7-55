@@ -108,7 +108,7 @@ func _draw()->void:
   var covered:=gesture=="screen" and id!=drag_screen and Rect2(receiver_at(drag_screen),Vector2(184,105)).grow(5).intersects(Rect2(label_at-Vector2(0,20),Vector2(100,24)))
   if not covered:ink("接收屏甲" if id=="left" else "接收屏乙",label_at,18)
  ink("分配盒",Vector2(401,301),18,Color("f4eddb"))
- draw_tools();draw_book()
+ draw_tools();draw_book();draw_feedback()
 
 static func mini(canvas:CanvasItem,bounds:Rect2,value:int)->void:
  var factor:float=bounds.size.x/864.0

@@ -1,16 +1,16 @@
 {
   "schema": "755.flc.room-puzzle-review.v2",
   "status": "coverage_and_four_toy_models_checked_not_runtime_acceptance",
-  "generatedAt": "2026-10-30T08:31:12.477Z",
+  "generatedAt": "2026-10-30T13:04:15.560Z",
   "baselineCommit": "4c5fa5f147ce3cdd492895a97f9cca69fd415efd",
-  "designSha256": "b680d3a530b5cd37edb2abb8d87e3854244199b5e403fbb78dbe3ea78b581979",
+  "designSha256": "83db5fd10122ef5e560f7e74aeeae815739e2ff2b21748d6dee032d08ab71ea5",
   "transcriptLedgerSha256": "614f5bb8a6a3e4aaf1e51681206be711691cfd50626328b506dc9612000d3b26",
   "sourceHashes": {
     "data/floor_2.json": "4c91022bd738f6eea49f6ca5411cab2658859dd5ddd43cd517e8e547f272f3d5",
     "data/floor_3.json": "eabfb05659e7309e8b21ee082785cb32ab3638fb99e442deeea353fe97db9088",
     "data/floor_4.json": "f20ec7a4866c3122dd41adecc4e926e2b3dadd14e6f43361d6da61772bfa1c46"
   },
-  "checks": 833,
+  "checks": 834,
   "totalMapRooms": 25,
   "totalDesignedRooms": 25,
   "missingRooms": [],
@@ -49,7 +49,7 @@
       ]
     }
   ],
-  "anchorReferences": 47,
+  "anchorReferences": 48,
   "roomsWithOnlyProposedProps": [
     "3:xlab_box"
   ],

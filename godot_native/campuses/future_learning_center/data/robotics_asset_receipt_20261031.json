@@ -1,0 +1,37 @@
+{
+  "tool": "builtin image_gen",
+  "normalization": "No bitmap edits. Original PNG bytes retained; alpha-bounds and atlas-region metadata only.",
+  "records": [
+    {
+      "file": "robotics_assembly_table.png",
+      "sourceFile": "exec-9e422cd7-62b7-4e29-a668-82966bf45c8f.png",
+      "sha256": "4f089fd16f11f1463bfc886ebc84aca87909195d1554fcb15ec14b1684724cc4",
+      "size": [
+        2138,
+        735
+      ],
+      "regions": [
+        "robotics_assembly_table"
+      ]
+    },
+    {
+      "file": "robotics_components_atlas.png",
+      "sourceFile": "exec-bfb7e113-5785-40fd-94a3-f95779cbc0e1.png",
+      "sha256": "e1e87f5899b019b6a12851284e3721ef65386fef87ffccbb6428df04fd419f5b",
+      "size": [
+        1740,
+        904
+      ],
+      "regions": [
+        "robotics_hardware",
+        "robotics_wheels",
+        "robotics_motors",
+        "robotics_wires",
+        "robotics_controller",
+        "robotics_chassis",
+        "robotics_tools",
+        "robotics_brackets"
+      ]
+    }
+  ]
+}

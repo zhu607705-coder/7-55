@@ -6,6 +6,7 @@ const Plane45=preload("res://campuses/future_learning_center/scripts/bench_proje
 const LEVER_BASE := Vector2(832,365)
 const CRANK := Vector2(704,403)
 const Miniatures=preload("res://campuses/future_learning_center/scripts/miniature_bench.gd")
+const FeedbackSubtitle=preload("res://campuses/future_learning_center/scripts/feedback_subtitle.gd")
 var miniature:Node
 var bench_mode:="mechanical"
 var font: Font
@@ -82,7 +83,7 @@ func part_at(id: String, home: Vector2) -> Vector2:
 	return entry.from.lerp(entry.to,1.0-pow(1.0-t,3))-Vector2(0,sin(t*PI)*5)
 
 func notice(value: String) -> void:
-	feedback = value; feedback_seconds = 5.0
+	feedback = value; feedback_seconds = FeedbackSubtitle.duration(value)
 
 func _notification(what: int) -> void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:
@@ -213,7 +214,7 @@ func draw_table(title: String) -> void:
 	draw_texture_rect(miniature.texture(),Rect2(0,0,960,540),false)
 	ink(title,Vector2(32,39),24)
 
-func draw_tools() -> void:
+func draw_tools(show_annotations := true) -> void:
 	# Three engraved detents: forward/run, middle/stop, backward/return.
 	var x:=LEVER_BASE.x+56
 	for y:float in [-76,-42,-8]:draw_line(Vector2(x,y+LEVER_BASE.y),Vector2(x+16,y+LEVER_BASE.y),ApparatusStyle.INK,3,true)
@@ -222,12 +223,12 @@ func draw_tools() -> void:
 	ApparatusStyle.grip(self,lever_grip(),"vertical",gesture=="lever")
 	ApparatusStyle.grip(self,CRANK,"rotate",gesture=="crank")
 	if not book_open:ApparatusStyle.grip(self,Vector2(884,103),"book")
-	if gesture=="lever":
+	if show_annotations and gesture=="lever":
 		ink("运行" if lever_offset< -20 else ("归位" if lever_offset>20 else "暂停"),LEVER_BASE+Vector2(34,35),18)
 	draw_cues()
-	if feedback_seconds>0:
-		draw_rect(Rect2(16,486,928,46),Color("253e46"))
-		ink(feedback,Vector2(28,516),21,Color("f5f1e4"))
+
+func draw_feedback() -> void:
+	if feedback_seconds > 0: FeedbackSubtitle.paint(self, font, feedback)
 
 func draw_book() -> void:
 	if not book_open: return

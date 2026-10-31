@@ -139,6 +139,6 @@ func _draw()->void:
  for i:int in 3:ApparatusStyle.grip(self,pointer-Vector2(0,20) if gesture=="gear" and drag==i else part_at("gear%d"%i,Vector2(142+96*i,387)),"drag",gesture=="gear" and drag==i)
  if gesture=="gear":ApparatusStyle.target(self,Rect2(AXLE-Vector2(40,40),Vector2(80,80)))
  elif gesture=="belt":ApparatusStyle.target(self,Rect2(400,155,280,105))
- draw_tools();draw_book()
+ draw_tools();draw_book();draw_feedback()
 func _box(color:Color)->StyleBoxFlat:
  var result:=StyleBoxFlat.new();result.bg_color=color;result.border_color=Color("526b7a");result.set_border_width_all(1);return result
