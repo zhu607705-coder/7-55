@@ -8,7 +8,8 @@ const TRAY:=[Vector2(245,454),Vector2(355,454)]
 const HINTS:=["每次改摆法后，哪些记录还对应现在这套装配？","保持装配不动，比较两侧来光与送料结果。","对照交接卡、试拍和装置开口，查看失败记录的具体路径。"]
 var model=Model.new()
 var hints:Array=HINTS.duplicate()
-var apparatus_title:="两侧来光 · 同一套装配"
+var apparatus_title:="两侧来光"
+var apparatus_goal:="保持同一套装配，核对两侧试拍与送料。"
 var font:Font
 var drag:=-1
 var selected:=-1
@@ -46,18 +47,18 @@ func _input(event:InputEvent)->void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode==KEY_ESCAPE:close();get_viewport().set_input_as_handled()
 	elif event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
 		if touch_id>=0 or event.device==InputEvent.DEVICE_ID_EMULATION:return
-		if event.pressed:_press(event.position)
-		else:_release(event.position)
+		if event.pressed:_press(get_global_transform_with_canvas().affine_inverse()*event.position)
+		else:_release(get_global_transform_with_canvas().affine_inverse()*event.position)
 		get_viewport().set_input_as_handled()
-	elif event is InputEventMouseMotion and touch_id<0:pointer=event.position;queue_redraw()
+	elif event is InputEventMouseMotion and touch_id<0:pointer=get_global_transform_with_canvas().affine_inverse()*event.position;queue_redraw()
 	elif event is InputEventScreenTouch:
 		if event.index==touch_id and event.canceled:_cancel_pointer()
-		elif event.pressed and not event.canceled and touch_id<0:touch_id=event.index;_press(event.position)
+		elif event.pressed and not event.canceled and touch_id<0:touch_id=event.index;_press(get_global_transform_with_canvas().affine_inverse()*event.position)
 		elif not event.pressed and event.index==touch_id:
 			if event.canceled:_cancel_pointer()
-			else:_release(event.position);touch_id=-1
+			else:_release(get_global_transform_with_canvas().affine_inverse()*event.position);touch_id=-1
 		get_viewport().set_input_as_handled()
-	elif event is InputEventScreenDrag and event.index==touch_id:pointer=event.position;queue_redraw();get_viewport().set_input_as_handled()
+	elif event is InputEventScreenDrag and event.index==touch_id:pointer=get_global_transform_with_canvas().affine_inverse()*event.position;queue_redraw();get_viewport().set_input_as_handled()
 func _press(at:Vector2)->void:
 	pressed_at=at;pointer=at;action=""
 	if Rect2(38,407,142,88).has_point(at):action="hint";return
@@ -112,6 +113,7 @@ func _baffle(i:int,at:Vector2,slot:int)->void:
 	draw_ellipse_shadow(at+Vector2(0,8),Vector2(w*.6,10))
 	box(Rect2(at-Vector2(w/2,h/2+20),Vector2(w,h)),Color("767d79"),20)
 	for screw:float in [-1.0,1.0]:draw_circle(at+Vector2(screw*(w/2-5),-h/2-15),2,Color("c5c8bb"))
+	ApparatusStyle.grip(self,at,"drag",selected==i)
 	if selected==i:draw_arc(at,44,0,TAU,32,Color("d1bc83"),2)
 func draw_ellipse_shadow(at:Vector2,r:Vector2)->void:
 	var poly:=PackedVector2Array()
@@ -121,6 +123,7 @@ func _draw()->void:
 	if font==null:return
 	draw_rect(Rect2(0,0,960,540),Color("192329"))
 	text(apparatus_title,Vector2(32,42),22)
+	if hint_level>=0:text(apparatus_goal,Vector2(32,68),16)
 	box(Rect2(185,111,590,302),Color("716750"),22)
 	for x:int in range(200,770,24):draw_line(Vector2(x,115),Vector2(x,407),Color(0,0,0,.025),1)
 	# The fixture is a square in its own plane, shown in the same oblique projection.
@@ -130,6 +133,7 @@ func _draw()->void:
 		var ends:=model.slot_segment(slot)
 		draw_line(projected(ends[0]),projected(ends[1]),Color("444c4c"),7)
 		draw_line(projected(ends[0])+Vector2(0,2),projected(ends[1])+Vector2(0,2),Color("c2c2b0"),2)
+		if drag>=0:ApparatusStyle.target(self,Rect2(projected(Model.SLOT_POINTS[slot])-Vector2(24,24),Vector2(48,48)),true)
 	_draw_apparatus_extra()
 	# Lamps and direct light rays show the actual first obstruction.
 	for side:int in 2:
@@ -161,10 +165,13 @@ func _draw()->void:
 	var lever:=lever_at()
 	draw_circle(lever+Vector2(0,13),26,Color("303b40"));draw_line(lever+Vector2(0,13),lever+Vector2(0,-21 if model.running else -8),Color("b4b6aa"),8);draw_circle(lever+Vector2(0,-21 if model.running else -8),11,Color("6a5145"));text("送料",lever+Vector2(-17,51),14)
 	draw_arc(Vector2(650,452),23,-PI*.7,PI*.7,32,Color("a5aaa0"),6);draw_circle(Vector2(650,452)+Vector2(17,17),8,Color("bda16c"));text("夹具",Vector2(631,493),14)
+	ApparatusStyle.grip(self,camera,"press",model.running)
+	ApparatusStyle.grip(self,lever,"press",model.running)
+	ApparatusStyle.grip(self,Vector2(650,452),"press")
 	# Physical paper cards, opened only on request.
-	box(Rect2(38,417,132,70),Color("c9b992"),3);text("交接卡",Vector2(63,448),16,Color("343a3a"));text("翻开查看",Vector2(55,473),13,Color("595b51"))
+	box(Rect2(38,417,132,70),Color("c9b992"),3);text("交接卡",Vector2(63,448),16,Color("343a3a"))
 	box(Rect2(798,123,130,240),Color("c6c1aa"),4)
-	text("试拍记录",Vector2(811,149),17,Color("303e40"));text("装配 %d · 夹具 %d"%[model.configuration_revision,model.fixture_revision],Vector2(804,172),12,Color("485655"))
+	text("试拍记录",Vector2(811,149),17,Color("303e40"))
 	var row:=0
 	for key:String in ["photo_a","photo_b","feed"]:
 		var y:=190+row*48;box(Rect2(810,y,106,36),Color("d7d2be"),2)
@@ -174,9 +181,9 @@ func _draw()->void:
 			if r.passed:draw_circle(Vector2(894,y+17),7,Color("526b60"));draw_line(Vector2(888,y+17),Vector2(892,y+21),Color("dfdfcb"),2);draw_line(Vector2(892,y+21),Vector2(900,y+12),Color("dfdfcb"),2)
 			else:draw_line(Vector2(889,y+11),Vector2(901,y+23),Color("875f4c"),3);draw_line(Vector2(901,y+11),Vector2(889,y+23),Color("875f4c"),3)
 		row+=1
-	text("旧记录 %d"%model.history.size(),Vector2(815,347),13,Color("485655"))
 	if show_records:
-		box(Rect2(468,74,450,68),Color("d3c5a5"),3)
+		box(Rect2(468,74,450,100),Color("d3c5a5"),3)
+		text("装配 %d · 夹具 %d · 旧记录 %d"%[model.configuration_revision,model.fixture_revision,model.history.size()],Vector2(482,153),14,Color("3c4746"))
 		var last:Dictionary=model.history.back() if not model.history.is_empty() else {}
 		text("没有历史试验" if last.is_empty() else "%s · 装配 %d / 夹具 %d · %s"%[last.kind,last.configuration_revision,last.fixture_revision,"成立" if last.passed else "未成立"],Vector2(482,113),16,Color("3c4746"))
 	if hint_level>=0:

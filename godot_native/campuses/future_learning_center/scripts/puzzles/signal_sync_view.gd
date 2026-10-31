@@ -59,7 +59,7 @@ func pattern(at:Vector2,value:int)->void:
 func _draw()->void:
  if font==null:return
  draw_rect(Rect2(0,0,960,540),Color("28373b"))
- text("团队工作室 · 两个版本",Vector2(35,36),23)
+ text("团队工作室",Vector2(35,36),23)
  box(Rect2(30,100,895,320),Color("9d8d71"),12)
  # Socket identity, not left/right screen position, determines the signal.
  for input:String in model.cables:
@@ -69,7 +69,7 @@ func _draw()->void:
    var t:=clampf(model.elapsed/(.7 if input=="bus_in" else 1.05),0,1)
    draw_circle(b.lerp(a,t),6,Color("eee1b5"))
  box(Rect2(80,170,145,110),Color("475c60"),8);pattern(Vector2(150,225),model.source_pattern)
- text("当前源卡 · 翻一页",Vector2(80,155),16)
+ text("源卡",Vector2(80,155),16)
  box(Rect2(345,170,132,130),Color("526868"),10)
  text("分配盒",Vector2(368,192),17)
  box(Rect2(350,325,127,72),Color("77796d"),7);pattern(Vector2(405,360),model.cache_pattern)
@@ -86,10 +86,15 @@ func _draw()->void:
   text("接收甲" if i==0 else "接收乙",at+Vector2(-32,35),13)
   var socket:=port_at("screen_a" if i==0 else "screen_b")
   draw_circle(socket,10,Color("d0c9af"));draw_circle(socket,5,Color("24353a"))
- if not cable_input.is_empty():draw_line(port_at(cable_input),pointer,Color("ddd4b5"),5);draw_circle(pointer,9,Color("d0c9af"))
+ for input:String in SignalSync.INPUTS:ApparatusStyle.grip(self,port_at(input),"drag",cable_input==input)
+ if not cable_input.is_empty():
+  for output:String in SignalSync.OUTPUTS:
+   var destination:=port_at(output)
+   ApparatusStyle.target(self,Rect2(destination-Vector2(16,16),Vector2(32,32)),pointer.distance_to(destination)<28)
+  draw_line(port_at(cable_input),pointer,Color("ddd4b5"),5);draw_circle(pointer,9,Color("d0c9af"))
  box(Rect2(35,450,155,55),Color("ddd6bf"),4);text("修改前后的稿纸",Vector2(48,481),16,Color("30454b"))
- box(Rect2(300,450,220,55),Color("ddd6bf"),4);text("接收时刻纸条 · 翻看",Vector2(312,480),15,Color("30454b"))
- if hint_level>=0:text(hints[hint_level],Vector2(35,74),16)
+ box(Rect2(300,450,220,55),Color("ddd6bf"),4);text("接收记录",Vector2(312,480),15,Color("30454b"))
+ if hint_level>=0:text("让两屏持续跟随源卡。"+hints[hint_level],Vector2(35,74),16)
  if show_records:
   text("不同改动已验证：%d / 2"%model.receipts.size(),Vector2(560,470),16)
   text(model.outcome,Vector2(550,500),15)

@@ -10,6 +10,8 @@ var font:Font
 var held:=-1
 var held_sheet:=false
 var touch_id:=-1
+var pending_touch_action:=""
+var touch_press:=Vector2.ZERO
 var pointer:=Vector2.ZERO
 var paper_open:=false
 var hint_level:=0
@@ -23,7 +25,9 @@ func _ready()->void:
  mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL;font=ApparatusStyle.font();size=Vector2(960,540);hide()
 func open()->void:show();model.resume();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
-func cancel_pointer()->void:model.cancel_drag();held=-1;held_sheet=false;touch_id=-1;queue_redraw()
+func cancel_pointer()->void:
+ pending_touch_action="";_cancel_pointer_state()
+func _cancel_pointer_state()->void:model.cancel_drag();held=-1;held_sheet=false;touch_id=-1;queue_redraw()
 func _notification(what:int)->void:
  if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:model.pause();cancel_pointer()
 func _process(dt:float)->void:
@@ -58,13 +62,28 @@ func move_at(at:Vector2)->void:
  queue_redraw()
 func rotation_handle()->Vector2:return piece_position(0)+Vector2(0,-44)
 func sheet_position()->Vector2:return Vector2(766,374) if model.extension else Vector2(620,475)
+func _touch_action(at:Vector2)->String:
+ if Rect2(45,470,145,42).has_point(at):return "paper"
+ if at.distance_to(Vector2(240,490))<27:return "undo"
+ if at.distance_to(Vector2(540,412))<28:return "holder"
+ if at.distance_to(Vector2(830,470))<40:return "shutter"
+ if Rect2(sheet_position()-Vector2(42,17),Vector2(84,34)).has_point(at):return ""
+ if at.distance_to(rotation_handle())<19:return "bar"
+ return ""
 func _gui_input(e:InputEvent)->void:
  if not visible:return
  if e is InputEventScreenTouch:
-  if e.index==touch_id and e.canceled:model.cancel();cancel_pointer()
-  elif e.pressed and not e.canceled and touch_id<0:touch_id=e.index;press_at(e.position)
+  if e.index==touch_id and e.canceled:
+   if pending_touch_action.is_empty():model.cancel()
+   cancel_pointer()
+  elif e.pressed and not e.canceled and touch_id<0:
+   touch_id=e.index;touch_press=e.position;pending_touch_action=_touch_action(e.position)
+   if pending_touch_action.is_empty():press_at(e.position)
   elif not e.pressed and e.index==touch_id:
-   if e.canceled:model.cancel();cancel_pointer()
+   if not pending_touch_action.is_empty():
+    var activate:bool=not e.canceled and touch_press.distance_to(e.position)<18 and _touch_action(e.position)==pending_touch_action
+    pending_touch_action=""
+    if activate:press_at(e.position)
    else:release_at(e.position)
    touch_id=-1
   accept_event()
@@ -138,7 +157,7 @@ func _grid(at:Vector2,cells:Dictionary,view:int,mask:bool)->void:
    if mask and not model.visible_cell(view,cell):draw_rect(r,Color("b1a083"));draw_line(r.position,r.end,PAPER,2)
 func _draw()->void:
  if font==null:return
- draw_rect(Rect2(0,0,960,540),INK);_text("跨学科研讨 · 三个视图，同一件东西",Vector2(32,38),22,PAPER)
+ draw_rect(Rect2(0,0,960,540),INK);_text("跨学科研讨",Vector2(32,38),22,PAPER)
  draw_rect(Rect2(35,87,890,430),Color("a38e70"))
  for y:int in range(105,515,30):draw_line(Vector2(43,y),Vector2(917,y),Color("987e5f"),1)
  draw_rect(Rect2(54,111,150,330),Color("756b56"))
@@ -158,13 +177,16 @@ func _draw()->void:
  cells.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return a.depth<b.depth if a.depth!=b.depth else a.cell.z<b.cell.z)
  for row:Dictionary in cells:_cube(Vector3(row.cell),Color("71918e") if row.piece==0 else Color("b8956d"))
  var h:=rotation_handle();draw_arc(h,12,.3,5.7,20,PAPER,3);draw_circle(h+Vector2(10,-8),4,INK)
+ ApparatusStyle.grip(self,h,"press",false)
+ for i:int in 3:
+  if model.drag_piece!=i:ApparatusStyle.grip(self,piece_position(i),"drag",false)
  draw_circle(Vector2(540,412),24,INK);draw_line(Vector2(540,412),Vector2(558,396),PAPER,6);draw_circle(Vector2(558,396),7,Color("ba9c75"))
  for view:int in 3:
   var y:=112+view*111
   draw_rect(Rect2(695,y,192,96),PAPER);_text(["俯视","正面","侧面"][view],Vector2(707,y+20),14)
   _grid(Vector2(712,y+31),model.target(view),view,true)
   if model.drag_piece<0:_grid(Vector2(806,y+31),Model.project(model.voxels(),view),view,false)
-  else:_text("抓持中",Vector2(805,y+63),13)
+  else:draw_arc(Vector2(833,y+57),13,.3,5.7,16,INK,2)
   draw_circle(Vector2(700,y+90),4,INK)
  if model.drag_piece>=0:
   for local:Vector3i in model.cells(model.drag_piece,Vector3i.ZERO,model.bar_turn):_cube(model.preview_origin+Vector3(local),Color("71918e") if model.drag_piece==0 else Color("b8956d"))
@@ -174,5 +196,7 @@ func _draw()->void:
  draw_rect(Rect2(782,457,96,39),INK);draw_circle(Vector2(818,475),18,Color("7d9590"));draw_circle(Vector2(818,475),11,INK);draw_circle(Vector2(861,452 if not model.running else 457),8,Color("b4936c"))
  draw_rect(Rect2(45,472,145,38),PAPER);_text("观察便笺",Vector2(68,498),16)
  draw_arc(Vector2(240,490),15,.3,5.7,20,PAPER,4)
- if paper_open:_text(HINTS[hint_level],Vector2(295,497),15,PAPER)
+ if paper_open:
+  _text("让同一件组合体符合三个视图。",Vector2(33,66),16,PAPER)
+  _text(HINTS[hint_level],Vector2(295,497),15,PAPER)
  elif not model.outcome.is_empty():_text(model.outcome,Vector2(303,497),15,PAPER)

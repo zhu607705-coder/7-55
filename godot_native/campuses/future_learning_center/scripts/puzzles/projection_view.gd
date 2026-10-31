@@ -9,6 +9,8 @@ var model=Model.new()
 var font:Font
 var selected:=-1
 var drag:=-1
+var touch_action_pending:=false
+var touch_action_origin:=Vector2.ZERO
 var touch_id:=-1
 var pointer:=Vector2.ZERO
 var origin:=Vector2.ZERO
@@ -28,7 +30,7 @@ func _ready()->void:
 	font=ApparatusStyle.font();size=Vector2(960,540);hide()
 func open()->void:cancel_pointer();model.resume();show();grab_focus();queue_redraw()
 func close()->void:model.cancel();model.pause();cancel_pointer();hide();closed.emit()
-func cancel_pointer()->void:model.cancel_drag();drag=-1;selected=-1;mask_drag=false;touch_id=-1;queue_redraw()
+func cancel_pointer()->void:touch_action_pending=false;model.cancel_drag();drag=-1;selected=-1;mask_drag=false;touch_id=-1;queue_redraw()
 func _notification(what:int)->void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:model.pause();cancel_pointer()
 func _process(dt:float)->void:
@@ -44,10 +46,10 @@ func _gui_input(event:InputEvent)->void:
 	if not visible:return
 	if event is InputEventScreenTouch:
 		if event.index==touch_id and event.canceled:model.cancel();cancel_pointer()
-		elif event.pressed and not event.canceled and touch_id<0:touch_id=event.index;press_at(event.position)
+		elif event.pressed and not event.canceled and touch_id<0:touch_id=event.index;_touch_begin(event.position)
 		elif not event.pressed and event.index==touch_id:
 			if event.canceled:model.cancel();cancel_pointer()
-			else:release_at(event.position)
+			else:_touch_finish(event.position)
 			touch_id=-1
 		accept_event()
 	elif event is InputEventScreenDrag and event.index==touch_id:move_at(event.position);accept_event()
@@ -141,8 +143,8 @@ func _grid(at:Vector2,cells:Dictionary,side:int,mask:bool)->void:
 			if mask and not model.visible_cell(side,cell):draw_rect(r,Color("a3957c"));draw_line(r.position,r.end,PAPER,1)
 func _draw()->void:
 	if font==null:return
-	draw_rect(Rect2(0,0,960,540),Color("29353b"));_text("X-Lab 小间 · 两个方向，同一组折片",Vector2(32,37),22,PAPER)
-	_text("让两面轮廓同时吻合目标片",Vector2(33,65),16,Color("bcc5bd"))
+	draw_rect(Rect2(0,0,960,540),Color("29353b"));_text("X-Lab · 双向投影",Vector2(32,37),22,PAPER)
+	if paper_open:_text("让两面轮廓同时吻合目标片",Vector2(33,65),16,Color("bcc5bd"))
 	draw_rect(Rect2(35,96,890,424),Color("a48f70"))
 	for y:int in range(112,515,28):draw_line(Vector2(43,y),Vector2(918,y),Color("988263"),1)
 	_turntable()
@@ -160,9 +162,11 @@ func _draw()->void:
 		for d:int in 4:draw_circle(slot_point(i,d),6,PAPER);_text(str(d),slot_point(i,d)+Vector2(-4,24),12)
 		var h:=slot_point(i,model.displayed_pose(i).x);draw_circle(h+Vector2(0,3),17,INK);draw_circle(h,15,COLORS[i])
 		_text("A" if i==0 else "B",Vector2(165,h.y+5),16)
+		ApparatusStyle.grip(self,h,"horizontal",drag==i and drag_kind=="slider")
 		draw_line(Vector2(490+i*63,382),Vector2(490+i*63,430),INK,7);draw_circle(height_point(i),15,COLORS[i])
-	_text("升降支架",Vector2(482,462),13)
+		ApparatusStyle.grip(self,height_point(i),"vertical",drag==i and drag_kind=="height")
 	draw_circle(Vector2(95,330),27,INK);draw_line(Vector2(95,330),Vector2(95,330)+Vector2(cos(model.angle),sin(model.angle))*24,PAPER,6)
+	ApparatusStyle.grip(self,Vector2(95,330),"rotate")
 	_text("0° / 90°",Vector2(62,378),13)
 	draw_rect(Rect2(626,120,254,220),PAPER)
 	_text("目标片",Vector2(646,146),16);_text("透光像",Vector2(762,146),16)
@@ -178,6 +182,7 @@ func _draw()->void:
 	draw_circle(Vector2(735,400),25,Color("86938b"));draw_circle(Vector2(735,400),18,INK);draw_circle(Vector2(735,400),10,Color("52747d"))
 	draw_line(Vector2(730,392),Vector2(738,392),PAPER,2)
 	draw_circle(Vector2(785,374 if model.running else 369),9,COLORS[1])
+	ApparatusStyle.grip(self,Vector2(785,369),"press",model.running)
 	if model.running:draw_line(Vector2(635,350),Vector2(635+235*model.elapsed/.6,350),PAPER,3)
 	elif not model.outcome.is_empty():_text(model.outcome,Vector2(650,357),16)
 	draw_rect(Rect2(56,467,150,42),PAPER);_text("观察笔记",Vector2(77,494),16)
@@ -185,6 +190,7 @@ func _draw()->void:
 	draw_rect(Rect2(769,458,118,49),Color("8a775d"))
 	draw_line(Vector2(772,460),Vector2(884,460),PAPER,2)
 	_mask(pointer if mask_drag else mask_position())
+	ApparatusStyle.grip(self,(pointer if mask_drag else mask_position())+Vector2(34,-6),"drag",mask_drag)
 	if paper_open:_text(HINTS[hint_level-1],Vector2(300,494),15,PAPER)
 	elif model.current_passed():_text("两面均已验证",Vector2(380,494),16,PAPER)
 func _turntable()->void:
@@ -203,3 +209,20 @@ func _mask(at:Vector2)->void:
 	draw_line(at-Vector2(42,8),at+Vector2(42,-8),PAPER,1)
 	draw_rect(Rect2(at+Vector2(31,-17),Vector2(9,21)),Color("6b7d79"))
 	draw_line(at+Vector2(34,-14),at+Vector2(34,1),PAPER,2)
+
+func _touch_begin(at:Vector2)->void:
+	touch_action_origin=at;touch_action_pending=at.distance_to(Vector2(95,330))<35 or Rect2(665,350,150,82).has_point(at) or Rect2(56,461,150,52).has_point(at) or Rect2(224,461,65,52).has_point(at) or _touch_slot(at)
+	if not touch_action_pending:press_at(at)
+func _touch_finish(at:Vector2)->void:
+	if touch_action_pending:
+		touch_action_pending=false
+		if at.distance_to(touch_action_origin)>18:return
+		press_at(touch_action_origin)
+	release_at(at)
+func _touch_slot(at:Vector2)->bool:
+	if selected<0:return false
+	for i:int in 2:
+		if at.distance_to(height_point(i))<24 or at.distance_to(slot_point(i,model.depths[i]))<24:return false
+	for d:int in 4:
+		if at.distance_to(slot_point(selected,d))<24:return true
+	return false

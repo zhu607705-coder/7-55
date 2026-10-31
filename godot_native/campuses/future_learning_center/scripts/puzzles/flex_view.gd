@@ -7,6 +7,9 @@ const PAPER=ApparatusStyle.PAPER
 const COPPER := Color("b88a58")
 const PORT_Y := [232.0, 302.0, 372.0]
 const ROLE_LABEL := ["源", "分", "收"]
+var pending_touch:=""
+var pending_unplug:=-1
+var pending_origin:=Vector2.ZERO
 var model = Model.new()
 var font: Font
 var route_drag := -1
@@ -32,6 +35,7 @@ func open() -> void:
 func close() -> void:
 	model.cancel(); _clear_drag(); hide(); closed.emit()
 func _clear_drag() -> void:
+	pending_touch="";pending_unplug=-1
 	route_drag = -1; route_selected = -1; dragging = -1; held_board = false; touch_id = -1; selected = -1
 func _notification(what: int) -> void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT, NOTIFICATION_APPLICATION_PAUSED]:
@@ -55,12 +59,39 @@ func _input(event: InputEvent) -> void:
 		pointer = (get_global_transform_with_canvas().affine_inverse()*event.position)
 	elif event is InputEventScreenTouch:
 		if event.canceled and event.index == touch_id: _clear_drag()
-		elif event.pressed and touch_id < 0: touch_id = event.index; press((get_global_transform_with_canvas().affine_inverse()*event.position))
-		elif not event.pressed and event.index == touch_id: release((get_global_transform_with_canvas().affine_inverse()*event.position)); touch_id = -1
+		elif event.pressed and not event.canceled and touch_id < 0: touch_id = event.index; _touch_begin((get_global_transform_with_canvas().affine_inverse()*event.position))
+		elif not event.pressed and event.index == touch_id: _touch_finish((get_global_transform_with_canvas().affine_inverse()*event.position)); touch_id = -1
 	elif event is InputEventScreenDrag:
 		if event.index == touch_id: pointer = (get_global_transform_with_canvas().affine_inverse()*event.position)
 	else: return
 	get_viewport().set_input_as_handled(); queue_redraw()
+func _touch_action(at:Vector2)->String:
+	if notebook:return "notes"
+	if Rect2(48,438,130,65).has_point(at):return "paper"
+	if Rect2(190,435,110,65).has_point(at):return "reel"
+	if model.paused:return "resume"
+	if not model.running and at.distance_to(Vector2(275,164))<34:return "adapter"
+	if not model.running and at.distance_to(Vector2(730,300))<40:return "trial"
+	return ""
+func _touch_begin(at:Vector2)->void:
+	pending_touch=_touch_action(at);pending_origin=at;pending_unplug=-1
+	if pending_touch.is_empty():
+		if not model.running and selected<0:
+			for port:int in 3:
+				if at.distance_to(Vector2(610,PORT_Y[port]))<29:
+					var cable:int=model.connections.find(port)
+					if cable>=0:pending_unplug=cable;dragging=cable;selected=cable;pointer=at;return
+		press(at)
+func _touch_finish(at:Vector2)->void:
+	if not pending_touch.is_empty():
+		var activate:=pending_touch==_touch_action(at) and pending_origin.distance_to(at)<18
+		pending_touch=""
+		if activate:press(pending_origin)
+	else:
+		if pending_unplug>=0:
+			if not Rect2(0,0,960,540).has_point(at):_clear_drag();return
+			model.edit(pending_unplug,-1);pending_unplug=-1
+		release(at)
 func press(at: Vector2) -> void:
 	pointer = at
 	if notebook:
@@ -151,10 +182,11 @@ func _draw() -> void:
 	_block(Rect2(32,76,880,375),Color("a17c56"),22)
 	_block(Rect2(190,151,494,259),Color("d0d1c5"),12)
 	_txt("流动工位",Vector2(36,38),24)
-	_txt("同一件底座，在两个工位都传到正确端点。",Vector2(36,64),17)
+	if notebook:_txt("同一件底座，在两个工位都传到正确端点。",Vector2(36,64),17)
 	_block(Rect2(385,94,190,56),Color("d1c6aa"),6)
 	draw_arc(Vector2(480,120),28,PI,TAU,20,INK,5)
 	_txt("便携底座 · 01",Vector2(402,143),16)
+	ApparatusStyle.grip(self,Vector2(480,120),"drag",held_board)
 	if held_board:
 		draw_rect(Rect2(pointer-Vector2(40,20),Vector2(80,40)),Color(.85,.80,.68,.7)); _txt("01",pointer,18)
 	for s: int in 2:
@@ -165,9 +197,9 @@ func _draw() -> void:
 			draw_rect(Rect2(x,dock.position.y-3,9,54),Color("d8d4c4"))
 		for port:int in 3:_symbol(Vector2(767+port*29,139+s*66),Model.ROLES[s][port],INK)
 		_txt("甲" if s==0 else "乙",Vector2(706,144+s*66),16)
+		if held_board:ApparatusStyle.target(self,dock,true)
 		if s==model.station:draw_line(dock.position+Vector2(14,42),dock.position+Vector2(114,42),COPPER,4)
 		if model.station_proofs[s]: draw_circle(Vector2(841,130+s*66),5,INK)
-	_txt("搬起把手换工位",Vector2(719,257),14)
 	# Fixed fixture occupies the crossover conduit. Outer loops go around it.
 	_block(Model.PILLAR,Color("747d7b"),10)
 	for i: int in 3:
@@ -183,6 +215,7 @@ func _draw() -> void:
 		var grip:Vector2=pointer if route_drag==i else route_grip(i)
 		draw_circle(grip+Vector2(0,2),10,INK);draw_circle(grip,7,Color("b5b8ae"))
 		draw_line(grip-Vector2(3,4),grip+Vector2(3,4),INK,2)
+		ApparatusStyle.grip(self,grip,"drag",route_drag==i)
 		if route_selected==i:
 			for outside:bool in [true,false]:
 				var seat:=route_seat(i,outside)
@@ -203,7 +236,7 @@ func _draw() -> void:
 	_draw_knob()
 	_txt("源信号",Vector2(700,355),17)
 	_txt("接收",Vector2(813,304),16)
-	_block(Rect2(48,438,130,65),PAPER,4); _txt("试验手册",Vector2(64,470),18); _txt("按需翻阅",Vector2(72,491),14)
+	_block(Rect2(48,438,130,65),PAPER,4); _txt("试验手册",Vector2(64,470),18)
 	# Cable reel flanges and turns are the clickable object, not a boxed command.
 	for x:int in [205,239]:draw_arc(Vector2(x,470),24,0,TAU,32,INK,5)
 	for y:int in range(451,490,6):draw_line(Vector2(207,y),Vector2(238,y),COPPER,3)

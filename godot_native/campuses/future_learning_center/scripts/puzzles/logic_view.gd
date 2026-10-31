@@ -30,18 +30,18 @@ func _input(e:InputEvent)->void:
  if e is InputEventKey and e.pressed and e.keycode==KEY_ESCAPE:close();get_viewport().set_input_as_handled()
  elif e is InputEventMouseButton and e.button_index==MOUSE_BUTTON_LEFT:
   if touch_id>=0 or e.device==InputEvent.DEVICE_ID_EMULATION:return
-  if e.pressed:press(e.position)
-  else:release(e.position)
+  if e.pressed:press(get_global_transform_with_canvas().affine_inverse()*e.position)
+  else:release(get_global_transform_with_canvas().affine_inverse()*e.position)
   get_viewport().set_input_as_handled()
- elif e is InputEventMouseMotion and touch_id<0:pointer=e.position
+ elif e is InputEventMouseMotion and touch_id<0:pointer=get_global_transform_with_canvas().affine_inverse()*e.position
  elif e is InputEventScreenTouch:
   if e.index==touch_id and e.canceled:cancel_pointer()
-  elif e.pressed and not e.canceled and touch_id<0:touch_id=e.index;press(e.position)
+  elif e.pressed and not e.canceled and touch_id<0:touch_id=e.index;press(get_global_transform_with_canvas().affine_inverse()*e.position)
   elif not e.pressed and touch_id==e.index:
    if e.canceled:cancel_pointer()
-   else:release(e.position);touch_id=-1
+   else:release(get_global_transform_with_canvas().affine_inverse()*e.position);touch_id=-1
   get_viewport().set_input_as_handled()
- elif e is InputEventScreenDrag and e.index==touch_id:pointer=e.position;get_viewport().set_input_as_handled()
+ elif e is InputEventScreenDrag and e.index==touch_id:pointer=get_global_transform_with_canvas().affine_inverse()*e.position;get_viewport().set_input_as_handled()
 func block_at(i:int)->Vector2:return model.position if model.block==i else TRAYS[i]
 func press(at:Vector2)->void:
  down=at;pointer=at;drag=""
@@ -95,7 +95,8 @@ func circuit(at:Vector2,which:int,scale_value:float)->void:
 func _draw()->void:
  if font==null:return
  draw_rect(Rect2(0,0,960,540),Color("26323a"))
- txt("它为什么抓了个空",Vector2(34,38),22);txt("试件靠近并被托住时，才允许夹持。",Vector2(34,64),15)
+ txt("它为什么抓了个空",Vector2(34,38),22)
+ if hints>=0:txt("试件靠近并被托住时，才允许夹持。",Vector2(34,64),15)
  slab(Rect2(25,90,910,320),Color("93836b"))
  for i:int in 3:
   slab(Rect2(35,120+i*95,120,78),Color("667773"));circuit(Vector2(40,125+i*95),i,1.0)
@@ -103,6 +104,7 @@ func _draw()->void:
  slab(SLOT,Color("65736e"));txt("走线插座",Vector2(228,205),16)
  if model.card>=0:circuit(Vector2(202,245),model.card,1.35)
  else:txt("＋",Vector2(255,285),28)
+ if drag.begins_with("card"):ApparatusStyle.target(self,SLOT,true)
  var inputs:=model.contacts()
  draw_line(Vector2(355,238),Vector2(430,268),Color("414f54"),5)
  draw_line(Vector2(355,325),Vector2(480,355),Color("414f54"),5)
@@ -117,9 +119,11 @@ func _draw()->void:
   var at:=pointer if drag=="block%d"%i else block_at(i)
   var shape:Rect2=Model.SHAPES[i]
   slab(Rect2(at+shape.position,shape.size),[Color("a49478"),Color("929e97"),Color("afa68b")][i])
+  ApparatusStyle.grip(self,at,"drag",drag=="block%d"%i)
   txt(str(i+1),at+shape.position+Vector2(8,20),15,Color("26323a"))
  txt("试块托盘",Vector2(300,515),14)
  draw_circle(Vector2(680,335),29,Color("33444a"));draw_line(Vector2(680,340),Vector2(680,309 if model.running else 321),Color("d5d4c6"),7);draw_circle(Vector2(680,309 if model.running else 321),10,Color("a88c69"));txt("试夹",Vector2(663,382),14)
+ ApparatusStyle.grip(self,Vector2(680,335),"press",model.running)
  slab(Rect2(720,155,180,95),Color("65736e"))
  draw_line(Vector2(755,180),Vector2(862,222 if model.swapped else 180),Color("b3c5c2"),4)
  draw_line(Vector2(755,222),Vector2(862,180 if model.swapped else 222),Color("b4a17b"),4)
@@ -132,7 +136,7 @@ func _draw()->void:
   for key:String in model.receipts:
    var r:Dictionary=model.receipts[key]
    txt(key+"   "+("合拢" if r.output else "张开"),Vector2(772,y),15,Color("314249"));y+=26
- else:txt("翻开查看",Vector2(780,380),15,Color("4a5554"))
+
  slab(Rect2(35,433,150,65),Color("d4cfb9"));txt("观察手册",Vector2(59,462),18,Color("314249"))
  if hints>=0:txt(HELP[hints],Vector2(195,105),16)
  if model.paused:txt("已暂停 · 触碰装置继续",Vector2(380,530),16)

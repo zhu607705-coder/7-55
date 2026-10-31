@@ -7,6 +7,8 @@ const PAPER=ApparatusStyle.PAPER
 const SOURCE:=Vector2(315,310)
 const DESTINATION:=Vector2(750,308)
 const TARGET:=Rect2(610,245,290,125)
+var pending_touch:=""
+var pending_origin:=Vector2.ZERO
 var model=Model.new()
 var font:Font
 var drag:=-1
@@ -28,7 +30,7 @@ func _ready()->void:
 	font=ApparatusStyle.font();size=Vector2(960,540);hide()
 func open()->void:cancel_pointer();model.resume();show();grab_focus();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
-func cancel_pointer()->void:model.cancel_drag();drag=-1;selected=-1;tray_drag=false;touch_id=-1;queue_redraw()
+func cancel_pointer()->void:pending_touch="";model.cancel_drag();drag=-1;selected=-1;tray_drag=false;touch_id=-1;queue_redraw()
 func _notification(what:int)->void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:model.pause();cancel_pointer()
 func _process(dt:float)->void:
@@ -42,10 +44,10 @@ func _gui_input(event:InputEvent)->void:
 	if not visible:return
 	if event is InputEventScreenTouch:
 		if event.index==touch_id and event.canceled:_cancel_touch()
-		elif event.pressed and not event.canceled and touch_id<0:touch_id=event.index;press_at(event.position)
+		elif event.pressed and not event.canceled and touch_id<0:touch_id=event.index;_touch_begin(event.position)
 		elif not event.pressed and event.index==touch_id:
 			if event.canceled:_cancel_touch()
-			else:release_at(event.position)
+			else:_touch_finish(event.position)
 			touch_id=-1
 		accept_event()
 	elif event is InputEventScreenDrag and event.index==touch_id:move_at(event.position);accept_event()
@@ -66,6 +68,21 @@ func _gui_input(event:InputEvent)->void:
 			else:model.undo()
 		elif selected>=0 and event.keycode in [KEY_1,KEY_2,KEY_3,KEY_4]:model.place(selected,int(event.keycode)-int(KEY_1));selected=-1
 		queue_redraw();accept_event()
+func _touch_action(at:Vector2)->String:
+	if Rect2(55,453,150,57).has_point(at):return "paper"
+	if Rect2(227,453,64,57).has_point(at):return "undo"
+	if at.distance_to(Vector2(315+model.pivot*70,402))<25:return "pivot"
+	if at.distance_to(handle_position())<34 and not model.held:return "lift"
+	return ""
+func _touch_begin(at:Vector2)->void:
+	pending_touch=_touch_action(at);pending_origin=at
+	if pending_touch.is_empty():press_at(at)
+func _touch_finish(at:Vector2)->void:
+	if not pending_touch.is_empty():
+		var activate:=pending_touch==_touch_action(at) and pending_origin.distance_to(at)<18
+		pending_touch=""
+		if activate:press_at(pending_origin)
+	else:release_at(at)
 func press_at(at:Vector2)->void:
 	pointer=at;origin=at
 	if Rect2(55,453,150,57).has_point(at):_paper();return
@@ -130,6 +147,7 @@ func _cup(cup:int,at:Vector2,scale_value:float,angle:=0.0)->void:
 	_ellipse(at-Vector2(0,h),Vector2(w,7*scale_value),PAPER)
 	_ellipse(at-Vector2(0,h),Vector2(w-5,4*scale_value),Color("5b6864"))
 	draw_line(at-Vector2(w,h),at+Vector2(-w,0),PAPER,2*scale_value)
+	ApparatusStyle.grip(self,Vector2(0,-h*.4),"drag",selected==cup)
 	if selected==cup:draw_arc(at-Vector2(0,h/2),33*scale_value,0,TAU,32,PAPER,2)
 	draw_set_transform(Vector2.ZERO)
 func _tray()->void:
@@ -153,8 +171,8 @@ func _tray()->void:
 		if cup!=drag:_cup(cup,cup_position(slot),scale_value,model.tilt)
 func _draw()->void:
 	if font==null:return
-	draw_rect(Rect2(0,0,960,540),Color("29373b"));_text("茶水区 · 把四杯稳稳端过去",Vector2(32,37),22,PAPER)
-	_text("移动杯子，抓住提手，再把托盘送到沙发茶几",Vector2(33,65),16,Color("bdc5bd"))
+	draw_rect(Rect2(0,0,960,540),Color("29373b"));_text("茶水区",Vector2(32,37),22,PAPER)
+	if paper_open:_text("移动杯子，抓住提手，再把托盘送到沙发茶几",Vector2(33,65),16,Color("bdc5bd"))
 	draw_rect(Rect2(35,97,890,422),Color("a99373"))
 	for y:int in range(112,516,30):draw_line(Vector2(43,y),Vector2(916,y),Color("9c8565"),1)
 	# Sofa, plant and tea table establish a real destination rather than a delivery button.
@@ -164,7 +182,11 @@ func _draw()->void:
 	draw_rect(Rect2(610,255,290,102),Color("7f6d56"));draw_rect(Rect2(610,249,290,98),Color("c1ac8a"))
 	_ellipse(DESTINATION,Vector2(119,36),Color("ad9979"))
 	draw_rect(Rect2(88,300,457,83),Color("806c51"));draw_rect(Rect2(88,289,457,82),Color("bca17b"))
+	if tray_drag:ApparatusStyle.target(self,TARGET,true)
 	_tray()
+	ApparatusStyle.grip(self,handle_position(),"drag",tray_drag)
+	if drag>=0:
+		for slot:int in 4:ApparatusStyle.target(self,Rect2(cup_position(slot)-Vector2(31,25),Vector2(62,50)),true)
 	draw_line(Vector2(292,402),Vector2(351,402),INK,7)
 	for x:float in [315.0,315.0+70.0/6.0]:draw_line(Vector2(x,391),Vector2(x,410),PAPER,2)
 	draw_circle(Vector2(315+model.pivot*70,402),11,Color("698a86"))

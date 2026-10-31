@@ -5,6 +5,8 @@ const Model=preload("res://campuses/future_learning_center/scripts/puzzles/stora
 const INK=ApparatusStyle.INK
 const PAPER=ApparatusStyle.PAPER
 const BOX_COLORS:=[Color("b89361"),Color("93a59d"),Color("a19b88")]
+var pending_touch:=""
+var pending_origin:=Vector2.ZERO
 var model=Model.new()
 var font:Font
 var drag:=-1
@@ -24,12 +26,14 @@ func _ready()->void:
 func open()->void:show();queue_redraw()
 func close()->void:_cancel();hide();closed.emit()
 func _cancel()->void:
+	pending_touch=""
 	model.cancel_gesture();drag=-1;door_drag=false;touch_id=-1
 func _notification(what:int)->void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:_cancel()
 func _process(dt:float)->void:
 	if visible:contact_time=maxf(0,contact_time-dt);queue_redraw()
 func _input(event:InputEvent)->void:
+	if event is InputEventMouse and event.device==InputEvent.DEVICE_ID_EMULATION:return
 	if ApparatusStyle.navigation_event(self,event):return
 	if not visible:return
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -44,12 +48,26 @@ func _input(event:InputEvent)->void:
 		motion(get_global_transform_with_canvas().affine_inverse()*event.position)
 	elif event is InputEventScreenTouch:
 		if event.canceled and event.index==touch_id:_cancel()
-		elif event.pressed and touch_id<0:touch_id=event.index;press(get_global_transform_with_canvas().affine_inverse()*event.position)
-		elif not event.pressed and event.index==touch_id:release();touch_id=-1
+		elif event.pressed and not event.canceled and touch_id<0:touch_id=event.index;_touch_begin(get_global_transform_with_canvas().affine_inverse()*event.position)
+		elif not event.pressed and event.index==touch_id:_touch_finish(get_global_transform_with_canvas().affine_inverse()*event.position);touch_id=-1
 	elif event is InputEventScreenDrag:
 		if event.index==touch_id:motion(get_global_transform_with_canvas().affine_inverse()*event.position)
 	else:return
 	get_viewport().set_input_as_handled();queue_redraw()
+func _touch_action(at:Vector2)->String:
+	if notebook:return "notes"
+	if Rect2(72,422,125,70).has_point(at):return "paper"
+	if at.distance_to(Vector2(805,432))<32:return "undo"
+	return ""
+func _touch_begin(at:Vector2)->void:
+	pending_touch=_touch_action(at);pending_origin=at
+	if pending_touch.is_empty():press(at)
+func _touch_finish(at:Vector2)->void:
+	if not pending_touch.is_empty():
+		var activate:=pending_touch==_touch_action(at) and pending_origin.distance_to(at)<18
+		pending_touch=""
+		if activate:press(pending_origin)
+	else:release()
 func press(at:Vector2)->void:
 	pointer=at
 	if notebook:
@@ -83,7 +101,7 @@ func _draw()->void:
 	draw_rect(Rect2(0,0,960,540),Color("c6c7c3"))
 	for y:int in range(90,540,45):draw_line(Vector2(0,y),Vector2(960,y),Color("b6b9b6"),1)
 	_txt("设备储藏室",Vector2(35,38),24)
-	_txt("取出长箱，给其他箱子留下支撑和归路。",Vector2(35,65),17)
+	if notebook:_txt("取出长箱，给其他箱子留下支撑和归路。",Vector2(35,65),17)
 	# Cabinet shell and supported surfaces are the same geometry as the model.
 	_block(Rect2(204,132,432,234),Color("70503b"),20)
 	for rect:Rect2 in Model.SUPPORT:
@@ -103,11 +121,13 @@ func _draw()->void:
 	draw_line(Model.HINGE,tip,Color("a1744e"),12)
 	draw_line(Model.HINGE,tip,Color("c79b62"),3)
 	draw_circle(Model.HINGE,7,INK);draw_circle(tip,10,Color("b6bdba"));draw_circle(tip,5,INK)
+	ApparatusStyle.grip(self,tip,"rotate",door_drag)
 	for i:int in 3:
 		var box:Rect2=model.box(i)
 		_block(box,BOX_COLORS[i],10)
 		var c:=box.get_center()
 		draw_rect(Rect2(c-Vector2(19,6),Vector2(38,12)),INK,false,3)
+		ApparatusStyle.grip(self,c,"drag",drag==i)
 		for edge:float in [box.position.x+12,box.end.x-12]:
 			draw_line(Vector2(edge,box.position.y+3),Vector2(edge,box.end.y-3),BOX_COLORS[i].darkened(.2),4)
 		_txt("长箱" if i==0 else str(i),Vector2(box.position.x+25,box.position.y+22),15)
@@ -120,10 +140,9 @@ func _draw()->void:
 		var label:String={"support":"边缘没有支撑","box":"箱角碰到了","door":"门扇占住了通路"}.get(model.contact_kind,"")
 		_txt(label,Vector2(300,397),17)
 	_block(Rect2(72,422,125,70),PAPER,5)
-	_txt("借用手册",Vector2(86,453),18);_txt("按需翻阅",Vector2(92,476),14)
+	_txt("借用手册",Vector2(86,453),18)
 	draw_arc(Vector2(805,432),22,.3,TAU-.5,22,INK,5)
 	draw_colored_polygon(PackedVector2Array([Vector2(822,412),Vector2(831,430),Vector2(814,427)]),INK)
-	_txt("撤回",Vector2(785,479),15)
 	if model.returned:_txt("长箱已取用并归位",Vector2(348,475),21)
 	elif model.taken:_txt("长箱已取出 · 仍可归还",Vector2(327,475),20)
 	if notebook:

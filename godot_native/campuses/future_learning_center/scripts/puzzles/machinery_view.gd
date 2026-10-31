@@ -33,7 +33,7 @@ func _input(event:InputEvent)->void:
 	if not visible:return
 	if event is InputEventScreenTouch:
 		if event.canceled and event.index==touch_id:cancel_pointer()
-		elif event.pressed and touch_id<0:touch_id=event.index;press(_local(event.position))
+		elif event.pressed and not event.canceled and touch_id<0:touch_id=event.index;press(_local(event.position))
 		elif not event.pressed and event.index==touch_id:release(_local(event.position));touch_id=-1
 	elif event is InputEventScreenDrag:
 		if event.index==touch_id:motion(_local(event.position))
@@ -115,7 +115,7 @@ func _draw()->void:
 	if font==null:return
 	draw_rect(Rect2(0,0,960,540),Color("c1c7bb"))
 	for y:int in range(85,540,34):draw_line(Vector2(0,y),Vector2(960,y+8),Color("b3bdad"),1)
-	text("机加工区 · 泡沫加工演示盒",Vector2(32,36),23);text("沿轮廓试切，再从通道里抽出同一件样品。",Vector2(33,65),16)
+	text("泡沫加工演示盒",Vector2(32,36),23)
 	slab(Rect2(74,134,812,270),Color("776e5e"),20)
 	slab(Model.TRAY,Color("b7b69b"),4)
 	# Outer frame supports the datum; a genuine opening exists only on the selected exit side.
@@ -134,6 +134,13 @@ func _draw()->void:
 	if action=="clamp":clamp.position=pointer-clamp.size/2
 	slab(clamp,Color("6c7b75"),8)
 	var screw:=clamp.get_center();draw_circle(screw,12,INK);draw_line(screw-Vector2(17,0),screw+Vector2(17,0),Color("c8c8b2"),6)
+	ApparatusStyle.grip(self,screw,"drag",action=="clamp")
+	ApparatusStyle.grip(self,model.part_rect().position+Vector2(60,64),"drag",action=="part")
+	if action=="clamp":
+		for i:int in 3:
+			var slot:Rect2=model.mirrored_rect(Model.CLAMPS[i])
+			ApparatusStyle.target(self,slot,pointer.distance_to(slot.get_center())<45)
+	elif action=="blank":ApparatusStyle.target(self,Model.FRAME,Model.FRAME.has_point(pointer))
 	if model.cutter.is_finite():
 		var p:Vector2=model.cutter
 		draw_line(Vector2(p.x,133),p-Vector2(0,10),Color("78908c"),7)
@@ -151,12 +158,12 @@ func _draw()->void:
 		var tip:=at+Vector2(25 if i==0 else -25,0)
 		draw_line(tip,tip+Vector2(-8 if i==0 else 8,-7),INK,3);draw_line(tip,tip+Vector2(-8 if i==0 else 8,7),INK,3)
 		text("替换样坯",BLANKS[i]+Vector2(-30,45),14)
-	slab(Rect2(40,443,145,65),PAPER,5);text("加工草片",Vector2(75,472),18);text("翻看失败件",Vector2(68,495),14)
-	draw_arc(Vector2(262,464),21,.2,TAU-.5,24,INK,4);text("撤回",Vector2(246,502),14)
+	slab(Rect2(40,443,145,65),PAPER,5);text("加工草片",Vector2(75,472),18)
+	draw_arc(Vector2(262,464),21,.2,TAU-.5,24,INK,4)
 	if not model.outcome.is_empty():text(model.outcome,Vector2(318,475),16)
 	if notebook:
 		slab(Rect2(105,104,750,352),PAPER,8)
-		text("轮廓片与本次切口",Vector2(132,140),23)
+		text("沿轮廓试切，再抽出同一件样品",Vector2(132,140),22)
 		text("轻触实际虚线刀路，观察刀头沿这段移动。",Vector2(132,183),17)
 		text("抓夹具换夹持面；抓样件下缘横槽，沿通道抽出。",Vector2(132,218),17)
 		for i:int in hint_level:text(HINTS[i],Vector2(132,265+i*39),17)

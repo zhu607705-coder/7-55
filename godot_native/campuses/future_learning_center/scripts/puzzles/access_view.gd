@@ -122,8 +122,8 @@ func _draw()->void:
 	if font==null:return
 	draw_rect(Rect2(0,0,960,540),Color("c5c8bd"))
 	for y:int in range(85,540,35):draw_line(Vector2(0,y),Vector2(960,y+9),Color("b7bcaf"),1)
-	text("团队工作室 4 · 透明铰链盒",Vector2(32,37),23)
-	text("零件装好之后，让盒盖真正打开，再合上。",Vector2(33,65),16)
+	text("团队工作室 4 · 铰链盒",Vector2(32,37),23)
+	if notebook:text("零件装好之后，让盒盖真正打开，再合上。",Vector2(33,65),16)
 	slab(Rect2(100,368,755,38),Color("8f7a5e"),24)
 	# Transparent shell: axis and both bores remain visible in the same live view.
 	draw_colored_polygon(PackedVector2Array([Vector2(350,285),Vector2(530,285),Vector2(530,365),Vector2(350,365)]),Color(.62,.75,.75,.3))
@@ -133,6 +133,8 @@ func _draw()->void:
 		var at:=support_at(i)
 		if action=="support" and support==i:at=pointer
 		_support(i,at)
+		ApparatusStyle.grip(self,at+Vector2(0,12),"drag",action=="support" and support==i)
+		if action=="support" and support==i:ApparatusStyle.target(self,Rect2(point(Model.HOLES[i])-Vector2(22,24),Vector2(44,48)),pointer.distance_to(point(Model.HOLES[i]))<34)
 	var rod:Rect2=model.shaft_rect()
 	var left:float=model.screen_x(rod.position.x);var right:float=model.screen_x(rod.end.x)
 	draw_line(Vector2(left,285),Vector2(right,285),INK,9);draw_line(Vector2(left,283),Vector2(right,283),Color("d5d3bb"),4)
@@ -141,6 +143,11 @@ func _draw()->void:
 	for i:int in 2:
 		if model.through_hole(i):draw_arc(point(Model.HOLES[i]),12,0,TAU,20,Color("7e9b81"),2)
 	_cover()
+	ApparatusStyle.grip(self,grip,"horizontal",action=="shaft")
+	if model.cover:
+		ApparatusStyle.grip(self,cover_handle(),"vertical",action=="lid")
+		ApparatusStyle.grip(self,cover_tab(),"drag",action=="cover")
+	else:ApparatusStyle.grip(self,pointer if action=="cover" else COVER_TRAY,"drag",action=="cover")
 	if model.contact.is_finite():
 		var mark:=point(model.contact.x,285+model.contact.y)
 		draw_arc(mark,17,0,TAU,24,Color("a5694d"),3)
@@ -149,11 +156,11 @@ func _draw()->void:
 	var mount:Vector2=pointer if action=="side" else point(315,385)
 	slab(Rect2(mount-Vector2(17,10),Vector2(34,20)),Color("9a8a6d"),4)
 	text("换侧定位块",Vector2(390,410),14)
-	slab(Rect2(44,425,135,77),PAPER,5);text("局部爆炸图",Vector2(58,456),18);text("按需翻看",Vector2(72,481),14)
+	slab(Rect2(44,425,135,77),PAPER,5);text("局部爆炸图",Vector2(58,456),18)
 	for i:int in 2:
 		draw_arc(SUPPORT_TRAYS[i],27,0,TAU,24,Color("7a8276"),1)
 		text("支撑托盘",SUPPORT_TRAYS[i]+Vector2(-29,48),14)
-	draw_arc(Vector2(430,460),20,.2,TAU-.5,24,INK,4);text("撤回",Vector2(414,500),14)
+	draw_arc(Vector2(430,460),20,.2,TAU-.5,24,INK,4)
 	if not feedback.is_empty():text(feedback,Vector2(495,488),16)
 	elif not model.outcome.is_empty():text(model.outcome,Vector2(495,488),16)
 	if notebook:

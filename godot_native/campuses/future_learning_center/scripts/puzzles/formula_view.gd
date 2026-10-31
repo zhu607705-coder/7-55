@@ -123,7 +123,7 @@ func history_caption()->String:
 func _draw()->void:
 	if font==null or not is_instance_valid(miniature):return
 	draw_texture_rect(miniature.texture(),Rect2(0,0,960,540),false)
-	text("让 1 号车在同一段阳光下，比 2 号基准车跑得远。",Vector2(32,36),21)
+	text("太阳能试车台",Vector2(32,36),23)
 	for id:int in 2:
 		var y:=163+id*34
 		identity_mark(Vector2(335,y-5),id,.8)
@@ -135,34 +135,40 @@ func _draw()->void:
 			var at:Vector2=held_position() if id==0 and action=="car" else race_point(model.cars[id].distance,id)
 			identity_mark(at+Vector2(-25,-3),id,.65)
 	text("%.1f / 30 秒 · 累计距离"%model.time(),Vector2(365,86),16)
-	if not model.on_track:text("将 1 号车放在起跑线",Vector2(330,291),16)
+	if action=="car":
+		ApparatusStyle.target(self,Rect2(race_point(0,0)-Vector2(32,23),Vector2(64,46)),held_position().distance_to(race_point(0,0))<=32)
+		ApparatusStyle.target(self,Rect2(BENCH_CAR-Vector2(45,30),Vector2(90,60)),held_position().distance_to(BENCH_CAR)<=45)
 	text("来光 %s"%("30°" if model.scenario==0 else "60°"),LAMP+Vector2(-27,-28),16)
-	text("选板",Vector2(76,340),16)
-	text("1 号装配位" if not model.on_track else "1 号本轮配置",Vector2(410,330),16)
-	text("2 号固定参照",Vector2(677,330),16)
-	for i:int in 2:text("小板 · 0.4" if i==0 else "大板 · 1.1",PANEL_TRAYS[i]+Vector2(-40,49),16)
+	for i:int in 2:
+		text("小板 · 0.4" if i==0 else "大板 · 1.1",PANEL_TRAYS[i]+Vector2(-40,49),16)
+		if not model.on_track and i!=model.panel:ApparatusStyle.grip(self,held_position() if action=="panel" and part==i else PANEL_TRAYS[i],"drag",action=="panel" and part==i)
 	var at:Vector2=held_position() if action=="car" and not model.on_track else BENCH_CAR
 	identity_mark(at+Vector2(-48,-3),0,.8)
 	identity_mark(Vector2(700,367),1,.7)
-	text(config_caption(model.configuration()),Vector2(401,424),15)
-	text(config_caption(model.baseline()),Vector2(663,424),15)
-	if model.on_track:text("取回实车再调整",Vector2(635,499),16)
-	for i:int in 3:text(str(Model.RATIOS[i]),GEAR_TRAYS[i]+Vector2(-10,39),16)
+	if not model.on_track:
+		ApparatusStyle.grip(self,at,"drag",action=="car")
+		ApparatusStyle.grip(self,TILT_KNOB,"rotate",action=="tilt")
+		if action in ["panel","gear"]:ApparatusStyle.target(self,Rect2(410,308,145,105),Rect2(410,308,145,105).has_point(held_position()))
+	else:ApparatusStyle.grip(self,held_position() if action=="car" else race_point(model.cars[0].distance,0),"drag",action=="car")
+	for i:int in 3:
+		text(str(Model.RATIOS[i]),GEAR_TRAYS[i]+Vector2(-10,39),16)
+		if not model.on_track and i!=model.gear:ApparatusStyle.grip(self,held_position() if action=="gear" and part==i else GEAR_TRAYS[i],"drag",action=="gear" and part==i)
 	text("板倾角 %.0f°"%panel_tilt(),TILT_KNOB+Vector2(-36,41),16)
-	text("发车闸",GATE+Vector2(30,8),16)
-	text("试车记录",Vector2(77,477),18);text("按需翻阅",Vector2(78,500),16)
-	text("教学模型 · 距离为模型单位",Vector2(655,522),15)
+	ApparatusStyle.grip(self,GATE,"press",action=="gate")
+	text("试车记录",Vector2(77,477),18)
 	if not current_outcome().is_empty():text(current_outcome(),Vector2(635,477),20)
 	if notebook:
 		slab(Rect2(105,95,750,361),PAPER,8)
-		text("本场与历史轨迹 · 1 号 / 2 号",Vector2(132,134),23)
-		text(history_caption(),Vector2(132,172),17)
+		text("同一段阳光下，让 1 号车比 2 号车跑得远",Vector2(132,134),21)
+		text("将车拖到起跑线，拨发车闸；取回实车后再调整。",Vector2(132,160),16)
+		text("1 号 "+config_caption(model.configuration())+"    2 号 "+config_caption(model.baseline()),Vector2(132,188),16)
+		text(history_caption(),Vector2(132,216),16)
 		if not model.records.is_empty():
 			var record:Dictionary=model.records[-1]
-			text("1 号配置："+config_caption(record.configuration),Vector2(132,201),16)
+			text("上次 1 号："+config_caption(record.configuration),Vector2(132,242),16)
 			for i:int in record.segments.size():
 				var row:Dictionary=record.segments[i]
-				text("%.0fs  %.1f / %.1f"%[row.time,row.player,row.baseline],Vector2(132+i*165,234),15)
-		text("个人纪录 %.2f · %.2f"%[model.personal_best[0],model.personal_best[1]],Vector2(132,269),16)
-		for i:int in hint_level:text(HINTS[i],Vector2(132,291+i*36),17)
+				text("%.0fs  %.1f / %.1f"%[row.time,row.player,row.baseline],Vector2(132+i*165,270),15)
+		text("个人纪录 %.2f · %.2f（模型单位）"%[model.personal_best[0],model.personal_best[1]],Vector2(132,298),16)
+		for i:int in hint_level:text(HINTS[i],Vector2(132,324+i*27),17)
 		text("翻下一页提示",Vector2(670,443),17)

@@ -16,6 +16,8 @@ var model = Model.new()
 var font: Font
 var selected := -1
 var drag := -1
+var touch_action_pending:=false
+var touch_action_origin:=Vector2.ZERO
 var touch_id := -1
 var pointer := Vector2.ZERO
 var origin := Vector2.ZERO
@@ -38,6 +40,7 @@ func open() -> void:
 func close() -> void:
 	model.cancel(); cancel_pointer(); hide(); closed.emit()
 func cancel_pointer() -> void:
+	touch_action_pending=false
 	drag = -1; selected = -1; touch_id = -1
 	queue_redraw()
 func _notification(what: int) -> void:
@@ -62,11 +65,11 @@ func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouse and event.device == InputEvent.DEVICE_ID_EMULATION: return
 	if event is InputEventScreenTouch:
 		if event.canceled and event.index == touch_id: cancel_pointer(); accept_event(); return
-		if event.pressed and touch_id < 0:
-			touch_id = event.index; press_at(event.position)
+		if event.pressed and not event.canceled and touch_id < 0:
+			touch_id = event.index; _touch_begin(event.position)
 		elif not event.pressed and touch_id == event.index:
 			if event.canceled: cancel_pointer()
-			else: release_at(event.position)
+			else: _touch_finish(event.position)
 			touch_id = -1
 		accept_event()
 	elif event is InputEventScreenDrag and event.index == touch_id:
@@ -178,8 +181,8 @@ func _draw() -> void:
 	draw_rect(Rect2(0,0,960,540),Color("273039"))
 	_plinth(Rect2(35,89,890,414),Color("a88b68"),18)
 	for y: int in range(105,490,35): draw_line(Vector2(48,y),Vector2(910,y),Color("947b60"),1)
-	_text("专注孵化区 · 同一接法，两种状态",Vector2(32,36),22,PAPER)
-	_text("让模型设备在待机和工作时都能运行",Vector2(33,64),16,Color("b8c2c1"))
+	_text("专注孵化区",Vector2(32,36),22,PAPER)
+	if paper_open:_text("让模型设备在待机和工作时都能运行",Vector2(33,64),16,Color("b8c2c1"))
 	for i: int in model.device_count():
 		var start: Vector2 = DEVICE_POS[i]+Vector2(25,59)
 		var end: Vector2 = pointer if drag == i else plug_position(i)
@@ -203,11 +206,16 @@ func _draw() -> void:
 	for i: int in model.device_count():
 		var at: Vector2 = pointer if drag == i else plug_position(i)
 		draw_circle(at,11,INK);draw_circle(at,7,BLUE if i%2==0 else COPPER)
+		ApparatusStyle.grip(self,at,"drag",drag==i)
 		if selected == i: draw_arc(at,17,0,TAU,24,PAPER,2)
+	if drag>=0 or selected>=0:
+		for branch:int in 2:
+			ApparatusStyle.target(self,Rect2(BRANCH_POS[branch]+Vector2(-88,2),Vector2(176,63)),Rect2(BRANCH_POS[branch]+Vector2(-88,2),Vector2(176,63)).has_point(pointer))
 	_plinth(Rect2(680,311,78,111),METAL)
 	_text("待机",Vector2(688,332),14);_text("工作",Vector2(688,409),14)
 	draw_line(LEVER,LEVER+Vector2(0,-38 if model.mode==0 else 13),INK,11)
 	draw_circle(LEVER+Vector2(0,-38 if model.mode==0 else 13),14,COPPER)
+	ApparatusStyle.grip(self,LEVER+Vector2(0,-38 if model.mode==0 else 13),"press",model.running)
 	if model.paused: _text("Ⅱ",Vector2(742,356),22)
 	# Paper and wrench are optional physical tools, not a permanent help panel.
 	draw_colored_polygon(PackedVector2Array([Vector2(58,420),Vector2(183,410),Vector2(196,482),Vector2(70,494)]),PAPER)
@@ -226,4 +234,26 @@ func _draw() -> void:
 	elif model.outcome == "overload": _text("支路超出刻度，保护停机。",Vector2(300,475),16)
 	elif model.outcome == "unplugged": _text("有设备的插头尚未接入。",Vector2(300,475),16)
 	elif model._current_passed(0) and model._current_passed(1): _text("当前接法的两种状态均已验证。",Vector2(300,475),16)
-	_text("低压教学模型",Vector2(795,480),13,INK)
+	if paper_open:_text("低压教学模型",Vector2(795,480),13,INK)
+
+func _touch_begin(at:Vector2)->void:
+	touch_action_origin=at;touch_action_pending=Rect2(52,414,150,86).has_point(at) or Rect2(216,443,70,46).has_point(at) or at.distance_to(LEVER)<46 or (Rect2(782,311,132,102).has_point(at) and not model.extension) or _touch_device_body(at) or _touch_branch(at)
+	if not touch_action_pending:press_at(at)
+func _touch_finish(at:Vector2)->void:
+	if touch_action_pending:
+		touch_action_pending=false
+		if at.distance_to(touch_action_origin)>18:return
+		press_at(touch_action_origin)
+	release_at(at)
+func _touch_device_body(at:Vector2)->bool:
+	for i:int in model.device_count():
+		if at.distance_to(plug_position(i))<22:return false
+		if Rect2(DEVICE_POS[i]-Vector2(58,38),Vector2(116,80)).has_point(at):return true
+	return false
+func _touch_branch(at:Vector2)->bool:
+	if selected<0:return false
+	for i:int in model.device_count():
+		if at.distance_to(plug_position(i))<22:return false
+	for branch:int in 2:
+		if Rect2(BRANCH_POS[branch]-Vector2(88,0),Vector2(176,65)).has_point(at):return true
+	return false

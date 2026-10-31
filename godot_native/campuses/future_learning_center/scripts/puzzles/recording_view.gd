@@ -64,7 +64,7 @@ func _draw()->void:
  draw_line(Vector2(733,210),Vector2(733,lever_y),Color("c4c8bc"),8);draw_circle(Vector2(733,lever_y),12,Color("a98f6e"))
  text("退",Vector2(761,165),14);text("停",Vector2(761,215),14);text("进",Vector2(761,266),14)
  draw_arc(Vector2(665,445),33,0,TAU,32,Color("9aaca7"),6);draw_circle(Vector2(665,445),7,Color("506368"));draw_line(Vector2(665,445),Vector2(695,445),Color("a9b9b1"),6);draw_circle(Vector2(695,445),8,Color("aa9274"))
- text("手轮 · 左退右进",Vector2(606,500),14)
+ if hint_level>=0:text("手轮 · 左退右进",Vector2(606,500),14)
  box(Rect2(775,300,155,196),Color("d7d1bc"),4);text("试拍纸卡",Vector2(790,328),17,Color("35464d"))
  if show_records:
   box(Rect2(792,345,120,95),Color("b4b8a7"),2)
@@ -74,7 +74,13 @@ func _draw()->void:
   var shot_round:int=-1 if model.history.is_empty() else model.history.back().round
   text("照片轮次 %d"%shot_round,Vector2(787,462),13,Color("35464d"))
   text("当前轮次 %d"%model.round_id,Vector2(787,483),13,Color("35464d"))
- else:text("翻开查看",Vector2(800,375),14,Color("35464d"))
- box(Rect2(35,435,155,65),Color("d7d1bc"),4);text("碰停条与照片",Vector2(48,463),16,Color("35464d"));text("翻开对照",Vector2(60,485),13,Color("35464d"))
+ else:
+  draw_line(Vector2(805,356),Vector2(889,356),Color("35464d"),2)
+  draw_line(Vector2(805,370),Vector2(873,370),Color("35464d"),2)
+ box(Rect2(35,435,155,65),Color("d7d1bc"),4);text("碰停条与照片",Vector2(48,463),16,Color("35464d"))
+ ApparatusStyle.grip(self,Vector2(441,by),"vertical",baffle_drag)
+ ApparatusStyle.grip(self,Vector2(733,lever_y),"vertical",action=="drive")
+ ApparatusStyle.grip(self,Vector2(695,445),"rotate",action=="crank")
+ ApparatusStyle.grip(self,Vector2(670,185),"press",model.photographing)
  if hint_level>=0:text(hints[hint_level],Vector2(35,76),16)
  if not model.outcome.is_empty():text(model.outcome,Vector2(210,526),15)

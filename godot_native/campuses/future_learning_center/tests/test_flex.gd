@@ -58,10 +58,10 @@ func _run()->void:
 		root.add_child(view);view.open()
 		var touch:=InputEventScreenTouch.new();touch.index=0;touch.pressed=true;touch.position=Vector2(230,465)
 		view._input(touch)
-		check(view.model.short_cable,"touch toggles short spool once")
+		check(not view.model.short_cable,"touch press defers spool change until owned release")
 		var mouse:=InputEventMouseButton.new();mouse.device=InputEvent.DEVICE_ID_EMULATION;mouse.button_index=MOUSE_BUTTON_LEFT;mouse.pressed=true;mouse.position=touch.position
 		view._input(mouse)
-		check(view.model.short_cable,"emulated mouse cannot toggle spool a second time")
+		check(not view.model.short_cable,"emulated mouse cannot commit pending spool action")
 		touch.pressed=false;view._input(touch);view._input(mouse)
 		check(view.model.short_cable,"late emulated press is ignored after touch release")
 		touch.pressed=true;touch.position=Vector2(350,232);view._input(touch)

@@ -3,7 +3,7 @@ const AssemblyModel=preload("res://campuses/future_learning_center/scripts/puzzl
 var bracket_drag:=false
 const BRACKET_TRAY:=Vector2(500,451)
 func _init()->void:
-	model=AssemblyModel.new();apparatus_title="整机复验 · 分开能用，装在一起呢"
+	model=AssemblyModel.new();apparatus_title="整机复验";apparatus_goal="分开能用的附件，装在一起也要重新验证。"
 	hints=["分开测试时没有的接触，在组合后出现在哪里？","只卸下一个附件比较送料，再装回比较，其他条件不动。","对照分体记录的活动范围与当前接触点，核对装配版本。"]
 func bracket_position()->Vector2:
 	return projected(model.rotate_point(Vector2(model.bracket_x,65))) if model.bracket_attached else BRACKET_TRAY
@@ -29,5 +29,7 @@ func _draw_apparatus_extra()->void:
 	var p:=pointer if bracket_drag else bracket_position()
 	box(Rect2(p-Vector2(16,20),Vector2(32,30)),Color("655e52"),16)
 	draw_line(p-Vector2(9,16),p+Vector2(9,-16),Color("c5c3b3"),5)
+	ApparatusStyle.grip(self,p,"drag",bracket_drag)
+	if bracket_drag:ApparatusStyle.target(self,Rect2(452,414,97,75),true)
 	if model.bracket_attached and not model.feed_clear() and model.travel>=.35:draw_circle(p-Vector2(0,12),7,Color("cb9b62"))
 	box(Rect2(452,421,97,62),Color("515750"),3);text("附件托盘",Vector2(460,480),13)

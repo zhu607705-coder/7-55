@@ -11,6 +11,8 @@ var model=Model.new()
 var font:Font
 var drag:=-1
 var touch_id:=-1
+var pending_touch_action:=""
+var touch_press:=Vector2.ZERO
 var pointer:=Vector2.ZERO
 var origin:=Vector2.ZERO
 var grip_offset:=Vector2.ZERO
@@ -29,6 +31,8 @@ func _ready()->void:
 func open()->void:cancel_pointer();show();grab_focus();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
 func cancel_pointer()->void:
+ pending_touch_action="";_cancel_pointer_state()
+func _cancel_pointer_state()->void:
  drag=-1;touch_id=-1
  if resume_after_drag and model.running:model.resume()
  resume_after_drag=false;queue_redraw()
@@ -43,12 +47,27 @@ func _notification(what:int)->void:
  if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:resume_after_drag=false;model.pause();cancel_pointer()
 func _process(dt:float)->void:
  if visible:model.step(dt);queue_redraw()
+func _touch_action(at:Vector2)->String:
+ if at.distance_to(POWER)<30:return "power"
+ if at.distance_to(Vector2(225,427))<26:return "step"
+ if Rect2(42,474,140,38).has_point(at):return "paper"
+ if at.distance_to(Vector2(855,490))<25:return "undo"
+ return ""
 func _gui_input(e:InputEvent)->void:
  if not visible:return
  if e is InputEventScreenTouch:
-  if e.index==touch_id and e.canceled:cancel_pointer()
-  elif e.pressed and not e.canceled and touch_id<0:touch_id=e.index;press_at(e.position)
-  elif not e.pressed and e.index==touch_id:release_at(e.position);touch_id=-1
+  if e.index==touch_id and e.canceled:
+   cancel_pointer()
+  elif e.pressed and not e.canceled and touch_id<0:
+   touch_id=e.index;touch_press=e.position;pending_touch_action=_touch_action(e.position)
+   if pending_touch_action.is_empty():press_at(e.position)
+  elif not e.pressed and e.index==touch_id:
+   if not pending_touch_action.is_empty():
+    var activate:bool=not e.canceled and touch_press.distance_to(e.position)<18 and _touch_action(e.position)==pending_touch_action
+    pending_touch_action=""
+    if activate:press_at(e.position)
+   else:release_at(e.position)
+   touch_id=-1
   accept_event()
  elif e is InputEventScreenDrag and e.index==touch_id:move_at(e.position);accept_event()
  elif e is InputEventMouse and e.device==InputEvent.DEVICE_ID_EMULATION:return
@@ -113,8 +132,8 @@ func _arrow(at:Vector2,heading:float,color:Color)->void:
  draw_line(at-d*12,at+d*12,color,3);draw_line(at+d*12,at+d*4+side*7,color,3);draw_line(at+d*12,at+d*4-side*7,color,3)
 func _draw()->void:
  if font==null:return
- draw_rect(Rect2(0,0,960,540),INK);_text("机器人团队 · 送到了，还要回来",Vector2(32,38),22,PAPER)
- _text("完成装载、卸载与空载返回",Vector2(33,66),16,Color("bdc5bd"))
+ draw_rect(Rect2(0,0,960,540),INK);_text("机器人团队",Vector2(32,38),22,PAPER)
+ if paper_open:_text("完成装载、卸载与空载返回",Vector2(33,66),16,PAPER)
  draw_rect(Rect2(35,88,890,375),Color("a58e6e"))
  for y:int in range(95,460,26):draw_line(Vector2(40,y),Vector2(920,y),Color("978060"),1)
  for edge:Array in Model.EDGES:
@@ -136,12 +155,19 @@ func _draw()->void:
  draw_line(SWITCH,SWITCH+Vector2(-35,0).lerp(Vector2(0,-35),blend),Color("c8b480"),7)
  draw_line(SWITCH+Vector2(0,10),SWITCH+Vector2(switch_pose(),34),INK,5)
  draw_circle(SWITCH+Vector2(switch_pose(),34),10,Color("c8b480"))
+ ApparatusStyle.grip(self,SWITCH+Vector2(switch_pose(),34),"drag",drag==1)
+ ApparatusStyle.grip(self,TURN,"rotate",drag==0)
  for n:int in [0,2,5]:
   var at:Vector2=Model.NODES[n]
   draw_rect(Rect2(at+Vector2(-52 if n==0 else 26,-25),Vector2(32,50)),Color("696f60"))
   for off:int in [-18,18]:draw_line(at+Vector2(-48 if n==0 else 30,off),at+Vector2(-24 if n==0 else 54,off),PAPER,3)
  var flag:Vector2=pointer-grip_offset if drag==2 else Model.NODES[model.target]+Vector2(80,0)
  draw_line(flag+Vector2(0,23),flag-Vector2(0,23),INK,3);draw_rect(Rect2(flag-Vector2(0,23),Vector2(30,20)),Color("c8b480"))
+ ApparatusStyle.grip(self,flag,"drag",drag==2)
+ if drag==2:
+  for target:int in [2,5]:
+   var destination:Vector2=Model.NODES[target]+Vector2(80,0)
+   ApparatusStyle.target(self,Rect2(destination-Vector2(22,24),Vector2(44,48)),flag.distance_to(destination)<22)
  if paper_open:
   if model.outward.size()>1:draw_polyline(PackedVector2Array(model.outward),Color("e4d6a3"),2)
   for i:int in range(1,model.inward.size()):

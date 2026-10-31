@@ -4,7 +4,9 @@ var tape_drag:=-1
 var start_offset:=0.0
 func _init()->void:
  model=Sync.new();hints=["同一动作，在两条纸带上是否出现在同一位置？","对齐一次闪光后，再看看远处的碰停事件。","比较相机图帧与碰停纸带中两处共同事件的间隔。"]
-func _cancel_pointer()->void:tape_drag=-1;super._cancel_pointer()
+func _cancel_pointer()->void:
+ if tape_drag>=0:model.shift(tape_drag,start_offset)
+ tape_drag=-1;super._cancel_pointer()
 func _press(at:Vector2)->void:
  pointer=at;pressed_at=at;action=""
  if Rect2(35,440,150,70).has_point(at):action="hint";return
@@ -64,9 +66,11 @@ func _draw()->void:
  box(Rect2(632,343,12,49),Color("627674"),4)
  draw_circle(Vector2(160,356),13,Color("dacc9d") if model.running and (model.elapsed<.18 or (model.elapsed>.7 and model.elapsed<.9)) else Color("667b7b"))
  draw_circle(Vector2(740,383),28,Color("354951"));draw_line(Vector2(740,383),Vector2(740,360 if model.running else 372),Color("cad0be"),7);draw_circle(Vector2(740,360 if model.running else 372),10,Color("ac9274"))
- text("送料柄",Vector2(715,424),14)
- draw_circle(Vector2(850,464),35,Color("b1b6a3"));draw_circle(Vector2(850,464),15,Color("40555c"));draw_line(Vector2(820,441),Vector2(852,435),Color("d3cdb4"),9);text("备用记录卷",Vector2(801,517),14)
+ ApparatusStyle.grip(self,Vector2(740,360 if model.running else 372),"press",model.running)
+ draw_circle(Vector2(850,464),35,Color("b1b6a3"));draw_circle(Vector2(850,464),15,Color("40555c"));draw_line(Vector2(820,441),Vector2(852,435),Color("d3cdb4"),9)
  box(Rect2(35,450,150,60),Color("d2cbb3"),4);text("对照笔记",Vector2(65,484),17,Color("35474d"))
+ for i:int in 2:ApparatusStyle.grip(self,Vector2(110,158+i*108),"horizontal",tape_drag==i)
+ ApparatusStyle.grip(self,Vector2(850,440),"rotate",action=="roll")
  if hint_level>=0:text(hints[hint_level],Vector2(35,75),15)
  if not model.outcome.is_empty():text(model.outcome,Vector2(205,475),14)
  if model.paused:text("已暂停 · 触碰装置继续",Vector2(260,507),15)

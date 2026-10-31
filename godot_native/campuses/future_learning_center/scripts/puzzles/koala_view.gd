@@ -18,6 +18,8 @@ var font:Font
 var held:=-1
 var held_card:=-1
 var touch_id:=-1
+var pending_touch_action:=""
+var touch_press:=Vector2.ZERO
 var pointer:=Vector2.ZERO
 var origin:=Vector2.ZERO
 var grab_offset:=Vector2.ZERO
@@ -30,7 +32,9 @@ func _ready()->void:
  mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL;font=ApparatusStyle.font();size=Vector2(960,540);model.insert_card(0);hide()
 func open()->void:show();model.resume();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
-func cancel_pointer()->void:held=-1;held_card=-1;touch_id=-1;queue_redraw()
+func cancel_pointer()->void:
+ pending_touch_action="";_cancel_pointer_state()
+func _cancel_pointer_state()->void:held=-1;held_card=-1;touch_id=-1;queue_redraw()
 func _notification(what:int)->void:
  if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:model.pause();cancel_pointer()
 func _process(dt:float)->void:
@@ -40,13 +44,28 @@ func module_position(id:int)->Vector2:
  var index:int=model.chain.find(id)
  return socket(index) if index>=0 else Vector2(130+id*90,480)
 func card_position(id:int)->Vector2:return Vector2(735+id*110,155)
+func _touch_action(at:Vector2)->String:
+ if paper_open:return "page" if NOTE_PAGE.has_point(at) else "paper_close"
+ if NOTEBOOK.has_point(at):return "paper"
+ if at.distance_to(UNDO)<26:return "undo"
+ if at.distance_to(CRANK)<35:return "crank"
+ for i:int in 4:
+  if Rect2(GOAL_ORIGIN+Vector2(i*48-23,-27),Vector2(46,54)).has_point(at):return "token_%d_%s"%[i,at.y>GOAL_ORIGIN.y]
+ return ""
 func _gui_input(e:InputEvent)->void:
  if not visible:return
  if e is InputEventScreenTouch:
-  if e.index==touch_id and e.canceled:model.cancel();cancel_pointer()
-  elif e.pressed and not e.canceled and touch_id<0:touch_id=e.index;press_at(e.position)
+  if e.index==touch_id and e.canceled:
+   if pending_touch_action.is_empty():model.cancel()
+   cancel_pointer()
+  elif e.pressed and not e.canceled and touch_id<0:
+   touch_id=e.index;touch_press=e.position;pending_touch_action=_touch_action(e.position)
+   if pending_touch_action.is_empty():press_at(e.position)
   elif not e.pressed and e.index==touch_id:
-   if e.canceled:model.cancel();cancel_pointer()
+   if not pending_touch_action.is_empty():
+    var activate:bool=not e.canceled and touch_press.distance_to(e.position)<18 and _touch_action(e.position)==pending_touch_action
+    pending_touch_action=""
+    if activate:press_at(e.position)
    else:release_at(e.position)
    touch_id=-1
   accept_event()
@@ -106,8 +125,9 @@ func _token(token:int,p:Vector2,s:=1.0)->void:
   for x:int in [-6,0,6]:draw_line(p+Vector2(x,-5)*s,p+Vector2(x,5)*s,PAPER,2*s)
 func _pattern(tokens:Array,at:Vector2,s:=1.0)->void:
  for i:int in 4:_token(tokens[i],at+Vector2(i*48*s,0),s)
-func _module(id:int,at:Vector2)->void:
+func _module(id:int,at:Vector2,interactive:=true)->void:
  draw_rect(Rect2(at-Vector2(30,26)+Vector2(0,5),Vector2(60,52)),INK);draw_rect(Rect2(at-Vector2(30,26),Vector2(60,52)),Color("a8b1a1"))
+ if interactive:ApparatusStyle.grip(self,at+Vector2(0,20),"drag",held==id)
  var op:int=Model.OPERATORS[id]
  if op in [0,1]:
   var direction:=1 if op==1 else -1
@@ -127,8 +147,7 @@ func _card(id:int,at:Vector2)->void:
 func _draw()->void:
  if font==null:return
  draw_rect(Rect2(0,0,960,540),INK)
- _text("考拉工作室 · 把变化倒过来",Vector2(32,37),22,PAPER)
- _text("接好模块，让输出与原图一致。",Vector2(33,66),16,Color("bdc8c2"))
+ _text("考拉工作室",Vector2(32,37),22,PAPER)
  draw_rect(Rect2(35,87,890,430),Color("a48d6c"))
  for y:int in range(105,515,30):draw_line(Vector2(43,y),Vector2(917,y),Color("987e5d"),1)
  # The encoded card is the only input image; its paper is physically clamped.
@@ -141,10 +160,9 @@ func _draw()->void:
  for id:int in 2:
   if held_card==id:continue
   _card(id,card_position(id))
- _text("换卡试验",Vector2(747,214),13)
  # Closed notebook keeps examples and every intermediate result off the main task.
  draw_rect(NOTEBOOK,Color("687d75"));draw_line(Vector2(545,124),Vector2(545,192),PAPER,2)
- _text("试验笔记",Vector2(557,153),16,PAPER);_text("翻看过程",Vector2(560,177),13,PAPER)
+ _text("试验笔记",Vector2(557,153),16,PAPER)
  # A bent paper guide links input to the left end of the physical pipeline.
  draw_polyline(PackedVector2Array([Vector2(190,205),Vector2(190,220),Vector2(95,220),Vector2(95,270)]),INK,3)
  draw_line(Vector2(95,270),Vector2(817,270),INK,8)
@@ -156,7 +174,7 @@ func _draw()->void:
   if held!=i:_module(i,module_position(i))
  if model.running and model.step_index<model.chain.size():draw_arc(socket(model.step_index),36,0,TAU,32,PAPER,2)
  draw_circle(CRANK,28,INK);draw_line(CRANK,CRANK+Vector2(16,-20),PAPER,6);draw_circle(CRANK+Vector2(16,-20),9,Color("b79b73"))
- _text("摇柄",CRANK+Vector2(-15,48),13)
+ ApparatusStyle.grip(self,CRANK,"press",model.running)
  draw_polyline(PackedVector2Array([Vector2(817,270),Vector2(817,334),Vector2(652,334),Vector2(652,345)]),INK,3)
  # Comparison is adjacent, uses identical token scale and one shared baseline.
  draw_rect(Rect2(268,344,223,73),PAPER);draw_rect(Rect2(543,344,223,73),PAPER)
@@ -169,17 +187,21 @@ func _draw()->void:
  elif output_is_current() and not model.outcome.is_empty():_text(model.outcome,Vector2(530,434),14)
  _text("备用模块",Vector2(81,432),14)
  draw_arc(UNDO,17,.4,5.7,24,PAPER,5)
- if held>=0:_module(held,held_center())
- if held_card>=0:_card(held_card,held_center())
+ if held>=0:
+  for i:int in mini(model.chain.size()+1,8):ApparatusStyle.target(self,Rect2(socket(i)-Vector2(32,28),Vector2(64,56)),held_center().distance_to(socket(i))<=20)
+  _module(held,held_center())
+ if held_card>=0:
+  ApparatusStyle.target(self,INPUT_CLAMP,held_center().distance_to(INPUT_CLAMP.get_center())<=24)
+  _card(held_card,held_center())
  if paper_open:_draw_notebook()
 func _draw_notebook()->void:
  draw_rect(Rect2(69,104,817,342),INK);draw_rect(Rect2(65,100,817,342),PAPER)
  draw_line(Vector2(472,114),Vector2(472,426),Color("b5ac95"),2)
- _text("原机留下的变化",Vector2(94,135),20)
+ _text("接好模块，让输出与原图一致",Vector2(94,135),18)
  var sample:Array=[0,2,4,6]
  _pattern(sample,Vector2(224,173),.9)
  for i:int in 3:
-  draw_set_transform(Vector2(146,221+i*51),0,Vector2(.58,.58));_module([0,4,5][i],Vector2.ZERO);draw_set_transform(Vector2.ZERO)
+  draw_set_transform(Vector2(146,221+i*51),0,Vector2(.58,.58));_module([0,4,5][i],Vector2.ZERO,false);draw_set_transform(Vector2.ZERO)
   sample=Model.transform(sample,[0,2,3][i]);_pattern(sample,Vector2(224,221+i*51),.9)
  _text("实际试验纸带" if output_is_current() else "上次试验纸带",Vector2(499,135),20)
  if model.frames.is_empty():_text("摇动把手后，过程留在这里。",Vector2(503,184),16)

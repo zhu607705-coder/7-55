@@ -14,6 +14,8 @@ var trailer_origin:=Vector2.ZERO
 var coupling_blocked:=false
 var selected:=-1
 var drag:=-1
+var touch_action_pending:=false
+var touch_action_origin:=Vector2.ZERO
 var touch_id:=-1
 var pointer:=Vector2.ZERO
 var origin:=Vector2.ZERO
@@ -28,7 +30,7 @@ func _ready()->void:
 	font=ApparatusStyle.font();size=Vector2(960,540);hide()
 func open()->void:cancel_pointer();show();grab_focus();queue_redraw()
 func close()->void:model.cancel();cancel_pointer();hide();closed.emit()
-func cancel_pointer()->void:model.cancel_drag();trailer_drag=false;trailer_selected=false;selected=-1;drag=-1;touch_id=-1;queue_redraw()
+func cancel_pointer()->void:touch_action_pending=false;model.cancel_drag();trailer_drag=false;trailer_selected=false;selected=-1;drag=-1;touch_id=-1;queue_redraw()
 func _notification(what:int)->void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:model.pause();cancel_pointer()
 func _process(dt:float)->void:
@@ -46,10 +48,10 @@ func _gui_input(event:InputEvent)->void:
 	if event is InputEventMouse and event.device==InputEvent.DEVICE_ID_EMULATION:return
 	if event is InputEventScreenTouch:
 		if event.canceled and event.index==touch_id:cancel_pointer();accept_event();return
-		if event.pressed and touch_id<0:touch_id=event.index;press_at(event.position)
+		if event.pressed and not event.canceled and touch_id<0:touch_id=event.index;_touch_begin(event.position)
 		elif not event.pressed and touch_id==event.index:
 			if event.canceled:cancel_pointer()
-			else:release_at(event.position)
+			else:_touch_finish(event.position)
 			touch_id=-1
 		accept_event()
 	elif event is InputEventScreenDrag and event.index==touch_id:motion_at(event.position);accept_event()
@@ -84,7 +86,7 @@ func press_at(at:Vector2)->void:
 		coupling_blocked=not model.couple_trailer(true);trailer_selected=false;return
 	if trailer_selected and model.extension and at.distance_to(TRAILER_TRAY)<45:
 		model.couple_trailer(false);trailer_selected=false;return
-	if at.distance_to(Vector2(580,210))<38:model.toggle_switch();return
+	if switch_hit(at):model.toggle_switch();return
 	for i:int in 2:
 		if at.distance_to(cart_position(i))<36:
 			if model.paused and model.cart==i:model.resume();return
@@ -152,7 +154,7 @@ func _draw()->void:
 	draw_rect(Rect2(36,81,888,427),Color("b4aa92"))
 	for y:int in range(100,506,18):draw_line(Vector2(39,y),Vector2(920,y+4),Color("b0a58d"),1)
 	_text("研讨间 2 · 双向运输",Vector2(44,49),23)
-	_text("让两辆车带着原零件交换终点",Vector2(44,73),15)
+	if paper_open:_text("让两辆车带着原零件交换终点",Vector2(44,73),15)
 	_track(cell_position(0)-Vector2(38,0),cell_position(8)+Vector2(38,0));_track(cell_position(4),cell_position(9))
 	for i:int in 9:
 		_text(str(i),cell_position(i)+Vector2(-4,51),12)
@@ -168,7 +170,11 @@ func _draw()->void:
 	draw_circle(Vector2(559,181) if model.siding else Vector2(603,181),10,Color("76664e"))
 	for i:int in 2:
 		_cart(i,cart_position(i))
+		ApparatusStyle.grip(self,cart_position(i)+Vector2(0,15),"horizontal",drag==i)
 		if selected==i or (model.paused and model.cart==i):draw_arc(cart_position(i),42,0,TAU,32,PAPER,2)
+	ApparatusStyle.grip(self,Vector2(559,181) if model.siding else Vector2(603,181),"press")
+	if drag>=0:
+		for cell:int in 10:ApparatusStyle.target(self,Rect2(cell_position(cell)-Vector2(25,24),Vector2(50,48)),pointer.distance_to(cell_position(cell))<30)
 	if model.blocked>=0:
 		var p:=cell_position(model.blocked);draw_line(p-Vector2(13,13),p+Vector2(13,13),Color("944f44"),4);draw_line(p+Vector2(-13,13),p+Vector2(13,-13),Color("944f44"),4)
 	draw_rect(Rect2(55,446,155,54),PAPER);_text("试用者笔记",Vector2(70,479),16)
@@ -178,6 +184,7 @@ func _draw()->void:
 	draw_line(TRAILER_TRAY+Vector2(-45,29),TRAILER_TRAY+Vector2(45,29),INK,4)
 	if not model.extension and not trailer_drag:_body(0,TRAILER_TRAY,true)
 	if trailer_drag:_body(0,pointer,true)
+	ApparatusStyle.grip(self,pointer if trailer_drag else trailer_position(),"drag",trailer_drag)
 	if trailer_selected and not trailer_drag:draw_arc(trailer_position(),39,0,TAU,32,PAPER,2)
 	if coupling_blocked:
 		var tail:=cart_position(0)-Vector2(80,0)
@@ -189,3 +196,17 @@ func _draw()->void:
 		_text("试用者笔记 · "+str(hint_level),Vector2(73,126),16)
 		var text_value:String=HINTS[hint_level-1]
 		_text(text_value.substr(0,18),Vector2(73,159),16);_text(text_value.substr(18),Vector2(73,186),16)
+
+func _touch_begin(at:Vector2)->void:
+	touch_action_origin=at;touch_action_pending=Rect2(52,442,164,65).has_point(at) or Rect2(235,448,64,54).has_point(at) or switch_hit(at) or (model.running and (at.distance_to(cart_position(0))<36 or at.distance_to(cart_position(1))<36)) or (selected>=0 and at.distance_to(cart_position(0))>=36 and at.distance_to(cart_position(1))>=36 and at.distance_to(trailer_position())>=36)
+	if not touch_action_pending:press_at(at)
+func _touch_finish(at:Vector2)->void:
+	if touch_action_pending:
+		touch_action_pending=false
+		if at.distance_to(touch_action_origin)>18:return
+		press_at(touch_action_origin)
+	release_at(at)
+
+func switch_hit(at:Vector2)->bool:
+	var knob:=Vector2(559,181) if model.siding else Vector2(603,181)
+	return at.distance_to(knob)<27 or at.distance_to(Vector2(580,210))<38

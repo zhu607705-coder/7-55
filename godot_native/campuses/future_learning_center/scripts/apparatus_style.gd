@@ -70,3 +70,44 @@ static func navigation_event(owner:Control,event:InputEvent)->bool:
  if event is InputEventMouse or event is InputEventScreenTouch or event is InputEventScreenDrag:
   return Rect2(Vector2.ZERO,button.size).has_point(button.get_global_transform_with_canvas().affine_inverse()*event.position)
  return false
+
+## Marks belong to real handles, never invisible screen actions. They stay static
+## until held; the same strokes survive reduced-motion and monochrome viewing.
+static func grip(owner:CanvasItem,at:Vector2,kind:String="drag",active:bool=false)->void:
+ var color:Color=PAPER if active else GRIP
+ var width:=3.0
+ if kind=="rotate":
+  owner.draw_arc(at,17,-PI*.8,PI*.65,20,color,width,true)
+  var end:=at+Vector2(cos(PI*.65),sin(PI*.65))*17
+  owner.draw_line(end,end+Vector2(8,-1),color,width,true)
+  owner.draw_line(end,end+Vector2(0,-8),color,width,true)
+ elif kind=="press":
+  owner.draw_arc(at,19,PI*1.12,PI*1.88,16,color,width,true)
+  owner.draw_line(at+Vector2(-6,-24),at+Vector2(0,-19),color,width,true)
+  owner.draw_line(at+Vector2(6,-24),at+Vector2(0,-19),color,width,true)
+ elif kind=="book":
+  owner.draw_polyline(PackedVector2Array([at+Vector2(-12,-12),at+Vector2(12,-12),at+Vector2(12,12),at+Vector2(-12,12),at+Vector2(-12,-12)]),color,2,true)
+  owner.draw_line(at+Vector2(0,-11),at+Vector2(0,11),color,2,true)
+  owner.draw_line(at+Vector2(5,-6),at+Vector2(9,-6),color,2,true)
+ else:
+  # Ribbed orange material is a grip, not an extra arrow button.
+  var vertical:=kind=="vertical"
+  for offset:int in [-6,0,6]:
+   var delta:=Vector2(offset,0) if vertical else Vector2(0,offset)
+   var axis:=Vector2(0,7) if vertical else Vector2(7,0)
+   owner.draw_line(at+delta-axis,at+delta+axis,INK,5,true)
+   owner.draw_line(at+delta-axis,at+delta+axis,color,2.5,true)
+ if active:owner.draw_arc(at,24,0,TAU,32,PAPER,2,true)
+
+## Corner brackets show a destination boundary without filling/covering its part.
+## Call while holding the relevant part; no green 'correct answer' coloring.
+static func target(owner:CanvasItem,rect:Rect2,active:bool=false)->void:
+ var color:Color=PAPER if active else GRIP
+ var length:=minf(12,minf(rect.size.x,rect.size.y)*.25)
+ for corner:Vector2 in [Vector2.ZERO,Vector2(1,0),Vector2(0,1),Vector2.ONE]:
+  var at:Vector2=rect.position+rect.size*corner
+  var direction:=Vector2(1-2*corner.x,1-2*corner.y)
+  owner.draw_line(at,at+Vector2(direction.x*length,0),INK,5,true)
+  owner.draw_line(at,at+Vector2(0,direction.y*length),INK,5,true)
+  owner.draw_line(at,at+Vector2(direction.x*length,0),color,2.5,true)
+  owner.draw_line(at,at+Vector2(0,direction.y*length),color,2.5,true)

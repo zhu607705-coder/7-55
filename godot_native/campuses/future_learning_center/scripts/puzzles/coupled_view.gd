@@ -8,6 +8,8 @@ const PIN_TRAY:=Vector2(100,310)
 var model=Model.new()
 var font:Font
 var drag:=-1
+var touch_action_pending:=false
+var touch_action_origin:=Vector2.ZERO
 var touch_id:=-1
 var pointer:=Vector2.ZERO
 var offset:=Vector2.ZERO
@@ -24,6 +26,7 @@ func _ready()->void:
 func open()->void:model.resume();show();grab_focus();queue_redraw()
 func close()->void:cancel_pointer();hide();closed.emit()
 func cancel_pointer()->void:
+ touch_action_pending=false
  if not before.is_empty():model.restore(before)
  before={};drag=-1;touch_id=-1;queue_redraw()
 func _notification(what:int)->void:
@@ -32,8 +35,8 @@ func _gui_input(event:InputEvent)->void:
  if not visible:return
  if event is InputEventScreenTouch:
   if event.index==touch_id and event.canceled:cancel_pointer()
-  elif event.pressed and touch_id<0:touch_id=event.index;press_at(event.position)
-  elif not event.pressed and event.index==touch_id:release_at(event.position);touch_id=-1
+  elif event.pressed and not event.canceled and touch_id<0:touch_id=event.index;_touch_begin(event.position)
+  elif not event.pressed and event.index==touch_id:_touch_finish(event.position);touch_id=-1
   accept_event()
  elif event is InputEventScreenDrag and event.index==touch_id:move_at(event.position);accept_event()
  elif event is InputEventMouse and event.device==InputEvent.DEVICE_ID_EMULATION:return
@@ -99,8 +102,8 @@ func _pin(at:Vector2)->void:
  draw_circle(at-Vector2(0,11),10,Color("9f8765"));draw_arc(at-Vector2(0,11),7,PI,TAU,16,PAPER,2)
 func _draw()->void:
  if font==null:return
- draw_rect(Rect2(0,0,960,540),INK);_text("团队工作室 · 连起来以后",Vector2(32,38),22,PAPER)
- _text("把两块送入终台区域并连成一个导通整体",Vector2(33,66),16,Color("bdc5bd"))
+ draw_rect(Rect2(0,0,960,540),INK);_text("团队工作室 · 连体滑块",Vector2(32,38),22,PAPER)
+ if paper_open:_text("把两块送入终台区域并连成一个导通整体",Vector2(33,66),16,Color("bdc5bd"))
  draw_rect(Rect2(35,86,890,380),Color("a58e6e"))
  for y:int in range(95,470,26):draw_line(Vector2(40,y),Vector2(920,y),Color("978060"),1)
  # All three support surfaces use the exact model boundaries.
@@ -123,14 +126,27 @@ func _draw()->void:
   var socket:Vector2=at+(model.positions[1-i]-at).normalized()*28
   draw_circle(socket,5,INK);draw_circle(socket,2,Color("c5b78e"))
   draw_arc(at,12,0,TAU,24,INK,3);draw_line(at-Vector2(8,0).rotated(model.angle),at+Vector2(8,0).rotated(model.angle),PAPER,2)
+  ApparatusStyle.grip(self,at,"drag",drag==i)
   if selected==i:draw_arc(at,18,0,TAU,24,PAPER,1)
  if model.connected:
   draw_line(model.positions[0],model.positions[1],Color("c5b78e"),5)
   _pin(model.midpoint());draw_line(model.midpoint(),handle(),INK,3);draw_arc(handle(),12,0,TAU,24,PAPER,4)
+  ApparatusStyle.grip(self,handle(),"rotate",drag==3)
  elif drag!=2:_pin(PIN_TRAY)
+ if drag==2:ApparatusStyle.target(self,Rect2(model.midpoint()-Vector2(22,22),Vector2(44,44)),pointer.distance_to(model.midpoint())<28)
  if drag==2:_pin(pointer)
  if model.blocked_at!=Vector2.ZERO:draw_arc(model.blocked_at,34,0,TAU,32,Color("ac6559"),3)
  draw_rect(Rect2(42,474,140,38),PAPER);_text("制作者便笺",Vector2(59,499),16)
  draw_arc(Vector2(855,490),14,.4,5.5,24,PAPER,3);draw_line(Vector2(841,482),Vector2(841,494),PAPER,3)
  if paper_open:_text(HINTS[hint_level],Vector2(205,499),16,PAPER)
  elif not model.outcome.is_empty():_text(model.outcome,Vector2(205,499),16,PAPER)
+
+func _touch_begin(at:Vector2)->void:
+ touch_action_origin=at;touch_action_pending=Rect2(42,472,140,42).has_point(at) or at.distance_to(Vector2(855,490))<28
+ if not touch_action_pending:press_at(at)
+func _touch_finish(at:Vector2)->void:
+ if touch_action_pending:
+  touch_action_pending=false
+  if at.distance_to(touch_action_origin)>18:return
+  press_at(touch_action_origin)
+ release_at(at)

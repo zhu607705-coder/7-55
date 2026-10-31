@@ -37,7 +37,7 @@ func _release(at:Vector2)->void:
 func _draw()->void:
  if font==null:return
  draw_rect(Rect2(0,0,960,540),Color("c0c5bc"))
- text("开放平台 · 挡光，不挡镜头",Vector2(30,35),22,Color("293d42"))
+ text("开放平台",Vector2(30,35),22,Color("293d42"))
  for y:int in range(90,530,35):draw_line(Vector2(25,y),Vector2(935,y),Color("b0b6af"),1)
  draw_colored_polygon(model.shadow(),Color("7c8f91",.58))
  for r:Rect2 in Platform.SCENERY:
@@ -53,16 +53,18 @@ func _draw()->void:
   text("甲" if i==0 else "乙",p+Vector2(-6,51),16,Color("293d42"))
  if hint_level>=0:
   draw_dashed_line(Platform.CAMERA,Platform.TARGET,Color("e6e2ca"),2,6)
-  text(hints[hint_level],Vector2(30,70),16,Color("293d42"))
+  text("挡光，不挡镜头。"+hints[hint_level],Vector2(30,70),16,Color("293d42"))
  # Whiteboard face and its wheels share one movable footprint.
  var b:Vector2=model.board
  draw_line(b+Vector2(-60,-16),b+Vector2(-60,-92),Color("46585d"),5);draw_line(b+Vector2(60,-16),b+Vector2(60,-92),Color("46585d"),5)
  box(Rect2(b-Vector2(72,100),Vector2(144,75)),Color("d9ded2"),5)
+ ApparatusStyle.grip(self,b-Vector2(0,50),"drag",board_drag)
  draw_line(b-Vector2(72,0),b+Vector2(72,0),Color("4a5a5e"),7)
  for dx:int in [-65,65]:draw_circle(b+Vector2(dx,9),7,Color("34474d"))
  if model.contact.is_finite():draw_arc(model.contact,20,0,TAU,24,Color("9c6956"),3)
  draw_line(Vector2(480,420),Vector2(457,452),Color("46575b"),5);draw_line(Vector2(480,420),Vector2(503,452),Color("46575b"),5)
  box(Rect2(456,395,48,30),Color("46575b"),7);draw_circle(Vector2(480,410),13,Color("24383f"));draw_circle(Vector2(480,410),6,Color("98ada9"))
+ ApparatusStyle.grip(self,Vector2(480,414),"press",model.photographing)
  if model.photographing:draw_arc(Vector2(480,410),20,0,model.exposure/.5*TAU,20,Color("e6d8b7"),3)
  box(Rect2(25,80,200,85),Color("e2ddc9"),3);text("甲 / 乙 · 试拍相册",Vector2(36,104),16,Color("293d42"))
  for i:int in 2:

@@ -137,13 +137,14 @@ func leaf_shape(i:int)->void:
 	for fraction:float in [.2,.8]:draw_circle(a.lerp(b,fraction),2,INK)
 	draw_circle(a,8,INK);draw_circle(a,4,Color("d6d4c8"))
 	draw_circle(b,13,INK);draw_circle(b,9,LEAF_COLORS[i]);draw_arc(b,6,0,TAU,16,PAPER,1)
+	ApparatusStyle.grip(self,b,"rotate",leaf==i)
 	text("窄盖" if i==0 else "宽盖",a.lerp(b,.55)+Vector2(-15,-17),14)
 func _draw()->void:
 	if font==null:return
 	draw_rect(Rect2(0,0,960,540),Color("c3c6bc"))
 	for y:int in range(80,540,36):draw_line(Vector2(0,y),Vector2(960,y+8),Color("b8bbae"),1)
 	text("X-Lab 南区 · 折叠样机",Vector2(32,36),23)
-	text("展开使用，再把同一台样机收入模板。",Vector2(33,65),16)
+	if notebook:text("展开使用，再把同一台样机收入模板。",Vector2(33,65),16)
 	slab(Rect2(100,362,760,40),Color("8e795d"),24)
 	# The transport gauge is fixed; the live covers are never exchanged for a closed sprite.
 	draw_rect(Model.TEMPLATE,Color(.89,.87,.77,.18))
@@ -166,15 +167,18 @@ func _draw()->void:
 	if action=="attachment":accessory=pointer
 	slab(Rect2(accessory-Model.ATTACHMENT.size/2,Model.ATTACHMENT.size),Color("75635a"),7)
 	draw_line(accessory-Vector2(12,0),accessory+Vector2(12,0),Color("cbbfaf"),3)
+	ApparatusStyle.grip(self,accessory,"drag",action=="attachment")
+	ApparatusStyle.grip(self,connector,"drag",action=="plug")
+	if action=="attachment":ApparatusStyle.target(self,Model.ATTACHMENT,true)
 	if action=="cable":draw_line(origin,pointer,Color("c89960"),5)
 	if action=="plug":slab(Rect2(pointer-Vector2(10,7),Vector2(20,14)),Color("c6bca4"),3)
 	if model.contact.is_finite() and (contact_flash>0 or not model.contact_kind.is_empty()):
 		draw_arc(model.contact,17,0,TAU,24,Color("a16147"),3)
 		text({"leaf":"盖片相碰","cable":"连接带被夹住","attachment":"盖片碰到附件"}.get(model.contact_kind,""),Vector2(350,386),17)
 	draw_circle(SWITCH,27,INK);draw_circle(SWITCH,21,Color("b99766"));draw_line(SWITCH,SWITCH+Vector2(0,-15 if not model.running else 15),PAPER,4)
-	text("通电试验",SWITCH+Vector2(-34,48),15)
-	slab(Rect2(45,425,145,77),PAPER,5);text("结构草图",Vector2(72,454),19);text("与碰停照片",Vector2(66,479),15)
-	draw_arc(Vector2(250,465),20,.2,TAU-.5,24,INK,4);text("撤回",Vector2(234,502),14)
+	ApparatusStyle.grip(self,SWITCH,"press",model.running)
+	slab(Rect2(45,425,145,77),PAPER,5);text("结构草图",Vector2(72,454),19)
+	draw_arc(Vector2(250,465),20,.2,TAU-.5,24,INK,4)
 	text("附件托盘",Vector2(727,507),14)
 	text("连接带停车位",Vector2(562,462),14)
 	if not feedback.is_empty():text(feedback,Vector2(310,500),16)
