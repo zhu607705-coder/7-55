@@ -204,7 +204,7 @@ func _solar_readouts()->void:
  var light:float=(0 if preview==2 else 1) if gesture=="light" else solar.intensity_at(solar.elapsed())
  ink("太阳光模拟器",Vector2(671,81),19)
  ink(["斜照 30°","斜照 60°","遮光板关闭"][preview],Vector2(675,104),16)
- ink("拨动橙色握柄调光",Vector2(419,73),15)
+ if book_open:ink("拨动橙色握柄调光",Vector2(419,73),15)
  ink("改装车",Vector2(53,164),18);ink("基准车",Vector2(53,275),18)
  var white:=Color("f4eddb")
  ink("行驶距离 / 格",Vector2(649,187),17,white)

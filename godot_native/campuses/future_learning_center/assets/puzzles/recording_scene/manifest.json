@@ -1,0 +1,227 @@
+[
+  {
+    "filename": "drive_base.png",
+    "sha256": "cbc18b3cc37cf5167d0a1c2bcaf027f5b60f4f468bbbf1fb5dd6dfe857f57e71",
+    "size": [
+      793,
+      1983
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      217,
+      91,
+      359,
+      1799
+    ],
+    "box": [
+      41.0696,
+      205.8056
+    ],
+    "pivot": [
+      395,
+      975
+    ]
+  },
+  {
+    "filename": "drive_handle.png",
+    "sha256": "bcfda31f318f8ca9138789d7af4020465335c9682ba0e0c3def0a498f6881257",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      408,
+      374,
+      439,
+      520
+    ],
+    "box": [
+      24,
+      24
+    ],
+    "pivot": [
+      626,
+      835
+    ]
+  },
+  {
+    "filename": "handwheel.png",
+    "sha256": "090d06618c99bd1711459eed7118650259c1b61d40df66692e4312fb23f1a4ba",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      91,
+      89,
+      1090,
+      1072
+    ],
+    "box": [
+      66,
+      66
+    ],
+    "pivot": [
+      625,
+      639
+    ]
+  },
+  {
+    "filename": "sliding_baffle.png",
+    "sha256": "c6336c8a4caaadcb397bc4919e000b7a398476d171a05564f8b89aa2223c0831",
+    "size": [
+      971,
+      1619
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      375,
+      96,
+      221,
+      1427
+    ],
+    "box": [
+      22,
+      120
+    ],
+    "pivot": [
+      485.5,
+      809.5
+    ]
+  },
+  {
+    "filename": "endstop.png",
+    "sha256": "3175e4374a7c7cbb096bbef992909d3ea469bdd732e9b4e242994be07bc16300",
+    "size": [
+      1051,
+      1497
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      441,
+      113,
+      175,
+      1271
+    ],
+    "box": [
+      12,
+      65
+    ],
+    "pivot": [
+      441,
+      748.5
+    ]
+  },
+  {
+    "filename": "dropgate.png",
+    "sha256": "c10090f5d9a84eed87323c1626df203a5f20d30df5b5e81ce0a53764639cecd2",
+    "size": [
+      1050,
+      1498
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      369,
+      179,
+      308,
+      1144
+    ],
+    "box": [
+      14,
+      50
+    ],
+    "pivot": [
+      523,
+      751
+    ]
+  },
+  {
+    "filename": "paper_guide.png",
+    "sha256": "c5e38900b979d9e58abf7e96fd6553929905b210680c6303b88a5a3454154fa7",
+    "size": [
+      2206,
+      713
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      61,
+      218,
+      2084,
+      270
+    ],
+    "box": [
+      800,
+      104
+    ],
+    "pivot": [
+      1103,
+      353
+    ]
+  },
+  {
+    "filename": "paper_strip.png",
+    "sha256": "521676f4110acb105b23448d56b9b723d6b6c3430016bb6c9f9a1004047deb42",
+    "size": [
+      2172,
+      724
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      90,
+      241,
+      1990,
+      236
+    ],
+    "box": [
+      786,
+      59.885
+    ],
+    "pivot": [
+      1085,
+      359
+    ]
+  },
+  {
+    "filename": "paper_roll.png",
+    "sha256": "095c0d0d2b1152cceb670f232443d06bb81e101fe83901d0778628f650eabf84",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "source": "web-image-generation",
+    "original_bytes_preserved": true,
+    "region": [
+      165,
+      144,
+      910,
+      961
+    ],
+    "box": [
+      70,
+      70
+    ],
+    "pivot": [
+      670,
+      607
+    ]
+  }
+]

@@ -1,4 +1,5 @@
 extends Control
+const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 ## Scene props own manipulation; the only screen-space control is exit navigation.
 signal closed
 const Plane45=preload("res://campuses/future_learning_center/scripts/bench_projection.gd")
@@ -29,11 +30,7 @@ var cues: Array[Dictionary]=[]
 var returns: Dictionary={}
 
 func _ready() -> void:
-	var face:FontFile=load("res://ui_assets/fonts/SelectedSans-Regular.otf").duplicate()
-	face.antialiasing=TextServer.FONT_ANTIALIASING_GRAY;face.allow_system_fallback=false
-	var typeface:=FontVariation.new();typeface.base_font=face
-	typeface.fallbacks=[load("res://ui_assets/fonts/SelectedCoverage-Regular.otf")]
-	font=typeface
+	font=ApparatusStyle.font()
 	miniature=Miniatures.new();add_child(miniature)
 	visibility_changed.connect(func()->void:miniature.set_active(visible))
 	reduced_motion=OS.get_environment("FLC_REDUCED_MOTION")=="1"
@@ -41,14 +38,7 @@ func _ready() -> void:
 		reduced_motion=reduced_motion or bool(JavaScriptBridge.eval("window.matchMedia('(prefers-reduced-motion: reduce)').matches"))
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	var exit := Button.new()
-	exit.text = "离开操作台"; exit.position = Vector2(808,7); exit.size = Vector2(144,40)
-	exit.add_theme_font_override("font",font); exit.add_theme_font_size_override("font_size",20)
-	var style := StyleBoxFlat.new(); style.bg_color = Color("344452")
-	style.border_color = Color("7993a1"); style.set_border_width_all(1)
-	exit.add_theme_stylebox_override("normal",style)
-	exit.add_theme_color_override("font_color",Color("e8e0c8"))
-	exit.pressed.connect(close); add_child(exit)
+	ApparatusStyle.configure_exit(self,close)
 	hide()
 
 func _load_texture(path: String) -> Texture2D:
@@ -116,7 +106,16 @@ func lever_grip() -> Vector2:
 	return LEVER_BASE + Vector2(0,-42+lever_offset if gesture=="lever" else lever_rest)
 
 func _input(event: InputEvent) -> void:
+	if ApparatusStyle.navigation_event(self,event):return
 	if not visible: return
+	# Browsers may synthesize mouse input after the touch owner has released.
+	# Ignore it even with no active owner, or one tap can operate the book twice.
+	if event is InputEventMouse and event.device==InputEvent.DEVICE_ID_EMULATION:return
+	if event is InputEventScreenTouch and event.canceled:
+		if event.index==pointer_owner:
+			_release(event.position,true)
+			get_viewport().set_input_as_handled()
+		return
 	var handled := false
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode==KEY_ESCAPE:
@@ -215,11 +214,16 @@ func draw_table(title: String) -> void:
 	ink(title,Vector2(32,39),24)
 
 func draw_tools() -> void:
-	ink("运行",LEVER_BASE+Vector2(55,-67),18)
-	ink("停",LEVER_BASE+Vector2(55,-36),18)
-	ink("归位",LEVER_BASE+Vector2(55,-7),18)
-	ink("撤回装配",CRANK+Vector2(-35,39),17)
-	ink("试验记录",Vector2(849,151),16)
+	# Three engraved detents: forward/run, middle/stop, backward/return.
+	var x:=LEVER_BASE.x+56
+	for y:float in [-76,-42,-8]:draw_line(Vector2(x,y+LEVER_BASE.y),Vector2(x+16,y+LEVER_BASE.y),ApparatusStyle.INK,3,true)
+	draw_colored_polygon(PackedVector2Array([Vector2(x+25,LEVER_BASE.y-84),Vector2(x+25,LEVER_BASE.y-68),Vector2(x+37,LEVER_BASE.y-76)]),ApparatusStyle.INK)
+	draw_rect(Rect2(x+25,LEVER_BASE.y-48,12,12),ApparatusStyle.INK)
+	ApparatusStyle.grip(self,lever_grip(),"vertical",gesture=="lever")
+	ApparatusStyle.grip(self,CRANK,"rotate",gesture=="crank")
+	if not book_open:ApparatusStyle.grip(self,Vector2(884,103),"book")
+	if gesture=="lever":
+		ink("运行" if lever_offset< -20 else ("归位" if lever_offset>20 else "暂停"),LEVER_BASE+Vector2(34,35),18)
 	draw_cues()
 	if feedback_seconds>0:
 		draw_rect(Rect2(16,486,928,46),Color("253e46"))
@@ -237,6 +241,9 @@ func draw_book() -> void:
 	for n: int in mini(6,int(ceil(value.length()/6.0))):
 		ink(value.substr(n*6,6),book_at+Vector2(15,-187+n*27),23,Color("202b35"))
 	ink("记录" if book_page==0 else "线索 %d/3"%book_page,book_at+Vector2(-167,-128),20,Color("344452"))
+	if bench_mode!="pantry":
+		ink("推杆运行 · 中位暂停",book_at+Vector2(-215,-84),16,ApparatusStyle.INK)
+		ink("后拉归位 · 转轮撤回",book_at+Vector2(-215,-57),16,ApparatusStyle.INK)
 	var fold:=book_at+Vector2(164,-25)
 	draw_colored_polygon(PackedVector2Array([fold+Vector2(-17,7),fold+Vector2(17,7),fold+Vector2(17,-20)]),Color("c79b62"))
 

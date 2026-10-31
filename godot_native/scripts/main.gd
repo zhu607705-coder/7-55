@@ -122,7 +122,24 @@ const PAPER := Color("f4f1e8")
 const ACCENT := Color("c9e96e")
 const BLUE := Color("267b9e")
 
+var flc_entry_mode:=false
+
 func _ready() -> void:
+	flc_entry_mode=bool(get_tree().root.get_meta("flc_entry_requested",false))
+	if flc_entry_mode:
+		get_tree().root.remove_meta("flc_entry_requested")
+		# Optional exploration has no background story/phone session to advance.
+		get_tree().auto_accept_quit=false
+		get_tree().root.close_requested.connect(_request_quit)
+		resized.connect(_layout)
+		await _open_game_now({"kind":"future_learning_center","script":"res://scripts/games/future_learning_center/view.gd","return_to_entry":true})
+		if not is_instance_valid(active_game):
+			get_tree().change_scene_to_file("res://scenes/entry.tscn")
+			return
+		if OS.has_feature("web"):
+			web_platform=preload("res://scripts/platform/web_platform.gd").new()
+			web_platform.name="WebPlatform";add_child(web_platform);web_platform.setup(self,State)
+		return
 	if OS.has_feature("web") and not await WebContent.ensure_state(State.d): return
 	# Let native audio owners retire their mixer-thread playbacks before exit.
 	get_tree().auto_accept_quit = false
@@ -175,6 +192,7 @@ func _ready() -> void:
 		if arg == "--screenshot": _screenshot_requested = true
 
 func _content_ready() -> bool:
+	if flc_entry_mode:return not OS.has_feature("web") or await WebContent.ensure_families(["chapter2","flc_activity"],true)
 	if not OS.has_feature("web"): return true
 	var owner: Dictionary = State.d
 	var ready: bool = await WebContent.ensure_state(owner)
@@ -623,6 +641,9 @@ func _library_world_presentation(cue: String,payload: Dictionary,layer: RefCount
 	phone_world_return.grab_focus()
 
 func _layout() -> void:
+	if flc_entry_mode:
+		if is_instance_valid(active_game):active_game.configure_activity_layout(size,size.x<760)
+		return
 	if _room302_studio_active():
 		_layout_modal()
 		return
@@ -1439,6 +1460,7 @@ func _modal_focus_controls(parent: Node, result: Array[Control]) -> void:
 		_modal_focus_controls(child,result)
 
 func _input(event: InputEvent) -> void:
+	if flc_entry_mode:return
 	_room302_observe_input(event)
 	_sync_inventory_dock_input()
 	if not _room302_studio_active() and is_instance_valid(world) and (world.handle_root_kayak_pointer(event) or world.handle_root_exploration_pointer(event)):
@@ -2062,8 +2084,54 @@ func _retire_progressive_game(owner: Control) -> void:
 	# already issued a fresh nonce; it must survive retirement of its old view.
 	State.cancel_progressive_activity(str(request.get("on_cancel","")),{"session":session,"puzzleId":request.get("puzzleId","")})
 
+func _open_flc_entry_activity(config:Dictionary)->void:
+	if config.get("kind","")!="future_learning_center" or is_instance_valid(active_game):return
+	active_game=load("res://scripts/games/future_learning_center/view.gd").new()
+	add_child(active_game)
+	var owner:Control=active_game
+	owner.cancelled.connect(func():
+		if active_game!=owner:return
+		owner.dispose_presentation();active_game=null
+		if _quit_requested:get_tree().quit();return
+		get_tree().change_scene_to_file("res://scenes/entry.tscn")
+	)
+	owner.leave_requested.connect(func():_request_flc_exit(owner))
+	owner.setup(config)
+	_layout()
+
+func _wait_flc_save(owner:Control,bridge:Node)->bool:
+	if not is_instance_valid(bridge):return false
+	bridge.request_save()
+	var started:=Time.get_ticks_msec()
+	while is_inside_tree() and is_instance_valid(owner) and active_game==owner:
+		var receipt:Dictionary=bridge.read_save_persistence()
+		if not receipt.get("error","").is_empty():return false
+		if not receipt.get("pending",false):
+			var digest:=FileAccess.get_sha256(State.SAVE_PATH)
+			return not digest.is_empty() and receipt.get("acknowledgedDigest","")==digest
+		# Match the existing persistence transport's observation window.
+		if Time.get_ticks_msec()-started>=60000:return false
+		await get_tree().process_frame
+	return false
+
+func _request_flc_exit(owner:Control)->void:
+	if active_game!=owner or owner.exit_pending:return
+	owner.set_exit_waiting()
+	if not owner.floor_view.checkpoint_state():_quit_requested=false;owner.exit_failed();return
+	var saved:bool=await _wait_flc_save(owner,web_platform) if OS.has_feature("web") else true
+	if not is_instance_valid(owner) or active_game!=owner:return
+	if saved:
+		get_tree().root.set_meta("flc_exit_receipt",web_platform.read_save_persistence() if OS.has_feature("web") and is_instance_valid(web_platform) else {})
+		owner.finish_leave()
+	else:_quit_requested=false;owner.exit_failed()
+
 func _open_game_now(config: Dictionary) -> void:
+	if config.get("kind","")=="future_learning_center" and OS.has_feature("web"):
+		if not await WebContent.ensure_families(["chapter2","flc_activity"],true):return
 	if not await _content_ready(): return
+	if flc_entry_mode:
+		_open_flc_entry_activity(config)
+		return
 	# The source opens the real A1 doors before the registered lamp questions.
 	# This local visual prelude never changes controller facts or completion proof.
 	if config.get("kind","")=="star_lamp_closure" and not config.get("native_exterior_presented",false):
@@ -2100,6 +2168,8 @@ func _open_game_now(config: Dictionary) -> void:
 	active_game.size = game_viewport
 	add_child(active_game)
 	var owned_game: Control=active_game
+	if path=="res://scripts/games/future_learning_center/view.gd":
+		owned_game.leave_requested.connect(func():_request_flc_exit(owned_game))
 	var finish := func(result: Dictionary):
 		if not is_instance_valid(owned_game) or active_game!=owned_game:return
 		var callback := str(config.get("on_success",config.get("callback","")))
@@ -2386,6 +2456,7 @@ func _sync_selected_world_overlay() -> void:
 		if is_instance_valid(chrome): chrome.modulate.a=0.0 if reading else 1.0
 
 func _process(delta: float) -> void:
+	if flc_entry_mode:return
 	_sync_selected_world_overlay()
 	if is_instance_valid(world) and world.chapter4_layers != null:
 		var archive: RefCounted=world.chapter4_layers.archive_motion
@@ -2415,6 +2486,7 @@ func _capture() -> void:
 		print("Screenshot: ",ProjectSettings.globalize_path(capture_path))
 
 func _unhandled_key_input(event: InputEvent) -> void:
+	if flc_entry_mode:return
 	if not is_visible_in_tree(): return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if is_instance_valid(modal):
@@ -2764,12 +2836,21 @@ func _run_visual_gallery() -> void:
 	runner.start(self)
 
 func _request_quit() -> void:
+	if flc_entry_mode and is_instance_valid(active_game):
+		_quit_requested=true
+		active_game._leave()
+		return
 	if _quit_requested: return
 	_quit_requested = true
 	await shutdown()
 	get_tree().quit()
 
 func shutdown() -> void:
+	if flc_entry_mode:
+		if is_instance_valid(active_game):active_game.dispose_presentation()
+		if is_instance_valid(web_platform):web_platform.request_save()
+		set_process(false)
+		return
 	# Native audio retires on the mixer thread. Await the real owners before
 	# immediate test/standalone exit instead of leaking a still-playing stream.
 	set_process(false)

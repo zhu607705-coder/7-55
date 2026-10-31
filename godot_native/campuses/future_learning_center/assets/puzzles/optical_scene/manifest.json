@@ -1,0 +1,193 @@
+{
+  "source": "Original ChatGPT webpage image generation, 2026-10-31",
+  "method": "Independently generated raster objects; no source-image uploads; original PNG bytes preserved. Private conversation URL and transcript intentionally excluded.",
+  "assets": [
+    {
+      "filename": "baffle_edge.png",
+      "sha256": "6d6ce070b3d23b81abb2cea8c218df5a5997408a9494894f9f5a413734ba019f",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "has_alpha_channel": true,
+      "visible_bbox_alpha128": [
+        415,
+        82,
+        609,
+        1454
+      ],
+      "original_bytes_preserved": true
+    },
+    {
+      "filename": "baffle_front.png",
+      "sha256": "7223874c7819675fc00cb6241a010c176b67e2df19b2d88d7e768602688b6917",
+      "size": [
+        1850,
+        850
+      ],
+      "mode": "RGBA",
+      "has_alpha_channel": true,
+      "visible_bbox_alpha128": [
+        154,
+        180,
+        1697,
+        719
+      ],
+      "original_bytes_preserved": true
+    },
+    {
+      "filename": "bracket.png",
+      "sha256": "3d92f4590cb3859e736a13a6a9f8c8cd0fd6f7a39e09d6e64193a670637b1725",
+      "size": [
+        1046,
+        1503
+      ],
+      "mode": "RGBA",
+      "has_alpha_channel": true,
+      "visible_bbox_alpha128": [
+        187,
+        171,
+        865,
+        1415
+      ],
+      "original_bytes_preserved": true
+    },
+    {
+      "filename": "carriage.png",
+      "sha256": "5b8cd72b33e25f473c39a7db5de4a40b52e6b1de78912ca7f68e0676587148c3",
+      "size": [
+        1272,
+        1237
+      ],
+      "mode": "RGBA",
+      "has_alpha_channel": true,
+      "visible_bbox_alpha128": [
+        179,
+        241,
+        1094,
+        1020
+      ],
+      "original_bytes_preserved": true
+    },
+    {
+      "filename": "fixture.png",
+      "sha256": "a441fc103af31e72b603cb108180d3e9cffc44b5ccf0c612abb78bd39d5db913",
+      "size": [
+        1543,
+        1019
+      ],
+      "mode": "RGBA",
+      "has_alpha_channel": true,
+      "visible_bbox_alpha128": [
+        85,
+        96,
+        1459,
+        911
+      ],
+      "original_bytes_preserved": true
+    },
+    {
+      "filename": "lamp.png",
+      "sha256": "7a146cf895cfec8752011642a8f90bb4bbeac68ffdce3a37a222a2b1d1e14ac3",
+      "size": [
+        1294,
+        1216
+      ],
+      "mode": "RGBA",
+      "has_alpha_channel": true,
+      "visible_bbox_alpha128": [
+        184,
+        138,
+        1108,
+        1107
+      ],
+      "original_bytes_preserved": true
+    },
+    {
+      "filename": "quarter_control.png",
+      "sha256": "74154e20b39ae1e748d594543b1fc0de9cf87054fb5597bffc1d574278b940af",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "has_alpha_channel": true,
+      "visible_bbox_alpha128": [
+        218,
+        255,
+        1037,
+        1035
+      ],
+      "original_bytes_preserved": true
+    },
+    {
+      "filename": "rail_horizontal.png",
+      "sha256": "40fce2b7a53fc07123b2ffdfd270068d186540cb363293ec025a8d43adc9e2b0",
+      "size": [
+        2172,
+        724
+      ],
+      "mode": "RGBA",
+      "has_alpha_channel": true,
+      "visible_bbox_alpha128": [
+        82,
+        272,
+        2090,
+        442
+      ],
+      "original_bytes_preserved": true
+    },
+    {
+      "filename": "rail_vertical.png",
+      "sha256": "c7c36196ebf1da6bce0c4f22bbf615f8bb643a4cacc446b07abcedadc1a06125",
+      "size": [
+        950,
+        1655
+      ],
+      "mode": "RGBA",
+      "has_alpha_channel": true,
+      "visible_bbox_alpha128": [
+        326,
+        109,
+        625,
+        1546
+      ],
+      "original_bytes_preserved": true
+    },
+    {
+      "filename": "socket.png",
+      "sha256": "6629e1404eae254a05e0505565e589032c676a39bb6f1a6ff2b812cc7289346d",
+      "size": [
+        1615,
+        974
+      ],
+      "mode": "RGBA",
+      "has_alpha_channel": true,
+      "visible_bbox_alpha128": [
+        100,
+        452,
+        1518,
+        545
+      ],
+      "original_bytes_preserved": true
+    },
+    {
+      "filename": "target.png",
+      "sha256": "b1c64a2763c2e20820fd7753cbcee539547ede5bf8429f4a10a18cdd4d6d8225",
+      "size": [
+        1291,
+        1218
+      ],
+      "mode": "RGBA",
+      "has_alpha_channel": true,
+      "visible_bbox_alpha128": [
+        176,
+        188,
+        1100,
+        1050
+      ],
+      "original_bytes_preserved": true
+    }
+  ]
+}

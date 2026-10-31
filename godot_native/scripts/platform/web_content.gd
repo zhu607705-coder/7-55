@@ -2,7 +2,7 @@ extends Node
 ## Presentation-only content availability. Never changes State, quests or saves.
 signal blocking_changed(blocking: bool)
 signal content_changed
-const FAMILIES := ["chapter2", "chapter3", "chapter35", "chapter4", "campus_shared", "campus_chaoyang", "campus_haidian", "campus_changping"]
+const FAMILIES := ["chapter2", "chapter3", "chapter35", "chapter4", "flc_activity", "campus_shared", "campus_chaoyang", "campus_haidian", "campus_changping"]
 const STORY_FAMILIES := ["chapter2", "chapter3", "chapter35", "chapter4"]
 const ReleaseContent = preload("res://scripts/release_content_policy.gd")
 const Ui = preload("res://scripts/ui/native_ui_theme.gd")
@@ -14,6 +14,9 @@ var _packs: Dictionary = {}
 var _families: Dictionary = {}
 var _waiters: Dictionary = {}
 var _next_waiter := 0
+var _optional_waiters:Dictionary={}
+var _optional_error:=""
+var _cancel_optional_button:Button
 var _blocking := false
 var _prefetch_started := false
 var _prefetch_families: Array = []
@@ -161,12 +164,25 @@ func _set_prefetch_window(snapshot: Dictionary) -> void:
 	_prefetch_families = next
 	_host.setPrefetchFamilies(JSON.stringify(next))
 
-func ensure_families(families: Array) -> bool:
+func ensure_families(families: Array, optional_flc:bool=false) -> bool:
 	# Admission precedes the native monolithic fallback as well: loading a Web
 	# story-only PCK with a native editor binary must not reopen stripped content.
 	for family: Variant in families:
 		if not ReleaseContent.family_available(family): return false
 	if not _enabled: return true
+	# An old cached manifest without the new optional activity is not readiness.
+	if "flc_activity" in families and _families.get("flc_activity", []).is_empty():
+		if optional_flc:
+			_next_waiter+=1
+			var missing_token:=_next_waiter
+			_waiters[missing_token]=[];_optional_waiters[missing_token]=true
+			_optional_error="活动资源目录需要更新。可重新加载，或返回入口。"
+			_update_overlay()
+			while _waiters.has(missing_token):await content_changed
+			return false
+		_fatal_error = "活动资源目录需要更新，请重新加载页面。当前进度已保留。"
+		_show_fatal()
+		return false
 	if not _fatal_error.is_empty():
 		_show_fatal()
 		return false
@@ -175,14 +191,25 @@ func ensure_families(families: Array) -> bool:
 	_next_waiter += 1
 	var token := _next_waiter
 	_waiters[token] = ids.duplicate()
+	if optional_flc and "flc_activity" in families:_optional_waiters[token]=true
 	_update_overlay()
 	_request_missing(ids)
 	while not _ids_ready(ids):
 		await content_changed
-		if not is_inside_tree(): return false
+		if not is_inside_tree() or not _waiters.has(token): return false
 	_waiters.erase(token)
+	_optional_waiters.erase(token)
 	_update_overlay()
 	return true
+
+func cancel_optional_flc(token:int=-1)->void:
+	# Only abandon optional callers. Downloaded/mountable bytes remain cached;
+	# a late content callback cannot recreate the erased activity waiter.
+	if token<0 and not _optional_waiters.is_empty():token=int(_optional_waiters.keys().back())
+	if not _optional_waiters.has(token):return
+	_waiters.erase(token);_optional_waiters.erase(token)
+	if _optional_waiters.is_empty():_optional_error=""
+	_update_overlay();content_changed.emit()
 
 func _request_missing(ids: Array) -> void:
 	var wanted: Array = []
@@ -249,9 +276,11 @@ func read_snapshot() -> Dictionary:
 	for id: String in required:
 		total += int(_packs[id].bytes)
 		if _packs[id].status == "ready": loaded += int(_packs[id].bytes)
+	var cancel_visible:bool=is_instance_valid(_cancel_optional_button) and _cancel_optional_button.is_visible_in_tree()
+	var cancel_rect:Rect2=_cancel_optional_button.get_global_rect() if cancel_visible else Rect2()
 	var retry_visible: bool = is_instance_valid(_retry) and _retry.is_visible_in_tree()
 	var retry_rect: Rect2 = _retry.get_global_rect() if retry_visible else Rect2()
-	return {"enabled": _enabled, "monolithic": not _enabled, "blocking": _blocking, "prefetchStarted": _prefetch_started, "prefetchFamilies": _prefetch_families.duplicate(), "manifestError": _fatal_error, "readyFamilies": ready_families, "requiredIds": required, "requiredBytes": total, "loadedBytes": loaded, "packs": packs, "retryVisible": retry_visible, "retryRect": {"x": retry_rect.position.x, "y": retry_rect.position.y, "width": retry_rect.size.x, "height": retry_rect.size.y}}.duplicate(true)
+	return {"enabled": _enabled, "monolithic": not _enabled, "blocking": _blocking, "prefetchStarted": _prefetch_started, "prefetchFamilies": _prefetch_families.duplicate(), "manifestError": _fatal_error, "readyFamilies": ready_families, "requiredIds": required, "requiredBytes": total, "loadedBytes": loaded, "packs": packs, "cancelVisible":cancel_visible,"cancelRect":{"x":cancel_rect.position.x,"y":cancel_rect.position.y,"width":cancel_rect.size.x,"height":cancel_rect.size.y},"retryVisible": retry_visible, "retryRect": {"x": retry_rect.position.x, "y": retry_rect.position.y, "width": retry_rect.size.x, "height": retry_rect.size.y}}.duplicate(true)
 
 func _waiting_ids() -> Array:
 	var result: Array = []
@@ -282,6 +311,8 @@ func _build_overlay() -> void:
 	_detail = Label.new(); _detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART; _detail.add_theme_font_size_override("font_size", 15); _detail.add_theme_color_override("font_color", Color("52645b")); column.add_child(_detail)
 	_progress = ProgressBar.new(); _progress.show_percentage = false; _progress.custom_minimum_size.y = 8; column.add_child(_progress)
 	_retry = Button.new(); _retry.text = "重试"; _retry.custom_minimum_size.y = 48; Ui.apply_button(_retry); _retry.pressed.connect(_retry_required); column.add_child(_retry)
+	_cancel_optional_button=Button.new();_cancel_optional_button.text="返回入口";_cancel_optional_button.custom_minimum_size.y=48
+	Ui.apply_button(_cancel_optional_button);_cancel_optional_button.pressed.connect(cancel_optional_flc);column.add_child(_cancel_optional_button);_cancel_optional_button.hide()
 	_cover.resized.connect(_layout_overlay); _layout_overlay()
 
 func _layout_overlay() -> void:
@@ -293,6 +324,11 @@ func _show_fatal() -> void:
 	_retry.text = "重新加载"; _retry.show(); _retry.grab_focus.call_deferred()
 
 func _update_overlay() -> void:
+	if is_instance_valid(_cancel_optional_button):_cancel_optional_button.visible=not _optional_waiters.is_empty()
+	if not _optional_error.is_empty() and not _optional_waiters.is_empty():
+		_build_overlay();_overlay.show();_set_blocking(true)
+		_detail.text=_optional_error;_progress.hide();_retry.text="重新加载";_retry.show();_cancel_optional_button.show()
+		return
 	if not _fatal_error.is_empty():
 		_show_fatal()
 		return
@@ -305,6 +341,7 @@ func _update_overlay() -> void:
 		_set_blocking(false)
 		return
 	_build_overlay(); _overlay.show(); _set_blocking(true)
+	_cancel_optional_button.visible=not _optional_waiters.is_empty()
 	_progress.show(); _retry.text = "重试"
 	var total := 0
 	var loaded := 0
@@ -318,7 +355,7 @@ func _update_overlay() -> void:
 	_retry.visible = failed
 
 func _retry_required() -> void:
-	if not _fatal_error.is_empty():
+	if not _fatal_error.is_empty() or not _optional_error.is_empty():
 		_reload_browser()
 		return
 	var ids: Array = []

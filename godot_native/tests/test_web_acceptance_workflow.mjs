@@ -34,10 +34,10 @@ const worldCode = receiptCode('Accept actual world input for this profile');
 const phoneCode = receiptCode('Accept actual early charging and two-stage Tiyi phone input', phoneJob);
 const phoneContract = readFileSync(new URL('../tools/web_phone_shards.mjs', import.meta.url), 'utf8');
 const fixtureHelper = readFileSync(new URL('../tools/prepare_web_controller_fixtures.mjs', import.meta.url), 'utf8');
-const consumerNames = ['browser_baseline', 'browser_streaming', 'browser_profiles', 'phone_profiles', 'library_profiles'];
+const consumerNames = ['browser_baseline', 'browser_streaming', 'browser_profiles', 'phone_profiles', 'library_profiles', 'browser_flc'];
 const gateNames = ['build', 'browser_contracts', ...consumerNames, 'browser_coverage'];
 
-await test('one immutable producer fans out to nine bounded jobs and thirteen logical consumers', () => {
+await test('one immutable producer fans out to eleven bounded jobs including optional FLC', () => {
   assert.deepEqual(Object.keys(jobs), [...gateNames, 'deploy']);
   assert.doesNotMatch(build, /^    needs:/m);
   for (const name of consumerNames) {
@@ -69,7 +69,11 @@ await test('one immutable producer fans out to nine bounded jobs and thirteen lo
   assert.match(profilesJob, /max-parallel: 3/);
   assert.match(phoneJob, /max-parallel: 1/);
   assert.match(libraryJob, /max-parallel: 2/);
-  assert.equal(2 + 1 + 3 + 1 + 2, 9, 'bounded physical job count');
+  assert.equal(2 + 1 + 3 + 1 + 2 + 2, 11, 'bounded physical job count including parallel FLC');
+  assert.match(jobs.browser_flc, /max-parallel: 2/);
+  assert.match(jobs.browser_flc, /profile: \[desktop-1280, touch-390\]/);
+  assert.match(jobs.browser_flc, /--scenarios flc-activity/);
+  assert.match(jobs.browser_flc, /flcActivity\?\.completed/);
   assert.deepEqual(phoneRows(), [['retina-touch-390','c2-tiyi']]);
   assert.deepEqual(pairedRows(profilesJob), [['desktop-1280','desktop-1280','all'],['touch-390','retina-touch-390','charging'],['retina-touch-390','','']]);
   assert.deepEqual(pairedRows(libraryJob), [['desktop-1280','',''],['touch-390','retina-touch-390','c1-tiyi']]);
@@ -707,4 +711,16 @@ await test('actual aggregate validator fails closed on incomplete coverage, alte
       ['baseline missing case receipt',d=>d[baseline]['web_ci/ci-baseline-receipt.json'].cases.pop()],['streaming missing gate receipt',d=>d[streaming]['web_streaming/ci-streaming-receipt.json'].verified.pop()]
     ]){const result=execute(mutate);assert.notEqual(result.status,0,`${reason} unexpectedly accepted`);}
   }finally{rmSync(root,{recursive:true,force:true});}
+});
+
+await test('FLC focused CI uses ordinary object input and independent persisted reload evidence', () => {
+  const source=readFileSync(new URL('../tools/verify_web_export.mjs',import.meta.url),'utf8');
+  const body=source.split('async function flcActivityCase() {')[1].split('async function freshCase')[0];
+  for(const required of ["await acceptPortraitFallback();", "clickControl('OpenFutureLearningCenter','name')", "activity.apparatusPoint", "activity.puzzleRect", "pointer('start',from)", "pointer('end',to)", "clickControl('ReturnFLC','name')", "receipt.acknowledgedDigest===receipt.digest", "primary?.sha256===exited.saveDigest", "fields?.tilt===1", "activity.formulaTilt===30", "Page.reload", "performance.timeOrigin", "readPersistentSaveEntries()"] ) assert.ok(body.includes(required),required);
+  assert.doesNotMatch(body,/importSave\(|localStorage\.setItem|Runtime\.callFunctionOn|State\.d|\.set_state\(/);
+  assert.match(jobs.browser_flc,/--chrome-arg --use-angle=swiftshader/);
+  assert.match(jobs.browser_flc,/--chrome-arg --enable-unsafe-swiftshader/);
+  assert.match(jobs.browser_flc,/sourceCommit!==process\.env\.GITHUB_SHA/);
+  assert.match(coverageJob,/library_profiles, browser_flc\]/);
+  assert.match(deploy,/needs\.browser_flc\.result == 'success'/);
 });

@@ -322,23 +322,27 @@ for (const [file, acceptance, budget] of WORKFLOWS) test(`${file}: helper fixtur
     assert(text.includes("'scripts/test-ci-media-tools.mjs'"));
   }
 });
-test('Godot Web baseline, streaming, profile and library commands retain bounded read-only consumers', () => {
+test('Godot Web baseline, streaming, profile, library and FLC commands retain bounded read-only consumers', () => {
   const text = readFileSync(new URL('../.github/workflows/deploy-pages.yml', import.meta.url), 'utf8');
   const build = text.split('  build:\n')[1].split('  browser_profiles:\n')[0];
   const profiles = text.split('  browser_profiles:\n')[1].split('  library_profiles:\n')[0];
-  const library = text.split('  library_profiles:\n')[1].split('  deploy:\n')[0];
+  const library = text.split('  library_profiles:\n')[1].split('  browser_flc:\n')[0];
+  const flc = text.split('  browser_flc:\n')[1].split('  browser_coverage:\n')[0];
   const commandCount = value => (value.match(/node godot_native\/tools\/verify_web_export\.mjs/g) ?? []).length;
-  assert.equal(commandCount(text), 8);
+  assert.equal(commandCount(text), 9, 'eight existing invocations plus one independent FLC acceptance invocation');
+  assert.equal(commandCount(flc), 1);
+  assert.match(flc, /--scenarios flc-activity/);
+  assert.match(flc, /profile: \[desktop-1280, touch-390\]/);
   assert.equal(commandCount(build), 3, 'original baseline, streaming and combined touch-phone gates remain');
   assert.equal(commandCount(profiles), 3, 'original world, combined phone and separate retina phone gates remain');
   assert.equal(commandCount(library), 2, 'both library profiles plus paired retina C1 retain separate invocations');
   assert(build.includes('--scenarios streaming'));
   for (const scenario of ['--scenarios mobile-world', '--scenarios phone-recovery']) assert(profiles.includes(scenario));
   assert(library.includes('--scenarios library --only "$ACCEPTANCE_PROFILE"'));
-  for (const consumer of [profiles, library]) {
+  for (const consumer of [profiles, library, flc]) {
     assert.match(consumer, /needs: \[build, browser_contracts\]/);
     assert.match(consumer, /needs\.build\.outputs\.bundle_ready == 'true'/);
-    assert.match(consumer, /timeout-minutes: 12/);
+    assert.match(consumer, consumer === flc ? /timeout-minutes: 10/ : /timeout-minutes: 12/);
     assert.match(consumer, /permissions:\n      contents: read/);
     assert.match(consumer, /fail-fast: false/);
     assert.match(consumer, /node godot_native\/tools\/web_acceptance_bundle\.mjs verify/);

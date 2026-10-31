@@ -1,0 +1,16 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+   at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
+
+OBSERVED res://frames/401_projection.png { "pointer": (0.0, 0.0), "mouse_down": false, "drag": -1, "depths": [0, 0], "heights": [0, 0], "completed": false, "running": false }
+OBSERVED res://frames/402_projection.png { "pointer": (840.0, 77.0), "mouse_down": false, "drag": -1, "depths": [0, 0], "heights": [0, 0], "completed": false, "running": false }
+OBSERVED res://frames/403_projection.png { "pointer": (482.0, 275.0), "mouse_down": false, "drag": -1, "depths": [0, 0], "heights": [0, 0], "completed": false, "running": false }
+OBSERVED res://frames/404_projection.png { "pointer": (267.0, 394.0), "mouse_down": false, "drag": -1, "depths": [0, 0], "heights": [0, 0], "completed": false, "running": false }
+OBSERVED res://frames/405_projection.png { "pointer": (224.0, 434.0), "mouse_down": true, "drag": 1, "depths": [0, 0], "heights": [0, 0], "completed": false, "running": false }
+OBSERVED res://frames/406_projection.png { "pointer": (275.0, 434.0), "mouse_down": true, "drag": 1, "depths": [0, 0], "heights": [0, 0], "completed": false, "running": false }
+OBSERVED res://frames/407_projection.png { "pointer": (325.0, 434.0), "mouse_down": true, "drag": 1, "depths": [0, 0], "heights": [0, 0], "completed": false, "running": false }
+OBSERVED res://frames/408_projection.png { "pointer": (325.0, 434.0), "mouse_down": false, "drag": -1, "depths": [0, 2], "heights": [0, 0], "completed": false, "running": false }
+OBSERVED res://frames/409_projection.png { "pointer": (384.0, 394.0), "mouse_down": false, "drag": -1, "depths": [0, 2], "heights": [0, 0], "completed": false, "running": false }
+OBSERVED res://frames/410_projection.png { "pointer": (619.0, 236.0), "mouse_down": false, "drag": -1, "depths": [0, 2], "heights": [0, 0], "completed": false, "running": false }
+OBSERVED res://frames/411_projection.png { "pointer": (795.0, 116.0), "mouse_down": false, "drag": -1, "depths": [0, 2], "heights": [0, 0], "completed": false, "running": false }

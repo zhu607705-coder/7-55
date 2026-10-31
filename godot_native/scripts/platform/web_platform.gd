@@ -190,7 +190,9 @@ func _on_browser_touch_cancel(args: Array) -> void:
 		if not (id is int or id is float) or id<0 or id>2147483647 or id!=floorf(id):continue
 		var event:=InputEventScreenTouch.new()
 		event.index=int(id);event.pressed=false;event.canceled=true
-		Input.parse_input_event(event)
+		if is_instance_valid(shell) and is_instance_valid(shell.active_game) and shell.active_game.has_method("cancel_browser_touch"):
+			shell.active_game.cancel_browser_touch(event)
+		else:Input.parse_input_event(event)
 
 func _current_save_digest() -> String:
 	return FileAccess.get_sha256(state.SAVE_PATH) if state != null and FileAccess.file_exists(state.SAVE_PATH) else ""
@@ -445,6 +447,8 @@ func _properties(object: Object, names: Array) -> Dictionary:
 	return result
 
 func _control_rect(control: Control) -> Rect2:
+	if is_instance_valid(shell.active_game) and shell.active_game.has_method("activity_control_rect"):
+		return shell.active_game.activity_control_rect(control)
 	var rect := control.get_global_rect()
 	if control.get_viewport() == shell.world_viewport:
 		var surface: Rect2 = shell.world_view.get_global_rect()
@@ -506,6 +510,7 @@ func read_snapshot() -> Dictionary:
 		game = _properties(active, ["phase", "elapsed", "blocks", "misses", "hold_ms", "paused", "dragging", "done", "dialogue_index", "display_scale", "field", "mode", "running", "chase_presentation_error"])
 		game["script"] = active.get_script().resource_path
 		game["rect"] = _rect(active.get_global_rect())
+		if active.has_method("activity_snapshot"):game["activity"]=active.activity_snapshot()
 		if active.get_script().resource_path == "res://scripts/games/theater_shadow_rehearsal.gd":
 			game["rehearsal"] = active.geometry_snapshot()
 		if game.has("field"):
@@ -544,9 +549,9 @@ func read_snapshot() -> Dictionary:
 	world["worldEffect"]=effect
 	var save := FileAccess.get_file_as_string(state.SAVE_PATH) if FileAccess.file_exists(state.SAVE_PATH) else ""
 	var content: Dictionary = shell.get_node("/root/WebContent").read_snapshot()
-	var landscape_preferred: bool=shell.world_frame.is_visible_in_tree() or (is_instance_valid(shell.active_game) and shell.game_viewport.x>shell.game_viewport.y)
+	var landscape_preferred: bool=(is_instance_valid(shell.world_frame) and shell.world_frame.is_visible_in_tree()) or (is_instance_valid(shell.active_game) and shell.game_viewport.x>shell.game_viewport.y)
 	if content.get("retryVisible", false): controls.append({"name": "RetryRequiredContent", "text": "重试", "type": "Button", "rect": content.retryRect, "disabled": false})
-	return {"sampleFrame": Engine.get_process_frames(), "engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "content": content, "savePersistence": read_save_persistence(), "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "world": world, "presentation":{"landscapePreferred":landscape_preferred}, "phoneRect": _rect(shell.phone.get_global_rect()), "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
+	return {"sampleFrame": Engine.get_process_frames(), "engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "content": content, "savePersistence": read_save_persistence(), "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "activity":game.get("activity",{}), "world": world, "presentation":{"landscapePreferred":landscape_preferred}, "phoneRect": _rect(shell.phone.get_global_rect()) if is_instance_valid(shell.phone) else {}, "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
 
 func _exit_tree() -> void:
 	if _browser != null: _browser.dispose()

@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { isFlcRuntimePath } from './web_story_content_policy.mjs';
 import { CONTENT_PACK_TARGET, CONTENT_PACK_LIMIT } from './web_content_chunks.mjs';
 
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -50,6 +51,7 @@ const links = [];
 const unresolved = [];
 function assign(name, group, reason) { ownership.set(name, { group, reason }); }
 function classify(name) {
+  if (isFlcRuntimePath(name)) return 'flc_activity';
   if (name.startsWith('campuses/buct_shared/')) return 'campus_shared';
   if (name.startsWith('campuses/buct_changping/')) return 'campus_changping';
   if (name.startsWith('campuses/buct_haidian/')) return 'campus_haidian';
@@ -267,7 +269,13 @@ for (const entry of entries) if (!ownership.has(entry.path)) {
   assign(entry.path, 'core', 'unresolved retained in core');
   unresolved.push({ path: entry.path, bytes: entry.bytes, reason: 'unclassified export entry retained in core' });
 }
-const groupOrder = ['core', 'chapter2', 'chapter3', 'chapter35', 'chapter4', 'campus_shared', 'campus_chaoyang', 'campus_haidian', 'campus_changping'];
+// Optional activity admission must stay genuinely lazy. A newly introduced
+// preload from core is a packaging regression, not permission to bloat boot.
+for (const [name, owner] of ownership) {
+  if (isFlcRuntimePath(name.replace(/\.(?:import|remap)$/, '')) && owner.group !== 'flc_activity')
+    throw new Error(`FLC activity resource promoted outside its admission gate: ${name} (${owner.reason})`);
+}
+const groupOrder = ['core', 'chapter2', 'chapter3', 'chapter35', 'chapter4', 'flc_activity', 'campus_shared', 'campus_chaoyang', 'campus_haidian', 'campus_changping'];
 const summaries = groupOrder.map(id => {
   const files = entries.filter(entry => ownership.get(entry.path).group === id).sort((a, b) => a.path.localeCompare(b.path, 'en'));
   return { id, count: files.length, payloadBytes: files.reduce((sum, entry) => sum + entry.bytes, 0), paths: files.map(entry => entry.path) };

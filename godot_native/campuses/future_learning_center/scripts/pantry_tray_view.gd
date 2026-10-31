@@ -168,7 +168,7 @@ func _book_lines() -> Array[String]:
 func _draw() -> void:
 	draw_table("茶水休息区 · 备水与平衡")
 	ink("沙发茶几",Vector2(42,235),18)
-	ink("备茶记录",Vector2(849,151),16)
+	if not book_open:ApparatusStyle.grip(self,Vector2(884,103),"book")
 	ink("细流阀",Vector2(821,224),17)
 	ink("4 ml/s",Vector2(826,248),16)
 	if not model.draining: ink("倒回水槽",Vector2(824,480),16)
@@ -180,8 +180,8 @@ func _draw() -> void:
 		if model.dock_slot == i: at = DOCK+Vector2(-38,61)
 		draw_rect(Rect2(at-Vector2(4,18),Vector2(86,23)),Color("253e46"))
 		ink("%s %d ml" % [char(65+cup),roundi(model.water[cup])],at,17,Color("f5f1e4"))
-	if model.phase == "table": ink("提手",handle_at()+Vector2(-64,7),18,Color("f5f1e4"))
-	if model.earned and model.editable(): ink("提手定位",support_at()+Vector2(-36,52),17,Color("f5f1e4"))
+	if model.phase == "table": ApparatusStyle.grip(self,handle_at(),"vertical",gesture=="handle")
+	if model.earned and model.editable(): ApparatusStyle.grip(self,support_at(),"horizontal",gesture=="support")
 	draw_cues()
 	if feedback_seconds > 0:
 		draw_rect(Rect2(16,486,928,46),Color("253e46"))

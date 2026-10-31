@@ -16,23 +16,26 @@ func cancel() -> void:
 func _notification(what: int) -> void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]: cancel()
 
+func _local(at:Vector2)->Vector2:return get_global_transform_with_canvas().affine_inverse()*at
 func _input(event: InputEvent) -> void:
 	if not is_visible_in_tree(): return
+	if event is InputEventMouse and event.device==InputEvent.DEVICE_ID_EMULATION:return
 	var handled:=false
 	if event is InputEventScreenTouch:
-		var at: Vector2=event.position-global_position
-		if event.pressed and pointer_owner==-2 and at.distance_to(CENTER)<RADIUS+12:
+		var at: Vector2=_local(event.position)
+		if event.canceled and event.index==pointer_owner:cancel();handled=true
+		elif event.pressed and not event.canceled and pointer_owner==-2 and at.distance_to(CENTER)<RADIUS+12:
 			pointer_owner=event.index; _move(at); handled=true
 		elif not event.pressed and pointer_owner==event.index: cancel(); handled=true
 	elif event is InputEventScreenDrag and event.index==pointer_owner:
-		_move(event.position-global_position); handled=true
+		_move(_local(event.position)); handled=true
 	elif event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
-		var at: Vector2=event.position-global_position
+		var at: Vector2=_local(event.position)
 		if event.pressed and pointer_owner==-2 and at.distance_to(CENTER)<RADIUS+12:
 			pointer_owner=-1; _move(at); handled=true
 		elif not event.pressed and pointer_owner==-1: cancel(); handled=true
 	elif event is InputEventMouseMotion and pointer_owner==-1:
-		_move(event.position-global_position); handled=true
+		_move(_local(event.position)); handled=true
 	if handled: get_viewport().set_input_as_handled()
 
 func _move(at: Vector2) -> void:

@@ -18,6 +18,41 @@ var motion_lab:Control
 var motion_pending:=""
 var signal_sync:Control
 var signal_sync_pending:=false
+const PuzzleAnchors = {
+ "koala": ["koala", "koala_desk_94", 2],
+ "machinery": ["machinery", "machinery_workbench_77", 2],
+ "seminar_2f": ["solid_projection", "seminar_discussion_table_49", 2],
+ "platform": ["platform", "platform_discussion_table_38", 2],
+ "robotics": ["robotics", "robotics_workbench_31", 2],
+ "team": ["signal_sync", "team_desk_18", 2],
+ "formula": ["formula", "formula_workbench_1", 2],
+ "studio_2": ["coupled", "studio_2_desk_58", 3],
+ "studio_4": ["access", "studio_4_desk_174", 3],
+ "studio_3": ["sync", "studio_3_desk_116", 3],
+ "studio_1": ["perspective", "studio_1_desk_0", 3],
+ "recording": ["recording", "recording_desk_234", 3],
+ "pantry": ["balance", "pantry_desk_262", 3],
+ "seminar": ["schedule", "seminar_discussion_table_238", 3],
+ "xlab_box": ["projection", "xlab_box_projection_table", 3],
+ "xlab_south": ["fold", "xlab_south_desk_322", 3],
+ "xlab_north": ["logic", "xlab_north_desk_266", 3],
+ "flex_c": ["flex", "flex_c_desk_138", 4],
+ "collab_b": ["collab", "collab_b_desk_85", 4],
+ "focus_a": ["focus", "focus_a_desk_16", 4],
+ "storage": ["storage", "storage_cabinet_12", 4],
+ "seminar_3": ["assembly", "seminar_3_discussion_table_7", 4],
+ "seminar_2": ["rail", "seminar_2_discussion_table_2", 4],
+ "seminar_1": ["rules", "seminar_1_whiteboard_0", 4],
+}
+var puzzle_views:Dictionary={}
+var puzzle_layer:CanvasLayer
+var active_puzzle:Control
+var puzzle_pending:=""
+var persistence_enabled:=false
+var _restoring:=true
+var _suspending:=false
+var _checkpoint_elapsed:=0.0
+var _completion_stamp:=""
 var stairs:Control
 var stair_destination:Dictionary={}
 var workbench:Control
@@ -63,18 +98,22 @@ func _ready()->void:
 	add_child(camera);camera.enabled=true;camera.position_smoothing_enabled=false
 	_build_ui()
 	var bench_layer:=CanvasLayer.new();bench_layer.layer=5;add_child(bench_layer)
+	puzzle_layer=bench_layer
 	workbench=Workbench.new();workbench.size=Vector2(960,540);bench_layer.add_child(workbench)
-	workbench.closed.connect(func()->void:ui.show();route.clear();workbench_pending=false)
+	workbench.closed.connect(func()->void:ui.show();route.clear();workbench_pending=false;_commit_room("2:electrical",workbench.model))
 	signal_sync=SignalSync.new();signal_sync.size=Vector2(960,540);bench_layer.add_child(signal_sync)
-	signal_sync.closed.connect(func()->void:ui.show();route.clear();signal_sync_pending=false)
+	signal_sync.closed.connect(func()->void:ui.show();route.clear();signal_sync_pending=false;_commit_room("2:signal_bench",signal_sync.model))
 	motion_lab=MotionLab.new();motion_lab.size=Vector2(960,540);bench_layer.add_child(motion_lab)
-	motion_lab.closed.connect(func()->void:ui.show();route.clear();motion_pending="")
+	motion_lab.closed.connect(func()->void:ui.show();route.clear();motion_pending="";_commit_room("2:solar_bench",motion_lab.solar);_commit_room("2:robot_delivery",motion_lab.robot))
 	pantry_tray=PantryTray.new();pantry_tray.size=Vector2(960,540);bench_layer.add_child(pantry_tray)
-	pantry_tray.closed.connect(func()->void:ui.show();route.clear();pantry_pending=false)
+	pantry_tray.closed.connect(func()->void:ui.show();route.clear();pantry_pending=false;_commit_room("3:pantry_water",pantry_tray.model))
 	stairs=Stairs.new();stairs.size=Vector2(960,540);bench_layer.add_child(stairs)
 	stairs.cancelled.connect(func()->void:stair_destination.clear();ui.show();route.clear())
 	stairs.finished.connect(_finish_stairs)
 	load_floor(3);set_hour(12)
+	_restore_activity()
+	_restoring=false
+	_completion_stamp=_completion_signature()
 	queue_redraw()
 
 func load_floor(floor_number:int,arrival:Vector2=Vector2.INF)->bool:
@@ -84,6 +123,9 @@ func load_floor(floor_number:int,arrival:Vector2=Vector2.INF)->bool:
 	var next_space=FloorSpace.new();next_space.configure(next)
 	var foot:=Vector2(next.spawn[0],next.spawn[1]) if not arrival.is_finite() else arrival
 	if not next_space.can_stand(foot-Body.FOOT_CENTER_OFFSET):return false
+	if is_instance_valid(active_puzzle):active_puzzle.close()
+	puzzle_pending=""
+	if is_instance_valid(joystick):joystick.cancel()
 	if is_instance_valid(workbench) and workbench.visible:workbench.close()
 	if is_instance_valid(signal_sync) and signal_sync.visible:signal_sync.close()
 	if is_instance_valid(motion_lab) and motion_lab.visible:motion_lab.close()
@@ -102,6 +144,7 @@ func load_floor(floor_number:int,arrival:Vector2=Vector2.INF)->bool:
 	framing.update(0,player,space,true);_apply_camera()
 	if is_instance_valid(title_label):title_label.text="未来学习中心  /  %dF"%floor_number
 	if is_instance_valid(transit_panel):transit_panel.hide()
+	if not _restoring:checkpoint_state()
 	queue_redraw();return true
 
 func set_hour(hour:float)->void:
@@ -143,6 +186,12 @@ func _texture(path:String)->Texture2D:
 func _process(dt:float)->void:
 	elapsed+=dt
 	if capture_only:return
+	_checkpoint_elapsed+=dt
+	if persistence_enabled and _checkpoint_elapsed>=3:
+		_checkpoint_elapsed=0
+		var stamp:=_completion_signature()
+		if stamp!=_completion_stamp and checkpoint_state():_completion_stamp=stamp
+	if is_instance_valid(active_puzzle) and active_puzzle.visible:return
 	if is_instance_valid(workbench) and workbench.visible:return
 	if is_instance_valid(signal_sync) and signal_sync.visible:return
 	if is_instance_valid(motion_lab) and motion_lab.visible:return
@@ -151,7 +200,7 @@ func _process(dt:float)->void:
 	var direction:=Vector2.ZERO
 	if user_control and not overview:
 		direction=Vector2(int(Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT))-int(Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)),int(Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN))-int(Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP)))+touch_vector
-		if direction.length_squared()>0:route.clear();direction=direction.limit_length()
+		if direction.length_squared()>0:route.clear();puzzle_pending="";direction=direction.limit_length()
 		elif not route.is_empty():
 			# Follow the validated corner all the way before taking the next leg.
 			# Skipping it four pixels early can cut into a chair's foot collider.
@@ -168,6 +217,8 @@ func _process(dt:float)->void:
 	elif motion.length()>0:route.clear()
 	if not space.can_stand(player):invalid_frames+=1
 	framing.update(dt,player,space,false,overview);_apply_camera()
+	if not puzzle_pending.is_empty() and route.is_empty():
+		var pending:=puzzle_pending;puzzle_pending="";open_puzzle(pending)
 	if workbench_pending and route.is_empty():
 		workbench_pending=false;open_workbench()
 	if signal_sync_pending and route.is_empty():
@@ -183,6 +234,7 @@ func _process(dt:float)->void:
 		if not landing.is_empty():transit_button.text=str(landing.name)
 		elif is_instance_valid(transit_panel):transit_panel.hide()
 		place_label.text=("%dF 全层总览"%int(data.floor)) if overview else str(room.get("name","环廊"))+object_hint
+		if can_open_workbench() and not overview:place_label.text+="  ·  操作台"
 	queue_redraw()
 
 func _apply_camera()->void:
@@ -195,6 +247,7 @@ func set_foot(point:Vector2,snap:=true)->bool:
 
 func _unhandled_input(event:InputEvent)->void:
 	if not user_control:return
+	if is_instance_valid(active_puzzle) and active_puzzle.visible:return
 	if is_instance_valid(stairs) and stairs.visible:return
 	if is_instance_valid(workbench) and workbench.visible:return
 	if is_instance_valid(signal_sync) and signal_sync.visible:return
@@ -206,7 +259,11 @@ func _unhandled_input(event:InputEvent)->void:
 		elif event.keycode==KEY_L:_cycle_time()
 		elif event.keycode==KEY_E:open_transit()
 		elif event.keycode==KEY_SPACE:
-			if not open_pantry() and not open_workbench() and not open_signal_sync() and not open_motion_lab("solar") and not open_motion_lab("robotics"):inspect_nearby()
+			if not open_pantry() and not open_workbench() and not open_signal_sync() and not open_motion_lab("solar") and not open_motion_lab("robotics"):
+				var opened:=false
+				for key:String in PuzzleAnchors:
+					if open_puzzle(key):opened=true;break
+				if not opened:inspect_nearby()
 	elif event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT:
 		point_action(screen_to_world(event.position));get_viewport().set_input_as_handled()
 	elif event is InputEventScreenTouch and event.pressed:
@@ -218,6 +275,7 @@ func screen_to_world(screen:Vector2)->Vector2:return framing.center+(screen-Room
 func world_to_screen(point:Vector2)->Vector2:return (point-framing.center)*framing.zoom+RoomCamera.VIEW/2
 func request_walk(foot:Vector2)->void:
 	if overview:return
+	puzzle_pending=""
 	workbench_pending=false
 	signal_sync_pending=false
 	motion_pending=""
@@ -241,6 +299,7 @@ func can_open_pantry()->bool:
 	var foot:=player+Body.FOOT_CENTER_OFFSET;var box:Rect2=Space.rect(item.footprint)
 	return foot.distance_to(foot.clamp(box.position,box.end))<=105
 func open_pantry()->bool:
+	if _has_open_station():return false
 	if not can_open_pantry():return false
 	if is_instance_valid(joystick):joystick.cancel()
 	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
@@ -264,6 +323,7 @@ func can_open_motion_lab(mode:String)->bool:
 	var foot:=player+Body.FOOT_CENTER_OFFSET;var box:Rect2=Space.rect(item.footprint)
 	return foot.distance_to(foot.clamp(box.position,box.end))<=105
 func open_motion_lab(mode:String)->bool:
+	if _has_open_station():return false
 	if not can_open_motion_lab(mode):return false
 	if is_instance_valid(joystick):joystick.cancel()
 	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();motion_pending="";signal_sync_pending=false;workbench_pending=false
@@ -287,6 +347,7 @@ func can_open_signal_sync()->bool:
 	var foot:=player+Body.FOOT_CENTER_OFFSET;var box:Rect2=Space.rect(item.footprint)
 	return foot.distance_to(foot.clamp(box.position,box.end))<=105
 func open_signal_sync()->bool:
+	if _has_open_station():return false
 	if not can_open_signal_sync():return false
 	if is_instance_valid(joystick):joystick.cancel()
 	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();signal_sync_pending=false;workbench_pending=false
@@ -302,11 +363,14 @@ func can_open_workbench()->bool:
 	var foot:=player+Body.FOOT_CENTER_OFFSET;var box:Rect2=Space.rect(item.footprint)
 	return foot.distance_to(foot.clamp(box.position,box.end))<=105
 func open_workbench()->bool:
+	if _has_open_station():return false
 	if not can_open_workbench():return false
 	if is_instance_valid(joystick):joystick.cancel()
 	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();workbench_pending=false
+	if is_instance_valid(joystick):joystick.cancel()
 	workbench.open();ui.hide();return true
 func point_action(at:Vector2)->void:
+	if _has_open_station():return
 	var pantry:=pantry_desk()
 	if not pantry.is_empty() and Space.rect(pantry.bounds).has_point(at):
 		if open_pantry():return
@@ -326,6 +390,15 @@ func point_action(at:Vector2)->void:
 		var approach:=signal_sync_approach()
 		if approach.is_finite():request_walk(approach);signal_sync_pending=not route.is_empty()
 		return
+	if int(data.floor) in [2,3,4]:
+		for key:String in PuzzleAnchors:
+			var anchor:=puzzle_anchor(key)
+			if not anchor.is_empty() and Space.rect(anchor.bounds).has_point(at):
+				if open_puzzle(key):return
+				var approach:=puzzle_approach(key)
+				if approach.is_finite():
+					request_walk(approach);puzzle_pending=key
+				return
 	var item:=workshop_bench()
 	if not item.is_empty() and Space.rect(item.bounds).has_point(at):
 		if open_workbench():return
@@ -337,7 +410,7 @@ func toggle_overview()->void:
 	overview=not overview;route.clear();touch_vector=Vector2.ZERO
 
 func _notification(what:int)->void:
-	if what==NOTIFICATION_APPLICATION_FOCUS_OUT:route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
+	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_APPLICATION_PAUSED]:suspend_activity()
 
 func _build_ui()->void:
 	ui=CanvasLayer.new();add_child(ui)
@@ -447,6 +520,7 @@ func _draw()->void:
 					if item.id==MOTION_ANCHORS[mode]:motion_lab.draw_room_prop(self,mode,Space.rect(item.bounds))
 			if int(data.floor)==2 and item.id in ["team_monitor_front_9","team_monitor_front_13"]:
 				SignalSync.mini(self,Space.rect(item.bounds),int(signal_sync.model.displayed.left if item.id=="team_monitor_front_9" else signal_sync.model.displayed.right))
+			_draw_puzzle_prop(item)
 			if item.id==data.get("workshopReference",{}).get("bench",""):
 				var b:Rect2=Space.rect(item.bounds)
 				Workbench.mini(self,b.position+Vector2(40,6),1.1,workbench.model)
@@ -514,3 +588,177 @@ func _draw_covers()->void:
 		if not hit.has_area():continue
 		var slice:=Rect2((hit.position-origin)/float(item.scale),hit.size/float(item.scale))
 		draw_texture_rect_region(textures[item.path],hit,slice,Color(1,1,1,.78))
+
+# Object stations are optional activities; only the host State facade persists them.
+func puzzle_anchor(key:String)->Dictionary:
+	if not PuzzleAnchors.has(key) or int(data.get("floor",0))!=int(PuzzleAnchors[key][2]):return {}
+	for item:Dictionary in data.get("objects",[]):
+		if str(item.id)==str(PuzzleAnchors[key][1]):return item
+	return {}
+
+func puzzle_approach(key:String)->Vector2:
+	var item:=puzzle_anchor(key)
+	if item.is_empty():return Vector2.INF
+	var box:Rect2=Space.rect(item.footprint)
+	var best:=Vector2.INF
+	var distance:=INF
+	for offset:Vector2 in [Vector2(0,65),Vector2(-65,0),Vector2(65,0),Vector2(0,-65)]:
+		var point:=box.get_center()+offset+Vector2(signf(offset.x)*box.size.x/2,signf(offset.y)*box.size.y/2)
+		var target:=point-Body.FOOT_CENTER_OFFSET
+		if not space.can_stand(target):continue
+		var path:PackedVector2Array=space.route(player,target)
+		if path.is_empty() and player.distance_to(target)>1:continue
+		var length:=0.0;var previous:=player
+		for waypoint:Vector2 in path:length+=previous.distance_to(waypoint);previous=waypoint
+		if length<distance:distance=length;best=point
+	return best
+
+func open_puzzle(key:String)->bool:
+	if _has_open_station():return false
+	var item:=puzzle_anchor(key)
+	if item.is_empty() or overview:return false
+	var box:Rect2=Space.rect(item.footprint)
+	var foot:=player+Body.FOOT_CENTER_OFFSET
+	if foot.distance_to(foot.clamp(box.position,box.end))>105:return false
+	if not puzzle_views.has(key):
+		var script=load("res://campuses/future_learning_center/scripts/puzzles/%s_view.gd"%PuzzleAnchors[key][0])
+		if script==null:return false
+		var view:Control=script.new();view.size=Vector2(960,540);puzzle_layer.add_child(view)
+		view.closed.connect(func()->void:active_puzzle=null;ui.show();route.clear();puzzle_pending="";_commit_room(_room_id(key),view.model))
+		puzzle_views[key]=view
+		_restore_room(_room_id(key),view.model)
+	if is_instance_valid(active_puzzle):active_puzzle.close()
+	route.clear();puzzle_pending="";touch_vector=Vector2.ZERO
+	if is_instance_valid(joystick):joystick.cancel()
+	active_puzzle=puzzle_views[key];active_puzzle.open();ui.hide();return true
+
+func _draw_puzzle_prop(item:Dictionary)->void:
+	if not int(data.floor) in [2,3,4]:return
+	var key:=""
+	for candidate:String in PuzzleAnchors:
+		if int(data.floor)==int(PuzzleAnchors[candidate][2]) and item.id==PuzzleAnchors[candidate][1]:key=candidate;break
+	if key.is_empty():return
+	var box:Rect2=Space.rect(item.bounds)
+	var at:=Vector2(box.get_center().x,box.position.y+box.size.y*.24)
+	# Physical tabletop apparatus, not a floating menu icon.
+	var width:=minf(74,box.size.x*.7)
+	draw_rect(Rect2(at-Vector2(width/2,4),Vector2(width,24)),Color("545957"))
+	draw_rect(Rect2(at-Vector2(width/2,8),Vector2(width,24)),Color("d7d3c4"))
+	if key in ["formula","robotics"]:
+		draw_line(at+Vector2(-30,10),at+Vector2(30,10),Color("586360"),2)
+		draw_rect(Rect2(at+Vector2(-15,-4),Vector2(26,12)),Color("889b97"))
+		for x:int in [-10,6]:draw_circle(at+Vector2(x,9),4,Color("414947"))
+	elif key=="team":
+		for x:int in [-25,5]:
+			draw_rect(Rect2(at+Vector2(x,-14),Vector2(22,20)),Color("414b4e"))
+			draw_rect(Rect2(at+Vector2(x+3,-11),Vector2(16,13)),Color("a4b4ad"))
+	elif key=="platform":
+		draw_rect(Rect2(at+Vector2(-23,-15),Vector2(40,27)),Color("dedccf"))
+		draw_line(at+Vector2(-20,12),at+Vector2(-25,20),Color("5e6762"),2)
+		draw_line(at+Vector2(14,12),at+Vector2(20,20),Color("5e6762"),2)
+	elif key=="seminar_2f":
+		for i:int in 3:draw_rect(Rect2(at+Vector2(-22+i*14,-6-i%2*8),Vector2(13,17)),Color("9eaa96"))
+	elif key=="machinery":
+		draw_rect(Rect2(at+Vector2(-25,-5),Vector2(42,18)),Color("a79978"))
+		for x:int in [-27,17]:draw_rect(Rect2(at+Vector2(x,-8),Vector2(7,24)),Color("4f625d"))
+	elif key=="koala":
+		for i:int in 4:draw_rect(Rect2(at+Vector2(-27+i*15,-4),Vector2(12,18)),Color("c4c6b4"))
+	elif key=="xlab_box":
+		for x:int in [-18,10]:
+			draw_rect(Rect2(at+Vector2(x,-15),Vector2(8,25)),Color("77877d"))
+			draw_rect(Rect2(at+Vector2(x,-15),Vector2(19,5)),Color("adb4a2"))
+	elif key=="pantry":
+		draw_rect(Rect2(at+Vector2(-30,-3),Vector2(60,18)),Color("777662"))
+		for i:int in 4:draw_circle(at+Vector2(-22+i*15,4),4,Color("e0dccb"))
+	elif key=="seminar":
+		for i:int in 4:draw_rect(Rect2(at+Vector2(-25+i*14,-3),Vector2(10,15)),Color("849186"))
+	elif key=="recording":
+		draw_line(at+Vector2(-28,5),at+Vector2(28,5),Color("d5cfb1"),2)
+		draw_rect(Rect2(at+Vector2(-3,-15),Vector2(6,28)),Color("657574"))
+	elif key=="flex_c":
+		for i:int in 3:
+			var x:=at.x-25+i*24
+			draw_line(Vector2(x,at.y-4),Vector2(x+5,at.y+10),Color("444f51"),3)
+	elif key in ["collab_b","seminar_3"]:
+		draw_line(at+Vector2(-25,4),at+Vector2(25,4),Color("ded7a5"),2)
+		draw_rect(Rect2(at+Vector2(-8,-14),Vector2(5,26)),Color("4b5557"))
+	elif key=="seminar_2":
+		draw_line(at+Vector2(-30,8),at+Vector2(30,8),Color("4b5557"),3)
+		for x:int in [-18,18]:draw_rect(Rect2(at+Vector2(x,-2),Vector2(10,8)),Color("77745e"))
+	elif key=="storage":
+		draw_rect(Rect2(at+Vector2(-24,-8),Vector2(22,18)),Color("a49172"))
+		draw_rect(Rect2(at+Vector2(4,-5),Vector2(23,15)),Color("bcad90"))
+	else:
+		for i:int in 3:draw_circle(at+Vector2(-22+i*22,3),5,Color("687670"))
+
+
+# The formal host opts in.	Standalone reviews never write the player's save.
+func _save_state()->Node:
+	if not persistence_enabled or not is_inside_tree():return null
+	return get_node_or_null("/root/State")
+func _room_id(key:String)->String:
+	return "%d:%s"%[int(PuzzleAnchors[key][2]),"seminar" if key=="seminar_2f" else key]
+func _room_models()->Dictionary:
+	var models:Dictionary={}
+	if is_instance_valid(workbench):models["2:electrical"]=workbench.model
+	if is_instance_valid(signal_sync):models["2:signal_bench"]=signal_sync.model
+	if is_instance_valid(motion_lab):
+		models["2:solar_bench"]=motion_lab.solar;models["2:robot_delivery"]=motion_lab.robot
+	if is_instance_valid(pantry_tray):models["3:pantry_water"]=pantry_tray.model
+	for key:String in puzzle_views:
+		if is_instance_valid(puzzle_views[key]):models[_room_id(key)]=puzzle_views[key].model
+	return models
+func _restore_room(id:String,model:Object)->void:
+	var state:=_save_state()
+	if state!=null and state.has_method("restore_flc_room"):state.restore_flc_room(id,model)
+func _restore_activity()->void:
+	var state:=_save_state()
+	if state==null:return
+	for id:String in _room_models():_restore_room(id,_room_models()[id])
+	var location:Dictionary=state.flc_location() if state.has_method("flc_location") else {}
+	if location.is_empty():load_floor(2);return
+	var floor_number:=int(location.get("floor",2))
+	var at:Array=location.get("player",[])
+	# Persisted actor coordinates still have to fit the current source collision map.
+	if at.size()==2:
+		if not load_floor(floor_number,Vector2(float(at[0]),float(at[1]))+Body.FOOT_CENTER_OFFSET):load_floor(floor_number)
+	else:load_floor(floor_number)
+	set_hour(float(location.get("hour",12)))
+func _commit_room(id:String,model:Object)->void:
+	if _restoring or _suspending:return
+	var state:=_save_state()
+	if state!=null and state.has_method("commit_flc_room"):state.commit_flc_room(id,model)
+func checkpoint_state()->bool:
+	if _restoring:return false
+	var state:=_save_state()
+	if state==null or not state.has_method("commit_flc_snapshot") or data.is_empty():return false
+	return state.commit_flc_snapshot(_room_models(),{"floor":int(data.floor),"player":[player.x,player.y],"hour":lighting.hour})
+func _completion_signature()->String:
+	var rows:Array=[]
+	for id:String in _room_models():
+		var model:Object=_room_models()[id]
+		for prop:Dictionary in model.get_property_list():
+			if str(prop.name) in ["complete","completed","earned","transfer","extension_completed","advanced_earned"]:
+				rows.append([id,prop.name,model.get(prop.name)])
+	return str(rows)
+func suspend_activity()->void:
+	if _suspending:return
+	_suspending=true
+	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
+	puzzle_pending="";workbench_pending=false;signal_sync_pending=false;motion_pending="";pantry_pending=false
+	if is_instance_valid(joystick):joystick.cancel()
+	if is_instance_valid(active_puzzle):active_puzzle.close()
+	for view:Control in [workbench,signal_sync,motion_lab,pantry_tray]:
+		if is_instance_valid(view) and view.visible:view.close()
+	if is_instance_valid(stairs):stairs.model.cancel();stairs.hide()
+	stair_destination.clear()
+	if is_instance_valid(transit_panel):transit_panel.hide()
+	_suspending=false
+	checkpoint_state()
+func _exit_tree()->void:
+	if persistence_enabled:suspend_activity()
+
+func _has_open_station()->bool:
+	for view in [active_puzzle,workbench,signal_sync,motion_lab,pantry_tray,stairs]:
+		if is_instance_valid(view) and view.visible:return true
+	return false

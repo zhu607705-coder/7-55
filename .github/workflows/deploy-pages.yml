@@ -1001,10 +1001,93 @@ jobs:
             godot_native/exports/verification/web_phone_recovery/
           if-no-files-found: warn
 
+  browser_flc:
+    name: Godot Web FLC activity (${{ matrix.profile }})
+    if: ${{ !cancelled() && needs.build.outputs.bundle_ready == 'true' }}
+    needs: [build, browser_contracts]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        profile: [desktop-1280, touch-390]
+    env:
+      ACCEPTANCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      ACCEPTANCE_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      EXPECTED_RECEIPT_SHA: ${{ needs.build.outputs.receipt_sha }}
+      EXPECTED_PRODUCER_ATTEMPT: ${{ needs.build.outputs.producer_attempt }}
+      ACCEPTANCE_PROFILE: ${{ matrix.profile }}
+    steps:
+
+      - name: Check out exact producer source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          filter: blob:none
+          sparse-checkout: godot_native/tools
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.3
+
+      - name: Download this run's sealed producer inputs
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.bundle_name }}
+          path: ${{ runner.temp }}/godot-web-inputs
+
+      - name: Verify exact source and every input byte
+        run: |
+          node godot_native/tools/web_acceptance_bundle.mjs verify \
+            --bundle-dir "$RUNNER_TEMP/godot-web-inputs" \
+            --receipt-sha "$EXPECTED_RECEIPT_SHA" \
+            --producer-attempt "$EXPECTED_PRODUCER_ATTEMPT" \
+            --output-receipt godot_native/exports/verification/verified-flc-inputs.json
+
+      - name: Accept ordinary FLC entry object save and reload
+        timeout-minutes: 6
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p godot_native/exports/verification/web_flc
+          python3 -m http.server 5209 --bind 127.0.0.1 --directory "$RUNNER_TEMP/godot-web-inputs/web-release" > godot_native/exports/verification/web_flc/http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          curl --fail --silent --retry 5 --retry-connrefused --retry-delay 1 --output /dev/null http://127.0.0.1:5209/build-manifest.json
+          godot_web_chrome="$(command -v google-chrome || command -v chromium)"
+          node godot_native/tools/verify_web_export.mjs \
+            --url http://127.0.0.1:5209/ \
+            --export-dir "$RUNNER_TEMP/godot-web-inputs/web-release" \
+            --output godot_native/exports/verification/web_flc \
+            --only "$ACCEPTANCE_PROFILE" --scenarios flc-activity \
+            --chrome "$godot_web_chrome" \
+            --chrome-arg --use-angle=swiftshader \
+            --chrome-arg --enable-unsafe-swiftshader \
+            --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_flc/acceptance.log
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const report=JSON.parse(fs.readFileSync('godot_native/exports/verification/web_flc/web-acceptance.json','utf8'));
+          if(!report.passed || report.scenarios!=='flc-activity' || report.exportManifest?.sourceCommit!==process.env.GITHUB_SHA || report.cases.length!==1 || report.cases[0].id!==process.env.ACCEPTANCE_PROFILE || !report.cases[0].flcActivity?.completed) throw Error('Missing exact-source FLC ordinary-input and persisted reload evidence');
+          NODE
+
+      - name: Preserve FLC browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-web-flc-${{ matrix.profile }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            godot_native/exports/verification/verified-flc-inputs.json
+            godot_native/exports/verification/web_flc/
+          if-no-files-found: warn
+
   browser_coverage:
     name: Verify complete exact-source Web coverage
     if: ${{ !cancelled() }}
-    needs: [build, browser_contracts, browser_baseline, browser_streaming, browser_profiles, phone_profiles, library_profiles]
+    needs: [build, browser_contracts, browser_baseline, browser_streaming, browser_profiles, phone_profiles, library_profiles, browser_flc]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -1020,7 +1103,7 @@ jobs:
         run: |
           node --input-type=module <<'NODE'
           const needs = JSON.parse(process.env.ACCEPTANCE_JOB_RESULTS);
-          const expected = ['build', 'browser_contracts', 'browser_baseline', 'browser_streaming', 'browser_profiles', 'phone_profiles', 'library_profiles'];
+          const expected = ['build', 'browser_contracts', 'browser_baseline', 'browser_streaming', 'browser_profiles', 'phone_profiles', 'library_profiles', 'browser_flc'];
           if (JSON.stringify(Object.keys(needs).sort()) !== JSON.stringify(expected.sort()) || expected.some(name => needs[name].result !== 'success')) throw Error('Every Web producer and consumer job must succeed');
           NODE
       - name: Check out exact validator source only
@@ -1148,7 +1231,7 @@ jobs:
           if-no-files-found: warn
   deploy:
     name: Publish Godot Web game
-    if: ${{ needs.build.result == 'success' && needs.browser_contracts.result == 'success' && needs.browser_baseline.result == 'success' && needs.browser_streaming.result == 'success' && needs.browser_profiles.result == 'success' && needs.phone_profiles.result == 'success' && needs.library_profiles.result == 'success' && needs.browser_coverage.result == 'success' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/codex/godot-complete-20261019') }}
+    if: ${{ needs.build.result == 'success' && needs.browser_contracts.result == 'success' && needs.browser_baseline.result == 'success' && needs.browser_streaming.result == 'success' && needs.browser_profiles.result == 'success' && needs.phone_profiles.result == 'success' && needs.library_profiles.result == 'success' && needs.browser_flc.result == 'success' && needs.browser_coverage.result == 'success' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/codex/godot-complete-20261019') }}
     permissions:
       pages: write
       id-token: write
@@ -1156,7 +1239,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: [build, browser_contracts, browser_baseline, browser_streaming, browser_profiles, phone_profiles, library_profiles, browser_coverage]
+    needs: [build, browser_contracts, browser_baseline, browser_streaming, browser_profiles, phone_profiles, library_profiles, browser_flc, browser_coverage]
     steps:
       - name: Configure Pages
         uses: actions/configure-pages@v5

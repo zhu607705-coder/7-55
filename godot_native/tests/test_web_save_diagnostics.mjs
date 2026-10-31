@@ -191,7 +191,7 @@ check('frame metadata does not expand observation identity and exhaust the origi
 // Execute the current dispatch with inert scenario bodies. Adding a focused
 // scenario may extend the initializer/else chain without removing an original
 // acceptance path. Protect those paths by their actual calls and profile sets.
-const dispatchStart = draft.indexOf('    result = await freshCase(');
+const dispatchStart = draft.indexOf("    result = scenarios === 'flc-activity' ?");
 const dispatchEnd = draft.indexOf("    if (scenarios === 'mobile-world') check(active.mobileWorld", dispatchStart);
 assert(dispatchStart >= 0 && dispatchEnd > dispatchStart);
 const dispatch = draft.slice(dispatchStart, dispatchEnd);
@@ -205,7 +205,7 @@ const bootTimeout = vm.runInNewContext(bootTimeoutExpression, { option: name => 
 assert.equal(bootTimeout, 420000);
 const baselineProfiles = ['desktop-1280', 'desktop-1440', 'touch-390', 'retina-1440', 'retina-touch-390', 'desktop-1920'];
 const focusedProfiles = ['desktop-1280', 'touch-390', 'retina-touch-390'];
-for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'phone-recovery', 'corners', 'checkin', 'words', 'durability', 'durability-switch', 'resource-loading']) {
+for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'phone-recovery', 'corners', 'checkin', 'words', 'durability', 'durability-switch', 'resource-loading', 'flc-activity']) {
   const selected = vm.runInNewContext(selectedExpression, { only: 'all', scenarios });
   const expectedProfiles = scenarios === 'streaming' ? ['desktop-1280'] : ['mobile-world', 'phone-recovery'].includes(scenarios) ? focusedProfiles : baselineProfiles;
   check(`${scenarios}: original acceptance profile coverage remains exact`, () => assert.deepEqual(Array.from(selected, row => row[0]), expectedProfiles));
@@ -213,11 +213,12 @@ for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'p
     const calls = [], initialized = [], recoveryInputs = [];
     const context = { scenarios, id, touch, bootTimeout, fixtureDir: '/explicit-test-fixture', active: { screenshots: [] } };
     for (const name of ['snapshot', 'clickControl', 'clickPoint', 'renderPoint', 'poll', 'check', 'interval', 'screenshot', 'importSave', 'assertLayout', 'settings', 'saveProgressAndWait', 'startStory', 'press']) context[name] = () => {};
-    for (const name of ['mobileWorldCase', 'phoneRecoveryCase', 'phoneNavigationCase', 'portableSaveCase', 'cornerNavigationCase', 'checkinPresentationCase', 'libraryCase', 'resourceLoadingCase', 'c1Case', 'legacyCase', 'fixtureCases', 'bikeCase', 'mediaCase', 'durabilityCase', 'durabilitySwitchCase', 'streamingCase']) context[name] = async options => { calls.push(name); if (name === 'phoneRecoveryCase') recoveryInputs.push(options); return {}; };
+    for (const name of ['flcActivityCase', 'mobileWorldCase', 'phoneRecoveryCase', 'phoneNavigationCase', 'portableSaveCase', 'cornerNavigationCase', 'checkinPresentationCase', 'libraryCase', 'resourceLoadingCase', 'c1Case', 'legacyCase', 'fixtureCases', 'bikeCase', 'mediaCase', 'durabilityCase', 'durabilitySwitchCase', 'streamingCase']) context[name] = async options => { calls.push(name); if (name === 'phoneRecoveryCase') recoveryInputs.push(options); return {}; };
     context.freshCase = async focused => { initialized.push(focused); return {}; };
     await vm.runInNewContext(`(async () => { let result; ${dispatch} })()`, context);
     const expected = [];
-    if (scenarios === 'mobile-world') expected.push('mobileWorldCase');
+    if (scenarios === 'flc-activity') expected.push('flcActivityCase');
+    else if (scenarios === 'mobile-world') expected.push('mobileWorldCase');
     else if (scenarios === 'phone-recovery') expected.push('phoneRecoveryCase');
     else expected.push('portableSaveCase');
     if (scenarios === 'corners') expected.push('cornerNavigationCase');
@@ -233,7 +234,7 @@ for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'p
       if (scenarios === 'streaming') expected.push('streamingCase');
     } else if (touch && scenarios === 'all') expected.push('c1Case');
     check(`${scenarios}/${id}: original scenario bodies still execute exactly once`, () => {
-      assert.deepEqual(initialized, [['mobile-world', 'phone-recovery'].includes(scenarios)]);
+      assert.deepEqual(initialized, scenarios === 'flc-activity' ? [] : [['mobile-world', 'phone-recovery'].includes(scenarios)]);
       assert.deepEqual(calls, expected);
     });
     if (scenarios === 'phone-recovery') check(`${scenarios}/${id}: configured boot deadline reaches recovery`, () => { assert.equal(recoveryInputs.length, 1); assert.equal(recoveryInputs[0].bootTimeout, bootTimeout); });
@@ -611,5 +612,36 @@ check('performance helper has no script injection, storage write, handler or tim
   assert.equal((helper.match(/await request\('Performance\.enable'/g) || []).length, 1);
   assert.equal((helper.match(/await request\('Performance\.getMetrics'/g) || []).length, 2);
   assert(draft.includes('    caseRecord.savePerformance = active.savePerformance || [];'));
+});
+// Exercise the actual Entry bridge bootstrap before any simulated process tick.
+// The native ready-order assertion binds this JS fixture to synchronous publication;
+// neither this fixture nor its receipt constitutes a real browser/storage proof.
+const entrySource = readFileSync(new URL('../scripts/entry.gd', import.meta.url), 'utf8');
+const entryReady = entrySource.slice(entrySource.indexOf('func _ready()'), entrySource.indexOf('func entry_snapshot()'));
+const entryBootstrap = [...entryReady.matchAll(/JavaScriptBridge\.eval\("""([\s\S]*?)""",true\)/g)]
+  .map(match => match[1]).find(code => code.includes('__FLC_ENTRY_READONLY__'));
+assert(entryBootstrap, 'actual Entry bridge bootstrap exists');
+const entryWindow = {};
+vm.runInNewContext(entryBootstrap, { window: entryWindow });
+check('Entry bootstrap cannot advertise ready before receipt publication', () => {
+  assert.notEqual(entryWindow.__GODOT_755__.snapshot().entry, true);
+});
+check('Entry ready synchronously publishes the full native snapshot before dropping its private bridge', () => {
+  const acquire = entryReady.indexOf('_entry_bridge=JavaScriptBridge.get_interface("__FLC_ENTRY_READONLY__")');
+  const publish = entryReady.indexOf('_entry_bridge.publish(JSON.stringify(entry_snapshot()))', acquire);
+  const retire = entryReady.indexOf('JavaScriptBridge.eval("delete window.__FLC_ENTRY_READONLY__",true)', acquire);
+  assert(acquire >= 0 && publish > acquire && retire > publish);
+  assert(!/\bawait\b|call_deferred/.test(entryReady.slice(acquire, retire)));
+});
+check('first published Entry snapshot exposes exact receipt and returns detached readonly copies', () => {
+  const nativeSnapshot = { entry: true, engine: 'Godot', sampleFrame: 42, saveDigest: digest,
+    savePersistence: { pending: false, error: '', digest, acknowledgedDigest: digest }, visibleControls: [] };
+  entryWindow.__FLC_ENTRY_READONLY__.publish(JSON.stringify(nativeSnapshot));
+  const first = entryWindow.__GODOT_755__.snapshot();
+  assert.equal(first.entry, true);
+  assert.equal(first.savePersistence.digest, first.saveDigest);
+  assert.equal(first.savePersistence.acknowledgedDigest, first.saveDigest);
+  first.savePersistence.digest = 'caller mutation';
+  assert.equal(entryWindow.__GODOT_755__.snapshot().savePersistence.digest, digest);
 });
 console.log(`PASS ${checks.length} pure Node checks; no browser, real IDB, or runtime acceptance executed.`);

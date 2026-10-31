@@ -16,6 +16,7 @@ signal action_completed(action: String,previous: Dictionary,next: Dictionary,res
 const SAVE_PATH := "user://save.json"
 const BACKUP_PATH := "user://save.previous.json"
 const SOURCE_VERSION := 36
+const FLCRoomSave = preload("res://scripts/flc_room_save.gd")
 const SaveDomainGuard = preload("res://scripts/save_domain_guard.gd")
 const DeveloperTools = preload("res://scripts/developer_tools_policy.gd")
 var _domain_guard: RefCounted = SaveDomainGuard.new()
@@ -49,6 +50,50 @@ func initial() -> Dictionary:
 	var fresh: Dictionary = value if value is Dictionary else {}
 	fresh["native"] = {"chapter": 1, "page": "alarm", "scene": "", "mode": "light", "player": {}, "settings": {"music": true, "effects": true, "volume": 0.6, "text_scale": 1.0, "reduced_motion": false}, "log": [], "completed": [], "selected_item": ""}
 	return fresh
+
+func flc_room_checkpoint(room_id:String)->Dictionary:
+	return d.get("native",{}).get("flc_rooms",{}).get("rooms",{}).get(room_id,{}).duplicate(true)
+
+func restore_flc_room(room_id:String,model:Object)->bool:
+	var checkpoint:=flc_room_checkpoint(room_id)
+	return not checkpoint.is_empty() and FLCRoomSave.restore(room_id,model,checkpoint)
+
+func commit_flc_room(room_id:String,model:Object)->bool:
+	var checkpoint:=FLCRoomSave.capture(room_id,model)
+	if checkpoint.is_empty():return false
+	var value:Dictionary=d.native.get("flc_rooms",FLCRoomSave.empty()).duplicate(true)
+	value.rooms[room_id]=checkpoint
+	return _commit_flc_namespace(value)
+
+func commit_flc_snapshot(models:Dictionary,location:Dictionary)->bool:
+	if not FLCRoomSave.valid_location(location):return false
+	var value:Dictionary=d.native.get("flc_rooms",FLCRoomSave.empty()).duplicate(true)
+	for room_id:Variant in models:
+		if not room_id is String:return false
+		var checkpoint:=FLCRoomSave.capture(room_id,models[room_id])
+		if checkpoint.is_empty():return false
+		value.rooms[room_id]=checkpoint
+	value.location=location.duplicate(true)
+	return _commit_flc_namespace(value)
+
+func flc_location()->Dictionary:
+	return d.get("native",{}).get("flc_rooms",{}).get("location",{}).duplicate(true)
+
+func commit_flc_location(location:Dictionary)->bool:
+	if not FLCRoomSave.valid_location(location):return false
+	var value:Dictionary=d.native.get("flc_rooms",FLCRoomSave.empty()).duplicate(true)
+	value.location=location.duplicate(true)
+	return _commit_flc_namespace(value)
+
+func _commit_flc_namespace(value:Dictionary)->bool:
+	if developer_mode or not FLCRoomSave.valid(value):return false
+	var existed:bool=d.native.has("flc_rooms")
+	var before:Variant=d.native.get("flc_rooms")
+	d.native.flc_rooms=value
+	if save_game():return true
+	if existed:d.native.flc_rooms=before
+	else:d.native.erase("flc_rooms")
+	return false
 
 func asset(path: String) -> String:
 	if path.begins_with("res://"): return path
@@ -383,6 +428,7 @@ func validate_snapshot(value: Variant, allow_legacy_v35_fields: bool=false) -> b
 	if value.actOne.has("tiyiUpdateStage") and value.actOne.tiyiUpdateStage not in preload("res://scripts/chapters/tiyi_access.gd").STAGES: return false
 	if value.ui.has("homeDeskReturnScene") and value.ui.homeDeskReturnScene not in [null,"phone_home","bonsai"]: return false
 	if value.native.has("campus_network_account") and not preload("res://scripts/chapters/campus_network_account.gd").valid(value.native.campus_network_account):return false
+	if value.native.has("flc_rooms") and not FLCRoomSave.valid(value.native.flc_rooms):return false
 	# The studio checkpoint is optional for old saves; present checkpoints stay bounded.
 	if value.native.has("theater_chest") and not preload("res://scripts/games/theater_chest_mechanism.gd").valid(value): return false
 	if value.native.has("c4_clock_chain") and not preload("res://scripts/games/chapter4_clock_chain.gd").valid_state(value): return false

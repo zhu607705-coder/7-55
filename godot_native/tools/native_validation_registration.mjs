@@ -30,8 +30,27 @@ export function registerStage(spec) {
   dependencies:Object.freeze([...dependencies]),exclusive,resources:Object.freeze({slots:1}),...(spec.durationHintMs === undefined ? {} : {durationHintMs:spec.durationHintMs})});
 }
 
-// Add reviewed reader registrations here. No example stage is enabled by default.
-export const NATIVE_STAGE_REGISTRATIONS = Object.freeze([]);
+// Each FLC reader uses one existing scheduler slot; no nested CI worker pool.
+const flc='godot_native/campuses/future_learning_center';
+export const NATIVE_STAGE_REGISTRATIONS = Object.freeze([
+ ...['koala','machinery','solid_projection','platform','robotics','signal_sync','formula','flex','collab','focus','storage','assembly','rail','rules','projection','projection_placement','2f_placement','fold','logic','balance','schedule','recording','access','sync','perspective','coupled','puzzles_integration','floor'].map(name=>({
+  id:`flc_${name}`,execution:'godot',entry:`${flc}/tests/test_${name}.gd`,args:['--with-view'],
+  inputs:[`${flc}/tests/test_${name}.gd`,...(['floor','puzzles_integration','projection_placement','2f_placement'].includes(name)
+   ? [`${flc}/scripts/floor_view.gd`,`${flc}/scripts/floor_space.gd`,`${flc}/data/floor_2.json`,`${flc}/data/floor_3.json`,`${flc}/data/floor_4.json`]
+   : [`${flc}/scripts/puzzles/${name}_model.gd`,`${flc}/scripts/puzzles/${name}_view.gd`])],
+  outputs:[],dependencies:[],durationHintMs:['floor','puzzles_integration','projection_placement','2f_placement'].includes(name)?15000:1000,
+ })),
+ // Generated-object readers are explicit CI stages, not only local puzzle tests.
+ ...['schedule_generated_art','schedule_object_sprite','schedule_scene_states','optical_generated_art','optical_scene_states','optical_scaled_host','recording_generated_art','recording_scene_states','recording_scaled_host','cable_generated_art','cable_scene_states','cable_scaled_host','workbench_annotations'].map(name=>({
+  id:`flc_${name}`,execution:'godot',entry:`${flc}/tests/test_${name}.gd`,args:['--with-view'],
+  inputs:[`${flc}/tests/test_${name}.gd`,`${flc}/scripts`,`${flc}/assets/puzzles`,`${flc}/data`,
+   'godot_native/scripts/games/future_learning_center'],outputs:[],dependencies:[],durationHintMs:name.endsWith('_scaled_host')?15000:1000,
+ })),
+ {id:"flc_web_policy",execution:"node",entry:"godot_native/tools/test_flc_web_policy.mjs",
+  inputs:["godot_native/tools/test_flc_web_policy.mjs","godot_native/tools/web_story_content_policy.mjs","godot_native/tools/plan_web_content.mjs","godot_native/scripts/release_content_policy.gd"],outputs:[],dependencies:[],durationHintMs:1000},
+ {id:"flc_projection_table_builder",execution:"node",entry:`${flc}/tests/test_projection_table_builder.mjs`,
+  inputs:[`${flc}/tests/test_projection_table_builder.mjs`,`${flc}/tools/place_projection_table.mjs`,`${flc}/data/floor_3.json`,`${flc}/data/object_assets.json`],outputs:[],dependencies:[],durationHintMs:1000}
+]);
 
 export function appendRegisteredStages(legacy, {project, executable, registrations = NATIVE_STAGE_REGISTRATIONS}) {
  requireValue(Array.isArray(registrations), 'Native stage registrations must be an array');
