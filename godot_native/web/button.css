@@ -38,7 +38,7 @@
     0 var(--button-u) calc(2 * var(--button-u)) var(--button-contact),
     0 calc(4 * var(--button-u)) calc(10 * var(--button-u)) calc(-3 * var(--button-u)) var(--button-lift) !important;
   cursor: pointer; vertical-align: middle; text-decoration: none !important;
-  transition: transform 120ms ease, box-shadow 140ms ease, --button-face-top 160ms ease, --button-face-bottom 160ms ease, background-color 160ms ease, color 160ms ease, border-color 160ms ease !important;
+  transition: translate 120ms ease, transform 120ms ease, box-shadow 140ms ease, --button-face-top 160ms ease, --button-face-bottom 160ms ease, background-color 160ms ease, color 160ms ease, border-color 160ms ease !important;
 }
 .tactile-button[data-size="lg"] { --button-label-size: 16px; }
 .tactile-button[data-variant="primary"] {
@@ -65,13 +65,17 @@
     0 calc(8 * var(--button-u)) calc(16 * var(--button-u)) calc(-5 * var(--button-u)) var(--button-lift) !important;
 }
 .tactile-button:not(:disabled):active {
-  transform: translateY(var(--button-u)) !important;
   --button-face-top: var(--button-bottom); --button-face-bottom: var(--button-top);
   box-shadow:
     inset 0 var(--button-u) calc(2 * var(--button-u)) var(--button-recess),
     inset 0 0 0 transparent,
     0 var(--button-u) 0 var(--button-paper),
     0 var(--button-u) var(--button-u) var(--button-contact) !important;
+}
+/* Compose the press offset with scene-owned centering/rotation transforms.
+   Older baseline browsers keep the pressed face/insets without displacement. */
+@supports (translate: 0 1px) {
+  .tactile-button:not(:disabled):active { translate: 0 var(--button-u); }
 }
 .tactile-button[data-variant="ghost"], .tactile-button[data-variant="text"] {
   --button-edge: transparent; --button-ink: #62645f;

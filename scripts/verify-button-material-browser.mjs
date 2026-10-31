@@ -18,7 +18,8 @@ import { execFileSync, spawn } from "node:child_process";
     const el = page.locator("#" + size + "-" + variant);
     const read = () => el.evaluate((el2) => {
       const s = getComputedStyle(el2);
-      return { height: el2.getBoundingClientRect().height, font: s.fontSize, radius: s.borderRadius, border: s.borderTopWidth, shadow: s.boxShadow, bg: s.backgroundImage, transform: s.transform };
+      const r = el2.getBoundingClientRect();
+      return { x:r.x, y:r.y, height:r.height, font: s.fontSize, radius: s.borderRadius, border: s.borderTopWidth, shadow: s.boxShadow, bg: s.backgroundImage, transform: s.transform };
     });
     await page.mouse.move(0, 0);
     await page.waitForTimeout(180);
@@ -34,9 +35,9 @@ import { execFileSync, spawn } from "node:child_process";
     await page.waitForTimeout(180);
     const active = await read();
     if ((active.shadow.match(/inset/g) || []).length !== 2) throw Error("pressed inset count");
-    if (!active.transform.startsWith("matrix")) throw Error("press transform");
-    const pressY = Number(active.transform.slice(7, -1).split(",")[5]);
-    if (Math.abs(pressY - (size === "md" ? 1 : 16 / 14)) > 1e-3) throw Error("press scale");
+    const pressY = active.y-hover.y;
+    const expectedPress = await page.evaluate(()=>CSS.supports('translate','0 1px')) ? (size === "md" ? 1 : 16 / 14) : 0;
+    if (Math.abs(active.x-hover.x) > .01 || Math.abs(pressY-expectedPress) > .02) throw Error("press scale/placement");
     await page.mouse.up();
     results.push({ size, variant, rest, hover, active });
   }
@@ -55,11 +56,32 @@ import { execFileSync, spawn } from "node:child_process";
   await page.screenshot({ path: dir + "/board-mobile.png", fullPage: true });
   if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)) throw Error("mobile overflow");
   fs.writeFileSync(dir + "/results.json", JSON.stringify(results, null, 2));
+  await verifyRingPressedLayout(browser, dir);
   await verifyPhoneFocus(browser, dir);
   await verifySurfaces(browser, dir);
   await browser.close();
   console.log("PASS 10 variant/size combinations, rest/hover/pressed, keyboard focus/Enter, native disabled, mobile overflow");
 })();
+async function verifyRingPressedLayout(browser, dir) {
+  await build({stdin:{contents:`import React from 'react';import{createRoot}from'react-dom/client';import{InvestigationRing}from'./src/components/InvestigationRing';import'./src/styles/investigation-ring.css';window.ringActivations=[];createRoot(document.getElementById('root')).render(<InvestigationRing ariaLabel="Investigation input fixture" title="Evidence" completed={0} total={3} nodes={['a','b','c'].map(id=>({id,label:id,statusLabel:'Ready',state:'ready'}))} onActivate={id=>window.ringActivations.push(id)}/>);`,resolveDir:process.cwd(),loader:'tsx'},bundle:true,outfile:dir+'/ring-input.js',jsx:'automatic'});
+  const page=await browser.newPage();
+  const records=[];
+  for(const width of [390,1280]) {
+    await page.setViewportSize({width,height:844});
+    await page.setContent(`<style>body{margin:20px}#root{width:350px}</style><style>${fs.readFileSync(dir+'/ring-input.css','utf8')}</style><div id="root"></div><script>${fs.readFileSync(dir+'/ring-input.js','utf8')}<\/script>`);
+    const node=page.locator('.investigation-ring__node').first();await node.waitFor();
+    const rest=await node.boundingBox();
+    // Releasing in the original left half used to miss after a 60px jump.
+    await page.mouse.move(rest.x+5,rest.y+rest.height/2);await page.mouse.down();await page.waitForTimeout(180);
+    const pressed=await node.boundingBox();
+    if(Math.abs(pressed.x-rest.x)>.1||Math.abs(pressed.y-rest.y)>1.2)throw Error('Investigation ring jumps during press: '+JSON.stringify({rest,pressed}));
+    await page.mouse.up();
+    if(await page.evaluate(()=>window.ringActivations.join(','))!=='a')throw Error('Original left-half press/release lost evidence activation');
+    records.push({width,rest,pressed,activated:'a'});
+  }
+  fs.writeFileSync(dir+'/ring-input-results.json',JSON.stringify(records,null,2));
+  await page.close();
+}
 async function verifySurfaces(browser, dir) {
   const commit = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
   const tree = execFileSync("git", ["rev-parse", "HEAD^{tree}"], { encoding: "utf8" }).trim();
