@@ -1,0 +1,20 @@
+{
+  "2": {
+    "oldCount": 173,
+    "oldIdsHash": "df81ad26a3db37ef92ff824cd0c8eda84be0e36b0dbfc9e0d06efecc70a858a8",
+    "architectureHash": "3053e43de87c4e5ec5e497dc578b68466c493df5babc61775cb86ec6be14d1cd",
+    "otherObjectsHash": "0794f0e38c1fe5f5c269a435e8c3d3567e140f04177cf5e4b5a1c40efae45609"
+  },
+  "3": {
+    "oldCount": 379,
+    "oldIdsHash": "06779ed45b1f9fc9103eb460d0898a9dcc2df5c783f52f76355a202a0ccf884e",
+    "architectureHash": "f478c176c44da6a173fae0bf770210372394e06bd892fbe23325cc9ada89ff92",
+    "otherObjectsHash": "c552aae15224326667de355f3ecb1ba928494652883e03ae2c79c3277b3f3795"
+  },
+  "4": {
+    "oldCount": 193,
+    "oldIdsHash": "2aea214d0f8ec6055a3b6f17a28d4a0e5e5405001f52c0b25636a6cf72b15b51",
+    "architectureHash": "7044cf3917ea8e638f85add487064cf9b64f8d9ef0e0b5ce7ab9f9afcc41860e",
+    "otherObjectsHash": "5a0a53027c90cb884aa04c2b06c4ae179dfb9695b44a74552201105efe89b165"
+  }
+}

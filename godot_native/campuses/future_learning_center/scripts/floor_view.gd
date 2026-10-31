@@ -1,5 +1,6 @@
 extends Node2D
 const Body=preload("res://scripts/player_metrics.gd")
+const NpcPicker=preload("res://scripts/world_object_picker.gd")
 const Space=preload("res://scripts/space/spatial_rules.gd")
 const FloorSpace=preload("res://campuses/future_learning_center/scripts/floor_space.gd")
 const RoomCamera=preload("res://campuses/future_learning_center/scripts/room_camera.gd")
@@ -65,6 +66,13 @@ var time_button:Button
 var preview_hours:=[8.0,12.0,16.0,21.0]
 var time_index:=1
 var object_hint:=""
+# Ambient people are optional presentation, never room model/save state.
+const NPC_RANGE:=100.0
+var npc_picker=NpcPicker.new()
+var npc_pending:=""
+var npc_reply:=""
+var npc_reply_id:=""
+var npc_reply_remaining:=0.0
 var data:Dictionary
 var space=FloorSpace.new()
 var framing=RoomCamera.new()
@@ -135,9 +143,11 @@ func load_floor(floor_number:int,arrival:Vector2=Vector2.INF)->bool:
 	signal_sync_pending=false
 	motion_pending=""
 	pantry_pending=false
+	_clear_npc_interaction()
 	data=next;space=next_space;route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
 	for item:Dictionary in data.modules:_texture(item.path)
 	for item:Dictionary in data.get("objects",[]):_texture(item.path)
+	for item:Dictionary in data.get("npcs",[]):_texture(item.path)
 	for item:Dictionary in data.get("atriums",[]):_texture(item.source)
 	if data.has("atrium"):_texture(data.atrium.source)
 	player=foot-Body.FOOT_CENTER_OFFSET;framing=RoomCamera.new();overview=false
@@ -159,6 +169,7 @@ func travel_to(floor_number:int)->bool:
 	var landing:Dictionary=transit.nearby(data,player)
 	if landing.kind=="stairs":
 		if not stairs.open(int(data.floor),floor_number,str(landing.id)):return false
+		_clear_npc_interaction()
 		stair_destination=target.duplicate(true);stair_destination["source"]=int(data.floor)
 		route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();transit_panel.hide();ui.hide();return true
 	return load_floor(int(target.floor),Vector2(target.point[0],target.point[1]))
@@ -185,6 +196,7 @@ func _texture(path:String)->Texture2D:
 
 func _process(dt:float)->void:
 	elapsed+=dt
+	_tick_npc_feedback(dt)
 	if capture_only:return
 	_checkpoint_elapsed+=dt
 	if persistence_enabled and _checkpoint_elapsed>=3:
@@ -200,7 +212,7 @@ func _process(dt:float)->void:
 	var direction:=Vector2.ZERO
 	if user_control and not overview:
 		direction=Vector2(int(Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT))-int(Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)),int(Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN))-int(Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP)))+touch_vector
-		if direction.length_squared()>0:route.clear();puzzle_pending="";direction=direction.limit_length()
+		if direction.length_squared()>0:route.clear();puzzle_pending="";_clear_npc_interaction();direction=direction.limit_length()
 		elif not route.is_empty():
 			# Follow the validated corner all the way before taking the next leg.
 			# Skipping it four pixels early can cut into a chair's foot collider.
@@ -227,13 +239,16 @@ func _process(dt:float)->void:
 		var pending:=motion_pending;motion_pending="";open_motion_lab(pending)
 	if pantry_pending and route.is_empty():
 		pantry_pending=false;open_pantry()
+	if not npc_pending.is_empty() and route.is_empty():
+		var pending:=npc_pending;npc_pending=""
+		if not talk_to_npc(pending):_npc_feedback("暂时无法靠近。")
 	if is_instance_valid(place_label):
 		var room:Dictionary=space.room_at(player+Body.FOOT_CENTER_OFFSET)
 		var landing:Dictionary=transit.nearby(data,player)
 		transit_button.visible=not landing.is_empty() and not overview
 		if not landing.is_empty():transit_button.text=str(landing.name)
 		elif is_instance_valid(transit_panel):transit_panel.hide()
-		place_label.text=("%dF 全层总览"%int(data.floor)) if overview else str(room.get("name","环廊"))+object_hint
+		place_label.text=("%dF 全层总览"%int(data.floor)) if overview else str(room.get("name","环廊"))+object_hint+("  ·  "+npc_reply if not npc_reply.is_empty() else "")
 		if can_open_workbench() and not overview:place_label.text+="  ·  操作台"
 	queue_redraw()
 
@@ -247,6 +262,9 @@ func set_foot(point:Vector2,snap:=true)->bool:
 
 func _unhandled_input(event:InputEvent)->void:
 	if not user_control:return
+	if event is InputEventScreenTouch and event.canceled:
+		if not npc_pending.is_empty():route.clear()
+		_clear_npc_interaction();return
 	if is_instance_valid(active_puzzle) and active_puzzle.visible:return
 	if is_instance_valid(stairs) and stairs.visible:return
 	if is_instance_valid(workbench) and workbench.visible:return
@@ -263,18 +281,19 @@ func _unhandled_input(event:InputEvent)->void:
 				var opened:=false
 				for key:String in PuzzleAnchors:
 					if open_puzzle(key):opened=true;break
-				if not opened:inspect_nearby()
+				if not opened and not talk_nearby_npc():inspect_nearby()
 	elif event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT:
 		point_action(screen_to_world(event.position));get_viewport().set_input_as_handled()
-	elif event is InputEventScreenTouch and event.pressed:
+	elif event is InputEventScreenTouch and event.pressed and not event.canceled:
 		point_action(screen_to_world(event.position));get_viewport().set_input_as_handled()
 	elif event is InputEventKey and event.keycode==KEY_ESCAPE and event.pressed:
-		route.clear()
+		route.clear();_clear_npc_interaction()
 
 func screen_to_world(screen:Vector2)->Vector2:return framing.center+(screen-RoomCamera.VIEW/2)/framing.zoom
 func world_to_screen(point:Vector2)->Vector2:return (point-framing.center)*framing.zoom+RoomCamera.VIEW/2
 func request_walk(foot:Vector2)->void:
 	if overview:return
+	_clear_npc_interaction()
 	puzzle_pending=""
 	workbench_pending=false
 	signal_sync_pending=false
@@ -304,6 +323,7 @@ func open_pantry()->bool:
 	if is_instance_valid(joystick):joystick.cancel()
 	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
 	pantry_pending=false;motion_pending="";signal_sync_pending=false;workbench_pending=false
+	_clear_npc_interaction()
 	pantry_tray.open();ui.hide();return true
 func motion_desk(mode:String)->Dictionary:
 	if int(data.floor)!=2 or not MOTION_ANCHORS.has(mode):return {}
@@ -327,6 +347,7 @@ func open_motion_lab(mode:String)->bool:
 	if not can_open_motion_lab(mode):return false
 	if is_instance_valid(joystick):joystick.cancel()
 	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();motion_pending="";signal_sync_pending=false;workbench_pending=false
+	_clear_npc_interaction()
 	motion_lab.open(mode);ui.hide();return true
 func signal_sync_desk()->Dictionary:
 	if int(data.floor)!=2:return {}
@@ -351,6 +372,7 @@ func open_signal_sync()->bool:
 	if not can_open_signal_sync():return false
 	if is_instance_valid(joystick):joystick.cancel()
 	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();signal_sync_pending=false;workbench_pending=false
+	_clear_npc_interaction()
 	signal_sync.open();ui.hide();return true
 func workshop_bench()->Dictionary:
 	if not data.has("workshopReference"):return {}
@@ -368,6 +390,7 @@ func open_workbench()->bool:
 	if is_instance_valid(joystick):joystick.cancel()
 	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear();workbench_pending=false
 	if is_instance_valid(joystick):joystick.cancel()
+	_clear_npc_interaction()
 	workbench.open();ui.hide();return true
 func point_action(at:Vector2)->void:
 	if _has_open_station():return
@@ -404,9 +427,13 @@ func point_action(at:Vector2)->void:
 		if open_workbench():return
 		var target:Array=data.workshopReference.approach
 		request_walk(Vector2(target[0],target[1]));workbench_pending=not route.is_empty()
-	else:request_walk(at)
+	else:
+		var person:=npc_at(at)
+		if not person.is_empty():request_npc(str(person.id))
+		else:request_walk(at)
 func toggle_overview()->void:
 	if is_instance_valid(joystick):joystick.cancel()
+	_clear_npc_interaction()
 	overview=not overview;route.clear();touch_vector=Vector2.ZERO
 
 func _notification(what:int)->void:
@@ -444,6 +471,7 @@ func _cycle_time()->void:
 func open_transit()->void:
 	var landing:Dictionary=transit.nearby(data,player)
 	if landing.is_empty() or overview:return
+	_clear_npc_interaction()
 	route.clear()
 	for button:Button in transit_panel.get_child(0).get_children():
 		var target:=int(str(button.name));button.disabled=transit.destination(data,player,target).is_empty()
@@ -451,6 +479,7 @@ func open_transit()->void:
 	transit_panel.visible=not transit_panel.visible
 
 func inspect_nearby()->void:
+	_clear_npc_interaction()
 	object_hint=""
 	var foot:=player+Body.FOOT_CENTER_OFFSET;var distance:=100.0
 	for item:Dictionary in data.get("objects",[]):
@@ -459,6 +488,111 @@ func inspect_nearby()->void:
 		var closest:=foot.clamp(box.position,box.end)
 		if foot.distance_to(closest)<distance:
 			distance=foot.distance_to(closest);object_hint="  ·  "+str(item.name)
+
+# NPC geometry uses the player's existing sprite scale and foot-center contract.
+# It is deliberately stationary: no second navigation or saved actor state.
+func npc_by_id(id:String)->Dictionary:
+	for person:Dictionary in data.get("npcs",[]):
+		if str(person.id)==id:return person
+	return {}
+
+func npc_foot(person:Dictionary)->Vector2:
+	return Vector2(person.foot[0],person.foot[1])
+
+func npc_geometry(person:Dictionary)->Dictionary:
+	var frame:Vector2=Vector2(person.frameSize[0],person.frameSize[1])
+	return {"rect":Body.visual_rect(npc_foot(person)-Body.FOOT_CENTER_OFFSET),"texture":_texture(str(person.path)),"source":Rect2(Vector2.ZERO,frame)}
+
+func npc_at(point:Vector2)->Dictionary:
+	if overview:return {}
+	var people:Array=data.get("npcs",[]).duplicate()
+	people.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return float(a.foot[1])>float(b.foot[1]))
+	for person:Dictionary in people:
+		if not npc_picker.contains(npc_geometry(person),point):continue
+		# A transparent sprite corner cannot steal an object click; nor can a
+		# person behind an opaque foreground prop be picked through that prop.
+		for prop:Dictionary in data.get("objects",[]):
+			if float(prop.baseline)<npc_foot(person).y:continue
+			if npc_picker.contains({"rect":Space.rect(prop.bounds),"source":Space.rect(prop.crop),"texture":_texture(str(prop.path))},point):return {}
+		return person
+	return {}
+
+func can_talk_to_npc(person:Dictionary)->bool:
+	if person.is_empty() or overview or _has_open_station():return false
+	var foot:=player+Body.FOOT_CENTER_OFFSET
+	if str(space.room_at(foot).get("id",""))!=str(person.room):return false
+	var distance:=foot.distance_to(npc_foot(person))
+	if distance>NPC_RANGE:return false
+	# Stop the sight/approach test outside the other actor's solid foot box.
+	var edge:=foot+(npc_foot(person)-foot).normalized()*maxf(0.0,distance-24.0)
+	return space.segment_clear(player,edge-Body.FOOT_CENTER_OFFSET)
+
+func npc_approach(person:Dictionary)->Vector2:
+	var best:=Vector2.INF
+	var length:=INF
+	for direction:Vector2 in [Vector2.DOWN,Vector2.RIGHT,Vector2.LEFT,Vector2.UP,Vector2(1,1).normalized(),Vector2(-1,1).normalized(),Vector2(1,-1).normalized(),Vector2(-1,-1).normalized()]:
+		var foot:=npc_foot(person)+direction*55.0
+		var target:=foot-Body.FOOT_CENTER_OFFSET
+		if str(space.room_at(foot).get("id",""))!=str(person.room) or not space.can_stand(target):continue
+		if not space.segment_clear(target,npc_foot(person)+direction*24.0-Body.FOOT_CENTER_OFFSET):continue
+		var path:PackedVector2Array=space.route(player,target)
+		if path.is_empty() and player.distance_to(target)>1.0:continue
+		var distance:=0.0
+		var previous:=player
+		for corner:Vector2 in path:distance+=previous.distance_to(corner);previous=corner
+		if distance<length:length=distance;best=foot
+	return best
+
+func talk_to_npc(id:String)->bool:
+	var person:=npc_by_id(id)
+	if not can_talk_to_npc(person):return false
+	_clear_npc_interaction()
+	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
+	puzzle_pending="";workbench_pending=false;signal_sync_pending=false;motion_pending="";pantry_pending=false
+	if is_instance_valid(joystick):joystick.cancel()
+	object_hint=""
+	_npc_feedback(str(person.name)+"："+str(person.line),id)
+	return true
+
+func request_npc(id:String)->void:
+	if _has_open_station() or overview:return
+	var person:=npc_by_id(id)
+	if person.is_empty():return
+	if talk_to_npc(id):return
+	var approach:=npc_approach(person)
+	_clear_npc_interaction()
+	if not approach.is_finite():
+		route.clear();puzzle_pending="";workbench_pending=false;signal_sync_pending=false;motion_pending="";pantry_pending=false
+		_npc_feedback("暂时无法靠近。");return
+	request_walk(approach)
+	if not route.is_empty():npc_pending=id
+	else:_npc_feedback("暂时无法靠近。")
+
+func talk_nearby_npc()->bool:
+	var best:=""
+	var distance:=INF
+	for person:Dictionary in data.get("npcs",[]):
+		if not can_talk_to_npc(person):continue
+		var candidate:float=(player+Body.FOOT_CENTER_OFFSET).distance_to(npc_foot(person))
+		if candidate<distance:distance=candidate;best=str(person.id)
+	return talk_to_npc(best) if not best.is_empty() else false
+
+func _npc_feedback(message:String,id:String="")->void:
+	object_hint="";npc_reply=message;npc_reply_id=id
+	npc_reply_remaining=clampf(1.6+float(message.length())*.12,2.4,6.5)
+
+func _clear_npc_interaction()->void:
+	npc_pending="";npc_reply="";npc_reply_id="";npc_reply_remaining=0.0
+
+func _tick_npc_feedback(dt:float)->void:
+	if npc_reply_remaining<=0.0:return
+	npc_reply_remaining=maxf(0.0,npc_reply_remaining-dt)
+	if npc_reply_remaining==0.0:npc_reply="";npc_reply_id=""
+
+func _draw_npc(person:Dictionary)->void:
+	var geometry:=npc_geometry(person)
+	draw_circle(npc_foot(person)+Vector2(1,2),10,Color(0,0,0,.16))
+	draw_texture_rect_region(geometry.texture,geometry.rect,geometry.source)
 
 func _region(texture:Texture2D,source:Rect2,at:Vector2,scale_value:float)->void:
 	draw_texture_rect_region(texture,Rect2(at,source.size*scale_value),source)
@@ -506,10 +640,13 @@ func _draw()->void:
 	for object:Dictionary in data.get("objects",[]):
 		if not Space.rect(object.bounds).grow(200).intersects(view):continue
 		lighting.draw_contact(self,object);lighting.draw_shadow(self,object);items.append(object)
+	for person:Dictionary in data.get("npcs",[]):
+		if npc_geometry(person).rect.intersects(view):items.append({"npc":person,"baseline":float(person.foot[1])})
 	if not capture_only:items.append({"actor":true,"baseline":player.y+Body.FOOT_CENTER_OFFSET.y})
 	items.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return float(a.baseline)<float(b.baseline))
 	for item:Dictionary in items:
 		if item.get("actor",false):_draw_actor()
+		elif item.has("npc"):_draw_npc(item.npc)
 		else:
 			_draw_prop(item)
 			if int(data.floor)==3:
@@ -630,6 +767,7 @@ func open_puzzle(key:String)->bool:
 	if is_instance_valid(active_puzzle):active_puzzle.close()
 	route.clear();puzzle_pending="";touch_vector=Vector2.ZERO
 	if is_instance_valid(joystick):joystick.cancel()
+	_clear_npc_interaction()
 	active_puzzle=puzzle_views[key];active_puzzle.open();ui.hide();return true
 
 func _draw_puzzle_prop(item:Dictionary)->void:
@@ -638,6 +776,8 @@ func _draw_puzzle_prop(item:Dictionary)->void:
 	for candidate:String in PuzzleAnchors:
 		if int(data.floor)==int(PuzzleAnchors[candidate][2]) and item.id==PuzzleAnchors[candidate][1]:key=candidate;break
 	if key.is_empty():return
+	# These two apparatus groups are now independently mounted raster sprites.
+	if data.has("roomLayout") and key in ["team","recording"]:return
 	var box:Rect2=Space.rect(item.bounds)
 	var at:=Vector2(box.get_center().x,box.position.y+box.size.y*.24)
 	# Physical tabletop apparatus, not a floating menu icon.
@@ -744,6 +884,7 @@ func _completion_signature()->String:
 func suspend_activity()->void:
 	if _suspending:return
 	_suspending=true
+	_clear_npc_interaction()
 	route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
 	puzzle_pending="";workbench_pending=false;signal_sync_pending=false;motion_pending="";pantry_pending=false
 	if is_instance_valid(joystick):joystick.cancel()

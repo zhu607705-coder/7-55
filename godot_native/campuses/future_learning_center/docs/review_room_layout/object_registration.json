@@ -1,0 +1,1243 @@
+{
+  "team": {
+    "floor": 2,
+    "objects": [
+      {
+        "id": "team_desk_6",
+        "asset": "desk",
+        "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+        "crop": [
+          50,
+          165,
+          1322,
+          827
+        ],
+        "scale": 0.10264750378214825,
+        "bounds": [
+          402.15,
+          3512.3781525631184,
+          135.7,
+          84.8894856278366
+        ],
+        "footprint": [
+          410.292,
+          3548.967638190955,
+          119.416,
+          48.3
+        ],
+        "baseline": 3597.267638190955,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "team_chair_back_7",
+        "asset": "chair_back",
+        "path": "res://campuses/future_learning_center/assets/objects/chair_back.png",
+        "crop": [
+          171,
+          278,
+          765,
+          1028
+        ],
+        "scale": 0.06313725490196077,
+        "bounds": [
+          445.85,
+          3577.3625401517393,
+          48.3,
+          64.90509803921567
+        ],
+        "footprint": [
+          448.748,
+          3610.067638190955,
+          42.504,
+          32.199999999999996
+        ],
+        "baseline": 3642.267638190955,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "team_desk_divider_8",
+        "asset": "desk_divider",
+        "path": "res://campuses/future_learning_center/assets/objects/desk_divider.png",
+        "crop": [
+          95,
+          195,
+          1584,
+          554
+        ],
+        "scale": 0.0769570707070707,
+        "bounds": [
+          409.05,
+          3494.833421019238,
+          121.89999999999999,
+          42.63421717171717
+        ],
+        "footprint": [
+          416.36400000000003,
+          3494.8026381909553,
+          107.27199999999999,
+          42.66499999999999
+        ],
+        "baseline": 3597.3251381909554,
+        "parent": "team_desk_6",
+        "mounted": true
+      },
+      {
+        "id": "team_monitor_front_9",
+        "asset": "monitor_front",
+        "path": "res://campuses/future_learning_center/assets/objects/monitor_front.png",
+        "crop": [
+          336,
+          193,
+          864,
+          645
+        ],
+        "scale": 0.053240740740740734,
+        "bounds": [
+          447,
+          3520.377360413177,
+          46,
+          34.34027777777777
+        ],
+        "footprint": [
+          449.76,
+          3538.617638190955,
+          40.48,
+          16.099999999999998
+        ],
+        "baseline": 3597.382638190955,
+        "parent": "team_desk_6",
+        "mounted": true
+      },
+      {
+        "id": "team_desk_10",
+        "asset": "desk",
+        "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+        "crop": [
+          50,
+          165,
+          1322,
+          827
+        ],
+        "scale": 0.10264750378214825,
+        "bounds": [
+          557.15,
+          3512.3781525631184,
+          135.7,
+          84.8894856278366
+        ],
+        "footprint": [
+          565.292,
+          3548.967638190955,
+          119.416,
+          48.3
+        ],
+        "baseline": 3597.267638190955,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "team_chair_back_11",
+        "asset": "chair_back",
+        "path": "res://campuses/future_learning_center/assets/objects/chair_back.png",
+        "crop": [
+          171,
+          278,
+          765,
+          1028
+        ],
+        "scale": 0.06313725490196077,
+        "bounds": [
+          600.85,
+          3577.3625401517393,
+          48.3,
+          64.90509803921567
+        ],
+        "footprint": [
+          603.7479999999999,
+          3610.067638190955,
+          42.504,
+          32.199999999999996
+        ],
+        "baseline": 3642.267638190955,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "team_desk_divider_12",
+        "asset": "desk_divider",
+        "path": "res://campuses/future_learning_center/assets/objects/desk_divider.png",
+        "crop": [
+          95,
+          195,
+          1584,
+          554
+        ],
+        "scale": 0.0769570707070707,
+        "bounds": [
+          564.05,
+          3494.833421019238,
+          121.89999999999999,
+          42.63421717171717
+        ],
+        "footprint": [
+          571.364,
+          3494.8026381909553,
+          107.27199999999999,
+          42.66499999999999
+        ],
+        "baseline": 3597.3251381909554,
+        "parent": "team_desk_10",
+        "mounted": true
+      },
+      {
+        "id": "team_monitor_front_13",
+        "asset": "monitor_front",
+        "path": "res://campuses/future_learning_center/assets/objects/monitor_front.png",
+        "crop": [
+          336,
+          193,
+          864,
+          645
+        ],
+        "scale": 0.053240740740740734,
+        "bounds": [
+          602,
+          3520.377360413177,
+          46,
+          34.34027777777777
+        ],
+        "footprint": [
+          604.76,
+          3538.617638190955,
+          40.48,
+          16.099999999999998
+        ],
+        "baseline": 3597.382638190955,
+        "parent": "team_desk_10",
+        "mounted": true
+      },
+      {
+        "id": "team_desk_14",
+        "asset": "desk",
+        "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+        "crop": [
+          50,
+          165,
+          1322,
+          827
+        ],
+        "scale": 0.10264750378214825,
+        "bounds": [
+          712.15,
+          3512.3781525631184,
+          135.7,
+          84.8894856278366
+        ],
+        "footprint": [
+          720.2919999999999,
+          3548.967638190955,
+          119.416,
+          48.3
+        ],
+        "baseline": 3597.267638190955,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "team_chair_back_15",
+        "asset": "chair_back",
+        "path": "res://campuses/future_learning_center/assets/objects/chair_back.png",
+        "crop": [
+          171,
+          278,
+          765,
+          1028
+        ],
+        "scale": 0.06313725490196077,
+        "bounds": [
+          755.85,
+          3577.3625401517393,
+          48.3,
+          64.90509803921567
+        ],
+        "footprint": [
+          758.7479999999999,
+          3610.067638190955,
+          42.504,
+          32.199999999999996
+        ],
+        "baseline": 3642.267638190955,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "team_desk_divider_16",
+        "asset": "desk_divider",
+        "path": "res://campuses/future_learning_center/assets/objects/desk_divider.png",
+        "crop": [
+          95,
+          195,
+          1584,
+          554
+        ],
+        "scale": 0.0769570707070707,
+        "bounds": [
+          719.05,
+          3494.833421019238,
+          121.89999999999999,
+          42.63421717171717
+        ],
+        "footprint": [
+          726.3639999999999,
+          3494.8026381909553,
+          107.27199999999999,
+          42.66499999999999
+        ],
+        "baseline": 3597.3251381909554,
+        "parent": "team_desk_14",
+        "mounted": true
+      },
+      {
+        "id": "team_monitor_front_17",
+        "asset": "monitor_front",
+        "path": "res://campuses/future_learning_center/assets/objects/monitor_front.png",
+        "crop": [
+          336,
+          193,
+          864,
+          645
+        ],
+        "scale": 0.053240740740740734,
+        "bounds": [
+          757,
+          3520.377360413177,
+          46,
+          34.34027777777777
+        ],
+        "footprint": [
+          759.7600000000001,
+          3538.617638190955,
+          40.48,
+          16.099999999999998
+        ],
+        "baseline": 3597.382638190955,
+        "parent": "team_desk_14",
+        "mounted": true
+      },
+      {
+        "id": "team_desk_18",
+        "asset": "desk",
+        "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+        "crop": [
+          50,
+          165,
+          1322,
+          827
+        ],
+        "scale": 0.10264750378214825,
+        "bounds": [
+          867.15,
+          3512.378152563119,
+          135.7,
+          84.8894856278366
+        ],
+        "footprint": [
+          875.292,
+          3548.967638190955,
+          119.416,
+          48.3
+        ],
+        "baseline": 3597.267638190955,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "team_chair_back_19",
+        "asset": "chair_back",
+        "path": "res://campuses/future_learning_center/assets/objects/chair_back.png",
+        "crop": [
+          171,
+          278,
+          765,
+          1028
+        ],
+        "scale": 0.06313725490196077,
+        "bounds": [
+          910.85,
+          3577.36254015174,
+          48.3,
+          64.90509803921567
+        ],
+        "footprint": [
+          913.7479999999999,
+          3610.067638190955,
+          42.504,
+          32.199999999999996
+        ],
+        "baseline": 3642.267638190955,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "team_desk_divider_20",
+        "asset": "desk_divider",
+        "path": "res://campuses/future_learning_center/assets/objects/desk_divider.png",
+        "crop": [
+          95,
+          195,
+          1584,
+          554
+        ],
+        "scale": 0.0769570707070707,
+        "bounds": [
+          874.05,
+          3494.833421019238,
+          121.89999999999999,
+          42.63421717171717
+        ],
+        "footprint": [
+          881.364,
+          3494.8026381909544,
+          107.27199999999999,
+          42.66499999999999
+        ],
+        "baseline": 3597.3251381909554,
+        "parent": "team_desk_18",
+        "mounted": true
+      },
+      {
+        "id": "team_monitor_front_21",
+        "asset": "monitor_front",
+        "path": "res://campuses/future_learning_center/assets/objects/monitor_front.png",
+        "crop": [
+          336,
+          193,
+          864,
+          645
+        ],
+        "scale": 0.053240740740740734,
+        "bounds": [
+          1155.7730627306273,
+          3696.4420100451007,
+          46,
+          34.34027777777777
+        ],
+        "footprint": [
+          1158.5330627306273,
+          3714.6822878228786,
+          40.48,
+          16.099999999999998
+        ],
+        "baseline": 3790.1,
+        "parent": "team_media_cart",
+        "mounted": true
+      },
+      {
+        "id": "team_desk_22",
+        "asset": "desk",
+        "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+        "crop": [
+          50,
+          165,
+          1322,
+          827
+        ],
+        "scale": 0.10264750378214825,
+        "bounds": [
+          582.15,
+          4015.110514372164,
+          135.7,
+          84.8894856278366
+        ],
+        "footprint": [
+          590.292,
+          4051.7,
+          119.416,
+          48.3
+        ],
+        "baseline": 4100,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "team_chair_back_23",
+        "asset": "chair_back",
+        "path": "res://campuses/future_learning_center/assets/objects/chair_back.png",
+        "crop": [
+          171,
+          278,
+          765,
+          1028
+        ],
+        "scale": 0.06313725490196077,
+        "bounds": [
+          625.85,
+          4113.294901960785,
+          48.3,
+          64.90509803921567
+        ],
+        "footprint": [
+          628.7479999999999,
+          4146,
+          42.504,
+          32.199999999999996
+        ],
+        "baseline": 4178.2,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "team_desk_divider_24",
+        "asset": "desk_divider",
+        "path": "res://campuses/future_learning_center/assets/objects/desk_divider.png",
+        "crop": [
+          95,
+          195,
+          1584,
+          554
+        ],
+        "scale": 0.0769570707070707,
+        "bounds": [
+          589.05,
+          3997.565782828283,
+          121.89999999999999,
+          42.63421717171717
+        ],
+        "footprint": [
+          596.364,
+          3997.5349999999994,
+          107.27199999999999,
+          42.66499999999999
+        ],
+        "baseline": 4100.0575,
+        "parent": "team_desk_22",
+        "mounted": true
+      },
+      {
+        "id": "team_monitor_front_25",
+        "asset": "monitor_front",
+        "path": "res://campuses/future_learning_center/assets/objects/monitor_front.png",
+        "crop": [
+          336,
+          193,
+          864,
+          645
+        ],
+        "scale": 0.053240740740740734,
+        "bounds": [
+          627,
+          4023.109722222222,
+          46,
+          34.34027777777777
+        ],
+        "footprint": [
+          629.76,
+          4041.35,
+          40.48,
+          16.099999999999998
+        ],
+        "baseline": 4100.115000000001,
+        "parent": "team_desk_22",
+        "mounted": true
+      },
+      {
+        "id": "team_desk_26",
+        "asset": "desk",
+        "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+        "crop": [
+          50,
+          165,
+          1322,
+          827
+        ],
+        "scale": 0.10264750378214825,
+        "bounds": [
+          737.15,
+          4015.110514372164,
+          135.7,
+          84.8894856278366
+        ],
+        "footprint": [
+          745.2919999999999,
+          4051.7,
+          119.416,
+          48.3
+        ],
+        "baseline": 4100,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "team_chair_back_27",
+        "asset": "chair_back",
+        "path": "res://campuses/future_learning_center/assets/objects/chair_back.png",
+        "crop": [
+          171,
+          278,
+          765,
+          1028
+        ],
+        "scale": 0.06313725490196077,
+        "bounds": [
+          780.85,
+          4113.294901960785,
+          48.3,
+          64.90509803921567
+        ],
+        "footprint": [
+          783.7479999999999,
+          4146,
+          42.504,
+          32.199999999999996
+        ],
+        "baseline": 4178.2,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "team_desk_divider_28",
+        "asset": "desk_divider",
+        "path": "res://campuses/future_learning_center/assets/objects/desk_divider.png",
+        "crop": [
+          95,
+          195,
+          1584,
+          554
+        ],
+        "scale": 0.0769570707070707,
+        "bounds": [
+          744.05,
+          3997.565782828283,
+          121.89999999999999,
+          42.63421717171717
+        ],
+        "footprint": [
+          751.3639999999999,
+          3997.5349999999994,
+          107.27199999999999,
+          42.66499999999999
+        ],
+        "baseline": 4100.0575,
+        "parent": "team_desk_26",
+        "mounted": true
+      },
+      {
+        "id": "team_monitor_front_29",
+        "asset": "monitor_front",
+        "path": "res://campuses/future_learning_center/assets/objects/monitor_front.png",
+        "crop": [
+          336,
+          193,
+          864,
+          645
+        ],
+        "scale": 0.053240740740740734,
+        "bounds": [
+          782,
+          4023.109722222222,
+          46,
+          34.34027777777777
+        ],
+        "footprint": [
+          784.7600000000001,
+          4041.35,
+          40.48,
+          16.099999999999998
+        ],
+        "baseline": 4100.115000000001,
+        "parent": "team_desk_26",
+        "mounted": true
+      },
+      {
+        "id": "team_media_cart",
+        "asset": "media_cart",
+        "path": "res://campuses/future_learning_center/assets/room_props/media_cart.png",
+        "crop": [
+          130,
+          312,
+          1084,
+          765
+        ],
+        "scale": 0.1088560885608856,
+        "bounds": [
+          1146.1162361623617,
+          3707.0516605166054,
+          118,
+          83.27490774907749
+        ],
+        "footprint": [
+          1146.5516605166051,
+          3756.036900369004,
+          106.78782287822878,
+          34.289667896678964
+        ],
+        "baseline": 3790,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "team_wall_cabinet_a",
+        "asset": "cabinet",
+        "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+        "crop": [
+          165,
+          168,
+          867,
+          1003
+        ],
+        "scale": 0.11694915254237288,
+        "bounds": [
+          1059.3025423728814,
+          3446.6193835708314,
+          101.39491525423729,
+          117.3
+        ],
+        "footprint": [
+          1059.6501190965093,
+          3549.467638190955,
+          100.69976180698151,
+          14.451745379876796
+        ],
+        "baseline": 3563.9193835708315,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "team_wall_cabinet_b",
+        "asset": "cabinet",
+        "path": "res://campuses/future_learning_center/assets/objects/locker_photo_v2.png",
+        "crop": [
+          165,
+          168,
+          867,
+          1003
+        ],
+        "scale": 0.11694915254237288,
+        "bounds": [
+          1179.3025423728814,
+          3446.6193835708314,
+          101.39491525423729,
+          117.3
+        ],
+        "footprint": [
+          1179.6501190965093,
+          3549.467638190955,
+          100.69976180698151,
+          14.451745379876796
+        ],
+        "baseline": 3563.9193835708315,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "team_cart_cable_reel",
+        "asset": "cable_reel",
+        "path": "res://campuses/future_learning_center/assets/puzzles/cable_scene/cable_reel.png",
+        "crop": [
+          75,
+          98,
+          1264,
+          973
+        ],
+        "scale": 0.022151898734177215,
+        "bounds": [
+          1205.049815498155,
+          3709.228490354524,
+          28,
+          21.553797468354432
+        ],
+        "footprint": [
+          1205.049815498155,
+          3728.7822878228785,
+          28,
+          2
+        ],
+        "baseline": 3790.2,
+        "parent": "team_media_cart",
+        "mounted": true
+      },
+      {
+        "id": "team_puzzle_monitor_left",
+        "asset": "tabletop_apparatus",
+        "path": "res://campuses/future_learning_center/assets/puzzles/cable_scene/monitor.png",
+        "crop": [
+          125,
+          287,
+          1003,
+          724
+        ],
+        "scale": 0.03589232303090728,
+        "bounds": [
+          886,
+          3535.6280123528873,
+          36,
+          25.98604187437687
+        ],
+        "footprint": [
+          886,
+          3559.614054227264,
+          36,
+          2
+        ],
+        "baseline": 3597.467638190955,
+        "parent": "team_desk_18",
+        "mounted": true
+      },
+      {
+        "id": "team_puzzle_monitor_right",
+        "asset": "tabletop_apparatus",
+        "path": "res://campuses/future_learning_center/assets/puzzles/cable_scene/monitor.png",
+        "crop": [
+          125,
+          287,
+          1003,
+          724
+        ],
+        "scale": 0.03589232303090728,
+        "bounds": [
+          939,
+          3535.6280123528873,
+          36,
+          25.98604187437687
+        ],
+        "footprint": [
+          939,
+          3559.614054227264,
+          36,
+          2
+        ],
+        "baseline": 3597.467638190955,
+        "parent": "team_desk_18",
+        "mounted": true
+      },
+      {
+        "id": "team_project_notebook",
+        "asset": "notebook",
+        "path": "res://campuses/future_learning_center/assets/puzzles/schedule_scene/cover.png",
+        "crop": [
+          153,
+          113,
+          1519,
+          642
+        ],
+        "scale": 0.019749835418038184,
+        "bounds": [
+          598.361,
+          4047.422547416537,
+          30,
+          12.679394338380515
+        ],
+        "footprint": [
+          598.361,
+          4058.1019417549173,
+          30,
+          2
+        ],
+        "baseline": 4100.2,
+        "parent": "team_desk_22",
+        "mounted": true
+      }
+    ],
+    "npcs": [
+      {
+        "id": "flc_2_team_student_a",
+        "room": "team",
+        "name": "同学",
+        "path": "res://campuses/future_learning_center/assets/npcs/student_phone_glance_2frame.png",
+        "frameSize": [
+          96,
+          128
+        ],
+        "frameCount": 2,
+        "foot": [
+          1055,
+          3755
+        ],
+        "line": "我在等这边的实验记录。",
+        "bounds": [
+          1023.8,
+          3681.7125,
+          62.4,
+          83.2
+        ],
+        "footprint": [
+          1045.25,
+          3747.6875,
+          19.5,
+          14.625
+        ],
+        "baseline": 3755,
+        "parent": null,
+        "displayScale": 0.65
+      },
+      {
+        "id": "flc_2_team_student_b",
+        "room": "team",
+        "name": "同学",
+        "path": "res://campuses/future_learning_center/assets/npcs/canteen_queue_student_01_front.png",
+        "frameSize": [
+          96,
+          128
+        ],
+        "frameCount": 2,
+        "foot": [
+          970,
+          4070
+        ],
+        "line": "我在整理项目记录。",
+        "bounds": [
+          938.8,
+          3996.7125,
+          62.4,
+          83.2
+        ],
+        "footprint": [
+          960.25,
+          4062.6875,
+          19.5,
+          14.625
+        ],
+        "baseline": 4070,
+        "parent": null,
+        "displayScale": 0.65
+      }
+    ]
+  },
+  "recording": {
+    "floor": 3,
+    "objects": [
+      {
+        "id": "recording_sofa_232",
+        "asset": "sofa",
+        "path": "res://campuses/future_learning_center/assets/objects/sofa.png",
+        "crop": [
+          357,
+          268,
+          850,
+          473
+        ],
+        "scale": 0.21176470588235297,
+        "bounds": [
+          610,
+          5076.71353857258,
+          180,
+          100.16470588235295
+        ],
+        "footprint": [
+          620.8,
+          5118.032090608778,
+          158.4,
+          58.84615384615385
+        ],
+        "baseline": 5176.878244454932,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "recording_camera_tripod_233",
+        "asset": "camera_tripod",
+        "path": "res://campuses/future_learning_center/assets/objects/camera_tripod.png",
+        "crop": [
+          144,
+          136,
+          712,
+          1305
+        ],
+        "scale": 0.07279693486590039,
+        "bounds": [
+          681.5836776908071,
+          5557.952336007552,
+          51.83141762452107,
+          95
+        ],
+        "footprint": [
+          684.6935627482784,
+          5616.958295990523,
+          45.611647509578546,
+          35.994040017028524
+        ],
+        "baseline": 5652.952336007552,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "recording_desk_234",
+        "asset": "desk",
+        "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+        "crop": [
+          50,
+          165,
+          1322,
+          827
+        ],
+        "scale": 0.10264750378214825,
+        "bounds": [
+          1042.15,
+          5081.442604980942,
+          135.7,
+          84.8894856278366
+        ],
+        "footprint": [
+          1050.292,
+          5118.032090608778,
+          119.416,
+          48.3
+        ],
+        "baseline": 5166.332090608778,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "recording_chair_back_235",
+        "asset": "chair_back",
+        "path": "res://campuses/future_learning_center/assets/objects/chair_back.png",
+        "crop": [
+          171,
+          278,
+          765,
+          1028
+        ],
+        "scale": 0.06313725490196077,
+        "bounds": [
+          1085.85,
+          5146.4269925695635,
+          48.3,
+          64.90509803921567
+        ],
+        "footprint": [
+          1088.748,
+          5179.1320906087785,
+          42.504,
+          32.199999999999996
+        ],
+        "baseline": 5211.332090608778,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "recording_desk_divider_236",
+        "asset": "desk_divider",
+        "path": "res://campuses/future_learning_center/assets/objects/desk_divider.png",
+        "crop": [
+          95,
+          195,
+          1584,
+          554
+        ],
+        "scale": 0.0769570707070707,
+        "bounds": [
+          1049.05,
+          5063.897873437061,
+          121.89999999999999,
+          42.63421717171717
+        ],
+        "footprint": [
+          1056.3639999999998,
+          5063.867090608778,
+          107.27199999999999,
+          42.66499999999999
+        ],
+        "baseline": 5166.389590608778,
+        "parent": "recording_desk_234",
+        "mounted": true
+      },
+      {
+        "id": "recording_monitor_front_237",
+        "asset": "monitor_front",
+        "path": "res://campuses/future_learning_center/assets/objects/monitor_front.png",
+        "crop": [
+          336,
+          193,
+          864,
+          645
+        ],
+        "scale": 0.053240740740740734,
+        "bounds": [
+          885.7730627306273,
+          5058.437200284875,
+          46,
+          34.34027777777777
+        ],
+        "footprint": [
+          888.5330627306275,
+          5076.677478062653,
+          40.48,
+          16.099999999999998
+        ],
+        "baseline": 5152.095190239775,
+        "parent": "recording_media_cart",
+        "mounted": true
+      },
+      {
+        "id": "recording_media_cart",
+        "asset": "media_cart",
+        "path": "res://campuses/future_learning_center/assets/room_props/media_cart.png",
+        "crop": [
+          130,
+          312,
+          1084,
+          765
+        ],
+        "scale": 0.1088560885608856,
+        "bounds": [
+          876.1162361623616,
+          5069.046850756379,
+          118,
+          83.27490774907749
+        ],
+        "footprint": [
+          876.5516605166051,
+          5118.032090608778,
+          106.78782287822878,
+          34.289667896678964
+        ],
+        "baseline": 5151.995190239774,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "recording_softbox",
+        "asset": "softbox",
+        "path": "res://campuses/future_learning_center/assets/room_props/softbox.png",
+        "crop": [
+          220,
+          112,
+          567,
+          1414
+        ],
+        "scale": 0.07779349363507779,
+        "bounds": [
+          492.82885431400285,
+          5390.15558698727,
+          44.1089108910891,
+          109.99999999999999
+        ],
+        "footprint": [
+          492.82885431400285,
+          5479.77369165488,
+          44.1089108910891,
+          20.381895332390382
+        ],
+        "baseline": 5500,
+        "parent": null,
+        "mounted": false
+      },
+      {
+        "id": "recording_cart_cable_reel",
+        "asset": "cable_reel",
+        "path": "res://campuses/future_learning_center/assets/puzzles/cable_scene/cable_reel.png",
+        "crop": [
+          75,
+          98,
+          1264,
+          973
+        ],
+        "scale": 0.022151898734177215,
+        "bounds": [
+          935.0498154981549,
+          5071.223680594298,
+          28,
+          21.553797468354432
+        ],
+        "footprint": [
+          935.0498154981549,
+          5090.777478062652,
+          28,
+          2
+        ],
+        "baseline": 5152.195190239774,
+        "parent": "recording_media_cart",
+        "mounted": true
+      },
+      {
+        "id": "recording_puzzle_rail",
+        "asset": "tabletop_apparatus",
+        "path": "res://campuses/future_learning_center/assets/puzzles/optical_scene/rail_horizontal.png",
+        "crop": [
+          82,
+          272,
+          2008,
+          170
+        ],
+        "scale": 0.045318725099601595,
+        "bounds": [
+          1064.5,
+          5124.672113090712,
+          91,
+          7.704183266932271
+        ],
+        "footprint": [
+          1064.5,
+          5130.376296357644,
+          91,
+          2
+        ],
+        "baseline": 5166.532090608778,
+        "parent": "recording_desk_234",
+        "mounted": true
+      },
+      {
+        "id": "recording_puzzle_baffle",
+        "asset": "tabletop_apparatus",
+        "path": "res://campuses/future_learning_center/assets/puzzles/recording_scene/sliding_baffle.png",
+        "crop": [
+          375,
+          96,
+          221,
+          1427
+        ],
+        "scale": 0.024886877828054297,
+        "bounds": [
+          1107.25,
+          5096.86272169701,
+          5.5,
+          35.51357466063348
+        ],
+        "footprint": [
+          1107.25,
+          5130.376296357644,
+          5.5,
+          2
+        ],
+        "baseline": 5166.532090608778,
+        "parent": "recording_desk_234",
+        "mounted": true
+      }
+    ],
+    "npcs": [
+      {
+        "id": "flc_3_recording_student_a",
+        "room": "recording",
+        "name": "同学",
+        "path": "res://campuses/future_learning_center/assets/npcs/canteen_queue_student_01_front.png",
+        "frameSize": [
+          96,
+          128
+        ],
+        "frameCount": 2,
+        "foot": [
+          1260,
+          5370
+        ],
+        "line": "设备先放在车上。",
+        "bounds": [
+          1228.8,
+          5296.7125,
+          62.4,
+          83.2
+        ],
+        "footprint": [
+          1250.25,
+          5362.6875,
+          19.5,
+          14.625
+        ],
+        "baseline": 5370,
+        "parent": null,
+        "displayScale": 0.65
+      }
+    ]
+  }
+}

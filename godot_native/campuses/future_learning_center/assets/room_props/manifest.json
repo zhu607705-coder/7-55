@@ -1,0 +1,144 @@
+[
+  {
+    "filename": "media_cart.png",
+    "source": {
+      "filename": "media_cart.png",
+      "sha256": "c173b58d65d6c1b9ed726cf94f3e28269fd8b30bd9cea18fe9f4409b3ed3f28a",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "has_alpha_channel": true,
+      "visible_bbox_alpha128": [
+        130,
+        312,
+        1214,
+        1077
+      ],
+      "alpha0": 958905,
+      "alpha255": 1663,
+      "partial_alpha": 611948,
+      "alpha_levels": 256,
+      "original_bytes_preserved": true,
+      "generation": "ChatGPT webpage image generation, 2026-10-31",
+      "provenance_note": "Original downloaded PNG bytes; private session links deliberately omitted."
+    },
+    "source_region": [
+      130,
+      312,
+      1084,
+      765
+    ],
+    "source_baseline_pivot": [
+      625,
+      1074
+    ],
+    "source_foot_aabb": [
+      134,
+      762,
+      981,
+      315
+    ],
+    "source_marks": {
+      "top_contact_line": [
+        [
+          250,
+          530
+        ],
+        [
+          990,
+          530
+        ]
+      ],
+      "monitor_contact": [
+        440,
+        530
+      ],
+      "reel_contact": [
+        800,
+        530
+      ],
+      "front_wheel_contacts": [
+        [
+          184,
+          1074
+        ],
+        [
+          1065,
+          1074
+        ]
+      ],
+      "rear_wheel_contacts_approx": [
+        [
+          225,
+          767
+        ],
+        [
+          1029,
+          767
+        ]
+      ]
+    },
+    "uniform_scale": 0.1088560885608856
+  },
+  {
+    "filename": "softbox.png",
+    "source": {
+      "filename": "softbox.png",
+      "sha256": "cf9c8893bdc329c1f41c304fb62744f2b3d1f959e12713d405443df6c0a8d27f",
+      "size": [
+        966,
+        1629
+      ],
+      "mode": "RGBA",
+      "has_alpha_channel": true,
+      "visible_bbox_alpha128": [
+        220,
+        112,
+        787,
+        1526
+      ],
+      "alpha0": 1349181,
+      "alpha255": 454,
+      "partial_alpha": 223979,
+      "alpha_levels": 256,
+      "original_bytes_preserved": true,
+      "generation": "ChatGPT webpage image generation, 2026-10-31",
+      "provenance_note": "Original downloaded PNG bytes; private session links deliberately omitted."
+    },
+    "source_region": [
+      220,
+      112,
+      567,
+      1414
+    ],
+    "source_baseline_pivot": [
+      505,
+      1524
+    ],
+    "source_foot_aabb": [
+      220,
+      1264,
+      567,
+      262
+    ],
+    "source_marks": {
+      "feet_contacts_approx": [
+        [
+          250,
+          1298
+        ],
+        [
+          759,
+          1298
+        ],
+        [
+          507,
+          1524
+        ]
+      ]
+    },
+    "uniform_scale": 0.07779349363507779
+  }
+]
