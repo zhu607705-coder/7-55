@@ -15,9 +15,12 @@ The actual official Godot implementation is vendored under `addons/qframework/`:
 - `UPSTREAM.json` records the source revision and SHA-256 for each included file.
 - Editor plugins, upstream examples, GUT and optional toolkits are not runtime dependencies.
 
-The project engine pin remains Godot 4.7.1. This increment was locally tested
-with the installed Godot 4.7.2 `ed1daf0bf`; retrieving 4.7.1 failed to connect.
-A 4.7.1 run and browser export acceptance remain outstanding.
+The project engine pin remains Godot 4.7.1. Full local validation passed with
+Godot 4.7.2 `ed1daf0bf`, and focused core compatibility validation passed with
+cached Godot 4.7.1 `a13da4feb`. The user accepted using the local patch version
+for this work. A fresh Web export and browser acceptance remain outstanding.
+The upstream MIT notice is also reproduced in the native root `NOTICE`, which
+is already included by all production export presets.
 
 ## Runtime composition
 
@@ -140,3 +143,26 @@ GODOT_BIN=/path/to/godot node godot_native/tools/validate_native.mjs --profile c
 Focused validation is not a full native suite, manual playthrough, browser delivery or
 physical-device acceptance. Reports retain the tested base revision and exact-content
 identity; keep these distinctions when reporting progress.
+
+## Validation record (2026-11-01)
+
+The tested runtime commit is `08d99c15daa4eb17546c4f3859593d7b42624434`.
+The subsequent documentation/NOTICE commit does not change runtime code.
+Both native runner reports record `inputChangedDuringRun: false`.
+
+| Check | Result |
+| --- | --- |
+| Full native suite, Godot 4.7.2 | 604 registered entries covered: 603 passed, 1 audited duplicate, 0 failures or blocked entries |
+| Focused core suite, Godot 4.7.1 | 11 selected entries passed, 0 failures; this is not a second full-suite run |
+| QFramework behavior comparison, both engines | 1,065 checks, 234 action comparisons across 117 checkpoints, 0 failures |
+| Actual-file save integration, both engines | 1,829 checks, 236 real-file browser-save imports, 0 failures |
+| Continuous native campaign, Godot 4.7.2 | Chapters 1, 2, 3 and 4 completed, 0 failures; automated, not a manual playthrough |
+| Native validation runner/registration Node contracts | 36 passed |
+| Vendor source integrity | All 6 scripts and the license match the pinned upstream Git tree blobs |
+
+The full runner audited `test_buct_rongmao.gd` as identical to an existing
+registered execution: same script bytes, scene, environment and inputs, with
+no self-path introspection. No regression file was removed.
+
+Raw reports and logs are retained in the chat artifact folder
+`qframework_architecture_20261101/`, alongside `validation_summary.json`.
