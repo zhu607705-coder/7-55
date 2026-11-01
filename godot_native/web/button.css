@@ -121,6 +121,8 @@
   --button-hover-top: #fff7df; --button-hover-bottom: #fff7df;
   --button-edge: #6f655a; --button-ink: #1d1a1e; --button-focus: #a43b32;
   --button-text-shadow: none;
+  /* Switch face and ink polarity together; intermediate blends lose contrast. */
+  transition: translate 120ms ease, transform 120ms ease, box-shadow 140ms ease, --button-face-top 160ms ease, --button-face-bottom 160ms ease, border-color 160ms ease !important;
   border-radius: calc(2.5 * var(--button-u)) !important;
   background: var(--button-top) !important;
   box-shadow: calc(2 * var(--button-u)) calc(3 * var(--button-u)) 0 rgba(29,26,30,.4) !important;

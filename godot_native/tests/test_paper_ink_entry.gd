@@ -57,6 +57,24 @@ func run() -> void:
 	check(presses==2,"keyboard activation remains available")
 	check(button.get_global_rect()==hit,"all input states retain measured hit rect")
 	button.queue_free();await frames()
+	# Endpoint-only palette checks miss ink crossing a still-dark primary face.
+	var primary:=Button.new();primary.text="已保存的线索";primary.size=Vector2(220,48)
+	primary.set_meta("tactile_paper_ink",true);primary.set_meta("tactile_variant","primary")
+	primary.disabled=true;root.add_child(primary);await frames()
+	var material:StyleBox=primary.get_theme_stylebox("disabled")
+	check(material.disabled_amount==1.0,"initially disabled primary adopts its readable face immediately")
+	check(contrast(primary.get_theme_color("font_disabled_color"),material.bg_color)>=4.5,"initially disabled primary remains readable")
+	var primary_hit:=primary.get_global_rect()
+	for disabled_now:bool in [false,true,false,true]:
+		primary.disabled=disabled_now
+		for step:float in [0.0,0.001,0.02,0.05,0.12]:
+			primary.get_node("TactileMaterialState")._process(step)
+			var actual_face:=PaperInk.face_color(material.variant,material.hover_amount,material.disabled_amount)
+			var actual_ink:Color=primary.get_theme_color("font_disabled_color" if disabled_now else "font_color")
+			check(contrast(actual_ink,actual_face)>=4.5,"disabled and re-enabled primary stay readable at every transition step")
+			check(material.bg_color.is_equal_approx(actual_face),"material compatibility color equals the actually drawn face")
+	check(primary.get_global_rect()==primary_hit,"readable disabled transitions preserve the original hit rectangle")
+	primary.queue_free();await frames()
 	var apparatus:=Button.new();apparatus.set_meta("tactile_exempt",true);apparatus.set_meta("tactile_paper_ink",true)
 	root.add_child(apparatus);await frames()
 	check(apparatus.get_node_or_null("TactileMaterialState")==null,"apparatus exemption still wins over skin request")

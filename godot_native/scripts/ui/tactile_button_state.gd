@@ -58,6 +58,8 @@ func _theme_changed() -> void:
 func _apply() -> void:
  if not is_instance_valid(button) or _updating:return
  _updating=true
+ # Switch light/dark disabled polarity with its ink, including first adoption.
+ if material.paper_ink:material.disabled_amount=1.0 if button.disabled else 0.0
  if compact and button.get_meta("tactile_compensated_type",false):
   unit=float(button.get_theme_font_size("font_size"))/14.0;material.unit=unit
   button.set_meta("tactile_unit",unit)
@@ -106,7 +108,8 @@ func _process(delta: float) -> void:
  _hover=move_toward(_hover,hover_target,delta/.160)
  _press=move_toward(_press,press_target,delta/.120)
  _lift=move_toward(_lift,hover_target,delta/.140)
- _disabled=move_toward(_disabled,disabled_target,delta/.160)
+ # A dark primary face cannot fade to light under already-switched dark ink.
+ _disabled=disabled_target if material.paper_ink else move_toward(_disabled,disabled_target,delta/.160)
  if old.is_equal_approx(Vector4(_hover,_press,_lift,_disabled)) and is_equal_approx(old_shadow,_shadow_press) and is_equal_approx(old_color,_color_press):return
  material.shadow_press=_shadow_press;material.color_press=_color_press
  material.hover_amount=_hover;material.press_amount=_press;material.lift_amount=_lift;material.disabled_amount=_disabled

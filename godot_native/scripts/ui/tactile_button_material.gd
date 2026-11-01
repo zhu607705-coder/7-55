@@ -36,7 +36,7 @@ var label_inset := 0.0
 # owned here; late legacy palette writes must not restore app-specific hues.
 var bg_color: Color:
  get:
-  if paper_ink:return PaperInk.face_color(variant)
+  if paper_ink:return PaperInk.face_color(variant,hover_amount,disabled_amount)
   if variant in ["ghost","text"]:return Color.TRANSPARENT
   return PALETTES[variant][1]
  set(_value):pass

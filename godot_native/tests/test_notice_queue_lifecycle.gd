@@ -2,6 +2,7 @@ extends SceneTree
 ## Emulated root input + real Main/audio consumers. Presentation fixtures do not
 ## grant story facts, and every stage uses the native test save sandbox.
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
+const PaperInk=preload("res://scripts/ui/paper_ink_material.gd")
 var checks:=0
 var failures:=0
 var shell:Control
@@ -16,6 +17,10 @@ func check(ok:bool,label:String)->void:
 	if not ok:failures+=1;push_error("NOTICE QUEUE: "+label)
 func frames(count:int=3)->void:
 	for i in count:await process_frame
+func check_paper_caption(view:Control,label:String)->void:
+	var face:StyleBox=view.panel.get_theme_stylebox("panel")
+	check(face is StyleBoxFlat and face.bg_color==PaperInk.PAPER,label+" has the exact opaque paper reading face")
+	check(view.body.get_theme_color("font_color")==PaperInk.INK and Ui._contrast(view.body.get_theme_color("font_color"),PaperInk.PAPER)>=4.5,label+" retains readable dark ink")
 func click(control:Control)->void:
 	var at:=control.get_global_transform_with_canvas()*(control.size/2)
 	for down in [true,false]:
@@ -60,7 +65,7 @@ func run()->void:
 	var line:=SourceLine.new();var library:Control=shell.library_story_host
 	library.current=line;library.view.session=line;library.view.tick();shell._layout();shell._process(8)
 	check(not shell.toast.visible,"library dialogue suspends the generic notice")
-	check(library.view.panel.get_theme_stylebox("panel") is StyleBoxEmpty,"library caption uses selected none background")
+	check_paper_caption(library.view,"library caption")
 	library.current=null;library.view.session=null;library.view.tick();shell._layout();shell._process(0)
 	check(shell.toast.text=="对白前的通知" and is_equal_approx(shell.toast_time,remaining),"dialogue close resumes exactly the unread lifetime")
 	var c3_view:Control=shell.c3_narrative_host.view
@@ -69,7 +74,8 @@ func run()->void:
 	c3_view.surface_visible=true;c3_view.session=SourceLine.new();c3_view.tick();shell._layout()
 	check(c3_view.is_visible_in_tree(),"C3 pause fixture is actually visible outside the hidden SubViewport")
 	shell._process(6)
-	check(not shell.toast.visible and c3_view.panel.get_theme_stylebox("panel") is StyleBoxEmpty,"visible C3 caption still suspends ordinary notices with selected none background")
+	check(not shell.toast.visible,"visible C3 caption still suspends ordinary notices")
+	check_paper_caption(c3_view,"C3 caption")
 	c3_view.session=null;c3_view.tick();shell._layout();shell._process(0)
 	check(shell.toast.text=="对白前的通知" and is_equal_approx(shell.toast_time,remaining),"C3 caption hands back the same unread notice")
 	await reset_phone()

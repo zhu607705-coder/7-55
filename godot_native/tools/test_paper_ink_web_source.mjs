@@ -16,6 +16,9 @@ for(const state of [':hover',':active',':focus-visible',':disabled'])check(css.i
 check(css.includes('translate: none'),'Pressed paper paint cannot shift the DOM hit rectangle');
 check(css.includes('@media (prefers-reduced-motion: reduce)')&&css.includes('@media (forced-colors: active)'),'Existing accessibility fallbacks retained');
 const scope=css.slice(css.indexOf('/* Godot Web entry skin.'));
+const transition=scope.match(/\btransition:\s*([^;]+);/)?.[1]||'';
+check(transition&&!/(?:^|,)\s*(?:background-color|color)\s/.test(transition),'Paper ink polarity changes never interpolate through unreadable colors');
+check(transition.includes('box-shadow 140ms ease')&&transition.includes('border-color 160ms ease'),'Existing paper hover/press shadow and edge feedback remains animated');
 check(!/(?:^|[;{])\s*(?:width|height|min-height|padding|gap|font-size|font-weight|font-family)\s*:/m.test(scope),'Opt-in skin cannot change authored geometry or type size');
 check(!/url\s*\(/i.test(scope),'No external font, texture or hidden request added');
 const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'755-paper-source-'));
