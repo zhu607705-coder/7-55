@@ -151,8 +151,13 @@ export async function continuousExercise(h, evidence) {
     // Attempted input, browser observation and ACKs remain separate evidence.
     const sendPointer = async (phase, point) => {
       const stats = timing.pointerAck[phase], began = Date.now(); stats.calls++;
-      const input = {phase, x: point.x, y: point.y, at: began}; timing.sent.push(input);
-      try { const result = await h.pointer(phase, point); stats.acknowledged++; input.acknowledgedAt = Date.now(); if (phase === 'move') timing.pointerMoves++; return result; }
+      // This CI Chromium path exposed integral MouseEvent client coordinates.
+      // Send explicit integers for exact cross-implementation comparison; touch
+      // retains its fractional path. Do not loosen the observation tolerance.
+      // The original float point stays intact for canvas registration checks.
+      const dispatchedPoint = h.touch ? point : {x: Math.trunc(point.x), y: Math.trunc(point.y)};
+      const input = {phase, x: dispatchedPoint.x, y: dispatchedPoint.y, at: began}; timing.sent.push(input);
+      try { const result = await h.pointer(phase, dispatchedPoint); stats.acknowledged++; input.acknowledgedAt = Date.now(); if (phase === 'move') timing.pointerMoves++; return result; }
       catch (error) { stats.failed++; input.error = error.message; input.failedAt = Date.now(); throw error; }
       finally { const elapsed = Date.now() - began; stats.totalMs += elapsed; stats.maxMs = Math.max(stats.maxMs, elapsed); }
     };

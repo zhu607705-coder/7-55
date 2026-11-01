@@ -66,7 +66,7 @@ for (const touch of [true, false]) await test(`cached canvas preserves every ori
     expected.push({phase: 'end', ...screen(finish)});
   }
   assert.equal(f.events.length, expected.length);
-  f.events.forEach((event, i) => {assert.equal(event.phase, expected[i].phase); assert.ok(Math.hypot(event.x - expected[i].x, event.y - expected[i].y) < 1e-9);});
+  f.events.forEach((event, i) => {assert.equal(event.phase, expected[i].phase); const point = touch ? expected[i] : {x: Math.trunc(expected[i].x), y: Math.trunc(expected[i].y)}; assert.ok(Math.hypot(event.x - point.x, event.y - point.y) < 1e-9);});
   const moves = expected.filter(event => event.phase === 'move').length;
   assert.equal(f.waits.length, moves); assert.ok(f.waits.every(ms => ms === 80));
   const expectedCalls = fractions.slice(1).reduce((sum, finish, i) => sum + 2 + Math.floor(Math.ceil((finish - fractions[i]) * length / 2) / 8), 0);
@@ -304,4 +304,30 @@ await test('a pending serial ACK prevents the next dispatch and the cadence star
   now = 450; resolveFirst(); await run;
   assert.deepEqual(sent, [{x: 0, now: 0}, {x: 1, now: 530}]);
   assert.equal(waits[0].now, 450); assert.equal(timing.maxInFlight, 1);
+});
+await test('fractional mouse mapping is normalized before dispatch and report while geometry remains fractional', async () => {
+  const f = fixture({touch: false}); await continuousExercise(f.h, f.evidence);
+  assert.ok(f.events.every(e => Number.isInteger(e.x) && Number.isInteger(e.y)));
+  assert.deepEqual(f.evidence.exerciseTransport.flatMap(row => row.sent.map(({phase, x, y}) => ({phase, x, y}))), f.events);
+  assert.ok(f.checks.some(label => /remains registered after input 8/.test(label)));
+  for (const row of f.evidence.exerciseTransport) verifyExerciseObservation(row.observed, row.sent, false);
+  const touch = fixture({touch: true}); await continuousExercise(touch.h, touch.evidence);
+  assert.ok(touch.events.some(e => !Number.isInteger(e.x) || !Number.isInteger(e.y)), 'touch still sends its original fractional geometry');
+});
+await test('actual desktop integer event shape passes only exact normalized sends, not wrong integers or missing events', () => {
+  // Observed Phase3 serial artifact: fractional start(640,468.414647) and
+  // move(638.332309,468.395018) become these trusted integral MouseEvents.
+  const sent = [{phase: 'start', x: 640, y: 468}, {phase: 'move', x: 638, y: 468}];
+  const observed = {events: sent.map(e => ({...e, trusted: true, identifier: null, buttons: 1})), overflow: false, cancelled: false};
+  verifyExerciseObservation(observed, sent, false);
+  assert.throws(() => verifyExerciseObservation(observed, [{...sent[0], y: 468.414647}, sent[1]], false), /order\/coordinate/);
+  assert.throws(() => verifyExerciseObservation(observed, [sent[0], {...sent[1], x: 639}], false), /order\/coordinate/);
+  assert.throws(() => verifyExerciseObservation({...observed, events: observed.events.slice(0, 1)}, sent, false), /lost, added/);
+});
+await test('mouse integer dispatch does not hide subpixel drift in the original float canvas mapping', async () => {
+  const f = fixture({touch: false}), render = f.h.renderPoint; let calls = 0;
+  f.h.renderPoint = async (...args) => {const point = await render(...args); if (++calls > 2) point.x += .1; return point;};
+  await assert.rejects(continuousExercise(f.h, f.evidence), /remains registered after input 8/);
+  assert.equal(f.events.filter(e => e.phase === 'move').length, 8);
+  assert.equal(f.events.at(-1).phase, 'end');
 });
