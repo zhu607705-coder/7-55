@@ -22,9 +22,18 @@ const DeveloperTools = preload("res://scripts/developer_tools_policy.gd")
 var _domain_guard: RefCounted = SaveDomainGuard.new()
 const JOURNAL_ARCHIVE = preload("res://scripts/media/journal_archive.gd")
 const MAX_PORTABLE_SAVE_BYTES := 48*1024*1024
-var d: Dictionary = {}
-var modules: Array = []
-var _content_cache: Dictionary = {}
+const GameArchitecture = preload("res://scripts/architecture/game_architecture.gd")
+const NavigationCommand = preload("res://scripts/architecture/commands/navigation_command.gd")
+const StoryActionCommand = preload("res://scripts/architecture/commands/story_action_command.gd")
+const ChapterQuery = preload("res://scripts/architecture/queries/chapter_query.gd")
+var _architecture: GameArchitecture
+# Legacy callers retain one shared dictionary; there is no parallel model/save.
+var d: Dictionary:
+	get: return game_architecture().get_model("Progression").snapshot
+	set(value): game_architecture().get_model("Progression").snapshot = value
+var modules: Array:
+	get: return game_architecture().get_system("Chapters").modules
+	set(value): game_architecture().get_system("Chapters").modules = value
 var developer_mode := false
 var formal_snapshot: Dictionary = {}
 var last_result: Dictionary = {}
@@ -33,11 +42,23 @@ var _journal_validator: RefCounted
 var _migration: RefCounted
 var _import_proof_cache: Dictionary = {}
 
+func game_architecture() -> GameArchitecture:
+	if _architecture == null:
+		_architecture = GameArchitecture.new()
+		_architecture.name = "GameArchitecture"
+		_architecture.init()
+		add_child(_architecture)
+		_architecture.get_system("Chapters").navigation_changed.connect(_on_navigation_changed)
+	return _architecture
+
+func _on_navigation_changed(persist: bool) -> void:
+	if persist: save_game()
+	changed.emit()
+
+func read_snapshot() -> Dictionary:
+	return game_architecture().send_query(ChapterQuery.new("snapshot"))
+
 func _ready() -> void:
-	for path in ["res://scripts/chapters/chapter4.gd", "res://scripts/chapters/chapter3.gd", "res://scripts/chapters/chapter1_2.gd"]:
-		if ResourceLoader.exists(path):
-			var script = load(path)
-			if script and script.can_instantiate(): modules.append(script.new())
 	d = initial()
 	if not (developer_tools_available() and OS.get_cmdline_user_args().has("--fresh")):
 		load_game()
@@ -100,56 +121,25 @@ func asset(path: String) -> String:
 	return "res://assets/" + path.trim_prefix("src/assets/").trim_prefix("assets/").trim_prefix("/")
 
 func content(name: String) -> Variant:
-	var normalized := name.trim_prefix("src/data/").trim_prefix("data/source/")
-	if not normalized.ends_with(".json"): normalized += ".json"
-	if not _content_cache.has(normalized):
-		var path := "res://data/source/" + normalized
-		_content_cache[normalized] = JSON.parse_string(FileAccess.get_file_as_string(path)) if FileAccess.file_exists(path) else {}
-	return _content_cache[normalized]
+	return game_architecture().get_utility("Content").read(name)
 
 func get_pages() -> Array:
-	var result: Array = []
-	var seen: Dictionary = {}
-	for module in modules:
-		if not module.has_method("pages"): continue
-		for page in module.pages(d):
-			if page is Dictionary and not seen.has(page.get("id", "")):
-				seen[page.id] = true
-				result.append(page)
-	return result
+	return game_architecture().send_query(ChapterQuery.new("pages"))
 
 func get_view(page: String) -> Dictionary:
-	for module in modules:
-		if module.has_method("view"):
-			var found: Dictionary = module.view(page, d)
-			if not found.is_empty(): return found
-	return {"title": "7:55", "body": "请选择一个应用。"}
+	return game_architecture().send_query(ChapterQuery.new("view", page))
 
 func get_actions(page: String) -> Array:
-	var result: Array = []
-	var seen: Dictionary = {}
-	for module in modules:
-		if not module.has_method("actions"): continue
-		for action in module.actions(page, d):
-			if action is Dictionary and not seen.has(action.get("id", "")):
-				seen[action.id] = true
-				result.append(action)
-	return result
+	return game_architecture().send_query(ChapterQuery.new("actions", page))
 
-func get_c3_narrative_session(delta_ms: float=0) -> RefCounted:
-	for module in modules:
-		if module.has_method("narrative_session"): return module.narrative_session(d,delta_ms)
-	return null
+func get_c3_narrative_session(delta_ms: float = 0) -> RefCounted:
+	return game_architecture().get_system("Chapters").narrative_session(delta_ms)
 
-func get_library_story_session(delta_ms: float=0) -> RefCounted:
-	for module in modules:
-		if module.get("library")!=null: return module.library.story_session(d,delta_ms)
-	return null
+func get_library_story_session(delta_ms: float = 0) -> RefCounted:
+	return game_architecture().get_system("Chapters").library_session(delta_ms)
 
 func get_phone_entry_session() -> RefCounted:
-	for module in modules:
-		if module.has_method("phone_entry_session"): return module.phone_entry_session(d)
-	return null
+	return game_architecture().get_system("Chapters").get_phone_entry_session()
 
 func get_home_desk_controller() -> RefCounted:
 	for module in modules:
@@ -182,29 +172,17 @@ func get_scene_session() -> RefCounted:
 	return null
 
 func get_targets(scene: String) -> Array:
-	var result: Array = []
-	for module in modules:
-		if module.has_method("targets"):
-			result.append_array(module.targets(scene,d))
-	return result
+	return game_architecture().send_query(ChapterQuery.new("targets", scene))
 
 func objective() -> String:
-	for module in modules:
-		if module.has_method("objective"):
-			var value: String = module.objective(d)
-			if not value.is_empty(): return value
-	return "调查被打散的签到记录。"
+	return game_architecture().send_query(ChapterQuery.new("objective"))
 
 func act(action: String, value: Variant = null) -> Dictionary:
-	if action!="lib_story_complete" and get_library_story_session()!=null: return {"handled":true,"message":""}
-	if action not in ["c3_story_complete","c3_promo_visual_complete","c3_reversal_visual_complete","c3_reversal_inspect_closed"] and get_c3_narrative_session()!=null: return {"handled":true,"message":""}
-	var previous_state: Dictionary=d.duplicate(true)
-	for module in modules:
-		if not module.has_method("dispatch"): continue
-		var result: Dictionary=module.dispatch(d,action,value)
-		if not result.is_empty(): return _accept_result(action,previous_state,result)
-	feedback.emit("这个操作暂时不可用。")
-	return {"handled":false,"message":"这个操作暂时不可用。"}
+	var outcome: Dictionary = game_architecture().send_command(StoryActionCommand.new(action, value))
+	var result: Dictionary = outcome.result
+	if outcome.status == "accepted": return _accept_result(action, outcome.previous, result)
+	if outcome.status == "unhandled": feedback.emit(str(result.message))
+	return result
 
 func _accept_result(action: String,previous_state: Dictionary,result: Dictionary) -> Dictionary:
 	var ephemeral: bool=action in ["c4_clock_begin","c4_clock_event","c4_clock_cancel","c3_rehearsal_begin","c3_rehearsal_result","c3_rehearsal_cancel","c3_chest_begin","c3_chest_clear","c3_chest_take","c3_chest_clue","c3_chest_inspect","c3_chest_place","c3_chest_turn","c3_chest_open","c3_chest_cancel"] and result.get("ephemeral",false)==true
@@ -236,9 +214,7 @@ func _accept_result(action: String,previous_state: Dictionary,result: Dictionary
 	return result
 
 func lake_module() -> RefCounted:
-	for module in modules:
-		if module.get("lake")!=null: return module.lake
-	return null
+	return game_architecture().get_system("Chapters").lake_module()
 
 func lake_world_stroke(world: Node,side: String,reverse: bool=false) -> Dictionary:
 	var owner:=lake_module()
@@ -255,16 +231,7 @@ func lake_world_tick(world: Node,delta: float) -> Dictionary:
 	return _accept_result("c3_world_tick",previous,result) if not result.is_empty() else {}
 
 func source_app(page: String) -> String:
-	var apps := ["alarm","desktop","phone_home","ending","wechat","cc98","zjuding","tiyi","weather","settings","bonsai","checkin","campus_card","photos","timeline_recovery","voice_memos","clock"]
-	if page in apps: return page
-	if page.begins_with("library_") or page in ["directory","c35_network","c3_campus_map"]: return "zjuding"
-	if page in ["c35_recovery"]: return "timeline_recovery"
-	if page in ["c35_voice"]: return "voice_memos"
-	if page in ["c35_photos"]: return "photos"
-	if page=="system_chat": return "zjuding"
-	if page in ["c35_official","c35_messages"]: return "wechat"
-	if page in ["c35_journal","c3_ticket_post"]: return "cc98"
-	return ""
+	return game_architecture().get_system("Chapters").source_app(page)
 
 func _consume_scene_open(_previous: String, _next: String) -> void:
 	# Navigation is not a battery drain. In particular, opening an app must not
@@ -275,16 +242,7 @@ func story_input_locked() -> bool:
 	return get_library_story_session()!=null or get_c3_narrative_session()!=null
 
 func _invalidate_progressive_activities() -> void:
-	for module in modules:
-		if module.has_method("invalidate_chest_mechanism"):
-			module.invalidate_chest_mechanism()
-		if module.has_method("invalidate_rehearsal_session"):
-			module.invalidate_rehearsal_session()
-		if module.has_method("invalidate_progressive_session"):
-			module.invalidate_progressive_session()
-	var lake = lake_module()
-	if lake != null and lake.has_method("invalidate_logistics_session"):
-		lake.invalidate_logistics_session()
+	game_architecture().get_system("Chapters").invalidate_progressive_activities()
 
 func cancel_progressive_activity(action: String, value: Dictionary) -> bool:
 	# Retire only a matching runtime capability. Closing or replacing a view
@@ -308,54 +266,20 @@ func cancel_progressive_activity(action: String, value: Dictionary) -> bool:
 	return false
 
 func open_page(page: String) -> void:
-	if story_input_locked(): return
-	_invalidate_progressive_activities()
-	# P10's revealed flower digit is local to its mounted page.
-	if str(d.native.page)=="bonsai" and page!="bonsai": d.native.erase("flower_eight_visible")
-	_consume_scene_open(str(d.native.page),page)
-	d.native.page = page
-	get_phone_entry_session()
-	var app := source_app(page)
-	if not app.is_empty(): d.currentScene = app
-	save_game()
-	changed.emit()
+	game_architecture().send_command(NavigationCommand.new("open_page", page))
 
 func open_scene(scene: String) -> void:
-	if story_input_locked(): return
-	_invalidate_progressive_activities()
-	d.native.scene = scene
-	d.rpgScene = scene
-	d.runtimeMode = "rpg"
-	save_game()
-	changed.emit()
+	game_architecture().send_command(NavigationCommand.new("open_scene", scene))
 
 func toggle_mode() -> void:
-	if story_input_locked(): return
-	_invalidate_progressive_activities()
-	d.native.mode = "dark" if d.native.mode == "light" else "light"
-	d.themeMode = "dark" if d.native.mode == "dark" else "normal"
-	d.chapter4.mode = d.native.mode
-	d.canteenHunt.mode = d.native.mode
-	d.theaterHunt.mode = d.native.mode
-	d.qizhenLake.mode = d.native.mode
-	save_game()
-	changed.emit()
+	game_architecture().send_command(NavigationCommand.new("toggle_mode", ""))
 
 func _record(message: String) -> void:
 	d.native.log.append({"text":message,"time":Time.get_datetime_string_from_system()})
 	while d.native.log.size() > 200: d.native.log.pop_front()
 
 func select_item(id: String) -> void:
-	if story_input_locked(): return
-	if id.is_empty():
-		d.native.selected_item = ""
-		d.ui.selectedItem = null
-		changed.emit()
-		return
-	if not d.items.get(id,false): return
-	d.native.selected_item = id
-	d.ui.selectedItem = id
-	changed.emit()
+	game_architecture().send_command(NavigationCommand.new("select_item", id))
 
 func merge_defaults(base: Dictionary, incoming: Dictionary) -> Dictionary:
 	var result := base.duplicate(true)
@@ -750,13 +674,7 @@ func restore_formal() -> void:
 
 func developer_checkpoints() -> Array:
 	if not developer_tools_available(): return []
-	if not _content_cache.has("_developer_checkpoints"):
-		var file := FileAccess.open("res://data/native/developer_checkpoints.json.gz",FileAccess.READ)
-		if not file: return []
-		var decoded := file.get_buffer(file.get_length()).decompress_dynamic(4*1024*1024,FileAccess.COMPRESSION_GZIP)
-		var parsed = JSON.parse_string(decoded.get_string_from_utf8())
-		_content_cache["_developer_checkpoints"] = parsed.get("checkpoints",[]) if parsed is Dictionary else []
-	return _content_cache["_developer_checkpoints"]
+	return game_architecture().get_utility("Content").developer_checkpoints()
 
 func begin_checkpoint(id: String) -> bool:
 	if not developer_tools_available(): return false
