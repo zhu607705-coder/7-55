@@ -97,7 +97,24 @@ jobs:
           cp unpacked/templates/version.txt unpacked/templates/web_nothreads_release.zip "$HOME/.local/share/godot/export_templates/4.7.1.stable/"
           godot --version
 
+      - name: Restore validated derived media cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/755-media-conversion-cache
+          key: media-conversion-v1-${{ runner.os }}-${{ hashFiles('godot_native/tools/convert_media.sh', 'godot_native/tools/media_conversion_cache.cjs', 'src/assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.mp4', 'src/assets/rpg/cinematics/qizhen-rain-rescue/qizhen_rain_rescue_hailuo23_v01.mp4') }}
+          restore-keys: media-conversion-v1-${{ runner.os }}-
+
+      - name: Restore source-bound imported resources (strict import still runs)
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/755-resource-import-cache
+          key: godot-resource-v1-${{ runner.os }}-4.7.1-${{ hashFiles('godot_native/tools/resource_import_cache.mjs', 'godot_native/project.godot') }}-${{ github.sha }}
+          restore-keys: godot-resource-v1-${{ runner.os }}-4.7.1-${{ hashFiles('godot_native/tools/resource_import_cache.mjs', 'godot_native/project.godot') }}-
+
       - name: Install media converter
+        env:
+          MEDIA_CONVERSION_CACHE_DIR: ${{ runner.temp }}/755-media-conversion-cache
+          GODOT_RESOURCE_CACHE_DIR: ${{ runner.temp }}/755-resource-import-cache
         # Media conversion writes only its private temp project while the cold
         # import owns the real project. Final import/export remain mandatory.
         run: |
@@ -219,7 +236,11 @@ jobs:
           node godot_native/tests/test_web_acceptance_workflow.mjs
           node godot_native/tests/test_web_consumer_source_closure.mjs
           node godot_native/tests/test_preparation_pipeline.mjs
+          node godot_native/tests/test_media_conversion_cache.mjs
+          node godot_native/tests/test_resource_import_cache.mjs
           node godot_native/tests/test_web_phone_shards.mjs
+          node godot_native/tests/test_web_phone_exercise.mjs
+          node godot_native/tests/test_web_transport_audit.mjs
           node godot_native/tests/test_web_controller_fixtures.mjs
           node godot_native/tests/test_web_browser_lifecycle.mjs
           node godot_native/tests/test_web_network_observation.mjs
@@ -1191,6 +1212,7 @@ jobs:
           const names = plan.map(item => selected.get(item.key).name);
           const digest = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex');
           const runnerSha256 = digest('godot_native/tools/verify_web_export.mjs');
+          const transportAuditSha256 = digest('godot_native/tools/web_transport_audit.mjs');
           const phoneSha256 = digest('godot_native/tools/web_phone_recovery.mjs');
           const phoneShardSha256 = digest('godot_native/tools/web_phone_shards.mjs');
           const retina = [], covered = []; let commonBundle;
@@ -1207,6 +1229,7 @@ jobs:
             for (const [file, id, scenario, group] of item.cases) {
               const report = read(file), c = report.cases?.[0];
               requireValue(report.passed === true && report.scenarios === scenario && report.runnerSha256 === runnerSha256 && report.exportManifest?.sourceCommit === expectedSource.checkedOutCommit && report.exportManifest?.engine === '4.7.1.stable.official' && report.cases?.length === 1 && c.id === id && c.passed === true && equal([c.width,c.height,c.touch,c.dpr], dimensions[id]) && c.renderer?.webgl2 === true, `Wrong or incomplete real browser case: ${item.key}/${id}`);
+              requireValue(report.transportAuditRunnerSha256 === transportAuditSha256 && report.transportAudit?.expected > 0 && report.transportAudit.completed === report.transportAudit.expected && Array.isArray(report.assets) && report.assets.length === report.transportAudit.expected && report.assets.every(asset => asset && /^[a-f0-9]{64}$/.test(asset.sha256)), `Incomplete independent HTTP transport audit: ${item.key}`);
               requireValue(Array.isArray(report.checks) && report.checks.length > 0 && report.checks.every(check => check.ok === true) && Array.isArray(report.errors) && report.errors.length === 0, `Missing or failed browser assertions: ${item.key}`);
               if (scenario === 'phone-recovery') {
                 requireValue(report.phoneRecoveryRunnerSha256 === phoneSha256 && report.phoneShardRunnerSha256 === phoneShardSha256 && receipt.group === group && receipt.cases[0].group === group && equal(receipt.cases[0].coverage, c.phoneRecovery?.coverage), 'Different phone runner/group evidence');

@@ -23,7 +23,7 @@ jobs:
         run: |
           node --test godot_native/tests/test_native_validation_runner.mjs godot_native/tests/test_native_validation_registration.mjs godot_native/tests/test_native_validation_bundle.mjs godot_native/tests/test_native_validation_shards.mjs godot_native/tests/test_native_validation_workflow.mjs
           node scripts/test-ci-media-tools.mjs
-          node --test godot_native/tests/test_preparation_pipeline.mjs
+          node --test godot_native/tests/test_preparation_pipeline.mjs godot_native/tests/test_media_conversion_cache.mjs godot_native/tests/test_resource_import_cache.mjs
 
   prepare:
     name: Prepare immutable native inputs
@@ -49,6 +49,18 @@ jobs:
           godot --version
       - name: Install locked source-test dependencies
         run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Restore derived media bytes (fresh stream validation remains required)
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/755-media-conversion-cache
+          key: media-conversion-v1-${{ runner.os }}-${{ hashFiles('godot_native/tools/convert_media.sh', 'godot_native/tools/media_conversion_cache.cjs', 'src/assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.mp4', 'src/assets/rpg/cinematics/qizhen-rain-rescue/qizhen_rain_rescue_hailuo23_v01.mp4') }}
+          restore-keys: media-conversion-v1-${{ runner.os }}-
+      - name: Restore source-bound imported resources (strict import still runs)
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/755-resource-import-cache
+          key: godot-resource-v1-${{ runner.os }}-4.7.1-${{ hashFiles('godot_native/tools/resource_import_cache.mjs', 'godot_native/project.godot') }}-${{ github.sha }}
+          restore-keys: godot-resource-v1-${{ runner.os }}-4.7.1-${{ hashFiles('godot_native/tools/resource_import_cache.mjs', 'godot_native/project.godot') }}-
       - name: Synchronize original assets and state
         run: node godot_native/tools/sync_source.mjs
       - name: Prepare deterministic source catalogs
@@ -57,6 +69,9 @@ jobs:
           node godot_native/tools/export-audio-director.mjs
           git diff --exit-code -- godot_native/data/native/save_normalizer.json godot_native/data/native/audio-director-source.json
       - name: Prepare isolated media and strict import in parallel
+        env:
+          MEDIA_CONVERSION_CACHE_DIR: ${{ runner.temp }}/755-media-conversion-cache
+          GODOT_RESOURCE_CACHE_DIR: ${{ runner.temp }}/755-resource-import-cache
         run: node godot_native/tools/prepare_import_media.mjs --install-media
       - name: Validate preflight and produce fixtures exclusively
         env:
@@ -103,9 +118,9 @@ jobs:
     timeout-minutes: 10
     strategy:
       fail-fast: false
-      max-parallel: 8
+      max-parallel: 12
       matrix:
-        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -144,7 +159,7 @@ jobs:
         run: |
           base='${{ github.event.pull_request.base.sha || '' }}'
           args=(); if test -n "$base"; then args+=(--base "$base"); fi
-          node godot_native/tools/validate_native.mjs --shard '${{ matrix.shard }}/8' \
+          node godot_native/tools/validate_native.mjs --shard '${{ matrix.shard }}/12' \
             --prepared-bundle "$RUNNER_TEMP/native-inputs" \
             --receipt-sha '${{ needs.prepare.outputs.receipt_sha }}' \
             --producer-attempt '${{ needs.prepare.outputs.producer_attempt }}' \

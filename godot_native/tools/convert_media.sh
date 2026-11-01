@@ -64,6 +64,10 @@ function validate(source, generated) {
   if (!Number.isFinite(Number(source.format.duration)) || !Number.isFinite(Number(generated.format.duration)) || Number(source.format.duration) <= 0 || Number(generated.format.duration) <= 0 || Math.abs(Number(source.format.duration) - Number(generated.format.duration)) > tolerance) throw new Error('Conversion changed complete clip duration');
   if (audio.length !== actualAudio.length || audio.some((stream, index) => actualAudio[index].codec_name !== 'vorbis' || stream.channels !== actualAudio[index].channels || stream.sample_rate !== actualAudio[index].sample_rate || (Number.isFinite(Number(stream.duration)) && (!Number.isFinite(Number(actualAudio[index].duration)) || Math.abs(Number(stream.duration) - Number(actualAudio[index].duration)) > tolerance)))) throw new Error('Conversion dropped or changed an audio track');
 }
+const Cache = require(path.join(mediaRoot, 'tools/media_conversion_cache.cjs'));
+const cacheRoot = process.env.MEDIA_CONVERSION_CACHE_DIR || '';
+const tools = cacheRoot ? {ffmpeg: Cache.toolIdentity(ffmpeg), ffprobe: Cache.toolIdentity(ffprobe)} : null;
+const converterSha256 = Cache.fileHash(path.join(mediaRoot,'tools/convert_media.sh'));
 const reports = [];
 for (const { input, output } of inputs) {
   if (input === output || path.extname(output) !== '.ogv') throw new Error('Conversion output must be a distinct generated .ogv file');
@@ -73,8 +77,18 @@ for (const { input, output } of inputs) {
   const candidate = path.join(temporary, 'candidate.ogv');
   const attempts = [];
   try {
-    let quality;
-    for (const level of [8, 7, 6, 5, 4]) {
+    let quality, cachedProbe;
+    const expected = Cache.identity({sourceSha256,converterSha256,tools,maxBytes});
+    const cached = Cache.read(cacheRoot,expected);
+    let cacheStatus = cached.hit ? 'hit' : cached.reason;
+    if(cached.hit) {
+      try {
+        // Hash/identity alone is not acceptance: decode every cached frame anew.
+        fs.copyFileSync(cached.output,candidate);cachedProbe=probe(candidate);validate(source,cachedProbe);
+        quality=cached.quality;attempts.push(...cached.attempts);
+      } catch(error) {cachedProbe=null;cacheStatus=`rejected stream: ${error.message}`;}
+    }
+    for (const level of quality === undefined ? [8, 7, 6, 5, 4] : []) {
       // No -fs, -t, -r, scale, shortest, or stream dropping: only video quality
       // changes on retry. Every authored audio track keeps Vorbis quality 5.
       run(ffmpeg, ['-nostdin', '-y', '-v', 'error', '-i', input, '-map', '0:v:0', '-map', '0:a?', '-c:v', 'libtheora', '-q:v', String(level), '-c:a', 'libvorbis', '-q:a', '5', candidate]);
@@ -83,16 +97,17 @@ for (const { input, output } of inputs) {
       if (bytes <= maxBytes) { quality = level; break; }
     }
     if (quality === undefined) throw new Error(`OGV remains above ${maxBytes} bytes after bounded quality retries: ${JSON.stringify(attempts)}`);
-    const generated = probe(candidate);
+    const generated = cachedProbe || probe(candidate);
     validate(source, generated);
     if (crypto.createHash('sha256').update(fs.readFileSync(input)).digest('hex') !== sourceSha256) throw new Error('Original source clip changed during conversion');
+    if (cacheStatus !== 'hit') Cache.write(cacheRoot,expected,candidate,{quality,attempts});
     fs.mkdirSync(path.dirname(output), { recursive: true });
     const replacement = output + `.validated-${process.pid}.tmp`;
     try { fs.copyFileSync(candidate, replacement); fs.renameSync(replacement, output); }
     finally { fs.rmSync(replacement, { force: true }); }
-    const row = { input, output, maxBytes, quality, attempts, bytes: fs.statSync(output).size, sourceSha256, outputSha256: crypto.createHash('sha256').update(fs.readFileSync(output)).digest('hex'), source, generated, fullStreamValidation: true };
+    const row = { input, output, maxBytes, quality, attempts, bytes: fs.statSync(output).size, sourceSha256, outputSha256: crypto.createHash('sha256').update(fs.readFileSync(output)).digest('hex'), source, generated, fullStreamValidation: true, cacheStatus };
     reports.push(row);
-    console.log(JSON.stringify({ input, output, quality, attempts, bytes: row.bytes, maxBytes, fullStreamValidation: true }));
+    console.log(JSON.stringify({ input, output, quality, attempts, bytes: row.bytes, maxBytes, fullStreamValidation: true, cacheStatus }));
   } finally { fs.rmSync(temporary, { recursive: true, force: true }); }
 }
 // A formal validation run checks this receipt, not mere .ogv existence.

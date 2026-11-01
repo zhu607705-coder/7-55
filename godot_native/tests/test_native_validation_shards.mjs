@@ -9,8 +9,8 @@ import {aggregateNative} from '../tools/native_validation_aggregate.mjs';
 import {digest,stageIdentity} from '../tools/native_validation_identity.mjs';
 const root=path.resolve(import.meta.dirname,'../..'),catalog=createValidationCatalog(path.join(root,'godot_native'));
 const summary=rows=>Object.fromEntries(['not-run','pass','prepared','failed','blocked','deduplicated'].map(s=>[s,rows.filter(r=>r.result===s).length]));
-function fixture(){
- const plan=createShardPlan(catalog,root),receiptSha='a'.repeat(64),input='b'.repeat(64),fixtureSha='c'.repeat(64),commit='d'.repeat(40),tree='e'.repeat(40);
+function fixture(count=NATIVE_SHARD_COUNT){
+ const plan=createShardPlan(catalog,root,{count}),receiptSha='a'.repeat(64),input='b'.repeat(64),fixtureSha='c'.repeat(64),commit='d'.repeat(40),tree='e'.repeat(40);
  const body={schema:2,input:{sha256:input,count:12},tools:[],jobs:2};const identity={...body,sha256:digest(body)};
  const pass=(stage,selected=true)=>({...stage,label:stage.id,selected,result:'pass',failed:false,status:0,error:null,signal:null,reused:false,
   output:'checks passed',startedAt:'2026-10-25T00:00:00.000Z',finishedAt:'2026-10-25T00:00:00.001Z',durationMs:1,identity:stageIdentity(identity,stage,fixtureSha)});
@@ -47,6 +47,24 @@ test('prepare and shard plans are explicit partial evidence; no implicit prerequ
 });
 test('only complete successful exact-source fragments yield full acceptance',()=>{
  const f=fixture(),r=aggregateNative(f);assert.equal(r.meta.fullSuitePassed,true);assert.equal(r.rows.length,catalog.length);assert.equal(r.meta.summary.pass,catalog.length);
+});
+test('fixed twelve-shard acceptance requires all twelve exact partition fragments',()=>{
+ assert.equal(NATIVE_SHARD_COUNT,12);
+ const f=fixture();assert.equal(f.fragments.length,12);
+ assert.deepEqual(f.fragments.map(part=>part.meta.shard.index),Array.from({length:12},(_,i)=>i));
+ const result=aggregateNative(f);assert.equal(result.meta.fullSuitePassed,true);
+ assert.equal(result.meta.fragments.length,12);
+ assert.equal(new Set(result.rows.map(row=>row.id)).size,catalog.length);
+ f.fragments=f.fragments.filter(part=>part.meta.shard.index!==11);
+ assert.throws(()=>aggregateNative(f),/Missing native shard report/);
+});
+test('old eight-shard fragments cannot replace or mix with the fixed twelve-shard plan',()=>{
+ const old=fixture(8);assert.throws(()=>aggregateNative(old),/Unknown shard or partition/);
+ const mixed=fixture();mixed.fragments[0]=old.fragments[0];
+ assert.throws(()=>aggregateNative(mixed),/Unknown shard or partition/);
+ const relabelled=fixture();relabelled.fragments[0]=structuredClone(old.fragments[0]);
+ relabelled.fragments[0].meta.shard.count=12;
+ assert.throws(()=>aggregateNative(relabelled),/Unknown shard or partition/);
 });
 test('audited identical-script evidence alias is accepted only beside its passing owner',()=>{
  const f=fixture(),part=f.fragments.find(f=>f.rows.find(r=>r.id==='test_buct_rongmao.gd').selected),r=part.rows.find(r=>r.id==='test_buct_rongmao.gd');
