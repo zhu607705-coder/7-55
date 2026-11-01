@@ -749,720 +749,276 @@
     ],
     "scope": "Chrome desktop and emulated multi-touch; not physical mobile acceptance"
   },
-  "source_views": {
-    "browser": "156.0.8078.79",
-    "checks": 17,
-    "failures": 0,
-    "rows": [
-      {
-        "label": "electrical lab starts on a physically safe in-room point",
-        "pass": true
-      },
-      {
-        "label": "two source-requested H2C instances are exposed",
-        "pass": true
-      },
-      {
-        "label": "H2C remains visible in room overview",
-        "pass": true
-      },
-      {
-        "label": "ordinary H2C geometry click opens inspection",
-        "pass": true
-      },
-      {
-        "label": "machine inspector exposes all three manufacturer dimensions",
-        "pass": true
-      },
-      {
-        "label": "co_creation has a safe ordinary walk entry",
-        "pass": true
-      },
-      {
-        "label": "conference_seminar has a safe ordinary walk entry",
-        "pass": true
-      },
-      {
-        "label": "interview has a safe ordinary walk entry",
-        "pass": true
-      },
-      {
-        "label": "open_office has a safe ordinary walk entry",
-        "pass": true
-      },
-      {
-        "label": "open_discussion has a safe ordinary walk entry",
-        "pass": true
-      },
-      {
-        "label": "recording has a safe ordinary walk entry",
-        "pass": true
-      },
-      {
-        "label": "pantry has a safe ordinary walk entry",
-        "pass": true
-      },
-      {
-        "label": "storage has a safe ordinary walk entry",
-        "pass": true
-      },
-      {
-        "label": "both actually read Feishu requirement sources are available in the viewer",
-        "pass": true
-      },
-      {
-        "label": "missing formal conference geometry is disclosed in the review interface",
-        "pass": true
-      },
-      {
-        "label": "source dialog remains readable within mobile viewport",
-        "pass": true
-      },
-      {
-        "label": "source-specific views have no page or console errors",
-        "pass": true
-      }
-    ],
-    "errors": []
-  },
-  "furniture": {
-    "browser": "156.0.8078.79",
-    "checks": 15,
+  "floor_assets": {
+    "checks": 40,
     "failures": 0,
     "rows": [
       {
         "pass": true,
-        "label": "physical desk controller can be approached at real scale",
+        "label": "warm_gray_fine color source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "warm_gray_fine color valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "warm_gray_fine restrained non-flat base color",
+        "details": 1.2803106454429796
+      },
+      {
+        "pass": true,
+        "label": "warm_gray_fine orm source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "warm_gray_fine orm valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "warm_gray_fine nonmetal roughness/occlusion channels",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "warm_gray_fine normal source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "warm_gray_fine normal valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "warm_gray_fine tangent normal direction remains near flat surface",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile color source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile color valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile restrained non-flat base color",
+        "details": 1.8685890684779445
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile orm source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile orm valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile nonmetal roughness/occlusion channels",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile normal source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile normal valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile tangent normal direction remains near flat surface",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green color source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green color valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green restrained non-flat base color",
+        "details": 0.9763067990460692
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green orm source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green orm valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green nonmetal roughness/occlusion channels",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green normal source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green normal valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green tangent normal direction remains near flat surface",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal color source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal color valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal restrained non-flat base color",
+        "details": 0.5194969402178856
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal orm source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal orm valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal nonmetal roughness/occlusion channels",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal normal source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal normal valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal tangent normal direction remains near flat surface",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "GLB contains baseline, electrical and recording finishes",
+        "details": 3
+      },
+      {
+        "pass": true,
+        "label": "FLC floor esd_gray_green exports all three PBR channels",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "FLC floor warm_gray_fine exports all three PBR channels",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "FLC floor studio_charcoal exports all three PBR channels",
+        "details": null
+      }
+    ]
+  },
+  "floor_views": {
+    "browser": "156.0.8078.79",
+    "checks": 13,
+    "failures": 0,
+    "rows": [
+      {
+        "pass": true,
+        "label": "all base floors load actual color/normal/roughness maps",
         "details": [
           {
-            "x": 615.0543183512979,
-            "y": 645.1065367630255,
-            "inFront": true,
-            "distance": 2.831815375359046,
-            "height": 0.73,
-            "target": 0.73,
-            "partOffsets": [
+            "floor": "2",
+            "profile": "warm_gray_fine",
+            "specialFinishes": [
+              "FLC floor esd_gray_green"
+            ],
+            "surfaces": [
               {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 0.5,
-                "offset": 0
-              },
-              {
-                "factor": 0.5,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
+                "material": "FLC floor warm_gray_fine",
+                "hasColor": true,
+                "hasNormal": true,
+                "hasRoughness": true,
+                "uvCount": 24,
+                "uvSpan": [
+                  -34.333335876464844,
+                  21.75
+                ]
               }
             ]
           },
           {
-            "x": 376.3562245603673,
-            "y": 574.7769352592034,
-            "inFront": true,
-            "distance": 4.073285018164617,
-            "height": 0.73,
-            "target": 0.73,
-            "partOffsets": [
+            "floor": "3",
+            "profile": "warm_gray_fine",
+            "specialFinishes": [
+              "FLC floor studio_charcoal"
+            ],
+            "surfaces": [
               {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 0.5,
-                "offset": 0
-              },
-              {
-                "factor": 0.5,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
+                "material": "FLC floor warm_gray_fine",
+                "hasColor": true,
+                "hasNormal": true,
+                "hasRoughness": true,
+                "uvCount": 48,
+                "uvSpan": [
+                  -34.333335876464844,
+                  21.75
+                ]
               }
             ]
           },
           {
-            "x": 504.77558019094323,
-            "y": 932.3549919607002,
-            "inFront": true,
-            "distance": 1.5975024415732335,
-            "height": 0.73,
-            "target": 0.73,
-            "partOffsets": [
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 0.5,
-                "offset": 0
-              },
-              {
-                "factor": 0.5,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              }
-            ]
-          },
-          {
-            "x": 165.23347011145862,
-            "y": 699.5100012172953,
-            "inFront": true,
-            "distance": 2.8979451930200724,
-            "height": 0.73,
-            "target": 0.73,
-            "partOffsets": [
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 0.5,
-                "offset": 0
-              },
-              {
-                "factor": 0.5,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 0,
-                "offset": 0
-              },
-              {
-                "factor": 1,
-                "offset": 0
+            "floor": "4",
+            "profile": "warm_gray_fine",
+            "specialFinishes": [],
+            "surfaces": [
+              {
+                "material": "FLC floor warm_gray_fine",
+                "hasColor": true,
+                "hasNormal": true,
+                "hasRoughness": true,
+                "uvCount": 100,
+                "uvSpan": [
+                  -34.333335876464844,
+                  21.75
+                ]
               }
             ]
           }
@@ -1470,80 +1026,51 @@
       },
       {
         "pass": true,
-        "label": "ordinary keypad click starts seated-to-standing lift"
+        "label": "floor textures use repeated meter-space UVs instead of stretching one image across a building"
       },
       {
         "pass": true,
-        "label": "feet and fixed outer columns stay on the floor"
+        "label": "electrical ESD finish remains separate"
       },
       {
         "pass": true,
-        "label": "intermediate telescoping columns move half stroke"
+        "label": "recording finish remains separate"
       },
       {
         "pass": true,
-        "label": "desktop, monitor, keyboard and keypad all move full stroke"
+        "label": "material comparison preserves observer pose, movement mode and camera"
       },
       {
         "pass": true,
-        "label": "desk lift preserves a safe observer position"
+        "label": "ordinary sample control changes current-floor finish"
       },
       {
         "pass": true,
-        "label": "same physical controller lowers desk again"
+        "label": "preview does not silently change another floor"
       },
       {
         "pass": true,
-        "label": "representative ergonomic chair supports close inspection"
+        "label": "common-floor preview preserves dedicated room finish"
       },
       {
         "pass": true,
-        "label": "ordinary chair click opens exact-scale geometry inspection"
+        "label": "shared sample deep link restores selected preview"
       },
       {
         "pass": true,
-        "label": "chair close view removes surrounding dividers and desks from its sightline"
+        "label": "returning to photo baseline restores imported PBR material"
       },
       {
         "pass": true,
-        "label": "chair inspection fits mobile viewport"
+        "label": "ordinary movement remains available after sample dialog"
       },
       {
         "pass": true,
-        "label": "existing floor-only 3F walk link enters the photo-referenced north area"
+        "label": "material choices fit narrow mobile viewport"
       },
       {
         "pass": true,
-        "label": "ordinary first-person look reveals upper windows and high ceiling"
-      },
-      {
-        "pass": true,
-        "label": "shared instancing keeps complete-floor draw calls bounded",
-        "details": {
-          "ready": true,
-          "floor": "4",
-          "room": "",
-          "mode": "overview",
-          "position": [
-            0,
-            0
-          ],
-          "yaw": 0,
-          "pitch": 0,
-          "eyeHeight": 1.65,
-          "inspect": null,
-          "joystick": [
-            0,
-            0
-          ],
-          "drawCalls": 405,
-          "triangles": 3659422,
-          "renderedMeshes": 242
-        }
-      },
-      {
-        "pass": true,
-        "label": "new furniture and photo area have no page/console errors",
+        "label": "PBR and candidate loads produce zero page/console errors",
         "details": []
       }
     ]
@@ -1571,19 +1098,29 @@
       "caliper_length": 0.233,
       "screwdriver_length": 0.204
     },
-    "glb_sha256": "7727e53620f548c18664db13ee29d4e8f1acbfbc0cfd2cdae41fb319e612047f"
+    "glb_sha256": "e9b0c4d141f09f68b59b6d1d2a5abf702d935bf7fa47bd49ed0c6fffc8dd2809",
+    "floor_material_revision": "photo_baseline_20261101"
   },
-  "review": "Current ergonomic furniture and user-confirmed3F north photo revision. Desk hardware click/lift/lower, physical mesh deformation factors, chair isolation and mobile refit, upper windows and floor-only deep link exercised. Whole4F405drawcalls in Chrome; not physical mobile performance acceptance. North height6.2m is a photo-based estimate; missing4F southwest conference geometry remains recorded. Independent authoring viewer, not formal Godot gameplay acceptance.",
+  "parent_validation": {
+    "commit": "ac7378e1",
+    "source_views": 17,
+    "furniture": 15,
+    "scope": "Previous revision checks retained as history; not reclassified as current floor-material visual acceptance."
+  },
+  "review": "Warm-gray photo baseline and pale tile comparison reviewed at the same real first-person pose, plus mobile source controls. PBR assets are locally authored, not external scans or confirmed manufacturer samples.3F north appearance is grounded in user photos; other common floors are provisional extensions. ESD/recording finishes remain separate. Existing Impeccable modal-shadow warning manually reviewed as the same false positive on a light page. Site material category, brand, geometry and formal game acceptance remain outside this material review.",
   "artifact_sha256": {
-    "flc_walkthrough.blend": "5f242a6e69bc5c1ed409021a37bd6629b65d06b46b9f559d9a805b21eec8d6bf",
-    "web/assets/building.glb": "7727e53620f548c18664db13ee29d4e8f1acbfbc0cfd2cdae41fb319e612047f",
+    "flc_walkthrough.blend": "5de58ee5a6bdb27225314b7e8068efc5815fd377d2e9cef8b001c4edb93ef6d7",
+    "web/assets/building.glb": "e9b0c4d141f09f68b59b6d1d2a5abf702d935bf7fa47bd49ed0c6fffc8dd2809",
     "web/assets/layout.json": "a549ac7f884a0f5cbc1c6af98562c0442ec388baa0e3d3c2912845e036543c94",
-    "web/assets/asset_catalog.json": "5c0ceb5189d0d319b53ebfe57e9fa07a1922a79aca5ecc458eb1e8b9a42b6f58",
-    "web/viewer.js": "25dc15270904209e77f78373f96b8edb86da012194af1fc7f576472d89123855",
-    "web/index.html": "fe8aae6c6ac6a87cadd38e558481329621cccf81e901c65e7aa975927762ce0b",
-    "web/collision.js": "51ac4bb965dc7580a3a01f14bc98830bdc0172dc07134948ab61dcfb88cf9424",
-    "scripts/build_scene.py": "a5f74b513925b05594261d0d4e4c13a1e8b5940b1a62a00795d1436b84dbd5b0",
-    "sources/feishu_alignment.md": "5d8e3d75f5e9c8f3959cb78523bbde5751c4bdad824f7bf0bfa931e36d7f6a20",
-    "sources/furniture_and_north_photos.md": "bd9f6c2696449a4465cb92f0a3db0ba57db99b49980edc004ca4652e48ea6f05"
+    "web/assets/asset_catalog.json": "2fcaf22829a3d0ad1c0efe1601df018b419853317a0765aff6bb2ddf4eda0bc5",
+    "web/assets/floor_material_catalog.json": "e328952fde5d309fdde2e02c8033a506e3befef600d9fe258c75031d54dd0b9d",
+    "web/viewer.js": "bebbc8e34e392dc8ceb0a38fb463ab133df27a35acfe0ba12c53a1b76d2f4782",
+    "web/floor_materials.js": "167704c86117c5b16e38d5b4ab7880524858a11715831830ca4a9b74083842fe",
+    "web/index.html": "dd69e873da411f6248958e52ce347058b72f527d9ed3091eefdda2e28645c3cd",
+    "web/style.css": "e3556f0fb983979e50f38d1475a1f5db239bf486529aad3a167a4f3ab24105ce",
+    "scripts/build_scene.py": "bbc5d94562f23267ce67396a6ef8dd47fe56389451fc1467e11332d912555335",
+    "scripts/apply_floor_materials.py": "6eba89c24d2370e4e3ef2063f2fb6f30182bd2652b20ce90a150b62efd2a6617",
+    "scripts/generate_floor_maps.py": "586bb8cd28e5778b1d527b86642c80ba44228141d02321ce32ec098aec2deb9a",
+    "sources/floor_material_decisions.md": "db78faa2f1035b52a26c61c8003c1a76f9cbefdc531cb7b45d389966525e740b"
   }
 }

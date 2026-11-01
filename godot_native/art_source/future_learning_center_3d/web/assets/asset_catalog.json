@@ -120,5 +120,6 @@
       "license": "MIT",
       "file": "../vendor/three/LICENSE"
     }
-  ]
+  ],
+  "floor_material_catalog": "floor_material_catalog.json"
 }

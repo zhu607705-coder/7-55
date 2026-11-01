@@ -10,3 +10,6 @@ Previous viewer directory is absent in the current filesystem. Restore only the 
 
 ## Feishu alignment revision
 Both supplied documents were actually read on2026-11-01, including the authenticated electrical/machining plan and procurement table. Main-document v1.3 is the functional brief; its diagram caveats remain authoritative. See `sources/feishu_alignment.md` for completed mappings and missing conference-room geometry. Manufacturer dimensions remain asset references, not building measurements or a verified site inventory.
+
+## Floor finish decision
+User requested floor-material definition. Current3F north site photos support a warm gray fine-texture low-gloss appearance; material category/brand remain unknown. Earlier project corridor photo ledger supports a separate tiled reference, without a confirmed exact zone/module. Provide reversible same-pose comparison, preserve special ESD/recording finishes and disclose provisional extensions to other floors.

@@ -5,6 +5,8 @@
   "scripts": {
     "test:collision": "node scripts/test_collision.mjs",
     "test:browser": "node scripts/test_browser.mjs",
-    "test:furniture": "node scripts/test_furniture.mjs"
+    "test:furniture": "node scripts/test_furniture.mjs",
+    "test:floor-materials": "node scripts/test_floor_materials.mjs",
+    "test:floor-assets": "python3 scripts/validate_floor_materials.py"
   }
 }

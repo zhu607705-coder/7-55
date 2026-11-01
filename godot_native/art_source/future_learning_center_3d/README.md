@@ -1,6 +1,6 @@
 # 未来学习中心 · 米制模型与第一人称漫游
 
-2026-11-01，人体工学桌椅与三楼现场照片修订。两份文档的实际读取范围、已落实与缺口见 [飞书核对记录](sources/feishu_alignment.md)。此版本把整层总览、房间近景和第一人称行走放在同一套米制几何中。最新新增升降桌、人体工学椅及经用户确认的三楼北侧展示区，见 [桌椅与现场照片依据](sources/furniture_and_north_photos.md)。镜头代表观察者，不需要人物或手部模型。它是独立的建筑评审网页，尚未接入正式游戏。
+2026-11-01，地面材质基准与比较样板修订。两份文档的实际读取范围、已落实与缺口见 [飞书核对记录](sources/feishu_alignment.md)。此版本把整层总览、房间近景和第一人称行走放在同一套米制几何中。最新新增升降桌、人体工学椅及经用户确认的三楼北侧展示区，见 [桌椅与现场照片依据](sources/furniture_and_north_photos.md)。镜头代表观察者，不需要人物或手部模型。它是独立的建筑评审网页，尚未接入正式游戏。地面最新决定见 [地面材质依据](sources/floor_material_decisions.md)。
 
 启动网页：
 
@@ -9,6 +9,8 @@ python3 -m http.server 8142 --bind 127.0.0.1 --directory web
 ```
 
 - 办公室第一人称：<http://127.0.0.1:8142/?floor=3&room=studio_1&mode=walk>
+- 三楼地面基准：<http://127.0.0.1:8142/?floor=3&mode=walk>
+- 地砖比较样板：<http://127.0.0.1:8142/?floor=3&mode=walk&finish=light_gray_tile>
 - 四楼整体：<http://127.0.0.1:8142/?floor=4>
 - 实验室：<http://127.0.0.1:8142/?floor=2&room=mechatronics&mode=walk>
 
@@ -58,16 +60,20 @@ node scripts/test_collision.mjs
 node scripts/test_browser.mjs
 node scripts/test_source_views.mjs
 node scripts/test_furniture.mjs
+python3 scripts/validate_floor_materials.py
+node scripts/test_floor_materials.mjs
 ```
 
 浏览器测试使用本机Chrome和`/private/tmp/flc-viewer-qa/node_modules/playwright-core`；移到其他机器时调整该依赖路径。此测试路径不属于网页运行依赖。
 
 ## 本轮验证
 
-当前修订：模型37项、通路88项、常规浏览器36项、需求对应视图17项、桌椅及照片专项15项全部通过。完整结果与模型哈希见 `review/validation_summary.json`。校验覆盖GLB真实尺度、中庭孔洞、全部房间/区进入同一通路、机电隔断通门、东侧开放区连接，以及实际浏览器键鼠和模拟双触点输入。
+当前地面修订验证包括模型37项、通路88项、常规浏览器36项、材质资源40项与材质界面13项。此前桌椅/照片专项结果保留为父版本证据，不作为新增地面修订的完整视觉验收。完整结果与模型哈希见 `review/validation_summary.json`。校验覆盖GLB真实尺度、中庭孔洞、全部房间/区进入同一通路、机电隔断通门、东侧开放区连接，以及实际浏览器键鼠和模拟双触点输入。
 
 浏览器模拟触屏，尚非物理手机、Safari/Firefox、现场尺寸或完整视觉验收。测试通过不代表缺失空间已经建成。
 
 本地参数化几何是本项目的新作；生成器代码沿用项目源代码许可。厂商资料只是尺寸出处，其文档、商标及原始CAD的权利没有被重新许可。NVIDIA候选仍保留数据集CC BY4.0出处，下载后需核对具体包内依赖与归属。原楼层参考资料的权利仍归原所有者。
 
 三楼工作室1的一把人体工学椅可点选近看；此时周围桌板/墙面暂时隐去，返回恢复原场景。升降桌保留共享网格，通过实例变换驱动上部和中间伸缩柱。Blender源场景12465网格对象、网页GLB约7.25MiB；整个四楼总览在本机Chrome检查为405次绘制，尚无物理手机性能验收。三楼直接漫游链接默认进入北侧展示区。生成器的中文展板字形使用本机STHeiti字体并烘焙成网格，网页运行不依赖该字体。
+
+地面基准采用浅暖灰细纹PBR；“尺度与来源 → 地面材质样板”可在当前位置比较浅灰大板砖，机电ESD区与录播室地面保留独立材质。具体材料品类/品牌仍待核实，其他公共区域沿用色系属于方案。12张本地贴图、四个材质配置及增量Blender材质脚本随源文件交付。

@@ -709,10 +709,17 @@ for group in LIB.values():
 parent=None
 scene.world.color=(.55,.55,.55)
 scene['source_dimension_note']='Footprint calibrated from prior 66sqm seminar annotation, not survey. Furnishings reference public nominal product dimensions; placements are review proposals.'
+# Material post-pass is shared with the incremental Blender authoring command.
+import sys
+sys.path.insert(0,str(ROOT/'scripts'))
+if not (WEB/'assets/floor_material_catalog.json').exists():
+ exec(compile((ROOT/'scripts/generate_floor_maps.py').read_text(),str(ROOT/'scripts/generate_floor_maps.py'),'exec'),{'__file__':str(ROOT/'scripts/generate_floor_maps.py')})
+from apply_floor_materials import apply_floor_materials
+apply_floor_materials(ROOT)
 bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'flc_walkthrough.blend'))
 bpy.ops.export_scene.gltf(filepath=str(WEB/'assets/building.glb'),export_format='GLB',export_extras=True,export_yup=True)
 (WEB/'assets/layout.json').write_text(json.dumps(meta,ensure_ascii=False,indent=2))
 (ROOT/'sources/plan_trace.json').write_text(json.dumps({'bounds':BOUNDS,'rooms':ROOMS,'voids':VOIDS,'dimensions_m':[WIDTH,LENGTH,RISE],'provenance':'Recovered exact numeric traces shown in preceding chat. Original source images and preceding standalone viewer unavailable in this filesystem. Native game-space JSON was NOT converted into survey dimensions.'},ensure_ascii=False,indent=2))
 meshes=[o for o in scene.objects if o.type=='MESH']
-(ROOT/'build_validation.json').write_text(json.dumps({'meshes':len(meshes),'floors':[2,3,4],'rooms':{f:len(meta['floors'][str(f)]['rooms']) for f in [2,3,4]},'units':'m','footprint_m':[WIDTH,LENGTH],'studio_1_area_m2':meta['floors']['3']['rooms'][1]['area'],'shared_meshes':len({o.data.name for o in meshes}),'tool_dimensions_m':{'caliper_length':.233,'screwdriver_length':.204},'glb_sha256':hashlib.sha256((WEB/'assets/building.glb').read_bytes()).hexdigest()},indent=2))
+(ROOT/'build_validation.json').write_text(json.dumps({'meshes':len(meshes),'floors':[2,3,4],'rooms':{f:len(meta['floors'][str(f)]['rooms']) for f in [2,3,4]},'units':'m','footprint_m':[WIDTH,LENGTH],'studio_1_area_m2':meta['floors']['3']['rooms'][1]['area'],'shared_meshes':len({o.data.name for o in meshes}),'floor_material_revision':'photo_baseline_20261101','tool_dimensions_m':{'caliper_length':.233,'screwdriver_length':.204},'glb_sha256':hashlib.sha256((WEB/'assets/building.glb').read_bytes()).hexdigest()},indent=2))
 print('BUILD_COMPLETE',len(meshes),'meshes')

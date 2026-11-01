@@ -21,5 +21,6 @@
     "caliper_length": 0.233,
     "screwdriver_length": 0.204
   },
-  "glb_sha256": "7727e53620f548c18664db13ee29d4e8f1acbfbc0cfd2cdae41fb319e612047f"
+  "glb_sha256": "e9b0c4d141f09f68b59b6d1d2a5abf702d935bf7fa47bd49ed0c6fffc8dd2809",
+  "floor_material_revision": "photo_baseline_20261101"
 }

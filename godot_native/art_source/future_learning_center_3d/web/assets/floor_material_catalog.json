@@ -1,0 +1,195 @@
+{
+  "schema": 1,
+  "units": "m",
+  "uv_period_m": 1.2,
+  "default": "warm_gray_fine",
+  "profiles": {
+    "warm_gray_fine": {
+      "name": "浅暖灰细纹 · 照片基准",
+      "base": [
+        166,
+        163,
+        158
+      ],
+      "roughness": 0.62,
+      "repeat_m": 1.2,
+      "joint_m": 0,
+      "evidence": "3F north photo appearance; actual material category/brand is unconfirmed",
+      "status": "visual_baseline_3f_north; provisional_extension_elsewhere",
+      "maps": {
+        "color": {
+          "file": "materials/floors/warm_gray_fine_color.png",
+          "sha256": "9fcce4f3a188cd07dc0c9d23f3f3d0394715f82e576398fdacd3c496bf1024ec",
+          "bytes": 41352,
+          "resolution": [
+            512,
+            512
+          ]
+        },
+        "orm": {
+          "file": "materials/floors/warm_gray_fine_orm.png",
+          "sha256": "da6aff723ff10ce2ad0ca61656eb6a449ee45f9c976f1ccbe624bd4559075f62",
+          "bytes": 53395,
+          "resolution": [
+            512,
+            512
+          ]
+        },
+        "normal": {
+          "file": "materials/floors/warm_gray_fine_normal.png",
+          "sha256": "52526ea2f001f3df3c3e5ecca0e6d901c5f1dea28ab63e31b8fb6bea172cfa5c",
+          "bytes": 71101,
+          "resolution": [
+            512,
+            512
+          ]
+        }
+      },
+      "metalness": 0,
+      "normal_strength": 0.45
+    },
+    "light_gray_tile": {
+      "name": "浅灰大板砖 · 回廊候选",
+      "base": [
+        177,
+        177,
+        171
+      ],
+      "roughness": 0.44,
+      "repeat_m": 0.6,
+      "joint_m": 0.0012,
+      "evidence": "Older corridor-photo ledger records visible pale glossy tiles; exact location, module and product remain unconfirmed",
+      "status": "unassigned_comparison; 600mm module and1.2mm joint are review assumptions",
+      "maps": {
+        "color": {
+          "file": "materials/floors/light_gray_tile_color.png",
+          "sha256": "38a3d1103f099ae29ab4ab9203878106a4ec80cce18dd7dc9ba0bf4d1cb23e2d",
+          "bytes": 39277,
+          "resolution": [
+            512,
+            512
+          ]
+        },
+        "orm": {
+          "file": "materials/floors/light_gray_tile_orm.png",
+          "sha256": "a85dbab17f520facb84605833da443c3b8968178e1272dcb7e8ee8c32d48da27",
+          "bytes": 54202,
+          "resolution": [
+            512,
+            512
+          ]
+        },
+        "normal": {
+          "file": "materials/floors/light_gray_tile_normal.png",
+          "sha256": "34c1ae5232456fc0e8d699824b6b9f0291ced36cb1e578934a17f98f6a5e55df",
+          "bytes": 117678,
+          "resolution": [
+            512,
+            512
+          ]
+        }
+      },
+      "metalness": 0,
+      "normal_strength": 0.45
+    },
+    "esd_gray_green": {
+      "name": "灰绿防静电地面 · 功能示意",
+      "base": [
+        125,
+        139,
+        132
+      ],
+      "roughness": 0.76,
+      "repeat_m": 1.2,
+      "joint_m": 0,
+      "evidence": "Feishu mechatronics document requires electrical ESD floor; color and texture are review choices, no electrical performance validated",
+      "status": "required_function; illustrative_finish",
+      "maps": {
+        "color": {
+          "file": "materials/floors/esd_gray_green_color.png",
+          "sha256": "4ad73d3764d099a5b0cd2e99138b45de12b98826f2647671875db59d7db3b13d",
+          "bytes": 41609,
+          "resolution": [
+            512,
+            512
+          ]
+        },
+        "orm": {
+          "file": "materials/floors/esd_gray_green_orm.png",
+          "sha256": "39f0cf0f1f9b110b1481394918b2ec1fdd22b2746345ab4b070cdd3919e455bd",
+          "bytes": 53441,
+          "resolution": [
+            512,
+            512
+          ]
+        },
+        "normal": {
+          "file": "materials/floors/esd_gray_green_normal.png",
+          "sha256": "52526ea2f001f3df3c3e5ecca0e6d901c5f1dea28ab63e31b8fb6bea172cfa5c",
+          "bytes": 71101,
+          "resolution": [
+            512,
+            512
+          ]
+        }
+      },
+      "metalness": 0,
+      "normal_strength": 0.45
+    },
+    "studio_charcoal": {
+      "name": "深灰低反光 · 录播室方案",
+      "base": [
+        58,
+        62,
+        61
+      ],
+      "roughness": 0.86,
+      "repeat_m": 1.2,
+      "joint_m": 0,
+      "evidence": "Dark recording room requirement; this floor finish is a proposed visual treatment",
+      "status": "design_proposal",
+      "maps": {
+        "color": {
+          "file": "materials/floors/studio_charcoal_color.png",
+          "sha256": "1ef42b953005d7065f1e6b0764c124f68a63038667b928fbb727529d147e53aa",
+          "bytes": 20333,
+          "resolution": [
+            512,
+            512
+          ]
+        },
+        "orm": {
+          "file": "materials/floors/studio_charcoal_orm.png",
+          "sha256": "6a92c8d4e7811d35548d99c6d1e9c723a21fe9341fe6ca68cfdf9d191eaedde4",
+          "bytes": 53474,
+          "resolution": [
+            512,
+            512
+          ]
+        },
+        "normal": {
+          "file": "materials/floors/studio_charcoal_normal.png",
+          "sha256": "52526ea2f001f3df3c3e5ecca0e6d901c5f1dea28ab63e31b8fb6bea172cfa5c",
+          "bytes": 71101,
+          "resolution": [
+            512,
+            512
+          ]
+        }
+      },
+      "metalness": 0,
+      "normal_strength": 0.45
+    }
+  },
+  "rights": "Locally authored numerical PBR maps for this project. No external scan or manufacturer sample claimed. Source photos/document rights remain with their owners.",
+  "assignment": {
+    "3F north": "warm_gray_fine photo-based visual baseline",
+    "2F/other3F/4F common floors": "warm_gray_fine provisional material-family extension, not verified site finish",
+    "2F electrical area": "esd_gray_green functional illustration",
+    "3F recording": "studio_charcoal design proposal"
+  },
+  "rejected_external_reference": {
+    "url": "https://polyhaven.com/a/concrete_floor_02",
+    "reason": "Publisher description is weathered/mossy and unsuitable for the clean photo reference; not downloaded or shipped"
+  }
+}
