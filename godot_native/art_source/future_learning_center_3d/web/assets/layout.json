@@ -1400,7 +1400,9 @@
           "reference": "User photos 2026-11-01; user confirmed 3F north open discussion area",
           "ceiling_height_m": 6.2,
           "height_status": "estimated from double-height photo, not measured",
-          "detail_status": "photo-based exhibition furniture; original event objects approximated"
+          "detail_status": "photo-based exhibition furniture; original event objects approximated",
+          "furnishing_revision": "photo_density_20261101",
+          "display_table_count": 5
         },
         {
           "id": "studio_1",
@@ -1776,86 +1778,6 @@
             ]
           ],
           "width": 0.1
-        },
-        {
-          "id": "Exhibition cubby",
-          "kind": "furniture",
-          "rect": [
-            9.484190751445087,
-            1.2712173913043476,
-            9.934190751445087,
-            3.971217391304348
-          ]
-        },
-        {
-          "id": "Mobile exhibition tabletop",
-          "kind": "furniture",
-          "rect": [
-            10.354190751445088,
-            2.921217391304348,
-            11.604190751445088,
-            3.5212173913043476
-          ]
-        },
-        {
-          "id": "Mobile exhibition tabletop",
-          "kind": "furniture",
-          "rect": [
-            12.201300578034681,
-            1.5712173913043477,
-            13.551300578034683,
-            2.1712173913043475
-          ]
-        },
-        {
-          "id": "Mobile exhibition tabletop",
-          "kind": "furniture",
-          "rect": [
-            14.923410404624278,
-            2.2462173913043477,
-            16.423410404624278,
-            2.896217391304348
-          ]
-        },
-        {
-          "id": "Rounded discussion display table",
-          "kind": "furniture",
-          "rect": [
-            12.301300578034683,
-            3.8816086956521727,
-            14.451300578034681,
-            4.9116086956521725
-          ]
-        },
-        {
-          "id": "Rollup poster",
-          "kind": "furniture",
-          "rect": [
-            9.929190751445088,
-            5.226608695652174,
-            10.829190751445086,
-            5.426608695652173
-          ]
-        },
-        {
-          "id": "Public copier",
-          "kind": "furniture",
-          "rect": [
-            9.754190751445089,
-            6.546608695652173,
-            10.404190751445087,
-            7.2466086956521725
-          ]
-        },
-        {
-          "id": "Public copier",
-          "kind": "furniture",
-          "rect": [
-            16.14841040462428,
-            6.546608695652173,
-            16.798410404624278,
-            7.2466086956521725
-          ]
         },
         {
           "id": "studio_1 partition",
@@ -3430,6 +3352,116 @@
             40.099999999999994,
             2.675,
             42.3
+          ]
+        },
+        {
+          "id": "Exhibition cubby",
+          "kind": "furniture",
+          "rect": [
+            9.484190751445087,
+            1.2712173913043476,
+            9.934190751445087,
+            3.971217391304348
+          ]
+        },
+        {
+          "id": "Mobile exhibition tabletop",
+          "kind": "furniture",
+          "rect": [
+            10.604190751445088,
+            2.5682173913043482,
+            11.854190751445088,
+            3.2742173913043477
+          ]
+        },
+        {
+          "id": "Mobile exhibition tabletop",
+          "kind": "furniture",
+          "rect": [
+            12.201300578034681,
+            1.5182173913043477,
+            13.551300578034683,
+            2.2242173913043475
+          ]
+        },
+        {
+          "id": "Mobile exhibition tabletop",
+          "kind": "furniture",
+          "rect": [
+            13.726300578034683,
+            1.6182173913043478,
+            14.926300578034683,
+            2.3242173913043476
+          ]
+        },
+        {
+          "id": "Mobile exhibition tabletop",
+          "kind": "furniture",
+          "rect": [
+            14.923410404624278,
+            2.194217391304348,
+            16.423410404624278,
+            2.9482173913043477
+          ]
+        },
+        {
+          "id": "Rounded discussion display table",
+          "kind": "furniture",
+          "rect": [
+            11.751300578034684,
+            3.581608695652173,
+            13.901300578034682,
+            4.611608695652173
+          ]
+        },
+        {
+          "id": "Rollup poster",
+          "kind": "furniture",
+          "rect": [
+            9.929190751445088,
+            5.226608695652174,
+            10.829190751445086,
+            5.426608695652173
+          ]
+        },
+        {
+          "id": "White high stool seat",
+          "kind": "furniture",
+          "rect": [
+            12.626300578034682,
+            0.7112173913043478,
+            13.126300578034682,
+            1.2112173913043478
+          ]
+        },
+        {
+          "id": "White high stool seat",
+          "kind": "furniture",
+          "rect": [
+            14.076300578034683,
+            0.7112173913043478,
+            14.576300578034683,
+            1.2112173913043478
+          ]
+        },
+        {
+          "id": "Public copier",
+          "kind": "furniture",
+          "rect": [
+            9.754190751445089,
+            6.546608695652173,
+            10.404190751445087,
+            7.2466086956521725
+          ]
+        },
+        {
+          "id": "Public copier",
+          "kind": "furniture",
+          "rect": [
+            16.14841040462428,
+            6.546608695652173,
+            16.798410404624278,
+            7.2466086956521725
           ]
         }
       ],

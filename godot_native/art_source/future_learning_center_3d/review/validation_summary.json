@@ -616,7 +616,7 @@
       {
         "label": "ordinary keyboard moves observer",
         "pass": true,
-        "distance": 0.6748500000000011
+        "distance": 0.674850000000002
       },
       {
         "label": "ordinary movement stays collision-valid",
@@ -748,6 +748,731 @@
       "desktop_903"
     ],
     "scope": "Chrome desktop and emulated multi-touch; not physical mobile acceptance"
+  },
+  "furniture": {
+    "browser": "156.0.8078.79",
+    "checks": 15,
+    "failures": 0,
+    "rows": [
+      {
+        "pass": true,
+        "label": "physical desk controller can be approached at real scale",
+        "details": [
+          {
+            "x": 606.4167151605349,
+            "y": 658.6957071448425,
+            "inFront": true,
+            "distance": 2.831815375359046,
+            "height": 0.73,
+            "target": 0.73,
+            "partOffsets": [
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0.5,
+                "offset": 0
+              },
+              {
+                "factor": 0.5,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              }
+            ]
+          },
+          {
+            "x": 348.0724636224069,
+            "y": 582.5775950438143,
+            "inFront": true,
+            "distance": 4.073285018164617,
+            "height": 0.73,
+            "target": 0.73,
+            "partOffsets": [
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0.5,
+                "offset": 0
+              },
+              {
+                "factor": 0.5,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              }
+            ]
+          },
+          {
+            "x": 487.0614341101568,
+            "y": 969.5862801903249,
+            "inFront": false,
+            "distance": 1.5975024415732335,
+            "height": 0.73,
+            "target": 0.73,
+            "partOffsets": [
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0.5,
+                "offset": 0
+              },
+              {
+                "factor": 0.5,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              }
+            ]
+          },
+          {
+            "x": 119.57315256991252,
+            "y": 717.5768740712517,
+            "inFront": true,
+            "distance": 2.8979451930200724,
+            "height": 0.73,
+            "target": 0.73,
+            "partOffsets": [
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0.5,
+                "offset": 0
+              },
+              {
+                "factor": 0.5,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "label": "ordinary keypad click starts seated-to-standing lift"
+      },
+      {
+        "pass": true,
+        "label": "feet and fixed outer columns stay on the floor"
+      },
+      {
+        "pass": true,
+        "label": "intermediate telescoping columns move half stroke"
+      },
+      {
+        "pass": true,
+        "label": "desktop, monitor, keyboard and keypad all move full stroke"
+      },
+      {
+        "pass": true,
+        "label": "desk lift preserves a safe observer position"
+      },
+      {
+        "pass": true,
+        "label": "same physical controller lowers desk again"
+      },
+      {
+        "pass": true,
+        "label": "representative ergonomic chair supports close inspection"
+      },
+      {
+        "pass": true,
+        "label": "ordinary chair click opens exact-scale geometry inspection"
+      },
+      {
+        "pass": true,
+        "label": "chair close view removes surrounding dividers and desks from its sightline"
+      },
+      {
+        "pass": true,
+        "label": "chair inspection fits mobile viewport"
+      },
+      {
+        "pass": true,
+        "label": "existing floor-only 3F walk link enters the photo-referenced north area"
+      },
+      {
+        "pass": true,
+        "label": "ordinary first-person look reveals upper windows and high ceiling"
+      },
+      {
+        "pass": true,
+        "label": "shared instancing keeps complete-floor draw calls bounded",
+        "details": {
+          "ready": true,
+          "floor": "4",
+          "room": "",
+          "mode": "overview",
+          "position": [
+            0,
+            0
+          ],
+          "yaw": 0,
+          "pitch": 0,
+          "eyeHeight": 1.65,
+          "verticalFov": 46,
+          "horizontalFov": 64.9708117024375,
+          "inspect": null,
+          "joystick": [
+            0,
+            0
+          ],
+          "drawCalls": 407,
+          "triangles": 3665110,
+          "renderedMeshes": 243
+        }
+      },
+      {
+        "pass": true,
+        "label": "new furniture and photo area have no page/console errors",
+        "details": []
+      }
+    ]
   },
   "floor_assets": {
     "checks": 40,
@@ -1075,8 +1800,151 @@
       }
     ]
   },
+  "north_density": {
+    "checks": 13,
+    "failures": 0,
+    "rows": [
+      {
+        "pass": true,
+        "label": "north room outline and scale are retained"
+      },
+      {
+        "pass": true,
+        "label": "four mobile high tables and one rounded low table follow the photo"
+      },
+      {
+        "pass": true,
+        "label": "two photographed white high stools have physical proxies"
+      },
+      {
+        "pass": true,
+        "label": "right-side visitor route retains at least one meter between furniture envelopes",
+        "details": 1.0221098265895954
+      },
+      {
+        "pass": true,
+        "label": "visitor route is traversable at every5cm sample",
+        "details": {
+          "samples": 50
+        }
+      },
+      {
+        "pass": true,
+        "label": "foreground display can be approached without entering furniture"
+      },
+      {
+        "pass": true,
+        "label": "photo-based furnishings occupy more floor area",
+        "details": {
+          "baselineArea": 6.1450000000000005,
+          "newArea": 8.027500000000002
+        }
+      },
+      {
+        "pass": true,
+        "label": "walk lens has a bounded horizontal field of view",
+        "details": {
+          "ready": true,
+          "floor": "3",
+          "room": "seminar",
+          "mode": "walk",
+          "position": [
+            13.276300578034682,
+            5.396608695652173
+          ],
+          "yaw": 0,
+          "pitch": -0.14,
+          "eyeHeight": 1.65,
+          "verticalFov": 60,
+          "horizontalFov": 81.78678929826181,
+          "inspect": null,
+          "joystick": [
+            0,
+            0
+          ],
+          "drawCalls": 218,
+          "triangles": 1926874,
+          "renderedMeshes": 243
+        }
+      },
+      {
+        "pass": true,
+        "label": "ultrawide screen does not expand the first-person lens beyond82degrees",
+        "details": {
+          "ready": true,
+          "floor": "3",
+          "room": "seminar",
+          "mode": "walk",
+          "position": [
+            13.276300578034682,
+            5.396608695652173
+          ],
+          "yaw": 0,
+          "pitch": -0.14,
+          "eyeHeight": 1.65,
+          "verticalFov": 40.279038696090886,
+          "horizontalFov": 82.00000000000001,
+          "inspect": null,
+          "joystick": [
+            0,
+            0
+          ],
+          "drawCalls": 266,
+          "triangles": 2160854,
+          "renderedMeshes": 243
+        }
+      },
+      {
+        "pass": true,
+        "label": "portrait walk retains a usable vertical field of view"
+      },
+      {
+        "pass": true,
+        "label": "ordinary movement works beside the denser display group"
+      },
+      {
+        "pass": true,
+        "label": "ordinary movement remains outside furniture"
+      },
+      {
+        "pass": true,
+        "label": "north composition and camera checks have no page/console errors",
+        "details": []
+      }
+    ],
+    "roomArea": 44.82184026137219,
+    "baselineOccupiedArea": 6.1450000000000005,
+    "occupiedArea": 8.027500000000002,
+    "mainRouteClearance": 1.0221098265895954,
+    "scope": "photo-based local furnishings and lens refinement; no surveyed room-dimension claim"
+  },
+  "scope_contract": {
+    "baseline_commit": "a26b07f7",
+    "rows": [
+      {
+        "label": "2F layout is unchanged",
+        "pass": true
+      },
+      {
+        "label": "4F layout is unchanged",
+        "pass": true
+      },
+      {
+        "label": "3F voids unchanged",
+        "pass": true
+      },
+      {
+        "label": "all room boundaries unchanged",
+        "pass": true
+      },
+      {
+        "label": "3F wall proxies unchanged",
+        "pass": true
+      }
+    ]
+  },
   "build": {
-    "meshes": 12465,
+    "meshes": 12504,
     "floors": [
       2,
       3,
@@ -1093,34 +1961,33 @@
       42.4
     ],
     "studio_1_area_m2": 24.78,
-    "shared_meshes": 1509,
+    "shared_meshes": 1548,
     "tool_dimensions_m": {
       "caliper_length": 0.233,
       "screwdriver_length": 0.204
     },
-    "glb_sha256": "e9b0c4d141f09f68b59b6d1d2a5abf702d935bf7fa47bd49ed0c6fffc8dd2809",
-    "floor_material_revision": "photo_baseline_20261101"
+    "glb_sha256": "78f966e98631bf52ed81a220bf192dd950163a8fbfa99e40cbada2061d83bf4f",
+    "floor_material_revision": "photo_baseline_20261101",
+    "north_density_revision": "photo_density_20261101"
   },
   "parent_validation": {
-    "commit": "ac7378e1",
     "source_views": 17,
-    "furniture": 15,
-    "scope": "Previous revision checks retained as history; not reclassified as current floor-material visual acceptance."
+    "commit": "ac7378e1",
+    "scope": "Older source-view report retained as history."
   },
-  "review": "Warm-gray photo baseline and pale tile comparison reviewed at the same real first-person pose, plus mobile source controls. PBR assets are locally authored, not external scans or confirmed manufacturer samples.3F north appearance is grounded in user photos; other common floors are provisional extensions. ESD/recording finishes remain separate. Existing Impeccable modal-shadow warning manually reviewed as the same false positive on a light page. Site material category, brand, geometry and formal game acceptance remain outside this material review.",
+  "review": "Photo-based north furnishings regrouped without altering room bounds.4 high tables plus1 low table,2 stools, covered silver silhouette and grouped small exhibits. Before/after overview uses unchanged camera; walk lens now has82degree horizontal and60degree vertical caps. Right-side furniture-envelope gap1.022m, route checked every5cm. Ordinary mouse/key/mobile-emulated control and existing furniture/material interactions pass. No site measurement, complete-building or formal-game acceptance claimed.",
   "artifact_sha256": {
-    "flc_walkthrough.blend": "5de58ee5a6bdb27225314b7e8068efc5815fd377d2e9cef8b001c4edb93ef6d7",
-    "web/assets/building.glb": "e9b0c4d141f09f68b59b6d1d2a5abf702d935bf7fa47bd49ed0c6fffc8dd2809",
-    "web/assets/layout.json": "a549ac7f884a0f5cbc1c6af98562c0442ec388baa0e3d3c2912845e036543c94",
+    "flc_walkthrough.blend": "cf506f18e8722f100c58df9e6e101dd0ec8b1afff1b40c020e796f906cf4a5fc",
+    "web/assets/building.glb": "78f966e98631bf52ed81a220bf192dd950163a8fbfa99e40cbada2061d83bf4f",
+    "web/assets/layout.json": "28a2b4bb0c83c10bae5e1e7e29b21572db843d75045db9e01f23dedb8d9eccf1",
     "web/assets/asset_catalog.json": "2fcaf22829a3d0ad1c0efe1601df018b419853317a0765aff6bb2ddf4eda0bc5",
     "web/assets/floor_material_catalog.json": "e328952fde5d309fdde2e02c8033a506e3befef600d9fe258c75031d54dd0b9d",
-    "web/viewer.js": "bebbc8e34e392dc8ceb0a38fb463ab133df27a35acfe0ba12c53a1b76d2f4782",
+    "web/viewer.js": "84ad8a3f209147652e326267485fcc0107194ef876f8150d531e30ab37208cbd",
     "web/floor_materials.js": "167704c86117c5b16e38d5b4ab7880524858a11715831830ca4a9b74083842fe",
     "web/index.html": "dd69e873da411f6248958e52ce347058b72f527d9ed3091eefdda2e28645c3cd",
     "web/style.css": "e3556f0fb983979e50f38d1475a1f5db239bf486529aad3a167a4f3ab24105ce",
-    "scripts/build_scene.py": "bbc5d94562f23267ce67396a6ef8dd47fe56389451fc1467e11332d912555335",
-    "scripts/apply_floor_materials.py": "6eba89c24d2370e4e3ef2063f2fb6f30182bd2652b20ce90a150b62efd2a6617",
-    "scripts/generate_floor_maps.py": "586bb8cd28e5778b1d527b86642c80ba44228141d02321ce32ec098aec2deb9a",
-    "sources/floor_material_decisions.md": "db78faa2f1035b52a26c61c8003c1a76f9cbefdc531cb7b45d389966525e740b"
+    "scripts/build_scene.py": "ff6bbbe9cf88e3436666422d7a0e9f228e243b49c4490ca3afd71066564e8541",
+    "scripts/refine_north_exhibition.py": "a2d3de7f96c15e7003fb8e544a9a9933ad019d1d5f13ac6390c6b8cc9a686b91",
+    "sources/north_density_review.md": "f45cea2022e7ed091b709418bab84a3efe327801dfc8e9b1a450c4784a439a90"
   }
 }

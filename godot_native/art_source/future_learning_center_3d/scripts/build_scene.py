@@ -456,6 +456,7 @@ def photo_poster(x,z):
 
 def mobile_display(x,z,w=1.25,d=.60):
  display_top('Mobile exhibition tabletop',x,z,w,d,1.0,wood)
+ meta['floors'][str(current_floor)]['colliders'][-1]['rect']=[x-w/2,z-d*.48-.065,x+w/2,z+d*.48+.065]
  for dx in [-w/2+.16,w/2-.16]:
   bar('Display steel upright',(x+dx,.08,z),(x+dx,.965,z),.020,metal)
   bar('Display wheeled foot',(x+dx,.08,z-d*.48),(x+dx,.08,z+d*.48),.018,metal)
@@ -509,6 +510,11 @@ def north_exhibition(room):
    for side in [-1,1]:box('Return grille edge',x+side*.05,h-.012,z,.014,.018,1.8,white,kind='ceiling')
   for z in [z0+1.0,z0+3.0,z0+5.0]:
    ob=cyl('Recessed ceiling downlight',x,h-.012,z,.065,.020,paper);ob['kind']='ceiling'
+ north_furnishings(room)
+
+def north_furnishings(room):
+ x0,z0,x1,z1=room['bounds'];cx=(x0+x1)/2
+ room['furnishing_revision']='photo_density_20261101';room['display_table_count']=5
  # Low open cubbies along the photographed left wall.
  cabx=x0+.28;cabz=z0+2.40;length=2.70
  for y in [.12,.45,.78,1.11]:box('Exhibition cubby horizontal',cabx,y,cabz,.42,.025,length,metal)
@@ -516,20 +522,51 @@ def north_exhibition(room):
  box('Exhibition cubby back',x0+.06,.62,cabz,.022,1.0,length,black);solid('Exhibition cubby',cabx,cabz,.45,length)
  for j in range(5):plant(cabx,cabz-1.05+j*.51,1.13)
  # Several independently movable high tables and a lower rounded gathering table.
- mobile_display(x0+1.55,z0+3.00,1.25,.60)
+ mobile_display(x0+1.80,z0+2.70,1.25,.60)
  mobile_display(cx-.40,z0+1.65,1.35,.60)
+ mobile_display(cx+1.05,z0+1.75,1.20,.60)
  mobile_display(x1-1.45,z0+2.35,1.50,.65)
- display_top('Rounded discussion display table',cx+.10,z1-1.65,2.15,1.03,.73)
+ display_top('Rounded discussion display table',cx-.45,z1-1.95,2.15,1.03,.73)
  for dx in [-.72,.72]:
-  box('Rounded table support',cx+.10+dx,.36,z1-1.65,.055,.70,.68,metal,.01)
-  box('Rounded table floor pad',cx+.10+dx,.025,z1-1.65,.09,.03,.73,metal,.02)
+  box('Rounded table support',cx-.45+dx,.36,z1-1.95,.055,.70,.68,metal,.01)
+  box('Rounded table floor pad',cx-.45+dx,.025,z1-1.95,.09,.03,.73,metal,.02)
  # Photo evidence: roll-up event graphic and lightweight white geometric exhibits.
  photo_poster(x0+.95,z1-.72)
  thread_art(x1-1.45,z0+2.35,1.03)
- for i in range(5):
-  x=cx-.50+i*.27;z=z1-1.65+(i%2)*.17
-  box('Small exhibit plinth',x,.76,z,.21,.04,.19,paper,.005)
-  cyl('Small exhibition object',x,.84,z,.045,.12,[metal,blue,leaf,glass,wood][i])
+ # The photographed central silver-covered form is a silhouette approximation.
+ silver=material('Silver covered display',(.62,.63,.60),.35,.38)
+ points=[];loop=rounded_loop(.88,.54,.09,steps=4);n=len(loop)
+ for ring in range(4):
+  for i,(xx,zz) in enumerate(loop):
+   fold=.018*math.sin(i*3.7+ring*2.3);scale=[.94,1.03,1.0,.83][ring]
+   points.append((cx-.40+xx*scale+fold,1.03+ring*.17+.035*math.sin(i*2.1+ring),z0+1.65+zz*scale+fold*.45))
+ points.append((cx-.48,1.57,z0+1.64));faces=[]
+ for ring in range(3):
+  for i in range(n):
+   a=ring*n+i;b=ring*n+(i+1)%n;c=(ring+1)*n+(i+1)%n;d=(ring+1)*n+i;faces.extend([(a,b,c),(a,c,d)])
+ for i in range(n):faces.append((3*n+i,3*n+(i+1)%n,4*n))
+ geometry('Photographed silver covered form',points,faces,silver)
+ # Two white high stools visible behind the middle display tables.
+ for x in [cx-.40,cx+1.05]:
+  z=z0+.74;display_top('White high stool seat',x,z,.38,.34,.74,paper)
+  meta['floors'][str(current_floor)]['colliders'][-1]['rect']=[x-.25,z-.25,x+.25,z+.25]
+  box('White high stool back',x,.94,z-.16,.36,.22,.035,paper,.04)
+  for dx in [-.16,.16]:
+   for dz in [-.14,.14]:bar('High stool leg',(x+dx,.03,z+dz),(x+dx,.71,z+dz),.013,black)
+  tube('High stool footrest',[(x-.17,.28,z+.15),(x+.17,.28,z+.15)],.012,metal)
+ # Replace uniform cylinders with grouped small exhibits and angled labels.
+ tx=cx-.45;tz=z1-1.95
+ box('Bottle group display tray',tx-.60,.765,tz-.02,.42,.04,.32,metal,.006)
+ for i in range(8):
+  xx=tx-.75+(i%4)*.10;zz=tz-.11+(i//4)*.15
+  cyl('Small exhibit vial',xx,.835,zz,.025,.10,[glass,leaf,blue,paper][i%4]);cyl('Exhibit vial cap',xx,.892,zz,.027,.014,black)
+ box('Angular exhibit plinth',tx,.76,tz,.27,.04,.25,paper,.006)
+ poly=[(tx-.10,.78,tz-.09),(tx+.13,.78,tz-.08),(tx+.09,.78,tz+.12),(tx-.08,.78,tz+.10),(tx+.02,1.05,tz+.01)]
+ geometry('Angular paper-like exhibit',poly,[(0,1,4),(1,2,4),(2,3,4),(3,0,4)],paper)
+ box('Loop exhibit dark plinth',tx+.58,.76,tz,.25,.04,.22,black,.005)
+ tube('Open loop exhibit',[(tx+.48,.79,tz),(tx+.44,.92,tz),(tx+.53,1.04,tz),(tx+.66,1.0,tz),(tx+.70,.86,tz),(tx+.62,.79,tz)],.012,paper)
+ for x,z in [(tx-.55,tz+.30),(tx+.10,tz+.30),(cx+1.05,z0+1.75)]:
+  ob=box('Exhibit information card',x,.775 if z>z0+3 else 1.025,z,.16,.008,.10,paper,.003);ob.rotation_euler.x=math.radians(12)
  # Public copiers remain in the north circulation zone, clear of the photo composition.
  for x in [x0+.65,x1-.65]:
   z=z1+.85;box('Public copier cabinet',x,.48,z,.65,.96,.70,paper,.018);box('Copier scanner',x,1.01,z,.65,.10,.70,black,.015);solid('Public copier',x,z,.65,.70)
