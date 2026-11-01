@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {createNativeTestSandbox} from './native_test_sandbox.mjs';
 import {acquireNativeWorkspaceLock} from './native_validation_lock.mjs';
 import {fileDigest} from './native_validation_identity.mjs';
+import {restoreResourceCache,captureResourceCache,engineIdentity} from './resource_import_cache.mjs';
 import {startValidationProcess,joinValidationProcesses} from './managed_validation_process.mjs';
 
 export const MEDIA_CLIPS=['rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition','rpg/cinematics/qizhen-rain-rescue/qizhen_rain_rescue_hailuo23_v01'];
@@ -23,12 +24,15 @@ export async function prepareImportAndMedia({root=path.resolve(import.meta.dirna
     const converter='tools/convert_media.sh',inputs=[converter,'tools/media_conversion_cache.cjs',...MEDIA_CLIPS.map(name=>`assets/${name}.mp4`)];
     const hashes=new Map(inputs.map(relative=>[relative,fileDigest(path.join(project,relative))]));
     for(const relative of inputs){const target=path.join(media,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(project,relative),target);if(fileDigest(target)!==hashes.get(relative))throw Error(`Copied media input changed: ${relative}`);}
+    const cache=process.env.GODOT_RESOURCE_CACHE_DIR;
+    const importCache=restoreResourceCache({project,cache,engine:cache?engineIdentity(executable):null});
     // The temporary converter has its own workspace lock and outputs. It cannot
     // publish OGVs while Godot is reading the original project/import cache.
     handles.push(launch(executable,['--headless','--path',project,'--editor','--import','--quit'],{cwd:root,env:sandbox.env,logFile:path.join(logs,'preliminary-import.log'),strictGodot:true}));
     const mediaCommand=installMedia?'"$1" "$2" && NODE_BIN="$1" bash "$3"':'NODE_BIN="$1" bash "$3"';
     handles.push(launch('bash',['-c',mediaCommand,'755-isolated-media',process.execPath,path.join(root,'scripts/ensure-ci-media-tools.mjs'),path.join(media,converter)],{cwd:root,env:process.env,logFile:path.join(logs,'isolated-media.log')}));
     const processes=await joinValidationProcesses(handles);if(aborted)throw aborted;
+    const importedCache=captureResourceCache(importCache);
     for(const [relative,hash] of hashes)if(fileDigest(path.join(project,relative))!==hash)throw Error(`Media source changed during preparation: ${relative}`);
     const receiptPath=path.join(media,'.validation/media-prepared.json');
     const receipt=JSON.parse(fs.readFileSync(receiptPath,'utf8'));
@@ -41,7 +45,7 @@ export async function prepareImportAndMedia({root=path.resolve(import.meta.dirna
     // children have closed. The original formal import/parse still runs next.
     for(const name of MEDIA_CLIPS){const relative=`assets/${name}.ogv`,target=path.join(project,relative),staged=`${target}.validated-${process.pid}.tmp`;fs.copyFileSync(path.join(media,relative),staged);fs.renameSync(staged,target);}
     fs.copyFileSync(receiptPath,path.join(project,'.validation/media-prepared.json'));
-    const result={schema:1,elapsedMs:Date.now()-began,processes,isolatedOutputs:true,preliminaryImportPassed:true,formalImportStillRequired:true,sourceHashes:Object.fromEntries(hashes),reports:receipt.reports};
+    const result={schema:1,resourceCache:{restore:{restored:importCache.restored,miss:importCache.miss,rejected:importCache.rejected,elapsedMs:importCache.elapsedMs},capture:importedCache},elapsedMs:Date.now()-began,processes,isolatedOutputs:true,preliminaryImportPassed:true,formalImportStillRequired:true,sourceHashes:Object.fromEntries(hashes),reports:receipt.reports};
     fs.writeFileSync(path.join(logs,'preparation.json'),JSON.stringify(result,null,2)+'\n');return result;
   } finally {
     for(const handle of handles)await handle.stopAndJoin();

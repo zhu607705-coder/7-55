@@ -104,9 +104,17 @@ jobs:
           key: media-conversion-v1-${{ runner.os }}-${{ hashFiles('godot_native/tools/convert_media.sh', 'godot_native/tools/media_conversion_cache.cjs', 'src/assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.mp4', 'src/assets/rpg/cinematics/qizhen-rain-rescue/qizhen_rain_rescue_hailuo23_v01.mp4') }}
           restore-keys: media-conversion-v1-${{ runner.os }}-
 
+      - name: Restore source-bound imported resources (strict import still runs)
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/755-resource-import-cache
+          key: godot-resource-v1-${{ runner.os }}-4.7.1-${{ hashFiles('godot_native/tools/resource_import_cache.mjs', 'godot_native/project.godot') }}-${{ github.sha }}
+          restore-keys: godot-resource-v1-${{ runner.os }}-4.7.1-${{ hashFiles('godot_native/tools/resource_import_cache.mjs', 'godot_native/project.godot') }}-
+
       - name: Install media converter
         env:
           MEDIA_CONVERSION_CACHE_DIR: ${{ runner.temp }}/755-media-conversion-cache
+          GODOT_RESOURCE_CACHE_DIR: ${{ runner.temp }}/755-resource-import-cache
         # Media conversion writes only its private temp project while the cold
         # import owns the real project. Final import/export remain mandatory.
         run: |
@@ -229,6 +237,7 @@ jobs:
           node godot_native/tests/test_web_consumer_source_closure.mjs
           node godot_native/tests/test_preparation_pipeline.mjs
           node godot_native/tests/test_media_conversion_cache.mjs
+          node godot_native/tests/test_resource_import_cache.mjs
           node godot_native/tests/test_web_phone_shards.mjs
           node godot_native/tests/test_web_phone_exercise.mjs
           node godot_native/tests/test_web_transport_audit.mjs

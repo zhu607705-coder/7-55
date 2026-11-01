@@ -88,3 +88,65 @@ await test('pointer transport failure releases without retrying or proceeding', 
   assert.equal(f.events.at(-1).phase, 'end'); assert.equal(f.events.filter(e => e.phase === 'move').length, 3);
   assert.equal(f.evidence.samples.length, 0);
 });
+
+function timedFixture(options = {}) {
+  const f = fixture(options), state = {now: 1000}, costs = {start: 11, move: 7, end: 13};
+  for (const [method, cost] of [['snapshot', 5], ['renderPoint', 3], ['interval', null]]) {
+    const original = f.h[method]; f.h[method] = async (...args) => {state.now += cost ?? args[0]; return original(...args);};
+  }
+  const pointer = f.h.pointer;
+  f.h.pointer = async (phase, point) => {state.now += costs[phase]; return pointer(phase, point);};
+  return {...f, state, costs};
+}
+await test('serial telemetry measures exact ACK, snapshot and elapsed spans without more input or waits', async () => {
+  const f = timedFixture(), originalNow = Date.now;
+  Date.now = () => f.state.now;
+  try {
+    await continuousExercise(f.h, f.evidence);
+    for (const row of f.evidence.exerciseTransport) {
+      for (const phase of ['start', 'move', 'end']) {
+        const stats = row.pointerAck[phase], count = phase === 'move' ? row.pointerMoves : 1;
+        assert.deepEqual(stats, {calls: count, acknowledged: count, failed: 0, totalMs: count * f.costs[phase], maxMs: f.costs[phase]});
+      }
+      assert.equal(row.snapshots.failed, 0); assert.equal(row.snapshots.maxMs, 5);
+      assert.equal(row.snapshots.totalMs, row.snapshots.calls * 5);
+      assert.equal(row.geometryMs, row.geometryCalls * 3);
+      assert.equal(row.elapsedMs, row.finishedAt - row.startedAt);
+      assert.equal(row.elapsedMs, row.geometryMs + row.snapshots.totalMs + row.inputWaitMs +
+        Object.values(row.pointerAck).reduce((sum, stats) => sum + stats.totalMs, 0));
+    }
+    assert.equal(f.events.filter(e => e.phase === 'move').length, 399);
+    assert.equal(f.waits.length, 399); assert.equal(f.waits.reduce((a, b) => a + b, 0), 31920);
+  } finally {Date.now = originalNow;}
+});
+for (const phase of ['start', 'move', 'end']) await test(`${phase} ACK failure is timed as failed, never as an acknowledged move`, async () => {
+  const f = timedFixture({failMove: phase === 'move'}), originalNow = Date.now;
+  const pointer = f.h.pointer;
+  if (phase !== 'move') f.h.pointer = async (p, point) => {await pointer(p, point); if (p === phase) throw Error(`synthetic ${phase} failure`);};
+  Date.now = () => f.state.now;
+  try {
+    await assert.rejects(continuousExercise(f.h, f.evidence), /synthetic/);
+    const row = f.evidence.exerciseTransport[0], stats = row.pointerAck[phase];
+    assert.equal(stats.failed, 1); assert.equal(stats.acknowledged, stats.calls - 1);
+    assert.equal(stats.totalMs, stats.calls * f.costs[phase]); assert.equal(stats.maxMs, f.costs[phase]);
+    assert.equal(row.pointerMoves, row.pointerAck.move.acknowledged);
+    assert.equal(row.elapsedMs, row.finishedAt - row.startedAt);
+    assert.equal(row.elapsedMs, row.geometryMs + row.snapshots.totalMs + row.inputWaitMs +
+      Object.values(row.pointerAck).reduce((sum, value) => sum + value.totalMs, 0));
+    assert.equal(f.events.filter(e => e.phase === 'end').length, phase === 'start' ? 0 : 1,
+      'telemetry retains existing release behavior rather than injecting another event');
+  } finally {Date.now = originalNow;}
+});
+await test('snapshot failure includes its elapsed time and the existing final release ACK', async () => {
+  const f = timedFixture(), originalNow = Date.now, snapshot = f.h.snapshot; let calls = 0;
+  f.h.snapshot = async () => {const result = await snapshot(); if (++calls === 3) throw Error('synthetic snapshot failure'); return result;};
+  Date.now = () => f.state.now;
+  try {
+    await assert.rejects(continuousExercise(f.h, f.evidence), /snapshot failure/);
+    const row = f.evidence.exerciseTransport[0];
+    assert.deepEqual(row.snapshots, {calls: 2, failed: 1, totalMs: 10, maxMs: 5});
+    assert.equal(row.pointerMoves, 8); assert.equal(row.pointerAck.end.acknowledged, 1);
+    assert.equal(row.elapsedMs, row.geometryMs + row.snapshots.totalMs + row.inputWaitMs +
+      Object.values(row.pointerAck).reduce((sum, value) => sum + value.totalMs, 0));
+  } finally {Date.now = originalNow;}
+});
