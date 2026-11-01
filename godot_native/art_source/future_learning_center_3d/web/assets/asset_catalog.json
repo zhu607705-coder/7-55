@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "units": "m",
+  "policy": "Reuse existing open geometry first; otherwise batch-author dimension-driven reusable components from manufacturer specifications. Do not individually generate generic tools by default.",
+  "assets": {
+    "office_desk": {
+      "name": "工位桌",
+      "status": "dimension_driven_local_geometry",
+      "dimensions": {
+        "width": 1.4,
+        "depth": 0.6,
+        "topHeight": 0.73
+      },
+      "source": "https://www.ikea.co.id/in/produk/ruang-kerja-di-rumah/meja-kerja/lagkapten-adils-spr-09417160",
+      "evidence": "IKEA LAGKAPTEN/ADILS published 140x60x73cm. Monitor, legs and finish are illustrative; not an exact CAD replica or verified site inventory."
+    },
+    "office_chair": {
+      "name": "网背办公椅",
+      "status": "dimension_driven_local_geometry",
+      "dimensions": {
+        "seatWidth": 0.46,
+        "seatDepth": 0.49,
+        "baseWidth": 0.71,
+        "chosenSeatHeight": 0.46
+      },
+      "source": "https://www.ikea.com/gb/en/p/flintan-office-chair-black-50489031/",
+      "evidence": "FLINTAN nominal seat46x49cm, width/depth71cm, seat-height range45-58cm. Backrest frame/mesh detailing is a local approximation; not an exact product or site chair."
+    },
+    "caliper_150": {
+      "name": "150 mm 数显卡尺",
+      "status": "dimension_driven_local_geometry",
+      "dimensions": {
+        "length": 0.233,
+        "range": 0.15,
+        "beamWidth": 0.016,
+        "outsideJaw": 0.04,
+        "insideJaw": 0.021,
+        "jawThickness": 0.0035
+      },
+      "source": "https://www.mitutoyo.com/webfoo/wp-content/uploads/E12047.pdf",
+      "evidence": "Manufacturer E12047, printed pages6-7, ABS150mm series. Fixed dimensions follow the drawing. The slider is shown partly open; casing and button geometry are approximate. Local geometry, no manufacturer CAD claimed."
+    },
+    "screwdriver_3x100": {
+      "name": "3 × 100 mm 一字螺丝刀",
+      "status": "dimension_driven_local_geometry",
+      "dimensions": {
+        "length": 0.204,
+        "bladeLength": 0.1,
+        "tipWidth": 0.003,
+        "tipThickness": 0.0005,
+        "handleDiameter": 0.023
+      },
+      "source": "https://www2.wiha.com/files/asia-pacific/EN-Asia-Pacific_catalogue.pdf",
+      "evidence": "Wiha320N, order00821: 3.0x100mm blade, overall204mm, tip0.5mm, handle diameter23mm. Handle detail is illustrative; no branded markings or manufacturer CAD claimed."
+    }
+  },
+  "external_candidates": [
+    {
+      "provider": "NVIDIA",
+      "dataset": "https://huggingface.co/datasets/nvidia/simready-assets",
+      "license": "CC-BY-4.0",
+      "revision_reference": "2464ca32165bfff81ba34bc703ddb932822cfd27",
+      "candidate": "chair_office_fabric_manager_a01/simready_usd/sm_chair_office_fabric_manager_a01_01.usd",
+      "status": "identified_not_downloaded",
+      "note": "Dataset license verified from publisher card. Direct download from this host timed out/no route. Model dimensions and per-package dependency/license files must be checked when acquired; do not assume equivalence to the site chair."
+    },
+    {
+      "provider": "NVIDIA",
+      "dataset": "https://huggingface.co/datasets/nvidia/simready-assets",
+      "license": "CC-BY-4.0",
+      "revision_reference": "2464ca32165bfff81ba34bc703ddb932822cfd27",
+      "candidate": "handTool_wrench_torque_a01/simready_usd/sm_handTool_wrench_torque_a01_01.usd",
+      "status": "identified_not_downloaded",
+      "note": "Publicly indexed source path; not present in this deliverable."
+    }
+  ],
+  "local_geometry_license": "New locally authored geometry for this project; generator code follows the project source-code license. Manufacturer dimensions are referenced, not manufacturer CAD. Original floor-plan, brand, document and third-party asset rights remain with their owners.",
+  "licenses": [
+    {
+      "asset": "Three.js0.185.1",
+      "license": "MIT",
+      "file": "../vendor/three/LICENSE"
+    }
+  ]
+}

@@ -1,0 +1,630 @@
+{
+  "model": {
+    "checks": 18,
+    "failures": 0,
+    "rows": [
+      {
+        "pass": true,
+        "label": "blend 2F hierarchy",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "blend 2F physical atrium hole",
+        "details": [
+          13.0,
+          -20.0,
+          -0.019992828369140625
+        ]
+      },
+      {
+        "pass": true,
+        "label": "blend 3F hierarchy",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "blend 3F physical atrium hole",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "blend 4F hierarchy",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "blend 4F physical atrium hole",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "glb 2F hierarchy",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "glb 2F physical atrium hole",
+        "details": [
+          13.0,
+          -20.0,
+          -0.020000457763671875
+        ]
+      },
+      {
+        "pass": true,
+        "label": "glb 3F hierarchy",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "glb 3F physical atrium hole",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "glb 4F hierarchy",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "glb 4F physical atrium hole",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "office_desk reusable instances",
+        "details": 64
+      },
+      {
+        "pass": true,
+        "label": "office_desk exported meter scale",
+        "details": [
+          1.4000000953674316,
+          0.5999984741210938,
+          1.1999999284744263
+        ]
+      },
+      {
+        "pass": true,
+        "label": "caliper_150 reusable instances",
+        "details": 7
+      },
+      {
+        "pass": true,
+        "label": "caliper_150 exported meter scale",
+        "details": [
+          0.2329998016357422,
+          0.07050037384033203,
+          0.02274996042251587
+        ]
+      },
+      {
+        "pass": true,
+        "label": "screwdriver_3x100 reusable instances",
+        "details": 7
+      },
+      {
+        "pass": true,
+        "label": "screwdriver_3x100 exported meter scale",
+        "details": [
+          0.20399999618530273,
+          0.023000717163085938,
+          0.023000001907348633
+        ]
+      }
+    ]
+  },
+  "collision": {
+    "checks": 78,
+    "failures": 0,
+    "rows": [
+      {
+        "label": "2F corridor spawn",
+        "pass": true
+      },
+      {
+        "label": "2F exterior is blocked",
+        "pass": true
+      },
+      {
+        "label": "2F seminar safe start",
+        "pass": true
+      },
+      {
+        "label": "2F seminar spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "2F formula safe start",
+        "pass": true
+      },
+      {
+        "label": "2F formula spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "2F team safe start",
+        "pass": true
+      },
+      {
+        "label": "2F team spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "2F robotics safe start",
+        "pass": true
+      },
+      {
+        "label": "2F robotics spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "2F mechatronics safe start",
+        "pass": true
+      },
+      {
+        "label": "2F mechatronics spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "2F koala safe start",
+        "pass": true
+      },
+      {
+        "label": "2F koala spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "2F swept movement remains valid",
+        "pass": true
+      },
+      {
+        "label": "2F high-speed wall crossing blocked",
+        "pass": true
+      },
+      {
+        "label": "2F seminar joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "2F formula joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "2F team joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "2F robotics joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "2F mechatronics joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "2F koala joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "3F corridor spawn",
+        "pass": true
+      },
+      {
+        "label": "3F exterior is blocked",
+        "pass": true
+      },
+      {
+        "label": "3F seminar safe start",
+        "pass": true
+      },
+      {
+        "label": "3F seminar spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "3F studio_1 safe start",
+        "pass": true
+      },
+      {
+        "label": "3F studio_1 spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "3F studio_2 safe start",
+        "pass": true
+      },
+      {
+        "label": "3F studio_2 spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "3F studio_3 safe start",
+        "pass": true
+      },
+      {
+        "label": "3F studio_3 spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "3F studio_4 safe start",
+        "pass": true
+      },
+      {
+        "label": "3F studio_4 spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "3F recording safe start",
+        "pass": true
+      },
+      {
+        "label": "3F recording spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "3F pantry safe start",
+        "pass": true
+      },
+      {
+        "label": "3F pantry spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "3F xlab safe start",
+        "pass": true
+      },
+      {
+        "label": "3F xlab spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "3F atrium has no walkable floor",
+        "pass": true
+      },
+      {
+        "label": "3F swept movement remains valid",
+        "pass": true
+      },
+      {
+        "label": "3F seminar joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "3F studio_1 joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "3F studio_2 joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "3F studio_3 joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "3F studio_4 joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "3F recording joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "3F pantry joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "3F xlab joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "4F corridor spawn",
+        "pass": true
+      },
+      {
+        "label": "4F exterior is blocked",
+        "pass": true
+      },
+      {
+        "label": "4F storage safe start",
+        "pass": true
+      },
+      {
+        "label": "4F storage spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_1 safe start",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_1 spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_2 safe start",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_2 spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_3 safe start",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_3 spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "4F focus safe start",
+        "pass": true
+      },
+      {
+        "label": "4F focus spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "4F collab safe start",
+        "pass": true
+      },
+      {
+        "label": "4F collab spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "4F flex safe start",
+        "pass": true
+      },
+      {
+        "label": "4F flex spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "4F atrium has no walkable floor",
+        "pass": true
+      },
+      {
+        "label": "4F atrium has no walkable floor",
+        "pass": true
+      },
+      {
+        "label": "4F atrium has no walkable floor",
+        "pass": true
+      },
+      {
+        "label": "4F swept movement remains valid",
+        "pass": true
+      },
+      {
+        "label": "4F storage joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_1 joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_2 joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_3 joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "4F focus joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "4F collab joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "4F flex joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "reverse/away motion is not suppressed by a stale blocked flag",
+        "pass": true
+      }
+    ]
+  },
+  "browser": {
+    "browser": "156.0.8078.79",
+    "checks": 35,
+    "failures": 0,
+    "rows": [
+      {
+        "label": "complete 4F overview opens",
+        "pass": true
+      },
+      {
+        "label": "4F retains seven enclosed areas and whole floor entry",
+        "pass": true
+      },
+      {
+        "label": "desktop has no document overflow",
+        "pass": true
+      },
+      {
+        "label": "floor explosion is reversible navigation",
+        "pass": true
+      },
+      {
+        "label": "room opens at meter-scale eye height",
+        "pass": true
+      },
+      {
+        "label": "ordinary keyboard moves observer",
+        "pass": true,
+        "distance": 0.6750000000000016
+      },
+      {
+        "label": "ordinary movement stays collision-valid",
+        "pass": true
+      },
+      {
+        "label": "held movement cannot enter furniture/walls",
+        "pass": true
+      },
+      {
+        "label": "observer can back away after collision",
+        "pass": true
+      },
+      {
+        "label": "ordinary pointer drag changes look direction",
+        "pass": true
+      },
+      {
+        "label": "focus loss clears held movement",
+        "pass": true
+      },
+      {
+        "label": "optional help is available",
+        "pass": true
+      },
+      {
+        "label": "help returns to the same view",
+        "pass": true
+      },
+      {
+        "label": "escape returns from walkthrough",
+        "pass": true
+      },
+      {
+        "label": "room walk deep link restores safe room entry",
+        "pass": true
+      },
+      {
+        "label": "real-scale tool can be approached and is visible",
+        "pass": true
+      },
+      {
+        "label": "ordinary tool click opens anchored close inspection",
+        "pass": true
+      },
+      {
+        "label": "inspection returns to exact observer position",
+        "pass": true
+      },
+      {
+        "label": "walk keyboard focus restored after inspection",
+        "pass": true
+      },
+      {
+        "label": "four manufacturer dimension sources are exposed",
+        "pass": true
+      },
+      {
+        "label": "lost WebGL context offers recovery",
+        "pass": true
+      },
+      {
+        "label": "context reload restores room walk route",
+        "pass": true
+      },
+      {
+        "label": "mobile exposes analog locomotion",
+        "pass": true
+      },
+      {
+        "label": "mobile walkthrough has no overflow",
+        "pass": true
+      },
+      {
+        "label": "left thumb moves observer",
+        "pass": true
+      },
+      {
+        "label": "second touch looks while first thumb moves",
+        "pass": true
+      },
+      {
+        "label": "releasing both touches stops locomotion",
+        "pass": true
+      },
+      {
+        "label": "touch cancel clears joystick",
+        "pass": true
+      },
+      {
+        "label": "mobile whole-floor view has no overflow",
+        "pass": true
+      },
+      {
+        "label": "landscape touch has no overflow",
+        "pass": true
+      },
+      {
+        "label": "non-16:9 desktop has no overflow",
+        "pass": true
+      },
+      {
+        "label": "reduced motion retains ordinary walkthrough",
+        "pass": true
+      },
+      {
+        "label": "geometry failure has readable retry state",
+        "pass": true
+      },
+      {
+        "label": "failed geometry load can recover",
+        "pass": true
+      },
+      {
+        "label": "zero unexpected page/console errors",
+        "pass": true,
+        "errors": []
+      }
+    ],
+    "captures": [
+      "floor_4",
+      "building_exploded",
+      "office_overview",
+      "office_walk",
+      "tool_inspection",
+      "mobile_walk",
+      "mobile_floor_4",
+      "mobile_landscape",
+      "desktop_903"
+    ],
+    "scope": "Chrome desktop and emulated multi-touch; not physical mobile acceptance"
+  },
+  "build": {
+    "meshes": 3715,
+    "floors": [
+      2,
+      3,
+      4
+    ],
+    "rooms": {
+      "2": 6,
+      "3": 8,
+      "4": 7
+    },
+    "units": "m",
+    "footprint_m": [
+      26.1,
+      42.4
+    ],
+    "studio_1_area_m2": 24.78,
+    "shared_meshes": 713,
+    "tool_dimensions_m": {
+      "caliper_length": 0.233,
+      "screwdriver_length": 0.204
+    },
+    "glb_sha256": "e24e42a53a0bec9f6bb704227f1464d67ba206cd115e4e17dd7675fcf9cbd704"
+  },
+  "review": "Final desktop/mobile captures inspected; one detector dark-glow warning reviewed as false positive on a light surface with offset modal shadow.",
+  "artifact_sha256": {
+    "flc_walkthrough.blend": "20632e9fb4b835ed8965330f73063767b11e9fb4dfa074306425cdf9bd576773",
+    "web/assets/building.glb": "e24e42a53a0bec9f6bb704227f1464d67ba206cd115e4e17dd7675fcf9cbd704",
+    "web/assets/layout.json": "1db863ff81d0f61cdb6b869ddb084f4e88e499608873ccecf1b646ebc77bca72",
+    "web/viewer.js": "88d27433fa46b53de67563a93911b1a64ab1845ad41d7217d9ca4a40ca5e90a0",
+    "web/collision.js": "51ac4bb965dc7580a3a01f14bc98830bdc0172dc07134948ab61dcfb88cf9424"
+  }
+}

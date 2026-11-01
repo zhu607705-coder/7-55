@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#edf0ed"><title>未来学习中心 · 空间漫游</title><link rel="icon" href="data:,"><link rel="stylesheet" href="style.css"><script type="importmap">{"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/addons/"}}</script></head>
+<body>
+<main id="viewport" aria-label="未来学习中心三维空间"><canvas id="scene" aria-label="三维建筑。进入漫游后可以行走观察。" tabindex="0"></canvas></main>
+<header class="topbar"><div class="identity"><h1>未来学习中心</h1><p id="location">空间漫游</p></div><nav aria-label="观察模式"><button id="overview" type="button">楼层总览</button><button id="walk" type="button" class="primary" disabled>进入漫游</button><button id="help" type="button" aria-label="使用说明">说明</button></nav></header>
+<aside class="navigator" aria-label="楼层与空间"><label for="floor">楼层</label><select id="floor"><option value="2">2F</option><option value="3">3F</option><option value="4">4F</option></select><label for="room">空间</label><select id="room"><option value="">整层</option></select><button id="explode" type="button" aria-pressed="false">展开楼层</button></aside>
+<div class="bottom"><p id="scale-note">正在载入建筑…</p><button id="sources" type="button">尺度与来源</button></div>
+<div id="loading" class="loading" role="status"><p id="loading-text">正在载入空间</p><button id="retry" hidden type="button">重新载入</button></div>
+<div id="walk-controls" hidden><div id="joystick" aria-label="移动摇杆" role="group"><span id="stick"></span></div></div>
+<div id="inspect" hidden><strong id="tool-name"></strong><span id="tool-dimensions"></span><button id="inspect-exit" type="button">返回空间</button></div>
+<dialog id="help-dialog"><form method="dialog"><button class="close" aria-label="关闭说明">关闭</button></form><h2>像看房一样，走进空间</h2><p>先选择楼层与房间，再进入漫游。镜头保持站立视高，桌椅和房间使用同一套米制几何。</p><dl><dt>电脑</dt><dd>拖动画面转头，WASD 或方向键行走。Esc 返回总览。</dd><dt>触屏</dt><dd>左下摇杆移动，右侧拖动转头。松手、切换页面后会立即停止。</dd><dt>近看工具</dt><dd>在实验桌上点选卡尺或螺丝刀，进入可旋转的近景，再返回原来位置。</dd></dl><p class="muted">楼梯当前用于结构示意；跨层请先返回总览。1F 尚缺完整平面图。</p></dialog>
+<dialog id="sources-dialog"><form method="dialog"><button class="close" aria-label="关闭尺度与来源">关闭</button></form><h2>尺度与来源</h2><p>楼层约 26.1 × 42.4 m，沿用此前按图纸面积标定的比例。房间尺寸、门洞偏移和层高仍为近似值，尚不能视作现场测绘。</p><p>桌椅采用公开产品规格作为尺寸参照；摆放数量与设备外形属于本次空间评审方案。</p><ul id="source-list"></ul><p>NVIDIA SimReady 的公开 USD 模型已列入后续资产候选；本次下载未连通，当前画面中的桌椅与工具是依据厂商尺寸构建的共享模型。</p></dialog>
+<script type="module" src="viewer.js"></script>
+</body></html>

@@ -1,0 +1,25 @@
+{
+  "meshes": 3715,
+  "floors": [
+    2,
+    3,
+    4
+  ],
+  "rooms": {
+    "2": 6,
+    "3": 8,
+    "4": 7
+  },
+  "units": "m",
+  "footprint_m": [
+    26.1,
+    42.4
+  ],
+  "studio_1_area_m2": 24.78,
+  "shared_meshes": 713,
+  "tool_dimensions_m": {
+    "caliper_length": 0.233,
+    "screwdriver_length": 0.204
+  },
+  "glb_sha256": "e24e42a53a0bec9f6bb704227f1464d67ba206cd115e4e17dd7675fcf9cbd704"
+}
