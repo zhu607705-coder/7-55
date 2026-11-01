@@ -41,7 +41,80 @@ export async function waitForBrightnessControl(h, afterFrame) {
   }, 'fresh native brightness control is visible and usable', 20000);
 }
 
-async function continuousExercise(h, evidence) {
+// Only the harness trace is writable. Listeners never cancel, synthesize or
+// modify an event or game state. This function is serialized into the browser.
+export function exerciseInputObserver(action, touch) {
+  const key = '__755ExerciseInputObservation';
+  if (action === 'begin') {
+    if (window[key]) throw Error('Exercise observer already active');
+    const state = {events: [], overflow: false, cancelled: false};
+    const types = touch ? ['touchstart', 'touchmove', 'touchend', 'touchcancel'] : ['mousedown', 'mousemove', 'mouseup'];
+    state.listen = event => {
+      if (event.type === 'touchcancel') state.cancelled = true;
+      const phase = ({touchstart: 'start', touchmove: 'move', touchend: 'end', mousedown: 'start', mousemove: 'move', mouseup: 'end'})[event.type];
+      if (!phase) return;
+      const points = touch ? Array.from(event.changedTouches) : [event];
+      for (const point of points) {
+        if (state.events.length >= 1024) {state.overflow = true; break;}
+        state.events.push({phase, x: point.clientX, y: point.clientY, trusted: event.isTrusted,
+          identifier: touch ? point.identifier : null, buttons: touch ? null : event.buttons, at: performance.now()});
+      }
+    };
+    state.types = types;
+    for (const type of types) window.addEventListener(type, state.listen, {capture: true, passive: true});
+    window[key] = state;
+    return true;
+  }
+  const state = window[key];
+  if (!state) throw Error('Exercise observer is not active');
+  const result = {events: state.events.slice(), overflow: state.overflow, cancelled: state.cancelled};
+  if (action === 'end') {
+    for (const type of state.types) window.removeEventListener(type, state.listen, {capture: true});
+    delete window[key];
+  } else if (action !== 'read') throw Error('Unknown exercise observer operation');
+  return result;
+}
+
+export function verifyExerciseObservation(observed, sent, touch) {
+  if (!observed || observed.overflow || observed.cancelled || !Array.isArray(observed.events) || observed.events.length !== sent.length)
+    throw Error('Exercise browser event observation lost, added or cancelled input');
+  for (let i = 0; i < sent.length; i++) {
+    const actual = observed.events[i], expected = sent[i];
+    if (actual.phase !== expected.phase || actual.trusted !== true || !Number.isFinite(actual.x) || !Number.isFinite(actual.y)
+      || Math.hypot(actual.x - expected.x, actual.y - expected.y) > .05
+      || (touch && actual.identifier !== 4) || (!touch && actual.buttons !== (expected.phase === 'end' ? 0 : 1)))
+      throw Error(`Exercise browser event order/coordinate differs at input ${i + 1}`);
+  }
+}
+
+// Keep every move serialized: real browsers coalesced concurrent commands even
+// when all ACKs succeeded. Observe the ACK first, then retain the original 80ms
+// interval. Trusted DOM event verification below remains mandatory.
+export function createExerciseMoveQueue(dispatch, interval, timing, now = () => performance.now()) {
+  const pending = new Set(); let firstError;
+  const fail = error => {firstError ||= error;};
+  return {
+    async move(point) {
+      while (pending.size >= 1) {await Promise.race(pending); if (firstError) throw firstError;}
+      if (firstError) throw firstError;
+      let job;
+      try { job = Promise.resolve(dispatch(point)); } catch (error) { fail(error); throw error; }
+      const tracked = job.then(() => {}, fail).finally(() => pending.delete(tracked));
+      pending.add(tracked); timing.maxInFlight = Math.max(timing.maxInFlight || 0, pending.size);
+      await tracked;
+      if (firstError) throw firstError;
+      const acknowledgedAt = now();
+      await interval(80); timing.inputWaitMs += 80;
+      // Timers can wake slightly early; do not allow a sub-80ms send interval.
+      while (now() - acknowledgedAt < 80) {const remaining = 80 - (now() - acknowledgedAt); await interval(remaining); timing.inputWaitMs += remaining;}
+      if (firstError) throw firstError;
+    },
+    async drain() {await Promise.all(pending); if (firstError) throw firstError;},
+    async settle() {await Promise.all(pending);}
+  };
+}
+
+export async function continuousExercise(h, evidence) {
   const initial = await h.poll(async () => {
     const s = await h.snapshot();
     return s.activeGame?.script === 'res://scripts/games/virtual_run.gd' && s.visibleControls.some(c => c.name === 'RunProgress') ? s : null;
@@ -70,27 +143,94 @@ async function continuousExercise(h, evidence) {
   const count = s => Number(s.visibleControls.find(c => c.name === 'RunProgress')?.text.match(/(\d+)\s*\/\s*10/)?.[1]);
   h.check(count(initial) === 0, `${h.id}: exercise starts with zero controller-earned fixes`);
   for (let segment = 0; segment < 10; segment++) {
-    let s = await h.snapshot(), last = await h.renderPoint(screenPoint(pointAt(fractions[segment] * length), s), s);
-    h.check(count(s) === segment, `${h.id}: segment ${segment + 1} starts at the previous genuine checkpoint`);
-    evidence.inputs.push({ method: h.touch ? 'ordinaryTouchDrag' : 'ordinaryMouseDrag', name: 'VirtualRunTrack', segment: segment + 1, at: Date.now() });
-    await h.pointer('start', last);
+    const timing = {segment: segment + 1, startedAt: Date.now(), geometryCalls: 0, geometryMs: 0, pointerMoves: 0, inputWaitMs: 0,
+      pointerAck: Object.fromEntries(['start', 'move', 'end'].map(phase => [phase, {calls: 0, acknowledged: 0, failed: 0, totalMs: 0, maxMs: 0}])),
+      snapshots: {calls: 0, failed: 0, totalMs: 0, maxMs: 0}, sent: [], observed: null, maxInFlight: 0};
+    (evidence.exerciseTransport ||= []).push(timing);
+    // Start/move/end stay serial. Keep attempted input, ACK and DOM receipt distinct.
+    // Attempted input, browser observation and ACKs remain separate evidence.
+    const sendPointer = async (phase, point) => {
+      const stats = timing.pointerAck[phase], began = Date.now(); stats.calls++;
+      // This CI Chromium path exposed integral MouseEvent client coordinates.
+      // Send explicit integers for exact cross-implementation comparison; touch
+      // retains its fractional path. Do not loosen the observation tolerance.
+      // The original float point stays intact for canvas registration checks.
+      const dispatchedPoint = h.touch ? point : {x: Math.trunc(point.x), y: Math.trunc(point.y)};
+      const input = {phase, x: dispatchedPoint.x, y: dispatchedPoint.y, at: began}; timing.sent.push(input);
+      try { const result = await h.pointer(phase, dispatchedPoint); stats.acknowledged++; input.acknowledgedAt = Date.now(); if (phase === 'move') timing.pointerMoves++; return result; }
+      catch (error) { stats.failed++; input.error = error.message; input.failedAt = Date.now(); throw error; }
+      finally { const elapsed = Date.now() - began; stats.totalMs += elapsed; stats.maxMs = Math.max(stats.maxMs, elapsed); }
+    };
+    const readSnapshot = async () => {
+      const stats = timing.snapshots, began = Date.now(); stats.calls++;
+      try { return await h.snapshot(); }
+      catch (error) { stats.failed++; throw error; }
+      finally { const elapsed = Date.now() - began; stats.totalMs += elapsed; stats.maxMs = Math.max(stats.maxMs, elapsed); }
+    };
     try {
-      const start = fractions[segment] * length, finish = fractions[segment + 1] * length;
-      const steps = Math.ceil((finish - start) / 2);
-      for (let step = 1; step <= steps; step++) {
-        last = await h.renderPoint(screenPoint(pointAt(start + (finish - start) * step / steps), s), s);
-        await h.pointer('move', last); await h.interval(80);
-        if (step % 8 === 0) {
-          s = await h.snapshot();
-          if (count(s) === segment + 1) break;
+      let s = await readSnapshot();
+      // renderPoint is an axis-aligned canvas/viewport mapping. Measure it once
+      // per segment instead of making a browser Runtime.evaluate round trip for
+      // every two source pixels. The trajectory, 80ms cadence and authority reads
+      // below stay unchanged. Revalidate at every existing eight-input boundary;
+      // a resized/reframed canvas fails closed and finally releases the pointer.
+      const measure = async (point, value) => {
+        const began = Date.now();
+        try { return await h.renderPoint(point, value); }
+        finally { timing.geometryCalls++; timing.geometryMs += Date.now() - began; }
+      };
+      const origin = await measure({x: 0, y: 0}, s);
+      const corner = await measure({x: 100, y: 100}, s);
+      const transform = point => ({x: origin.x + point.x * (corner.x - origin.x) / 100,
+        y: origin.y + point.y * (corner.y - origin.y) / 100});
+      h.check([origin.x, origin.y, corner.x, corner.y].every(Number.isFinite) && corner.x > origin.x && corner.y > origin.y,
+        `${h.id}: segment ${segment + 1} uses a measured positive canvas transform`);
+      const geometry = JSON.stringify({rect: s.activeGame.rect, viewport: s.viewport});
+      let last = transform(screenPoint(pointAt(fractions[segment] * length), s));
+      h.check(count(s) === segment, `${h.id}: segment ${segment + 1} starts at the previous genuine checkpoint`);
+      evidence.inputs.push({ method: h.touch ? 'ordinaryTouchDrag' : 'ordinaryMouseDrag', name: 'VirtualRunTrack', segment: segment + 1, at: Date.now() });
+      const queue = createExerciseMoveQueue(point => sendPointer('move', point), h.interval, timing, h.monotonicNow);
+      let failure, startAttempted = false;
+      const observe = async action => {
+        timing.observed = await h.observeExercise(action);
+        verifyExerciseObservation(timing.observed, timing.sent, h.touch);
+      };
+      try {
+        await h.observeExercise('begin');
+        startAttempted = true;
+        await sendPointer('start', last);
+        const start = fractions[segment] * length, finish = fractions[segment + 1] * length;
+        const steps = Math.ceil((finish - start) / 2);
+        for (let step = 1; step <= steps; step++) {
+          const sourcePoint = pointAt(start + (finish - start) * step / steps);
+          last = transform(screenPoint(sourcePoint, s));
+          await queue.move(last);
+          if (step % 8 === 0) {
+            await queue.drain(); await observe('read');
+            s = await readSnapshot();
+            if (count(s) === segment + 1) break;
+            const actual = await measure(screenPoint(sourcePoint, s), s);
+            h.check(JSON.stringify({rect: s.activeGame.rect, viewport: s.viewport}) === geometry &&
+              Math.hypot(actual.x - last.x, actual.y - last.y) < .01,
+              `${h.id}: continuous exercise canvas remains registered after input ${step} of segment ${segment + 1}`);
+          }
         }
+        await queue.drain(); await observe('read');
+        s = await h.poll(async () => {
+          const current = await readSnapshot();
+          return count(current) === segment + 1 ? current : null;
+        }, `continuous pointer traversal completes running segment ${segment + 1}`, 8000);
+        evidence.samples.push({ label: `continuous exercise segment ${segment + 1}`, at: Date.now(), progress: s.visibleControls.find(c => c.name === 'RunProgress').text });
+      } catch (error) {failure = error; throw error;}
+      finally {
+        // Stop issuing moves, observe every outstanding ACK, then release once.
+        // Never let a release/observation failure mask the first transport error.
+        await queue.settle();
+        try {if (startAttempted) await sendPointer('end', last);} catch (error) {if (!failure) failure = error; timing.releaseError = error.message;}
+        try {await observe('end');} catch (error) {if (!failure) failure = error; timing.observationError = error.message;}
+        if (failure) throw failure;
       }
-      s = await h.poll(async () => {
-        const current = await h.snapshot();
-        return count(current) === segment + 1 ? current : null;
-      }, `continuous pointer traversal completes running segment ${segment + 1}`, 8000);
-      evidence.samples.push({ label: `continuous exercise segment ${segment + 1}`, at: Date.now(), progress: s.visibleControls.find(c => c.name === 'RunProgress').text });
-    } finally { await h.pointer('end', last); }
+    } finally { timing.finishedAt = Date.now(); timing.elapsedMs = timing.finishedAt - timing.startedAt; }
   }
   const accepted = await h.poll(async () => {
     const s = await h.snapshot();

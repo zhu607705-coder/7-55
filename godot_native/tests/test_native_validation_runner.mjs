@@ -4,8 +4,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
+import {createShardPlan} from '../tools/native_validation_shards.mjs';
 import {scheduleValidation} from '../tools/native_validation_scheduler.mjs';
-import {createValidationCatalog, planValidation, PREFLIGHT, NORTH_TARGETED, FIXTURE_WRITERS} from '../tools/native_validation_plan.mjs';
+import {createValidationCatalog, planValidation, PREFLIGHT, NORTH_TARGETED, FIXTURE_WRITERS, TIMING_EXCLUSIVE, PREPARATION_IDS} from '../tools/native_validation_plan.mjs';
 import {snapshotPaths, validationIdentity, stageIdentity, fixtureIdentity, canReuse, PRODUCER_OUTPUTS, inheritedTestOverrides, completedStageIdentity} from '../tools/native_validation_identity.mjs';
 const project = path.resolve(import.meta.dirname, '..');
 const catalog = createValidationCatalog(project, '/fake/godot');
@@ -179,4 +180,24 @@ test('reader evidence cannot be rebound to fixture bytes changed during executio
  assert.equal(completedStageIdentity(identity,reader,'same','same'),stageIdentity(identity,reader,'same'));
  const producer={...reader,id:'test_minigame_models.gd'};
  assert.equal(completedStageIdentity(identity,producer,'before','produced'),stageIdentity(identity,producer,'produced'));
+});
+
+test('only the measured timing-sensitive suite is exclusive and remains exactly one runtime consumer', () => {
+ assert.deepEqual(TIMING_EXCLUSIVE,['test_canteen_queue_floor_tap.gd']);
+ const id=TIMING_EXCLUSIVE[0],stage=catalog.find(s=>s.id===id);
+ assert.equal(stage.exclusive,true);assert.ok(!FIXTURE_WRITERS.includes(id));assert.ok(!PREPARATION_IDS.includes(id));
+ assert.ok(!planValidation(catalog,{profile:'prepare'}).stages.some(s=>s.id===id));
+ const full=planValidation(catalog);assert.equal(full.stages.filter(s=>s.id===id).length,1);
+ const shards=createShardPlan(catalog,path.dirname(project));assert.equal(shards.shards.flatMap(s=>s.ids).filter(x=>x===id).length,1);
+ for(const peer of ['test_canteen_drink_performance.gd','test_canteen_return_stack.gd','test_collapsed_inventory_focus.gd','test_compact_world_tasks.gd'])assert.equal(catalog.find(s=>s.id===peer).exclusive,false,peer);
+});
+test('actual timing suite drains sibling engines and blocks following peers until it closes', async () => {
+ const timing=catalog.find(s=>s.id==='test_canteen_queue_floor_tap.gd');
+ const peers=['test_canteen_drink_performance.gd','test_canteen_return_stack.gd','test_collapsed_inventory_focus.gd'].map(id=>catalog.find(s=>s.id===id));
+ const c=controlled(),done=scheduleValidation([peers[0],peers[1],timing,peers[2]],{jobs:2,run:c.run});
+ await tick();assert.deepEqual(c.starts,peers.slice(0,2).map(s=>s.id));
+ c.pending.get(peers[0].id).resolve(true);await tick();assert.ok(!c.pending.has(timing.id));
+ c.pending.get(peers[1].id).resolve(true);await tick();assert.deepEqual([...c.active],[timing.id]);assert.ok(!c.pending.has(peers[2].id));
+ c.pending.get(timing.id).resolve(true);await tick();assert.deepEqual([...c.active],[peers[2].id]);
+ c.pending.get(peers[2].id).resolve(true);const results=await done;assert.ok([...results.values()].every(r=>r.status==='pass'));
 });

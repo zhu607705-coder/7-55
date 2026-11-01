@@ -1764,7 +1764,8 @@ func _floor_anchor_bounds(visible: Rect2) -> Rect2:
 func _floor_obstacles() -> Array:
 	var feet:=PlayerMetrics.foot_rect(Vector2.ZERO)
 	var native_furniture:bool=is_instance_valid(native_canteen) and native_canteen.is_active()
-	var obstacles:Array=native_canteen.navigation_obstacles(feet) if native_furniture else []
+	# Append route-local doors/voids without mutating the native geometry cache.
+	var obstacles:Array=native_canteen.navigation_obstacles(feet).duplicate() if native_furniture else []
 	for obstacle in ([] if native_furniture else collisions):
 		if not obstacle is Dictionary: continue
 		var shape: Dictionary=library_layers.replace_collision(obstacle) if scene_id=="library_interior" and library_layers!=null else obstacle

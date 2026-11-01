@@ -4,7 +4,7 @@ import {digest} from './native_validation_identity.mjs';
 import {PREPARATION_IDS} from './native_validation_plan.mjs';
 import {registrationFields} from './native_validation_registration.mjs';
 
-export const NATIVE_SHARD_COUNT = 8;
+export const NATIVE_SHARD_COUNT = 12;
 const observed = JSON.parse(fs.readFileSync(new URL('./native_validation_timings.json', import.meta.url), 'utf8')).durationMs;
 export function stageDescriptor(stage, root) {
  const portable = value => value === root ? '$ROOT' : value.startsWith(`${root}${path.sep}`) ? `$ROOT/${path.relative(root, value).split(path.sep).join('/')}` : value;

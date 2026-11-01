@@ -2,6 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {appendRegisteredStages, registrationFields} from './native_validation_registration.mjs';
 export const FIXTURE_WRITERS = ['test_canteen_defense.gd', 'test_minigame_models.gd', 'test_photo_brightness_consumer.gd'];
+// Wall-clock latency assertions run without sibling engines on this runner.
+// They remain runtime consumers, never prepared fixture producers.
+export const TIMING_EXCLUSIVE = Object.freeze(['test_canteen_queue_floor_tap.gd']);
 export const PREFLIGHT = ['Prepared source and media inputs', 'Native save isolation', 'Godot asset import and editor parse', 'Native startup', 'test_all_scripts_parse.gd'];
 export const PREPARATION_IDS = [...PREFLIGHT, 'Source catalog tests/export_lake_live_source_fixtures.mjs', ...FIXTURE_WRITERS];
 export const NORTH_TARGETED = ['test_north_generated_objects.gd', 'test_north_independent_props.gd', 'test_north_preview_gate.gd', 'test_north_prop_fail_closed.gd'];
@@ -16,7 +19,7 @@ const LAKE_PREPARATION = 'Source catalog tests/export_lake_live_source_fixtures.
 consumers(LAKE_PREPARATION, ['test_lake_live_world.gd']);
 export function createValidationCatalog(project, executable = 'godot', options = {}) {
  const stages = [];
- const run = (label, args, command = executable) => stages.push({id: label, label, args, command, exclusive: !label.endsWith('.gd') || FIXTURE_WRITERS.includes(label), dependencies: DEPENDENCIES.get(label) || []});
+ const run = (label, args, command = executable) => stages.push({id: label, label, args, command, exclusive: !label.endsWith('.gd') || FIXTURE_WRITERS.includes(label) || TIMING_EXCLUSIVE.includes(label), dependencies: DEPENDENCIES.get(label) || []});
  run('Prepared source and media inputs', [path.join(project, 'tests/verify_native_prepared_inputs.mjs')], process.execPath);
 run('Native save isolation',[path.join(project,'tests/verify_native_test_sandbox.mjs')],process.execPath);
 run('Godot asset import and editor parse',['--headless','--path',project,'--editor','--import','--quit']);

@@ -6,7 +6,7 @@ import {NATIVE_SHARD_COUNT} from '../tools/native_validation_shards.mjs';
 const source=fs.readFileSync(new URL('../../.github/workflows/godot-native-ci.yml',import.meta.url),'utf8');
 const matches=[...source.matchAll(/^  ([a-z][a-z0-9-]*):\n/gm)];
 const jobs=Object.fromEntries(matches.filter(m=>source.indexOf('jobs:\n')<m.index).map((m,i,a)=>[m[1],source.slice(m.index,a[i+1]?.index??source.length)]));
-test('bounded eight-shard architecture retains original final required-check identity',()=>{
+test('bounded twelve-shard architecture retains original final required-check identity',()=>{
  assert.deepEqual(Object.keys(jobs),['contracts','prepare','runtime','graphics','native-parse-and-tests']);
  assert.match(jobs.runtime,/fail-fast: false/);assert.equal(Number(jobs.runtime.match(/max-parallel: (\d+)/)[1]),NATIVE_SHARD_COUNT);assert.deepEqual(JSON.parse(jobs.runtime.match(/shard: (\[[^\n]+\])/)[1]),Array.from({length:NATIVE_SHARD_COUNT},(_,i)=>i));
  assert.match(jobs.runtime,/NATIVE_TEST_JOBS: '2'/);assert.doesNotMatch(source,/continue-on-error|runs-on:.*(?:large|gpu-|self-hosted)/);

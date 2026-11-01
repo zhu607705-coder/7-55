@@ -10,7 +10,7 @@ import {startValidationProcess,joinValidationProcesses} from '../tools/managed_v
 const tick=async()=>{for(let i=0;i<20;i++)await Promise.resolve();};
 function fixture(){
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'755-preparation-test-')),project=path.join(root,'godot_native');
- for(const relative of ['tools/convert_media.sh',...MEDIA_CLIPS.map(name=>`assets/${name}.mp4`)]){const file=path.join(project,relative);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,relative);}
+ for(const relative of ['tools/convert_media.sh','tools/media_conversion_cache.cjs',...MEDIA_CLIPS.map(name=>`assets/${name}.mp4`)]){const file=path.join(project,relative);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,relative);}
  fs.writeFileSync(path.join(project,'project.godot'),'[application]\nconfig/name="Synthetic preparation fixture"\n');
  return {root,project};
 }
