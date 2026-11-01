@@ -7,7 +7,7 @@ const $=id=>document.getElementById(id),canvas=$('scene');
 const params=new URLSearchParams(location.search),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const state={floor:['2','3','4'].includes(params.get('floor'))?params.get('floor'):'4',room:params.get('room')||'',mode:'overview',exploded:false,pos:[0,0],yaw:0,pitch:0,inspect:null};
 let layout,catalog,renderer,scene,camera,orbit,loaded=false,roots=new Map(),selection,look=null,lastTime=0;
-const keys=new Set(),joy={x:0,y:0,pointer:null};let savedWalk=null,toolRoots=[];
+const keys=new Set(),joy={x:0,y:0,pointer:null};let savedWalk=null,toolRoots=[],deskRoots=[];
 const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
 function failure(text) {$('loading').hidden=false;$('loading-text').textContent=text;$('retry').hidden=false;stopInput();}
 $('retry').onclick=()=>location.reload();
@@ -37,13 +37,47 @@ function mergeSet(items,parent,kind){
  }
 }
 function inheritedKind(mesh,root){let owner=mesh;while(owner&&owner!==root){if(owner.userData.kind)return owner.userData.kind;owner=owner.parent;}return 'furniture';}
+function optimizeDesk(obj,target,inverse,handled){
+ const desk=new THREE.Group();desk.userData={...obj.userData,floor:target.userData.floor,currentHeight:.73,targetHeight:.73,parts:[]};
+ inverse.clone().multiply(obj.matrixWorld).decompose(desk.position,desk.quaternion,desk.scale);target.add(desk);deskRoots.push(desk);
+ const buckets=target.userData.deskBatches??=new Map();
+ obj.traverse(mesh=>{if(!mesh.isMesh)return;handled.add(mesh);const mat=Array.isArray(mesh.material)?mesh.material[0]:mesh.material,key=mesh.geometry.uuid+'_'+mat.uuid;
+  if(!buckets.has(key))buckets.set(key,{geometry:mesh.geometry,material:mat,entries:[]});
+  const entry={desk,factor:Number(mesh.userData.liftFactor||0),control:mesh.userData.deskRole==='control',base:inverse.clone().multiply(mesh.matrixWorld)};
+  buckets.get(key).entries.push(entry);desk.userData.parts.push(entry);
+ });
+}
+function finalizeDesks(target){
+ for(const {geometry,material,entries} of target.userData.deskBatches?.values()||[]){
+  const batch=new THREE.InstancedMesh(geometry,material.clone(),entries.length);batch.userData={kind:'furniture',floor:target.userData.floor,deskEntries:entries};batch.castShadow=true;batch.receiveShadow=true;
+  entries.forEach((entry,i)=>{entry.batch=batch;entry.index=i;batch.setMatrixAt(i,entry.base);});batch.instanceMatrix.setUsage(THREE.DynamicDrawUsage);batch.computeBoundingSphere();batch.boundingSphere.radius+=.55;target.add(batch);
+ }
+ delete target.userData.deskBatches;
+}
+const liftMatrix=new THREE.Matrix4();
+function animateDesks(dt){
+ for(const desk of deskRoots){const d=desk.userData,delta=d.targetHeight-d.currentHeight;if(Math.abs(delta)<.0001)continue;d.currentHeight+=Math.sign(delta)*Math.min(Math.abs(delta),.12*dt);
+  for(const part of d.parts){liftMatrix.copy(part.base);liftMatrix.elements[13]+=(d.currentHeight-.73)*part.factor;part.batch.setMatrixAt(part.index,liftMatrix);part.batch.instanceMatrix.needsUpdate=true;}
+ }
+}
+function deskControls(){
+ camera.updateMatrixWorld();
+ return deskRoots.filter(d=>d.userData.floor===state.floor).map(desk=>{
+  desk.updateWorldMatrix(true,true);const center=desk.localToWorld(new THREE.Vector3(.48,.683+desk.userData.currentHeight-.73,-.329)),p=center.clone().project(camera);
+  return {desk,x:(p.x+1)*innerWidth/2,y:(1-p.y)*innerHeight/2,inFront:p.z>=-1&&p.z<=1&&Math.abs(p.x)<1&&Math.abs(p.y)<1,distance:camera.position.distanceTo(center),height:desk.userData.currentHeight,target:desk.userData.targetHeight};
+ });
+}
+function toggleDesk(desk){stopInput();desk.userData.targetHeight=desk.userData.targetHeight>.9?.73:1.10;canvas.focus({preventScroll:true});}
+
 function optimizeFloor(original,target){
- const inverse=original.matrixWorld.clone().invert(),groups=new Map(),handled=new Set();
+ const inverse=original.matrixWorld.clone().invert(),groups=new Map(),handled=new Set();let chairReview=false;
  original.traverse(obj=>{
-  if(obj.userData.inspectable){const group=new THREE.Group();group.userData={...obj.userData,floor:target.userData.floor};group.position.setFromMatrixPosition(inverse.clone().multiply(obj.matrixWorld));target.add(group);const list=[];const inv=obj.matrixWorld.clone().invert();obj.traverse(child=>{if(child.isMesh){handled.add(child);list.push({mesh:child,matrix:inv.clone().multiply(child.matrixWorld)});}});mergeSet(list,group,'tool');toolRoots.push(group);}
+  if(obj.userData.adjustableDesk)optimizeDesk(obj,target,inverse,handled);
+  if(!chairReview&&target.userData.floor==='3'&&obj.userData.assetId==='office_chair'){const room=layout.floors['3'].rooms.find(r=>r.id==='studio_1'),p=obj.position;if(p.x>room.bounds[0]&&p.x<room.bounds[2]&&p.z>room.bounds[1]&&p.z<room.bounds[3]){obj.userData.inspectable=true;chairReview=true;}}
+  if(obj.userData.inspectable){const group=new THREE.Group();group.userData={...obj.userData,floor:target.userData.floor};inverse.clone().multiply(obj.matrixWorld).decompose(group.position,group.quaternion,group.scale);target.add(group);const list=[];const inv=obj.matrixWorld.clone().invert();obj.traverse(child=>{if(child.isMesh){handled.add(child);list.push({mesh:child,matrix:inv.clone().multiply(child.matrixWorld)});}});mergeSet(list,group,'tool');toolRoots.push(group);}
  });
  original.traverse(mesh=>{if(!mesh.isMesh||handled.has(mesh))return;const kind=inheritedKind(mesh,original);if(!groups.has(kind))groups.set(kind,[]);groups.get(kind).push({mesh,matrix:inverse.clone().multiply(mesh.matrixWorld)});});
- for(const [kind,items] of groups)mergeSet(items,target,kind);
+ for(const [kind,items] of groups)mergeSet(items,target,kind);finalizeDesks(target);
 }
 function roomData(){return layout?.floors[state.floor].rooms.find(r=>r.id===state.room);}
 function populateRooms(){
@@ -66,11 +100,11 @@ function setOverview(){if(!loaded)return;if(state.inspect)exitInspect();stopInpu
  orbit.update();drawSelection();
 }
 function drawSelection(){if(selection){scene.remove(selection);selection.geometry.dispose();selection.material.dispose();selection=null;}const room=roomData();if(!room||state.mode==='walk'||state.exploded)return;const [a,b,c,d]=room.bounds,y=layout.floors[state.floor].elevation+.018;const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(a,y,b),new THREE.Vector3(c,y,b),new THREE.Vector3(c,y,d),new THREE.Vector3(a,y,d)]);selection=new THREE.LineLoop(g,new THREE.LineBasicMaterial({color:0x27799a}));scene.add(selection);}
-function enterWalk(){if(!loaded)return;if(state.inspect)exitInspect();stopInput();state.exploded=false;state.mode='walk';const room=roomData(),f=layout.floors[state.floor];state.pos=nearestSafe(layout,state.floor,room?room.spawn:f.spawn);state.yaw=room?room.heading:Math.PI;state.pitch=-.14;orbit.enabled=false;camera.fov=64;camera.updateProjectionMatrix();updateScene();drawSelection();syncEye();canvas.focus({preventScroll:true});}
+function enterWalk(){if(!loaded)return;if(state.inspect)exitInspect();stopInput();state.exploded=false;state.mode='walk';if(!state.room&&state.floor==='3'){state.room='seminar';$('room').value=state.room;}const room=roomData(),f=layout.floors[state.floor];state.pos=nearestSafe(layout,state.floor,room?room.spawn:f.spawn);state.yaw=room?room.heading:Math.PI;state.pitch=-.14;orbit.enabled=false;camera.fov=64;camera.updateProjectionMatrix();updateScene();drawSelection();syncEye();canvas.focus({preventScroll:true});}
 function syncEye(){camera.position.set(state.pos[0],layout.floors[state.floor].elevation+layout.eyeHeight,state.pos[1]);camera.rotation.set(state.pitch,state.yaw,0,'YXZ');}
 function stopInput(){keys.clear();joy.x=joy.y=0;joy.pointer=null;$('stick').style.transform='';look=null;}
-function resize(){if(!renderer)return;const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();if(loaded&&state.mode==='overview'&&!state.inspect)setOverview();}
-function frame(now){requestAnimationFrame(frame);const dt=Math.min(.05,lastTime?(now-lastTime)/1000:0);lastTime=now;if(document.hidden)return;
+function resize(){if(!renderer)return;const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();if(loaded&&state.inspect){const tool=toolRoots.find(t=>t.userData.assetId===state.inspect&&t.userData.floor===state.floor),radius=new THREE.Box3().setFromObject(tool).getSize(new THREE.Vector3()).length()/2,dir=camera.position.clone().sub(orbit.target).normalize(),distance=fitDistance(radius,40);camera.position.copy(orbit.target).add(dir.multiplyScalar(distance));orbit.maxDistance=Math.max(.85,distance*2);orbit.update();}else if(loaded&&state.mode==='overview')setOverview();}
+function frame(now){requestAnimationFrame(frame);const dt=Math.min(.05,lastTime?(now-lastTime)/1000:0);lastTime=now;if(document.hidden)return;animateDesks(dt);
  if(state.mode==='walk'&&!state.inspect){let f=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0)-joy.y;let side=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0)+joy.x;const len=Math.hypot(f,side);if(len>1){f/=len;side/=len;}const speed=layout.speed*dt;const dx=(-Math.sin(state.yaw)*f+Math.cos(state.yaw)*side)*speed,dz=(-Math.cos(state.yaw)*f-Math.sin(state.yaw)*side)*speed;state.pos=moveBody(layout,state.floor,state.pos,dx,dz);
  const current=layout.floors[state.floor].rooms.find(r=>state.pos[0]>r.bounds[0]&&state.pos[0]<r.bounds[2]&&state.pos[1]>r.bounds[1]&&state.pos[1]<r.bounds[3]);
  const roomId=current?.id||'';if(roomId!==state.room){state.room=roomId;$('room').value=roomId;updateScene();}
@@ -100,7 +134,10 @@ function hitIsVisible(hit){
 function pick(e){
  pointer.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);raycaster.setFromCamera(pointer,camera);
  const hits=raycaster.intersectObjects([...roots.values()].filter(r=>r.visible),true).filter(hitIsVisible);if(!hits.length)return;
- const hit=hits[0];let tool=hit.object;while(tool&&!tool.userData.inspectable)tool=tool.parent;
+ const hit=hits[0];
+ if(state.mode==='walk'){const entry=hit.object.userData.deskEntries?.[hit.instanceId];if(entry?.control){toggleDesk(entry.desk);return;}let owner=hit.object,control=false;while(owner){control ||=!!owner.userData.deskControl;if(owner.userData.adjustableDesk&&control){toggleDesk(owner);return;}owner=owner.parent;}
+ const nearby=deskControls().filter(d=>d.inFront&&d.distance<3&&Math.hypot(e.clientX-d.x,e.clientY-d.y)<22&&hit.distance>d.distance-.12).sort((a,b)=>Math.hypot(e.clientX-a.x,e.clientY-a.y)-Math.hypot(e.clientX-b.x,e.clientY-b.y));if(nearby.length){toggleDesk(nearby[0].desk);return;}}
+ let tool=hit.object;while(tool&&!tool.userData.inspectable)tool=tool.parent;
  if(tool){inspectTool(tool);return;}
  // Expand tiny tools' visible anchors to a minimum target, while keeping walls
  // authoritative for occlusion and limiting this assistance to arm's reach.
@@ -110,13 +147,14 @@ function pick(e){
  }
  if(state.mode==='overview'&&!state.exploded){const f=layout.floors[state.floor],p=hit.point;const room=f.rooms.find(r=>p.x>r.bounds[0]&&p.x<r.bounds[2]&&p.z>r.bounds[1]&&p.z<r.bounds[3]);if(room){state.room=room.id;$('room').value=room.id;setOverview();}}
 }
-function inspectTool(tool){stopInput();savedWalk={mode:state.mode,pos:[...state.pos],yaw:state.yaw,pitch:state.pitch,camera:camera.position.clone(),target:orbit.target.clone()};state.inspect=tool.userData.assetId;const a=catalog.assets[state.inspect],bounds=new THREE.Box3().setFromObject(tool),center=bounds.getCenter(new THREE.Vector3()),size=bounds.getSize(new THREE.Vector3()).length();$('inspect').hidden=false;$('tool-name').textContent=a.name;$('tool-dimensions').textContent=a.dimensions.length?`总长 ${Math.round(a.dimensions.length*1000)} mm · 厂商尺寸参照`:`外形 ${[a.dimensions.width,a.dimensions.depth,a.dimensions.height].map(v=>Math.round(v*1000)).join(' × ')} mm`;$('walk-controls').hidden=true;orbit.enabled=true;orbit.minDistance=.10;orbit.maxDistance=.85;orbit.maxPolarAngle=Math.PI*.90;orbit.target.copy(center);const distance=fitDistance(size/2,40);orbit.maxDistance=Math.max(.85,distance*2);camera.position.copy(center).add((a.dimensions.height?new THREE.Vector3(.75,.65,-1.4):new THREE.Vector3(.45,1.15,.95)).normalize().multiplyScalar(distance));camera.fov=40;camera.updateProjectionMatrix();orbit.update();}
-function exitInspect(){if(!state.inspect||!savedWalk)return;stopInput();state.inspect=null;$('inspect').hidden=true;state.pos=savedWalk.pos;state.yaw=savedWalk.yaw;state.pitch=savedWalk.pitch;camera.position.copy(savedWalk.camera);orbit.target.copy(savedWalk.target);orbit.minDistance=1;orbit.maxDistance=110;orbit.maxPolarAngle=Math.PI*.48;orbit.enabled=savedWalk.mode!=='walk';camera.fov=savedWalk.mode==='walk'?64:46;camera.updateProjectionMatrix();updateScene();if(state.mode==='walk')syncEye();savedWalk=null;canvas.focus({preventScroll:true});}
+function inspectTool(tool){stopInput();savedWalk={viewport:[innerWidth,innerHeight],mode:state.mode,pos:[...state.pos],yaw:state.yaw,pitch:state.pitch,camera:camera.position.clone(),target:orbit.target.clone()};state.inspect=tool.userData.assetId;if(state.inspect==='office_chair'){savedWalk.hiddenNodes=[];for(const [floor,root] of roots){if(floor!==tool.userData.floor){savedWalk.hiddenNodes.push([root,root.visible]);root.visible=false;continue;}for(const child of root.children){if(child===tool||child.userData.kind==='floor')continue;savedWalk.hiddenNodes.push([child,child.visible]);child.visible=false;}}}
+ const a=catalog.assets[state.inspect],bounds=new THREE.Box3().setFromObject(tool),center=bounds.getCenter(new THREE.Vector3()),size=bounds.getSize(new THREE.Vector3()).length();$('inspect').hidden=false;$('tool-name').textContent=a.name;$('tool-dimensions').textContent=a.dimensions.length?`总长 ${Math.round(a.dimensions.length*1000)} mm · 厂商尺寸参照`:`外形 ${[a.dimensions.width,a.dimensions.depth,a.dimensions.height].map(v=>Math.round(v*1000)).join(' × ')} mm`;$('walk-controls').hidden=true;orbit.enabled=true;orbit.minDistance=.10;orbit.maxDistance=.85;orbit.maxPolarAngle=Math.PI*.90;orbit.target.copy(center);const distance=fitDistance(size/2,40);orbit.maxDistance=Math.max(.85,distance*2);camera.position.copy(center).add((a.dimensions.height?new THREE.Vector3(.75,.65,-1.4):new THREE.Vector3(.45,1.15,.95)).applyQuaternion(tool.quaternion).normalize().multiplyScalar(distance));camera.fov=40;camera.updateProjectionMatrix();orbit.update();}
+function exitInspect(){if(!state.inspect||!savedWalk)return;stopInput();for(const [node,visible] of savedWalk.hiddenNodes||[])node.visible=visible;state.inspect=null;$('inspect').hidden=true;state.pos=savedWalk.pos;state.yaw=savedWalk.yaw;state.pitch=savedWalk.pitch;camera.position.copy(savedWalk.camera);orbit.target.copy(savedWalk.target);orbit.minDistance=1;orbit.maxDistance=110;orbit.maxPolarAngle=Math.PI*.48;orbit.enabled=savedWalk.mode!=='walk';camera.fov=savedWalk.mode==='walk'?64:46;camera.updateProjectionMatrix();updateScene();if(state.mode==='walk')syncEye();const refit=state.mode==='overview'&&(savedWalk.viewport[0]!==innerWidth||savedWalk.viewport[1]!==innerHeight);savedWalk=null;if(refit)setOverview();canvas.focus({preventScroll:true});}
 $('inspect-exit').onclick=exitInspect;
 const joystick=$('joystick');joystick.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(joy.pointer!==null)return;joy.pointer=e.pointerId;joystick.setPointerCapture(e.pointerId);updateStick(e);});joystick.addEventListener('pointermove',e=>{if(joy.pointer===e.pointerId)updateStick(e);});
 function updateStick(e){const r=joystick.getBoundingClientRect(),max=r.width*.30;let x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2;const len=Math.hypot(x,y);if(len>max){x=x/len*max;y=y/len*max;}joy.x=x/max;joy.y=y/max;$('stick').style.transform=`translate(${x}px,${y}px)`;}
 for(const event of ['pointerup','pointercancel','lostpointercapture'])joystick.addEventListener(event,e=>{if(joy.pointer!==e.pointerId)return;joy.pointer=null;joy.x=joy.y=0;$('stick').style.transform='';});
 canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();failure('画面连接已中断，请重新载入当前空间。');});
 // Read-only diagnostics for acceptance; tests exercise ordinary pointer/key/touch input.
-window.flcReview={layers:()=>[...roots.entries()].map(([floor,root])=>({floor,visible:root.visible,parts:root.children.filter(m=>m.isMesh).map(m=>({kind:m.userData.kind,visible:m.visible,minY:new THREE.Box3().setFromObject(m).min.y,maxY:new THREE.Box3().setFromObject(m).max.y}))})),snapshot:()=>({ready:loaded,floor:state.floor,room:state.room,mode:state.mode,position:[...state.pos],yaw:state.yaw,pitch:state.pitch,eyeHeight:layout?.eyeHeight,inspect:state.inspect,joystick:[joy.x,joy.y],drawCalls:renderer?.info.render.calls,triangles:renderer?.info.render.triangles,renderedMeshes:[...roots.values()].reduce((n,r)=>n+r.children.length,0)}),canStand:(x,z)=>canStand(layout,state.floor,x,z),tools:()=>visibleTools().map(({tool,...info})=>info)};
+window.flcReview={desks:()=>deskControls().map(({desk,...info})=>({...info,partOffsets:desk.userData.parts.map(p=>{const m=new THREE.Matrix4();p.batch.getMatrixAt(p.index,m);return {factor:p.factor,offset:m.elements[13]-p.base.elements[13]};})})),layers:()=>[...roots.entries()].map(([floor,root])=>({floor,visible:root.visible,parts:root.children.filter(m=>m.isMesh).map(m=>({kind:m.userData.kind,visible:m.visible,minY:new THREE.Box3().setFromObject(m).min.y,maxY:new THREE.Box3().setFromObject(m).max.y}))})),snapshot:()=>({ready:loaded,floor:state.floor,room:state.room,mode:state.mode,position:[...state.pos],yaw:state.yaw,pitch:state.pitch,eyeHeight:layout?.eyeHeight,inspect:state.inspect,joystick:[joy.x,joy.y],drawCalls:renderer?.info.render.calls,triangles:renderer?.info.render.triangles,renderedMeshes:[...roots.values()].reduce((n,r)=>n+r.children.length,0)}),canStand:(x,z)=>canStand(layout,state.floor,x,z),tools:()=>visibleTools().map(({tool,...info})=>info)};
 start();

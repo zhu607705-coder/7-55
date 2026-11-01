@@ -1,1 +1,10 @@
-{"name":"future-learning-center-walkthrough-review","private":true,"type":"module","scripts":{"test:collision":"node scripts/test_collision.mjs","test:browser":"node scripts/test_browser.mjs"}}
+{
+  "name": "future-learning-center-walkthrough-review",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:collision": "node scripts/test_collision.mjs",
+    "test:browser": "node scripts/test_browser.mjs",
+    "test:furniture": "node scripts/test_furniture.mjs"
+  }
+}

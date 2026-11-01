@@ -1,5 +1,5 @@
 {
-  "checks": 25,
+  "checks": 37,
   "failures": 0,
   "rows": [
     {
@@ -80,8 +80,8 @@
       "label": "office_desk exported meter scale",
       "details": [
         1.4000000953674316,
-        0.5999984741210938,
-        1.1999999284744263
+        0.6289997100830078,
+        1.21999990940094
       ]
     },
     {
@@ -158,6 +158,70 @@
       "pass": true,
       "label": "co-creation table has six independently authored modules",
       "details": null
+    },
+    {
+      "pass": true,
+      "label": "ergonomic chair keeps real product-scale footprint and headrest height",
+      "details": [
+        0.6590003967285156,
+        0.6922165155410767,
+        1.2880000323057175
+      ]
+    },
+    {
+      "pass": true,
+      "label": "breathable back has actual open cells rather than an opaque slab",
+      "details": 0.11813116047778749
+    },
+    {
+      "pass": true,
+      "label": "five-star base has ten horizontal-axis caster wheels",
+      "details": null
+    },
+    {
+      "pass": true,
+      "label": "exported ergonomic chair includes Headrest mesh",
+      "details": null
+    },
+    {
+      "pass": true,
+      "label": "exported ergonomic chair includes Lumbar support wing",
+      "details": null
+    },
+    {
+      "pass": true,
+      "label": "exported ergonomic chair includes Adjustable arm pad",
+      "details": null
+    },
+    {
+      "pass": true,
+      "label": "exported ergonomic chair includes Synchro tilt mechanism",
+      "details": null
+    },
+    {
+      "pass": true,
+      "label": "GLB preserves shared adjustable-desk root contract",
+      "details": null
+    },
+    {
+      "pass": true,
+      "label": "GLB preserves telescoping-stage motion factors",
+      "details": null
+    },
+    {
+      "pass": true,
+      "label": "GLB preserves physical keypad target",
+      "details": null
+    },
+    {
+      "pass": true,
+      "label": "north discussion area has a separate high ceiling",
+      "details": null
+    },
+    {
+      "pass": true,
+      "label": "photo-based double-height ceiling exports in real meters",
+      "details": 10.25
     }
   ]
 }

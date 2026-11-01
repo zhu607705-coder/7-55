@@ -38,6 +38,26 @@ for asset,expected in [('printer_h2c',[.492,.514,.626]),('laser_p2s',[1.0,.639,.
 f4=bpy.data.objects['Floor 4']
 check(sum(o.name.startswith('Personal locker door') for o in f4.children_recursive)==80,'80 personal locker doors exist in exported geometry')
 check(sum(o.name.startswith('Movable polygon table module') for o in f4.children_recursive)==6,'co-creation table has six independently authored modules')
+chair=next(o for o in bpy.data.objects if o.get('assetId')=='office_chair')
+pts=[ob.matrix_world@Vector(corner) for ob in chair.children_recursive if ob.type=='MESH' for corner in ob.bound_box]
+spans=[max(p[i] for p in pts)-min(p[i] for p in pts) for i in range(3)]
+check(spans[0]<=.72 and spans[1]<=.72 and 1.19<=spans[2]<=1.42,'ergonomic chair keeps real product-scale footprint and headrest height',spans)
+back=next(o for o in chair.children_recursive if o.name.startswith('Ergonomic breathable back') and o.type=='MESH')
+area=sum(p.area for p in back.data.polygons)
+check(.04<area<.15,'breathable back has actual open cells rather than an opaque slab',area)
+check(sum(o.name.startswith('Twin caster wheel') for o in chair.children_recursive)==10,'five-star base has ten horizontal-axis caster wheels')
+for feature in ['Headrest mesh','Lumbar support wing','Adjustable arm pad','Synchro tilt mechanism']:
+ check(any(o.name.startswith(feature) for o in chair.children_recursive),'exported ergonomic chair includes '+feature)
+desk=next(o for o in bpy.data.objects if o.get('assetId')=='office_desk')
+check(desk.get('adjustableDesk') is True,'GLB preserves shared adjustable-desk root contract')
+check(any(o.get('liftFactor')==.5 for o in desk.children_recursive) and any(o.get('liftFactor')==1 for o in desk.children_recursive),'GLB preserves telescoping-stage motion factors')
+check(any(o.get('deskRole')=='control' for o in desk.children_recursive),'GLB preserves physical keypad target')
+hall=bpy.data.objects['Floor 3']
+high=[o for o in hall.children_recursive if o.type=='MESH' and o.name.startswith('North hall ceiling')]
+check(bool(high),'north discussion area has a separate high ceiling')
+if high:
+ z=min((high[0].matrix_world@Vector(c)).z for c in high[0].bound_box)
+ check(abs(z-(4.05+6.2))<.01,'photo-based double-height ceiling exports in real meters',z)
 report={'checks' :len(rows),'failures':sum(not r['pass'] for r in rows),'rows':rows}
 (ROOT/'review/model_validation.json').write_text(json.dumps(report,indent=2));print('MODEL_VALIDATION',json.dumps(report))
 if report['failures']:raise SystemExit(1)

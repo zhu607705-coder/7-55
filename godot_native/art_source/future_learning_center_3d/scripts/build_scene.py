@@ -8,7 +8,7 @@ from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]; WEB=ROOT/'web'
 WIDTH,LENGTH,RISE=26.1,42.4,4.05
 BOUNDS={2:(103,91,796,1217),3:(94,46,440,621),4:(70,52,640,975)}
-ROOMS={2:[('seminar',(256,97,553,254),'south','研讨室'),('formula',(109,325,326,534),'east','方程式工作室'),('team',(109,545,326,769),'east','团队工作室'),('robotics',(109,777,326,965),'east','ASABE 机器人室'),('mechatronics',(625,434,791,1055),'west','机电开放实验室'),('koala',(350,1070,790,1210),'north','考拉空间')],3:[('seminar',(219,49,321,128),'south','开放讨论区'),('studio_1',(98,164,179,219),'east','团队工作室 1'),('studio_2',(98,219,179,276),'east','团队工作室 2'),('studio_3',(98,276,179,333),'east','团队工作室 3'),('studio_4',(98,333,179,389),'east','团队工作室 4'),('recording',(98,397,179,489),'east','录播室'),('pantry',(219,541,321,620),'north','茶水与休息区'),('xlab',(344,222,437,620),'west','X-Lab')],4:[('storage',(195,61,261,175),'south','储物间'),('seminar_1',(74,239,210,424),'east','研讨室 1'),('seminar_2',(74,427,210,610),'east','研讨室 2'),('seminar_3',(74,615,210,770),'east','研讨室 3'),('focus',(492,336,633,606),'west','专注孵化区 A'),('collab',(492,614,633,835),'west','协作共创区 B'),('flex',(446,849,633,969),'north','流动工位区 C（可选）')]}
+ROOMS={2:[('seminar',(256,97,553,254),'south','研讨室'),('formula',(109,325,326,534),'east','方程式工作室'),('team',(109,545,326,769),'east','团队工作室'),('robotics',(109,777,326,965),'east','ASABE 机器人室'),('mechatronics',(625,434,791,1055),'west','机电开放实验室'),('koala',(350,1070,790,1210),'north','考拉空间')],3:[('seminar',(219,49,321,128),'south','北侧开放研讨与展示区'),('studio_1',(98,164,179,219),'east','团队工作室 1'),('studio_2',(98,219,179,276),'east','团队工作室 2'),('studio_3',(98,276,179,333),'east','团队工作室 3'),('studio_4',(98,333,179,389),'east','团队工作室 4'),('recording',(98,397,179,489),'east','录播室'),('pantry',(219,541,321,620),'north','茶水与休息区'),('xlab',(344,222,437,620),'west','X-Lab')],4:[('storage',(195,61,261,175),'south','储物间'),('seminar_1',(74,239,210,424),'east','研讨室 1'),('seminar_2',(74,427,210,610),'east','研讨室 2'),('seminar_3',(74,615,210,770),'east','研讨室 3'),('focus',(492,336,633,606),'west','专注孵化区 A'),('collab',(492,614,633,835),'west','协作共创区 B'),('flex',(446,849,633,969),'north','流动工位区 C（可选）')]}
 VOIDS={2:[],3:[[(222,168),(321,168),(321,504),(234,489)]],4:[[(270,61),(439,61),(439,174),(280,169)],[(270,248),(439,248),(439,793),(288,770)],[(270,859),(439,859),(439,968),(289,964)]]}
 def point(f,x,z):
  a,b,c,d=BOUNDS[f];return [(x-a)/(c-a)*WIDTH,(z-b)/(d-b)*LENGTH]
@@ -77,28 +77,138 @@ def prototype(asset,fn):
  return group
 def instance(asset,x,z,angle=0):
  group=LIB[asset];root=empty(asset,x,0,z);root.rotation_euler.z=-angle;root['assetId']=asset;root['floor']=current_floor
+ if asset=='office_desk':root['adjustableDesk']=True;root['seatedHeight']=.73;root['standingHeight']=1.10
  for original in group.children:
   ob=original.copy();ob.data=original.data;scene.collection.objects.link(ob);ob.parent=root;ob['floor']=current_floor
  return root
+def geometry(name,vertices,faces,mat,kind='furniture',smooth=False):
+ mesh=bpy.data.meshes.new(name);mesh.from_pydata([(x,-z,y) for x,y,z in vertices],[],faces);mesh.update()
+ ob=bpy.data.objects.new(name,mesh);scene.collection.objects.link(ob);ob.data.materials.append(mat)
+ if parent:ob.parent=parent
+ ob['kind']=kind;ob['floor']=current_floor
+ if smooth:
+  for p in mesh.polygons:p.use_smooth=True
+ return ob
+
+def tube(name,points,r,mat,closed=False,sides=8,kind='furniture'):
+ pts=[Vector(p) for p in points];vs=[];faces=[];n=len(pts)
+ for i,p in enumerate(pts):
+  t=(pts[(i+1)%n]-pts[(i-1)%n]) if closed else (pts[min(i+1,n-1)]-pts[max(i-1,0)])
+  t.normalize();ref=Vector((0,1,0)) if abs(t.y)<.9 else Vector((0,0,1));a=t.cross(ref).normalized();b=t.cross(a).normalized()
+  for j in range(sides):vs.append(p+r*(a*math.cos(j*math.tau/sides)+b*math.sin(j*math.tau/sides)))
+ for i in range(n if closed else n-1):
+  for j in range(sides):faces.append((i*sides+j,i*sides+(j+1)%sides,((i+1)%n)*sides+(j+1)%sides,((i+1)%n)*sides+j))
+ if not closed:faces.extend([tuple(reversed(range(sides))),tuple((n-1)*sides+j for j in range(sides))])
+ return geometry(name,vs,faces,mat,kind,smooth=True)
+
+def perforated_surface(name,fn,nu,nv,mat):
+ # Actual open cells, batched as one shared mesh; no individual strand objects.
+ vs=[];faces=[]
+ def patch(u0,v0,u1,v1):
+  k=len(vs);vs.extend([fn(u0,v0),fn(u1,v0),fn(u1,v1),fn(u0,v1)]);faces.append((k+3,k+2,k+1,k))
+ for i in range(nu):
+  for j in range(nv):
+   u=i/nu;v=j/nv;patch(u,v,u+.25/nu,v+1/nv);patch(u,v,u+1/nu,v+.22/nv)
+ patch(1-.15/nu,0,1,1);patch(0,1-.15/nv,1,1)
+ return geometry(name,vs,faces,mat,smooth=True)
+
+def rounded_loop(w,d,r=.06,steps=8):
+ out=[]
+ for cx,cz,a in [(w/2-r,d/2-r,0),(-w/2+r,d/2-r,math.pi/2),(-w/2+r,-d/2+r,math.pi),(w/2-r,-d/2+r,math.pi*1.5)]:
+  for i in range(steps+1):
+   q=a+i*math.pi/2/steps;out.append((cx+r*math.cos(q),cz+r*math.sin(q)))
+ return out
+
 def make_chair():
- box('Seat cushion',0,.46,0,.46,.075,.49,black,.025)
- box('Back mesh',0,.82,.23,.45,.55,.034,meshmat,.014)
- for x in [-.235,.235]:bar('Back frame',(x,.50,.22),(x,1.10,.23),.013,black)
- bar('Back top',(-.235,1.10,.23),(.235,1.10,.23),.014,black)
- cyl('Gas lift',0,.255,0,.035,.35,metal)
+ # Public STYRSPEL dimensions are ergonomic size references, not site make/model.
+ def seat(u,v):
+  x=(u-.5)*.47;z=(v-.5)*.44;y=.49-.017*math.sin(math.pi*u)*math.sin(math.pi*v)-.014*(1-v)**3
+  return x,y,z
+ perforated_surface('Ergonomic woven seat',seat,20,19,meshmat)
+ loop=rounded_loop(.50,.47,.075);tube('Waterfall seat rim',[(x,.485-.016*max(0,-z/.235),z) for x,z in loop],.018,black,True)
+ box('Seat underside slider',0,.414,.025,.34,.055,.26,black,.018)
+ for x in [-.14,.14]:box('Seat adjustment rail',x,.446,0,.022,.026,.32,metal,.005)
+ box('Synchro tilt mechanism',0,.365,.045,.19,.08,.18,black,.020)
+ tube('Recline adjustment lever',[(.10,.374,.02),(.22,.387,-.06),(.245,.396,-.10)],.010,metal)
+ box('Seat lever paddle',.245,.396,-.11,.075,.018,.045,black,.008)
+ knob=cyl('Tilt tension dial',-.14,.375,.02,.032,.055,black);knob.rotation_euler.y=math.pi/2
+ cyl('Chrome gas piston',0,.25,0,.022,.25,metal);cyl('Gas cylinder housing',0,.155,0,.036,.20,black)
+ # Curved, tapered back and lumbar region, with visible open mesh.
+ def back(u,v):
+  width=.43+.045*math.sin(v*math.pi);x=(u-.5)*width;y=.585+v*.49
+  z=.175+.105*v-.048*math.sin(v*math.pi*1.4)+.020*(2*u-1)**2
+  return x,y,z
+ perforated_surface('Ergonomic breathable back',back,22,28,meshmat)
+ rim=[back(i/22,0) for i in range(23)]+[back(1,i/28) for i in range(1,29)]+[back(1-i/22,1) for i in range(1,23)]+[back(0,1-i/28) for i in range(1,28)]
+ tube('Curved back perimeter frame',rim,.016,black,True)
+ tube('Back spine',[(0,.42,.18),(0,.58,.26),(0,.82,.31),(0,1.045,.31)],.023,black)
+ for side in [-1,1]:
+  tube('Lumbar support wing',[(0,.66,.27),(side*.11,.69,.235),(side*.19,.73,.205)],.027,black)
+  tube('Upper back support',[(0,.91,.31),(side*.12,.96,.31),(side*.205,1.025,.285)],.012,black)
+ box('Lumbar adjustment slider',0,.74,.305,.075,.15,.035,metal,.008)
+ # Height-adjustable headrest, with separate stem and curved mesh pad.
+ for x in [-.055,.055]:bar('Headrest sliding stem',(x,1.035,.29),(x,1.185,.30),.009,metal)
+ def head(u,v):return (u-.5)*.31,1.145+v*.13,.30-.025*math.cos((u-.5)*math.pi)
+ perforated_surface('Headrest mesh',head,16,8,meshmat)
+ hr=[head(i/16,0) for i in range(17)]+[head(1,i/8) for i in range(1,9)]+[head(1-i/16,1) for i in range(1,17)]+[head(0,1-i/8) for i in range(1,8)]
+ tube('Headrest padded rim',hr,.014,black,True)
+ for side in [-1,1]:
+  x=side*.285
+  tube('Armrest structural support',[(side*.17,.40,.15),(x,.47,.12),(x,.58,.08)],.018,black)
+  box('Armrest height slide',x,.61,.08,.038,.15,.045,metal,.006)
+  box('Armrest adjustment collar',x,.61,.08,.052,.055,.06,black,.006)
+  box('Adjustable arm pad',x,.695,-.015,.072,.035,.27,black,.018)
+  box('Armrest release button',x+side*.028,.626,.08,.012,.025,.030,metal,.004)
+ # Five separate curved spokes and twin horizontal-axis caster wheels.
  for i in range(5):
-  a=i*math.tau/5;x,z=math.cos(a)*.32,math.sin(a)*.32
-  bar('Star base',(0,.15,0),(x,.10,z),.019,black);cyl('Caster',x,.06,z,.035,.07,rubber)
- for x in [-.29,.29]:
-  bar('Arm support',(x,.50,.12),(x,.66,.12),.017,black);box('Arm rest',x,.67,0,.055,.035,.28,black,.01)
+  a=i*math.tau/5;t=Vector((-math.sin(a),0,math.cos(a)));x,z=math.cos(a)*.305,math.sin(a)*.305
+  tube('Swept five-star base',[(0,.145,0),(x*.35,.14,z*.35),(x*.74,.105,z*.74),(x,.075,z)],.021,black)
+  cyl('Caster swivel',x,.065,z,.020,.06,metal)
+  box('Caster fork',x,.052,z,.052,.04,.045,black,.007)
+  for side in [-1,1]:
+   c=Vector((x,.034,z))+t*side*.021
+   tube('Twin caster wheel',[c-t*.009,c+t*.009],.033,rubber,sides=24)
+   tube('Caster hub',[c-t*.010,c+t*.010],.017,black,sides=16)
+
 def make_desk():
- box('Desk top',0,.71,0,1.4,.04,.60,paper,.012)
- for x in [-.62,.62]:
-  for z in [-.235,.235]:cyl('Desk leg',x,.345,z,.025,.69,white)
- box('Monitor base',0,.755,.14,.24,.025,.15,black,.01);box('Monitor stand',0,.86,.18,.045,.21,.035,metal)
- box('Monitor frame',0,1.04,.18,.53,.32,.04,black,.012);box('Screen',0,1.04,.155,.485,.275,.006,blue)
- box('Keyboard',0,.747,-.12,.42,.022,.13,black,.008);box('Mouse',.34,.753,-.12,.055,.035,.09,black,.018)
- box('Paper stack',-.47,.747,-.03,.21,.015,.26,white)
+ def moving(ob,factor=1,role='assembly'):
+  ob['liftFactor']=factor;ob['deskRole']=role;return ob
+ moving(box('Height-adjustable desktop',0,.7125,0,1.4,.035,.60,paper,.014))
+ for x in [-.56,.56]:
+  box('Standing desk T foot',x,.043,0,.09,.065,.565,white,.021)
+  for z in [-.23,.23]:cyl('Desk leveling pad',x,.012,z,.023,.024,rubber)
+  box('Lift column outer',x,.295,.035,.085,.43,.11,white,.007)
+  moving(box('Lift column middle',x,.46,.035,.071,.28,.094,metal,.005),.5)
+  moving(box('Lift column upper',x,.555,.035,.058,.27,.078,white,.005))
+  moving(box('Desktop side rail',x,.668,0,.055,.04,.49,white,.006))
+  moving(box('Motor housing',x,.65,.035,.13,.07,.15,white,.009))
+ moving(box('Telescoping support beam',0,.655,.035,1.12,.065,.065,white,.006))
+ moving(box('Beam adjustment sleeve',0,.655,.035,.24,.075,.075,metal,.004))
+ moving(box('Cable tray',0,.626,.16,.75,.038,.12,black,.008))
+ moving(box('Power control unit',-.18,.644,.09,.20,.04,.09,black,.007))
+ moving(tube('Cable service loop',[(-.30,.65,.12),(-.30,.55,.15),(-.28,.51,.18),(-.25,.55,.18)],.005,rubber))
+ # Side-mounted height controller: actual visible interaction target.
+ moving(box('Desk height controller',.48,.683,-.301,.16,.035,.045,black,.006),1,'control')
+ moving(box('Controller lit display',.443,.685,-.325,.046,.015,.0025,display,.001),1,'control')
+ for x in [.485,.525]:
+  moving(box('Height control key',x,.685,-.326,.025,.020,.004,metal,.002),1,'control')
+  # Native triangular arrows, aligned to front of the physical keypad.
+  verts=[(x-.005,.682,-.329),(x+.005,.682,-.329),(x,.690,-.329)]
+  moving(geometry('Height direction icon',verts,[(0,1,2)],white),1,'control')
+ # Articulated monitor arm, clamp, keyboard keys and cable eyelets.
+ moving(box('Monitor clamp',0,.745,.255,.075,.04,.075,black,.006))
+ moving(tube('Monitor arm upright',[(0,.75,.245),(0,.94,.245)],.015,metal))
+ moving(tube('Monitor articulated arm',[(0,.94,.245),(.10,1.0,.20),(0,1.04,.18)],.014,metal))
+ moving(box('Monitor frame',0,1.06,.17,.53,.32,.032,black,.012));moving(box('Screen',0,1.06,.151,.485,.275,.004,blue))
+ moving(box('Keyboard case',0,.747,-.12,.42,.022,.13,black,.008))
+ # All keys batched as one object to retain shared mesh reuse.
+ vs=[];faces=[]
+ for row in range(4):
+  for col in range(13):
+   x=-.188+col*.030;y=.759;z=-.164+row*.028;k=len(vs);vs.extend([(x,y,z),(x+.023,y,z),(x+.023,y,z+.020),(x,y,z+.020)]);faces.append((k+3,k+2,k+1,k))
+ moving(geometry('Keyboard key caps',vs,faces,metal))
+ moving(box('Mouse',.34,.753,-.12,.055,.035,.09,black,.018));moving(box('Paper stack',-.47,.747,-.03,.21,.015,.26,white))
+
 def make_caliper():
  # Mitutoyo E12047 p.6/7: L233, H16, outside jaw40, inside21, jaw thickness3.5mm.
  box('Beam',.1165,.004,0,.233,.0035,.016,metal)
@@ -311,22 +421,118 @@ def locker_bank():
     box('Locker pull',xx+.07,y,z+.28,.014,.08,.018,metal)
  meta['floors']['4']['personal_lockers']=80
 
-def discussion_area(room):
- x0,z0,x1,z1=room['bounds'];cx=(x0+x1)/2
- room['layout_variant']='open_discussion';room['enclosure']='open'
- for x in [x0+1.65,x1-1.65]:
-  table(x,z0+2.0,1.8,1.0)
-  for dx in [-.55,.55]:
-   for side in [-1,1]:meeting_chair(x+dx,z0+2.0+side*.90,0 if side==1 else math.pi)
- box('Standing discussion tabletop',cx,1.06,z1-1.7,1.4,.06,.65,wood,.015);solid('Standing table',cx,z1-1.7,1.4,.65)
- for dx in [-.5,.5]:box('Standing table leg',cx+dx,.52,z1-1.7,.05,1.04,.50,metal)
+def display_top(name,x,z,w,d,height,mat=paper):
+ poly=[(x+xx,z+zz) for xx,zz in rounded_loop(w,d,min(.15,d*.22))]
+ ob=prism(name,poly,height-.035,.035,mat);ob['kind']='furniture';solid(name,x,z,w,d)
+ return ob
+
+def plant(x,z,y):
+ cyl('Ceramic plant pot',x,y+.12,z,.13,.24,paper)
+ vs=[];faces=[]
+ for i in range(9):
+  a=i*2.399;start=Vector((x,y+.24,z));tip=start+Vector((math.cos(a)*(.19+i*.007),.18+(i%3)*.06,math.sin(a)*(.19+i*.007)))
+  right=Vector((-math.sin(a),0,math.cos(a)))*.065
+  k=len(vs)
+  for t in [0,.2,.4,.6,.8,1]:
+   c=start.lerp(tip,t);c.y+=math.sin(t*math.pi)*.06;w=math.sin(t*math.pi);vs.extend([c-right*w,c+right*w])
+  for j in range(5):faces.append((k+j*2,k+j*2+1,k+j*2+3,k+j*2+2))
+ geometry('Broad leaf plant',vs,faces,leaf,smooth=True)
+
+
+def photo_poster(x,z):
+ box('Rollup poster',x,1.05,z,.82,1.95,.025,paper,.003)
+ for dx in [-.32,.32]:box('Rollup poster foot',x+dx,.04,z,.04,.04,.36,metal,.005)
+ box('Rollup base',x,.075,z,.90,.07,.09,metal,.012)
+ def label(body,y,size):
+  curve=bpy.data.curves.new('Exhibition typography','FONT');curve.body=body;curve.size=size;curve.align_x='CENTER';curve.extrude=.0002
+  fontpath=Path('/System/Library/Fonts/STHeiti Light.ttc')
+  if fontpath.exists():curve.font=bpy.data.fonts.load(str(fontpath),check_existing=True)
+  ob=bpy.data.objects.new('Exhibition poster title',curve);scene.collection.objects.link(ob);ob.parent=parent;ob.location=(x,-z-.017,y);ob.rotation_euler.x=math.pi/2;ob.data.materials.append(black)
+  bpy.context.view_layer.objects.active=ob;ob.select_set(True);bpy.ops.object.convert(target='MESH');ob.select_set(False)
+ label('感官即界面',1.65,.105);label('2026.07.09',1.40,.045);label('X-Lab',1.88,.045)
+ tube('Poster linework',[(x-.28,1.17,z+.019),(x+.10,.90,z+.019),(x-.11,.48,z+.019),(x+.26,.38,z+.019)],.0015,metal)
+ solid('Rollup poster',x,z,.90,.20)
+
+
+def mobile_display(x,z,w=1.25,d=.60):
+ display_top('Mobile exhibition tabletop',x,z,w,d,1.0,wood)
+ for dx in [-w/2+.16,w/2-.16]:
+  bar('Display steel upright',(x+dx,.08,z),(x+dx,.965,z),.020,metal)
+  bar('Display wheeled foot',(x+dx,.08,z-d*.48),(x+dx,.08,z+d*.48),.018,metal)
+  for side in [-1,1]:
+   zz=z+side*d*.48;tube('Large display caster',[(x+dx-.018,.065,zz),(x+dx+.018,.065,zz)],.065,rubber,sides=24)
+ bar('Display lower stretcher',(x-w/2+.16,.32,z),(x+w/2-.16,.32,z),.016,metal)
+
+
+def thread_art(x,z,y):
+ # Approximate the photographed white thread cube and suspended central diamond.
+ s=.52;corners=[(x+dx*s/2,y+dy*s,z+dz*s/2) for dx,dy,dz in [(-1,0,-1),(1,0,-1),(1,0,1),(-1,0,1),(-1,1,-1),(1,1,-1),(1,1,1),(-1,1,1)]]
+ for a,b in [(0,1),(1,2),(2,3),(3,0),(4,5),(5,6),(6,7),(7,4),(0,4),(1,5),(2,6),(3,7)]:tube('Exhibit cube edge',[corners[a],corners[b]],.004,paper)
+ diamond=[(x,y+.46,z),(x+.18,y+.27,z),(x,y+.08,z),(x-.18,y+.27,z)]
+ tube('Suspended diamond',diamond,.004,paper,True)
+ # Batched thin threads for stable export and a readable, open silhouette.
+ vs=[];faces=[]
+ for i in range(30):
+  a=i*math.tau/30;c=Vector((x+math.cos(a)*.24,y+(i%2)*s,z+math.sin(a)*.24));d=Vector(diamond[i%4]);side=Vector((.0012,0,.0012));k=len(vs);vs.extend([c-side,c+side,d+side,d-side]);faces.append((k,k+1,k+2,k+3))
+ geometry('Tensioned exhibit threads',vs,faces,paper)
+ cyl('Pink suspended exhibit',x,y+.24,z,.065,.08,red)
+
+
+def north_exhibition(room):
+ x0,z0,x1,z1=room['bounds'];cx=(x0+x1)/2;w=x1-x0;h=6.2
+ room.update({'layout_variant':'photo_referenced_open_discussion_exhibition','reference':'User photos 2026-11-01; user confirmed 3F north open discussion area','ceiling_height_m':h,'height_status':'estimated from double-height photo, not measured','detail_status':'photo-based exhibition furniture; original event objects approximated'})
+ frame=material('North hall graphite frames',(.115,.13,.14),.55,.34)
+ window=material('North hall window glass',(.22,.31,.30),.12,.18,.32)
+ # Double-height opening preserves existing floor topology and the room's plan bounds.
+ for x in [x0,x1]:
+  a,b=[x,z0],[x,z1]
+  if x==x0:
+   wall('North hall side wall',a,[x,z1-1.65],h=h)
+   wall('North hall door return',[x,z1-.60],b,h=h)
+   box('Side door upper wall',x,4.2,z1-1.125,.10,4.0,1.05,white,kind='wall')
+  else:wall('North hall side wall',a,b,h=h)
+ # Two window tiers with a white intermediate beam and actual opening sashes.
+ for lo,hi in [(.20,3.05),(3.95,5.80)]:
+  box('Two-tier window infill',cx,(lo+hi)/2,z0+.08,w-.24,hi-lo,.035,window,kind='wall')
+  for i in range(7):
+   x=x0+.12+(w-.24)*i/6
+   box('Graphite window mullion',x,(lo+hi)/2,z0+.07,.065,hi-lo,.075,frame,kind='wall')
+  for y in [lo,lo+(hi-lo)*.32,hi]:box('Graphite window transom',cx,y,z0+.07,w-.2,.055,.075,frame,kind='wall')
+  for i in [0,5]:
+   x=x0+.12+(w-.24)*(i+.80)/6
+   box('Window opening handle',x,lo+(hi-lo)*.65,z0+.13,.018,.20,.025,metal,kind='wall')
+ for lo,hi in [(0,.20),(3.05,3.95),(5.8,h)]:box('White window beam',cx,(lo+hi)/2,z0+.05,w,hi-lo,.18,white,kind='wall')
+ box('North hall ceiling',cx,h+.06,(z0+z1)/2,w,.12,z1-z0,white,kind='ceiling')
+ for x in [x0+w*.24,x0+w*.76]:
+  for z in [z0+1.1,z0+3.4]:
+   box('Linear ceiling return grille',x,h-.006,z,.085,.012,1.75,black,kind='ceiling')
+   for side in [-1,1]:box('Return grille edge',x+side*.05,h-.012,z,.014,.018,1.8,white,kind='ceiling')
+  for z in [z0+1.0,z0+3.0,z0+5.0]:
+   ob=cyl('Recessed ceiling downlight',x,h-.012,z,.065,.020,paper);ob['kind']='ceiling'
+ # Low open cubbies along the photographed left wall.
+ cabx=x0+.28;cabz=z0+2.40;length=2.70
+ for y in [.12,.45,.78,1.11]:box('Exhibition cubby horizontal',cabx,y,cabz,.42,.025,length,metal)
+ for j in range(7):box('Exhibition cubby divider',cabx,.62,cabz-length/2+j*length/6,.42,1.0,.022,wood)
+ box('Exhibition cubby back',x0+.06,.62,cabz,.022,1.0,length,black);solid('Exhibition cubby',cabx,cabz,.45,length)
+ for j in range(5):plant(cabx,cabz-1.05+j*.51,1.13)
+ # Several independently movable high tables and a lower rounded gathering table.
+ mobile_display(x0+1.55,z0+3.00,1.25,.60)
+ mobile_display(cx-.40,z0+1.65,1.35,.60)
+ mobile_display(x1-1.45,z0+2.35,1.50,.65)
+ display_top('Rounded discussion display table',cx+.10,z1-1.65,2.15,1.03,.73)
+ for dx in [-.72,.72]:
+  box('Rounded table support',cx+.10+dx,.36,z1-1.65,.055,.70,.68,metal,.01)
+  box('Rounded table floor pad',cx+.10+dx,.025,z1-1.65,.09,.03,.73,metal,.02)
+ # Photo evidence: roll-up event graphic and lightweight white geometric exhibits.
+ photo_poster(x0+.95,z1-.72)
+ thread_art(x1-1.45,z0+2.35,1.03)
+ for i in range(5):
+  x=cx-.50+i*.27;z=z1-1.65+(i%2)*.17
+  box('Small exhibit plinth',x,.76,z,.21,.04,.19,paper,.005)
+  cyl('Small exhibition object',x,.84,z,.045,.12,[metal,blue,leaf,glass,wood][i])
+ # Public copiers remain in the north circulation zone, clear of the photo composition.
  for x in [x0+.65,x1-.65]:
-  box('Public copier cabinet',x,.48,z0+.60,.65,.96,.70,paper,.018);box('Copier scanner',x,1.01,z0+.60,.65,.10,.70,black,.015)
-  box('Copier paper output',x,.70,z0+.23,.46,.08,.04,black);solid('Public copier',x,z0+.60,.65,.70)
- electronic_board(cx,z0+.18,1.5)
- for dx in [-.6,.6]:
-  bar('Mobile board leg',(cx+dx,.08,z0+.18),(cx+dx,1.0,z0+.18),.02,metal)
-  bar('Mobile board foot',(cx+dx,.08,z0-.07),(cx+dx,.08,z0+.43),.02,metal)
+  z=z1+.85;box('Public copier cabinet',x,.48,z,.65,.96,.70,paper,.018);box('Copier scanner',x,1.01,z,.65,.10,.70,black,.015);solid('Public copier',x,z,.65,.70)
 
 
 def recording_studio(room):
@@ -402,7 +608,7 @@ def storage_room(room):
 def furnish(room):
  x0,z0,x1,z1=room['bounds'];cx=(x0+x1)/2;cz=(z0+z1)/2;name=room['id'];w=x1-x0;d=z1-z0
  if current_floor==2 and name=='mechatronics':electronics_lab(room);return
- if current_floor==3 and name=='seminar':discussion_area(room);return
+ if current_floor==3 and name=='seminar':north_exhibition(room);return
  if current_floor==3 and name=='recording':recording_studio(room);return
  if name=='pantry':pantry_areas(room);return
  if current_floor==4 and name=='storage':storage_room(room);return
@@ -412,6 +618,7 @@ def furnish(room):
   count=1 if name.startswith('studio_') else max(1,int((d-1.4)/4.2))
   for i in range(count):bank(cx,z0+min(d/2,2.1)+i*4.2)
   if d>5:cupboard(x0+1.0,z1-.30,1.5)
+
  elif name=='pantry':
   table(cx,cz,3.8,1.3)
   for dx in [-1.2,0,1.2]:
@@ -472,9 +679,16 @@ for f in [2,3,4]:
  current_floor=f;parent=None;root_floor=empty('Floor '+str(f),0,(f-2)*RISE,0);root_floor['floorRoot']=f;parent=root_floor
  voids=[[point(f,*p) for p in poly] for poly in VOIDS[f]]
  meta['floors'][str(f)]={'floor':f,'elevation':(f-2)*RISE,'rooms':[],'colliders':[],'voids':voids,'tools':[],'spawn':[WIDTH/2,1.8]}
- slab('Floor slab',voids,-.10,gray);slab('Ceiling',voids,3.18,white)
+ slab('Floor slab',voids,-.10,gray)
+ ceiling_voids=list(voids)
+ if f==3:
+  rect=ROOMS[3][0][1];ceiling_voids.append([point(3,rect[0],rect[1]),point(3,rect[2],rect[1]),point(3,rect[2],rect[3]),point(3,rect[0],rect[3])])
+ slab('Ceiling',ceiling_voids,3.18,white)
  for a,b in [([0,0],[WIDTH,0]),([WIDTH,0],[WIDTH,LENGTH]),([WIDTH,LENGTH],[0,LENGTH]),([0,LENGTH],[0,0])]:
-  wall('Perimeter parapet',a,b,h=.95);wall('Perimeter glazing',a,b,h=3.1,mat=glass,block=False)
+  if f==3 and a==[0,0]:
+   xleft=point(3,*ROOMS[3][0][1][:2])[0];xright=point(3,*ROOMS[3][0][1][2:])[0]
+   for aa,bb in [(a,[xleft,0]),([xright,0],b)]:wall('Perimeter parapet',aa,bb,h=.95);wall('Perimeter glazing',aa,bb,h=3.1,mat=glass,block=False)
+  else:wall('Perimeter parapet',a,b,h=.95);wall('Perimeter glazing',a,b,h=3.1,mat=glass,block=False)
  for poly in voids:
   for a,b in zip(poly,poly[1:]+poly[:1]):
    wall('Atrium guard',a,b,h=1.1,mat=glass)
