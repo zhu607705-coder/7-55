@@ -55,6 +55,8 @@ func arrive(at: Vector2,expected: Vector2,using_touch: bool=false) -> void:
 	var old_calls:int=w._floor_planner.calls;var tick:=Time.get_ticks_usec()
 	root_tap(at,using_touch)
 	var planning_us:=Time.get_ticks_usec()-tick
+	# Print only after the measured dispatch has ended, including failing routes.
+	print("CANTEEN_QUEUE_ROUTE_TIMING "+JSON.stringify({"planningUs":planning_us,"candidates":w._canteen_floor_tap.candidate_count,"maxCandidates":Tap.MAX_CANDIDATES,"limitUs":200000,"input":"touch" if using_touch else "mouse","root":str(at),"start":str(start),"rawGoal":str(raw),"expectedGoal":str(expected),"resolvedGoal":str(w._floor_goal)}))
 	var waypoints: String=str(w._floor_route)
 	check(w._floor_status=="moving" and not w._floor_route.is_empty(),"root input starts an actual floor route")
 	check(w._floor_planner.calls==old_calls+1,"exactly one unchanged planner call per request")
