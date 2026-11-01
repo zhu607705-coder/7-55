@@ -87,24 +87,26 @@ export function verifyExerciseObservation(observed, sent, touch) {
   }
 }
 
-// All promises are observed immediately, including synchronous dispatch throws.
-// Backpressure never catches up with a burst: every actual dispatch is followed
-// by the original 80ms interval, regardless of acknowledgement latency.
+// Keep every move serialized: real browsers coalesced concurrent commands even
+// when all ACKs succeeded. Observe the ACK first, then retain the original 80ms
+// interval. Trusted DOM event verification below remains mandatory.
 export function createExerciseMoveQueue(dispatch, interval, timing, now = () => performance.now()) {
   const pending = new Set(); let firstError;
   const fail = error => {firstError ||= error;};
   return {
     async move(point) {
-      while (pending.size >= 4) {await Promise.race(pending); if (firstError) throw firstError;}
+      while (pending.size >= 1) {await Promise.race(pending); if (firstError) throw firstError;}
       if (firstError) throw firstError;
       let job;
       try { job = Promise.resolve(dispatch(point)); } catch (error) { fail(error); throw error; }
-      const dispatchedAt = now();
       const tracked = job.then(() => {}, fail).finally(() => pending.delete(tracked));
       pending.add(tracked); timing.maxInFlight = Math.max(timing.maxInFlight || 0, pending.size);
+      await tracked;
+      if (firstError) throw firstError;
+      const acknowledgedAt = now();
       await interval(80); timing.inputWaitMs += 80;
       // Timers can wake slightly early; do not allow a sub-80ms send interval.
-      while (now() - dispatchedAt < 80) {const remaining = 80 - (now() - dispatchedAt); await interval(remaining); timing.inputWaitMs += remaining;}
+      while (now() - acknowledgedAt < 80) {const remaining = 80 - (now() - acknowledgedAt); await interval(remaining); timing.inputWaitMs += remaining;}
       if (firstError) throw firstError;
     },
     async drain() {await Promise.all(pending); if (firstError) throw firstError;},
@@ -145,7 +147,7 @@ export async function continuousExercise(h, evidence) {
       pointerAck: Object.fromEntries(['start', 'move', 'end'].map(phase => [phase, {calls: 0, acknowledged: 0, failed: 0, totalMs: 0, maxMs: 0}])),
       snapshots: {calls: 0, failed: 0, totalMs: 0, maxMs: 0}, sent: [], observed: null, maxInFlight: 0};
     (evidence.exerciseTransport ||= []).push(timing);
-    // Start/end stay serial; move ACK spans can overlap. Their sum is not wall time.
+    // Start/move/end stay serial. Keep attempted input, ACK and DOM receipt distinct.
     // Attempted input, browser observation and ACKs remain separate evidence.
     const sendPointer = async (phase, point) => {
       const stats = timing.pointerAck[phase], began = Date.now(); stats.calls++;

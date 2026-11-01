@@ -155,35 +155,35 @@ await test('snapshot failure includes its elapsed time and the existing final re
   } finally {Date.now = originalNow;}
 });
 
-await test('bounded queue retains 80ms spacing, at most four in flight and drains out-of-order ACKs', async () => {
+await test('serial queue waits for delayed ACKs, retains 80ms spacing and never overlaps moves', async () => {
   const sent = [], ack = [], stats = {inputWaitMs: 0}; let active = 0, peak = 0;
   const queue = createExerciseMoveQueue(point => {
     const i = point.x; sent.push({i, at: performance.now()}); active++; peak = Math.max(peak, active);
-    return new Promise(resolve => setTimeout(() => {ack.push(i); active--; resolve();}, i === 0 ? 430 : 330));
+    return new Promise(resolve => setTimeout(() => {ack.push(i); active--; resolve();}, i === 0 ? 50 : 15));
   }, ms => new Promise(resolve => setTimeout(resolve, ms)), stats);
   for (let i = 0; i < 9; i++) await queue.move({x: i, y: 1});
   await queue.drain();
-  assert.equal(active, 0); assert.equal(peak, 4); assert.equal(stats.maxInFlight, 4);
+  assert.equal(active, 0); assert.equal(peak, 1); assert.equal(stats.maxInFlight, 1);
   assert.deepEqual(sent.map(e => e.i), Array.from({length: 9}, (_, i) => i));
-  assert.notDeepEqual(ack, sent.map(e => e.i));
+  assert.deepEqual(ack, sent.map(e => e.i));
   for (let i = 1; i < sent.length; i++) assert.ok(sent[i].at - sent[i - 1].at >= 79.5, 'no catch-up burst');
   assert.ok(stats.inputWaitMs >= 720 && stats.inputWaitMs < 730);
 });
 for (const kind of ['sync', 'reject', 'timeout']) await test(`${kind} move failure stops issuing commands and drains every earlier command`, async () => {
-  const pending = [], sent = [], stats = {inputWaitMs: 0}; let clock = 0;
+  const sent = [], stats = {inputWaitMs: 0}; let clock = 0;
   const queue = createExerciseMoveQueue(point => {
     sent.push(point.x);
     if (point.x === 2) {
       if (kind === 'sync') throw Error('sync dispatch failed');
       return Promise.reject(Error(kind === 'timeout' ? 'CDP command timed out' : 'CDP rejected'));
     }
-    return new Promise(resolve => pending.push(resolve));
+    return Promise.resolve();
   }, async ms => {clock += ms;}, stats, () => clock);
   await queue.move({x: 0}); await queue.move({x: 1});
   await assert.rejects(queue.move({x: 2}), /failed|timed out|rejected/);
   let settled = false; const settlement = queue.settle().then(() => {settled = true;});
-  await Promise.resolve(); assert.equal(settled, false);
-  pending.forEach(resolve => resolve()); await settlement;
+  await settlement; assert.equal(settled, true);
+  await settlement;
   await assert.rejects(queue.move({x: 3}), /failed|timed out|rejected/);
   await assert.rejects(queue.drain(), /failed|timed out|rejected/);
   assert.deepEqual(sent, [0, 1, 2]);
@@ -273,7 +273,7 @@ await test('all ten segments observe and snapshot only after delayed moves drain
   await continuousExercise(f.h, f.evidence);
   assert.equal(f.evidence.samples.length, 10); assert.equal(f.events.filter(e => e.phase === 'move').length, 399);
   assert.equal(f.events.filter(e => e.phase === 'end').length, 10);
-  assert.ok(f.evidence.exerciseTransport.every(row => row.maxInFlight <= 4 && row.observed.events.length === row.sent.length));
+  assert.ok(f.evidence.exerciseTransport.every(row => row.maxInFlight === 1 && row.observed.events.length === row.sent.length));
   assert.equal(observedMoveCounts[0], 8); assert.equal(observedMoveCounts[1], 16);
 });
 await test('pending moves settle before release and release failure cannot mask first move failure', async () => {
@@ -291,4 +291,17 @@ await test('pending moves settle before release and release failure cannot mask 
   assert.equal(moves, 3); assert.equal(pending, 0);
   assert.equal(f.evidence.exerciseTransport[0].releaseError, 'secondary release failure');
   assert.equal(f.events.filter(e => e.phase === 'end').length, 1);
+});
+await test('a pending serial ACK prevents the next dispatch and the cadence starts only after ACK', async () => {
+  let resolveFirst, now = 0; const sent = [], waits = [], timing = {inputWaitMs: 0};
+  const queue = createExerciseMoveQueue(point => {
+    sent.push({x: point.x, now});
+    if (point.x === 0) return new Promise(resolve => {resolveFirst = resolve;});
+  }, async ms => {waits.push({ms, now}); now += ms;}, timing, () => now);
+  const run = (async () => {await queue.move({x: 0}); await queue.move({x: 1}); await queue.drain();})();
+  for (let i = 0; i < 10; i++) await Promise.resolve();
+  assert.deepEqual(sent, [{x: 0, now: 0}]); assert.deepEqual(waits, []);
+  now = 450; resolveFirst(); await run;
+  assert.deepEqual(sent, [{x: 0, now: 0}, {x: 1, now: 530}]);
+  assert.equal(waits[0].now, 450); assert.equal(timing.maxInFlight, 1);
 });
