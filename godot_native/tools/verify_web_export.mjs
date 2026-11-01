@@ -7,7 +7,7 @@ import { createReadStream, existsSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, readdir, writeFile, rm, open } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { phoneRecoveryCase } from './web_phone_recovery.mjs';
+import { phoneRecoveryCase, exerciseInputObserver } from './web_phone_recovery.mjs';
 import { phoneGroups, assertPhoneCoverage } from './web_phone_shards.mjs';
 import { phoneNavigationCase } from './web_phone_navigation.mjs';
 import { startTransportAudit } from './web_transport_audit.mjs';
@@ -1893,6 +1893,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
     if (scenarios === 'mobile-world') await mobileWorldCase();
     else if (scenarios === 'phone-recovery') active.phoneRecovery = await phoneRecoveryCase({ id, touch, fixtureDir, bootTimeout, group: active.phoneGroup,
       snapshot, clickControl, clickPoint, renderPoint, poll, check, interval, screenshot, importSave,
+      observeExercise: action => evaluate(`(${exerciseInputObserver.toString()})(${JSON.stringify(action)},${touch})`),
       pointer: async (phase, point) => {
         if (touch) await active.cdp.send('Input.dispatchTouchEvent', {type: phase === 'start' ? 'touchStart' : phase === 'move' ? 'touchMove' : 'touchEnd', touchPoints: phase === 'end' ? [] : [{...point, id: 4}]});
         else await active.cdp.send('Input.dispatchMouseEvent', {type: phase === 'start' ? 'mousePressed' : phase === 'move' ? 'mouseMoved' : 'mouseReleased', button: 'left', buttons: phase === 'end' ? 0 : 1, clickCount: 1, ...point});

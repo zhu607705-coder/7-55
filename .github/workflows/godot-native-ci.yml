@@ -118,9 +118,9 @@ jobs:
     timeout-minutes: 10
     strategy:
       fail-fast: false
-      max-parallel: 8
+      max-parallel: 12
       matrix:
-        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -159,7 +159,7 @@ jobs:
         run: |
           base='${{ github.event.pull_request.base.sha || '' }}'
           args=(); if test -n "$base"; then args+=(--base "$base"); fi
-          node godot_native/tools/validate_native.mjs --shard '${{ matrix.shard }}/8' \
+          node godot_native/tools/validate_native.mjs --shard '${{ matrix.shard }}/12' \
             --prepared-bundle "$RUNNER_TEMP/native-inputs" \
             --receipt-sha '${{ needs.prepare.outputs.receipt_sha }}' \
             --producer-attempt '${{ needs.prepare.outputs.producer_attempt }}' \

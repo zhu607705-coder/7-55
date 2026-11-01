@@ -41,6 +41,77 @@ export async function waitForBrightnessControl(h, afterFrame) {
   }, 'fresh native brightness control is visible and usable', 20000);
 }
 
+// Only the harness trace is writable. Listeners never cancel, synthesize or
+// modify an event or game state. This function is serialized into the browser.
+export function exerciseInputObserver(action, touch) {
+  const key = '__755ExerciseInputObservation';
+  if (action === 'begin') {
+    if (window[key]) throw Error('Exercise observer already active');
+    const state = {events: [], overflow: false, cancelled: false};
+    const types = touch ? ['touchstart', 'touchmove', 'touchend', 'touchcancel'] : ['mousedown', 'mousemove', 'mouseup'];
+    state.listen = event => {
+      if (event.type === 'touchcancel') state.cancelled = true;
+      const phase = ({touchstart: 'start', touchmove: 'move', touchend: 'end', mousedown: 'start', mousemove: 'move', mouseup: 'end'})[event.type];
+      if (!phase) return;
+      const points = touch ? Array.from(event.changedTouches) : [event];
+      for (const point of points) {
+        if (state.events.length >= 1024) {state.overflow = true; break;}
+        state.events.push({phase, x: point.clientX, y: point.clientY, trusted: event.isTrusted,
+          identifier: touch ? point.identifier : null, buttons: touch ? null : event.buttons, at: performance.now()});
+      }
+    };
+    state.types = types;
+    for (const type of types) window.addEventListener(type, state.listen, {capture: true, passive: true});
+    window[key] = state;
+    return true;
+  }
+  const state = window[key];
+  if (!state) throw Error('Exercise observer is not active');
+  const result = {events: state.events.slice(), overflow: state.overflow, cancelled: state.cancelled};
+  if (action === 'end') {
+    for (const type of state.types) window.removeEventListener(type, state.listen, {capture: true});
+    delete window[key];
+  } else if (action !== 'read') throw Error('Unknown exercise observer operation');
+  return result;
+}
+
+export function verifyExerciseObservation(observed, sent, touch) {
+  if (!observed || observed.overflow || observed.cancelled || !Array.isArray(observed.events) || observed.events.length !== sent.length)
+    throw Error('Exercise browser event observation lost, added or cancelled input');
+  for (let i = 0; i < sent.length; i++) {
+    const actual = observed.events[i], expected = sent[i];
+    if (actual.phase !== expected.phase || actual.trusted !== true || !Number.isFinite(actual.x) || !Number.isFinite(actual.y)
+      || Math.hypot(actual.x - expected.x, actual.y - expected.y) > .05
+      || (touch && actual.identifier !== 4) || (!touch && actual.buttons !== (expected.phase === 'end' ? 0 : 1)))
+      throw Error(`Exercise browser event order/coordinate differs at input ${i + 1}`);
+  }
+}
+
+// All promises are observed immediately, including synchronous dispatch throws.
+// Backpressure never catches up with a burst: every actual dispatch is followed
+// by the original 80ms interval, regardless of acknowledgement latency.
+export function createExerciseMoveQueue(dispatch, interval, timing, now = () => performance.now()) {
+  const pending = new Set(); let firstError;
+  const fail = error => {firstError ||= error;};
+  return {
+    async move(point) {
+      while (pending.size >= 4) {await Promise.race(pending); if (firstError) throw firstError;}
+      if (firstError) throw firstError;
+      let job;
+      try { job = Promise.resolve(dispatch(point)); } catch (error) { fail(error); throw error; }
+      const dispatchedAt = now();
+      const tracked = job.then(() => {}, fail).finally(() => pending.delete(tracked));
+      pending.add(tracked); timing.maxInFlight = Math.max(timing.maxInFlight || 0, pending.size);
+      await interval(80); timing.inputWaitMs += 80;
+      // Timers can wake slightly early; do not allow a sub-80ms send interval.
+      while (now() - dispatchedAt < 80) {const remaining = 80 - (now() - dispatchedAt); await interval(remaining); timing.inputWaitMs += remaining;}
+      if (firstError) throw firstError;
+    },
+    async drain() {await Promise.all(pending); if (firstError) throw firstError;},
+    async settle() {await Promise.all(pending);}
+  };
+}
+
 export async function continuousExercise(h, evidence) {
   const initial = await h.poll(async () => {
     const s = await h.snapshot();
@@ -72,14 +143,15 @@ export async function continuousExercise(h, evidence) {
   for (let segment = 0; segment < 10; segment++) {
     const timing = {segment: segment + 1, startedAt: Date.now(), geometryCalls: 0, geometryMs: 0, pointerMoves: 0, inputWaitMs: 0,
       pointerAck: Object.fromEntries(['start', 'move', 'end'].map(phase => [phase, {calls: 0, acknowledged: 0, failed: 0, totalMs: 0, maxMs: 0}])),
-      snapshots: {calls: 0, failed: 0, totalMs: 0, maxMs: 0}};
+      snapshots: {calls: 0, failed: 0, totalMs: 0, maxMs: 0}, sent: [], observed: null, maxInFlight: 0};
     (evidence.exerciseTransport ||= []).push(timing);
-    // Timers wrap only existing serial awaits. Counts distinguish attempted
-    // pointer commands from successful ACKs; a failed command is never retried.
+    // Start/end stay serial; move ACK spans can overlap. Their sum is not wall time.
+    // Attempted input, browser observation and ACKs remain separate evidence.
     const sendPointer = async (phase, point) => {
       const stats = timing.pointerAck[phase], began = Date.now(); stats.calls++;
-      try { const result = await h.pointer(phase, point); stats.acknowledged++; return result; }
-      catch (error) { stats.failed++; throw error; }
+      const input = {phase, x: point.x, y: point.y, at: began}; timing.sent.push(input);
+      try { const result = await h.pointer(phase, point); stats.acknowledged++; input.acknowledgedAt = Date.now(); if (phase === 'move') timing.pointerMoves++; return result; }
+      catch (error) { stats.failed++; input.error = error.message; input.failedAt = Date.now(); throw error; }
       finally { const elapsed = Date.now() - began; stats.totalMs += elapsed; stats.maxMs = Math.max(stats.maxMs, elapsed); }
     };
     const readSnapshot = async () => {
@@ -110,15 +182,24 @@ export async function continuousExercise(h, evidence) {
       let last = transform(screenPoint(pointAt(fractions[segment] * length), s));
       h.check(count(s) === segment, `${h.id}: segment ${segment + 1} starts at the previous genuine checkpoint`);
       evidence.inputs.push({ method: h.touch ? 'ordinaryTouchDrag' : 'ordinaryMouseDrag', name: 'VirtualRunTrack', segment: segment + 1, at: Date.now() });
-      await sendPointer('start', last);
+      const queue = createExerciseMoveQueue(point => sendPointer('move', point), h.interval, timing, h.monotonicNow);
+      let failure, startAttempted = false;
+      const observe = async action => {
+        timing.observed = await h.observeExercise(action);
+        verifyExerciseObservation(timing.observed, timing.sent, h.touch);
+      };
       try {
+        await h.observeExercise('begin');
+        startAttempted = true;
+        await sendPointer('start', last);
         const start = fractions[segment] * length, finish = fractions[segment + 1] * length;
         const steps = Math.ceil((finish - start) / 2);
         for (let step = 1; step <= steps; step++) {
           const sourcePoint = pointAt(start + (finish - start) * step / steps);
           last = transform(screenPoint(sourcePoint, s));
-          await sendPointer('move', last); timing.pointerMoves++; await h.interval(80); timing.inputWaitMs += 80;
+          await queue.move(last);
           if (step % 8 === 0) {
+            await queue.drain(); await observe('read');
             s = await readSnapshot();
             if (count(s) === segment + 1) break;
             const actual = await measure(screenPoint(sourcePoint, s), s);
@@ -127,12 +208,21 @@ export async function continuousExercise(h, evidence) {
               `${h.id}: continuous exercise canvas remains registered after input ${step} of segment ${segment + 1}`);
           }
         }
+        await queue.drain(); await observe('read');
         s = await h.poll(async () => {
           const current = await readSnapshot();
           return count(current) === segment + 1 ? current : null;
         }, `continuous pointer traversal completes running segment ${segment + 1}`, 8000);
         evidence.samples.push({ label: `continuous exercise segment ${segment + 1}`, at: Date.now(), progress: s.visibleControls.find(c => c.name === 'RunProgress').text });
-      } finally { await sendPointer('end', last); }
+      } catch (error) {failure = error; throw error;}
+      finally {
+        // Stop issuing moves, observe every outstanding ACK, then release once.
+        // Never let a release/observation failure mask the first transport error.
+        await queue.settle();
+        try {if (startAttempted) await sendPointer('end', last);} catch (error) {if (!failure) failure = error; timing.releaseError = error.message;}
+        try {await observe('end');} catch (error) {if (!failure) failure = error; timing.observationError = error.message;}
+        if (failure) throw failure;
+      }
     } finally { timing.finishedAt = Date.now(); timing.elapsedMs = timing.finishedAt - timing.startedAt; }
   }
   const accepted = await h.poll(async () => {
