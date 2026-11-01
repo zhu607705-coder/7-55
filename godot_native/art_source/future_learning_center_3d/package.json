@@ -8,6 +8,9 @@
     "test:furniture": "node scripts/test_furniture.mjs",
     "test:floor-materials": "node scripts/test_floor_materials.mjs",
     "test:floor-assets": "python3 scripts/validate_floor_materials.py",
-    "test:north-density": "node scripts/test_north_density.mjs"
+    "test:north-density": "node scripts/test_north_density.mjs",
+    "test:asset-geometry": "node pipeline/validate_asset.mjs",
+    "test:asset-pipeline": "node scripts/test_asset_pipeline.mjs",
+    "profile:assets": "node scripts/profile_asset_scene.mjs hyper3d_lod"
   }
 }

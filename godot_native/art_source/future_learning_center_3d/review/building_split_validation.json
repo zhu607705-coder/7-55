@@ -1,0 +1,14 @@
+{
+  "source": {
+    "file": "web/assets/building.glb",
+    "bytes": 8349076,
+    "sha256": "78f966e98631bf52ed81a220bf192dd950163a8fbfa99e40cbada2061d83bf4f"
+  },
+  "output": {
+    "file": "web/assets/building.web.glb",
+    "bytes": 6701528,
+    "sha256": "fd7a70f5d6b992312adffd559361c629fd91cdce153bf6906421513c57840e89"
+  },
+  "chairAnchors": 125,
+  "anchorContract": "World matrices, names and extras match before/after; layout.json and colliders are separate and unchanged."
+}

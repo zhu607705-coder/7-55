@@ -1,0 +1,1993 @@
+{
+  "model": {
+    "checks": 37,
+    "failures": 0,
+    "rows": [
+      {
+        "pass": true,
+        "label": "blend 2F hierarchy",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "blend 2F physical atrium hole",
+        "details": [
+          13.0,
+          -20.0,
+          -0.019992828369140625
+        ]
+      },
+      {
+        "pass": true,
+        "label": "blend 3F hierarchy",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "blend 3F physical atrium hole",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "blend 4F hierarchy",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "blend 4F physical atrium hole",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "glb 2F hierarchy",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "glb 2F physical atrium hole",
+        "details": [
+          13.0,
+          -20.0,
+          -0.020000457763671875
+        ]
+      },
+      {
+        "pass": true,
+        "label": "glb 3F hierarchy",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "glb 3F physical atrium hole",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "glb 4F hierarchy",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "glb 4F physical atrium hole",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "office_desk reusable instances",
+        "details": 66
+      },
+      {
+        "pass": true,
+        "label": "office_desk exported meter scale",
+        "details": [
+          1.4000000953674316,
+          0.6289997100830078,
+          1.21999990940094
+        ]
+      },
+      {
+        "pass": true,
+        "label": "caliper_150 reusable instances",
+        "details": 3
+      },
+      {
+        "pass": true,
+        "label": "caliper_150 exported meter scale",
+        "details": [
+          0.2329998016357422,
+          0.07050037384033203,
+          0.02274996042251587
+        ]
+      },
+      {
+        "pass": true,
+        "label": "screwdriver_3x100 reusable instances",
+        "details": 3
+      },
+      {
+        "pass": true,
+        "label": "screwdriver_3x100 exported meter scale",
+        "details": [
+          0.20399999618530273,
+          0.023000717163085938,
+          0.023000001907348633
+        ]
+      },
+      {
+        "pass": true,
+        "label": "printer_h2c exported instances",
+        "details": 2
+      },
+      {
+        "pass": true,
+        "label": "printer_h2c three-axis envelope matches manufacturer millimeters",
+        "details": [
+          0.4920005798339844,
+          0.5139999389648438,
+          0.625999927520752
+        ]
+      },
+      {
+        "pass": true,
+        "label": "printer_h2c three-axis envelope matches manufacturer millimeters",
+        "details": [
+          0.4920005798339844,
+          0.5139999389648438,
+          0.625999927520752
+        ]
+      },
+      {
+        "pass": true,
+        "label": "laser_p2s exported instances",
+        "details": 1
+      },
+      {
+        "pass": true,
+        "label": "laser_p2s three-axis envelope matches manufacturer millimeters",
+        "details": [
+          1.0,
+          0.6389999389648438,
+          0.26799988746643066
+        ]
+      },
+      {
+        "pass": true,
+        "label": "80 personal locker doors exist in exported geometry",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "co-creation table has six independently authored modules",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "ergonomic chair keeps real product-scale footprint and headrest height",
+        "details": [
+          0.6590003967285156,
+          0.6922165155410767,
+          1.2880000323057175
+        ]
+      },
+      {
+        "pass": true,
+        "label": "breathable back has actual open cells rather than an opaque slab",
+        "details": 0.11813116047778749
+      },
+      {
+        "pass": true,
+        "label": "five-star base has ten horizontal-axis caster wheels",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "exported ergonomic chair includes Headrest mesh",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "exported ergonomic chair includes Lumbar support wing",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "exported ergonomic chair includes Adjustable arm pad",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "exported ergonomic chair includes Synchro tilt mechanism",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "GLB preserves shared adjustable-desk root contract",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "GLB preserves telescoping-stage motion factors",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "GLB preserves physical keypad target",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "north discussion area has a separate high ceiling",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "photo-based double-height ceiling exports in real meters",
+        "details": 10.25
+      }
+    ]
+  },
+  "collision": {
+    "checks": 88,
+    "failures": 0,
+    "rows": [
+      {
+        "label": "2F corridor spawn",
+        "pass": true
+      },
+      {
+        "label": "2F exterior is blocked",
+        "pass": true
+      },
+      {
+        "label": "2F seminar safe start",
+        "pass": true
+      },
+      {
+        "label": "2F seminar spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "2F formula safe start",
+        "pass": true
+      },
+      {
+        "label": "2F formula spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "2F team safe start",
+        "pass": true
+      },
+      {
+        "label": "2F team spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "2F robotics safe start",
+        "pass": true
+      },
+      {
+        "label": "2F robotics spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "2F mechatronics safe start",
+        "pass": true
+      },
+      {
+        "label": "2F mechatronics spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "2F koala safe start",
+        "pass": true
+      },
+      {
+        "label": "2F koala spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "2F swept movement remains valid",
+        "pass": true
+      },
+      {
+        "label": "2F high-speed wall crossing blocked",
+        "pass": true
+      },
+      {
+        "label": "2F seminar joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "2F formula joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "2F team joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "2F robotics joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "2F mechatronics joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "2F koala joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "lab partition electrical side clear floor",
+        "pass": true
+      },
+      {
+        "label": "lab partition electrical side reaches corridor through an actual doorway",
+        "pass": true
+      },
+      {
+        "label": "lab partition machining side clear floor",
+        "pass": true
+      },
+      {
+        "label": "lab partition machining side reaches corridor through an actual doorway",
+        "pass": true
+      },
+      {
+        "label": "1.2m acoustic-partition opening is walkable at eye-body radius",
+        "pass": true
+      },
+      {
+        "label": "3F corridor spawn",
+        "pass": true
+      },
+      {
+        "label": "3F exterior is blocked",
+        "pass": true
+      },
+      {
+        "label": "3F seminar safe start",
+        "pass": true
+      },
+      {
+        "label": "3F seminar spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "3F studio_1 safe start",
+        "pass": true
+      },
+      {
+        "label": "3F studio_1 spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "3F studio_2 safe start",
+        "pass": true
+      },
+      {
+        "label": "3F studio_2 spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "3F studio_3 safe start",
+        "pass": true
+      },
+      {
+        "label": "3F studio_3 spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "3F studio_4 safe start",
+        "pass": true
+      },
+      {
+        "label": "3F studio_4 spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "3F recording safe start",
+        "pass": true
+      },
+      {
+        "label": "3F recording spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "3F pantry safe start",
+        "pass": true
+      },
+      {
+        "label": "3F pantry spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "3F xlab safe start",
+        "pass": true
+      },
+      {
+        "label": "3F xlab spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "3F atrium has no walkable floor",
+        "pass": true
+      },
+      {
+        "label": "3F swept movement remains valid",
+        "pass": true
+      },
+      {
+        "label": "3F seminar joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "3F studio_1 joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "3F studio_2 joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "3F studio_3 joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "3F studio_4 joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "3F recording joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "3F pantry joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "3F xlab joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "4F corridor spawn",
+        "pass": true
+      },
+      {
+        "label": "4F exterior is blocked",
+        "pass": true
+      },
+      {
+        "label": "4F storage safe start",
+        "pass": true
+      },
+      {
+        "label": "4F storage spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_1 safe start",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_1 spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_2 safe start",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_2 spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_3 safe start",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_3 spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "4F focus safe start",
+        "pass": true
+      },
+      {
+        "label": "4F focus spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "4F collab safe start",
+        "pass": true
+      },
+      {
+        "label": "4F collab spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "4F flex safe start",
+        "pass": true
+      },
+      {
+        "label": "4F flex spawn remains in selected room",
+        "pass": true
+      },
+      {
+        "label": "4F atrium has no walkable floor",
+        "pass": true
+      },
+      {
+        "label": "4F atrium has no walkable floor",
+        "pass": true
+      },
+      {
+        "label": "4F atrium has no walkable floor",
+        "pass": true
+      },
+      {
+        "label": "4F swept movement remains valid",
+        "pass": true
+      },
+      {
+        "label": "4F storage joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_1 joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_2 joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "4F seminar_3 joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "4F focus joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "4F collab joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "4F flex joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "focus remains a connected open work zone",
+        "pass": true
+      },
+      {
+        "label": "collab remains a connected open work zone",
+        "pass": true
+      },
+      {
+        "label": "flex remains a connected open work zone",
+        "pass": true
+      },
+      {
+        "label": "open zones focus/collab have no inherited dividing wall",
+        "pass": true
+      },
+      {
+        "label": "open zones collab/flex have no inherited dividing wall",
+        "pass": true
+      },
+      {
+        "label": "reverse/away motion is not suppressed by a stale blocked flag",
+        "pass": true
+      }
+    ]
+  },
+  "browser": {
+    "browser": "156.0.8078.79",
+    "checks": 36,
+    "failures": 0,
+    "rows": [
+      {
+        "label": "4F overview route opens",
+        "pass": true
+      },
+      {
+        "label": "all three ceilings stay hidden in overview, including multi-material GLB groups",
+        "pass": true
+      },
+      {
+        "label": "4F retains seven room/area entries and whole floor entry",
+        "pass": true
+      },
+      {
+        "label": "desktop has no document overflow",
+        "pass": true
+      },
+      {
+        "label": "floor explosion is reversible navigation",
+        "pass": true
+      },
+      {
+        "label": "room opens at meter-scale eye height",
+        "pass": true
+      },
+      {
+        "label": "ordinary keyboard moves observer",
+        "pass": true,
+        "distance": 0.674850000000002
+      },
+      {
+        "label": "ordinary movement stays collision-valid",
+        "pass": true
+      },
+      {
+        "label": "held movement cannot enter furniture/walls",
+        "pass": true
+      },
+      {
+        "label": "observer can back away after collision",
+        "pass": true
+      },
+      {
+        "label": "ordinary pointer drag changes look direction",
+        "pass": true
+      },
+      {
+        "label": "focus loss clears held movement",
+        "pass": true
+      },
+      {
+        "label": "optional help is available",
+        "pass": true
+      },
+      {
+        "label": "help returns to the same view",
+        "pass": true
+      },
+      {
+        "label": "escape returns from walkthrough",
+        "pass": true
+      },
+      {
+        "label": "room walk deep link restores safe room entry",
+        "pass": true
+      },
+      {
+        "label": "real-scale tool can be approached and is visible",
+        "pass": true
+      },
+      {
+        "label": "ordinary tool click opens anchored close inspection",
+        "pass": true
+      },
+      {
+        "label": "inspection returns to exact observer position",
+        "pass": true
+      },
+      {
+        "label": "walk keyboard focus restored after inspection",
+        "pass": true
+      },
+      {
+        "label": "six manufacturer dimension sources are exposed",
+        "pass": true
+      },
+      {
+        "label": "lost WebGL context offers recovery",
+        "pass": true
+      },
+      {
+        "label": "context reload restores room walk route",
+        "pass": true
+      },
+      {
+        "label": "mobile exposes analog locomotion",
+        "pass": true
+      },
+      {
+        "label": "mobile walkthrough has no overflow",
+        "pass": true
+      },
+      {
+        "label": "left thumb moves observer",
+        "pass": true
+      },
+      {
+        "label": "second touch looks while first thumb moves",
+        "pass": true
+      },
+      {
+        "label": "releasing both touches stops locomotion",
+        "pass": true
+      },
+      {
+        "label": "touch cancel clears joystick",
+        "pass": true
+      },
+      {
+        "label": "mobile whole-floor view has no overflow",
+        "pass": true
+      },
+      {
+        "label": "landscape touch has no overflow",
+        "pass": true
+      },
+      {
+        "label": "non-16:9 desktop has no overflow",
+        "pass": true
+      },
+      {
+        "label": "reduced motion retains ordinary walkthrough",
+        "pass": true
+      },
+      {
+        "label": "geometry failure has readable retry state",
+        "pass": true
+      },
+      {
+        "label": "failed geometry load can recover",
+        "pass": true
+      },
+      {
+        "label": "zero unexpected page/console errors",
+        "pass": true,
+        "errors": []
+      }
+    ],
+    "captures": [
+      "floor_4",
+      "building_exploded",
+      "office_overview",
+      "office_walk",
+      "tool_inspection",
+      "mobile_walk",
+      "mobile_floor_4",
+      "mobile_landscape",
+      "desktop_903"
+    ],
+    "scope": "Chrome desktop and emulated multi-touch; not physical mobile acceptance"
+  },
+  "furniture": {
+    "browser": "156.0.8078.79",
+    "checks": 15,
+    "failures": 0,
+    "rows": [
+      {
+        "pass": true,
+        "label": "physical desk controller can be approached at real scale",
+        "details": [
+          {
+            "x": 606.4167151605349,
+            "y": 658.6957071448425,
+            "inFront": true,
+            "distance": 2.831815375359046,
+            "height": 0.73,
+            "target": 0.73,
+            "partOffsets": [
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0.5,
+                "offset": 0
+              },
+              {
+                "factor": 0.5,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              }
+            ]
+          },
+          {
+            "x": 348.0724636224069,
+            "y": 582.5775950438143,
+            "inFront": true,
+            "distance": 4.073285018164617,
+            "height": 0.73,
+            "target": 0.73,
+            "partOffsets": [
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0.5,
+                "offset": 0
+              },
+              {
+                "factor": 0.5,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              }
+            ]
+          },
+          {
+            "x": 487.0614341101568,
+            "y": 969.5862801903249,
+            "inFront": false,
+            "distance": 1.5975024415732335,
+            "height": 0.73,
+            "target": 0.73,
+            "partOffsets": [
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0.5,
+                "offset": 0
+              },
+              {
+                "factor": 0.5,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              }
+            ]
+          },
+          {
+            "x": 119.57315256991252,
+            "y": 717.5768740712517,
+            "inFront": true,
+            "distance": 2.8979451930200724,
+            "height": 0.73,
+            "target": 0.73,
+            "partOffsets": [
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0.5,
+                "offset": 0
+              },
+              {
+                "factor": 0.5,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 0,
+                "offset": 0
+              },
+              {
+                "factor": 1,
+                "offset": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "label": "ordinary keypad click starts seated-to-standing lift"
+      },
+      {
+        "pass": true,
+        "label": "feet and fixed outer columns stay on the floor"
+      },
+      {
+        "pass": true,
+        "label": "intermediate telescoping columns move half stroke"
+      },
+      {
+        "pass": true,
+        "label": "desktop, monitor, keyboard and keypad all move full stroke"
+      },
+      {
+        "pass": true,
+        "label": "desk lift preserves a safe observer position"
+      },
+      {
+        "pass": true,
+        "label": "same physical controller lowers desk again"
+      },
+      {
+        "pass": true,
+        "label": "representative ergonomic chair supports close inspection"
+      },
+      {
+        "pass": true,
+        "label": "ordinary chair click opens exact-scale geometry inspection"
+      },
+      {
+        "pass": true,
+        "label": "chair close view removes surrounding dividers and desks from its sightline"
+      },
+      {
+        "pass": true,
+        "label": "chair inspection fits mobile viewport"
+      },
+      {
+        "pass": true,
+        "label": "existing floor-only 3F walk link enters the photo-referenced north area"
+      },
+      {
+        "pass": true,
+        "label": "ordinary first-person look reveals upper windows and high ceiling"
+      },
+      {
+        "pass": true,
+        "label": "shared instancing keeps complete-floor draw calls bounded",
+        "details": {
+          "ready": true,
+          "floor": "4",
+          "room": "",
+          "mode": "overview",
+          "position": [
+            0,
+            0
+          ],
+          "yaw": 0,
+          "pitch": 0,
+          "eyeHeight": 1.65,
+          "verticalFov": 46,
+          "horizontalFov": 64.9708117024375,
+          "inspect": null,
+          "joystick": [
+            0,
+            0
+          ],
+          "drawCalls": 407,
+          "triangles": 3665110,
+          "renderedMeshes": 243
+        }
+      },
+      {
+        "pass": true,
+        "label": "new furniture and photo area have no page/console errors",
+        "details": []
+      }
+    ]
+  },
+  "floor_assets": {
+    "checks": 40,
+    "failures": 0,
+    "rows": [
+      {
+        "pass": true,
+        "label": "warm_gray_fine color source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "warm_gray_fine color valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "warm_gray_fine restrained non-flat base color",
+        "details": 1.2803106454429796
+      },
+      {
+        "pass": true,
+        "label": "warm_gray_fine orm source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "warm_gray_fine orm valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "warm_gray_fine nonmetal roughness/occlusion channels",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "warm_gray_fine normal source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "warm_gray_fine normal valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "warm_gray_fine tangent normal direction remains near flat surface",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile color source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile color valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile restrained non-flat base color",
+        "details": 1.8685890684779445
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile orm source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile orm valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile nonmetal roughness/occlusion channels",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile normal source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile normal valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "light_gray_tile tangent normal direction remains near flat surface",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green color source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green color valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green restrained non-flat base color",
+        "details": 0.9763067990460692
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green orm source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green orm valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green nonmetal roughness/occlusion channels",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green normal source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green normal valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "esd_gray_green tangent normal direction remains near flat surface",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal color source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal color valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal restrained non-flat base color",
+        "details": 0.5194969402178856
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal orm source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal orm valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal nonmetal roughness/occlusion channels",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal normal source hash",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal normal valid RGB PNG dimensions",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "studio_charcoal tangent normal direction remains near flat surface",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "GLB contains baseline, electrical and recording finishes",
+        "details": 3
+      },
+      {
+        "pass": true,
+        "label": "FLC floor esd_gray_green exports all three PBR channels",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "FLC floor warm_gray_fine exports all three PBR channels",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "FLC floor studio_charcoal exports all three PBR channels",
+        "details": null
+      }
+    ]
+  },
+  "floor_views": {
+    "browser": "156.0.8078.79",
+    "checks": 13,
+    "failures": 0,
+    "rows": [
+      {
+        "pass": true,
+        "label": "all base floors load actual color/normal/roughness maps",
+        "details": [
+          {
+            "floor": "2",
+            "profile": "warm_gray_fine",
+            "specialFinishes": [
+              "FLC floor esd_gray_green"
+            ],
+            "surfaces": [
+              {
+                "material": "FLC floor warm_gray_fine",
+                "hasColor": true,
+                "hasNormal": true,
+                "hasRoughness": true,
+                "uvCount": 24,
+                "uvSpan": [
+                  -34.333335876464844,
+                  21.75
+                ]
+              }
+            ]
+          },
+          {
+            "floor": "3",
+            "profile": "warm_gray_fine",
+            "specialFinishes": [
+              "FLC floor studio_charcoal"
+            ],
+            "surfaces": [
+              {
+                "material": "FLC floor warm_gray_fine",
+                "hasColor": true,
+                "hasNormal": true,
+                "hasRoughness": true,
+                "uvCount": 48,
+                "uvSpan": [
+                  -34.333335876464844,
+                  21.75
+                ]
+              }
+            ]
+          },
+          {
+            "floor": "4",
+            "profile": "warm_gray_fine",
+            "specialFinishes": [],
+            "surfaces": [
+              {
+                "material": "FLC floor warm_gray_fine",
+                "hasColor": true,
+                "hasNormal": true,
+                "hasRoughness": true,
+                "uvCount": 100,
+                "uvSpan": [
+                  -34.333335876464844,
+                  21.75
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "label": "floor textures use repeated meter-space UVs instead of stretching one image across a building"
+      },
+      {
+        "pass": true,
+        "label": "electrical ESD finish remains separate"
+      },
+      {
+        "pass": true,
+        "label": "recording finish remains separate"
+      },
+      {
+        "pass": true,
+        "label": "material comparison preserves observer pose, movement mode and camera"
+      },
+      {
+        "pass": true,
+        "label": "ordinary sample control changes current-floor finish"
+      },
+      {
+        "pass": true,
+        "label": "preview does not silently change another floor"
+      },
+      {
+        "pass": true,
+        "label": "common-floor preview preserves dedicated room finish"
+      },
+      {
+        "pass": true,
+        "label": "shared sample deep link restores selected preview"
+      },
+      {
+        "pass": true,
+        "label": "returning to photo baseline restores imported PBR material"
+      },
+      {
+        "pass": true,
+        "label": "ordinary movement remains available after sample dialog"
+      },
+      {
+        "pass": true,
+        "label": "material choices fit narrow mobile viewport"
+      },
+      {
+        "pass": true,
+        "label": "PBR and candidate loads produce zero page/console errors",
+        "details": []
+      }
+    ]
+  },
+  "north_density": {
+    "checks": 13,
+    "failures": 0,
+    "rows": [
+      {
+        "pass": true,
+        "label": "north room outline and scale are retained"
+      },
+      {
+        "pass": true,
+        "label": "four mobile high tables and one rounded low table follow the photo"
+      },
+      {
+        "pass": true,
+        "label": "two photographed white high stools have physical proxies"
+      },
+      {
+        "pass": true,
+        "label": "right-side visitor route retains at least one meter between furniture envelopes",
+        "details": 1.0221098265895954
+      },
+      {
+        "pass": true,
+        "label": "visitor route is traversable at every5cm sample",
+        "details": {
+          "samples": 50
+        }
+      },
+      {
+        "pass": true,
+        "label": "foreground display can be approached without entering furniture"
+      },
+      {
+        "pass": true,
+        "label": "photo-based furnishings occupy more floor area",
+        "details": {
+          "baselineArea": 6.1450000000000005,
+          "newArea": 8.027500000000002
+        }
+      },
+      {
+        "pass": true,
+        "label": "walk lens has a bounded horizontal field of view",
+        "details": {
+          "ready": true,
+          "floor": "3",
+          "room": "seminar",
+          "mode": "walk",
+          "position": [
+            13.276300578034682,
+            5.396608695652173
+          ],
+          "yaw": 0,
+          "pitch": -0.14,
+          "eyeHeight": 1.65,
+          "verticalFov": 60,
+          "horizontalFov": 81.78678929826181,
+          "inspect": null,
+          "joystick": [
+            0,
+            0
+          ],
+          "drawCalls": 218,
+          "triangles": 1926874,
+          "renderedMeshes": 243
+        }
+      },
+      {
+        "pass": true,
+        "label": "ultrawide screen does not expand the first-person lens beyond82degrees",
+        "details": {
+          "ready": true,
+          "floor": "3",
+          "room": "seminar",
+          "mode": "walk",
+          "position": [
+            13.276300578034682,
+            5.396608695652173
+          ],
+          "yaw": 0,
+          "pitch": -0.14,
+          "eyeHeight": 1.65,
+          "verticalFov": 40.279038696090886,
+          "horizontalFov": 82.00000000000001,
+          "inspect": null,
+          "joystick": [
+            0,
+            0
+          ],
+          "drawCalls": 266,
+          "triangles": 2160854,
+          "renderedMeshes": 243
+        }
+      },
+      {
+        "pass": true,
+        "label": "portrait walk retains a usable vertical field of view"
+      },
+      {
+        "pass": true,
+        "label": "ordinary movement works beside the denser display group"
+      },
+      {
+        "pass": true,
+        "label": "ordinary movement remains outside furniture"
+      },
+      {
+        "pass": true,
+        "label": "north composition and camera checks have no page/console errors",
+        "details": []
+      }
+    ],
+    "roomArea": 44.82184026137219,
+    "baselineOccupiedArea": 6.1450000000000005,
+    "occupiedArea": 8.027500000000002,
+    "mainRouteClearance": 1.0221098265895954,
+    "scope": "photo-based local furnishings and lens refinement; no surveyed room-dimension claim"
+  },
+  "scope_contract": {
+    "baseline_commit": "a26b07f7",
+    "rows": [
+      {
+        "label": "2F layout is unchanged",
+        "pass": true
+      },
+      {
+        "label": "4F layout is unchanged",
+        "pass": true
+      },
+      {
+        "label": "3F voids unchanged",
+        "pass": true
+      },
+      {
+        "label": "all room boundaries unchanged",
+        "pass": true
+      },
+      {
+        "label": "3F wall proxies unchanged",
+        "pass": true
+      }
+    ]
+  },
+  "build": {
+    "meshes": 12504,
+    "floors": [
+      2,
+      3,
+      4
+    ],
+    "rooms": {
+      "2": 6,
+      "3": 8,
+      "4": 7
+    },
+    "units": "m",
+    "footprint_m": [
+      26.1,
+      42.4
+    ],
+    "studio_1_area_m2": 24.78,
+    "shared_meshes": 1548,
+    "tool_dimensions_m": {
+      "caliper_length": 0.233,
+      "screwdriver_length": 0.204
+    },
+    "glb_sha256": "78f966e98631bf52ed81a220bf192dd950163a8fbfa99e40cbada2061d83bf4f",
+    "floor_material_revision": "photo_baseline_20261101",
+    "north_density_revision": "photo_density_20261101"
+  },
+  "parent_validation": {
+    "source_views": 17,
+    "commit": "ac7378e1",
+    "scope": "Older source-view report retained as history."
+  },
+  "review": "Photo-based north furnishings regrouped without altering room bounds.4 high tables plus1 low table,2 stools, covered silver silhouette and grouped small exhibits. Before/after overview uses unchanged camera; walk lens now has82degree horizontal and60degree vertical caps. Right-side furniture-envelope gap1.022m, route checked every5cm. Ordinary mouse/key/mobile-emulated control and existing furniture/material interactions pass. No site measurement, complete-building or formal-game acceptance claimed.",
+  "artifact_sha256": {
+    "flc_walkthrough.blend": "cf506f18e8722f100c58df9e6e101dd0ec8b1afff1b40c020e796f906cf4a5fc",
+    "web/assets/building.glb": "78f966e98631bf52ed81a220bf192dd950163a8fbfa99e40cbada2061d83bf4f",
+    "web/assets/layout.json": "28a2b4bb0c83c10bae5e1e7e29b21572db843d75045db9e01f23dedb8d9eccf1",
+    "web/assets/asset_catalog.json": "2fcaf22829a3d0ad1c0efe1601df018b419853317a0765aff6bb2ddf4eda0bc5",
+    "web/assets/floor_material_catalog.json": "e328952fde5d309fdde2e02c8033a506e3befef600d9fe258c75031d54dd0b9d",
+    "web/viewer.js": "84ad8a3f209147652e326267485fcc0107194ef876f8150d531e30ab37208cbd",
+    "web/floor_materials.js": "167704c86117c5b16e38d5b4ab7880524858a11715831830ca4a9b74083842fe",
+    "web/index.html": "dd69e873da411f6248958e52ce347058b72f527d9ed3091eefdda2e28645c3cd",
+    "web/style.css": "e3556f0fb983979e50f38d1475a1f5db239bf486529aad3a167a4f3ab24105ce",
+    "scripts/build_scene.py": "ff6bbbe9cf88e3436666422d7a0e9f228e243b49c4490ca3afd71066564e8541",
+    "scripts/refine_north_exhibition.py": "a2d3de7f96c15e7003fb8e544a9a9933ad019d1d5f13ac6390c6b8cc9a686b91",
+    "sources/north_density_review.md": "f45cea2022e7ed091b709418bab84a3efe327801dfc8e9b1a450c4784a439a90"
+  }
+}

@@ -23,7 +23,7 @@
     },
     "office_chair": {
       "name": "人体工学网椅",
-      "status": "dimension_driven_local_geometry",
+      "status": "dimension_reference_with_provider_preview",
       "dimensions": {
         "width": 0.71,
         "depth": 0.69,
@@ -41,7 +41,21 @@
         ]
       },
       "source": "https://www.ikea.com/gb/en/p/styrspel-gaming-chair-dark-grey-grey-80522034/",
-      "evidence": "User confirmed ergonomic chairs. STYRSPEL published size/adjustability is a reference; site brand is unknown. Local curved open-mesh seat/back, separate headrest, lumbar wings/slider, adjustable arm-pad structure, synchro-tilt housing, gas lift and twin-wheel five-star base. The reference is not a manufacturer CAD or site-product identification."
+      "evidence": "User confirmed ergonomic chairs. STYRSPEL published size/adjustability is a reference; site brand is unknown. Local curved open-mesh seat/back, separate headrest, lumbar wings/slider, adjustable arm-pad structure, synchro-tilt housing, gas lift and twin-wheel five-star base. The reference is not a manufacturer CAD or site-product identification. Default independent viewer now uses the generic Hyper3D preview variant; the dimension reference does not identify it as a site product. See the variant manifest for calibrated bounds, source hash and factor-only PBR materials.",
+      "defaultViewerVariant": "hyper3d",
+      "variants": {
+        "authored": {
+          "manifest": "models/ergonomic_chair/authored/manifest.json",
+          "status": "dimension_driven_local_geometry"
+        },
+        "hyper3d": {
+          "manifest": "models/ergonomic_chair/hyper3d/manifest.json",
+          "status": "authoring_preview",
+          "generationId": "bbd66ef7-bd49-48c3-ab58-de53c841c21e",
+          "referenceHeightM": 1.29,
+          "textureImages": 0
+        }
+      }
     },
     "caliper_150": {
       "name": "150 mm 数显卡尺",

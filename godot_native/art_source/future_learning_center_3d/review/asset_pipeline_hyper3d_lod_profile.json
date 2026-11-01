@@ -1,0 +1,126 @@
+{
+  "browser": "156.0.8078.79",
+  "viewport": [
+    1280,
+    800
+  ],
+  "scope": "Local headless Chrome90rAF-interval/CPU samples; not isolated GPU time or physical-phone acceptance",
+  "rows": [
+    {
+      "route": "?floor=4",
+      "readyMs": 268,
+      "medianFrameMs": 16.699999999999818,
+      "p95FrameMs": 16.700000000000273,
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Max, Unspecified Version)",
+      "scene": {
+        "ready": true,
+        "floor": "4",
+        "room": "",
+        "mode": "overview",
+        "position": [
+          0,
+          0
+        ],
+        "yaw": 0,
+        "pitch": 0,
+        "eyeHeight": 1.65,
+        "verticalFov": 46,
+        "horizontalFov": 68.36553430152975,
+        "inspect": null,
+        "joystick": [
+          0,
+          0
+        ],
+        "drawCalls": 435,
+        "triangles": 1344238,
+        "renderedMeshes": 244
+      },
+      "resources": [
+        {
+          "file": "lod0.draco.glb",
+          "encodedBytes": 199860,
+          "transferBytes": 200160,
+          "duration": 1.5
+        },
+        {
+          "file": "lod1.draco.glb",
+          "encodedBytes": 93948,
+          "transferBytes": 94248,
+          "duration": 1.2000000476837158
+        },
+        {
+          "file": "lod2.draco.glb",
+          "encodedBytes": 39972,
+          "transferBytes": 40272,
+          "duration": 1
+        },
+        {
+          "file": "building.web.glb",
+          "encodedBytes": 6701528,
+          "transferBytes": 6701828,
+          "duration": 5.399999976158142
+        }
+      ],
+      "cpuTaskSeconds": 0.18121199999999993,
+      "cpuScriptSeconds": 0.167483
+    },
+    {
+      "route": "?floor=3&room=studio_1&mode=walk",
+      "readyMs": 215,
+      "medianFrameMs": 16.699999999999818,
+      "p95FrameMs": 16.700000000000273,
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Max, Unspecified Version)",
+      "scene": {
+        "ready": true,
+        "floor": "3",
+        "room": "studio_1",
+        "mode": "walk",
+        "position": [
+          5.761849710982658,
+          9.715130434782608
+        ],
+        "yaw": 1.5707963267948966,
+        "pitch": -0.14,
+        "eyeHeight": 1.65,
+        "verticalFov": 57.03083921199429,
+        "horizontalFov": 82,
+        "inspect": null,
+        "joystick": [
+          0,
+          0
+        ],
+        "drawCalls": 222,
+        "triangles": 614998,
+        "renderedMeshes": 244
+      },
+      "resources": [
+        {
+          "file": "lod0.draco.glb",
+          "encodedBytes": 199860,
+          "transferBytes": 200160,
+          "duration": 1.399999976158142
+        },
+        {
+          "file": "lod1.draco.glb",
+          "encodedBytes": 93948,
+          "transferBytes": 94248,
+          "duration": 1.2999999523162842
+        },
+        {
+          "file": "lod2.draco.glb",
+          "encodedBytes": 39972,
+          "transferBytes": 40272,
+          "duration": 1.1999999284744263
+        },
+        {
+          "file": "building.web.glb",
+          "encodedBytes": 6701528,
+          "transferBytes": 6701828,
+          "duration": 5.099999904632568
+        }
+      ],
+      "cpuTaskSeconds": 0.17571499999999995,
+      "cpuScriptSeconds": 0.155362
+    }
+  ]
+}

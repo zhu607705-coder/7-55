@@ -1,0 +1,1 @@
+{"name":"flc-build-time-asset-pipeline","private":true,"type":"module","description":"Local asset validation, LOD, compression and provenance tools","dependencies":{"@gltf-transform/core":"4.5.1","@gltf-transform/extensions":"4.5.1","@gltf-transform/functions":"4.5.1","draco3dgltf":"1.5.9","meshoptimizer":"1.3.0"}}
