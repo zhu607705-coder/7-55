@@ -1,6 +1,7 @@
 // Final stable-ID room pass. Run only after all legacy put() calls have finished.
 // Keeps the surveyed architecture/navigation untouched; furniture positions are gameplay staging.
 import fs from 'node:fs';
+import {applyWideDeskLayout} from './apply_wide_desk_layout.mjs';
 const assets=JSON.parse(fs.readFileSync(new URL('../data/object_assets.json',import.meta.url)));
 const calibration=JSON.parse(fs.readFileSync(new URL('../assets/room_props/manifest.json',import.meta.url)));
 function translateObject(object,dx,dy){for(const key of ['bounds','footprint']){object[key][0]+=dx;object[key][1]+=dy;}object.baseline+=dy;}
@@ -37,7 +38,8 @@ function remount(plan,id,parentId,sourceContact){
  object.baseline=parent.baseline+.1;object.parent=parent.id;object.mounted=true;
 }
 export function applyRoomLayout(p){
- if(![2,3].includes(p.floor)||p.roomLayout?.version===1)return;
+ if(![2,3].includes(p.floor))return;
+ if(p.roomLayout?.version>=1){applyWideDeskLayout(p);return;}
  const oldIds=p.objects.map(o=>o.id);
  if(new Set(oldIds).size!==oldIds.length)throw Error('Duplicate legacy object ID');
  if(p.floor===2){
@@ -81,6 +83,7 @@ export function applyRoomLayout(p){
   p.wallStorage.rooms.push({room:'team',before:0,after:units.length,cabinets:units.length,racks:0,fitted:0,refrigerators:0,wallY:wall(p,'team',275),navigationY:Math.min(...floor(p,'team').map(q=>q[1])),maxRearGap:.5,unitIds:units.map(o=>o.id)});
  }
  p.roomLayout={version:1,rooms:p.floor===2?['team']:['recording'],deskGroupScale:1.15,stableLegacyIds:true,placement:'Wall work zones and open central activity space; source wall seams, full-foot navigation and separate mounted raster objects.'};
+ applyWideDeskLayout(p);
  if(oldIds.some((id,i)=>p.objects[i]?.id!==id))throw Error('Legacy IDs/order changed');
  if(new Set(p.objects.map(o=>o.id)).size!==p.objects.length)throw Error('Duplicate room-pass object ID');
 }

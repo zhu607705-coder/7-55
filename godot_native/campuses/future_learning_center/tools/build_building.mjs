@@ -4,6 +4,8 @@ import {fileURLToPath} from 'node:url';
 import {execFileSync} from 'node:child_process';
 import {buildOtherFloors,core,point} from './build_other_floors.mjs';
 import {applyPhotoDetails} from './apply_photo_details.mjs';
+import {applyRoboticsDetails} from './apply_robotics_details.mjs';
+import {applyRoboticsFrontage} from './apply_robotics_frontage.mjs';
 import {placeWallStorage} from './place_wall_storage.mjs';
 import {placeProjectionTable} from './place_projection_table.mjs';
 import {applyRoomLayout} from './apply_room_layout.mjs';
@@ -272,6 +274,8 @@ function furnish(p){
  if(p.floor===2)hall();
  placeWallStorage(p,props);
  applyPhotoDetails(p,props);
+ applyRoboticsDetails(p,props);
+ applyRoboticsFrontage(p,assets);
  placeProjectionTable(p,props);
  applyRoomLayout(p);
  p.objectCounts=Object.fromEntries([...new Set(p.objects.map(o=>o.asset))].map(k=>[k,p.objects.filter(o=>o.asset===k).length]));

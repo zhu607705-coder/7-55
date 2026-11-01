@@ -140,5 +140,87 @@
       ]
     },
     "uniform_scale": 0.07779349363507779
+  },
+  {
+    "filename": "wide_desk.png",
+    "source": {
+      "sha256": "e585752ad8b24e19a049a08dd57517cd248e2eb5d55a1219830301fc0ee5125b",
+      "size": [
+        1448,
+        1086
+      ],
+      "mode": "RGBA",
+      "visible_bbox_alpha128": [
+        14,
+        296,
+        1435,
+        817
+      ],
+      "original_bytes_preserved": true,
+      "generation": "ChatGPT webpage image generation, 2026-10-31; one geometry revision",
+      "provenance_note": "Original downloaded PNG bytes; private session links deliberately omitted."
+    },
+    "source_region": [
+      14,
+      296,
+      1421,
+      521
+    ],
+    "source_baseline_pivot": [
+      724.5,
+      816
+    ],
+    "source_foot_aabb": [
+      30,
+      658,
+      1394,
+      159
+    ],
+    "source_marks": {
+      "tabletop_quad": [
+        [
+          114,
+          296
+        ],
+        [
+          1333,
+          296
+        ],
+        [
+          1433,
+          530
+        ],
+        [
+          15,
+          530
+        ]
+      ],
+      "front_feet": [
+        [
+          60,
+          816
+        ],
+        [
+          1388,
+          816
+        ]
+      ],
+      "rear_feet": [
+        [
+          168,
+          687
+        ],
+        [
+          1277,
+          687
+        ]
+      ],
+      "tabletop_front_y": 530,
+      "tabletop_back_y": 296,
+      "back_edge_ground_y": 582,
+      "back_edge_ground_note": "Rear tabletop edge projected to floor using front vertical height 816-530; rear legs are inset. Foot contacts are manual source-pixel measurements, not whole image bounds."
+    },
+    "uniform_scale": 0.11963406052076003,
+    "registration_limits": "At width170, vertical table height34.22 and tabletop projected depth27.99. Depth is shallower than requested35-45; do not stretch to compensate."
   }
 ]

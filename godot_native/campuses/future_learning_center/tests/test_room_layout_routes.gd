@@ -26,8 +26,8 @@ func run()->void:
  var block:=source.split("const PuzzleAnchors = {")[1].split("\n}")[0]
  var pattern:=RegEx.new();pattern.compile('"([^"]+)":\\s*\\["[^"]+",\\s*"([^"]+)",\\s*(\\d+)\\]')
  for match:RegExMatch in pattern.search_all(block):registry.append({"key":match.get_string(1),"id":match.get_string(2),"floor":int(match.get_string(3))})
- for row:Array in [[2,"electrical_assembly_bench"],[2,"formula_workbench_0"],[2,"robotics_workbench_30"],[2,"team_desk_6"],[3,"pantry_pantry_island_250"]]:registry.append({"floor":row[0],"id":row[1]})
- check(registry.size()==29,"all 24 registered plus five independent activity anchors are included")
+ for row:Array in [[2,"electrical_assembly_bench"],[2,"formula_workbench_0"],[2,"robotics_workbench_30"],[2,"team_desk_6"],[3,"pantry_pantry_island_250"],[3,"studio_2_desk_59"],[3,"studio_2_wall_cabinet_4"]]:registry.append({"floor":row[0],"id":row[1]})
+ check(registry.size()==31,"all 24 registered plus seven independent activity anchors are included")
  for floor_number:int in [2,3,4]:
   var data:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://campuses/future_learning_center/data/floor_%d.json"%floor_number))
   var space=FloorSpace.new();space.configure(data)

@@ -46,6 +46,12 @@ export const NATIVE_STAGE_REGISTRATIONS = Object.freeze([
   inputs:[`${flc}/tests/test_${name}.gd`,`${flc}/scripts`,`${flc}/assets/puzzles`,`${flc}/data`,
    'godot_native/scripts/games/future_learning_center'],outputs:[],dependencies:[],durationHintMs:name.endsWith('_scaled_host')?15000:1000,
  })),
+ // Standalone main activities remain covered when room layout/NPC passes are combined.
+ ...['coupling_tray','locker_cipher'].map(name=>({
+  id:`flc_${name}`,execution:'godot',entry:`${flc}/tests/test_${name}.gd`,args:[],
+  inputs:[`${flc}/tests/test_${name}.gd`,`${flc}/scripts/${name}_model.gd`],
+  outputs:[],dependencies:[],durationHintMs:1000,
+ })),
  // Room layout and NPC readers are release stages as well as local regressions.
  ...['room_layout_routes','room_npcs'].map(name=>({
   id:`flc_${name}`,execution:'godot',entry:`${flc}/tests/test_${name}.gd`,args:['--with-view'],
@@ -55,7 +61,7 @@ export const NATIVE_STAGE_REGISTRATIONS = Object.freeze([
   outputs:[],dependencies:[],durationHintMs:15000,
  })),
  {id:'flc_room_layout_builder',execution:'node',entry:`${flc}/tests/test_room_layout_builder.mjs`,
-  inputs:[`${flc}/tests/test_room_layout_builder.mjs`,`${flc}/tests/room_layout_baseline.json`,`${flc}/tools/apply_room_layout.mjs`,`${flc}/data`,`${flc}/assets/room_props`,`${flc}/assets/npcs`,
+  inputs:[`${flc}/tests/test_room_layout_builder.mjs`,`${flc}/tests/room_layout_baseline.json`,`${flc}/tools/apply_room_layout.mjs`,`${flc}/tools/apply_wide_desk_layout.mjs`,`${flc}/data`,`${flc}/assets/room_props`,`${flc}/assets/npcs`,
    'godot_native/tools/web_story_content_policy.mjs','src/assets/rpg/npcs/finale/student_phone_glance_2frame.png','src/assets/rpg/npcs/canteen/canteen_queue_student_01_front.png'],
   outputs:[],dependencies:[],durationHintMs:1000},
  {id:"flc_web_policy",execution:"node",entry:"godot_native/tools/test_flc_web_policy.mjs",

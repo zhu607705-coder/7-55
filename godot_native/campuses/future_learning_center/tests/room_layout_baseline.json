@@ -1,9 +1,11 @@
 {
   "2": {
-    "oldCount": 173,
-    "oldIdsHash": "df81ad26a3db37ef92ff824cd0c8eda84be0e36b0dbfc9e0d06efecc70a858a8",
-    "architectureHash": "3053e43de87c4e5ec5e497dc578b68466c493df5babc61775cb86ec6be14d1cd",
-    "otherObjectsHash": "0794f0e38c1fe5f5c269a435e8c3d3567e140f04177cf5e4b5a1c40efae45609"
+    "oldCount": 194,
+    "oldIdsHash": "4da8c8a8d7813ae0b0594844a4c0b6597f9c6507c71935841c4f0bba5e7aa145",
+    "architectureHash": "ed1dfaad811e41d08ed916ed920b6bf435339be9a96c603b796f1eb81eb9b04b",
+    "otherObjectsHash": "9b61e4f52a3e75c4157c7ff8feefe67b77900105fc246d7c0027c7757cdbb9d2",
+    "sourceCommit": "72fe2ed3dab84c99cedb2e427a4d639fca135472",
+    "note": "Rebased to approved main PR202 robotics details/frontage; comparison is exact against main, not generated from candidate changes."
   },
   "3": {
     "oldCount": 379,

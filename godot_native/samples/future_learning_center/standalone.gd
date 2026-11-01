@@ -10,6 +10,14 @@ func _ready()->void:
 	world.load_floor(2)
 	var area:=OS.get_environment("FLC_REVIEW_AREA")
 	if OS.has_feature("web"):area=str(JavaScriptBridge.eval("new URLSearchParams(location.search).get('area') || ''"))
+	if area=="locker":
+		world.load_floor(3)
+		if not world.set_foot(world.locker_approach()):push_error("Locker review spawn is blocked")
+		return
+	if area=="coupling":
+		world.load_floor(3)
+		if not world.set_foot(world.coupling_approach()):push_error("Coupling review spawn is blocked")
+		return
 	if area=="pantry":
 		world.load_floor(3)
 		if not world.set_foot(world.pantry_approach()):push_error("Pantry review spawn is blocked")

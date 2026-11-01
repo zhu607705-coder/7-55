@@ -55,6 +55,8 @@ func arrive(at: Vector2,expected: Vector2,using_touch: bool=false) -> void:
 	var old_calls:int=w._floor_planner.calls;var tick:=Time.get_ticks_usec()
 	root_tap(at,using_touch)
 	var planning_us:=Time.get_ticks_usec()-tick
+	# Print only after the measured dispatch has ended, including failing routes.
+	print("CANTEEN_QUEUE_ROUTE_TIMING "+JSON.stringify({"planningUs":planning_us,"candidates":w._canteen_floor_tap.candidate_count,"maxCandidates":Tap.MAX_CANDIDATES,"limitUs":200000,"input":"touch" if using_touch else "mouse","root":str(at),"start":str(start),"rawGoal":str(raw),"expectedGoal":str(expected),"resolvedGoal":str(w._floor_goal)}))
 	var waypoints: String=str(w._floor_route)
 	check(w._floor_status=="moving" and not w._floor_route.is_empty(),"root input starts an actual floor route")
 	check(w._floor_planner.calls==old_calls+1,"exactly one unchanged planner call per request")
@@ -129,6 +131,18 @@ func run() -> void:
 	root.size=Vector2i(844,390);shell.size=Vector2(844,390);shell._layout();await frames(4)
 	state.action_completed.connect(func(id,_a,_b,_c):actions.append(id))
 	state.feedback.connect(func(line):feedback.append(line))
+	# Repeated walking/planning reads must not append world voids to the native cache.
+	var foot:=Metrics.foot_rect(Vector2.ZERO)
+	var cached:Array=shell.world.native_canteen.navigation_obstacles(foot).duplicate()
+	var obstacles:Array=shell.world._floor_obstacles()
+	var expected_obstacles:Array=obstacles.duplicate()
+	var stable:=true
+	for iteration in 64:
+		stable=stable and shell.world._floor_obstacles()==expected_obstacles
+	check(stable,"repeated route geometry reads retain exact obstacle order and contents")
+	check(shell.world.native_canteen.navigation_obstacles(foot)==cached,"route-local additions never grow or alter native navigation cache")
+	obstacles.append(Rect2(-999,-999,1,1))
+	check(shell.world.native_canteen.navigation_obstacles(foot)==cached and shell.world._floor_obstacles().size()==obstacles.size()-1,"caller-owned obstacle mutation cannot escape into navigation cache")
 	for using_touch in [false,true]:
 		await replay_approach()
 		var request:=source_screen(NEAR_WALL)

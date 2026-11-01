@@ -1,0 +1,586 @@
+{
+  "schema": "flc-coupling-acceptance-v1",
+  "recordedAt": "2026-10-30T13:44:41.517734+00:00",
+  "branch": "codex/flc-transcript-level-design-20261029",
+  "baseHead": "9d28feb6a36a1182a43e186ffc6bf38f6cd03202",
+  "fetchedMain": "8d1f464789f7dd5041f12d364deee7d753a5abf7",
+  "testedUncommittedWorkingTree": true,
+  "runtime": "Isolated native 3F studio 2 coupling tray, sixth prototype",
+  "productionSaveAccess": false,
+  "preview": "http://127.0.0.1:8139/coupling_20261030/?area=coupling",
+  "engine": "4.7.1.stable.official.a13da4feb",
+  "sourceFiles": [
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/coupling_tray_model.gd",
+      "sha256": "d9fb13441e05e14043492b773d6c1b3182df3ca5bf737555dfa61e6d49b35533",
+      "bytes": 5746
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/coupling_tray_view.gd",
+      "sha256": "bd538d5acf6e7596482b1cf100681fe8aee1d65b19825ce19f2c55e02e3afb1a",
+      "bytes": 5722
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/coupling_miniature.gd",
+      "sha256": "b2c756ebe055bed089517ff075243a5d208262f3e06c45e2688dfc725be9bf51",
+      "bytes": 4565
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/physical_bench.gd",
+      "sha256": "212498456a3d0b8deeb94b63772f21364804eb524f593fea32fae5c1a62df8db",
+      "bytes": 10741
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/miniature_bench.gd",
+      "sha256": "e368e9269ce1e77d9e85e0dfdeeab108f1fb96cc3939eb5fe20235c9d2c9aa86",
+      "bytes": 24938
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/floor_view.gd",
+      "sha256": "8ef2e0556224c2ac5cdddecb39ca2a5211792f923da433970d807a26c7a638d4",
+      "bytes": 31986
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/test_coupling_tray.gd",
+      "sha256": "1ea58a2e9372c2f97545283f88f351c0599d1ae996bb7a1df4e99952b3f80484",
+      "bytes": 3900
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/tests/test_coupling_input.gd",
+      "sha256": "a78426dfbe08b9cff14f5fd81f9df186106f7ef0e53e2f6b8ecda97b90b5e0e8",
+      "bytes": 8558
+    },
+    {
+      "path": "godot_native/tests/test_future_learning_center_coupling.gd",
+      "sha256": "e3c4aae37ef53c40fa3658dd5184b8924ca995b73ad13ff256cfd106dd99c46a",
+      "bytes": 76
+    },
+    {
+      "path": "godot_native/samples/future_learning_center/run.mjs",
+      "sha256": "c9dac0e1b457aa272682046e18e064cf502a349ecfcbf98c215dfc0134d0915a",
+      "bytes": 3011
+    },
+    {
+      "path": "godot_native/samples/future_learning_center/standalone.gd",
+      "sha256": "9ace9b6ddf16d9701ad34936f991e996ffa3a97eb40a0cae1fe48b56f8e8b6fc",
+      "bytes": 1913
+    },
+    {
+      "path": "godot_native/samples/future_learning_center/build_web.mjs",
+      "sha256": "d6b5cd5f18b39c11ad8eba046b4f76d3c304a74191dbaf0272b3efb04778e800",
+      "bytes": 5633
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/design/room_puzzles.v2.json",
+      "sha256": "83db5fd10122ef5e560f7e74aeeae815739e2ff2b21748d6dee032d08ab71ea5",
+      "bytes": 89212
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/design/room_puzzle_review.v2.json",
+      "sha256": "e0587e36e3749fd0bac73c7231a16f51ec1aba08d48f8f573d14f8a07463ed01",
+      "bytes": 4548
+    }
+  ],
+  "preservedFiles": [
+    {
+      "path": "godot_native/campuses/future_learning_center/data/floor_2.json",
+      "sha256": "4c91022bd738f6eea49f6ca5411cab2658859dd5ddd43cd517e8e547f272f3d5",
+      "bytes": 348982,
+      "baseHeadSha256": "4c91022bd738f6eea49f6ca5411cab2658859dd5ddd43cd517e8e547f272f3d5",
+      "unchangedSinceHead": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/data/floor_3.json",
+      "sha256": "eabfb05659e7309e8b21ee082785cb32ab3638fb99e442deeea353fe97db9088",
+      "bytes": 621120,
+      "baseHeadSha256": "eabfb05659e7309e8b21ee082785cb32ab3638fb99e442deeea353fe97db9088",
+      "unchangedSinceHead": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/data/floor_4.json",
+      "sha256": "f20ec7a4866c3122dd41adecc4e926e2b3dadd14e6f43361d6da61772bfa1c46",
+      "bytes": 356551,
+      "baseHeadSha256": "f20ec7a4866c3122dd41adecc4e926e2b3dadd14e6f43361d6da61772bfa1c46",
+      "unchangedSinceHead": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/workbench_model.gd",
+      "sha256": "bbb5a1929616e2003674f72fd962151977e043982c6b8137fa5c23fdcdd1e0ae",
+      "bytes": 2983,
+      "baseHeadSha256": "bbb5a1929616e2003674f72fd962151977e043982c6b8137fa5c23fdcdd1e0ae",
+      "unchangedSinceHead": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/signal_sync_model.gd",
+      "sha256": "066278456bbc0050da53ddbdb1a240f917cbd00774c6173284142aac1f8fdcdf",
+      "bytes": 4246,
+      "baseHeadSha256": "066278456bbc0050da53ddbdb1a240f917cbd00774c6173284142aac1f8fdcdf",
+      "unchangedSinceHead": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/solar_race_model.gd",
+      "sha256": "0d199fcf171bd5538d4604359b199375127ba5ef03d5f318850186e6fb75482a",
+      "bytes": 4490,
+      "baseHeadSha256": "0d199fcf171bd5538d4604359b199375127ba5ef03d5f318850186e6fb75482a",
+      "unchangedSinceHead": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/robot_delivery_model.gd",
+      "sha256": "81107fb6a74e5b10d6655d5cd173159a780d423b7fb62560cf796a52e83e3b7e",
+      "bytes": 7293,
+      "baseHeadSha256": "81107fb6a74e5b10d6655d5cd173159a780d423b7fb62560cf796a52e83e3b7e",
+      "unchangedSinceHead": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/pantry_tray_model.gd",
+      "sha256": "11532643d0f81be161bdf274f91952dcf1ef967843a6fc6549cd9f014951fbb7",
+      "bytes": 4271,
+      "baseHeadSha256": "11532643d0f81be161bdf274f91952dcf1ef967843a6fc6549cd9f014951fbb7",
+      "unchangedSinceHead": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/floor_space.gd",
+      "sha256": "335f0104c804958982cf1c092c12fb91bae07b711ddd2af3932afb83fcc2881c",
+      "bytes": 8053,
+      "baseHeadSha256": "335f0104c804958982cf1c092c12fb91bae07b711ddd2af3932afb83fcc2881c",
+      "unchangedSinceHead": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/room_camera.gd",
+      "sha256": "2ad27189b56fad75c2a89f5b062264f923f7c63bc47e13b1da7a8734bad4afa8",
+      "bytes": 2312,
+      "baseHeadSha256": "2ad27189b56fad75c2a89f5b062264f923f7c63bc47e13b1da7a8734bad4afa8",
+      "unchangedSinceHead": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/building_transit.gd",
+      "sha256": "3a781756d006e4cc2c3c81a1311ae9af3186d42f6cd7b00f4a9b2ef9d4679eae",
+      "bytes": 1084,
+      "baseHeadSha256": "3a781756d006e4cc2c3c81a1311ae9af3186d42f6cd7b00f4a9b2ef9d4679eae",
+      "unchangedSinceHead": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/scripts/touch_stick.gd",
+      "sha256": "d9c63cb88e8a13b013669c06a6f370720394f0bb18cf2d5a52fe926d93abdd94",
+      "bytes": 2134,
+      "baseHeadSha256": "d9c63cb88e8a13b013669c06a6f370720394f0bb18cf2d5a52fe926d93abdd94",
+      "unchangedSinceHead": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/design/miniatures/DESIGN.md",
+      "sha256": "83a1e14d876c3f7e7bc3826f28305430f8752151e080d47b37cf821749360335",
+      "bytes": 20318,
+      "baseHeadSha256": "83a1e14d876c3f7e7bc3826f28305430f8752151e080d47b37cf821749360335",
+      "unchangedSinceHead": true
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/design/miniatures/.impeccable/design.json",
+      "sha256": "c057b79fe0452670b81a5274fed6db71844a5a3795e3e24042555d282084a175",
+      "bytes": 27285,
+      "baseHeadSha256": "c057b79fe0452670b81a5274fed6db71844a5a3795e3e24042555d282084a175",
+      "unchangedSinceHead": true
+    }
+  ],
+  "nativeInput": {
+    "desktop": {
+      "checks": 52,
+      "failures": 0,
+      "keyboardEvents": 0,
+      "touch": false,
+      "viewport": [
+        1280,
+        720
+      ]
+    },
+    "mobile": {
+      "checks": 52,
+      "failures": 0,
+      "keyboardEvents": 0,
+      "touch": true,
+      "viewport": [
+        844,
+        390
+      ]
+    }
+  },
+  "modelAssertions": {
+    "coupling": 46,
+    "pantryRegression": 52,
+    "roomSpatialRegression": 1740,
+    "failures": 0
+  },
+  "nativePreflight": {
+    "summary": {
+      "not-run": 538,
+      "pass": 8,
+      "prepared": 0,
+      "failed": 0,
+      "blocked": 0,
+      "deduplicated": 0
+    },
+    "partial": true,
+    "inputChangedDuringRun": false,
+    "receipt": {
+      "path": ".impeccable/review/flc_coupling_20261030/native-preflight.json",
+      "sha256": "59a69700079ff0e1ecaa9b00eb21a7f6e1bacc0d9c148a69e9fe83c848da6a7f",
+      "bytes": 136430
+    },
+    "metadata": {
+      "path": ".impeccable/review/flc_coupling_20261030/native-preflight.json.meta.json",
+      "sha256": "845ce95b42967bf166a2ff53b217ffe024a2c99622a895ef250723c9d17726f3",
+      "bytes": 2152
+    }
+  },
+  "designCoverage": {
+    "status": "coverage_and_four_toy_models_checked_not_runtime_acceptance",
+    "checks": 834,
+    "coverage": [
+      {
+        "floor": 2,
+        "mapRooms": 8,
+        "designedRooms": 8,
+        "main": 3,
+        "side": 5,
+        "estimatedPuzzleMinutes": [
+          31,
+          48
+        ]
+      },
+      {
+        "floor": 3,
+        "mapRooms": 10,
+        "designedRooms": 10,
+        "main": 3,
+        "side": 7,
+        "estimatedPuzzleMinutes": [
+          36,
+          57
+        ]
+      },
+      {
+        "floor": 4,
+        "mapRooms": 7,
+        "designedRooms": 7,
+        "main": 2,
+        "side": 5,
+        "estimatedPuzzleMinutes": [
+          30,
+          46
+        ]
+      }
+    ],
+    "main": 8,
+    "side": 17,
+    "anchorReferences": 48,
+    "missingRooms": [],
+    "roomsNeedingNewProps": [
+      "3:xlab_box"
+    ],
+    "toyModels": [
+      {
+        "room": "2:formula",
+        "kind": "solar_endurance"
+      },
+      {
+        "room": "3:seminar",
+        "kind": "three_beat_schedule",
+        "solutions": 1
+      },
+      {
+        "room": "3:pantry",
+        "kind": "tray_water_balance"
+      },
+      {
+        "room": "4:focus_a",
+        "kind": "power_partition",
+        "solutions": 4
+      }
+    ],
+    "generated": true
+  },
+  "historicalDesignChecker": {
+    "command": "verify_puzzle_design.mjs",
+    "status": "preexisting_pinned_workbench_summary_stale",
+    "pinnedSourceSha256": "7eea3b912db6a5af0a1687141557ed5179a31f0545e02284e7cef4945013a04c",
+    "currentSourceSha256": "bbb5a1929616e2003674f72fd962151977e043982c6b8137fa5c23fdcdd1e0ae",
+    "currentSourceUnchangedSinceHead": true,
+    "historicalReportPreserved": true
+  },
+  "standaloneExport": {
+    "engine": "4.7.1.stable.official.a13da4feb",
+    "projectConfigSha256": "1ab9736c20760752e3e3c585a1933c494b1d5596bd0f787623396a80b992edcf",
+    "autoloads": [],
+    "productionSaveAccess": false,
+    "browserAcceptance": false,
+    "stages": [
+      {
+        "label": "import",
+        "passed": true,
+        "status": 0
+      },
+      {
+        "label": "startup",
+        "passed": true,
+        "status": 0
+      },
+      {
+        "label": "web_export",
+        "passed": true,
+        "status": 0
+      }
+    ]
+  },
+  "exportFiles": [
+    {
+      "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/coupling_20261030/build_receipt.json",
+      "sha256": "751f683b6ee34e5cc6214cf4dd8173133cee6aede34de2e26048c39d40872203",
+      "bytes": 482
+    },
+    {
+      "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/coupling_20261030/index.audio.position.worklet.js",
+      "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
+      "bytes": 2973
+    },
+    {
+      "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/coupling_20261030/index.audio.worklet.js",
+      "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
+      "bytes": 7298
+    },
+    {
+      "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/coupling_20261030/index.html",
+      "sha256": "6d14b04f0d5bb74ea4842fa9ab2e9ff10a49f88fae39966db1fd0e4aa7f45a57",
+      "bytes": 5313
+    },
+    {
+      "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/coupling_20261030/index.js",
+      "sha256": "68586d6daafc93c6e697b3fb258976874aa7459b8931165ebb1dc3c9614cc42c",
+      "bytes": 279815
+    },
+    {
+      "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/coupling_20261030/index.pck",
+      "sha256": "c253a6acbc02a5001e308c1a3b48acbb1e8dee2804637b930e0d1428cdd0056d",
+      "bytes": 70362300
+    },
+    {
+      "path": "/Users/zhu/.codex/visualizations/2026/10/27/01a17b09-ba73-70c3-8098-7c93af6df733/flc_gameplay_review/coupling_20261030/index.wasm",
+      "sha256": "35116f68540ac41acf7d71ea457added91b5e960a9cca3e2acc72918eaf01277",
+      "bytes": 39513091
+    }
+  ],
+  "browser": {
+    "viewport": [
+      903,
+      862
+    ],
+    "input": "ordinary pointer drag through CUA",
+    "flows": [
+      "room entry",
+      "detach bridge",
+      "first passage",
+      "open circuit rejection",
+      "reseat bridge",
+      "first terminal lit",
+      "swap tray",
+      "two perpendicular passages",
+      "horizontal bridge",
+      "second terminal lit",
+      "notebook",
+      "room return"
+    ],
+    "warningErrorLogs": [],
+    "viewportOverrideReset": true,
+    "leftAtInitialTray": true,
+    "productionSaveAccess": false,
+    "fullBrowserMatrix": false
+  },
+  "captureFiles": [
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/browser_bridge_connected.png",
+      "sha256": "234c4c9f3dccb342b2623aa7b640a26c809c74253c59a80289fcdc986b9a8a99",
+      "bytes": 46184
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/browser_delivery_start.png",
+      "sha256": "34443c64411d4413689406cb38b3d6e9fe50aa0ef112c8765d41f04ba97bf472",
+      "bytes": 57218
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/browser_first_complete.png",
+      "sha256": "c36daf28098fe9682f79d1cda4d80fa91f7be0de2d7cc6c98e686745ed3fb4aa",
+      "bytes": 39982
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/browser_initial.png",
+      "sha256": "bf746c06fd2ec144f8e5fb935264cade91a48279e9fcd50e7618d29f355a8d34",
+      "bytes": 48015
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/browser_notebook.png",
+      "sha256": "19c3364449e0e82df65a2b90761dae673a4d312c5cb68d91d93c8bf59ca55138",
+      "bytes": 40077
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/browser_open_circuit.png",
+      "sha256": "3574d742e91ec28be126f3a7d33d4d075dadb89c65ed3e5b7f6de68b4b9eaa9c",
+      "bytes": 47412
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/browser_room.png",
+      "sha256": "6cf5a1e90800ac51b97a1c0deae203e08d18332758c6367ea257cd32ff3b2083",
+      "bytes": 76978
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/browser_room_complete.png",
+      "sha256": "311fd42604d4b16f86163d76dd772c26948847ab331c8e0f398b29f96a05eec8",
+      "bytes": 77002
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/browser_second_complete.png",
+      "sha256": "434c68c1d127316aec2a2449a2208d4bc78402e40223864086834e0224951502",
+      "bytes": 39124
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/browser_second_initial.png",
+      "sha256": "ff56fc8d8c719878eb0b2727650893e0a4e9ee01c5278d3d16d0efd8f229f621",
+      "bytes": 47083
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/browser_testing.png",
+      "sha256": "13bf229e3e62576d669090702bb78e9c80eea61f45833d40813d2dd68044c11a",
+      "bytes": 44814
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/desktop/coupling_blocked.png",
+      "sha256": "c59493c7d6cbb5b619f04e2a342c87400af5e2d102374063f676d099c6410a1f",
+      "bytes": 112224
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/desktop/coupling_first_complete.png",
+      "sha256": "0b60a4528118d0bc5b9aaa8aa90c44640fb685590b647c44dba62b945517bb40",
+      "bytes": 110346
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/desktop/coupling_initial.png",
+      "sha256": "649cb4eadf741bc19cae57981730de5bb13bbefac374d85ba0411c8ddb3f907b",
+      "bytes": 109907
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/desktop/coupling_notebook.png",
+      "sha256": "4a18ed8009891c5f59d0180c248f18e574b674f2c0bcc51738378ff45ac19c40",
+      "bytes": 97209
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/desktop/coupling_open_circuit.png",
+      "sha256": "4647603a90619de420808dc3d5556505c99741fc57c282574e4ba0f41e630c36",
+      "bytes": 108941
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/desktop/coupling_room.png",
+      "sha256": "7041094ca959f566a20f81fd3a20f6be68891a17107a2adb644c80664b481981",
+      "bytes": 732225
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/desktop/coupling_room_complete.png",
+      "sha256": "66d76d4320630f15fa4de6eed5e9d4e515db441f8f4e6fd54c6ebbeaf4a69314",
+      "bytes": 733614
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/desktop/coupling_second_complete.png",
+      "sha256": "a88ce62ca2a1e1b470d564aebd99e67d284f58420c5d12950104d41fc3c9f609",
+      "bytes": 108245
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/desktop/coupling_second_initial.png",
+      "sha256": "e2d523c852840816fad6478427f540351502b5dc283aa284300b1fe4bc64d5d2",
+      "bytes": 108034
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/desktop/coupling_testing.png",
+      "sha256": "1ff6d784e8cecfbb5433639d07923588129074776684df943a5d69c32364154a",
+      "bytes": 104544
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/desktop_contact.png",
+      "sha256": "a8c50ac10da094e118407233f51ad57788a3656eb93bf824c7e01941c6a581d7",
+      "bytes": 593076
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/mobile/coupling_blocked.png",
+      "sha256": "d584e8faf4718057125579640d7c9c82291d7fda1cbf536e7bade1eb74b4002b",
+      "bytes": 60021
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/mobile/coupling_first_complete.png",
+      "sha256": "358d0ff88fcd2ca3fa90a7cadfc028b16fef9417151d006265759780bee426c6",
+      "bytes": 59120
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/mobile/coupling_initial.png",
+      "sha256": "6f46f6a89c0464a4bd87ecc49c6b4cd2173f0f3a48c917da394e1dcf179cbf0d",
+      "bytes": 58993
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/mobile/coupling_notebook.png",
+      "sha256": "ad18994764aa05a749d0583107c92f8fb321dbf8fac141e01672e55567b45580",
+      "bytes": 53080
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/mobile/coupling_open_circuit.png",
+      "sha256": "50f74aff595115517ee6e798242a3fd688e2fca075baf05d16b9789f659afa1c",
+      "bytes": 58579
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/mobile/coupling_room.png",
+      "sha256": "eb3e899aa233fb595fcb847433bb29c42ad3be8e14e5086f3a16128b331e4729",
+      "bytes": 361847
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/mobile/coupling_room_complete.png",
+      "sha256": "6bee24e0ad73891f79bb1c811b6a54f6ce0c13842ccdeec88ab5183ba6cfab88",
+      "bytes": 362745
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/mobile/coupling_second_complete.png",
+      "sha256": "e4dcc372cb704628a1bdc6ff8cd994c489b328a6cbf5dac59e7f088b9a1cba6f",
+      "bytes": 58725
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/mobile/coupling_second_initial.png",
+      "sha256": "1f6872b01f17fa81c296f491dc2c2cb585b0f8ddd48c45927583688838302c87",
+      "bytes": 57713
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/mobile/coupling_testing.png",
+      "sha256": "50a0478036e6bed98d01664e80d299ec93f41a7103e516a4f2400a60ea7a6424",
+      "bytes": 55605
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/mobile_contact.png",
+      "sha256": "36222217662ce643511783a67d492926dba3f331a2db782d14739bffe5bf0cca",
+      "bytes": 445480
+    }
+  ],
+  "reviewFiles": [
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/finish_review.md",
+      "sha256": "c94570449181977b032570b2583d3f19e743bc2cbe56d09188c1c2706bb4e76e",
+      "bytes": 6860
+    },
+    {
+      "path": ".impeccable/review/flc_coupling_20261030/finish_verdict.md",
+      "sha256": "24fc060abbfbf13ab5254187aeae6bd4775cd9d8b73ba9251ba1fc88f3c83dc2",
+      "bytes": 2089
+    },
+    {
+      "path": "godot_native/campuses/future_learning_center/review/COUPLING_DESIGN_COMPARISON_20261030.md",
+      "sha256": "124e5c1cb4071030fa52c91cc66c6d2f56258feb8c6796c576790928175d0530",
+      "bytes": 12123
+    }
+  ],
+  "limitations": [
+    "Session-only prototype without formal chapter/save integration",
+    "No physical phone or novice playtest",
+    "No complete browser-engine matrix or full release validation",
+    "No new commit, push or merge in this continuation"
+  ]
+}

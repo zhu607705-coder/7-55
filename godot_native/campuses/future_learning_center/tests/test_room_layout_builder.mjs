@@ -33,3 +33,24 @@ test('reused NPC sprites belong to the FLC optional pack without loading later c
  for(const row of rows){const bytes=fs.readFileSync(new URL(row.filename,dir));assert.equal(createHash('sha256').update(bytes).digest('hex'),row.sha256);const source=new URL('../../../../'+row.source_path,import.meta.url);assert.deepEqual(bytes,fs.readFileSync(source));}
  for(const f of [2,3]){const p=JSON.parse(fs.readFileSync(new URL(`floor_${f}.json`,data)));for(const npc of p.npcs){assert.ok(isFlcRuntimePath(npc.path),`${npc.id} must load with FLC alone`);assert.ok(npc.path.startsWith('res://campuses/future_learning_center/assets/npcs/'));}}
 });
+
+test('wide low desks preserve human metrics, physical height and tabletop contact',()=>{
+ const native=new URL('../../../',import.meta.url),body=fs.readFileSync(new URL('scripts/player_metrics.gd',native),'utf8');
+ assert.match(body,/const DISPLAY_SCALE := 0\.65/);assert.match(body,/const FOOT_SIZE := Vector2\(19\.5,14\.625\)/);
+ for(const f of [2,3]){
+  const p=JSON.parse(fs.readFileSync(new URL(`floor_${f}.json`,data))),ids=f===2?[6,10,14,18,22,26].map(i=>`team_desk_${i}`):['recording_desk_234'];
+  assert.equal(p.roomLayout.version,2);
+  for(const id of ids){
+   const desk=p.objects.find(o=>o.id===id);assert.equal(desk.bounds[2],170);assert.equal(desk.path,'res://campuses/future_learning_center/assets/room_props/wide_desk.png');
+   assert.ok(Math.abs(desk.tabletop.verticalHeight-34.21534130893737)<1e-8);assert.ok(Math.abs(desk.tabletop.projectedDepth-27.994370161857848)<1e-8);
+   const polygon=desk.tabletop.polygon,inside=(point)=>{let hit=false;for(let i=0,j=polygon.length-1;i<polygon.length;j=i++){const a=polygon[i],b=polygon[j];if((a[1]>point[1])!==(b[1]>point[1])&&point[0]<(b[0]-a[0])*(point[1]-a[1])/(b[1]-a[1])+a[0])hit=!hit;}return hit;};
+   for(const child of p.objects.filter(o=>o.parent===id)){
+    assert.equal(child.tableContact.parent,id);const [x,y]=child.tableContact.point;
+    assert.ok(inside([x-child.bounds[2]/2,y])&&inside([x+child.bounds[2]/2,y]),`${child.id} full contact line lies on tabletop`);
+    assert.ok(Math.abs(child.bounds[1]+child.bounds[3]-y)<1e-8,`${child.id} does not float beyond front lip`);
+   }
+  }
+  const room=f===2?'team':'recording',module=p.modules.find(m=>m.id===room),wallY=module.at[1]+((f===2?275:321)-module.crop[1])*module.scale;
+  for(const id of f===2?['team_desk_6','team_desk_10','team_desk_18']:['recording_desk_234'])assert.ok(Math.abs(p.objects.find(o=>o.id===id).tabletop.backEdgeFloorY-wallY)<1e-8,`${id} back tabletop edge meets surveyed wall`);
+ }
+});

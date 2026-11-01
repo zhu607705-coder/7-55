@@ -969,6 +969,7 @@
       "family": "motion",
       "anchors": [
         "studio_2_desk_58",
+        "studio_2_desk_59",
         "studio_2_whiteboard_115"
       ],
       "props": [
@@ -1003,14 +1004,14 @@
       "actions": "连接、分离、推动两个滑块，观察连体的占地与触点。",
       "experiment": "分别测试单块和连体通过同一窄口。",
       "counterexample": "两块分别停在终台触点上也不导通，中间还缺连接。",
-      "solution": "先分离通过，再在宽区连接并整体移到触点。草模单块宽 1、连体宽 2、窄口宽 1.4；实际尺寸待原生摆位校准。",
+      "solution": "直口先拆开铜桥，分别送过窄口，再在终台区域连接。折线路盘增加垂直窄口，接点改为横向；仍须考虑滑块与铜桥的实际占地。单块48、连体108、窄口68逻辑像素。",
       "completion": "两块实际通过合法路径，到终区后保持连接，并同时压到两处触点。",
-      "transfer": "连接方向换成纵向，重新判断在哪个区域组装更合适。",
+      "transfer": "第二路盘增加相互垂直的窄口，终台接点从纵向改成横向，重新选择连接的位置。",
       "feedback": "卡住的边缘与缺失的中间连接可见。",
       "hints": [
-        "连接改变了哪一个尺寸？",
-        "分别试单块和连体。",
-        "比较过口记录与终台触点图。"
+        "连起来后，哪个方向变宽了？比较滑块和窄口。",
+        "单块过口后，试试两块一起压住终台。还缺什么？",
+        "第二块路盘有两个方向的窄口。在哪一侧连接，才有回转空间？"
       ],
       "recovery": "可拉回、拆开、撤回；不能丢弃或销毁滑块。",
       "payoff": "托盘内的双触点装置导通。",
@@ -1021,7 +1022,7 @@
       ],
       "id": "3:studio_2",
       "roomName": "团队工作室 2",
-      "status": "proposed_not_implemented",
+      "status": "isolated_native_prototype",
       "stateProposal": [
         "current_configuration",
         "configuration_revision",
@@ -1034,7 +1035,18 @@
         "teaching": "先发现整体过不了窄口，再用可拆连接保持两端功能。",
         "readability": "窄口宽度、部件宽度和终台接点可同时比较。",
         "assessedBy": "local_design_draft_not_playtested"
-      }
+      },
+      "implementation": {
+        "runtime": "godot_native_isolated_sample",
+        "review": "COUPLING_TRAY_20261030.md",
+        "entry": "3F studio_2_desk_59",
+        "model": "scripts/coupling_tray_model.gd",
+        "view": "scripts/coupling_tray_view.gd",
+        "resultPersistence": "session_only",
+        "productionChapterIntegrated": false,
+        "layouts": 2
+      },
+      "placementNote": "托盘放在原58号桌的面对面配对桌59号可见左侧桌面，避开显示器和中间隔板；家具、脚底碰撞与房间边界不变。"
     },
     {
       "floor": 3,

@@ -21669,28 +21669,28 @@
       "room": "recording",
       "asset": "desk",
       "name": "工作桌",
-      "path": "res://campuses/future_learning_center/assets/objects/desk.png",
+      "path": "res://campuses/future_learning_center/assets/room_props/wide_desk.png",
       "crop": [
-        50,
-        165,
-        1322,
-        827
+        14,
+        296,
+        1421,
+        521
       ],
-      "scale": 0.10264750378214825,
+      "scale": 0.11963406052076003,
       "bounds": [
-        1042.15,
-        5081.442604980942,
-        135.7,
-        84.8894856278366
+        1025,
+        5083.816749299841,
+        170,
+        62.32934553131598
       ],
       "footprint": [
-        1050.292,
-        5118.032090608778,
-        119.416,
-        48.3
+        1026.914144968332,
+        5127.124279208356,
+        166.76988036593949,
+        19.021815622800844
       ],
-      "baseline": 5166.332090608778,
-      "height": 74.75,
+      "baseline": 5146.026460770636,
+      "height": 34.21534130893737,
       "floor": [
         [
           370.6748466257669,
@@ -21709,7 +21709,31 @@
           5828.167059933932
         ]
       ],
-      "mounted": false
+      "mounted": false,
+      "tabletop": {
+        "polygon": [
+          [
+            1036.963406052076,
+            5083.816749299841
+          ],
+          [
+            1182.7973258268826,
+            5083.816749299841
+          ],
+          [
+            1194.7607318789585,
+            5111.811119461699
+          ],
+          [
+            1025.1196340605206,
+            5111.811119461699
+          ]
+        ],
+        "backEdgeFloorY": 5118.032090608778,
+        "verticalHeight": 34.21534130893737,
+        "projectedDepth": 27.994370161857848,
+        "source": "wide_desk.png manual source-pixel registration"
+      }
     },
     {
       "id": "recording_chair_back_235",
@@ -21726,17 +21750,17 @@
       "scale": 0.06313725490196077,
       "bounds": [
         1085.85,
-        5146.4269925695635,
+        5126.121362731421,
         48.3,
         64.90509803921567
       ],
       "footprint": [
         1088.748,
-        5179.1320906087785,
+        5158.826460770636,
         42.504,
         32.199999999999996
       ],
-      "baseline": 5211.332090608778,
+      "baseline": 5191.026460770636,
       "height": 74.75,
       "floor": [
         [
@@ -21772,18 +21796,18 @@
       ],
       "scale": 0.0769570707070707,
       "bounds": [
-        1049.05,
-        5063.897873437061,
+        1048.9542927515834,
+        5052.380280192867,
         121.89999999999999,
         42.63421717171717
       ],
       "footprint": [
-        1056.3639999999998,
-        5063.867090608778,
-        107.27199999999999,
-        42.66499999999999
+        1048.9542927515834,
+        5093.014497364584,
+        121.89999999999999,
+        2
       ],
-      "baseline": 5166.389590608778,
+      "baseline": 5146.076460770636,
       "height": 32.199999999999996,
       "floor": [
         [
@@ -21804,7 +21828,18 @@
         ]
       ],
       "mounted": true,
-      "parent": "recording_desk_234"
+      "parent": "recording_desk_234",
+      "tableContact": {
+        "point": [
+          1109.9042927515834,
+          5095.014497364584
+        ],
+        "uv": [
+          0.5,
+          0.4
+        ],
+        "parent": "recording_desk_234"
+      }
     },
     {
       "id": "recording_monitor_front_237",
@@ -29897,18 +29932,18 @@
       ],
       "scale": 0.045318725099601595,
       "bounds": [
-        1064.5,
-        5124.672113090712,
+        1064.430612244898,
+        5099.62783696887,
         91,
         7.704183266932271
       ],
       "footprint": [
-        1064.5,
-        5130.376296357644,
+        1064.430612244898,
+        5105.332020235802,
         91,
         2
       ],
-      "baseline": 5166.532090608778,
+      "baseline": 5146.226460770636,
       "height": 14,
       "floor": [
         [
@@ -29929,7 +29964,18 @@
         ]
       ],
       "mounted": true,
-      "parent": "recording_desk_234"
+      "parent": "recording_desk_234",
+      "tableContact": {
+        "point": [
+          1109.930612244898,
+          5107.332020235802
+        ],
+        "uv": [
+          0.5,
+          0.84
+        ],
+        "parent": "recording_desk_234"
+      }
     },
     {
       "id": "recording_puzzle_baffle",
@@ -29945,18 +29991,18 @@
       ],
       "scale": 0.024886877828054297,
       "bounds": [
-        1107.25,
-        5096.86272169701,
+        1107.180612244898,
+        5071.818445575168,
         5.5,
         35.51357466063348
       ],
       "footprint": [
-        1107.25,
-        5130.376296357644,
+        1107.180612244898,
+        5105.332020235802,
         5.5,
         2
       ],
-      "baseline": 5166.532090608778,
+      "baseline": 5146.226460770636,
       "height": 14,
       "floor": [
         [
@@ -29977,7 +30023,18 @@
         ]
       ],
       "mounted": true,
-      "parent": "recording_desk_234"
+      "parent": "recording_desk_234",
+      "tableContact": {
+        "point": [
+          1109.930612244898,
+          5107.332020235802
+        ],
+        "uv": [
+          0.5,
+          0.84
+        ],
+        "parent": "recording_desk_234"
+      }
     }
   ],
   "lighting": {
@@ -30212,13 +30269,17 @@
     }
   ],
   "roomLayout": {
-    "version": 1,
+    "version": 2,
     "rooms": [
       "recording"
     ],
     "deskGroupScale": 1.15,
     "stableLegacyIds": true,
-    "placement": "Wall work zones and open central activity space; source wall seams, full-foot navigation and separate mounted raster objects."
+    "placement": "Three north-wall team workstations plus a three-desk project group; recording workbench remains at the surveyed north wall. Other prop and actor scales unchanged.",
+    "deskRevision": "wide-low-web-v2",
+    "deskWidth": 170,
+    "actorScaleUnchanged": true,
+    "tabletopProjectedDepth": 27.994370161857848
   },
   "objectCounts": {
     "desk": 92,

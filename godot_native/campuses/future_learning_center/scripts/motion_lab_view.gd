@@ -198,7 +198,7 @@ func _draw()->void:
  else:
   ink("装货站",Vector2(67,355),18);ink("送达站",Vector2(524,355),18)
   ink("返程导向",GUIDE+Vector2(-35,54),18)
- draw_tools();draw_book()
+ draw_tools();draw_book();draw_feedback()
 func _solar_readouts()->void:
  var preview:int=drag_value if gesture=="light" else solar.sky
  var light:float=(0 if preview==2 else 1) if gesture=="light" else solar.intensity_at(solar.elapsed())
@@ -218,8 +218,9 @@ func draw_room_prop(canvas:CanvasItem,mode:String,bounds:Rect2)->void:
  if frames.is_empty():return
  var id:="solar_chassis" if mode=="solar" else "delivery_robot"
  var frame:Array=frames[id].right;var source:=Rect2(frame[0],frame[1],frame[2],frame[3])
- var at:=bounds.position+Vector2(bounds.size.x*.5,bounds.size.y*.59)
- var display:=source.size*.07
+ var assembly_island:bool=mode=="robotics" and bounds.size.x>400
+ var at:=bounds.position+Vector2(bounds.size.x*.5,bounds.size.y*(.56 if assembly_island else .59))
+ var display:=source.size*(.14 if assembly_island else .07)
  canvas.draw_texture_rect_region(atlases[id],Rect2(at-Vector2(display.x/2,display.y),display),source)
  if mode=="solar":
   var width:=25.0 if solar.setup.panel==1 else 19.0

@@ -107,9 +107,11 @@ func run()->void:
 			var before:Dictionary=world.data.duplicate(true)
 			var signature:String=world._completion_signature()
 			world._clear_npc_interaction();world.set_foot(approach);world.user_control=true
+			world.coupling_pending=true;world.locker_pending=true
 			var key:=InputEventKey.new();key.keycode=KEY_SPACE;key.pressed=true
 			world._unhandled_input(key)
 			check(world.npc_reply_id==str(person.id),"nearby Space reaches same short interaction")
+			check(not world.coupling_pending and not world.locker_pending,"NPC response retires new station approach targets")
 			world._clear_npc_interaction()
 			var touch:=InputEventScreenTouch.new();touch.index=2;touch.pressed=true;touch.canceled=true;touch.position=world.world_to_screen(point)
 			world._unhandled_input(touch)
@@ -142,6 +144,25 @@ func run()->void:
 			world.load_floor(4)
 			check(world.npc_pending.is_empty() and world.npc_reply.is_empty(),"floor handoff clears ambient state")
 			check(world.npc_by_id(str(person.id)).is_empty(),"retired-floor person cannot be interacted with")
+	# Main PR202 adds two standalone activities; their open lifecycle must also retire NPC state.
+	check(world.load_floor(3),"load current main standalone station floor")
+	for mode:String in ["coupling","locker"]:
+		var approach:Vector2=world.call(mode+"_approach")
+		check(approach.is_finite() and world.set_foot(approach),mode+" actual approach remains legal")
+		world.npc_pending="flc_3_recording_student_a";world.npc_reply="transient"
+		check(world.call("open_"+mode),mode+" existing anchor opens")
+		check(world.npc_pending.is_empty() and world.npc_reply.is_empty(),mode+" retires ambient target and reply")
+		var view:Control=world.coupling_tray if mode=="coupling" else world.locker_cipher
+		view.close()
+	check(world.load_floor(2),"load merged robotics room")
+	check(world.data.has("roboticsReference") and world.data.has("roboticsFrontage"),"both main robotics passes retained")
+	var robot_approach:Vector2=world.motion_approach("robotics")
+	check(robot_approach.is_finite() and world.set_foot(robot_approach),"main robotics approach legal with merged floor")
+	check(world.framing.zoom>=.89,"main authored close camera retained")
+	for point:Array in world.data.roboticsFrontage.closedGlassSamples:
+		check(not world.space.can_stand(Vector2(point[0],point[1])-Body.FOOT_CENTER_OFFSET),"closed glass still blocks full feet")
+	check(world.open_motion_lab("robotics"),"main robot bench still opens")
+	world.motion_lab.close()
 	check(ids.size()==expected_people and exercised_rooms.size()==2,"every authored person across both target rooms exercised")
 	check(Floor.PuzzleAnchors.size()==24,"existing room anchor registry unchanged")
 	world.queue_free();await process_frame

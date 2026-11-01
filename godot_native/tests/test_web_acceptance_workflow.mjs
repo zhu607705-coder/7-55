@@ -627,7 +627,7 @@ await test('source-only contracts remain required but never delay or mutate prod
   assert.doesNotMatch(contracts, /^    needs:|build_web\.mjs|--export|verify_web_export\.mjs|sync_source\.mjs|convert_media\.sh/m);
   assert.match(contracts, /ref: \$\{\{ github.sha \}\}/);
   assert.match(contracts, /test "\$\(git rev-parse HEAD\)" = "\$GITHUB_SHA"/);
-  for (const file of ['test_web_acceptance_workflow.mjs','test_web_consumer_source_closure.mjs','test_preparation_pipeline.mjs','test_web_phone_shards.mjs','test_web_controller_fixtures.mjs','test_web_browser_lifecycle.mjs','test_web_network_observation.mjs','test_web_streaming_fault_lifecycle.mjs','test_web_save_diagnostics.mjs','test_web_input_completion.mjs']) {
+  for (const file of ['test_web_acceptance_workflow.mjs','test_web_consumer_source_closure.mjs','test_preparation_pipeline.mjs','test_web_phone_shards.mjs','test_web_phone_exercise.mjs','test_web_transport_audit.mjs','test_web_controller_fixtures.mjs','test_web_browser_lifecycle.mjs','test_web_network_observation.mjs','test_web_streaming_fault_lifecycle.mjs','test_web_save_diagnostics.mjs','test_web_input_completion.mjs']) {
     assert.equal((workflow.match(new RegExp(`node godot_native/tests/${file.replaceAll('.', '\\.')}`, 'g')) || []).length,1);
     assert.ok(contracts.includes(file));assert.ok(!build.includes(file));
   }
@@ -652,7 +652,7 @@ await test('actual aggregate validator fails closed on incomplete coverage, alte
   const run='1234',attempt='1', receiptSha='e'.repeat(64);
   try {
     const directory=path.join(root,'godot_native/tools');mkdirSync(directory,{recursive:true});
-    for (const file of ['web_phone_shards.mjs','web_phone_recovery.mjs','verify_web_export.mjs']) writeFileSync(path.join(directory,file),readFileSync(new URL(`../tools/${file}`,import.meta.url)));
+    for (const file of ['web_phone_shards.mjs','web_phone_recovery.mjs','verify_web_export.mjs','web_transport_audit.mjs']) writeFileSync(path.join(directory,file),readFileSync(new URL(`../tools/${file}`,import.meta.url)));
     const git=(...args)=>{const result=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(result.status,0,result.stderr);return result.stdout.trim();};
     git('init','-q');git('add','godot_native/tools');git('-c','user.name=Contract Fixture','-c','user.email=fixture@example.invalid','commit','-qm','Synthetic validator fixture');
     const commit=git('rev-parse','HEAD'),tree=git('rev-parse','HEAD^{tree}');
@@ -674,7 +674,7 @@ await test('actual aggregate validator fails closed on incomplete coverage, alte
       if(item.key==='streaming'){receipt.case='desktop-1280';receipt.verified=['a','b','c','d'];}
       for(const [file,id,scenarios,group] of item.cases){
         const [width,height,touch,dpr]=sizes[id];const c={id,width,height,touch,dpr,passed:true,renderer:{webgl2:true}};
-        const report={passed:true,scenarios,runnerSha256:runnerSha,exportManifest:{sourceCommit:commit,engine:'4.7.1.stable.official'},cases:[c],checks:[{ok:true}],errors:[]};
+        const report={passed:true,scenarios,runnerSha256:runnerSha,transportAuditRunnerSha256:digest(readFileSync(path.join(directory,'web_transport_audit.mjs'))),transportAudit:{expected:1,completed:1},assets:[{sha256:'d'.repeat(64)}],exportManifest:{sourceCommit:commit,engine:'4.7.1.stable.official'},cases:[c],checks:[{ok:true}],errors:[]};
         if(group){c.phoneRecovery={completed:true,group,coverage:phoneCoverage(group),inputs:[{}]};report.phoneRecoveryRunnerSha256=phoneSha;report.phoneShardRunnerSha256=shardSha;receipt.group=group;receipt.cases[0]={id,group,coverage:phoneCoverage(group)};}
         docs[file]=report;
       }
@@ -707,7 +707,7 @@ await test('actual aggregate validator fails closed on incomplete coverage, alte
       ['missing artifact',d=>delete d[world]],['unknown artifact',d=>d.extra=d[world]],['duplicate attempt alias',d=>d[`godot-web-world-touch-390-${run}-01`]=d[world]],['missing receipt',d=>delete d[world]['web_mobile_world/ci-mobile-world-receipt.json']],
       ['wrong bundle digest',d=>d[world]['verified-inputs.json'].receiptSha='f'.repeat(64)],['stale consumer attempt',d=>d[world]['verified-inputs.json'].consumerAttempt='2'],['wrong producer attempt',d=>d[world]['verified-inputs.json'].producerAttempt='2'],['different base',d=>d[world]['verified-inputs.json'].source.base='a'.repeat(40)],['unverified bundle',d=>d[world]['verified-inputs.json'].verified=false],
       ['failed report',d=>report(d).passed=false],['unknown source',d=>report(d).exportManifest.sourceCommit='a'.repeat(40)],['unknown runner',d=>report(d).runnerSha256='b'.repeat(64)],['wrong scenario',d=>report(d).scenarios='all'],['missing case',d=>report(d).cases=[]],['duplicate case',d=>report(d).cases.push(report(d).cases[0])],['failed case',d=>report(d).cases[0].passed=false],['wrong DPR',d=>report(d).cases[0].dpr=3],['no renderer',d=>report(d).cases[0].renderer.webgl2=false],['failed assertion',d=>report(d).checks[0].ok=false],['missing assertions',d=>report(d).checks=[]],['runtime error',d=>report(d).errors.push('failure')],
-      ['phone wrong runner',d=>d[phone]['web_phone_recovery/web-acceptance.json'].phoneRecoveryRunnerSha256='a'.repeat(64)],['phone wrong shard contract',d=>d[phone]['web_phone_recovery/web-acceptance.json'].phoneShardRunnerSha256='a'.repeat(64)],['phone missing gate',d=>d[phone]['web_phone_recovery/web-acceptance.json'].cases[0].phoneRecovery.coverage.pop()],['phone duplicate group',d=>d[phone]['web_phone_recovery/web-acceptance.json'].cases[0].phoneRecovery.group='charging'],['phone false completion',d=>d[phone]['web_phone_recovery/web-acceptance.json'].cases[0].phoneRecovery.completed=false],['phone missing inputs',d=>d[phone]['web_phone_recovery/web-acceptance.json'].cases[0].phoneRecovery.inputs=[]],
+      ['missing HTTP audit',d=>delete report(d).transportAudit],['wrong HTTP helper',d=>report(d).transportAuditRunnerSha256='a'.repeat(64)],['incomplete HTTP audit',d=>report(d).transportAudit.completed=0],['missing HTTP asset',d=>report(d).assets=[]],['phone wrong runner',d=>d[phone]['web_phone_recovery/web-acceptance.json'].phoneRecoveryRunnerSha256='a'.repeat(64)],['phone wrong shard contract',d=>d[phone]['web_phone_recovery/web-acceptance.json'].phoneShardRunnerSha256='a'.repeat(64)],['phone missing gate',d=>d[phone]['web_phone_recovery/web-acceptance.json'].cases[0].phoneRecovery.coverage.pop()],['phone duplicate group',d=>d[phone]['web_phone_recovery/web-acceptance.json'].cases[0].phoneRecovery.group='charging'],['phone false completion',d=>d[phone]['web_phone_recovery/web-acceptance.json'].cases[0].phoneRecovery.completed=false],['phone missing inputs',d=>d[phone]['web_phone_recovery/web-acceptance.json'].cases[0].phoneRecovery.inputs=[]],
       ['baseline missing case receipt',d=>d[baseline]['web_ci/ci-baseline-receipt.json'].cases.pop()],['streaming missing gate receipt',d=>d[streaming]['web_streaming/ci-streaming-receipt.json'].verified.pop()]
     ]){const result=execute(mutate);assert.notEqual(result.status,0,`${reason} unexpectedly accepted`);}
   }finally{rmSync(root,{recursive:true,force:true});}
