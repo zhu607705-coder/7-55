@@ -113,3 +113,48 @@
 [data-button-surface="dark"] .tactile-button[data-variant="ghost"]:not(:disabled):is(:hover, :active),
 [data-button-surface="dark"] .tactile-button[data-layout="content"]:is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"], .is-selected, .is-active, .is-on) { --button-ink: #393a37; }
 [data-button-surface="dark"] .tactile-button[data-variant="text"]:not(:disabled):hover { color: #fff !important; }
+
+/* Godot Web entry skin. Retained React controls keep their existing material.
+   The same paper/ink roles are defined in ui/paper_ink_material.gd. */
+.tactile-button[data-skin="paper-ink"] {
+  --button-top: #f6efe2; --button-bottom: #f6efe2;
+  --button-hover-top: #fff7df; --button-hover-bottom: #fff7df;
+  --button-edge: #6f655a; --button-ink: #1d1a1e; --button-focus: #a43b32;
+  --button-text-shadow: none;
+  border-radius: calc(2.5 * var(--button-u)) !important;
+  background: var(--button-top) !important;
+  box-shadow: calc(2 * var(--button-u)) calc(3 * var(--button-u)) 0 rgba(29,26,30,.4) !important;
+}
+.tactile-button[data-skin="paper-ink"][data-variant="primary"] {
+  --button-top: #1d1a1e; --button-hover-top: #332c30; --button-ink: #f6efe2;
+}
+.tactile-button[data-skin="paper-ink"]:not(:disabled):hover {
+  background: var(--button-hover-top) !important; border-color: #927c52 !important;
+  box-shadow: calc(2 * var(--button-u)) calc(3 * var(--button-u)) 0 rgba(29,26,30,.4) !important;
+}
+.tactile-button[data-skin="paper-ink"]:not(:disabled):active {
+  /* Paint a pressed face without translating the DOM hit region. */
+  translate: none; box-shadow: inset 0 var(--button-u) 0 rgba(74,64,56,.3) !important;
+}
+.tactile-button[data-skin="paper-ink"]:focus-visible {
+  outline: calc(2 * var(--button-u)) solid #a43b32 !important;
+  outline-offset: calc(2 * var(--button-u)) !important;
+}
+.tactile-button[data-skin="paper-ink"]:disabled {
+  opacity: 1 !important; color: #4a4038 !important; background: #ded5c6 !important;
+  border-color: #a99c89 !important; box-shadow: none !important;
+}
+.tactile-button[data-skin="paper-ink"]:is([data-variant="ghost"], [data-variant="text"]) {
+  background: transparent !important; box-shadow: none !important;
+  border-color: transparent !important; --button-ink: #4a4038;
+}
+.tactile-button[data-skin="paper-ink"]:is([data-variant="ghost"], [data-variant="text"]):not(:disabled):hover {
+  background: rgba(29,26,30,.055) !important; box-shadow: none !important;
+}
+.tactile-button[data-skin="paper-ink"]:is([data-variant="ghost"], [data-variant="text"]):not(:disabled):active {
+  background: rgba(29,26,30,.1) !important; box-shadow: none !important;
+}
+@media (forced-colors: active) {
+  .tactile-button[data-skin="paper-ink"] { border-color: ButtonText !important; }
+  .tactile-button[data-skin="paper-ink"]:focus-visible { outline-color: Highlight !important; }
+}

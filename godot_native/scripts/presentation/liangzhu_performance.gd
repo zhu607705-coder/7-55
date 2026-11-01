@@ -5,9 +5,9 @@ const Model=preload("res://scripts/presentation/liangzhu_performance_model.gd")
 const ActorRig=preload("res://scripts/presentation/liangzhu_actor_rig.gd")
 const StageObjects=preload("res://scripts/presentation/theater_rehearsal_stage_objects.gd")
 const StagePlate=preload("res://scripts/presentation/liangzhu_stage_plate.gd")
-const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const TheaterUi=preload("res://scripts/ui/theater_typography.gd")
 const StageChrome=preload("res://scripts/ui/theater_stage_chrome.gd")
+const SelectedUi=preload("res://scripts/ui/selected_ui_theme.gd")
 const ASSET_ROOT="res://assets/native/liangzhu_performance_20261021/"
 const PAPER=Color("F4EAD5")
 const INK=Color("202B35")
@@ -143,7 +143,7 @@ func _build()->void:
 	title=_label("PerformanceTitle",20);title.text="梁祝 · 扇影";TheaterUi.heading(title)
 	caption=_label("PerformanceCaption",16)
 	for label:Label in [title,caption]:
-		label.add_theme_color_override("font_color",StageChrome.PAPER)
+		label.add_theme_color_override("font_color",StageChrome.INK)
 		label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;label.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
 	pause_button=_button("PerformancePause","暂停",_toggle_pause)
 	return_button=_button("PerformanceReturn","返回排练",skip)
@@ -154,17 +154,18 @@ func _build()->void:
 	for signal_name:String in ["mouse_entered","mouse_exited","button_down","button_up"]:help_button.connect(signal_name,_redraw_stage)
 	retry_button=_button("PerformanceQteRetry","再接这一拍",_retry_qte)
 	qte_label=_label("PerformanceQtePrompt",16)
-	qte_label.add_theme_color_override("font_color",Color("FFF0B2"))
+	qte_label.add_theme_color_override("font_color",StageChrome.PAPER)
 	qte_label.add_theme_color_override("font_outline_color",INK)
 	for node:Control in [title,caption,pause_button,return_button,help_button,retry_button,qte_label]:node.reparent(stage_frame)
 	_build_help()
 	_refresh()
 
 func _build_help()->void:
-	help_panel=Panel.new();help_panel.name="PerformancePaperMenu";help_panel.add_theme_stylebox_override("panel",Ui.box(PAPER,Color("70503B"),1,0,Vector2(14,12)));stage_frame.add_child(help_panel)
-	help_body=Label.new();help_body.name="PerformanceHelpBody";TheaterUi.text(help_body);help_body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;help_body.add_theme_color_override("font_color",INK);help_body.mouse_filter=Control.MOUSE_FILTER_IGNORE;help_panel.add_child(help_body)
+	help_panel=Panel.new();help_panel.name="PerformancePaperMenu";SelectedUi.apply_paper_panel(help_panel,Vector2(14,12));stage_frame.add_child(help_panel)
+	help_body=Label.new();help_body.name="PerformanceHelpBody";TheaterUi.text(help_body);help_body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;help_body.add_theme_color_override("font_color",StageChrome.INK);help_body.mouse_filter=Control.MOUSE_FILTER_IGNORE;help_panel.add_child(help_body)
 	for spec:Array in [["PerformanceHelpNext","翻下一页",_more_help],["PerformancePassive","从头观看",_start_passive],["PerformanceHelpClose","合上册页",_close_help]]:
 		var button:=Button.new();button.name=spec[0];button.text=spec[1];button.focus_mode=Control.FOCUS_ALL
+		button.set_meta("tactile_paper_ink",true)
 		button.set_meta("tactile_keep_layout",true);button.set_meta("tactile_compensated_type",true)
 		TheaterUi.button(button,spec[0]=="PerformanceHelpClose");button.pressed.connect(spec[2]);help_panel.add_child(button)
 		if spec[0]=="PerformanceHelpNext":help_next=button

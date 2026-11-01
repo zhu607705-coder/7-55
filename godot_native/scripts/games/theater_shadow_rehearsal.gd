@@ -5,6 +5,8 @@ signal cancelled
 const Model=preload("res://scripts/games/theater_shadow_rehearsal_model.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const TheaterUi=preload("res://scripts/ui/theater_typography.gd")
+const SelectedUi=preload("res://scripts/ui/selected_ui_theme.gd")
+const PaperInk=preload("res://scripts/ui/paper_ink_material.gd")
 const PerformanceView=preload("res://scripts/presentation/liangzhu_performance.gd")
 const StagePlate=preload("res://scripts/presentation/liangzhu_stage_plate.gd")
 const FanView=preload("res://scripts/presentation/theater_rehearsal_fan.gd")
@@ -126,8 +128,8 @@ func _build() -> void:
 	title_label=_label("RehearsalTitle",24);status_label=_label("RehearsalProgress",15);feedback_label=_label("RehearsalFeedback",17)
 	TheaterUi.heading(title_label)
 	stage_hud=Control.new();stage_hud.name="RehearsalStageFrame";stage_hud.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(stage_hud)
-	for label:Label in [title_label,status_label,feedback_label]:label.reparent(stage_hud);label.add_theme_color_override("font_color",INK)
-	rotation_label=_label("RehearsalRotate",24);rotation_label.text="把屏幕横过来\n让舞台铺开。";rotation_label.autowrap_mode=TextServer.AUTOWRAP_OFF;rotation_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;rotation_label.add_theme_color_override("font_color",INK)
+	for label:Label in [title_label,status_label,feedback_label]:label.reparent(stage_hud);label.add_theme_color_override("font_color",PaperInk.INK)
+	rotation_label=_label("RehearsalRotate",24);rotation_label.text="把屏幕横过来\n让舞台铺开。";rotation_label.autowrap_mode=TextServer.AUTOWRAP_OFF;rotation_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;rotation_label.add_theme_color_override("font_color",PaperInk.INK)
 	_button("RehearsalExit","返回现场",_cancel)
 	_button("RehearsalUndo","撤回",_undo);_button("RehearsalRestart","重排本幕",func():_clear_input();_apply({"kind":"restart"}))
 	_button("RehearsalTry","演一遍",_try_stage);_button("RehearsalNext","下一幕",_continue_stage)
@@ -138,20 +140,20 @@ func _build() -> void:
 	help_panel.add_theme_stylebox_override("panel",Ui.box(Color.TRANSPARENT,Color.TRANSPARENT,0,0,Vector2(36,26)));add_child(help_panel)
 	var column=VBoxContainer.new();column.add_theme_constant_override("separation",10);help_panel.add_child(column)
 	var heading=HBoxContainer.new();heading.add_theme_constant_override("separation",12);column.add_child(heading)
-	help_title=Label.new();help_title.add_theme_font_size_override("font_size",24);help_title.add_theme_color_override("font_color",INK);TheaterUi.heading(help_title);help_title.size_flags_horizontal=Control.SIZE_EXPAND_FILL;heading.add_child(help_title)
+	help_title=Label.new();help_title.add_theme_font_size_override("font_size",24);help_title.add_theme_color_override("font_color",PaperInk.INK);TheaterUi.heading(help_title);help_title.size_flags_horizontal=Control.SIZE_EXPAND_FILL;heading.add_child(help_title)
 	help_close=Button.new();help_close.name="RehearsalCloseReading";help_close.text="回到舞台";help_close.custom_minimum_size=Vector2(92,44);TheaterUi.button(help_close);help_close.pressed.connect(_close_help);heading.add_child(help_close)
 	help_content=BoxContainer.new();help_content.add_theme_constant_override("separation",28);help_content.size_flags_vertical=Control.SIZE_EXPAND_FILL;column.add_child(help_content)
 	notebook=Notebook.new();notebook.name="RehearsalInkDiagrams";notebook.size_flags_horizontal=Control.SIZE_EXPAND_FILL;notebook.size_flags_vertical=Control.SIZE_EXPAND_FILL;help_content.add_child(notebook)
 	notebook.tracing_aligned.connect(_on_tracing_aligned)
-	help_body=RichTextLabel.new();TheaterUi.text(help_body);help_body.bbcode_enabled=true;help_body.fit_content=false;help_body.scroll_active=true;help_body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;help_body.add_theme_font_size_override("normal_font_size",18);help_body.add_theme_color_override("default_color",INK);help_body.size_flags_vertical=Control.SIZE_EXPAND_FILL;help_body.size_flags_horizontal=Control.SIZE_EXPAND_FILL;help_content.add_child(help_body)
+	help_body=RichTextLabel.new();TheaterUi.text(help_body);help_body.bbcode_enabled=true;help_body.fit_content=false;help_body.scroll_active=true;help_body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;help_body.add_theme_font_size_override("normal_font_size",18);help_body.add_theme_color_override("default_color",PaperInk.INK);help_body.size_flags_vertical=Control.SIZE_EXPAND_FILL;help_body.size_flags_horizontal=Control.SIZE_EXPAND_FILL;help_content.add_child(help_body)
 	help_navigation=HBoxContainer.new();help_navigation.add_theme_constant_override("separation",12);column.add_child(help_navigation)
 	help_previous=Button.new();help_previous.name="RehearsalPreviousPage";help_previous.text="前页";help_previous.custom_minimum_size=Vector2(92,44);TheaterUi.button(help_previous);help_previous.pressed.connect(_previous_hint);help_navigation.add_child(help_previous)
-	help_page_label=Label.new();help_page_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;help_page_label.add_theme_color_override("font_color",Color("9A514A"));help_page_label.size_flags_horizontal=Control.SIZE_EXPAND_FILL;help_navigation.add_child(help_page_label)
+	help_page_label=Label.new();help_page_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;help_page_label.add_theme_color_override("font_color",PaperInk.FOCUS);help_page_label.size_flags_horizontal=Control.SIZE_EXPAND_FILL;help_navigation.add_child(help_page_label)
 	help_next=Button.new();help_next.name="RehearsalNextHint";help_next.text="后页";help_next.custom_minimum_size=Vector2(92,44);TheaterUi.button(help_next);help_next.pressed.connect(_next_hint);help_navigation.add_child(help_next)
 	help_panel.hide()
-	menu_panel=PanelContainer.new();menu_panel.name="RehearsalPaperMenu";menu_panel.add_theme_stylebox_override("panel",Ui.box(PAPER,Color("8d6b45"),2,4,Vector2(16,12)));add_child(menu_panel)
+	menu_panel=PanelContainer.new();menu_panel.name="RehearsalPaperMenu";SelectedUi.apply_paper_panel(menu_panel,Vector2(16,12));add_child(menu_panel)
 	var menu_column=VBoxContainer.new();menu_column.add_theme_constant_override("separation",6);menu_panel.add_child(menu_column)
-	var menu_title=Label.new();menu_title.text="排练单";menu_title.add_theme_font_size_override("font_size",22);menu_title.add_theme_color_override("font_color",INK);TheaterUi.heading(menu_title);menu_column.add_child(menu_title)
+	var menu_title=Label.new();menu_title.text="排练单";menu_title.add_theme_font_size_override("font_size",22);menu_title.add_theme_color_override("font_color",PaperInk.INK);TheaterUi.heading(menu_title);menu_column.add_child(menu_title)
 	for spec: Array in [["RehearsalMenuClose","回到舞台",_close_menu],["RehearsalMenuUndo","撤回",_menu_undo],["RehearsalMenuRestart","重排本幕",_menu_restart],["RehearsalMenuPause","暂停",_menu_pause],["RehearsalMenuExit","返回现场",_cancel]]:
 		var button=Button.new();button.name=spec[0];button.text=spec[1];button.custom_minimum_size.y=44;button.focus_mode=Control.FOCUS_NONE;TheaterUi.button(button,spec[0]=="RehearsalMenuClose");button.pressed.connect(spec[2]);menu_controls[spec[0]]=button
 		menu_column.add_child(button)
@@ -176,7 +178,7 @@ func _layout() -> void:
 		controls.RehearsalExit.show()
 		_place("RehearsalExit",Rect2((size.x-156)/2,field.end.y+164,156,44))
 	rotation_label.visible=portrait;rotation_label.position=Vector2(24,field.end.y+40);rotation_label.size=Vector2(size.x-48,100)
-	feedback_label.add_theme_color_override("font_color",INK);feedback_label.visible=not portrait
+	feedback_label.add_theme_color_override("font_color",PaperInk.INK);feedback_label.visible=not portrait
 	_layout_reading()
 	menu_panel.position=Vector2((size.x-minf(360,size.x-32))/2,(size.y-326)/2);menu_panel.size=Vector2(minf(360,size.x-32),326)
 	_layout_stage_hud();_hide_under_performance();queue_redraw()
@@ -772,15 +774,18 @@ func _draw_stage() -> void:
 	if paused:draw_rect(Rect2(Vector2.ZERO,LOGICAL),Color(0.06,0.07,0.10,.63))
 
 func _draw_cue_sheet(rect:Rect2)->void:
-	draw_rect(Rect2(rect.position+Vector2(0,2),rect.size),Color("202B3524"))
-	draw_rect(rect,PAPER);draw_rect(rect,Color("C5C1A9"),false,1)
-	draw_rect(Rect2(rect.position+Vector2(9,12),Vector2(2,rect.size.y-24)),Color("9A514A"))
+	# Only the screen-space cue/feedback sheets use the UI skin. Physical stage
+	# pages, fans, lamps and the curtain pull retain their authored materials.
+	draw_rect(rect,PaperInk.PAPER)
+	PaperInk.draw_panel(get_canvas_item(),rect)
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO,size),Color("252a31"))
 	if is_instance_valid(performance):return
 	if model==null or state.is_empty() or field.size.x<=0:return
 	draw_set_transform(field.position,0,field.size/LOGICAL);_draw_stage();draw_set_transform(Vector2.ZERO,0,Vector2.ONE)
-	if size.x<size.y:draw_style_box(Ui.box(PAPER,Color("8d6b45"),1,3),Rect2(rotation_label.position-Vector2(0,12),rotation_label.size+Vector2(0,24)))
+	if size.x<size.y:
+		var paper:=Rect2(rotation_label.position-Vector2(0,12),rotation_label.size+Vector2(0,24))
+		draw_rect(paper,PaperInk.PAPER);PaperInk.draw_panel(get_canvas_item(),paper)
 func geometry_snapshot() -> Dictionary:
 	var props: Array=[]
 	for object: Dictionary in state.get("objects",[]):

@@ -7,6 +7,7 @@ const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
 const Typography = preload("res://scripts/ui/native_typography.gd")
 const UiMaterial = preload("res://scripts/ui/campus_ui_material.gd")
 const PaperPanel = preload("res://scripts/ui/campus_paper_panel.gd")
+const PaperInk = preload("res://scripts/ui/paper_ink_material.gd")
 const BUCT_SCENE := "res://campuses/buct/scenes/playable.tscn"
 const HAIDIAN_SCENE := "res://campuses/buct_haidian/scenes/playable.tscn"
 const CHANGPING_SCENE := "res://campuses/buct_changping/scenes/playable.tscn"
@@ -41,6 +42,7 @@ var campus_heading: Label
 var title_rule: ColorRect
 
 func _ready() -> void:
+	set_meta("paper_ink_scope",true)
 	# Activity owners already finish their save handshake before returning here.
 	# No Main close-request listener survives this independent chooser.
 	get_tree().auto_accept_quit=true
@@ -70,6 +72,10 @@ func _ready() -> void:
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);add_child(shade)
 	card=PaperPanel.new();add_child(card)
 	var style:=UiMaterial.panel_style("paper",{},Vector2(28,24))
+	card.set_meta("tactile_paper_ink",true)
+	style.bg_color=PaperInk.PAPER;style.border_color=Color.TRANSPARENT
+	style.set_corner_radius_all(2);style.anti_aliasing=true
+	style.shadow_color=Color(PaperInk.INK,0.48);style.shadow_size=1;style.shadow_offset=Vector2(3,4)
 	card.add_theme_stylebox_override("panel",style)
 	content=VBoxContainer.new();content.add_theme_constant_override("separation",18);card.add_child(content)
 	title=Label.new();title.text="7:55";Typography.apply_display(title)
@@ -79,12 +85,14 @@ func _ready() -> void:
 	title_rule.mouse_filter=Control.MOUSE_FILTER_IGNORE;content.add_child(title_rule)
 	subtitle=Label.new();subtitle.text="选择入口";subtitle.add_theme_color_override("font_color",UiMaterial.WOOD);content.add_child(subtitle)
 	story_heading=_section_title("主线故事");content.add_child(story_heading)
-	story_button=_button("进入主线故事",open_story);story_button.name="ContinueStory";content.add_child(story_button)
+	story_button=_button("进入主线故事",open_story);story_button.name="ContinueStory";story_button.set_meta("tactile_paper_ink",true);content.add_child(story_button)
 	NativeUi.apply_button(story_button,UiMaterial.NAVY,UiMaterial.PAPER,UiMaterial.NAVY,0,1,20)
+	_paper_focus(story_button)
 	detail=Label.new();detail.text="" if ReleaseContent.story_only() else "不影响主线进度"
 	detail.add_theme_font_size_override("font_size",17);detail.add_theme_color_override("font_color",Color("665e52"));content.add_child(detail)
 	detail.visible=not ReleaseContent.story_only()
-	flc_button=_button("未来学习中心 · 自由探索",open_flc);flc_button.name="OpenFutureLearningCenter";content.add_child(flc_button)
+	flc_button=_button("未来学习中心 · 自由探索",open_flc);flc_button.name="OpenFutureLearningCenter";flc_button.set_meta("tactile_paper_ink",true);content.add_child(flc_button)
+	_paper_focus(flc_button)
 	if ReleaseContent.campuses_available():
 		campus_heading=_section_title("独立校园漫游");content.add_child(campus_heading)
 		content.move_child(campus_heading,detail.get_index())
@@ -136,6 +144,11 @@ func _section_title(text: String) -> Label:
 	var label:=Label.new();label.text=text
 	label.add_theme_font_size_override("font_size",20);label.add_theme_color_override("font_color",UiMaterial.NAVY)
 	return label
+
+func _paper_focus(button: Button) -> void:
+	var focus:=StyleBoxFlat.new();focus.bg_color=Color.TRANSPARENT
+	focus.border_color=PaperInk.FOCUS;focus.set_border_width_all(2);focus.set_corner_radius_all(2)
+	button.add_theme_stylebox_override("focus",focus)
 
 func _layout() -> void:
 	if not is_inside_tree() or not is_instance_valid(card) or not card.visible:return

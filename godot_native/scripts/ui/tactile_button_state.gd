@@ -25,6 +25,7 @@ func setup(target: Button,kind: String,size_name: String,keep_layout: bool=false
  var px: int=16 if size_name=="lg" else 14
  unit=float(button.get_theme_font_size("font_size") if button.get_meta("tactile_compensated_type",false) else px)/14.0
  material=Ui.tactile_material(variant,unit)
+ material.paper_ink=bool(button.get_meta("tactile_paper_ink",false))
  var original: StyleBox=button.get_theme_stylebox("normal")
  _padding=Vector4(original.get_margin(SIDE_LEFT),original.get_margin(SIDE_TOP),original.get_margin(SIDE_RIGHT),original.get_margin(SIDE_BOTTOM)) if compact else Vector4(18,1,18,1)*unit
  _padding.y=maxf(_padding.y,0.0 if compact else unit);_padding.w=maxf(_padding.w,0.0 if compact else unit)
@@ -71,14 +72,18 @@ func _apply() -> void:
    button.add_theme_font_override("font",Typography.display_font());button.set_meta("typography_role","display");_label_line=null
  for key: String in ["normal","hover","pressed","hover_pressed","disabled"]:
   if button.get_theme_stylebox(key)!=material:button.add_theme_stylebox_override(key,material)
- var ink: Color=Color.TRANSPARENT if _custom_label else TactileMaterial.PALETTES[variant][3]
+ var ink: Color=Color.TRANSPARENT if _custom_label else material.label_color()
  for key: String in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color"]:
   if not button.get_theme_color(key).is_equal_approx(ink):button.add_theme_color_override(key,ink)
- var disabled_ink: Color=Color.TRANSPARENT if _custom_label else (Color("c3c2be") if variant=="primary" else Color("62645f"))
+ var disabled_ink: Color=Color.TRANSPARENT if _custom_label else material.label_color(true)
  if not button.get_theme_color("font_disabled_color").is_equal_approx(disabled_ink):button.add_theme_color_override("font_disabled_color",disabled_ink)
  for key: String in ["icon_normal_color","icon_hover_color","icon_pressed_color","icon_hover_pressed_color","icon_focus_color"]:
   if not button.get_theme_color(key).is_equal_approx(ink):button.add_theme_color_override(key,ink)
- # Existing keyboard focus style and focus_mode intentionally remain unchanged.
+ if material.paper_ink:
+  var focus: StyleBox=button.get_theme_stylebox("focus")
+  if not focus is StyleBoxFlat or focus.border_color!=TactileMaterial.PaperInk.FOCUS:
+   button.add_theme_stylebox_override("focus",TactileMaterial.PaperInk.focus_style())
+ # Focus ownership, tab order and focus_mode intentionally remain unchanged.
  _updating=false
 
 func _process(delta: float) -> void:

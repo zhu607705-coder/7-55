@@ -3,6 +3,7 @@ extends Control
 signal finished(result: Dictionary)
 signal cancelled
 signal presentation_requested(id: String, payload: Dictionary)
+const PaperInk=preload("res://scripts/ui/paper_ink_material.gd")
 const WordModel=preload("res://scripts/games/prologue_word_model.gd")
 const SuccessPresentation=preload("res://scripts/ui/checkin_success_view.gd")
 const CharacterFlow=preload("res://scripts/games/prologue_character_flow.gd")
@@ -299,10 +300,11 @@ func _text(text:String,y:float,color:Color=INK,font_size:int=20,width:float=386,
 func _narration_card(text:String,y:float,height:float,speaker:String,font_size:int=20)->void:
 	# Quiet terminal output is readable independently from the moving ASCII field.
 	var box=Rect2(22,y,386,height)
-	draw_rect(box,PAPER)
-	draw_line(Vector2(38,y+36),Vector2(392,y+36),CharacterFlow.RULE,1)
-	_text(speaker,y+24,CharacterFlow.MUTED,14)
-	_text(text,y+64,INK,font_size,348,true)
+	draw_rect(box,PaperInk.PAPER)
+	PaperInk.draw_panel(get_canvas_item(),box)
+	draw_line(Vector2(38,y+36),Vector2(392,y+36),PaperInk.EDGE,1)
+	_text(speaker,y+24,PaperInk.SOFT_INK,14)
+	_text(text,y+64,PaperInk.INK,font_size,348,true)
 
 func _retained_words(y:float)->void:
 	# Keep each earned word intact; these are records of actual contacts, not
@@ -426,7 +428,8 @@ func _draw()->void:
 			var colon=line.find("：")
 			_narration_card(line.substr(colon+1),286,206,line.left(colon),23)
 	if paused:
-		draw_rect(Rect2(30,540,370,190),PAPER)
-		_text("已暂停",582,INK,25)
-		_text("文字已停住，已留下的字仍在。" if phase in ["deploy","intercept"] else "这一段停在这里。",624,INK,17)
+		var pause_rect:=Rect2(30,540,370,190)
+		draw_rect(pause_rect,PaperInk.PAPER);PaperInk.draw_panel(get_canvas_item(),pause_rect)
+		_text("已暂停",582,PaperInk.INK,25)
+		_text("文字已停住，已留下的字仍在。" if phase in ["deploy","intercept"] else "这一段停在这里。",624,PaperInk.INK,17)
 	draw_set_transform(Vector2.ZERO)

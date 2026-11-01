@@ -20,7 +20,7 @@
        size out of mobile layout, so landscape width cannot widen the viewport
        again before the next portrait resize. Godot still owns the pixel buffer. */
     #canvas { position: fixed; inset: 0; display: block; width: 100% !important; height: 100% !important; outline: none; touch-action: none; }
-    #loading { --boot-viewport-height: 100vh; position: fixed; inset: 0; z-index: 10; isolation: isolate; overflow: hidden; background: #D8C7A0; color: #344452; color-scheme: light; }
+    #loading { --boot-viewport-height: 100vh; position: fixed; inset: 0; z-index: 10; isolation: isolate; overflow: hidden; background: #D8C7A0; color: #1d1a1e; color-scheme: light; }
     #loading[hidden] { display: none; }
     #loading .boot-sheet { position: absolute; inset: 0; overflow: hidden; background: #F4EAD5; }
     #loading .boot-room { position: absolute; inset: 0; overflow: hidden; contain: paint; isolation: isolate; background: #243F5A; }
@@ -29,14 +29,14 @@
     #loading .boot-sunlight, #loading .boot-wake-glow, #loading .boot-dust { opacity: 1; }
     #loading .boot-wake-glow { transform: translate(-2px, -2px); }
     #loading .boot-content { position: absolute; inset: 0; pointer-events: none; }
-    #loading .boot-heading { position: absolute; top: max(24px, env(safe-area-inset-top, 0px)); left: max(24px, env(safe-area-inset-left, 0px)); width: min(350px, calc(100% - 48px)); padding: 16px 18px; border-left: 3px solid #9A514A; background: #F4EAD5; }
+    #loading .boot-heading { position: absolute; top: max(24px, env(safe-area-inset-top, 0px)); left: max(24px, env(safe-area-inset-left, 0px)); width: min(350px, calc(100% - 48px)); padding: 16px 18px; border: 1px solid #6f655a; border-radius: 2px; background: #f6efe2; }
     #loading .boot-transfer { position: absolute; right: max(24px, env(safe-area-inset-right, 0px)); bottom: max(24px, env(safe-area-inset-bottom, 0px)); width: min(380px, calc(100% - 48px)); }
     #loading .boot-eyebrow { font-size: 12px; line-height: 1.6; letter-spacing: .15em; color: #70503B; }
     #loading .boot-title { margin: 10px 0 6px; font-size: 76px; font-weight: 500; line-height: 1; color: #9A514A; }
     #loading .boot-subtitle { margin: 0 0 10px; font-size: 20px; line-height: 1.5; font-weight: 500; }
     #loading .boot-story { margin: 0; font-size: 17px; line-height: 1.7; color: #70503B; }
     #loading .boot-divider, #loading .boot-chapter-label { display: none; }
-    #loading .boot-status { position: relative; padding: 16px; pointer-events: auto; border: 1px solid #A1744E; background: #F4EAD5; box-shadow: 4px 4px 0 #D8C7A0; }
+    #loading .boot-status { position: relative; padding: 16px; pointer-events: auto; border: 1px solid #6f655a; border-radius: 2px; background: #f6efe2; box-shadow: 3px 4px 0 rgba(29,26,30,.28); }
     #loading .boot-status::after { content: ''; position: absolute; pointer-events: none; left: 7px; right: 7px; bottom: -5px; height: 5px; background: repeating-linear-gradient(90deg, #F4EAD5 0 7px, transparent 7px 10px); }
     #loading #loading-message { margin: 0; font-size: 16px; font-weight: 500; line-height: 1.7; white-space: pre-line; }
     #loading #loading-detail { min-height: 2.8em; margin: 0; color: #70503B; font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
@@ -45,7 +45,7 @@
     #loading progress::-webkit-progress-value { background: #9A514A; }
     #loading progress::-moz-progress-bar { background: #9A514A; }
     #loading .boot-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
-    #loading button:focus-visible { outline: calc(3 * var(--button-u)) solid #64748b; outline-offset: calc(3 * var(--button-u)); }
+    #loading button:focus-visible { outline: calc(3 * var(--button-u)) solid #a43b32; outline-offset: calc(3 * var(--button-u)); }
     #loading button:disabled { opacity: .65; cursor: wait; }
     #loading button[hidden], #loading progress[hidden] { display: none; }
     #loading .boot-footer { display: none; }
@@ -150,9 +150,9 @@
             <progress id="loading-progress" aria-label="游戏加载进度"></progress>
             <p id="loading-detail">先准备开场，后续内容会在游玩时后台加载。</p>
             <div class="boot-actions">
-              <button class="tactile-button" data-variant="primary" data-size="lg" id="start-game" type="button" hidden>进入游戏</button>
-              <button class="tactile-button" data-variant="secondary" data-size="lg" id="retry-game" type="button" hidden>重新加载</button>
-              <button class="tactile-button" data-variant="ghost" data-size="lg" id="boot-motion-toggle" type="button" aria-pressed="false" hidden>暂停动效</button>
+              <button class="tactile-button" data-skin="paper-ink" data-variant="primary" data-size="lg" id="start-game" type="button" hidden>进入游戏</button>
+              <button class="tactile-button" data-skin="paper-ink" data-variant="secondary" data-size="lg" id="retry-game" type="button" hidden>重新加载</button>
+              <button class="tactile-button" data-skin="paper-ink" data-variant="ghost" data-size="lg" id="boot-motion-toggle" type="button" aria-pressed="false" hidden>暂停动效</button>
             </div>
           </div>
           <div class="boot-footer">7:55 · 一场校园叙事解谜游戏</div>
