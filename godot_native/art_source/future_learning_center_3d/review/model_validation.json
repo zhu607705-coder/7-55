@@ -1,5 +1,5 @@
 {
-  "checks": 18,
+  "checks": 25,
   "failures": 0,
   "rows": [
     {
@@ -73,7 +73,7 @@
     {
       "pass": true,
       "label": "office_desk reusable instances",
-      "details": 64
+      "details": 66
     },
     {
       "pass": true,
@@ -87,7 +87,7 @@
     {
       "pass": true,
       "label": "caliper_150 reusable instances",
-      "details": 7
+      "details": 3
     },
     {
       "pass": true,
@@ -101,7 +101,7 @@
     {
       "pass": true,
       "label": "screwdriver_3x100 reusable instances",
-      "details": 7
+      "details": 3
     },
     {
       "pass": true,
@@ -111,6 +111,53 @@
         0.023000717163085938,
         0.023000001907348633
       ]
+    },
+    {
+      "pass": true,
+      "label": "printer_h2c exported instances",
+      "details": 2
+    },
+    {
+      "pass": true,
+      "label": "printer_h2c three-axis envelope matches manufacturer millimeters",
+      "details": [
+        0.4920005798339844,
+        0.5139999389648438,
+        0.625999927520752
+      ]
+    },
+    {
+      "pass": true,
+      "label": "printer_h2c three-axis envelope matches manufacturer millimeters",
+      "details": [
+        0.4920005798339844,
+        0.5139999389648438,
+        0.625999927520752
+      ]
+    },
+    {
+      "pass": true,
+      "label": "laser_p2s exported instances",
+      "details": 1
+    },
+    {
+      "pass": true,
+      "label": "laser_p2s three-axis envelope matches manufacturer millimeters",
+      "details": [
+        1.0,
+        0.6389999389648438,
+        0.26799988746643066
+      ]
+    },
+    {
+      "pass": true,
+      "label": "80 personal locker doors exist in exported geometry",
+      "details": null
+    },
+    {
+      "pass": true,
+      "label": "co-creation table has six independently authored modules",
+      "details": null
     }
   ]
 }

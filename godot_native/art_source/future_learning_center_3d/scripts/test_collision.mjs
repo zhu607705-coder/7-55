@@ -19,6 +19,23 @@ for(const [floor,data] of Object.entries(layout.floors)) {
  const seen=new Uint8Array(valid.length),queue=[indexNear(spawn)];seen[queue[0]]=1;
  for(let i=0;i<queue.length;i++){const k=queue[i],x=k%nx,z=Math.floor(k/nx);for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,zz=z+dz;if(xx<0||xx>=nx||zz<0||zz>=nz)continue;const n=zz*nx+xx;if(valid[n]&&!seen[n]){seen[n]=1;queue.push(n);}}}
  for(const room of data.rooms)check(seen[indexNear(nearestSafe(layout,floor,room.spawn))]===1,`${floor}F ${room.id} joins common door/corridor network`);
+ if(floor==='2'){
+  const r=data.rooms.find(r=>r.id==='mechatronics'),x=r.bounds[0]+.90,z=r.partition_z;
+  for(const [label,p] of [['electrical side',[x,z-.8]],['machining side',[x,z+.8]]]){
+   check(canStand(layout,floor,...p),`lab partition ${label} clear floor`);
+   check(seen[indexNear(p)]===1,`lab partition ${label} reaches corridor through an actual doorway`);
+  }
+  check(canStand(layout,floor,x,z),'1.2m acoustic-partition opening is walkable at eye-body radius');
+ }
+ if(floor==='4'){
+  const zones=['focus','collab','flex'].map(id=>data.rooms.find(r=>r.id===id));
+  for(const r of zones)check(r.enclosure==='open',`${r.id} remains a connected open work zone`);
+  for(let i=0;i<2;i++){
+   const a=zones[i],b=zones[i+1],x=(a.bounds[0]+a.bounds[2])/2,z=(a.bounds[3]+b.bounds[1])/2;
+   check(canStand(layout,floor,x,z),`open zones ${a.id}/${b.id} have no inherited dividing wall`);
+  }
+ }
+
 }
 // Recoverability: reverse input can leave a blocked surface, without teleporting.
 const p=nearestSafe(layout,'3',[.5,.5]);const blocked=moveBody(layout,'3',p,-100,0),away=moveBody(layout,'3',blocked,.7,0);check(away[0]>blocked[0]+.5,'reverse/away motion is not suppressed by a stale blocked flag');

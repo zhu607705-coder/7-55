@@ -28,6 +28,16 @@ for asset,expected in [('office_desk',1.4),('caliper_150',.233),('screwdriver_3x
   pts=[ob.matrix_world@Vector(corner) for ob in root.children_recursive if ob.type=='MESH' for corner in ob.bound_box]
   spans=[max(p[i] for p in pts)-min(p[i] for p in pts) for i in range(3)]
   check(abs(max(spans)-expected)<.01,asset+' exported meter scale',spans)
-report={'checks':len(rows),'failures':sum(not r['pass'] for r in rows),'rows':rows}
+for asset,expected in [('printer_h2c',[.492,.514,.626]),('laser_p2s',[1.0,.639,.268])]:
+ roots=[o for o in bpy.data.objects if o.get('assetId')==asset]
+ check(bool(roots),asset+' exported instances',len(roots))
+ for root in roots:
+  pts=[ob.matrix_world@Vector(corner) for ob in root.children_recursive if ob.type=='MESH' for corner in ob.bound_box]
+  spans=[max(p[i] for p in pts)-min(p[i] for p in pts) for i in range(3)]
+  check(all(abs(a-b)<.001 for a,b in zip(spans,expected)),asset+' three-axis envelope matches manufacturer millimeters',spans)
+f4=bpy.data.objects['Floor 4']
+check(sum(o.name.startswith('Personal locker door') for o in f4.children_recursive)==80,'80 personal locker doors exist in exported geometry')
+check(sum(o.name.startswith('Movable polygon table module') for o in f4.children_recursive)==6,'co-creation table has six independently authored modules')
+report={'checks' :len(rows),'failures':sum(not r['pass'] for r in rows),'rows':rows}
 (ROOT/'review/model_validation.json').write_text(json.dumps(report,indent=2));print('MODEL_VALIDATION',json.dumps(report))
 if report['failures']:raise SystemExit(1)

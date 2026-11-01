@@ -52,6 +52,28 @@
       },
       "source": "https://www2.wiha.com/files/asia-pacific/EN-Asia-Pacific_catalogue.pdf",
       "evidence": "Wiha320N, order00821: 3.0x100mm blade, overall204mm, tip0.5mm, handle diameter23mm. Handle detail is illustrative; no branded markings or manufacturer CAD claimed."
+    },
+    "printer_h2c": {
+      "name": "H2C 3D打印机尺寸参考",
+      "status": "dimension_driven_local_geometry",
+      "dimensions": {
+        "width": 0.492,
+        "depth": 0.514,
+        "height": 0.626
+      },
+      "source": "https://bambulab.cn/zh-cn/h2c/specs",
+      "evidence": "外形尺寸经厂家规格核对；内部、握柄和外壳细节为本地近似。需求文档采购型号，非实物现场库存认定。"
+    },
+    "laser_p2s": {
+      "name": "P2S 激光设备尺寸参考",
+      "status": "dimension_driven_local_geometry",
+      "dimensions": {
+        "width": 1.0,
+        "depth": 0.639,
+        "height": 0.268
+      },
+      "source": "https://wiki.xtool.cn/zh/p2/specification",
+      "evidence": "采用厂家外形规格；上盖和内部结构是可辨识的近似模型。需求文档中的附件尚未全部建模。"
     }
   },
   "external_candidates": [

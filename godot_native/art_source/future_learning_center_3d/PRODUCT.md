@@ -7,3 +7,6 @@ Web, desktop pointer/keyboard and mobile touch. Static, local dependencies, no G
 
 ## Evidence
 Previous viewer directory is absent in the current filesystem. Restore only the architectural trace data preserved in this conversation, retain the existing game's room data as an adjacency cross-check, and disclose estimated dimensions and missing 1F plan. 1F exhibition attribution is confirmed; exact floor boundaries are not known. Building height and footprint remain provisional. Furniture counts/placements are review choices, not a surveyed site inventory.
+
+## Feishu alignment revision
+Both supplied documents were actually read on2026-11-01, including the authenticated electrical/machining plan and procurement table. Main-document v1.3 is the functional brief; its diagram caveats remain authoritative. See `sources/feishu_alignment.md` for completed mappings and missing conference-room geometry. Manufacturer dimensions remain asset references, not building measurements or a verified site inventory.

@@ -1,14 +1,18 @@
 {
   "browser": "156.0.8078.79",
-  "checks": 35,
+  "checks": 36,
   "failures": 0,
   "rows": [
     {
-      "label": "complete 4F overview opens",
+      "label": "4F overview route opens",
       "pass": true
     },
     {
-      "label": "4F retains seven enclosed areas and whole floor entry",
+      "label": "all three ceilings stay hidden in overview, including multi-material GLB groups",
+      "pass": true
+    },
+    {
+      "label": "4F retains seven room/area entries and whole floor entry",
       "pass": true
     },
     {
@@ -81,7 +85,7 @@
       "pass": true
     },
     {
-      "label": "four manufacturer dimension sources are exposed",
+      "label": "six manufacturer dimension sources are exposed",
       "pass": true
     },
     {

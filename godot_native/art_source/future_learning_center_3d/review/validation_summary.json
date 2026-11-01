@@ -1,6 +1,6 @@
 {
   "model": {
-    "checks": 18,
+    "checks": 25,
     "failures": 0,
     "rows": [
       {
@@ -74,7 +74,7 @@
       {
         "pass": true,
         "label": "office_desk reusable instances",
-        "details": 64
+        "details": 66
       },
       {
         "pass": true,
@@ -88,7 +88,7 @@
       {
         "pass": true,
         "label": "caliper_150 reusable instances",
-        "details": 7
+        "details": 3
       },
       {
         "pass": true,
@@ -102,7 +102,7 @@
       {
         "pass": true,
         "label": "screwdriver_3x100 reusable instances",
-        "details": 7
+        "details": 3
       },
       {
         "pass": true,
@@ -112,11 +112,58 @@
           0.023000717163085938,
           0.023000001907348633
         ]
+      },
+      {
+        "pass": true,
+        "label": "printer_h2c exported instances",
+        "details": 2
+      },
+      {
+        "pass": true,
+        "label": "printer_h2c three-axis envelope matches manufacturer millimeters",
+        "details": [
+          0.4920005798339844,
+          0.5139999389648438,
+          0.625999927520752
+        ]
+      },
+      {
+        "pass": true,
+        "label": "printer_h2c three-axis envelope matches manufacturer millimeters",
+        "details": [
+          0.4920005798339844,
+          0.5139999389648438,
+          0.625999927520752
+        ]
+      },
+      {
+        "pass": true,
+        "label": "laser_p2s exported instances",
+        "details": 1
+      },
+      {
+        "pass": true,
+        "label": "laser_p2s three-axis envelope matches manufacturer millimeters",
+        "details": [
+          1.0,
+          0.6389999389648438,
+          0.26799988746643066
+        ]
+      },
+      {
+        "pass": true,
+        "label": "80 personal locker doors exist in exported geometry",
+        "details": null
+      },
+      {
+        "pass": true,
+        "label": "co-creation table has six independently authored modules",
+        "details": null
       }
     ]
   },
   "collision": {
-    "checks": 78,
+    "checks": 88,
     "failures": 0,
     "rows": [
       {
@@ -205,6 +252,26 @@
       },
       {
         "label": "2F koala joins common door/corridor network",
+        "pass": true
+      },
+      {
+        "label": "lab partition electrical side clear floor",
+        "pass": true
+      },
+      {
+        "label": "lab partition electrical side reaches corridor through an actual doorway",
+        "pass": true
+      },
+      {
+        "label": "lab partition machining side clear floor",
+        "pass": true
+      },
+      {
+        "label": "lab partition machining side reaches corridor through an actual doorway",
+        "pass": true
+      },
+      {
+        "label": "1.2m acoustic-partition opening is walkable at eye-body radius",
         "pass": true
       },
       {
@@ -428,6 +495,26 @@
         "pass": true
       },
       {
+        "label": "focus remains a connected open work zone",
+        "pass": true
+      },
+      {
+        "label": "collab remains a connected open work zone",
+        "pass": true
+      },
+      {
+        "label": "flex remains a connected open work zone",
+        "pass": true
+      },
+      {
+        "label": "open zones focus/collab have no inherited dividing wall",
+        "pass": true
+      },
+      {
+        "label": "open zones collab/flex have no inherited dividing wall",
+        "pass": true
+      },
+      {
         "label": "reverse/away motion is not suppressed by a stale blocked flag",
         "pass": true
       }
@@ -435,15 +522,19 @@
   },
   "browser": {
     "browser": "156.0.8078.79",
-    "checks": 35,
+    "checks": 36,
     "failures": 0,
     "rows": [
       {
-        "label": "complete 4F overview opens",
+        "label": "4F overview route opens",
         "pass": true
       },
       {
-        "label": "4F retains seven enclosed areas and whole floor entry",
+        "label": "all three ceilings stay hidden in overview, including multi-material GLB groups",
+        "pass": true
+      },
+      {
+        "label": "4F retains seven room/area entries and whole floor entry",
         "pass": true
       },
       {
@@ -516,7 +607,7 @@
         "pass": true
       },
       {
-        "label": "four manufacturer dimension sources are exposed",
+        "label": "six manufacturer dimension sources are exposed",
         "pass": true
       },
       {
@@ -594,8 +685,84 @@
     ],
     "scope": "Chrome desktop and emulated multi-touch; not physical mobile acceptance"
   },
+  "source_views": {
+    "browser": "156.0.8078.79",
+    "checks": 17,
+    "failures": 0,
+    "rows": [
+      {
+        "label": "electrical lab starts on a physically safe in-room point",
+        "pass": true
+      },
+      {
+        "label": "two source-requested H2C instances are exposed",
+        "pass": true
+      },
+      {
+        "label": "H2C remains visible in room overview",
+        "pass": true
+      },
+      {
+        "label": "ordinary H2C geometry click opens inspection",
+        "pass": true
+      },
+      {
+        "label": "machine inspector exposes all three manufacturer dimensions",
+        "pass": true
+      },
+      {
+        "label": "co_creation has a safe ordinary walk entry",
+        "pass": true
+      },
+      {
+        "label": "conference_seminar has a safe ordinary walk entry",
+        "pass": true
+      },
+      {
+        "label": "interview has a safe ordinary walk entry",
+        "pass": true
+      },
+      {
+        "label": "open_office has a safe ordinary walk entry",
+        "pass": true
+      },
+      {
+        "label": "open_discussion has a safe ordinary walk entry",
+        "pass": true
+      },
+      {
+        "label": "recording has a safe ordinary walk entry",
+        "pass": true
+      },
+      {
+        "label": "pantry has a safe ordinary walk entry",
+        "pass": true
+      },
+      {
+        "label": "storage has a safe ordinary walk entry",
+        "pass": true
+      },
+      {
+        "label": "both actually read Feishu requirement sources are available in the viewer",
+        "pass": true
+      },
+      {
+        "label": "missing formal conference geometry is disclosed in the review interface",
+        "pass": true
+      },
+      {
+        "label": "source dialog remains readable within mobile viewport",
+        "pass": true
+      },
+      {
+        "label": "source-specific views have no page or console errors",
+        "pass": true
+      }
+    ],
+    "errors": []
+  },
   "build": {
-    "meshes": 3715,
+    "meshes": 4849,
     "floors": [
       2,
       3,
@@ -612,19 +779,23 @@
       42.4
     ],
     "studio_1_area_m2": 24.78,
-    "shared_meshes": 713,
+    "shared_meshes": 1310,
     "tool_dimensions_m": {
       "caliper_length": 0.233,
       "screwdriver_length": 0.204
     },
-    "glb_sha256": "e24e42a53a0bec9f6bb704227f1464d67ba206cd115e4e17dd7675fcf9cbd704"
+    "glb_sha256": "d0670798d586ffab5308fbf151979f888b031d96bcd7f7b9b84defc351502229"
   },
-  "review": "Final desktop/mobile captures inspected; one detector dark-glow warning reviewed as false positive on a light surface with offset modal shadow.",
+  "review": "Current Feishu-aligned revision. Desktop/room/first-person/tool/mobile screenshots reviewed. Ceilings with multiple materials now preserve their semantic type; hidden/clipped surfaces are excluded from picking. Final 4F southwest formal-conference geometry remains missing; no full-building/site/production-game acceptance claimed.",
   "artifact_sha256": {
-    "flc_walkthrough.blend": "20632e9fb4b835ed8965330f73063767b11e9fb4dfa074306425cdf9bd576773",
-    "web/assets/building.glb": "e24e42a53a0bec9f6bb704227f1464d67ba206cd115e4e17dd7675fcf9cbd704",
-    "web/assets/layout.json": "1db863ff81d0f61cdb6b869ddb084f4e88e499608873ccecf1b646ebc77bca72",
-    "web/viewer.js": "88d27433fa46b53de67563a93911b1a64ab1845ad41d7217d9ca4a40ca5e90a0",
-    "web/collision.js": "51ac4bb965dc7580a3a01f14bc98830bdc0172dc07134948ab61dcfb88cf9424"
+    "flc_walkthrough.blend": "7e1d480f6eb152a04d40e5b3632e408e23ee10b9a3a6a07c761216c204de9f30",
+    "web/assets/building.glb": "d0670798d586ffab5308fbf151979f888b031d96bcd7f7b9b84defc351502229",
+    "web/assets/layout.json": "c0149a80792daf057ccdface5423ba1989a901a76aefa356d3b8f8de9dba374f",
+    "web/assets/asset_catalog.json": "1cf42d69e1305c44423867f171d8f0eb1782310dca6aea781af754186accebf6",
+    "web/viewer.js": "5a17efa741ce3f09c0a93f9a34a184f6dd20417a59e9916550cc9c05d757ce52",
+    "web/index.html": "ec8102aeb779f37f2b443f9943040f51b289e7b7e3156cd85e92ec9d5f65eb5f",
+    "web/collision.js": "51ac4bb965dc7580a3a01f14bc98830bdc0172dc07134948ab61dcfb88cf9424",
+    "scripts/build_scene.py": "1eb0a81a5b0cf5c2e22d2ada9c3b0fe5ecdd4205e79e04130b75e8b126c7b3d0",
+    "sources/feishu_alignment.md": "88026cfa5df60d42d8b0e3218072fbc03421091de9876bf6b6fca4cf825a0603"
   }
 }

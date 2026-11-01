@@ -1,5 +1,5 @@
 {
-  "checks": 78,
+  "checks": 88,
   "failures": 0,
   "rows": [
     {
@@ -88,6 +88,26 @@
     },
     {
       "label": "2F koala joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "lab partition electrical side clear floor",
+      "pass": true
+    },
+    {
+      "label": "lab partition electrical side reaches corridor through an actual doorway",
+      "pass": true
+    },
+    {
+      "label": "lab partition machining side clear floor",
+      "pass": true
+    },
+    {
+      "label": "lab partition machining side reaches corridor through an actual doorway",
+      "pass": true
+    },
+    {
+      "label": "1.2m acoustic-partition opening is walkable at eye-body radius",
       "pass": true
     },
     {
@@ -308,6 +328,26 @@
     },
     {
       "label": "4F flex joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "focus remains a connected open work zone",
+      "pass": true
+    },
+    {
+      "label": "collab remains a connected open work zone",
+      "pass": true
+    },
+    {
+      "label": "flex remains a connected open work zone",
+      "pass": true
+    },
+    {
+      "label": "open zones focus/collab have no inherited dividing wall",
+      "pass": true
+    },
+    {
+      "label": "open zones collab/flex have no inherited dividing wall",
       "pass": true
     },
     {
