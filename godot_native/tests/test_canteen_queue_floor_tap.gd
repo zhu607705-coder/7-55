@@ -131,6 +131,18 @@ func run() -> void:
 	root.size=Vector2i(844,390);shell.size=Vector2(844,390);shell._layout();await frames(4)
 	state.action_completed.connect(func(id,_a,_b,_c):actions.append(id))
 	state.feedback.connect(func(line):feedback.append(line))
+	# Repeated walking/planning reads must not append world voids to the native cache.
+	var foot:=Metrics.foot_rect(Vector2.ZERO)
+	var cached:Array=shell.world.native_canteen.navigation_obstacles(foot).duplicate()
+	var obstacles:Array=shell.world._floor_obstacles()
+	var expected_obstacles:Array=obstacles.duplicate()
+	var stable:=true
+	for iteration in 64:
+		stable=stable and shell.world._floor_obstacles()==expected_obstacles
+	check(stable,"repeated route geometry reads retain exact obstacle order and contents")
+	check(shell.world.native_canteen.navigation_obstacles(foot)==cached,"route-local additions never grow or alter native navigation cache")
+	obstacles.append(Rect2(-999,-999,1,1))
+	check(shell.world.native_canteen.navigation_obstacles(foot)==cached and shell.world._floor_obstacles().size()==obstacles.size()-1,"caller-owned obstacle mutation cannot escape into navigation cache")
 	for using_touch in [false,true]:
 		await replay_approach()
 		var request:=source_screen(NEAR_WALL)
