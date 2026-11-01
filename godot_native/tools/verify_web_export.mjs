@@ -10,6 +10,7 @@ import path from 'node:path';
 import { phoneRecoveryCase } from './web_phone_recovery.mjs';
 import { phoneGroups, assertPhoneCoverage } from './web_phone_shards.mjs';
 import { phoneNavigationCase } from './web_phone_navigation.mjs';
+import { startTransportAudit } from './web_transport_audit.mjs';
 
 const args = process.argv.slice(2);
 function option(name, fallback) { const inline = args.find(arg => arg.startsWith(`--${name}=`)); if (inline) return inline.slice(name.length + 3); const i = args.indexOf(`--${name}`); return i < 0 ? fallback : args[i + 1]; }
@@ -70,6 +71,9 @@ report.runnerSha256 = hash(runnerBytes);
 if (exportDir && existsSync(path.join(exportDir, 'build-manifest.json'))) report.exportManifest = JSON.parse(await readFile(path.join(exportDir, 'build-manifest.json'), 'utf8'));
 await mkdir(output, { recursive: true });
 await writeFile(path.join(output, 'runner-source.mjs'), runnerBytes);
+const transportSource = await readFile(new URL('./web_transport_audit.mjs', import.meta.url));
+report.transportAuditRunnerSha256 = hash(transportSource);
+await writeFile(path.join(output, 'transport-audit-runner.mjs'), transportSource);
 if (scenarios === 'phone-navigation') {
   const dependency = await readFile(new URL('./web_phone_navigation.mjs', import.meta.url));
   report.phoneNavigationRunnerSha256 = hash(dependency);
@@ -1962,21 +1966,24 @@ async function browserCase(id, width, height, touch, dpr = 1) {
     } });
   }
 }
+let transportAudit;
 try {
   const selected = [['desktop-1280', 1280, 720, false, 1], ['desktop-1440', 1440, 900, false, 1], ['touch-390', 390, 844, true, 1], ['retina-1440', 1440, 900, false, 2], ['retina-touch-390', 390, 844, true, 3], ['desktop-1920', 1920, 1080, false, 1]].filter(([id]) => (only === 'all' || id === only) && (scenarios !== 'streaming' || id === 'desktop-1280') && (!['mobile-world', 'phone-recovery'].includes(scenarios) || ['desktop-1280', 'touch-390', 'retina-touch-390'].includes(id)));
   check(selected.length > 0, 'at least one requested viewport selected');
   delivery = await prepareDeliveryEvidence();
-  for (const selectedCase of selected) await browserCase(...selectedCase);
   report.assets = [];
-  for (const resource of delivery.transport) {
-    const { relativePath, local } = artifactLocation(resource.url);
-    const response = await fetch(resource.url, { cache: 'no-cache' }); check(response.status === 200, `transport asset independently fetched in full: ${relativePath}`); const h = createHash('sha256'); let bytes = 0; for await (const chunk of response.body) { h.update(chunk); bytes += chunk.length; } const sha256 = h.digest('hex');
-    check(bytes === resource.bytes && sha256 === resource.sha256, `independent HTTP transport bytes match the actual manifest: ${relativePath}`, { bytes, sha256, expectedBytes: resource.bytes, expectedSha256: resource.sha256 });
-    if (local) { check(existsSync(local), `export artifact exists: ${relativePath}`); check(await shaFile(local) === sha256, `HTTP bytes match actual Godot export: ${relativePath}`); }
-    report.assets.push({ url: resource.url, relativePath, role: resource.role, resource: resource.resource, bytes, sha256, local, observedInBrowser: report.network.some(record => record.url === resource.url) });
-  }
+  transportAudit = startTransportAudit({resources: delivery.transport, locate: artifactLocation,
+    check, shaFile, exists: existsSync, onAsset: (asset, index) => { report.assets[index] = asset; }});
+  report.transportAudit = transportAudit.evidence;
+  for (const selectedCase of selected) await browserCase(...selectedCase);
+  const audited = await transportAudit.completion;
+  if (audited.error) throw audited.error;
+  for (const asset of report.assets) asset.observedInBrowser = report.network.some(record => record.url === asset.url);
   report.passed = report.cases.every(c => c.passed) && report.checks.every(c => c.ok);
-} catch (e) { report.errors.push(e.stack || String(e)); process.exitCode = 1; }
+} catch (e) {
+  report.errors.push(e.stack || String(e)); process.exitCode = 1;
+  if (transportAudit) { transportAudit.cancel(e); await transportAudit.completion; }
+}
 report.completedAt = new Date().toISOString(); await persist();
 console.log(`Godot Web acceptance ${report.passed ? 'PASS' : 'FAIL'}: ${report.checks.length} checks; ${report.cases.length} browser cases; ${output}`);
 if (!report.passed) console.error(report.errors.join('\n'));

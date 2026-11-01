@@ -28,7 +28,7 @@ function visit(relative) {
 for (const entry of entrypoints) visit(`godot_native/tools/${entry}`);
 
 await test('actual Web consumer dependency closure fits the exact tools-only sparse checkout', async t => {
-  assert.deepEqual([...closure].sort(), ['verify_web_export.mjs', 'web_acceptance_bundle.mjs', 'web_phone_navigation.mjs', 'web_phone_recovery.mjs', 'web_phone_shards.mjs'].map(name => `godot_native/tools/${name}`).sort());
+  assert.deepEqual([...closure].sort(), ['verify_web_export.mjs', 'web_acceptance_bundle.mjs', 'web_phone_navigation.mjs', 'web_phone_recovery.mjs', 'web_phone_shards.mjs', 'web_transport_audit.mjs'].map(name => `godot_native/tools/${name}`).sort());
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), '755-web-sparse-consumer-'));
   t.after(() => fs.rmSync(temporary, {recursive:true, force:true}));
   const full = path.join(temporary, 'full'), sparse = path.join(temporary, 'sparse');

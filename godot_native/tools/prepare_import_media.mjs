@@ -20,7 +20,7 @@ export async function prepareImportAndMedia({root=path.resolve(import.meta.dirna
   const began=Date.now();
   try {
     fs.mkdirSync(logs,{recursive:true});
-    const converter='tools/convert_media.sh',inputs=[converter,...MEDIA_CLIPS.map(name=>`assets/${name}.mp4`)];
+    const converter='tools/convert_media.sh',inputs=[converter,'tools/media_conversion_cache.cjs',...MEDIA_CLIPS.map(name=>`assets/${name}.mp4`)];
     const hashes=new Map(inputs.map(relative=>[relative,fileDigest(path.join(project,relative))]));
     for(const relative of inputs){const target=path.join(media,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(project,relative),target);if(fileDigest(target)!==hashes.get(relative))throw Error(`Copied media input changed: ${relative}`);}
     // The temporary converter has its own workspace lock and outputs. It cannot

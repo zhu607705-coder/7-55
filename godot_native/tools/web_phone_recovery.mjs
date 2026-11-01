@@ -41,7 +41,7 @@ export async function waitForBrightnessControl(h, afterFrame) {
   }, 'fresh native brightness control is visible and usable', 20000);
 }
 
-async function continuousExercise(h, evidence) {
+export async function continuousExercise(h, evidence) {
   const initial = await h.poll(async () => {
     const s = await h.snapshot();
     return s.activeGame?.script === 'res://scripts/games/virtual_run.gd' && s.visibleControls.some(c => c.name === 'RunProgress') ? s : null;
@@ -70,7 +70,27 @@ async function continuousExercise(h, evidence) {
   const count = s => Number(s.visibleControls.find(c => c.name === 'RunProgress')?.text.match(/(\d+)\s*\/\s*10/)?.[1]);
   h.check(count(initial) === 0, `${h.id}: exercise starts with zero controller-earned fixes`);
   for (let segment = 0; segment < 10; segment++) {
-    let s = await h.snapshot(), last = await h.renderPoint(screenPoint(pointAt(fractions[segment] * length), s), s);
+    let s = await h.snapshot();
+    // renderPoint is an axis-aligned canvas/viewport mapping. Measure it once
+    // per segment instead of making a browser Runtime.evaluate round trip for
+    // every two source pixels. The trajectory, 80ms cadence and authority reads
+    // below stay unchanged. Revalidate at every existing eight-input boundary;
+    // a resized/reframed canvas fails closed and finally releases the pointer.
+    const timing = {segment: segment + 1, startedAt: Date.now(), geometryCalls: 0, geometryMs: 0, pointerMoves: 0, inputWaitMs: 0};
+    (evidence.exerciseTransport ||= []).push(timing);
+    const measure = async (point, value) => {
+      const began = Date.now();
+      try { return await h.renderPoint(point, value); }
+      finally { timing.geometryCalls++; timing.geometryMs += Date.now() - began; }
+    };
+    const origin = await measure({x: 0, y: 0}, s);
+    const corner = await measure({x: 100, y: 100}, s);
+    const transform = point => ({x: origin.x + point.x * (corner.x - origin.x) / 100,
+      y: origin.y + point.y * (corner.y - origin.y) / 100});
+    h.check([origin.x, origin.y, corner.x, corner.y].every(Number.isFinite) && corner.x > origin.x && corner.y > origin.y,
+      `${h.id}: segment ${segment + 1} uses a measured positive canvas transform`);
+    const geometry = JSON.stringify({rect: s.activeGame.rect, viewport: s.viewport});
+    let last = transform(screenPoint(pointAt(fractions[segment] * length), s));
     h.check(count(s) === segment, `${h.id}: segment ${segment + 1} starts at the previous genuine checkpoint`);
     evidence.inputs.push({ method: h.touch ? 'ordinaryTouchDrag' : 'ordinaryMouseDrag', name: 'VirtualRunTrack', segment: segment + 1, at: Date.now() });
     await h.pointer('start', last);
@@ -78,11 +98,16 @@ async function continuousExercise(h, evidence) {
       const start = fractions[segment] * length, finish = fractions[segment + 1] * length;
       const steps = Math.ceil((finish - start) / 2);
       for (let step = 1; step <= steps; step++) {
-        last = await h.renderPoint(screenPoint(pointAt(start + (finish - start) * step / steps), s), s);
-        await h.pointer('move', last); await h.interval(80);
+        const sourcePoint = pointAt(start + (finish - start) * step / steps);
+        last = transform(screenPoint(sourcePoint, s));
+        await h.pointer('move', last); timing.pointerMoves++; await h.interval(80); timing.inputWaitMs += 80;
         if (step % 8 === 0) {
           s = await h.snapshot();
           if (count(s) === segment + 1) break;
+          const actual = await measure(screenPoint(sourcePoint, s), s);
+          h.check(JSON.stringify({rect: s.activeGame.rect, viewport: s.viewport}) === geometry &&
+            Math.hypot(actual.x - last.x, actual.y - last.y) < .01,
+            `${h.id}: continuous exercise canvas remains registered after input ${step} of segment ${segment + 1}`);
         }
       }
       s = await h.poll(async () => {
@@ -90,7 +115,7 @@ async function continuousExercise(h, evidence) {
         return count(current) === segment + 1 ? current : null;
       }, `continuous pointer traversal completes running segment ${segment + 1}`, 8000);
       evidence.samples.push({ label: `continuous exercise segment ${segment + 1}`, at: Date.now(), progress: s.visibleControls.find(c => c.name === 'RunProgress').text });
-    } finally { await h.pointer('end', last); }
+    } finally { timing.finishedAt = Date.now(); await h.pointer('end', last); }
   }
   const accepted = await h.poll(async () => {
     const s = await h.snapshot();
