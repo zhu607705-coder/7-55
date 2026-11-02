@@ -1,21 +1,20 @@
 import * as THREE from 'three';
-import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
+import {createModelLoader} from './model_loader.js';
 
 // Share one decoder; optional failure retains the authored building furniture.
-export async function loadChairAssets(variant='authored') {
+export async function loadChairAssets(variant='authored',shared=null) {
  const folder=`./assets/models/ergonomic_chair/${variant==='hyper3d'?'hyper3d':'authored'}/`;
- const decoder=new DRACOLoader().setDecoderPath('./vendor/three/draco/').setWorkerLimit(2);
+ const codec=shared||createModelLoader();
  try {
   const response=await fetch(folder+'manifest.json');if(!response.ok)throw Error('Chair manifest unavailable');
-  const manifest=await response.json(),loader=new GLTFLoader().setDRACOLoader(decoder);
+  const manifest=await response.json(),loader=codec.loader;
   const levels=await Promise.all(manifest.levels.map(async level=>{
    const gltf=await loader.loadAsync(folder+level.file);gltf.scene.updateMatrixWorld(true);
    const parts=[];gltf.scene.traverse(mesh=>{if(!mesh.isMesh)return;const geometry=mesh.geometry.clone();geometry.applyMatrix4(mesh.matrixWorld);parts.push({geometry,material:mesh.material});});
    return {parts,triangles:level.triangles};
   }));
   return {variant,manifest,levels,hero(){const g=new THREE.Group();for(const {geometry,material} of levels[0].parts){const m=new THREE.Mesh(geometry,material.clone());m.castShadow=true;m.receiveShadow=true;m.userData.kind='tool';g.add(m);}return g;}};
- } catch(error) {return null;} finally {decoder.dispose();}
+ } catch(error) {return null;} finally {if(!shared)codec.dispose();}
 }
 
 // Shared geometry, original placements/colliders, projected-height detail levels.

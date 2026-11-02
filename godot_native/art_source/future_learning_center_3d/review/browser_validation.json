@@ -30,7 +30,7 @@
     {
       "label": "ordinary keyboard moves observer",
       "pass": true,
-      "distance": 0.674850000000002
+      "distance": 0.6748499999999948
     },
     {
       "label": "ordinary movement stays collision-valid",

@@ -14,7 +14,8 @@
         1.0
       ],
       "role": "static reusable wheeled exhibit table; four variants remain dimension-led",
-      "status": "reference_ready_quote_pending_user_confirmation"
+      "status": "hi3d_succeeded_local_geometry_cleanup_viewer_review",
+      "generationRecord": "pipeline/hi3d/batch_20261102.json"
     },
     {
       "id": "thread_cube_exhibit",
@@ -34,7 +35,8 @@
         0.54
       ],
       "role": "folded reflective foil-covered installation silhouette; not exact student-work reproduction",
-      "status": "reference_ready_quote_pending_user_confirmation"
+      "status": "hi3d_succeeded_local_geometry_cleanup_viewer_review",
+      "generationRecord": "pipeline/hi3d/batch_20261102.json"
     },
     {
       "id": "rest_sofa",
@@ -44,7 +46,8 @@
         0.86
       ],
       "role": "requirements-led compact two-seat sofa; site brand unknown",
-      "status": "reference_ready_quote_pending_user_confirmation"
+      "status": "hi3d_succeeded_local_geometry_cleanup_viewer_review",
+      "generationRecord": "pipeline/hi3d/batch_20261102.json"
     },
     {
       "id": "office_sit_stand_desk",
@@ -57,7 +60,7 @@
       "status": "local_structure_retained"
     }
   ],
-  "pipeline": "reference -> Hi3D quote -> explicit confirmation of current quote -> generation -> local uniform metric normalization, LOD/Draco -> Three.js review",
+  "pipeline": "reference -> current confirmed45point quote per asset -> Hi3D -> local metric and manufacturing cleanup -> true polygon LODs plus texture budgets and Draco -> Three.js scene/interaction review",
   "geometryLocks": [
     "Room bounds, architectural walls and door openings are unchanged",
     "Maintain north visitor route at least1m",

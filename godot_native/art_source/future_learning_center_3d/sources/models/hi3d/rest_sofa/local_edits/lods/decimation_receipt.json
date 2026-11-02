@@ -1,0 +1,29 @@
+{
+  "source": "sofa_metric.glb",
+  "sourceSha256": "f7ad0b0b211bc1bd585802803701bc4522727e34df359e1f477eb4f5bb40711d",
+  "tool": "Blender 5.2.2 LTS",
+  "method": "Decimate collapse, UV data preserved; visual acceptance required",
+  "levels": [
+    {
+      "level": 0,
+      "target": 20000,
+      "triangles": 19999,
+      "file": "lod0_source.glb",
+      "sha256": "538621ac978cf5f7584ff3de0a2899cd5416439b5cfd75450aa4de54623a2b98"
+    },
+    {
+      "level": 1,
+      "target": 8000,
+      "triangles": 7999,
+      "file": "lod1_source.glb",
+      "sha256": "2d4225308cd5fddfa81f034f751c6fb6601324633dc5ef27bf611cfac06702f5"
+    },
+    {
+      "level": 2,
+      "target": 2000,
+      "triangles": 2000,
+      "file": "lod2_source.glb",
+      "sha256": "125be730b9b63f0398cde9a8c5f857edb37a138e7a528b4ba05748bcf6f7151d"
+    }
+  ]
+}

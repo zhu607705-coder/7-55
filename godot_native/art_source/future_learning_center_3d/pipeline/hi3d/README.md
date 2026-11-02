@@ -52,18 +52,25 @@ conversation groups, and one compact sofa. No room bounds or door openings were
 redesigned from the concept. Original user-photo paths were unavailable, so no
 new source-photo hashes or exact student-work reconstruction are claimed.
 
-Three exact quotes were obtained, one per complete asset input set:
-mobile exhibition table45points, silver exhibit45points, sofa45points. All use
-v3.0 high_quality/standard, model_with_texture, PBR enabled and private visibility.
-The table's three views are quoted together as one object. The quote records
-include expiration times; no paid task has been submitted.
+Three successful tasks used the explicitly approved135point batch:
 
-The tool contract requires explicit confirmation of the current estimate before
-`create_generation(confirmed=true)`. The user was offered a45point table pilot or
-the135point three-asset batch. Pending amount confirmation is not permission.
-Refresh an expired quote only when ready to submit; do not keep requoting the
-same unchanged parameters while waiting. Ask again if price or scope changes.
-Submissions are never automatically retried after a timeout or uncertain state.
+| Asset | Task | Actual points |
+|---|---|---|
+| Mobile exhibition table | d0d4c88ae6c444f8bdc3ff66e144560a |45|
+| Silver-covered exhibit | dcdd1e8a91ed4571aa4e3c706d5d1abd |45|
+| Two-seat sofa | ed018de298f64816945e46b92a6b295b |45|
+
+`batch_20261102.json` is the current ledger. The older pending-quote file is
+historical and explicitly superseded. One rejected silver submission created
+no task and deducted no points, verified by task listing and balance. Only after
+reconciliation and first-task completion was a new45point quote submitted once.
+There are no uncertain or automatically repeated paid jobs. Latest reported
+balance is25points; task receipts own the135point cost rather than subtracting
+a historical balance snapshot. Permanent model-page URLs are in each receipt.
+
+`download_outputs.py` preserves both provider GLBs, native previews, hashes and
+provenance. Its private input contains signed download URLs and stays outside
+the source tree. No credentials or signed URLs belong in this package.
 
 ## Work completed independently of paid generation
 
@@ -89,3 +96,43 @@ outputs still require original-file preservation, metric/axis calibration,
 material-map inspection, local LOD/Draco processing and real viewer acceptance
 before replacing the corresponding furniture. This pass is the independent3D
 authoring viewer; it does not constitute a native Godot release.
+
+## Local geometry, materials and runtime acceptance
+
+Table: keep the original caster/frame geometry; `pipeline/refine_table.py`
+replaces its wavy board with a flat rounded manufactured top and adjusts satin
+steel. Four widths translate end assemblies without changing caster size.
+Sofa: `pipeline/refine_sofa.py` edits seat span to fit the reserved footprint,
+keeps exterior bands rigid, preserves the color map, authors matte dielectric
+upholstery and smooth vertex normals. Raw imports had no NORMAL attribute;
+exporting them with flat DCC shading caused false surface seams and was rejected.
+Silver exhibit: uniform placement scale fits its generated silhouette on the
+existing table, without stretching the room or the model.
+
+Blender's `pipeline/decimate_static.py` bakes true polygon LODs for the edited
+meshes; ordinary simplification can stall at split normals/UV seams.
+`pipeline/build_asset.mjs` accepts INPUT OUTPUT HEIGHT YAW MAX_TEXTURE_PX
+followed by optional MID_SOURCE FAR_SOURCE. All levels share the same metric
+calibration. It resizes maps to1024/512/256, emits plain and Draco GLBs, independently
+decodes them, and checks topology and envelope errors below1mm.
+
+All original Hi3D models have base-color and metallic/roughness textures; they
+have no normal or AO texture. The sofa's unreliable metallic response is
+intentionally replaced locally. Original files are never overwritten.
+
+`web/assets/generated_furniture_catalog.json` binds six placements to the three
+paid sources plus local variants. One shared local Draco decoder serves the
+chair and these static assets. Highest detail is forced on ordinary object
+inspection; distance controls LOD elsewhere. Failed optional assets keep
+authored fallback geometry. Neutral local environment reflections support foil
+and satin metal without remote HDR downloads.
+
+Run `node scripts/test_hi3d_assets.mjs` for fee/source receipts, actual reductions,
+map budgets, geometry envelopes, six placements, pointer inspection, rotation,
+return, mobile sizing and injected per-asset/catalog failure. Also run the
+existing collision, browser, floor, furniture, north-density, chair-asset and
+exhibition/pantry regressions. This acceptance is local Chrome desktop/mobile
+emulation; physical mobile and native Godot integration are separate work.
+
+Rebuild all local derivatives without paid calls: `python3 pipeline/rebuild_hi3d.py`.
+Preserved normalized inputs are tracked and hashed in the edit receipts.

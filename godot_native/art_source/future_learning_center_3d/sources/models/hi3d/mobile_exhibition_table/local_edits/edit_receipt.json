@@ -1,0 +1,44 @@
+{
+  "source": "web/assets/models/hi3d/mobile_exhibition_table/lod0.glb",
+  "sourceSha256": "b8ffec81cb8ef99517d46e554e9b1e01b73d101c61025d8ff8ddc1eb1e487806",
+  "operations": [
+    "bisect generated tabletop at0.95m",
+    "flat rounded board with1.5mm bevel; top1.00m",
+    "satin metal material on support faces above0.17m",
+    "rigid end-assembly shifts for width variants; caster size unchanged"
+  ],
+  "variants": [
+    {
+      "widthCode": "150",
+      "widthM": 1.5,
+      "tabletopDepthM": 0.65,
+      "file": "sources/models/hi3d/mobile_exhibition_table/local_edits/table_150.glb",
+      "sha256": "65673c3d189c5b06680c8931ab6bf4b8da61f332fab4350568435acfa7d4dde4",
+      "bytes": 1351784
+    },
+    {
+      "widthCode": "135",
+      "widthM": 1.35,
+      "tabletopDepthM": 0.6,
+      "file": "sources/models/hi3d/mobile_exhibition_table/local_edits/table_135.glb",
+      "sha256": "746dc4028d63d02d32d08a31e6f21bafa314177d838fba60f319bd3603e93e1f",
+      "bytes": 1351832
+    },
+    {
+      "widthCode": "125",
+      "widthM": 1.25,
+      "tabletopDepthM": 0.6,
+      "file": "sources/models/hi3d/mobile_exhibition_table/local_edits/table_125.glb",
+      "sha256": "91d3ad15061bd844f2abfb9b7e3621e70b790a99cec437af389654ba5b32497f",
+      "bytes": 1351808
+    },
+    {
+      "widthCode": "120",
+      "widthM": 1.2,
+      "tabletopDepthM": 0.6,
+      "file": "sources/models/hi3d/mobile_exhibition_table/local_edits/table_120.glb",
+      "sha256": "2ea947c15b454086d7df00a2bf4b8a65f9eaf0b47604171edc61b0c97cd65c88",
+      "bytes": 1351836
+    }
+  ]
+}

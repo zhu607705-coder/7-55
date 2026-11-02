@@ -1,0 +1,348 @@
+{
+  "browser": "156.0.8078.79",
+  "checks": 70,
+  "failures": 0,
+  "rows": [
+    {
+      "pass": true,
+      "label": "exactly three approved successful45point jobs; no extra generation"
+    },
+    {
+      "pass": true,
+      "label": "mobile_exhibition_table: both original downloads preserved with exact hashes"
+    },
+    {
+      "pass": true,
+      "label": "silver_covered_exhibit: both original downloads preserved with exact hashes"
+    },
+    {
+      "pass": true,
+      "label": "rest_sofa: both original downloads preserved with exact hashes"
+    },
+    {
+      "pass": true,
+      "label": "mobile_exhibition_table: real polygon reductions at both distances",
+      "details": [
+        12349,
+        7999,
+        1999
+      ]
+    },
+    {
+      "pass": true,
+      "label": "mobile_exhibition_table: decoded envelope, texture budget and exact output hashes validated"
+    },
+    {
+      "pass": true,
+      "label": "silver_covered_exhibit: real polygon reductions at both distances",
+      "details": [
+        51314,
+        8468,
+        4682
+      ]
+    },
+    {
+      "pass": true,
+      "label": "silver_covered_exhibit: decoded envelope, texture budget and exact output hashes validated"
+    },
+    {
+      "pass": true,
+      "label": "mobile_exhibition_table_135: real polygon reductions at both distances",
+      "details": [
+        12349,
+        7999,
+        1999
+      ]
+    },
+    {
+      "pass": true,
+      "label": "mobile_exhibition_table_135: decoded envelope, texture budget and exact output hashes validated"
+    },
+    {
+      "pass": true,
+      "label": "mobile_exhibition_table_125: real polygon reductions at both distances",
+      "details": [
+        12349,
+        7999,
+        1999
+      ]
+    },
+    {
+      "pass": true,
+      "label": "mobile_exhibition_table_125: decoded envelope, texture budget and exact output hashes validated"
+    },
+    {
+      "pass": true,
+      "label": "mobile_exhibition_table_120: real polygon reductions at both distances",
+      "details": [
+        12349,
+        7999,
+        1999
+      ]
+    },
+    {
+      "pass": true,
+      "label": "mobile_exhibition_table_120: decoded envelope, texture budget and exact output hashes validated"
+    },
+    {
+      "pass": true,
+      "label": "rest_sofa: real polygon reductions at both distances",
+      "details": [
+        19999,
+        7999,
+        2000
+      ]
+    },
+    {
+      "pass": true,
+      "label": "rest_sofa: decoded envelope, texture budget and exact output hashes validated"
+    },
+    {
+      "pass": true,
+      "label": "sofa uses its color texture with authored matte dielectric upholstery"
+    },
+    {
+      "pass": true,
+      "label": "display_table_125: calibrated model fits reserved furniture envelope",
+      "details": [
+        1.250196502696133,
+        1.0000088228741837,
+        0.6571333325265569
+      ]
+    },
+    {
+      "pass": true,
+      "label": "display_table_125: all LOD silhouettes fit the reserved envelope with at most7mm edge tolerance"
+    },
+    {
+      "pass": true,
+      "label": "display_table_125: authored failure fallback has unchanged world placement"
+    },
+    {
+      "pass": true,
+      "label": "display_table_135: calibrated model fits reserved furniture envelope",
+      "details": [
+        1.3502122467574298,
+        1.0000011922802952,
+        0.6571248673364618
+      ]
+    },
+    {
+      "pass": true,
+      "label": "display_table_135: all LOD silhouettes fit the reserved envelope with at most7mm edge tolerance"
+    },
+    {
+      "pass": true,
+      "label": "display_table_135: authored failure fallback has unchanged world placement"
+    },
+    {
+      "pass": true,
+      "label": "display_table_120: calibrated model fits reserved furniture envelope",
+      "details": [
+        1.2001886902794996,
+        1.0000057229454165,
+        0.6571223039338274
+      ]
+    },
+    {
+      "pass": true,
+      "label": "display_table_120: all LOD silhouettes fit the reserved envelope with at most7mm edge tolerance"
+    },
+    {
+      "pass": true,
+      "label": "display_table_120: authored failure fallback has unchanged world placement"
+    },
+    {
+      "pass": true,
+      "label": "display_table_150: calibrated model fits reserved furniture envelope",
+      "details": [
+        1.5002358032353598,
+        1.0000011922802952,
+        0.6698815511256646
+      ]
+    },
+    {
+      "pass": true,
+      "label": "display_table_150: all LOD silhouettes fit the reserved envelope with at most7mm edge tolerance"
+    },
+    {
+      "pass": true,
+      "label": "display_table_150: authored failure fallback has unchanged world placement"
+    },
+    {
+      "pass": true,
+      "label": "silver_exhibit: calibrated model fits reserved furniture envelope",
+      "details": [
+        0.88,
+        0.46647319014009947,
+        0.5368758889163401
+      ]
+    },
+    {
+      "pass": true,
+      "label": "silver_exhibit: all LOD silhouettes fit the reserved envelope with at most7mm edge tolerance"
+    },
+    {
+      "pass": true,
+      "label": "silver_exhibit: authored failure fallback has unchanged world placement"
+    },
+    {
+      "pass": true,
+      "label": "pantry_sofa: calibrated model fits reserved furniture envelope",
+      "details": [
+        1.8013459773138842,
+        0.8600062631275119,
+        0.8206726890255926
+      ]
+    },
+    {
+      "pass": true,
+      "label": "pantry_sofa: all LOD silhouettes fit the reserved envelope with at most7mm edge tolerance"
+    },
+    {
+      "pass": true,
+      "label": "pantry_sofa: authored failure fallback has unchanged world placement"
+    },
+    {
+      "pass": true,
+      "label": "desktop display_table_150: all six placements load from three paid source assets"
+    },
+    {
+      "pass": true,
+      "label": "desktop display_table_150: ordinary pointer opens actual highest-detail model"
+    },
+    {
+      "pass": true,
+      "label": "display_table_150: dimensions explicitly describe a model reference"
+    },
+    {
+      "pass": true,
+      "label": "display_table_150: inspection fits 1440px viewport"
+    },
+    {
+      "pass": true,
+      "label": "display_table_150: return restores original room and observer position"
+    },
+    {
+      "pass": true,
+      "label": "desktop silver_exhibit: all six placements load from three paid source assets"
+    },
+    {
+      "pass": true,
+      "label": "desktop silver_exhibit: ordinary pointer opens actual highest-detail model"
+    },
+    {
+      "pass": true,
+      "label": "silver_exhibit: dimensions explicitly describe a model reference"
+    },
+    {
+      "pass": true,
+      "label": "silver_exhibit: inspection fits 1440px viewport"
+    },
+    {
+      "pass": true,
+      "label": "silver_exhibit: return restores original room and observer position"
+    },
+    {
+      "pass": true,
+      "label": "desktop pantry_sofa: all six placements load from three paid source assets"
+    },
+    {
+      "pass": true,
+      "label": "desktop pantry_sofa: ordinary pointer opens actual highest-detail model"
+    },
+    {
+      "pass": true,
+      "label": "pantry_sofa: dimensions explicitly describe a model reference"
+    },
+    {
+      "pass": true,
+      "label": "pantry_sofa: inspection fits 1440px viewport"
+    },
+    {
+      "pass": true,
+      "label": "pantry_sofa: return restores original room and observer position"
+    },
+    {
+      "pass": true,
+      "label": "mobile display_table_150: all six placements load from three paid source assets"
+    },
+    {
+      "pass": true,
+      "label": "mobile display_table_150: ordinary pointer opens actual highest-detail model"
+    },
+    {
+      "pass": true,
+      "label": "display_table_150: dimensions explicitly describe a model reference"
+    },
+    {
+      "pass": true,
+      "label": "display_table_150: inspection fits 390px viewport"
+    },
+    {
+      "pass": true,
+      "label": "display_table_150: return restores original room and observer position"
+    },
+    {
+      "pass": true,
+      "label": "mobile silver_exhibit: all six placements load from three paid source assets"
+    },
+    {
+      "pass": true,
+      "label": "mobile silver_exhibit: ordinary pointer opens actual highest-detail model"
+    },
+    {
+      "pass": true,
+      "label": "silver_exhibit: dimensions explicitly describe a model reference"
+    },
+    {
+      "pass": true,
+      "label": "silver_exhibit: inspection fits 390px viewport"
+    },
+    {
+      "pass": true,
+      "label": "silver_exhibit: return restores original room and observer position"
+    },
+    {
+      "pass": true,
+      "label": "mobile pantry_sofa: all six placements load from three paid source assets"
+    },
+    {
+      "pass": true,
+      "label": "mobile pantry_sofa: ordinary pointer opens actual highest-detail model"
+    },
+    {
+      "pass": true,
+      "label": "pantry_sofa: dimensions explicitly describe a model reference"
+    },
+    {
+      "pass": true,
+      "label": "pantry_sofa: inspection fits 390px viewport"
+    },
+    {
+      "pass": true,
+      "label": "pantry_sofa: return restores original room and observer position"
+    },
+    {
+      "pass": true,
+      "label": "all real Hi3D desktop/mobile routes have zero page or console errors",
+      "details": []
+    },
+    {
+      "pass": true,
+      "label": "silver download failure keeps authored furniture fallback without blocking other models"
+    },
+    {
+      "pass": true,
+      "label": "silver fallback remains walkable with no uncaught error"
+    },
+    {
+      "pass": true,
+      "label": "catalog download failure keeps authored furniture fallback without blocking other models"
+    },
+    {
+      "pass": true,
+      "label": "catalog fallback remains walkable with no uncaught error"
+    }
+  ]
+}
