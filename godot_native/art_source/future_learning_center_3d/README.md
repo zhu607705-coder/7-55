@@ -110,3 +110,7 @@ node scripts/test_north_density.mjs
 ## 第二批实验设备方案样板（未集成）
 
 在首批工具后，继续细化机电区已有的封闭式打印设备、封闭式激光设备和台式电源。尺寸沿用原场景依据；没有可靠厂家外观图的机型仅作为方案，不能当作精确产品复刻。独立blend、三LOD/Draco与本轮CPU近景见[本批依据和边界](sources/lab_tools_batch_20261102.md)。原场景入口、交互和碰撞未变。
+
+## 六件独立评审入口与 CPU 对照
+
+独立入口为 `web/props_review.html`，用于尺寸、材质、LOD 和实例复用检查，不替换主建筑或正式游戏。玻璃的 64/512 样本 CPU 对照及复现说明见 [本轮说明](sources/prop_review_refinement_20261102.md)。浏览器 WebGL/交互尚未在本环境实测。

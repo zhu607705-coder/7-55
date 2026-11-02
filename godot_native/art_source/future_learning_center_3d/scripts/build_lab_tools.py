@@ -142,11 +142,11 @@ def supply():
   for y in [-.075,.075]:box('Far cooling louver',(.1497,y,.17),(.0005,.005,.070),black)
   for x in [-.10,.10]:box('Far top louver',(x,.045,.2797),(.004,.08,.0004),black)
 
-def render(asset):
+def render(asset, samples=64, output_dir=None, seed=0):
  sc=bpy.context.scene
  if '--cutaway' in sys.argv and asset=='printer_enclosure_study':
   bpy.data.objects['Closed front glazing'].hide_render=True
- sc.render.engine='CYCLES';sc.cycles.device='CPU';sc.cycles.samples=64;sc.cycles.use_denoising=False
+ sc.render.engine='CYCLES';sc.cycles.device='CPU';sc.cycles.samples=samples;sc.cycles.seed=seed;sc.cycles.use_denoising=False
  points=[o.matrix_world@Vector(c) for o in sc.objects if o.type=='MESH' for c in o.bound_box];mn=Vector([min(p[i] for p in points) for i in range(3)]);mx=Vector([max(p[i] for p in points) for i in range(3)]);center=(mn+mx)/2;s=max(mx-mn)
  stage=mat('Render-only neutral stage',(.35,.38,.42),0,.8);box('Render-only stage',(0,0,-.008),(6,6,.014),stage,.001)
  bpy.ops.object.camera_add(location=center+Vector((1,-1.5,1.1))*s*2);cam=bpy.context.object;cam.rotation_euler=(center-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.type='ORTHO';cam.data.ortho_scale=s*2.05;sc.camera=cam
@@ -155,23 +155,24 @@ def render(asset):
  if '--cutaway' in sys.argv:
   bpy.ops.object.light_add(type='AREA',location=center+Vector((0,-1,.05))*s);o=bpy.context.object;o.name='Render-only cavity inspection fill';o.data.energy=35*s*s;o.data.size=s*.4;o.rotation_euler=(center-o.location).to_track_quat('-Z','Y').to_euler()
  sc.world=bpy.data.worlds.new('Studio');sc.world.color=(.18,.18,.18);sc.view_settings.view_transform='AgX';sc.view_settings.exposure=-.7
- sc.render.resolution_x=1200;sc.render.resolution_y=1000;sc.render.resolution_percentage=100;sc.render.image_settings.file_format='PNG';sc.render.filepath=str(REVIEW/(asset+('_cutaway' if '--cutaway' in sys.argv else '')+'.png'));bpy.ops.render.render(write_still=True)
+ sc.render.resolution_x=1200;sc.render.resolution_y=1000;sc.render.resolution_percentage=100;sc.render.image_settings.file_format='PNG';sc.render.filepath=str((output_dir or REVIEW)/(asset+('_cutaway' if '--cutaway' in sys.argv else '')+'.png'));bpy.ops.render.render(write_still=True)
 
 BUILDERS={'printer_enclosure_study':printer,'laser_enclosure_study':laser,'bench_power_supply':supply}
-if '--render-only' in sys.argv:
- for asset in BUILDERS:
-  if any(a.startswith('--asset=') for a in sys.argv) and '--asset='+asset not in sys.argv:continue
-  bpy.ops.wm.open_mainfile(filepath=str(OUT/asset/(asset+'.blend')));render(asset)
- raise SystemExit(0)
-records=[]
-for asset,build in BUILDERS.items():
- for LOD in range(3):
-  bpy.ops.wm.read_factory_settings(use_empty=True);bpy.context.preferences.filepaths.save_version=0;bpy.context.scene.unit_settings.system='METRIC';bpy.context.scene.unit_settings.scale_length=1
-  paint=mat('Powder-coated alloy',(.50,.54,.55),.15,.43);graphite=mat('Graphite structural polymer',(.025,.032,.038),0,.36);black=mat('Recess dark polymer',(.008,.011,.014),0,.50);steel=mat('Satin stainless fastener',(.42,.46,.49),1,.27);brass=mat('Nozzle brass',(.56,.31,.08),1,.32);rubber=mat('Isolation elastomer',(.014,.017,.019),0,.85);glass=mat('Tinted enclosure glazing',(.65,.78,.80),0,.10,.92);screen=mat('Inactive display glass',(.025,.060,.070),0,.24);red=mat('Red terminal polymer',(.5,.02,.012),0,.4);green=mat('Green terminal polymer',(.015,.25,.07),0,.4)
-  build();bpy.context.view_layer.update();objs=[o for o in bpy.context.scene.objects if o.type=='MESH'];points=[o.matrix_world@Vector(c) for o in objs for c in o.bound_box];bounds=[[min(p[i] for p in points) for i in range(3)],[max(p[i] for p in points) for i in range(3)]];tris=sum(len(p.vertices)-2 for o in objs for p in o.data.polygons)
-  folder=OUT/asset;folder.mkdir(exist_ok=True);dest=folder/f'lod{LOD}_source.glb';bpy.ops.export_scene.gltf(filepath=str(dest),export_format='GLB',export_extras=True,export_yup=True)
-  records.append({'asset':asset,'level':LOD,'triangles':tris,'boundsBlenderXYZ':bounds,'sizeBlenderXYZ':[bounds[1][i]-bounds[0][i] for i in range(3)],'meshParts':len(objs),'sha256':hashlib.sha256(dest.read_bytes()).hexdigest()})
-  if LOD==0:
-   bpy.ops.wm.save_as_mainfile(filepath=str(folder/(asset+'.blend')))
-   if '--skip-render' not in sys.argv:render(asset)
-(REVIEW/'build_report.json').write_text(json.dumps({'blender':bpy.app.version_string,'units':'m','scope':'Independent static equipment samples; existing design dimensions, illustrative internal structures; no operational simulation','records':records},indent=2)+'\n')
+if __name__=='__main__':
+ if '--render-only' in sys.argv:
+  for asset in BUILDERS:
+   if any(a.startswith('--asset=') for a in sys.argv) and '--asset='+asset not in sys.argv:continue
+   bpy.ops.wm.open_mainfile(filepath=str(OUT/asset/(asset+'.blend')));render(asset)
+  raise SystemExit(0)
+ records=[]
+ for asset,build in BUILDERS.items():
+  for LOD in range(3):
+   bpy.ops.wm.read_factory_settings(use_empty=True);bpy.context.preferences.filepaths.save_version=0;bpy.context.scene.unit_settings.system='METRIC';bpy.context.scene.unit_settings.scale_length=1
+   paint=mat('Powder-coated alloy',(.50,.54,.55),.15,.43);graphite=mat('Graphite structural polymer',(.025,.032,.038),0,.36);black=mat('Recess dark polymer',(.008,.011,.014),0,.50);steel=mat('Satin stainless fastener',(.42,.46,.49),1,.27);brass=mat('Nozzle brass',(.56,.31,.08),1,.32);rubber=mat('Isolation elastomer',(.014,.017,.019),0,.85);glass=mat('Tinted enclosure glazing',(.65,.78,.80),0,.10,.92);screen=mat('Inactive display glass',(.025,.060,.070),0,.24);red=mat('Red terminal polymer',(.5,.02,.012),0,.4);green=mat('Green terminal polymer',(.015,.25,.07),0,.4)
+   build();bpy.context.view_layer.update();objs=[o for o in bpy.context.scene.objects if o.type=='MESH'];points=[o.matrix_world@Vector(c) for o in objs for c in o.bound_box];bounds=[[min(p[i] for p in points) for i in range(3)],[max(p[i] for p in points) for i in range(3)]];tris=sum(len(p.vertices)-2 for o in objs for p in o.data.polygons)
+   folder=OUT/asset;folder.mkdir(exist_ok=True);dest=folder/f'lod{LOD}_source.glb';bpy.ops.export_scene.gltf(filepath=str(dest),export_format='GLB',export_extras=True,export_yup=True)
+   records.append({'asset':asset,'level':LOD,'triangles':tris,'boundsBlenderXYZ':bounds,'sizeBlenderXYZ':[bounds[1][i]-bounds[0][i] for i in range(3)],'meshParts':len(objs),'sha256':hashlib.sha256(dest.read_bytes()).hexdigest()})
+   if LOD==0:
+    bpy.ops.wm.save_as_mainfile(filepath=str(folder/(asset+'.blend')))
+    if '--skip-render' not in sys.argv:render(asset)
+ (REVIEW/'build_report.json').write_text(json.dumps({'blender':bpy.app.version_string,'units':'m','scope':'Independent static equipment samples; existing design dimensions, illustrative internal structures; no operational simulation','records':records},indent=2)+'\n')

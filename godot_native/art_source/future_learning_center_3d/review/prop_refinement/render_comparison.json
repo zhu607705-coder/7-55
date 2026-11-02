@@ -1,0 +1,57 @@
+{
+  "scope": "Sampling-only comparison; geometry and PBR unchanged; not a browser capture; samples are maximum budgets with adaptive sampling threshold 0.01",
+  "records": [
+    {
+      "asset": "printer_enclosure_study",
+      "samples": 64,
+      "seed": 0,
+      "denoising": false,
+      "engine": "Cycles CPU",
+      "blender": "4.3.2",
+      "sourceSha256": "856144dad4dbc758b3795015925371439e533e4839d3764e9783b62b60a081e1",
+      "image": "review/prop_refinement/64/printer_enclosure_study.png",
+      "sha256": "4056d6269cc97659082dc48149c5c3ac401f2db292130b7e1869d15a4ae14bfd",
+      "adaptiveSampling": true,
+      "adaptiveThreshold": 0.009999999776482582
+    },
+    {
+      "asset": "printer_enclosure_study",
+      "samples": 512,
+      "seed": 0,
+      "denoising": false,
+      "engine": "Cycles CPU",
+      "blender": "4.3.2",
+      "sourceSha256": "856144dad4dbc758b3795015925371439e533e4839d3764e9783b62b60a081e1",
+      "image": "review/prop_refinement/512/printer_enclosure_study.png",
+      "sha256": "b250184cd9a6998855b34fcb0b3597f42e8a963e1b820cc826c13ee023eeaa98",
+      "adaptiveSampling": true,
+      "adaptiveThreshold": 0.009999999776482582
+    },
+    {
+      "asset": "laser_enclosure_study",
+      "samples": 64,
+      "seed": 0,
+      "denoising": false,
+      "engine": "Cycles CPU",
+      "blender": "4.3.2",
+      "sourceSha256": "730005a9066188d8672c3451ec220585ca688b1acb006318b1e38107ae023ab9",
+      "image": "review/prop_refinement/64/laser_enclosure_study.png",
+      "sha256": "6359811050789f1acea2ca1d6883814615ec917b9defd63d8e63127702da7d3a",
+      "adaptiveSampling": true,
+      "adaptiveThreshold": 0.009999999776482582
+    },
+    {
+      "asset": "laser_enclosure_study",
+      "samples": 512,
+      "seed": 0,
+      "denoising": false,
+      "engine": "Cycles CPU",
+      "blender": "4.3.2",
+      "sourceSha256": "730005a9066188d8672c3451ec220585ca688b1acb006318b1e38107ae023ab9",
+      "image": "review/prop_refinement/512/laser_enclosure_study.png",
+      "sha256": "ed98189627cb964feb288c38d4e851780814ff6a8737d17e931cb44e1046d7a8",
+      "adaptiveSampling": true,
+      "adaptiveThreshold": 0.009999999776482582
+    }
+  ]
+}

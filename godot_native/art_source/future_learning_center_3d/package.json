@@ -16,6 +16,7 @@
     "test:table-dimensions": "node pipeline/test_table_dimensions.mjs",
     "test:small-props": "node pipeline/test_small_props.mjs",
     "test:lab-tools": "node pipeline/test_lab_tools.mjs",
-    "test:asset-default-precision": "node pipeline/test_default_precision.mjs"
+    "test:asset-default-precision": "node pipeline/test_default_precision.mjs",
+    "test:props-review": "node scripts/test_props_review.mjs"
   }
 }
