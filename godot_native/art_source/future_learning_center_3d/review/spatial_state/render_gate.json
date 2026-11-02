@@ -1,0 +1,4 @@
+{
+  "passed": 42,
+  "scope": "Render-request lifecycle only; not GPU timing or browser input acceptance"
+}

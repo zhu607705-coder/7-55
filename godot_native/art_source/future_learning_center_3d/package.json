@@ -22,6 +22,7 @@
     "test:spatial-presentation": "node scripts/test_spatial_presentation.mjs",
     "test:spatial-integration": "node scripts/test_spatial_viewer_integration.mjs",
     "test:spatial-browser": "node browser_tests/spatial_browser.mjs",
-    "test:spatial-overlay": "node scripts/test_spatial_overlay.mjs"
+    "test:spatial-overlay": "node scripts/test_spatial_overlay.mjs",
+    "test:render-gate": "node scripts/test_render_gate.mjs"
   }
 }
