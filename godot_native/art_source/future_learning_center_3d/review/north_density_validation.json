@@ -61,7 +61,7 @@
           0
         ],
         "drawCalls": 215,
-        "triangles": 414986,
+        "triangles": 445898,
         "renderedMeshes": 244
       }
     },
@@ -87,8 +87,8 @@
           0,
           0
         ],
-        "drawCalls": 215,
-        "triangles": 414986,
+        "drawCalls": 286,
+        "triangles": 627098,
         "renderedMeshes": 244
       }
     },

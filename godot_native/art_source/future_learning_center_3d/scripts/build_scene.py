@@ -458,10 +458,15 @@ def mobile_display(x,z,w=1.25,d=.60):
  display_top('Mobile exhibition tabletop',x,z,w,d,1.0,wood)
  meta['floors'][str(current_floor)]['colliders'][-1]['rect']=[x-w/2,z-d*.48-.065,x+w/2,z+d*.48+.065]
  for dx in [-w/2+.16,w/2-.16]:
-  bar('Display steel upright',(x+dx,.08,z),(x+dx,.965,z),.020,metal)
-  bar('Display wheeled foot',(x+dx,.08,z-d*.48),(x+dx,.08,z+d*.48),.018,metal)
+  bar('Display steel upright',(x+dx,.16,z),(x+dx,.965,z),.020,metal)
+  bar('Display wheeled foot',(x+dx,.15,z-d*.48),(x+dx,.15,z+d*.48),.018,metal)
   for side in [-1,1]:
    zz=z+side*d*.48;tube('Large display caster',[(x+dx-.018,.065,zz),(x+dx+.018,.065,zz)],.065,rubber,sides=24)
+   box('Exhibition caster fork crown',x+dx,.145,zz,.072,.016,.060,metal,.004)
+   for side_x in [-1,1]:
+    box('Exhibition caster fork cheek',x+dx+side_x*.028,.108,zz,.009,.082,.050,metal,.003)
+    tube('Exhibition caster axle cap',[(x+dx+side_x*.029,.065,zz),(x+dx+side_x*.041,.065,zz)],.010,metal,sides=12)
+   if side==1:box('Exhibition caster brake tab',x+dx,.156,zz+.040,.045,.009,.038,black,.003)
  bar('Display lower stretcher',(x-w/2+.16,.32,z),(x+w/2-.16,.32,z),.016,metal)
 
 
@@ -471,12 +476,23 @@ def thread_art(x,z,y):
  for a,b in [(0,1),(1,2),(2,3),(3,0),(4,5),(5,6),(6,7),(7,4),(0,4),(1,5),(2,6),(3,7)]:tube('Exhibit cube edge',[corners[a],corners[b]],.004,paper)
  diamond=[(x,y+.46,z),(x+.18,y+.27,z),(x,y+.08,z),(x-.18,y+.27,z)]
  tube('Suspended diamond',diamond,.004,paper,True)
- # Batched thin threads for stable export and a readable, open silhouette.
+ # Ruled thread fans retain the open photographed silhouette without opaque sheets.
  vs=[];faces=[]
- for i in range(30):
-  a=i*math.tau/30;c=Vector((x+math.cos(a)*.24,y+(i%2)*s,z+math.sin(a)*.24));d=Vector(diamond[i%4]);side=Vector((.0012,0,.0012));k=len(vs);vs.extend([c-side,c+side,d+side,d-side]);faces.append((k,k+1,k+2,k+3))
+ def strand(start,end):
+  a=Vector(start);b=Vector(end);direction=(b-a).normalized();side=direction.cross(Vector((0,1,0)))
+  if side.length<.01:side=direction.cross(Vector((1,0,0)))
+  side.normalize();other=direction.cross(side).normalized()
+  for offset in [side*.00040,other*.00040]:
+   k=len(vs);vs.extend([a-offset,a+offset,b+offset,b-offset]);faces.append((k,k+1,k+2,k+3))
+ for a,b,c,d in [(0,1,5,6),(1,2,6,7),(2,3,7,4),(3,0,4,5)]:
+  for i in range(1,33):
+   t=i/33;strand(Vector(corners[a]).lerp(Vector(corners[b]),t),Vector(corners[c]).lerp(Vector(corners[d]),t))
+ for i in range(24):
+  a=i*math.tau/24;strand((x+math.cos(a)*.24,y+(i%2)*s,z+math.sin(a)*.24),diamond[i%4])
  geometry('Tensioned exhibit threads',vs,faces,paper)
- cyl('Pink suspended exhibit',x,y+.24,z,.065,.08,red)
+ pink=bpy.data.materials.get('Exhibit pale pink') or material('Exhibit pale pink',(.78,.34,.40),rough=.38)
+ cyl('Pink suspended exhibit',x,y+.24,z,.065,.08,pink)
+
 
 
 def north_exhibition(room):
@@ -600,10 +616,16 @@ def recording_studio(room):
 
 def pantry_areas(room):
  x0,z0,x1,z1=room['bounds'];cx=(x0+x1)/2;cz=(z0+z1)/2
- room['layout_variant']='pantry_standing_conversation_rest';room['detail_status']='four use areas; combined conversation/rest option chosen for current footprint'
+ room['layout_variant']='pantry_standing_conversation_rest';room['detail_status']='requirements-led review with cabinet joinery, real stool bases and circulation refinement; provider assets pending quote confirmation'
+ room['furnishing_revision']='pantry_circulation_20261102'
+ room['heading']=math.atan2(-(cx+.75-room['spawn'][0]),-(z1-1.4-room['spawn'][1]))
  # Wall bar and independently editable service appliances.
  box('Pantry base cabinets',cx,.43,z1-.42,4.8,.86,.70,paper,.012);solid('Pantry cabinets',cx,z1-.42,4.8,.70)
  box('Pantry countertop',cx,.89,z1-.42,4.9,.06,.74,wood,.012)
+ for i in range(8):
+  xx=cx-2.1+i*.60;box('Pantry cabinet door',xx,.445,z1-.781,.575,.76,.022,paper,.006)
+  box('Pantry cabinet pull',xx+.12,.73,z1-.805,.18,.012,.020,metal,.004)
+ box('Pantry recessed toe kick',cx,.055,z1-.75,4.72,.10,.018,black,.002)
  box('Sink rim',cx+.7,.928,z1-.42,.55,.018,.42,metal,.01);box('Sink recess',cx+.7,.94,z1-.42,.43,.015,.30,black,.02)
  bar('Sink tap',(cx+.7,.93,z1-.15),(cx+.7,1.17,z1-.15),.015,metal);bar('Tap spout',(cx+.7,1.17,z1-.15),(cx+.7,1.17,z1-.35),.015,metal)
  for y in [1.45,1.90]:box('Pantry wall shelf',cx,y,z1-.16,4.6,.04,.28,wood,.008)
@@ -611,22 +633,30 @@ def pantry_areas(room):
  box('Microwave',cx-1.65,1.08,z1-.42,.50,.30,.36,paper,.01);box('Microwave door',cx-1.68,1.08,z1-.61,.36,.22,.014,black)
  box('Vending machine',x0+.65,.95,z1-1.75,.85,1.9,.75,black,.02);solid('Vending machine',x0+.65,z1-1.75,.85,.75)
  box('Vending products glass',x0+.65,1.13,z1-2.14,.65,1.2,.02,smoke)
- for i in range(3):box('Vending product shelf',x0+.65,.65+i*.3,z1-1.85,.63,.02,.40,paper)
+ for i in range(3):
+  box('Vending product shelf',x0+.65,.65+i*.3,z1-1.85,.63,.02,.40,paper)
+  for j in range(4):
+   xx=x0+.42+j*.15;yy=.76+i*.3;cyl('Vending drink container',xx,yy,z1-1.96,.035,.16,[paper,leaf,blue,metal][j])
+   cyl('Vending drink cap',xx,yy+.085,z1-1.96,.027,.012,black)
  # Six-person standing zone leaves a central route from the north entry.
  tx=x0+1.85;tz=z0+2.1;box('Six-person standing table',tx,1.05,tz,2.35,.06,.72,wood,.012);solid('Standing table',tx,tz,2.35,.72)
  for dx in [-.9,.9]:box('High table support',tx+dx,.52,tz,.06,1.04,.58,metal)
  for dx in [-.75,0,.75]:
   for side in [-1,1]:
    x=tx+dx;z=tz+side*.78;cyl('High stool seat',x,.74,z,.20,.07,black);cyl('High stool leg',x,.38,z,.025,.70,metal);solid('High stool',x,z,.42,.42)
+   cyl('Pantry stool stable base',x,.025,z,.17,.035,black);cyl('Pantry stool column collar',x,.12,z,.040,.17,metal)
+   tube('Pantry stool circular footrest',[(x+math.cos(i*math.tau/32)*.14,.29,z+math.sin(i*math.tau/32)*.14) for i in range(32)],.010,metal,True)
  # Two small conversation groups and one shared rest sofa.
  for z in [z0+1.5,z0+3.5]:
   table(x1-1.55,z,.70,.55)
   for dx in [-.70,.70]:meeting_chair(x1-1.55+dx,z,math.pi/2 if dx>0 else -math.pi/2)
- sofa(cx+.45,z1-1.9,1.8)
- for x,z in [(x0+.30,z0+.60),(cx+.4,z1-.43)]:
-  cyl('Pantry plant pot',x,.40 if x<x0+.5 else 1.02,z,.16,.28,wood);cyl('Pantry plant leaves',x,.8 if x<x0+.5 else 1.35,z,.26,.40,leaf)
+ sofa(cx-.40,z1-1.9,1.8)
+ plant(x0+.30,z0+.60,0);plant(cx+.4,z1-.43,.93)
  # User's established far-right fridge placement stays visible and separate.
  box('Pantry refrigerator',x1-.50,1.0,z1-.50,.75,2.0,.70,paper,.018);solid('Refrigerator',x1-.50,z1-.50,.75,.70)
+ box('Fridge upper door panel',x1-.50,1.43,z1-.86,.715,1.08,.018,paper,.012)
+ box('Fridge lower door panel',x1-.50,.455,z1-.86,.715,.835,.018,paper,.012)
+ box('Fridge door gasket seam',x1-.50,.89,z1-.864,.715,.012,.012,black,.002)
  for y in [.80,1.65]:box('Fridge handle',x1-.76,y,z1-.87,.025,.25,.035,metal)
 
 

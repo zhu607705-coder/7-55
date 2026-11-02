@@ -1,0 +1,149 @@
+{
+  "date": "2026-11-02",
+  "scope": "3F north exhibition furniture and approximate non-standard exhibits;3F pantry/rest design based on requirements",
+  "sources": [
+    "sources/furniture_and_north_photos.md",
+    "sources/feishu_alignment.md"
+  ],
+  "assets": [
+    {
+      "id": "mobile_exhibition_table",
+      "targetM": [
+        1.5,
+        0.65,
+        1.0
+      ],
+      "role": "static reusable wheeled exhibit table; four variants remain dimension-led",
+      "status": "reference_ready_quote_pending_user_confirmation"
+    },
+    {
+      "id": "thread_cube_exhibit",
+      "targetM": [
+        0.52,
+        0.52,
+        0.52
+      ],
+      "role": "approximate white thread cube and suspended pink center from user-photo silhouette",
+      "status": "reference_ready_authored_geometry_refined"
+    },
+    {
+      "id": "silver_covered_exhibit",
+      "targetM": [
+        0.88,
+        0.54,
+        0.54
+      ],
+      "role": "folded reflective foil-covered installation silhouette; not exact student-work reproduction",
+      "status": "reference_ready_quote_pending_user_confirmation"
+    },
+    {
+      "id": "rest_sofa",
+      "targetM": [
+        1.8,
+        0.82,
+        0.86
+      ],
+      "role": "requirements-led compact two-seat sofa; site brand unknown",
+      "status": "reference_ready_quote_pending_user_confirmation"
+    },
+    {
+      "id": "office_sit_stand_desk",
+      "targetM": [
+        1.4,
+        0.6,
+        0.73
+      ],
+      "role": "authored articulated desk; preserve independent telescoping stages and control",
+      "status": "local_structure_retained"
+    }
+  ],
+  "pipeline": "reference -> Hi3D quote -> explicit confirmation of current quote -> generation -> local uniform metric normalization, LOD/Draco -> Three.js review",
+  "geometryLocks": [
+    "Room bounds, architectural walls and door openings are unchanged",
+    "Maintain north visitor route at least1m",
+    "Preserve far-right pantry refrigerator and service route",
+    "No human body or hands in first-person camera"
+  ],
+  "referenceImages": [
+    {
+      "file": "sources/concepts/20261102_exhibition_rest/silver_covered_exhibit.png",
+      "sha256": "ce8dd182623dff23f214b837115853eb260a781f2569caee56aee4817be97516"
+    },
+    {
+      "file": "sources/concepts/20261102_exhibition_rest/thread_cube_exhibit.png",
+      "sha256": "762bf8195b7b884e7def802f1177d8d2bb9bae68e74ce81d88d720d6855bc6b7"
+    },
+    {
+      "file": "sources/concepts/20261102_exhibition_rest/rest_sofa.png",
+      "sha256": "10407c06bef17c29282d8b4c10e064df9f380cac64d05498db1293f0065d358a"
+    },
+    {
+      "file": "sources/concepts/20261102_exhibition_rest/mobile_exhibition_table_three_quarter.png",
+      "sha256": "cfd9f63485d0e2fed1dde87f2ea0c89aa1e2ff6d5e8b5e5b52660e85053029be"
+    },
+    {
+      "file": "sources/concepts/20261102_exhibition_rest/mobile_exhibition_table_side.png",
+      "sha256": "f0e4fff070d8731c62782f8e2afdf1bf8c276f914127a04ea30a340b5637bf3d"
+    },
+    {
+      "file": "sources/concepts/20261102_exhibition_rest/pantry_rest_direction.png",
+      "sha256": "cc0412186f92972ef3cd89f2f1ae7aa5489d23fd0a3703a35aa271f2dde8de9c"
+    },
+    {
+      "file": "sources/concepts/20261102_exhibition_rest/mobile_exhibition_table_front.png",
+      "sha256": "2981403cc88547e1bd18e7ad4e6fc63d36b6031920dff5743cafe7897b33e47d"
+    },
+    {
+      "file": "sources/concepts/20261102_exhibition_rest/mobile_exhibition_table_turnaround.png",
+      "sha256": "3400e46bcf0ff3d2fe87b7b94c28981be8b5c24e860c5f28e321365edc53f377"
+    }
+  ],
+  "quoteStatus": "Three private, v3.0 high_quality/standard, model_with_texture and PBR quotes prepared,45points each; no paid generation submitted.",
+  "conceptLimits": "Room concept may invent seat counts and minor details. Model/layout data owns capacities, boundaries and circulation. Non-standard exhibits are approximate interpretations.",
+  "promptFiles": [
+    "sources/concepts/20261102_exhibition_rest/thread_cube_exhibit.prompt.md",
+    "sources/concepts/20261102_exhibition_rest/mobile_exhibition_table_turnaround.prompt.md",
+    "sources/concepts/20261102_exhibition_rest/pantry_rest_direction.prompt.md",
+    "sources/concepts/20261102_exhibition_rest/silver_covered_exhibit.prompt.md",
+    "sources/concepts/20261102_exhibition_rest/rest_sofa.prompt.md"
+  ],
+  "pantryDirectionStatus": "Concept image ready; layout/capacities remain authored data authority.",
+  "preservedInputs": [
+    {
+      "file": "sources/concepts/20261102_exhibition_rest/inputs/pantry_overview_input.png",
+      "sha256": "db4fd09202ae12580758089a020dda8ada4528d826e67cb63aa4d21b2925d314"
+    },
+    {
+      "file": "sources/concepts/20261102_exhibition_rest/inputs/north_render_743d0b98.png",
+      "sha256": "db6772b5d6455fe45a836138666361a551608a382fa3b8c037536d5b28b8a7fb"
+    }
+  ],
+  "panelExtraction": {
+    "source": "mobile_exhibition_table_turnaround.png",
+    "sourcePixels": [
+      1774,
+      887
+    ],
+    "tool": "macOS sips, deterministic crop only",
+    "normalizedRects": {
+      "front": [
+        0,
+        0.16,
+        0.405,
+        0.85
+      ],
+      "side": [
+        0.42,
+        0.15,
+        0.605,
+        0.85
+      ],
+      "three_quarter": [
+        0.615,
+        0.15,
+        1,
+        0.86
+      ]
+    }
+  }
+}

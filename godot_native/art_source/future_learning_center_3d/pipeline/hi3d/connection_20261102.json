@@ -1,0 +1,504 @@
+{
+  "checkedDate": "2026-11-02",
+  "client": "Codex CLI 0.166.0-alpha.5.1",
+  "serverName": "hi3d",
+  "transport": "streamable_http",
+  "url": "https://agent.hi3d.cn/mcp",
+  "authentication": "OAuth",
+  "authVerified": true,
+  "verification": [
+    "Native Codex MCP status discovers11tools",
+    "get_capabilities succeeds",
+    "get_balance succeeds",
+    "upload_input succeeds",
+    "quote_generation succeeds"
+  ],
+  "nativeChatToolCatalog": "This pre-existing chat has no hot-added hi3d namespace. Native Codex MCP protocol calls work without restarting the app. Refresh/reopen a chat to expose its native tool names.",
+  "credentialHandling": "OAuth remains in Codex native credential storage. No bearer token is exported to project files.",
+  "tools": [
+    {
+      "name": "upload_input",
+      "description": "上传纯 Base64 参考图，返回当前用户的临时 file_token，有效24小时。单图最多 10 MiB。历史生成图片优先通过 source_images 引用任务，不要重新上传或重用过期令牌。",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "image_base64": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 14680064
+          },
+          "mime_type": {
+            "type": "string",
+            "enum": [
+              "image/png",
+              "image/jpeg",
+              "image/webp"
+            ]
+          }
+        },
+        "required": [
+          "image_base64",
+          "mime_type"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "create_generation",
+      "description": "收费操作。只有用户明确确认当前预估后，才传 confirmed=true。调用真实 hi3d-codex 生成接口；每份报价只能提交一次。不自动重试。",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "quote_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "confirmed": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "quote_id",
+          "confirmed"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "create_image_generation",
+      "description": "国内环境仅支持 Seedream v4.5 文生图与图片编辑，不支持多视图生图。用户要求生图后可直接提交，无需单独确认。历史图片通过 source_images 引用任务图片（image_index 从0开始），不要复用过期 file_token。提交只调用一次，不自动重试。",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_type": {
+            "type": "string",
+            "const": "image2d",
+            "default": "image2d"
+          },
+          "operation": {
+            "type": "string",
+            "enum": [
+              "text_to_image",
+              "edit"
+            ],
+            "default": "text_to_image"
+          },
+          "prompt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "file_tokens": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "maxItems": 4,
+            "default": []
+          },
+          "model_name": {
+            "type": "string",
+            "enum": [
+              "Seedream v4.5"
+            ],
+            "default": "Seedream v4.5"
+          },
+          "source_task_id": {
+            "$ref": "#/properties/file_tokens/items"
+          },
+          "source_images": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "task_id": {
+                  "$ref": "#/properties/file_tokens/items"
+                },
+                "image_index": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 29,
+                  "default": 0
+                }
+              },
+              "required": [
+                "task_id"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 4,
+            "description": "历史生成图片引用，按建模视图顺序排列；图片序号从0开始。优先使用此字段复用历史图片，不要复用24小时过期的 file_token / Historical task images in view order; zero-based indexes. Prefer these references over expired upload tokens."
+          },
+          "source_image_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 29,
+            "default": 0
+          },
+          "multi_view": {
+            "type": "boolean",
+            "const": false,
+            "default": false
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "enum": [
+              "1:1",
+              "16:9",
+              "9:16",
+              "4:3",
+              "3:4"
+            ],
+            "default": "1:1"
+          },
+          "style": {
+            "type": "string",
+            "enum": [
+              "",
+              "stone-sculpture",
+              "sci-fi-armor",
+              "steampunk",
+              "filigree-ivory",
+              "urban-art"
+            ],
+            "default": ""
+          },
+          "presets": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "maxItems": 10,
+            "default": []
+          },
+          "quote_id": {
+            "$ref": "#/properties/file_tokens/items"
+          },
+          "confirmed": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_account_context",
+      "description": "读取当前主站个人账户与积分余额，不返回登录凭据。",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "get_balance",
+      "description": "查询主站个人积分余额；查询不扣费。",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "get_task_outputs",
+      "description": "刷新成功任务的预览与下载链接；3D 结果优先展示 model_page_url 主站模型查看链接；在已配置图片域名且图片大小允许时返回原生图片内容，可直接展示。优先展示原生图片；如客户端未展示或预览未返回，提供工具中的“查看原图”链接。无需重新生成，不扣生成积分。",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "task_id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "quote_image_generation",
+      "description": "国内环境仅支持 Seedream v4.5 文生图与图片编辑，不支持多视图生图。用户要求生图后可直接提交，无需单独确认。历史图片通过 source_images 引用任务图片（image_index 从0开始），不要复用过期 file_token。提交只调用一次，不自动重试。",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_type": {
+            "type": "string",
+            "const": "image2d",
+            "default": "image2d"
+          },
+          "operation": {
+            "type": "string",
+            "enum": [
+              "text_to_image",
+              "edit"
+            ],
+            "default": "text_to_image"
+          },
+          "prompt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "file_tokens": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "maxItems": 4,
+            "default": []
+          },
+          "model_name": {
+            "type": "string",
+            "enum": [
+              "Seedream v4.5"
+            ],
+            "default": "Seedream v4.5"
+          },
+          "source_task_id": {
+            "$ref": "#/properties/file_tokens/items"
+          },
+          "source_images": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "task_id": {
+                  "$ref": "#/properties/file_tokens/items"
+                },
+                "image_index": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 29,
+                  "default": 0
+                }
+              },
+              "required": [
+                "task_id"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 4,
+            "description": "历史生成图片引用，按建模视图顺序排列；图片序号从0开始。优先使用此字段复用历史图片，不要复用24小时过期的 file_token / Historical task images in view order; zero-based indexes. Prefer these references over expired upload tokens."
+          },
+          "source_image_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 29,
+            "default": 0
+          },
+          "multi_view": {
+            "type": "boolean",
+            "const": false,
+            "default": false
+          },
+          "aspect_ratio": {
+            "type": "string",
+            "enum": [
+              "1:1",
+              "16:9",
+              "9:16",
+              "4:3",
+              "3:4"
+            ],
+            "default": "1:1"
+          },
+          "style": {
+            "type": "string",
+            "enum": [
+              "",
+              "stone-sculpture",
+              "sci-fi-armor",
+              "steampunk",
+              "filigree-ivory",
+              "urban-art"
+            ],
+            "default": ""
+          },
+          "presets": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "maxItems": 10,
+            "default": []
+          }
+        },
+        "required": [
+          "prompt"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_capabilities",
+      "description": "查询真实能力及默认参数。v2.0 仅 balanced/quality，v2.1 仅 fast/quality，v3.0 仅 standard/quality。不要承诺未开放的模型或客户端 UI 能力。",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "list_tasks",
+      "description": "查询当前个人账户的最近 MCP 任务，用于会话恢复和记录追溯。",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50,
+            "default": 10
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "quote_generation",
+      "description": "Free local-price quote; quote the complete image set once, not once per image. Do not repeatedly quote unchanged parameters. Input ownership and validity are checked on submission. Default to high_quality, model_with_texture and PBR enabled; use master only when explicitly requested. Chinese and English product names are accepted. v3.0 master=quality, high_quality=standard; v2.0/v2.1 high_quality=quality. Use model_with_texture or model_only. source_image_number starts at 1 and is optional; output format is fixed by the server. 按本地价格配置计算积分并查询余额，同一组完整图片与参数只报价一次，不要逐张图报价或重复报价。素材读取和有效性校验在提交时执行。默认高质版、模型与贴图、PBR开启；仅用户明确要求大师版时选大师。生成类型用“模型与贴图”或“仅模型”；v3.0 大师、高质，v2.1 快速、高质，v2.0 均衡、高质。source_task_id 指定历史图片任务；仅需非第一张时填写 source_image_number（从1开始）。输出格式由服务端固定，无需填写。文档价格就是本次生成费用。 历史生成图片（包括前几天生成的多视图）优先使用 source_images: [{task_id,image_index}]，最多4张，image_index从0开始，按视图顺序排列。提交时自动取得原图并刷新临时上传令牌。不要同时传这些图片的旧 file_tokens；不要与 source_task_id 混用。Prefer source_images for historical results; never reuse expired upload tokens.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "maxLength": 2000,
+            "default": ""
+          },
+          "file_tokens": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "maxItems": 4,
+            "default": []
+          },
+          "source_task_id": {
+            "$ref": "#/properties/file_tokens/items",
+            "description": "历史图片任务编号 / Source image task ID. 直接上传时不填 / Omit when using uploaded images."
+          },
+          "source_images": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "task_id": {
+                  "$ref": "#/properties/file_tokens/items"
+                },
+                "image_index": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 29,
+                  "default": 0
+                }
+              },
+              "required": [
+                "task_id"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 4,
+            "description": "历史生成图片引用，按建模视图顺序排列；图片序号从0开始。优先使用此字段复用历史图片，不要复用24小时过期的 file_token / Historical task images in view order; zero-based indexes. Prefer these references over expired upload tokens."
+          },
+          "version": {
+            "type": "string",
+            "enum": [
+              "v3.0",
+              "v2.1",
+              "v2.0"
+            ],
+            "default": "v3.0"
+          },
+          "model_type": {
+            "type": "string",
+            "enum": [
+              "大师",
+              "高质",
+              "快速",
+              "均衡",
+              "master",
+              "high_quality",
+              "fast",
+              "balanced"
+            ],
+            "default": "high_quality",
+            "description": "质量 / Quality: 大师=master, 高质=high_quality, 快速=fast, 均衡=balanced. v3.0: master/high_quality; v2.1: fast/high_quality; v2.0: balanced/high_quality. 不填默认高质版 / Defaults to high_quality, not master."
+          },
+          "generation_type": {
+            "type": "string",
+            "enum": [
+              "模型与贴图",
+              "仅模型",
+              "model_with_texture",
+              "model_only"
+            ],
+            "default": "model_with_texture",
+            "description": "生成类型 / Generation: 模型与贴图=model_with_texture (geometry + texture); 仅模型=model_only (geometry only)."
+          },
+          "license": {
+            "type": "string",
+            "enum": [
+              "private",
+              "cc-by-4.0"
+            ],
+            "default": "private",
+            "description": "模型许可 / License: private=私有，cc-by-4.0=CC BY 4.0 公开模型。用户要求公开或 CC BY 4.0 时选 cc-by-4.0；未指定默认私有 / Defaults to private; choose cc-by-4.0 when public is requested."
+          },
+          "pbr": {
+            "type": "boolean",
+            "default": true,
+            "description": "是否开启 PBR 材质 / Enable PBR materials. 带贴图时默认开启；关闭少5积分 / With texture: enabled by default; disable to save 5 points. 仅模型不影响费用 / No price effect for geometry only."
+          },
+          "source_image_number": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 30,
+            "description": "历史任务第几张图片，从1开始，默认第1张 / Image number in the source task, starting at 1; omit for the first image. Only used with source_task_id."
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_task",
+      "description": "查询原任务状态、进度、费用及结果。3D 完成后优先向用户展示 model_page_url 主站模型查看链接。按 next_poll_after 轮询；中断后用原 task_id 恢复。",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "task_id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    }
+  ],
+  "otherClientSettingsPreserved": true
+}
