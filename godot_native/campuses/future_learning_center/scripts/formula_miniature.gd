@@ -2,6 +2,11 @@ extends "res://campuses/future_learning_center/scripts/miniature_bench.gd"
 ## Presentation-only adapter for the ORIGINAL Formula energy-budget model.
 ## All input anchors stay in formula_view's logical plane; visible_p projects
 ## each grip back onto that plane under the inherited 45-degree camera.
+func _ready()->void:
+ super._ready()
+ # The generated worktop belongs to this page only, below the live apparatus.
+ viewport.transparent_bg=true
+
 func track_shape(v:Control,lane:int,width:float,height:float)->Mesh:
  var key:="formula_track_%d_%s_%s"%[lane,width,height]
  if meshes.has(key):return meshes[key]
@@ -41,8 +46,8 @@ func heading_at(v:Control,distance:float,lane:int)->float:
  return atan2(tangent.z,-tangent.x)
 func present(v:Control,_mode:String="formula")->void:
  touched.clear();rendered_mode="formula"
- box("table",p(Vector2(480,275),-12),Vector3(938,24,650),IVORY)
- box("assembly",visible_p(Vector2(435,375),1),Vector3(760,9,155),IVORY)
+ # Keep the live track and every object at its original input anchor. The
+ # background itself separates the testing mat from the timber assembly area.
  for lane:int in 2:
   mesh("lane_rim%d"%lane,track_shape(v,lane,22,3),Vector3.ZERO,METAL)
   mesh("lane%d"%lane,track_shape(v,lane,17,5),Vector3.ZERO,RUBBER)
@@ -68,8 +73,8 @@ func present(v:Control,_mode:String="formula")->void:
  var start:Vector2=v.race_point(0,0)
  line("start_a",start-Vector2(19,11),start+Vector2(19,11),1.5,ORANGE,6)
  line("start_b",start-Vector2(19,-11),start+Vector2(19,-11),1.5,ORANGE,6)
- # The readouts lie on an instrument plate, not floating over the track.
- pad("meter",Vector2(517,177),Vector2(408,77),IVORY,2)
+ # Native readouts sit inside the quiet testing mat, without a white card
+ # interrupting the oval. Values still come directly from the original model.
  for i:int in 2:
   var tray:Vector2=v.PANEL_TRAYS[i]
   pad("panelwell%d"%i,tray,Vector2(107,56),DARK,7)
