@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
+import {validateTableDimensions} from '../pipeline/table_dimension_contract.mjs';
 import {chromium} from '/private/tmp/flc-viewer-qa/node_modules/playwright-core/index.mjs';
 const rows=[],check=(ok,label,details)=>{rows.push({pass:!!ok,label,details});assert.ok(ok,label);};
 const catalog=JSON.parse(fs.readFileSync('web/assets/generated_furniture_catalog.json'));
@@ -19,10 +20,11 @@ const sofa=JSON.parse(fs.readFileSync('web/assets/models/hi3d/rest_sofa_metric/m
 const split=JSON.parse(fs.readFileSync('review/building_split_validation.json')),layout=JSON.parse(fs.readFileSync('web/assets/layout.json'));
 for(const slot of split.staticSlots){
  const cfg=catalog.slots[slot.id],m=JSON.parse(fs.readFileSync('web/assets/'+catalog.assets[cfg.asset].folder+'/manifest.json')),size=m.levels[0].size.map(v=>v*cfg.uniformScale);
- check(size[0]<=slot.target[0]+.003&&size[2]<=slot.target[1]+(slot.id.startsWith('display_table_')?.108:.003),`${slot.id}: calibrated model fits reserved furniture envelope`,size);
- const scale=cfg.uniformScale;check(m.levels.every(l=>l.size[0]*scale<=slot.target[0]+.007&&l.size[2]*scale<=slot.target[1]+(slot.id.startsWith('display_table_')?.108:.007)),`${slot.id}: all LOD silhouettes fit the reserved envelope with at most7mm edge tolerance`);
+ if(!slot.id.startsWith('display_table_'))check(size[0]<=slot.target[0]+.003&&size[2]<=slot.target[1]+.003,`${slot.id}: calibrated model fits reserved furniture envelope`,size);
+ const scale=cfg.uniformScale;if(!slot.id.startsWith('display_table_'))check(m.levels.every(l=>l.size[0]*scale<=slot.target[0]+.007&&l.size[2]*scale<=slot.target[1]+.007),`${slot.id}: all LOD silhouettes fit the reserved envelope with at most7mm edge tolerance`);
  check(slot.worldBoundsErrorM<.00001,`${slot.id}: authored failure fallback has unchanged world placement`);
 }
+const tableReport=await validateTableDimensions();rows.push(...tableReport.rows);
 const b=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true}),errors=[];
 async function ready(p,room){await p.goto('http://127.0.0.1:8142/?floor=3&room='+room);await p.waitForFunction(()=>flcReview.snapshot().ready&&flcReview.snapshot().drawCalls>0);await p.waitForTimeout(180);}
 async function inspect(p,id,width){

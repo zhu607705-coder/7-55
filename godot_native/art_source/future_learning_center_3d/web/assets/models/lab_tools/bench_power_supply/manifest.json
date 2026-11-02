@@ -1,0 +1,674 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 745272,
+    "sha256": "df22244a1c9fa723ae528a57ecb319b6358efcdbf077758552c5a1563b3c8813",
+    "triangles": 24508,
+    "primitives": 104,
+    "bounds": {
+      "min": [
+        -0.1497499942779541,
+        0,
+        -0.12500000186264515
+      ],
+      "max": [
+        0.1499500008940231,
+        0.27990001100988593,
+        0.12499999936496341
+      ]
+    },
+    "size": [
+      0.2996999951719772,
+      0.27990001100988593,
+      0.25000000122760857
+    ],
+    "materials": [
+      {
+        "name": "Powder-coated alloy",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.5,
+          0.5400000214576721,
+          0.550000011920929,
+          1
+        ],
+        "metallicFactor": 0.15000000596046448,
+        "roughnessFactor": 0.4300000071525574
+      },
+      {
+        "name": "Graphite structural polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.02500000037252903,
+          0.03200000151991844,
+          0.03799999877810478,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.36000001430511475
+      },
+      {
+        "name": "Recess dark polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.00800000037997961,
+          0.010999999940395355,
+          0.014000000432133675,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.5
+      },
+      {
+        "name": "Inactive display glass",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.02500000037252903,
+          0.05999999865889549,
+          0.07000000029802322,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.23999999463558197
+      },
+      {
+        "name": "Satin stainless fastener",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.41999998688697815,
+          0.46000000834465027,
+          0.49000000953674316,
+          1
+        ],
+        "metallicFactor": 1,
+        "roughnessFactor": 0.27000001072883606
+      },
+      {
+        "name": "Red terminal polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.5,
+          0.019999999552965164,
+          0.012000000104308128,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.4000000059604645
+      },
+      {
+        "name": "Green terminal polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.014999999664723873,
+          0.25,
+          0.07000000029802322,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.4000000059604645
+      },
+      {
+        "name": "Isolation elastomer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.014000000432133675,
+          0.017000000923871994,
+          0.01899999938905239,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.8500000238418579
+      }
+    ],
+    "textures": []
+  },
+  "calibration": {
+    "targetHeight": 0.2799000144004822,
+    "yawDegrees": 0,
+    "uniformScale": 1.0000000121135981,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "df22244a1c9fa723ae528a57ecb319b6358efcdbf077758552c5a1563b3c8813",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 1.3709802271222316e-7,
+      "bytes": 81808,
+      "uncompressedBytes": 532700,
+      "sha256": "3817fb4884c2a08004a06fa8cf2cb3efbed74b0e18cefe11e104d2f5bab01378",
+      "triangles": 20342,
+      "primitives": 8,
+      "bounds": {
+        "min": [
+          -0.1498499975872,
+          9.690879002044461e-11,
+          -0.12500000073494025
+        ],
+        "max": [
+          0.1498500033404106,
+          0.27990015116381084,
+          0.12500011279053713
+        ]
+      },
+      "size": [
+        0.2997000009276106,
+        0.279900151066902,
+        0.25000011352547735
+      ],
+      "materials": [
+        {
+          "name": "Powder-coated alloy",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5,
+            0.5400000214576721,
+            0.550000011920929,
+            1
+          ],
+          "metallicFactor": 0.15000000596046448,
+          "roughnessFactor": 0.4300000071525574
+        },
+        {
+          "name": "Graphite structural polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.02500000037252903,
+            0.03200000151991844,
+            0.03799999877810478,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.36000001430511475
+        },
+        {
+          "name": "Recess dark polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.010999999940395355,
+            0.014000000432133675,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5
+        },
+        {
+          "name": "Inactive display glass",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.02500000037252903,
+            0.05999999865889549,
+            0.07000000029802322,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.23999999463558197
+        },
+        {
+          "name": "Satin stainless fastener",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.41999998688697815,
+            0.46000000834465027,
+            0.49000000953674316,
+            1
+          ],
+          "metallicFactor": 1,
+          "roughnessFactor": 0.27000001072883606
+        },
+        {
+          "name": "Red terminal polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5,
+            0.019999999552965164,
+            0.012000000104308128,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4000000059604645
+        },
+        {
+          "name": "Green terminal polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.014999999664723873,
+            0.25,
+            0.07000000029802322,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4000000059604645
+        },
+        {
+          "name": "Isolation elastomer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.014000000432133675,
+            0.017000000923871994,
+            0.01899999938905239,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8500000238418579
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "a3d743719c8cc1c5c508bb1635adc887543954b07fae9aaf802255fa01b18807",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 1.3709802271222316e-7,
+      "bytes": 26488,
+      "uncompressedBytes": 126124,
+      "sha256": "fad69f6de40b4f88100739ffe19633d538ca20069154cd3d0609c63ad87699f5",
+      "triangles": 4684,
+      "primitives": 8,
+      "bounds": {
+        "min": [
+          -0.1498499975872,
+          9.690879002044461e-11,
+          -0.12500000073494025
+        ],
+        "max": [
+          0.1498500033404106,
+          0.27990015116381084,
+          0.12500011279053713
+        ]
+      },
+      "size": [
+        0.2997000009276106,
+        0.279900151066902,
+        0.25000011352547735
+      ],
+      "materials": [
+        {
+          "name": "Powder-coated alloy",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5,
+            0.5400000214576721,
+            0.550000011920929,
+            1
+          ],
+          "metallicFactor": 0.15000000596046448,
+          "roughnessFactor": 0.4300000071525574
+        },
+        {
+          "name": "Graphite structural polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.02500000037252903,
+            0.03200000151991844,
+            0.03799999877810478,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.36000001430511475
+        },
+        {
+          "name": "Recess dark polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.010999999940395355,
+            0.014000000432133675,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5
+        },
+        {
+          "name": "Inactive display glass",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.02500000037252903,
+            0.05999999865889549,
+            0.07000000029802322,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.23999999463558197
+        },
+        {
+          "name": "Satin stainless fastener",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.41999998688697815,
+            0.46000000834465027,
+            0.49000000953674316,
+            1
+          ],
+          "metallicFactor": 1,
+          "roughnessFactor": 0.27000001072883606
+        },
+        {
+          "name": "Red terminal polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5,
+            0.019999999552965164,
+            0.012000000104308128,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4000000059604645
+        },
+        {
+          "name": "Green terminal polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.014999999664723873,
+            0.25,
+            0.07000000029802322,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4000000059604645
+        },
+        {
+          "name": "Isolation elastomer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.014000000432133675,
+            0.017000000923871994,
+            0.01899999938905239,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8500000238418579
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "17ed6ed8c093449ed64f49d98a56a967fe9c60367250571af53e38a91b99862b",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 1.221968615183755e-7,
+      "bytes": 13960,
+      "uncompressedBytes": 42848,
+      "sha256": "6c802525cabe03c41b92cfe1c0f7bef89aa82d79120244e49bd51dd4cb78fc07",
+      "triangles": 1172,
+      "primitives": 8,
+      "bounds": {
+        "min": [
+          -0.1498499975872,
+          9.690879002044461e-11,
+          -0.12500000073494025
+        ],
+        "max": [
+          0.1498500033404106,
+          0.27990013626264965,
+          0.12499997705027376
+        ]
+      },
+      "size": [
+        0.2997000009276106,
+        0.27990013616574083,
+        0.249999977785214
+      ],
+      "materials": [
+        {
+          "name": "Powder-coated alloy",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5,
+            0.5400000214576721,
+            0.550000011920929,
+            1
+          ],
+          "metallicFactor": 0.15000000596046448,
+          "roughnessFactor": 0.4300000071525574
+        },
+        {
+          "name": "Graphite structural polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.02500000037252903,
+            0.03200000151991844,
+            0.03799999877810478,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.36000001430511475
+        },
+        {
+          "name": "Recess dark polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.010999999940395355,
+            0.014000000432133675,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5
+        },
+        {
+          "name": "Inactive display glass",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.02500000037252903,
+            0.05999999865889549,
+            0.07000000029802322,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.23999999463558197
+        },
+        {
+          "name": "Satin stainless fastener",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.41999998688697815,
+            0.46000000834465027,
+            0.49000000953674316,
+            1
+          ],
+          "metallicFactor": 1,
+          "roughnessFactor": 0.27000001072883606
+        },
+        {
+          "name": "Red terminal polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5,
+            0.019999999552965164,
+            0.012000000104308128,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4000000059604645
+        },
+        {
+          "name": "Green terminal polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.014999999664723873,
+            0.25,
+            0.07000000029802322,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4000000059604645
+        },
+        {
+          "name": "Isolation elastomer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.014000000432133675,
+            0.017000000923871994,
+            0.01899999938905239,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8500000238418579
+        }
+      ],
+      "textures": []
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}
