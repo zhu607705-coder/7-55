@@ -1,0 +1,7 @@
+{
+  "passed": 41,
+  "sourceNodes": 12862,
+  "sourceMeshes": 12656,
+  "registeredObjects": 76,
+  "scope": "Actual building.glb hierarchy/geometry and viewer state integration in Node VM. Renderer, DOM, network and optional generated asset loading mocked; embedded textures stripped in memory. NOT browser/GPU/pointer acceptance."
+}

@@ -114,3 +114,7 @@ node scripts/test_north_density.mjs
 ## 六件独立评审入口与 CPU 对照
 
 独立入口为 `web/props_review.html`，用于尺寸、材质、LOD 和实例复用检查，不替换主建筑或正式游戏。玻璃的 64/512 样本 CPU 对照及复现说明见 [本轮说明](sources/prop_review_refinement_20261102.md)。浏览器 WebGL/交互尚未在本环境实测。
+
+## 四层—房间—对象展示骨架（2026-11-02）
+
+原入口 `web/index.html` 增加可撤回的层级选择；默认四层展开，其中 1F 明确为待核准占位。空间与团队/展陈配置解耦，4F 保留办公轮廓，三楼仅使用已有资料与工位。详见 [实现与验收边界](sources/spatial_review_20261102.md)。本环境浏览器被 socket 权限阻止；真实网页图必须来自新增 Chromium 工作流，不能用 CPU 模型图替代。

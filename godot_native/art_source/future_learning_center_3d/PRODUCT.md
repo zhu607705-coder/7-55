@@ -16,3 +16,7 @@ User requested floor-material definition. Current3F north site photos support a 
 
 ## North spatial-density feedback
 User identified excessive emptiness. Compare photographed furniture count, grouping and observer lens before revising architecture. Current north pass restores the fourth stand, two stools and photographed large covered silhouette, retains room footprint and verifies the visitor route. Use the user-confirmed photo-appearance floor baseline.
+
+## Spatial navigation revision, 2026-11-02
+
+The user now requests four-layer expansion, selectable floors/rooms/objects and replaceable display content. Space identities must not encode team tenancy. 1F may be rebuilt: preserve only a versioned pending slot until approved geometry arrives. Prior 2F/3F/4F source geometry remains the baseline. 3F priority is living, exhibition/honors and software/hardware laboratory review; the current xlab source contains generic workstations, so this revision does not invent detailed lab equipment or an approved internal split. 4F is reviewed as office outlines and exterior corridor-poster placeholders; original office geometry is retained, not deleted. No back office, accounts, operational simulation or Godot integration is requested.

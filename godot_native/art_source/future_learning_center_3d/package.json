@@ -17,6 +17,11 @@
     "test:small-props": "node pipeline/test_small_props.mjs",
     "test:lab-tools": "node pipeline/test_lab_tools.mjs",
     "test:asset-default-precision": "node pipeline/test_default_precision.mjs",
-    "test:props-review": "node scripts/test_props_review.mjs"
+    "test:props-review": "node scripts/test_props_review.mjs",
+    "test:spatial-state": "node scripts/test_spatial_state.mjs",
+    "test:spatial-presentation": "node scripts/test_spatial_presentation.mjs",
+    "test:spatial-integration": "node scripts/test_spatial_viewer_integration.mjs",
+    "test:spatial-browser": "node browser_tests/spatial_browser.mjs",
+    "test:spatial-overlay": "node scripts/test_spatial_overlay.mjs"
   }
 }
