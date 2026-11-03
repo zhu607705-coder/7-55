@@ -1,0 +1,1597 @@
+{
+  "schemaVersion": 1,
+  "units": "metres",
+  "axes": "glTF Y-up; no runtime axis conversion",
+  "assets": {
+    "photo_monitor_stand": {
+      "folder": "models/photo_scene_20261103/photo_monitor_stand"
+    },
+    "photo_keyboard": {
+      "folder": "models/photo_scene_20261103/photo_keyboard"
+    },
+    "photo_mouse": {
+      "folder": "models/photo_desktop_corrected/photo_mouse"
+    },
+    "lounge_double_corrected": {
+      "folder": "models/photo_lounge_corrected/lounge_double_corrected"
+    },
+    "photo_pantry_grey_roundfront_appliance": {
+      "folder": "models/photo_scene_20261103/photo_pantry_grey_roundfront_appliance"
+    },
+    "photo_pantry_white_cleartop_appliance": {
+      "folder": "models/photo_scene_20261103/photo_pantry_white_cleartop_appliance"
+    },
+    "photo_side_by_side_fridge": {
+      "folder": "models/photo_scene_20261103/photo_side_by_side_fridge"
+    }
+  },
+  "bindings": [
+    {
+      "id": "desk-desktop/office_desk.008",
+      "floor": "3",
+      "sourceNodeName": "office_desk.008",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.009",
+      "floor": "3",
+      "sourceNodeName": "office_desk.009",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.010",
+      "floor": "3",
+      "sourceNodeName": "office_desk.010",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.011",
+      "floor": "3",
+      "sourceNodeName": "office_desk.011",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.012",
+      "floor": "3",
+      "sourceNodeName": "office_desk.012",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.013",
+      "floor": "3",
+      "sourceNodeName": "office_desk.013",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.014",
+      "floor": "3",
+      "sourceNodeName": "office_desk.014",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.015",
+      "floor": "3",
+      "sourceNodeName": "office_desk.015",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.016",
+      "floor": "3",
+      "sourceNodeName": "office_desk.016",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.017",
+      "floor": "3",
+      "sourceNodeName": "office_desk.017",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.018",
+      "floor": "3",
+      "sourceNodeName": "office_desk.018",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.019",
+      "floor": "3",
+      "sourceNodeName": "office_desk.019",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.020",
+      "floor": "3",
+      "sourceNodeName": "office_desk.020",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.021",
+      "floor": "3",
+      "sourceNodeName": "office_desk.021",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.022",
+      "floor": "3",
+      "sourceNodeName": "office_desk.022",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.023",
+      "floor": "3",
+      "sourceNodeName": "office_desk.023",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.024",
+      "floor": "3",
+      "sourceNodeName": "office_desk.024",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.025",
+      "floor": "3",
+      "sourceNodeName": "office_desk.025",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.026",
+      "floor": "3",
+      "sourceNodeName": "office_desk.026",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.027",
+      "floor": "3",
+      "sourceNodeName": "office_desk.027",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.028",
+      "floor": "3",
+      "sourceNodeName": "office_desk.028",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.029",
+      "floor": "3",
+      "sourceNodeName": "office_desk.029",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.030",
+      "floor": "3",
+      "sourceNodeName": "office_desk.030",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.031",
+      "floor": "3",
+      "sourceNodeName": "office_desk.031",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.032",
+      "floor": "3",
+      "sourceNodeName": "office_desk.032",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.033",
+      "floor": "3",
+      "sourceNodeName": "office_desk.033",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.034",
+      "floor": "3",
+      "sourceNodeName": "office_desk.034",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.035",
+      "floor": "3",
+      "sourceNodeName": "office_desk.035",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.036",
+      "floor": "3",
+      "sourceNodeName": "office_desk.036",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.037",
+      "floor": "3",
+      "sourceNodeName": "office_desk.037",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.038",
+      "floor": "3",
+      "sourceNodeName": "office_desk.038",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.039",
+      "floor": "3",
+      "sourceNodeName": "office_desk.039",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.040",
+      "floor": "3",
+      "sourceNodeName": "office_desk.040",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.041",
+      "floor": "3",
+      "sourceNodeName": "office_desk.041",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.042",
+      "floor": "3",
+      "sourceNodeName": "office_desk.042",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.043",
+      "floor": "3",
+      "sourceNodeName": "office_desk.043",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.044",
+      "floor": "3",
+      "sourceNodeName": "office_desk.044",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.045",
+      "floor": "3",
+      "sourceNodeName": "office_desk.045",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.046",
+      "floor": "3",
+      "sourceNodeName": "office_desk.046",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "desk-desktop/office_desk.047",
+      "floor": "3",
+      "sourceNodeName": "office_desk.047",
+      "status": "active",
+      "kind": "deskDesktop",
+      "parts": [
+        {
+          "asset": "photo_monitor_stand",
+          "position": [
+            0,
+            0.73,
+            0.15
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_keyboard",
+          "position": [
+            0,
+            0.73,
+            -0.12
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_mouse",
+          "position": [
+            -0.34,
+            0.73,
+            -0.12
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "rest/pantry-sofa",
+      "floor": "3",
+      "sourceNodeName": "Static asset pantry_sofa",
+      "status": "active",
+      "kind": "static",
+      "label": "照片双座沙发（比例参照）",
+      "parts": [
+        {
+          "asset": "lounge_double_corrected",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "yaw": 0
+        }
+      ]
+    },
+    {
+      "id": "pantry/photo_pantry_grey_roundfront_appliance",
+      "floor": "3",
+      "sourceNodeName": "Coffee machine",
+      "replaceNodes": [
+        "Coffee machine",
+        "Coffee cup niche"
+      ],
+      "status": "active",
+      "kind": "static",
+      "label": "灰色圆前壳台面电器（类型未定）",
+      "parts": [
+        {
+          "asset": "photo_pantry_grey_roundfront_appliance",
+          "position": [
+            0,
+            -0.16,
+            0
+          ],
+          "yaw": 3.141592653589793
+        }
+      ]
+    },
+    {
+      "id": "pantry/photo_pantry_white_cleartop_appliance",
+      "floor": "3",
+      "sourceNodeName": "Microwave",
+      "replaceNodes": [
+        "Microwave",
+        "Microwave door"
+      ],
+      "status": "active",
+      "kind": "static",
+      "label": "白色透明顶台面电器（类型未定）",
+      "parts": [
+        {
+          "asset": "photo_pantry_white_cleartop_appliance",
+          "position": [
+            0,
+            -0.16,
+            0
+          ],
+          "yaw": 3.141592653589793
+        }
+      ]
+    },
+    {
+      "id": "pantry/fridge",
+      "floor": "3",
+      "sourceNodeName": "Pantry refrigerator",
+      "replaceNodes": [
+        "Pantry refrigerator",
+        "Fridge upper door panel",
+        "Fridge lower door panel",
+        "Fridge door gasket seam",
+        "Fridge handle",
+        "Fridge handle.001"
+      ],
+      "status": "active",
+      "kind": "static",
+      "label": "照片对开门冰箱（比例参照）",
+      "parts": [
+        {
+          "asset": "photo_side_by_side_fridge",
+          "position": [
+            -0.01,
+            -1,
+            0
+          ],
+          "yaw": 3.141592653589793
+        }
+      ],
+      "placementNote": "Original centre moved 10 mm left; matching Refrigerator collider updated only. East wall clearance is 9 mm in approximate model, not a construction tolerance."
+    }
+  ],
+  "pending": [
+    {
+      "id": "hardware-304",
+      "status": "pending",
+      "reason": "Room mapping and placement await confirmation; no floor reassignment."
+    },
+    {
+      "id": "lounge-single-and-cushion",
+      "status": "pending",
+      "reason": "No verified existing anchor."
+    },
+    {
+      "id": "desktop/monitor-arm",
+      "status": "pending",
+      "asset": "photo_monitor_arm",
+      "reason": "Existing stand model includes inseparable stand; separate screen source required to avoid duplicate supports."
+    },
+    {
+      "id": "desktop/divider",
+      "status": "pending",
+      "asset": "photo_desk_divider",
+      "reason": "Actual footprint 1.6195 x 0.6695 m exceeds existing 1.4 x 0.6 m tabletop; no nonuniform fitting."
+    },
+    {
+      "id": "pantry/counter",
+      "status": "pending",
+      "reason": "Photo counter width 2.400 m vs existing 4.900 m; replacement would leave 1.25 m empty on each side while original collider remains 4.8 m."
+    },
+    {
+      "id": "pantry/fridge-surround",
+      "status": "pending",
+      "reason": "Wood surround width 1.558 m requires confirmed placement; not attached to refrigerator."
+    }
+  ]
+}

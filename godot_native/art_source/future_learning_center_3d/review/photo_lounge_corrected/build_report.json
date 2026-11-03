@@ -1,0 +1,895 @@
+{
+  "blender": "4.3.2",
+  "units": "m",
+  "coordinates": "Blender Z up, front -Y; glTF Y up, front +Z (export conversion maps Blender -Y to glTF +Z). Floor-centred identity objects.",
+  "dimensions": "Photo-estimated, not measured; no manufacturer identity claimed.",
+  "referenceToken": "photo_reference_lounge_02",
+  "scope": "Corrected source assets only. CPU images are modelling QA, not viewer acceptance.",
+  "records": [
+    {
+      "asset": "lounge_single_corrected",
+      "level": 0,
+      "boundsBlenderXYZ": [
+        [
+          -0.48697564005851746,
+          -0.4182000160217285,
+          0.0
+        ],
+        [
+          0.48697564005851746,
+          0.4125000238418579,
+          0.8520607352256775
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.9739512801170349,
+        0.8307000398635864,
+        0.8520607352256775
+      ],
+      "triangles": 15712,
+      "meshParts": 15,
+      "sha256": "3fbb05c2f4f094d42a57e8420965b1fd28dc63fa10a781df77cc8563b894443d",
+      "validation": [
+        {
+          "part": "Thick upholstered back and descending side wings",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.04601325743207024
+        },
+        {
+          "part": "Charcoal outer backing with rolled front ends",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.009392571767135862
+        },
+        {
+          "part": "Concealed upholstered shell underside",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.012928967821719345
+        },
+        {
+          "part": "Fine top edge upholstery welt",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 1.5429403358498164e-05
+        },
+        {
+          "part": "Independent flatter seat cushion with thin front edge",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.035522822032647734
+        },
+        {
+          "part": "Seat perimeter fine fabric welt",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 1.914401217574189e-05
+        },
+        {
+          "part": "Concealed central seat support",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0005564330960581737
+        },
+        {
+          "part": "Tapered central four star blade -1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0005354361890504604
+        },
+        {
+          "part": "Small dark floor glide -1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.6087877918728064e-06
+        },
+        {
+          "part": "Tapered central four star blade -1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0005354362167755125
+        },
+        {
+          "part": "Small dark floor glide -1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.608787791872867e-06
+        },
+        {
+          "part": "Tapered central four star blade 1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.000535436188518388
+        },
+        {
+          "part": "Small dark floor glide 1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.6087877918728026e-06
+        },
+        {
+          "part": "Tapered central four star blade 1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0005354362002181275
+        },
+        {
+          "part": "Small dark floor glide 1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.608787791872866e-06
+        }
+      ]
+    },
+    {
+      "asset": "lounge_single_corrected",
+      "level": 1,
+      "boundsBlenderXYZ": [
+        [
+          -0.48676949739456177,
+          -0.41819998621940613,
+          0.0
+        ],
+        [
+          0.48676949739456177,
+          0.4125000238418579,
+          0.8520446419715881
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.9735389947891235,
+        0.830700010061264,
+        0.8520446419715881
+      ],
+      "triangles": 7248,
+      "meshParts": 15,
+      "sha256": "f603f7d47b2c5eadf2c986aad8babaafb678d3ae0da99d84a211db8f4adc22e0",
+      "validation": [
+        {
+          "part": "Thick upholstered back and descending side wings",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.04544663598726857
+        },
+        {
+          "part": "Charcoal outer backing with rolled front ends",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.009294663132023002
+        },
+        {
+          "part": "Concealed upholstered shell underside",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.012856529904764862
+        },
+        {
+          "part": "Fine top edge upholstery welt",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 1.5341058934064417e-05
+        },
+        {
+          "part": "Independent flatter seat cushion with thin front edge",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.03552130844155968
+        },
+        {
+          "part": "Seat perimeter fine fabric welt",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 1.9121082994003565e-05
+        },
+        {
+          "part": "Concealed central seat support",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.000551672715953644
+        },
+        {
+          "part": "Tapered central four star blade -1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0005349392391592914
+        },
+        {
+          "part": "Small dark floor glide -1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.577915641679451e-06
+        },
+        {
+          "part": "Tapered central four star blade -1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0005349392600408618
+        },
+        {
+          "part": "Small dark floor glide -1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.5779156416794415e-06
+        },
+        {
+          "part": "Tapered central four star blade 1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.000534939237613905
+        },
+        {
+          "part": "Small dark floor glide 1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.5779156416794483e-06
+        },
+        {
+          "part": "Tapered central four star blade 1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0005349392569725404
+        },
+        {
+          "part": "Small dark floor glide 1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.577915641679437e-06
+        }
+      ]
+    },
+    {
+      "asset": "lounge_single_corrected",
+      "level": 2,
+      "boundsBlenderXYZ": [
+        [
+          -0.4858834147453308,
+          -0.4165000021457672,
+          0.0
+        ],
+        [
+          0.4858834147453308,
+          0.4125000238418579,
+          0.8428274393081665
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.9717668294906616,
+        0.8290000259876251,
+        0.8428274393081665
+      ],
+      "triangles": 2256,
+      "meshParts": 13,
+      "sha256": "d94175b252f4f71aa7a8bc65130016495290cea12154b73a120897073b8df9a5",
+      "validation": [
+        {
+          "part": "Thick upholstered back and descending side wings",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.04396165750690921
+        },
+        {
+          "part": "Charcoal outer backing with rolled front ends",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.009079871854489241
+        },
+        {
+          "part": "Concealed upholstered shell underside",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.012739590858017808
+        },
+        {
+          "part": "Independent flatter seat cushion with thin front edge",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.03530475866508605
+        },
+        {
+          "part": "Concealed central seat support",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0005328749224240555
+        },
+        {
+          "part": "Tapered central four star blade -1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0005375440446531362
+        },
+        {
+          "part": "Small dark floor glide -1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.456002573161079e-06
+        },
+        {
+          "part": "Tapered central four star blade -1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0005375440520454756
+        },
+        {
+          "part": "Small dark floor glide -1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.4560025731610755e-06
+        },
+        {
+          "part": "Tapered central four star blade 1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.000537544043404615
+        },
+        {
+          "part": "Small dark floor glide 1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.456002573161084e-06
+        },
+        {
+          "part": "Tapered central four star blade 1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0005375440532939984
+        },
+        {
+          "part": "Small dark floor glide 1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.456002573161083e-06
+        }
+      ]
+    },
+    {
+      "asset": "lounge_double_corrected",
+      "level": 0,
+      "boundsBlenderXYZ": [
+        [
+          -0.764473557472229,
+          -0.41819998621940613,
+          0.0
+        ],
+        [
+          0.764473557472229,
+          0.4125000238418579,
+          0.8520585894584656
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.528947114944458,
+        0.830700010061264,
+        0.8520585894584656
+      ],
+      "triangles": 15996,
+      "meshParts": 16,
+      "sha256": "8598674984dafe17e23d0a76df28da3d9a8432762a8f80b845e7b2d507e69962",
+      "validation": [
+        {
+          "part": "Thick upholstered back and descending side wings",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0706648602568072
+        },
+        {
+          "part": "Charcoal outer backing with rolled front ends",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.014155218339619595
+        },
+        {
+          "part": "Concealed upholstered shell underside",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.021129627692020127
+        },
+        {
+          "part": "Fine top edge upholstery welt",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 1.9483768619003787e-05
+        },
+        {
+          "part": "Recessed central back upholstery seam",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 1.9924232730933826e-06
+        },
+        {
+          "part": "Independent flatter seat cushion with thin front edge",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.05805444101171089
+        },
+        {
+          "part": "Seat perimeter fine fabric welt",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 2.5837260300691612e-05
+        },
+        {
+          "part": "Concealed central seat support",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0005564330960581737
+        },
+        {
+          "part": "Tapered central four star blade -1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.00075187850417491
+        },
+        {
+          "part": "Small dark floor glide -1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.6087887919476437e-06
+        },
+        {
+          "part": "Tapered central four star blade -1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0007518785748635749
+        },
+        {
+          "part": "Small dark floor glide -1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.6087887919474446e-06
+        },
+        {
+          "part": "Tapered central four star blade 1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0007518785940510848
+        },
+        {
+          "part": "Small dark floor glide 1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.6087887919476488e-06
+        },
+        {
+          "part": "Tapered central four star blade 1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0007518785220020671
+        },
+        {
+          "part": "Small dark floor glide 1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.6087887919474434e-06
+        }
+      ]
+    },
+    {
+      "asset": "lounge_double_corrected",
+      "level": 1,
+      "boundsBlenderXYZ": [
+        [
+          -0.7642496824264526,
+          -0.41819998621940613,
+          0.0
+        ],
+        [
+          0.7642496824264526,
+          0.4125000238418579,
+          0.8520408868789673
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.5284993648529053,
+        0.830700010061264,
+        0.8520408868789673
+      ],
+      "triangles": 7532,
+      "meshParts": 16,
+      "sha256": "2ce8d1816f74f807678f7ae4383831191813f8832e97852192aa7801605cf510",
+      "validation": [
+        {
+          "part": "Thick upholstered back and descending side wings",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0698081901524601
+        },
+        {
+          "part": "Charcoal outer backing with rolled front ends",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.013999608712329968
+        },
+        {
+          "part": "Concealed upholstered shell underside",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.02101124335381866
+        },
+        {
+          "part": "Fine top edge upholstery welt",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 1.9392404194734472e-05
+        },
+        {
+          "part": "Recessed central back upholstery seam",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 1.9924232730933826e-06
+        },
+        {
+          "part": "Independent flatter seat cushion with thin front edge",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.058051967402802745
+        },
+        {
+          "part": "Seat perimeter fine fabric welt",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 2.5805310929883926e-05
+        },
+        {
+          "part": "Concealed central seat support",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.000551672715953644
+        },
+        {
+          "part": "Tapered central four star blade -1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0007512111510104421
+        },
+        {
+          "part": "Small dark floor glide -1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.577916408298288e-06
+        },
+        {
+          "part": "Tapered central four star blade -1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0007512112254157258
+        },
+        {
+          "part": "Small dark floor glide -1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.5779164082980682e-06
+        },
+        {
+          "part": "Tapered central four star blade 1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0007512112415032341
+        },
+        {
+          "part": "Small dark floor glide 1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.5779164082982923e-06
+        },
+        {
+          "part": "Tapered central four star blade 1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0007512111738370874
+        },
+        {
+          "part": "Small dark floor glide 1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.577916408298068e-06
+        }
+      ]
+    },
+    {
+      "asset": "lounge_double_corrected",
+      "level": 2,
+      "boundsBlenderXYZ": [
+        [
+          -0.7632766962051392,
+          -0.4165000021457672,
+          0.0
+        ],
+        [
+          0.7632766962051392,
+          0.4125000238418579,
+          0.8428274393081665
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.5265533924102783,
+        0.8290000259876251,
+        0.8428274393081665
+      ],
+      "triangles": 2256,
+      "meshParts": 13,
+      "sha256": "2370e331976019f5cfae3a2412e864a1a254415b14ebe3b38489af6226aa0a15",
+      "validation": [
+        {
+          "part": "Thick upholstered back and descending side wings",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.06728502051995114
+        },
+        {
+          "part": "Charcoal outer backing with rolled front ends",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.013655644097140103
+        },
+        {
+          "part": "Concealed upholstered shell underside",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.020820131477086282
+        },
+        {
+          "part": "Independent flatter seat cushion with thin front edge",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.05769806304922334
+        },
+        {
+          "part": "Concealed central seat support",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0005328749224240555
+        },
+        {
+          "part": "Tapered central four star blade -1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0007546469652079912
+        },
+        {
+          "part": "Small dark floor glide -1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.456002573175216e-06
+        },
+        {
+          "part": "Tapered central four star blade -1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.000754646974194413
+        },
+        {
+          "part": "Small dark floor glide -1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.456002573175211e-06
+        },
+        {
+          "part": "Tapered central four star blade 1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0007546469680394343
+        },
+        {
+          "part": "Small dark floor glide 1 -1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.456002573175216e-06
+        },
+        {
+          "part": "Tapered central four star blade 1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.0007546469713629721
+        },
+        {
+          "part": "Small dark floor glide 1 1",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 3.4560025731752104e-06
+        }
+      ]
+    },
+    {
+      "asset": "lounge_loose_cushion",
+      "level": 0,
+      "boundsBlenderXYZ": [
+        [
+          -0.18181999027729034,
+          -0.07100000232458115,
+          0.0
+        ],
+        [
+          0.18181997537612915,
+          0.07100000232458115,
+          0.3636400103569031
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3636399656534195,
+        0.1420000046491623,
+        0.3636400103569031
+      ],
+      "triangles": 2084,
+      "meshParts": 2,
+      "sha256": "b716e1b8071a9a836b6105e47d3a79ad40938d566b0624ee76f22cb60e104e2b",
+      "validation": [
+        {
+          "part": "Optional loose softly stuffed square cushion",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.01216923798157971
+        },
+        {
+          "part": "Loose cushion sewn perimeter",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 7.502496931905868e-06
+        }
+      ]
+    },
+    {
+      "asset": "lounge_loose_cushion",
+      "level": 1,
+      "boundsBlenderXYZ": [
+        [
+          -0.18181999027729034,
+          -0.07100000232458115,
+          0.0
+        ],
+        [
+          0.18181993067264557,
+          0.07100000232458115,
+          0.3636400103569031
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3636399209499359,
+        0.1420000046491623,
+        0.3636400103569031
+      ],
+      "triangles": 1252,
+      "meshParts": 2,
+      "sha256": "9e152dc42221b8ee4c82f4995728cf5bc20fbbd71478f54827c5d2ed44584f26",
+      "validation": [
+        {
+          "part": "Optional loose softly stuffed square cushion",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.012152232277011657
+        },
+        {
+          "part": "Loose cushion sewn perimeter",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 7.49280555613747e-06
+        }
+      ]
+    },
+    {
+      "asset": "lounge_loose_cushion",
+      "level": 2,
+      "boundsBlenderXYZ": [
+        [
+          -0.18031999468803406,
+          -0.07100000232458115,
+          0.0
+        ],
+        [
+          0.18031999468803406,
+          0.07100000232458115,
+          0.3606399893760681
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3606399893760681,
+        0.1420000046491623,
+        0.3606399893760681
+      ],
+      "triangles": 332,
+      "meshParts": 1,
+      "sha256": "3d3a22ff6fc0eacc7fc0bc01ddfc56631d9b700cc530d1aff948c72828fdeaad",
+      "validation": [
+        {
+          "part": "Optional loose softly stuffed square cushion",
+          "boundaryOrNonManifoldEdges": 0,
+          "degenerateFaces": 0,
+          "invalidNormals": 0,
+          "signedVolume": 0.012069790913651717
+        }
+      ]
+    }
+  ]
+}

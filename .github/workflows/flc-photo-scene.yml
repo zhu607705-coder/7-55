@@ -1,0 +1,199 @@
+name: FLC photo scene and workstation contracts
+
+on:
+  pull_request:
+    paths:
+      - 'godot_native/art_source/future_learning_center_3d/**'
+      - '.github/workflows/flc-photo-scene.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'godot_native/art_source/future_learning_center_3d/**'
+      - '.github/workflows/flc-photo-scene.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+    working-directory: godot_native/art_source/future_learning_center_3d
+
+env:
+  TEST_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+# Additive gates. flc-small-props.yml and flc-spatial-browser.yml remain unchanged.
+# A Node/VM pass is never Chromium, GPU, visual, or physical-device acceptance.
+jobs:
+  photo-node-contracts:
+    name: Photo and workstation Node and actual GLB VM contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Initialize fresh run evidence
+        working-directory: ${{ runner.temp }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/flc-photo-node"
+          printf 'test_head=%s\nrun_id=%s\nrun_attempt=%s\nscope=Node and actual GLB VM contracts, not browser acceptance\n' \
+            "$TEST_HEAD_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" \
+            > "$RUNNER_TEMP/flc-photo-node/context.txt"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          sparse-checkout: godot_native/art_source/future_learning_center_3d
+      - uses: actions/setup-node@v4
+        id: node
+        with:
+          node-version: '22'
+      # Explicit conditions keep every contract running after another fails,
+      # without continue-on-error or masking the failed step/job outcome.
+      - name: Test wall-clock animation, low frame rate, pause and cancellation
+        if: ${{ !cancelled() && steps.node.outcome == 'success' }}
+        run: node scripts/test_frame_timing.mjs 2>&1 | tee "$RUNNER_TEMP/flc-photo-node/frame-timing.log"
+      - name: Test photo loader and config in Node
+        if: ${{ !cancelled() && steps.node.outcome == 'success' }}
+        run: |
+          git rev-parse HEAD | tee "$RUNNER_TEMP/flc-photo-node/checkout-sha.txt"
+          node scripts/test_photo_scene_assets.mjs 2>&1 | tee "$RUNNER_TEMP/flc-photo-node/photo-assets.log"
+      - name: Test workstation actual GLB geometry in Node
+        if: ${{ !cancelled() && steps.node.outcome == 'success' }}
+        run: |
+          node scripts/test_workstation_review.mjs 2>&1 | tee "$RUNNER_TEMP/flc-photo-node/workstation.log"
+          cp review/workstation-node.json "$RUNNER_TEMP/flc-photo-node/workstation-node.json"
+      - name: Test viewer in Node VM with default building.glb
+        if: ${{ !cancelled() && steps.node.outcome == 'success' }}
+        run: |
+          unset PHOTO_TEST_BUILDING
+          node scripts/test_spatial_viewer_integration.mjs 2>&1 | tee "$RUNNER_TEMP/flc-photo-node/vm-default.log"
+      - name: Test viewer in Node VM with building.web.glb
+        if: ${{ !cancelled() && steps.node.outcome == 'success' }}
+        env:
+          PHOTO_TEST_BUILDING: building.web.glb
+        run: node scripts/test_spatial_viewer_integration.mjs 2>&1 | tee "$RUNNER_TEMP/flc-photo-node/vm-web.log"
+      - name: Preserve all Node and VM evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flc-photo-node-and-glb-vm
+          path: ${{ runner.temp }}/flc-photo-node/
+          if-no-files-found: error
+
+  photo-browser:
+    name: Photo Chromium (${{ matrix.suite }}, desktop and mobile)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - suite: photo
+            script: photo_browser.mjs
+            evidence: photo_scene_browser
+          - suite: workstation
+            script: workstation_browser.mjs
+            evidence: workstation_browser
+    steps:
+      - name: Initialize fresh run evidence
+        working-directory: ${{ runner.temp }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/flc-browser-${{ matrix.suite }}"
+          printf 'test_head=%s\nrun_id=%s\nrun_attempt=%s\nscope=Actual Chromium WebGL, desktop and simulated mobile; not physical-device acceptance\n' \
+            "$TEST_HEAD_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" \
+            > "$RUNNER_TEMP/flc-browser-${{ matrix.suite }}/context.txt"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          sparse-checkout: godot_native/art_source/future_learning_center_3d
+      - name: Exclude historical browser receipts
+        run: |
+          rm -rf "review/${{ matrix.evidence }}"
+          mkdir -p "review/${{ matrix.evidence }}"
+          git rev-parse HEAD | tee "$RUNNER_TEMP/flc-browser-${{ matrix.suite }}/checkout-sha.txt"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: godot_native/art_source/future_learning_center_3d/browser_tests/package-lock.json
+      - name: Install locked Playwright 1.62.1 harness
+        run: npm ci --prefix browser_tests --ignore-scripts --no-audit --no-fund
+      - name: Install matching Chromium runtime
+        run: node browser_tests/node_modules/playwright/cli.js install --with-deps chromium
+      # Each script catches viewport failures separately and attempts both desktop
+      # and mobile. The two scripts run in independent, non-fail-fast matrix jobs.
+      - name: Run actual WebGL ordinary pointer and touch acceptance
+        run: node "browser_tests/${{ matrix.script }}" 2>&1 | tee "$RUNNER_TEMP/flc-browser-${{ matrix.suite }}/test.log"
+      - name: Preserve browser report, screenshots, traces and failure logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flc-photo-chromium-${{ matrix.suite }}
+          path: |
+            ${{ runner.temp }}/flc-browser-${{ matrix.suite }}/
+            godot_native/art_source/future_learning_center_3d/review/${{ matrix.evidence }}/
+          if-no-files-found: error
+
+  photo-source-blender:
+    name: Photo source and compositions (Blender 4.3.2)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Initialize fresh run evidence
+        working-directory: ${{ runner.temp }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/flc-photo-source/native" "$RUNNER_TEMP/flc-photo-source/compositions"
+          printf 'test_head=%s\nrun_id=%s\nrun_attempt=%s\nscope=Native/source/plain/Draco and composition contracts, not visual or browser acceptance\n' \
+            "$TEST_HEAD_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" \
+            > "$RUNNER_TEMP/flc-photo-source/context.txt"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          sparse-checkout: godot_native/art_source/future_learning_center_3d
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: godot_native/art_source/future_learning_center_3d/pipeline/package-lock.json
+      - name: Install locked asset decoder dependencies
+        id: dependencies
+        run: npm ci --prefix pipeline --no-audit --no-fund
+      - name: Install and verify official Blender 4.3.2
+        id: blender
+        env:
+          BLENDER_SHA256: 4da1c956673c0485e63054e563ee69198cc8f80d8157dd7592dffc8a6a5592e6
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libegl1 libgl1 libx11-6 libxxf86vm1 libxfixes3 libxi6 libxrender1 libxkbcommon0 libsm6
+          curl --fail --location --retry 3 \
+            https://download.blender.org/release/Blender4.3/blender-4.3.2-linux-x64.tar.xz \
+            --output "$RUNNER_TEMP/blender-4.3.2-linux-x64.tar.xz"
+          printf '%s  %s\n' "$BLENDER_SHA256" "$RUNNER_TEMP/blender-4.3.2-linux-x64.tar.xz" \
+            | sha256sum --check | tee "$RUNNER_TEMP/flc-photo-source/blender-checksum.txt"
+          tar -xJf "$RUNNER_TEMP/blender-4.3.2-linux-x64.tar.xz" -C "$RUNNER_TEMP"
+          "$RUNNER_TEMP/blender-4.3.2-linux-x64/blender" --version \
+            | tee "$RUNNER_TEMP/flc-photo-source/blender-version.txt"
+          grep -Fx 'Blender 4.3.2' "$RUNNER_TEMP/flc-photo-source/blender-version.txt"
+          echo "$RUNNER_TEMP/blender-4.3.2-linux-x64" >> "$GITHUB_PATH"
+          git rev-parse HEAD | tee "$RUNNER_TEMP/flc-photo-source/checkout-sha.txt"
+      - name: Validate source, plain GLB, actual Draco and 570-file publication baseline
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.blender.outcome == 'success' }}
+        run: |
+          node pipeline/test_photo_evidence.mjs --baseline-version=published \
+            --outdir="$RUNNER_TEMP/flc-photo-source/native" \
+            2>&1 | tee "$RUNNER_TEMP/flc-photo-source/native-test.log"
+      - name: Validate both native compositions independently
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' && steps.blender.outcome == 'success' }}
+        run: |
+          node pipeline/test_photo_evidence.mjs --compositions-only \
+            --outdir="$RUNNER_TEMP/flc-photo-source/compositions" \
+            2>&1 | tee "$RUNNER_TEMP/flc-photo-source/composition-test.log"
+      - name: Preserve current-source native and composition evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flc-photo-source-blender-4.3.2
+          path: ${{ runner.temp }}/flc-photo-source/
+          if-no-files-found: error

@@ -1,6 +1,15 @@
 /** Independent native, source, plain and actual Draco inspection. No visual/Web acceptance claim. */
 import fs from 'node:fs/promises';import crypto from 'node:crypto';import path from 'node:path';import {execFileSync} from 'node:child_process';
 import {NodeIO,getBounds} from '@gltf-transform/core';import {ALL_EXTENSIONS} from '@gltf-transform/extensions';import draco3d from 'draco3dgltf';
+// --root and --outdir accept absolute or caller-relative paths; output never needs to touch the asset tree.
+const option=name=>{const arg=process.argv.find(a=>a.startsWith('--'+name+'='));return arg?.slice(name.length+3);};
+const requestedRoot=option('root'),requestedOut=option('outdir');
+const explicitOutput=requestedOut?path.resolve(requestedOut):undefined;
+if(requestedRoot)process.chdir(path.resolve(requestedRoot));
+const outputRoot=explicitOutput??path.resolve('review/photo_evidence');
+const baselineVersion=option('baseline-version')??'published';
+if(!['recovered','published'].includes(baselineVersion))throw Error('Use --baseline-version=recovered or --baseline-version=published');
+await fs.mkdir(outputRoot,{recursive:true});
 const io=new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({'draco3d.decoder':await draco3d.createDecoderModule()});
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');const checks=[],assets=[],nativeByPath={};
 const check=(ok,label,details)=>checks.push({pass:!!ok,label,...(details===undefined?{}:{details})});
@@ -17,7 +26,7 @@ function geometry(d,label){let degenerate=0,finite=true,indexOK=true,normalOK=tr
  check(d.getRoot().listSkins().length===0&&d.getRoot().listAnimations().length===0,label+' static unrigged scope');
  return {triangles:tris(d),degenerate,materials:d.getRoot().listMaterials().length,textures:d.getRoot().listTextures().length};
 }
-async function native(file){if(nativeByPath[file])return nativeByPath[file];const b=await fs.readFile(file),out=`review/photo_evidence/native_${path.basename(file,'.blend')}.json`;execFileSync('blender',['-b','-t','1',file,'--python','review/photo_evidence/inspect_native.py','--',out],{stdio:'pipe',maxBuffer:8e6});check(sha(await fs.readFile(file))===sha(b),file+' read-only native inspection');const n=JSON.parse(await fs.readFile(out));check(n.objects.length>0&&n.objects.every(o=>o.finite),file+' native finite mesh geometry');nativeByPath[file]=n;return n;}
+async function native(file){if(nativeByPath[file])return nativeByPath[file];const b=await fs.readFile(file),out=path.join(outputRoot,`native_${path.basename(file,'.blend')}.json`);execFileSync('blender',['-b','-t','1',path.resolve(file),'--python',path.resolve('review/photo_evidence/inspect_native.py'),'--',out],{stdio:'pipe',maxBuffer:8e6,cwd:process.cwd(),env:{...process.env,PWD:process.cwd()}});check(sha(await fs.readFile(file))===sha(b),file+' read-only native inspection');const n=JSON.parse(await fs.readFile(out));check(n.objects.length>0&&n.objects.every(o=>o.finite),file+' native finite mesh geometry');nativeByPath[file]=n;return n;}
 if(process.argv.includes('--compositions-only')){const r=await validateCompositions();process.exit(r.sourceHashFailures||r.contactOutliers||r.unresolvedIntersections?1:0);}
 const groups={photo_instruments:6,photo_lab_contents:7,photo_bench_contents:7};
 for(const [group,count] of Object.entries(groups)){
@@ -46,19 +55,32 @@ const instrumentNative=Object.entries(nativeByPath).filter(([p])=>p.includes('/p
 check(new Set(instrumentNative.map(({n})=>JSON.stringify(n.objects.map(o=>({bounds:o.bounds,triangles:o.triangles}))))).size===6,'six instrument actual mesh layouts differ, not metadata-only variants');
 for(const {path:p,n} of instrumentNative)check(n.objects.every(o=>/candidate|estimated|unknown|unconfirmed/i.test(o.properties.evidenceStatus??'')),p+' native evidence status is explicitly provisional');
 const instruments=assets.filter(a=>a.group==='photo_instruments');check(new Set(instruments.map(a=>a.levels[0].sourceSha256)).size===6,'six instrument source files independently authored, DP800 intentionally reused twice');
+// Pinned recovered and publication variants; one version is selected for the entire run.
+// Changing either baseline and this pin is an explicit baseline change requiring review.
 const baseline='fe75c9aa98abed4a69770e92c1f7a9be82db3a64',art='godot_native/art_source/future_learning_center_3d/';
-const preserved=[];const paths=execFileSync('git',['ls-tree','-r','--name-only','--full-tree',baseline],{encoding:'utf8'}).trim().split('\n').filter(p=>p.startsWith(art+'sources/models/')||p.startsWith(art+'web/assets/models/'));
-for(const p of paths){const before=execFileSync('git',['show',baseline+':'+p],{maxBuffer:64e6}),now=await fs.readFile(p.slice(art.length));check(now.equals(before),'restored baseline unchanged '+p);preserved.push({path:p,sha256:sha(now)});}
-const failures=checks.filter(c=>!c.pass);const report={scope:'Actual source/plain/Draco and independent read-only native validation. Not visual approval, physical measurement confirmation, browser frame time, GPU performance, or functional electronics simulation.',baseline:{commit:baseline,meaning:'Recovery snapshot of preserved package, not original 82abe Git object',preservedFileCount:preserved.length,preserved},uniqueSourceCount:assets.length,levelsPerSource:3,totalUniqueRuntimeLod0Triangles:assets.reduce((v,a)=>v+a.levels[0].decodedTriangles,0),assets,checks:checks.length,failures:failures.length,failedChecks:failures,rows:checks};
-await fs.writeFile('review/photo_evidence/validation.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({assets:assets.length,checks:checks.length,failures,reportSha256:sha(await fs.readFile('review/photo_evidence/validation.json'))},null,2));if(failures.length)process.exitCode=1;
+const baselineManifestSha256='6a0da63c9847fb98e901699014c86dcad620ddb49434ed147eb0627624dbfb42';
+const baselineBytes=await fs.readFile(new URL('./photo_preserved_baseline_v1.json',import.meta.url));
+if(sha(baselineBytes)!==baselineManifestSha256)throw Error('Frozen baseline manifest SHA256 mismatch');
+const frozen=JSON.parse(baselineBytes);
+if(frozen.schema!==2||frozen.provenance.localRecoveryCommit!==baseline||frozen.fileCount!==570||frozen.files.length!==570)throw Error('Invalid frozen baseline provenance or file count');
+const preserved=[],seen=new Set();
+for(const entry of frozen.files){
+ const p=entry.path,expected=baselineVersion==='recovered'?entry:entry.published;
+ if(seen.has(p)||!(p.startsWith(art+'sources/models/')||p.startsWith(art+'web/assets/models/'))||p.split('/').includes('..')||!expected||!/^[a-f0-9]{64}$/.test(expected.sha256)||!Number.isSafeInteger(expected.bytes)||expected.bytes<0)throw Error('Invalid frozen baseline entry '+p);
+ seen.add(p);const now=await fs.readFile(p.slice(art.length));
+ check(now.length===expected.bytes&&sha(now)===expected.sha256,(baselineVersion==='recovered'?'restored baseline unchanged ':'exact published baseline variant ')+p);
+ preserved.push({path:p,sha256:sha(now),bytes:now.length,version:baselineVersion,recoveredSha256:entry.sha256,changedFromRecovered:expected.sha256!==entry.sha256});
+}
+const failures=checks.filter(c=>!c.pass);const report={scope:'Actual source/plain/Draco and independent read-only native validation. Not visual approval, physical measurement confirmation, browser frame time, GPU performance, or functional electronics simulation.',baseline:{commit:baseline,meaning:'Local recovery provenance only; not an upstream ancestor or original 82abe Git object. No Git object access required',manifestSha256:baselineManifestSha256,version:baselineVersion,meaningOfComparison:baselineVersion==='recovered'?'Exact recovery bytes':'Exact approved metadata-sanitized publication bytes; not identical to recovery bytes',preservedFileCount:preserved.length,preserved},uniqueSourceCount:assets.length,levelsPerSource:3,totalUniqueRuntimeLod0Triangles:assets.reduce((v,a)=>v+a.levels[0].decodedTriangles,0),assets,checks:checks.length,failures:failures.length,failedChecks:failures,rows:checks};
+await fs.writeFile(path.join(outputRoot,'validation.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({assets:assets.length,checks:checks.length,failures,reportSha256:sha(await fs.readFile(path.join(outputRoot,'validation.json')))},null,2));if(failures.length)process.exitCode=1;
 
 async function validateCompositions(){
  const layouts=[];for(const group of ['photo_lab_contents','photo_bench_contents']){
-  const source=`sources/models/${group}/composition.json`,out=`review/photo_evidence/${group}_composition_validation.json`;await fs.access(source);
-  execFileSync('blender',['-b','-t','1','--python','review/photo_evidence/inspect_composition.py','--',source,out],{stdio:'pipe',maxBuffer:8e6});
+  const source=`sources/models/${group}/composition.json`,out=path.join(outputRoot,`${group}_composition_validation.json`);await fs.access(source);
+  execFileSync('blender',['-b','-t','1','--python',path.resolve('review/photo_evidence/inspect_composition.py'),'--',path.resolve(source),out],{stdio:'pipe',maxBuffer:8e6,cwd:process.cwd(),env:{...process.env,PWD:process.cwd()}});
   const data=JSON.parse(await fs.readFile(out)),sourceData=JSON.parse(await fs.readFile(source));for(const pair of data.intersectionCandidates){const allowed=(sourceData.allowContacts??[]).find(a=>a.instances.includes(pair.a)&&a.instances.includes(pair.b));pair.declaredAllowedContact=!!allowed;if(allowed)pair.declaredReason=allowed.reason;}data.unresolvedIntersections=data.intersectionCandidates.filter(p=>!p.declaredAllowedContact);data.sourceManifestSha256=sha(await fs.readFile(source));data.sourceHashFailures=data.instances.filter(i=>!i.sourceHashMatches);data.contactOutliers=data.instances.filter(i=>i.supportDeltaM!==undefined&&(i.supportDeltaM<-.003||i.supportDeltaM>.015||i.supportXYOverlap===false));layouts.push(data);
  }
  const result={scope:'Two static photo-estimated candidate layouts; actual transformed native geometry, bounded intersection screening, declared scale/material variants and source hashes. No physics or visual approval.',layoutCount:layouts.length,instanceCount:layouts.reduce((n,l)=>n+l.instances.length,0),unresolvedIntersections:layouts.reduce((n,l)=>n+l.unresolvedIntersections.length,0),sourceHashFailures:layouts.reduce((n,l)=>n+l.sourceHashFailures.length,0),contactOutliers:layouts.reduce((n,l)=>n+l.contactOutliers.length,0),intersectionCandidates:layouts.reduce((n,l)=>n+l.intersectionCandidates.length,0),layouts};
- await fs.writeFile('review/photo_evidence/composition_validation.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({sourceHashFailures:result.sourceHashFailures,contactOutliers:result.contactOutliers,intersectionCandidates:result.intersectionCandidates,unresolvedIntersections:result.unresolvedIntersections,reportSha256:sha(await fs.readFile('review/photo_evidence/composition_validation.json'))}));
+ await fs.writeFile(path.join(outputRoot,'composition_validation.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({sourceHashFailures:result.sourceHashFailures,contactOutliers:result.contactOutliers,intersectionCandidates:result.intersectionCandidates,unresolvedIntersections:result.unresolvedIntersections,reportSha256:sha(await fs.readFile(path.join(outputRoot,'composition_validation.json')))}));
  return result;
 }

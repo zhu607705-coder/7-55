@@ -6,6 +6,8 @@ import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {buildSpatialCatalog,withSpatialObjects,spatialObjectId,createSpatialState,reduceSpatialState,validateExhibitionConfig} from './spatial_catalog.js';
 import {createSpatialPresentation} from './spatial_presentation.js';
 import {createRenderGate} from './render_gate.js';
+import {frameTimeSteps} from './frame_timing.js';
+import {REVIEW_ANCHOR,createWorkstationReview,loadReviewCandidates} from './workstation_review.js';
 import {createDeskInspectionProxy} from './desk_inspection.js';
 import {createSpatialOverlay} from './spatial_overlay.js';
 import {loadFloorMaterialLibrary} from './floor_materials.js';
@@ -13,11 +15,14 @@ import {canStand,moveBody,nearestSafe} from './collision.js';
 import {loadChairAssets,ChairInstances} from './chair_assets.js';
 import {createModelLoader} from './model_loader.js';
 import {loadStaticAssets,StaticAssetInstance} from './static_assets.js';
+import {PHOTO_DESK_TOP_NAME,photoDeskTopMaterial} from './photo_desk_materials.js';
+import {loadPhotoSceneAssets,photoDeskParts,PHOTO_DESKTOP_NAMES,photoLevel,rigidPhotoAnchor} from './photo_scene_assets.js';
 const $=id=>document.getElementById(id),canvas=$('scene');
 const params=new URLSearchParams(location.search),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const state={floor:['1','2','3','4'].includes(params.get('floor'))?params.get('floor'):'4',room:params.get('room')||'',mode:'overview',exploded:false,pos:[0,0],yaw:0,pitch:0,inspect:null,finishes:{'2':'warm_gray_fine','3':'warm_gray_fine','4':'warm_gray_fine'}};
 if(params.get('finish')==='light_gray_tile')state.finishes[state.floor]='light_gray_tile';
-let layout,catalog,floorLibrary,renderer,scene,camera,orbit,loaded=false,roots=new Map(),selection,look=null,lastTime=0;
+let layout,catalog,floorLibrary,renderer,scene,camera,orbit,loaded=false,roots=new Map(),selection,look=null,lastTime=null;
+let frameFocused=true;
 const renderGate=createRenderGate();
 let renderedFrames=0,lastFrameGapMs=0,lastRenderMs=0,lastDrawTime=0,lastDrawIntervalMs=0;
 let spatialCatalog,spatial,exhibitions,presentation,overlay,placeholder,inspectedRoot=null;
@@ -25,6 +30,8 @@ const spatialRoots=new Map();
 const keys=new Set(),joy={x:0,y:0,pointer:null};let savedWalk=null,toolRoots=[],deskRoots=[];
 let chairLibrary=null;const chairSystems=[];
 let staticLibrary=new Map();const staticInstances=[];
+let candidateLibrary={assets:new Map(),errors:[]},workstationReview=null,workstationReturn=null;
+let photoLibrary={assets:new Map(),bindings:new Map(),errors:[],pending:[]};
 const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
 function failure(text) {$('loading').hidden=false;$('loading-text').textContent=text;$('retry').hidden=false;stopInput();}
 $('retry').onclick=()=>location.reload();
@@ -46,8 +53,8 @@ async function start(){
   scene.add(new THREE.HemisphereLight(0xeef6ff,0xb8bbb3,2.2));
   const sun=new THREE.DirectionalLight(0xfff1dc,3.4);sun.position.set(-18,42,12);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-42;sun.shadow.camera.right=42;sun.shadow.camera.top=45;sun.shadow.camera.bottom=-45;sun.shadow.camera.far=100;sun.shadow.normalBias=.035;sun.shadow.bias=-.00015;sun.target.position.set(13,4,20);scene.add(sun,sun.target);
   floorLibrary=await loadFloorMaterialLibrary(renderer);
-  const codec=createModelLoader();try{[chairLibrary,staticLibrary]=await Promise.all([
-   loadChairAssets(params.get('chair')==='authored'?'authored':'hyper3d',codec),loadStaticAssets(codec)
+  const codec=createModelLoader();try{[chairLibrary,staticLibrary,photoLibrary,candidateLibrary]=await Promise.all([
+   loadChairAssets(params.get('chair')==='authored'?'authored':'hyper3d',codec),loadStaticAssets(codec),loadPhotoSceneAssets(codec),loadReviewCandidates(codec)
   ]);}finally{codec.dispose();}
   let gltf;try{gltf=await new GLTFLoader().loadAsync(chairLibrary?'./assets/building.web.glb':'./assets/building.glb');}catch(error){chairLibrary=null;gltf=await new GLTFLoader().loadAsync('./assets/building.glb');}gltf.scene.updateMatrixWorld(true);
   gltf.scene.traverse(obj=>{if(obj.userData.floorRoot){const root=new THREE.Group();root.name='Floor '+obj.userData.floorRoot;root.position.copy(obj.position);root.userData.sourcePosition=Object.freeze(root.position.toArray());root.userData.floor=String(obj.userData.floorRoot);roots.set(String(obj.userData.floorRoot),root);scene.add(root);optimizeFloor(obj,root);}});
@@ -59,7 +66,7 @@ async function start(){
   presentation=createSpatialPresentation(THREE,roots,layout);
   overlay=createSpatialOverlay({catalog:spatialCatalog,config:exhibitions,onAction:spatialAction,onObject:id=>openSpatialObject(id)});
   const ground=new THREE.Mesh(new THREE.PlaneGeometry(180,180),new THREE.MeshStandardMaterial({color:0xd8dfd8,roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.set(13,-.3,21);ground.receiveShadow=true;scene.add(ground);
-  loaded=true;$('walk').disabled=false;$('loading').hidden=true;$('floor').value=state.floor;populateRooms();setOverview();
+  loaded=true;$('workstation-review').disabled=false;$('walk').disabled=false;$('loading').hidden=true;$('floor').value=state.floor;populateRooms();setOverview();
   for(const [id,a] of Object.entries(catalog.assets)){const li=document.createElement('li'),link=document.createElement('a');link.href=a.source;link.target='_blank';link.rel='noopener';link.textContent=a.name+'：公开尺寸依据';li.append(link);$('source-list').append(li);}
   if(params.get('mode')==='walk'&&state.floor!=='1')enterWalk();
   resize();requestAnimationFrame(frame);window.dispatchEvent(new Event('viewer-ready'));
@@ -88,23 +95,40 @@ function optimizeDesk(obj,target,inverse,handled){
  const desk=new THREE.Group();desk.userData={...obj.userData,sourceNodeName:obj.name,assetId:'adjustable_desk',floor:target.userData.floor,currentHeight:.73,targetHeight:.73,parts:[]};
  inverse.clone().multiply(obj.matrixWorld).decompose(desk.position,desk.quaternion,desk.scale);target.add(desk);deskRoots.push(desk);
  const buckets=target.userData.deskBatches??=new Map();
- obj.traverse(mesh=>{if(!mesh.isMesh)return;handled.add(mesh);const mat=Array.isArray(mesh.material)?mesh.material[0]:mesh.material,key=mesh.geometry.uuid+'_'+mat.uuid;
+ const deskMatrix=inverse.clone().multiply(obj.matrixWorld);
+ const binding=rigidPhotoAnchor(deskMatrix)&&photoLibrary.bindings.get(target.userData.floor+'/'+(obj.userData.name||obj.name));
+ if(binding){desk.userData.photoBinding=binding.id;desk.userData.photoLevel=0;}
+ obj.traverse(mesh=>{if(!mesh.isMesh)return;handled.add(mesh);if(binding&&PHOTO_DESKTOP_NAMES.test(mesh.userData.name||mesh.name))return;const sourceMaterial=Array.isArray(mesh.material)?mesh.material[0]:mesh.material,mat=binding&&PHOTO_DESK_TOP_NAME.test(mesh.userData.name||mesh.name)?photoDeskTopMaterial(sourceMaterial):sourceMaterial,key=mesh.geometry.uuid+'_'+mat.uuid;
   if(!buckets.has(key))buckets.set(key,{geometry:mesh.geometry,material:mat,entries:[]});
-  const entry={desk,factor:Number(mesh.userData.liftFactor||0),control:mesh.userData.deskRole==='control',base:inverse.clone().multiply(mesh.matrixWorld)};
+  const entry={desk,factor:Number(mesh.userData.liftFactor||0),control:mesh.userData.deskRole==='control',role:mesh.userData.deskRole,base:inverse.clone().multiply(mesh.matrixWorld)};
   buckets.get(key).entries.push(entry);desk.userData.parts.push(entry);
  });
+ if(binding)for(const part of photoDeskParts(photoLibrary,binding,deskMatrix)){
+  const key=part.geometry.uuid+'_'+part.material.uuid;
+  if(!buckets.has(key))buckets.set(key,{geometry:part.geometry,material:part.material,entries:[]});
+  const entry={...part,desk,control:false};buckets.get(key).entries.push(entry);desk.userData.parts.push(entry);
+ }
 }
 function finalizeDesks(target){
  for(const {geometry,material,entries} of target.userData.deskBatches?.values()||[]){
   const batch=new THREE.InstancedMesh(geometry,material.clone(),entries.length);batch.userData={kind:'furniture',floor:target.userData.floor,deskEntries:entries};batch.castShadow=true;batch.receiveShadow=true;
-  entries.forEach((entry,i)=>{entry.batch=batch;entry.index=i;batch.setMatrixAt(i,entry.base);});batch.instanceMatrix.setUsage(THREE.DynamicDrawUsage);batch.computeBoundingSphere();batch.boundingSphere.radius+=.55;target.add(batch);
+  entries.forEach((entry,i)=>{entry.batch=batch;entry.index=i;batch.setMatrixAt(i,entry.base);});batch.instanceMatrix.setUsage(THREE.DynamicDrawUsage);batch.computeBoundingSphere();batch.boundingSphere.radius+=.55;entries.forEach((entry,i)=>{if(entry.level>0)batch.setMatrixAt(i,entry.base.clone().scale(new THREE.Vector3(0,0,0)));});target.add(batch);
  }
  delete target.userData.deskBatches;
 }
 const liftMatrix=new THREE.Matrix4();
-function animateDesks(dt){
- for(const desk of deskRoots){const d=desk.userData,delta=d.targetHeight-d.currentHeight;if(Math.abs(delta)<.0001)continue;renderGate.invalidate();d.currentHeight+=Math.sign(delta)*Math.min(Math.abs(delta),.12*dt);
-  for(const part of d.parts){liftMatrix.copy(part.base);liftMatrix.elements[13]+=(d.currentHeight-.73)*part.factor;part.batch.setMatrixAt(part.index,liftMatrix);part.batch.instanceMatrix.needsUpdate=true;}
+function animateDesks(dt,now){
+ for(const desk of deskRoots){const d=desk.userData,delta=d.targetHeight-d.currentHeight;if(Math.abs(delta)<.0001)continue;const activeDt=now===undefined||d.targetChangedAt===undefined?dt:Math.min(dt,Math.max(0,(now-d.targetChangedAt)/1000));if(activeDt<=0)continue;renderGate.invalidate();d.currentHeight+=Math.sign(delta)*Math.min(Math.abs(delta),.12*activeDt);
+  for(const part of d.parts){liftMatrix.copy(part.base);liftMatrix.elements[13]+=(d.currentHeight-.73)*part.factor;if(part.level!==undefined&&part.level!==d.photoLevel)liftMatrix.scale(zeroPhotoScale);part.batch.setMatrixAt(part.index,liftMatrix);part.batch.instanceMatrix.needsUpdate=true;}
+ }
+}
+const zeroPhotoScale=new THREE.Vector3(0,0,0),photoCenter=new THREE.Vector3();
+function updatePhotoDeskLods(){
+ for(const desk of deskRoots){const d=desk.userData;if(!d.photoBinding)continue;
+  desk.updateWorldMatrix(true,false);photoCenter.set(0,d.currentHeight+.25,0).applyMatrix4(desk.matrixWorld);
+  const pixels=.614*innerHeight/(2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*Math.max(.1,camera.position.distanceTo(photoCenter)));
+  const level=inspectedRoot===desk?0:photoLevel(pixels);if(level===d.photoLevel)continue;d.photoLevel=level;renderGate.invalidate();
+  for(const part of d.parts){if(part.level===undefined)continue;liftMatrix.copy(part.base);liftMatrix.elements[13]+=(d.currentHeight-.73)*part.factor;if(part.level!==level)liftMatrix.scale(zeroPhotoScale);part.batch.setMatrixAt(part.index,liftMatrix);part.batch.instanceMatrix.needsUpdate=true;}
  }
 }
 function deskControls(){
@@ -114,11 +138,24 @@ function deskControls(){
   return {desk,x:(p.x+1)*innerWidth/2,y:(1-p.y)*innerHeight/2,inFront:p.z>=-1&&p.z<=1&&Math.abs(p.x)<1&&Math.abs(p.y)<1,distance:camera.position.distanceTo(center),height:desk.userData.currentHeight,target:desk.userData.targetHeight};
  });
 }
-function toggleDesk(desk){stopInput();desk.userData.targetHeight=desk.userData.targetHeight>.9?.73:1.10;canvas.focus({preventScroll:true});}
+function toggleDesk(desk){stopInput();desk.userData.targetHeight=desk.userData.targetHeight>.9?.73:1.10;desk.userData.targetChangedAt=performance.now();canvas.focus({preventScroll:true});}
 
 function optimizeFloor(original,target){
  const inverse=original.matrixWorld.clone().invert(),groups=new Map(),handled=new Set(),chairPlacements=[];let chairReview=false;
  original.traverse(obj=>{
+  const photoBinding=photoLibrary.bindings.get(target.userData.floor+'/'+(obj.userData.name||obj.name));
+  if(photoBinding?.kind==='static'&&photoBinding.parts.length===1){
+   const placement=photoBinding.parts[0],asset=photoLibrary.assets.get(placement.asset),matrix=inverse.clone().multiply(obj.matrixWorld);
+   if(asset&&rigidPhotoAnchor(matrix)){
+    matrix.multiply(new THREE.Matrix4().makeTranslation(...placement.position)).multiply(new THREE.Matrix4().makeRotationY(placement.yaw||0));
+    const anchor=new THREE.Object3D();matrix.decompose(anchor.position,anchor.quaternion,anchor.scale);anchor.userData={...obj.userData,staticAssetSlot:obj.userData.staticAssetSlot||photoBinding.id};
+    const instance=new StaticAssetInstance({...asset,name:photoBinding.label||placement.asset},{asset:placement.asset,uniformScale:1},anchor,target);
+    instance.root.userData.sourceNodeName=obj.name;instance.root.userData.photoBinding=photoBinding.id;staticInstances.push(instance);toolRoots.push(instance.root);
+    obj.traverse(child=>{if(child.isMesh)handled.add(child);});
+    if(photoBinding.replaceNodes)original.traverse(child=>{if(photoBinding.replaceNodes.includes(child.userData.name||child.name))child.traverse(mesh=>{if(mesh.isMesh)handled.add(mesh);});});
+    return;
+   }
+  }
   const slot=staticLibrary.slots?.[obj.userData.staticAssetSlot],asset=slot&&staticLibrary.get(slot.asset);
   if(asset){obj.traverse(child=>{if(child.isMesh)handled.add(child);});
    const anchor=new THREE.Object3D();inverse.clone().multiply(obj.matrixWorld).decompose(anchor.position,anchor.quaternion,anchor.scale);anchor.userData=obj.userData;
@@ -150,9 +187,10 @@ function registerSpatialObjects(){
  spatialCatalog=withSpatialObjects(spatialCatalog,descriptors);
 }
 function objectBounds(node){
+ if(workstationReview&&node===inspectedRoot)return new THREE.Box3().setFromObject(workstationReview.root);
  if(!node?.userData.adjustableDesk)return new THREE.Box3().setFromObject(node);
  const bounds=new THREE.Box3();node.parent.updateMatrixWorld(true);
- for(const part of node.userData.parts){const matrix=new THREE.Matrix4();part.batch.getMatrixAt(part.index,matrix);matrix.premultiply(part.batch.matrixWorld);part.batch.geometry.computeBoundingBox();bounds.union(part.batch.geometry.boundingBox.clone().applyMatrix4(matrix));}
+ for(const part of node.userData.parts){if(part.level!==undefined&&part.level!==node.userData.photoLevel)continue;const matrix=new THREE.Matrix4();part.batch.getMatrixAt(part.index,matrix);matrix.premultiply(part.batch.matrixWorld);part.batch.geometry.computeBoundingBox();bounds.union(part.batch.geometry.boundingBox.clone().applyMatrix4(matrix));}
  return bounds;
 }
 function spatialAction(event){
@@ -222,17 +260,17 @@ function enterWalk(){if(!loaded||state.floor==='1'||state.floor==='4')return;if(
 function syncEye(){camera.position.set(state.pos[0],layout.floors[state.floor].elevation+layout.eyeHeight,state.pos[1]);camera.rotation.set(state.pitch,state.yaw,0,'YXZ');}
 function stopInput(){keys.clear();joy.x=joy.y=0;joy.pointer=null;$('stick').style.transform='';look=null;}
 function resize(){if(!renderer)return;renderGate.invalidate();const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;if(loaded&&state.mode==='walk'&&!state.inspect)camera.fov=walkFov();camera.updateProjectionMatrix();if(loaded&&state.inspect){const tool=inspectedRoot,radius=objectBounds(tool).getSize(new THREE.Vector3()).length()/2,dir=camera.position.clone().sub(orbit.target).normalize(),distance=fitDistance(radius,40);camera.position.copy(orbit.target).add(dir.multiplyScalar(distance));orbit.maxDistance=Math.max(.85,distance*2);orbit.update();}else if(loaded&&state.mode==='overview')setOverview();}
-function frame(now){requestAnimationFrame(frame);lastFrameGapMs=lastTime?now-lastTime:0;const dt=Math.min(.05,lastTime?(now-lastTime)/1000:0);lastTime=now;if(document.hidden)return;animateDesks(dt);savedWalk?.inspectionProxy?.update();
+function frame(now){requestAnimationFrame(frame);const timing=frameTimeSteps(now,lastTime,document.hidden||!frameFocused);lastFrameGapMs=timing.gapMs;lastTime=timing.previous;const dt=timing.walkDt;if(document.hidden)return;animateDesks(timing.deskDt,now);
  if(state.mode==='walk'&&!state.inspect){let f=(keys.has('KeyW')||keys.has('ArrowUp')?1:0)-(keys.has('KeyS')||keys.has('ArrowDown')?1:0)-joy.y;let side=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0)+joy.x;const len=Math.hypot(f,side);if(len>1){f/=len;side/=len;}const speed=layout.speed*dt;const dx=(-Math.sin(state.yaw)*f+Math.cos(state.yaw)*side)*speed,dz=(-Math.cos(state.yaw)*f-Math.sin(state.yaw)*side)*speed;state.pos=moveBody(layout,state.floor,state.pos,dx,dz);if(dx||dz)renderGate.invalidate();
  const current=layout.floors[state.floor].rooms.find(r=>state.pos[0]>r.bounds[0]&&state.pos[0]<r.bounds[2]&&state.pos[1]>r.bounds[1]&&state.pos[1]<r.bounds[3]);
  const roomId=current?.id||'';if(roomId!==state.room){state.room=roomId;spatial=reduceSpatialState(spatial,{type:'SELECT_ROOM',floor:state.floor,room:roomId},spatialCatalog);$('room').value=roomId;updateScene();}
  syncEye();}
- else if(orbit.update())renderGate.invalidate();for(const system of chairSystems)system.update(camera,innerHeight);for(const item of staticInstances)item.update(camera,innerHeight,state.inspect===item.root.userData.assetId);if(renderGate.consume()){const renderStart=Date.now();renderer.render(scene,camera);lastRenderMs=Date.now()-renderStart;lastDrawIntervalMs=lastDrawTime?now-lastDrawTime:0;lastDrawTime=now;renderedFrames++;}
+ else if(orbit.update())renderGate.invalidate();updatePhotoDeskLods();savedWalk?.inspectionProxy?.update(camera,innerHeight);for(const system of chairSystems)system.update(camera,innerHeight);for(const item of staticInstances)item.update(camera,innerHeight,state.inspect===item.root.userData.assetId);if(renderGate.consume()){const renderStart=Date.now();renderer.render(scene,camera);lastRenderMs=Date.now()-renderStart;lastDrawIntervalMs=lastDrawTime?now-lastDrawTime:0;lastDrawTime=now;renderedFrames++;}
 }
 $('floor').onchange=()=>spatialAction({type:'SELECT_FLOOR',floor:$('floor').value});$('room').onchange=()=>spatialAction({type:'SELECT_ROOM',room:$('room').value});$('overview').onclick=()=>{if(state.inspect){exitInspect();return;}if(state.mode==='walk')setOverview();else spatialAction({type:'BACK'});};$('walk').onclick=enterWalk;$('explode').onclick=()=>spatialAction({type:state.exploded?'COLLAPSE':'EXPAND'});
 for(const name of ['help','sources']){$(name).onclick=()=>{stopInput();if(name==='sources')$('floor-finish').value=state.finishes[state.floor];$(name+'-dialog').showModal();};$(name+'-dialog').addEventListener('close',()=>{stopInput();canvas.focus({preventScroll:true});});}
 window.addEventListener('keydown',e=>{if(e.key==='Escape'){if(state.inspect)exitInspect();else if(state.mode==='walk')setOverview();else if(loaded)spatialAction({type:'BACK'});return;}if(document.querySelector('dialog[open]')||/^(INPUT|SELECT|BUTTON)$/.test(document.activeElement?.tagName))return;if(state.mode==='walk'&&['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)){e.preventDefault();keys.add(e.code);}});
-window.addEventListener('keyup',e=>keys.delete(e.code));window.addEventListener('blur',stopInput);document.addEventListener('visibilitychange',()=>{stopInput();lastTime=0;renderGate.invalidate();});window.addEventListener('resize',resize);
+window.addEventListener('keyup',e=>keys.delete(e.code));window.addEventListener('blur',()=>{stopInput();frameFocused=false;lastTime=null;});window.addEventListener('focus',()=>{frameFocused=true;lastTime=null;renderGate.invalidate();});document.addEventListener('visibilitychange',()=>{stopInput();lastTime=null;renderGate.invalidate();});window.addEventListener('resize',resize);
 canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('pointerdown',e=>{if(e.button!==0)return;canvas.focus({preventScroll:true});if(look)return;look={id:e.pointerId,x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY,moved:false};if(state.mode==='walk'&&!state.inspect)canvas.setPointerCapture(e.pointerId);});
 canvas.addEventListener('pointermove',e=>{if(!look||look.id!==e.pointerId)return;const dx=e.clientX-look.x,dy=e.clientY-look.y;look.x=e.clientX;look.y=e.clientY;if(Math.hypot(e.clientX-look.startX,e.clientY-look.startY)>5)look.moved=true;if(state.mode==='walk'&&!state.inspect){state.yaw-=dx*.004;state.pitch=THREE.MathUtils.clamp(state.pitch-dy*.004,-1.25,1.25);renderGate.invalidate();}});
 canvas.addEventListener('pointerup',e=>{if(!look||look.id!==e.pointerId)return;const clicked=!look.moved;look=null;if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);if(clicked&&!state.inspect)pick(e);});canvas.addEventListener('pointercancel',()=>{look=null;});
@@ -271,12 +309,31 @@ function pick(e){
 function inspectTool(tool){renderGate.invalidate();stopInput();inspectedRoot=tool;savedWalk={spatial,viewport:[innerWidth,innerHeight],mode:state.mode,pos:[...state.pos],yaw:state.yaw,pitch:state.pitch,camera:camera.position.clone(),target:orbit.target.clone()};spatial=reduceSpatialState(spatial,{type:'SELECT_OBJECT',object:tool.userData.spatialId},spatialCatalog);overlay.update(spatial,{mode:state.mode,objects:spatialCatalog.objects});state.inspect=tool.userData.assetId||tool.userData.spatialId;if(state.inspect==='office_chair'||tool.userData.generatedAsset||tool.userData.adjustableDesk){savedWalk.hiddenNodes=[];for(const [floor,root] of roots){if(floor!==tool.userData.floor){savedWalk.hiddenNodes.push([root,root.visible]);root.visible=false;continue;}for(const child of root.children){if(child===tool||child.userData.kind==='floor')continue;savedWalk.hiddenNodes.push([child,child.visible]);child.visible=false;}}}
  if(tool.userData.adjustableDesk)savedWalk.inspectionProxy=createDeskInspectionProxy(THREE,tool);
  const measured=objectBounds(tool).getSize(new THREE.Vector3());const a=catalog.assets[state.inspect]||{name:tool.userData.assetLabel||spatialCatalog.objects[tool.userData.spatialId]?.name||'对象',dimensions:{width:measured.x,depth:measured.z,height:measured.y}},bounds=objectBounds(tool),center=bounds.getCenter(new THREE.Vector3()),size=bounds.getSize(new THREE.Vector3()).length();$('inspect').hidden=false;$('tool-name').textContent=a.name+(state.inspect==='office_chair'&&chairLibrary?.variant==='hyper3d'?' · Hyper3D 试作':'');$('tool-dimensions').textContent=a.dimensions.length?`总长 ${Math.round(a.dimensions.length*1000)} mm · 厂商尺寸参照`:`外形 ${[a.dimensions.width,a.dimensions.depth,a.dimensions.height].map(v=>Math.round(v*1000)).join(' × ')} mm`;if(state.inspect==='office_chair'&&chairLibrary?.variant==='hyper3d')$('tool-dimensions').textContent='模型约 '+[0,2,1].map(i=>Math.round(chairLibrary.manifest.levels[0].size[i]*1000)).join(' × ')+' mm · 比例参照';if(tool.userData.generatedAsset)$('tool-dimensions').textContent='模型约 '+[measured.x,measured.z,measured.y].map(v=>Math.round(v*1000)).join(' × ')+' mm · 比例参照';$('walk-controls').hidden=true;orbit.enabled=true;orbit.minDistance=.10;orbit.maxDistance=.85;orbit.maxPolarAngle=Math.PI*.90;orbit.target.copy(center);const distance=fitDistance(size/2,40);orbit.maxDistance=Math.max(.85,distance*2);camera.position.copy(center).add((a.dimensions.height?new THREE.Vector3(.75,.65,-1.4):new THREE.Vector3(.45,1.15,.95)).applyQuaternion(tool.quaternion).normalize().multiplyScalar(distance));camera.fov=40;camera.updateProjectionMatrix();orbit.update();}
-function exitInspect(){if(!state.inspect||!savedWalk)return;stopInput();savedWalk.inspectionProxy?.dispose();for(const [node,visible] of savedWalk.hiddenNodes||[])node.visible=visible;state.inspect=null;inspectedRoot=null;spatial=savedWalk.spatial;$('inspect').hidden=true;state.pos=savedWalk.pos;state.yaw=savedWalk.yaw;state.pitch=savedWalk.pitch;camera.position.copy(savedWalk.camera);orbit.target.copy(savedWalk.target);orbit.minDistance=1;orbit.maxDistance=110;orbit.maxPolarAngle=Math.PI*.48;orbit.enabled=savedWalk.mode!=='walk';camera.fov=savedWalk.mode==='walk'?walkFov():46;camera.updateProjectionMatrix();updateScene();if(state.mode==='walk')syncEye();const refit=state.mode==='overview'&&(savedWalk.viewport[0]!==innerWidth||savedWalk.viewport[1]!==innerHeight);savedWalk=null;if(refit)setOverview();canvas.focus({preventScroll:true});}
+function exitInspect(){if(!state.inspect||!savedWalk)return;const returnView=workstationReturn;workstationReturn=null;stopInput();$('workstation-controls').hidden=true;document.body.classList.remove('reviewing-workstation');workstationReview=null;savedWalk.inspectionProxy?.dispose();for(const [node,visible] of savedWalk.hiddenNodes||[])node.visible=visible;state.inspect=null;inspectedRoot=null;spatial=savedWalk.spatial;$('inspect').hidden=true;state.pos=savedWalk.pos;state.yaw=savedWalk.yaw;state.pitch=savedWalk.pitch;camera.position.copy(savedWalk.camera);orbit.target.copy(savedWalk.target);orbit.minDistance=1;orbit.maxDistance=110;orbit.maxPolarAngle=Math.PI*.48;orbit.enabled=savedWalk.mode!=='walk';camera.fov=savedWalk.mode==='walk'?walkFov():46;camera.updateProjectionMatrix();updateScene();if(state.mode==='walk')syncEye();const refit=state.mode==='overview'&&(savedWalk.viewport[0]!==innerWidth||savedWalk.viewport[1]!==innerHeight);savedWalk=null;if(refit)setOverview();if(returnView){Object.assign(state,returnView.state);spatial=returnView.spatial;$('floor').value=state.floor;populateRooms();updateScene();drawSelection();camera.position.copy(returnView.camera);orbit.target.copy(returnView.target);Object.assign(orbit,returnView.orbit);camera.fov=returnView.fov;camera.updateProjectionMatrix();orbit.update();}canvas.focus({preventScroll:true});}
 $('inspect-exit').onclick=exitInspect;
+$('workstation-review').onclick=()=>{
+ if(!loaded)return;if(state.inspect)exitInspect();const desk=spatialRoots.get(REVIEW_ANCHOR);if(!desk)return;
+ const prior={state:{...state,pos:[...state.pos]},spatial,camera:camera.position.clone(),target:orbit.target.clone(),fov:camera.fov,orbit:{enabled:orbit.enabled,minDistance:orbit.minDistance,maxDistance:orbit.maxDistance,maxPolarAngle:orbit.maxPolarAngle}};
+ openSpatialObject(REVIEW_ANCHOR);workstationReturn=prior;
+ // Restore the real room immediately; this view is not an isolated asset stage.
+ for(const [node,visible] of savedWalk.hiddenNodes||[])node.visible=visible;savedWalk.hiddenNodes=[];
+ savedWalk.inspectionProxy?.dispose();workstationReview=createWorkstationReview(desk,candidateLibrary);savedWalk.inspectionProxy=workstationReview;
+ $('workstation-controls').hidden=false;document.body.classList.add('reviewing-workstation');$('review-width').value='.614';$('review-height').value='.305';$('review-depth').value='0';$('review-tools').checked=false;
+ $('review-tools').disabled=candidateLibrary.assets.size!==3;
+ $('tool-name').textContent='3F 原场景工位 · 临时比例审阅';
+ $('review-status').textContent=candidateLibrary.assets.size===3?'工具位置为桌面候选，不是已确认的 304 布局。':'工具未完整载入，保留建筑和原工位。';
+ if(!desk.userData.photoBinding){for(const id of ['review-width','review-height','review-depth'])$(id).disabled=true;$('review-status').textContent='照片屏幕未载入，保留原工位；比例调整暂不可用。';}else for(const id of ['review-width','review-height','review-depth'])$(id).disabled=false;
+ const target=desk.localToWorld(new THREE.Vector3(0,desk.userData.currentHeight+.20,0));orbit.target.copy(target);camera.position.copy(target).add(new THREE.Vector3(.8,.75,-1.65).applyQuaternion(desk.quaternion));orbit.maxDistance=8;orbit.update();updateWorkstationText();renderGate.invalidate();
+};
+function updateWorkstationText(){if(!workstationReview)return;const s=workstationReview.snapshot();$('tool-dimensions').textContent=`屏框宽 ${Math.round(s.settings.width*1000)} mm / 桌宽 1400 mm = ${(s.widthRatio*100).toFixed(1)}% · 16:9 显示区近似 · 尺寸待核实`;}
+for(const [id,key] of [['review-width','width'],['review-height','panelCenter'],['review-depth','depth']])$(id).oninput=()=>{workstationReview?.set({[key]:Number($(id).value)});updateWorkstationText();renderGate.invalidate();};
+$('review-tools').onchange=()=>{workstationReview?.set({tools:$('review-tools').checked});renderGate.invalidate();};
+$('review-lift').onclick=()=>{if(workstationReview)toggleDesk(inspectedRoot);};
+
 const joystick=$('joystick');joystick.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(joy.pointer!==null)return;joy.pointer=e.pointerId;joystick.setPointerCapture(e.pointerId);updateStick(e);});joystick.addEventListener('pointermove',e=>{if(joy.pointer===e.pointerId)updateStick(e);});
 function updateStick(e){const r=joystick.getBoundingClientRect(),max=r.width*.30;let x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2;const len=Math.hypot(x,y);if(len>max){x=x/len*max;y=y/len*max;}joy.x=x/max;joy.y=y/max;$('stick').style.transform=`translate(${x}px,${y}px)`;}
 for(const event of ['pointerup','pointercancel','lostpointercapture'])joystick.addEventListener(event,e=>{if(joy.pointer!==e.pointerId)return;joy.pointer=null;joy.x=joy.y=0;$('stick').style.transform='';});
 canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();failure('画面连接已中断，请重新载入当前空间。');});
 // Read-only diagnostics for acceptance; tests exercise ordinary pointer/key/touch input.
-window.flcReview={spatial:()=>({state:spatial,catalog:spatialCatalog,configRevision:exhibitions?.revision,placeholderVisible:placeholder?.visible,displayFloors:[...roots].map(([floor,root])=>({floor,visible:root.visible,y:root.position.y,sourceY:root.userData.sourcePosition[1]})),posterCount:roots.get('4')?.children.filter(n=>n.userData.reviewPoster).length}),generatedAssets:()=>staticInstances.map(item=>item.snapshot()),chairs:()=>({loaded:!!chairLibrary,variant:chairLibrary?.variant,systems:chairSystems.map(s=>s.snapshot())}),floorMaterials:()=>[...roots.entries()].map(([floor,root])=>({floor,profile:state.finishes[floor],specialFinishes:root.children.filter(m=>m.isMesh&&m.userData.kind==='finish').map(m=>m.material.name),surfaces:root.children.filter(m=>m.isMesh&&m.userData.kind==='floor').map(m=>({material:m.material.name,hasColor:!!m.material.map,hasNormal:!!m.material.normalMap,hasRoughness:!!m.material.roughnessMap,uvCount:m.geometry.getAttribute('uv')?.count,uvSpan:m.geometry.getAttribute('uv')?Array.from(m.geometry.getAttribute('uv').array).reduce((r,v)=>[Math.min(r[0],v),Math.max(r[1],v)],[Infinity,-Infinity]):null}))})),desks:()=>deskControls().map(({desk,...info})=>({...info,partOffsets:desk.userData.parts.map(p=>{const m=new THREE.Matrix4();p.batch.getMatrixAt(p.index,m);return {factor:p.factor,offset:m.elements[13]-p.base.elements[13]};})})),layers:()=>[...roots.entries()].map(([floor,root])=>({floor,visible:root.visible,parts:root.children.filter(m=>m.isMesh).map(m=>({kind:m.userData.kind,visible:m.visible,minY:new THREE.Box3().setFromObject(m).min.y,maxY:new THREE.Box3().setFromObject(m).max.y}))})),snapshot:()=>({ready:loaded,renderedFrames,lastRafGapMs:lastFrameGapMs,lastRenderSubmissionMs:lastRenderMs,lastDrawIntervalMs,renderPolicy:'on-demand; RAF gap and JS submission time are not presented FPS',spatialScope:spatial?.scope,expanded:state.exploded,floor:state.floor,room:state.room,mode:state.mode,position:[...state.pos],yaw:state.yaw,pitch:state.pitch,eyeHeight:layout?.eyeHeight,verticalFov:camera?.fov,horizontalFov:camera?THREE.MathUtils.radToDeg(2*Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*camera.aspect)):null,inspect:state.inspect,joystick:[joy.x,joy.y],drawCalls:renderer?.info.render.calls,triangles:renderer?.info.render.triangles,renderedMeshes:[...roots.values()].reduce((n,r)=>n+r.children.length,0)}),canStand:(x,z)=>state.floor!=='1'&&canStand(layout,state.floor,x,z),tools:()=>visibleTools().map(({tool,...info})=>info)};
+window.flcReview={workstation:()=>workstationReview?.snapshot()||null,photoAssets:()=>({loaded:[...photoLibrary.assets.keys()],bindings:[...photoLibrary.bindings.values()].map(b=>b.id),errors:photoLibrary.errors,pending:photoLibrary.pending,static:staticInstances.filter(i=>i.root.userData.photoBinding).map(i=>({...i.snapshot(),binding:i.root.userData.photoBinding})),desks:deskRoots.filter(d=>d.userData.photoBinding).map(d=>({id:d.userData.spatialId,binding:d.userData.photoBinding,level:d.userData.photoLevel,scale:d.scale.toArray(),height:d.userData.currentHeight,parts:d.userData.parts.filter(p=>p.asset&&p.level===d.userData.photoLevel).map(p=>({asset:p.asset,factor:p.factor,role:p.role}))}))}),spatial:()=>({state:spatial,catalog:spatialCatalog,configRevision:exhibitions?.revision,placeholderVisible:placeholder?.visible,displayFloors:[...roots].map(([floor,root])=>({floor,visible:root.visible,y:root.position.y,sourceY:root.userData.sourcePosition[1]})),posterCount:roots.get('4')?.children.filter(n=>n.userData.reviewPoster).length}),generatedAssets:()=>staticInstances.map(item=>item.snapshot()),chairs:()=>({loaded:!!chairLibrary,variant:chairLibrary?.variant,systems:chairSystems.map(s=>s.snapshot())}),floorMaterials:()=>[...roots.entries()].map(([floor,root])=>({floor,profile:state.finishes[floor],specialFinishes:root.children.filter(m=>m.isMesh&&m.userData.kind==='finish').map(m=>m.material.name),surfaces:root.children.filter(m=>m.isMesh&&m.userData.kind==='floor').map(m=>({material:m.material.name,hasColor:!!m.material.map,hasNormal:!!m.material.normalMap,hasRoughness:!!m.material.roughnessMap,uvCount:m.geometry.getAttribute('uv')?.count,uvSpan:m.geometry.getAttribute('uv')?Array.from(m.geometry.getAttribute('uv').array).reduce((r,v)=>[Math.min(r[0],v),Math.max(r[1],v)],[Infinity,-Infinity]):null}))})),desks:()=>deskControls().map(({desk,...info})=>({...info,partOffsets:desk.userData.parts.map(p=>{const m=new THREE.Matrix4();p.batch.getMatrixAt(p.index,m);return {factor:p.factor,offset:m.elements[13]-p.base.elements[13]};})})),layers:()=>[...roots.entries()].map(([floor,root])=>({floor,visible:root.visible,parts:root.children.filter(m=>m.isMesh).map(m=>({kind:m.userData.kind,visible:m.visible,minY:new THREE.Box3().setFromObject(m).min.y,maxY:new THREE.Box3().setFromObject(m).max.y}))})),snapshot:()=>({ready:loaded,renderedFrames,lastRafGapMs:lastFrameGapMs,lastRenderSubmissionMs:lastRenderMs,lastDrawIntervalMs,renderPolicy:'on-demand; RAF gap and JS submission time are not presented FPS',spatialScope:spatial?.scope,expanded:state.exploded,floor:state.floor,room:state.room,mode:state.mode,position:[...state.pos],yaw:state.yaw,pitch:state.pitch,eyeHeight:layout?.eyeHeight,verticalFov:camera?.fov,horizontalFov:camera?THREE.MathUtils.radToDeg(2*Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*camera.aspect)):null,inspect:state.inspect,joystick:[joy.x,joy.y],drawCalls:renderer?.info.render.calls,triangles:renderer?.info.render.triangles,renderedMeshes:[...roots.values()].reduce((n,r)=>n+r.children.length,0)}),canStand:(x,z)=>state.floor!=='1'&&canStand(layout,state.floor,x,z),tools:()=>visibleTools().map(({tool,...info})=>info)};
 start();

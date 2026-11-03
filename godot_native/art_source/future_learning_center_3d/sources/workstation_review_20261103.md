@@ -1,0 +1,19 @@
+# Actual-building workstation review
+
+This is a reversible scene-review mode in the existing Three building viewer, not a standalone studio. Use the ordinary “审阅工位比例” button and “返回空间”. The anchor is the existing 3F studio_1 desk at local metres [2.646791935, 0, 10.419043541]. Source GLB name is office_desk.008; GLTFLoader sanitizes this to office_desk008. Existing runtime spatial ID is flc/f3/object/office_desk008. No existing IDs were renamed.
+
+The photograph 062874bdaf9d94b53eb35aa74f8a75c4.jpg shows three displays and two keyboards. This review compares ONE panel on an existing desk, not a full three-screen workstation reconstruction. 27 inches is unverified. Screen-frame width candidates are 553, 614, 675 mm (39.5%, 43.9%, 48.2% of a 1400 mm desk). Uniform X/Y scaling preserves the display aspect near 16:9; depth is unchanged. Only bezel/display transforms change. Stand geometry is never scaled. Panel center height and fore/aft translation have separate controls.
+
+Three optional tools are loaded through the real photo-asset loader with three LODs and uncompressed failure fallback. They are off by default. Their local tabletop centres are [0.38, 0.13], [0.43, 0.13], [0.48, 0.13] metres in X/Z. Sources are the separately built drawer-details pack: separated_twist_drill, waisted_double_ended_bit, short_metal_extension. Dimensions 124, 98, 50 mm respectively are shape estimates, not manufacturer measurements. No evidence locates these in studio_1 or identifies that room as 304. These are explicitly reviewCandidate placements. There is no default relocation of 2F objects and no corridor placement.
+
+The temporary proxy shares source-owned geometry/materials. Only the selected desk instances are suppressed; surrounding room architecture and other desks remain visible. The actual lift controller moves the table and candidate objects. Exiting restores that desk's initial height/target and its instances, disposes the proxy without destroying borrowed resources, and retains existing LOD behaviour. Entry from 4F, another 3F room, or 2F walk restores the prior floor, room, mode, camera and observer position on exit. No localStorage/save/schema writes or persisted object placement changes occur.
+
+## Validation
+
+- Actual uncompressed GLBs: 18 width/height/re-entry variants; support plane within 0.01 mm; all tools inside tabletop; no tool-tool or tool-monitor/keyboard/mouse AABB intersections; minimum planar gap 69.95 mm. Screen ratio remains near 16:9; stand matrices stay unchanged across width choices. Source transform matrices immutable, repeated dispose safe, selected instances restored.
+- Actual Three GLTFLoader/viewer VM: 113 checks building.glb; 114 building.web.glb, including repeated real entry handler, retained walls, two panel identities, lift and restoration. Embedded textures are stripped only in memory; renderer/network/DOM are mocked.
+- Other Node suites: photo assets 18, spatial state 165, presentation 126, overlay 14, render gate 42.
+- Browser ordinary click/tap/select/slider/check/exit harness: browser_tests/workstation_browser.mjs. NOT RUN here. Known Chromium socket EPERM is not retried or bypassed. The browser harness must run in approved CI after publication approval. Partial tool loading suppresses the entire candidate set. Panel-height/depth extremes have finite AABBs above the table. These movements are review transforms, not a claim about mechanical stand travel or fit. Mobile slider tests use touchscreen.tap. No CPU image is submitted as browser evidence. No physical mobile acceptance.
+- Impeccable was required by repository instructions but its installed skill was absent at the expected path and no matching shared copy was found; no unsupported install was attempted.
+
+No frozen source tree, Git branch, PR or Godot solar model was modified. Publication and browser CI remain with the parent/publisher.
