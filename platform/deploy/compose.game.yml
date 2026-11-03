@@ -1,0 +1,10 @@
+# Optional overlay: serve an independently built Godot release beside the community.
+# docker compose -f deploy/compose.production.yml -f deploy/compose.game.yml up -d --build
+services:
+  app:
+    environment:
+      GAME_URL: https://${DOMAIN:?Set your domain name}/game/
+  gateway:
+    volumes:
+      - ./Caddyfile.with-game:/etc/caddy/Caddyfile:ro
+      - ${GAME_EXPORT_DIR:?Set the absolute path to a verified Godot Web release}:/srv/game:ro
