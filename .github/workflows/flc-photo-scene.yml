@@ -23,7 +23,7 @@ defaults:
 env:
   TEST_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
-# Additive gates. flc-small-props.yml and flc-spatial-browser.yml remain unchanged.
+# Additive gates. Existing prop and spatial browser test commands remain intact.
 # A Node/VM pass is never Chromium, GPU, visual, or physical-device acceptance.
 jobs:
   photo-node-contracts:

@@ -21,6 +21,9 @@ jobs:
         working-directory: godot_native/art_source/future_learning_center_3d
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: godot_native/art_source/future_learning_center_3d
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
