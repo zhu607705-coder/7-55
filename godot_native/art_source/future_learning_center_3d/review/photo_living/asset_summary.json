@@ -1,0 +1,465 @@
+{
+  "units": "millimeters; source XYZ = width/depth/height",
+  "totalAssets": 19,
+  "checks": 3683,
+  "browserVerified": false,
+  "assets": [
+    {
+      "asset": "photo_keyboard",
+      "sourceSizeBlenderXYZmm": [
+        370.0,
+        145.0,
+        39.31
+      ],
+      "sourceTriangles": [
+        32712,
+        9828,
+        3828
+      ],
+      "runtimeTriangles": [
+        20474,
+        8054,
+        2058
+      ],
+      "runtimeBytes": [
+        83128,
+        39068,
+        16460
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "photo_monitor_stand",
+      "sourceSizeBlenderXYZmm": [
+        614.0,
+        180.0,
+        482.5
+      ],
+      "sourceTriangles": [
+        1140,
+        660,
+        220
+      ],
+      "runtimeTriangles": [
+        1140,
+        660,
+        220
+      ],
+      "runtimeBytes": [
+        8708,
+        7176,
+        4400
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "photo_mouse",
+      "sourceSizeBlenderXYZmm": [
+        63.49,
+        125.078,
+        40.441
+      ],
+      "sourceTriangles": [
+        20726,
+        7898,
+        2946
+      ],
+      "runtimeTriangles": [
+        20009,
+        7898,
+        1994
+      ],
+      "runtimeBytes": [
+        75588,
+        36336,
+        16160
+      ],
+      "dimensionStatus": "Photo estimate; GPX main shell uses official nominal envelope"
+    },
+    {
+      "asset": "photo_desk_divider",
+      "sourceSizeBlenderXYZmm": [
+        1619.5,
+        669.5,
+        420.0
+      ],
+      "sourceTriangles": [
+        1128,
+        648,
+        264
+      ],
+      "runtimeTriangles": [
+        1128,
+        648,
+        264
+      ],
+      "runtimeBytes": [
+        6112,
+        4788,
+        3568
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "photo_monitor_arm",
+      "sourceSizeBlenderXYZmm": [
+        287.5,
+        97.0,
+        536.5
+      ],
+      "sourceTriangles": [
+        3008,
+        1632,
+        616
+      ],
+      "runtimeTriangles": [
+        3008,
+        1632,
+        616
+      ],
+      "runtimeBytes": [
+        15588,
+        10580,
+        6468
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "photo_living_capsule_table",
+      "sourceSizeBlenderXYZmm": [
+        1160.0,
+        3350.0,
+        761.0
+      ],
+      "sourceTriangles": [
+        5264,
+        1616,
+        560
+      ],
+      "runtimeTriangles": [
+        5264,
+        1616,
+        560
+      ],
+      "runtimeBytes": [
+        2033816,
+        480708,
+        116424
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "photo_living_caramel_armchair",
+      "sourceSizeBlenderXYZmm": [
+        625.0,
+        540.0,
+        850.779
+      ],
+      "sourceTriangles": [
+        8100,
+        3540,
+        1280
+      ],
+      "runtimeTriangles": [
+        8100,
+        3540,
+        1280
+      ],
+      "runtimeBytes": [
+        775384,
+        210572,
+        61828
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "photo_living_orange_office_chair",
+      "sourceSizeBlenderXYZmm": [
+        662.607,
+        658.45,
+        973.535
+      ],
+      "sourceTriangles": [
+        10476,
+        4420,
+        1864
+      ],
+      "runtimeTriangles": [
+        10476,
+        4420,
+        1864
+      ],
+      "runtimeBytes": [
+        46264,
+        23152,
+        12780
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "photo_living_pale_shell_chair",
+      "sourceSizeBlenderXYZmm": [
+        584.0,
+        605.0,
+        849.172
+      ],
+      "sourceTriangles": [
+        7712,
+        2832,
+        944
+      ],
+      "runtimeTriangles": [
+        7712,
+        2832,
+        944
+      ],
+      "runtimeBytes": [
+        769820,
+        204872,
+        57888
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "photo_living_wood_planter",
+      "sourceSizeBlenderXYZmm": [
+        730.883,
+        716.285,
+        1535.823
+      ],
+      "sourceTriangles": [
+        14040,
+        5944,
+        2352
+      ],
+      "runtimeTriangles": [
+        14040,
+        5944,
+        2150
+      ],
+      "runtimeBytes": [
+        826052,
+        236056,
+        73384
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "photo_fridge_wood_surround",
+      "sourceSizeBlenderXYZmm": [
+        1558.0,
+        739.0,
+        2700.0
+      ],
+      "sourceTriangles": [
+        7020,
+        3332,
+        1232
+      ],
+      "runtimeTriangles": [
+        7020,
+        3332,
+        1232
+      ],
+      "runtimeBytes": [
+        29760,
+        17588,
+        10684
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "photo_pantry_backsplash_shelves",
+      "sourceSizeBlenderXYZmm": [
+        2430.0,
+        496.0,
+        1420.5
+      ],
+      "sourceTriangles": [
+        18604,
+        10496,
+        4292
+      ],
+      "runtimeTriangles": [
+        18604,
+        7998,
+        1998
+      ],
+      "runtimeBytes": [
+        68592,
+        41684,
+        20656
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "photo_pantry_counter",
+      "sourceSizeBlenderXYZmm": [
+        2400.0,
+        661.0,
+        950.0
+      ],
+      "sourceTriangles": [
+        4924,
+        2484,
+        1012
+      ],
+      "runtimeTriangles": [
+        4924,
+        2484,
+        1012
+      ],
+      "runtimeBytes": [
+        21220,
+        12744,
+        8120
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "photo_pantry_grey_roundfront_appliance",
+      "sourceSizeBlenderXYZmm": [
+        391.0,
+        461.5,
+        360.0
+      ],
+      "sourceTriangles": [
+        3728,
+        2016,
+        664
+      ],
+      "runtimeTriangles": [
+        3728,
+        2016,
+        664
+      ],
+      "runtimeBytes": [
+        21128,
+        15528,
+        9424
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "photo_pantry_sink_faucets",
+      "sourceSizeBlenderXYZmm": [
+        725.5,
+        589.5,
+        587.79
+      ],
+      "sourceTriangles": [
+        6596,
+        3644,
+        1384
+      ],
+      "runtimeTriangles": [
+        6596,
+        3644,
+        1384
+      ],
+      "runtimeBytes": [
+        27984,
+        18548,
+        10160
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "photo_pantry_white_cleartop_appliance",
+      "sourceSizeBlenderXYZmm": [
+        350.0,
+        387.5,
+        447.5
+      ],
+      "sourceTriangles": [
+        8956,
+        4504,
+        1788
+      ],
+      "runtimeTriangles": [
+        8956,
+        4504,
+        1788
+      ],
+      "runtimeBytes": [
+        40044,
+        25608,
+        15608
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "photo_side_by_side_fridge",
+      "sourceSizeBlenderXYZmm": [
+        902.0,
+        700.0,
+        1814.0
+      ],
+      "sourceTriangles": [
+        3008,
+        1728,
+        660
+      ],
+      "runtimeTriangles": [
+        3008,
+        1728,
+        660
+      ],
+      "runtimeBytes": [
+        15040,
+        11560,
+        7960
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "waste_bin_blue",
+      "sourceSizeBlenderXYZmm": [
+        503.527,
+        569.33,
+        823.977
+      ],
+      "sourceTriangles": [
+        18550,
+        8460,
+        3782
+      ],
+      "runtimeTriangles": [
+        18550,
+        7994,
+        2020
+      ],
+      "runtimeBytes": [
+        81636,
+        42008,
+        17508
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    },
+    {
+      "asset": "waste_bin_grey",
+      "sourceSizeBlenderXYZmm": [
+        503.527,
+        569.33,
+        823.977
+      ],
+      "sourceTriangles": [
+        18613,
+        8515,
+        3831
+      ],
+      "runtimeTriangles": [
+        18613,
+        7995,
+        2011
+      ],
+      "runtimeBytes": [
+        82084,
+        42252,
+        17596
+      ],
+      "dimensionStatus": "Photo proportion estimate, not surveyed"
+    }
+  ],
+  "laterPantryRevisionChecks": 536
+}

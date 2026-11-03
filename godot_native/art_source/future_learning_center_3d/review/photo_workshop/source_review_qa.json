@@ -1,0 +1,52 @@
+{
+  "individualSourceChecks": [
+    {
+      "asset": "photo_workshop_black_red_case",
+      "meshObjects": 21,
+      "nonMeshSceneObjects": [],
+      "unpackedImages": [],
+      "sourceOnly": true
+    },
+    {
+      "asset": "photo_workshop_blue_driver_rack",
+      "meshObjects": 179,
+      "nonMeshSceneObjects": [],
+      "unpackedImages": [],
+      "sourceOnly": true
+    },
+    {
+      "asset": "photo_workshop_green_tool_cart",
+      "meshObjects": 67,
+      "nonMeshSceneObjects": [],
+      "unpackedImages": [],
+      "sourceOnly": true
+    },
+    {
+      "asset": "photo_workshop_red_flat_case",
+      "meshObjects": 15,
+      "nonMeshSceneObjects": [],
+      "unpackedImages": [],
+      "sourceOnly": true
+    },
+    {
+      "asset": "photo_workshop_small_vise",
+      "meshObjects": 28,
+      "nonMeshSceneObjects": [],
+      "unpackedImages": [],
+      "sourceOnly": true
+    },
+    {
+      "asset": "photo_workshop_square_hole_board",
+      "meshObjects": 11,
+      "nonMeshSceneObjects": [],
+      "unpackedImages": [],
+      "sourceOnly": true
+    }
+  ],
+  "perforationCheck": {
+    "testedHoleCenters": 432,
+    "blockedHoleCenters": [],
+    "solidMarginRayHit": true,
+    "result": "PASS"
+  }
+}

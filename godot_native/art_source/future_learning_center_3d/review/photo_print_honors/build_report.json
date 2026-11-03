@@ -1,0 +1,455 @@
+{
+  "blender": "4.3.2",
+  "units": "m",
+  "referenceLibraryIds": [
+    "src_ref_2b3ca52f41b21d81c0bec42f5c59efdc",
+    "src_ref_f8318563838007cf69ccc6a8d3c77a47",
+    "src_ref_44e59b01a7ab2c5a0f13935519332fbd"
+  ],
+  "referencePixelsViewed": true,
+  "dimensions": "All dimensions are visual estimates. No surveyed or manufacturer dimensions claimed.",
+  "scope": "Six independent candidates only. Repeated white printers and two views of the honors cabinet share sources. No main-scene or runtime integration.",
+  "materials": "PBR factors; deterministic synthetic wood base-color map 384/192/96. No photo pixels, people, certificate text, names, logos, QR codes or fabricated award claims.",
+  "validation": "Each mesh checked for finite vertices, positive-area polygons, closed edge incidence, nonzero volume, and applied modifiers. Sources exclude review stages, cameras and lights.",
+  "render": "Cycles CPU review renders only, not browser or game acceptance.",
+  "records": [
+    {
+      "asset": "photo_print_black_compact",
+      "level": 0,
+      "triangles": 9744,
+      "boundsBlenderXYZ": [
+        [
+          -0.2524999976158142,
+          -0.2355000078678131,
+          0.0
+        ],
+        [
+          0.2539999783039093,
+          0.18299999833106995,
+          0.2240000069141388
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.5064999759197235,
+        0.41850000619888306,
+        0.2240000069141388
+      ],
+      "meshParts": 36,
+      "sha256": "92368aefbed1d6be3c6f08cb63558860a103c5c7f9bca9e0ffbc251e360d35f9",
+      "blendSha256": "c244f25168d60069f490540b12b4063e541c629c5d0b0f86c4ee86dc6cf1795f"
+    },
+    {
+      "asset": "photo_print_black_compact",
+      "level": 1,
+      "triangles": 3200,
+      "boundsBlenderXYZ": [
+        [
+          -0.2524999976158142,
+          -0.2355000078678131,
+          0.0
+        ],
+        [
+          0.2539999783039093,
+          0.18299999833106995,
+          0.2240000069141388
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.5064999759197235,
+        0.41850000619888306,
+        0.2240000069141388
+      ],
+      "meshParts": 32,
+      "sha256": "a882cbd6611d1c22dccf6e8bcddd7f52411139b0acf46957287fd9430dfade42"
+    },
+    {
+      "asset": "photo_print_black_compact",
+      "level": 2,
+      "triangles": 1084,
+      "boundsBlenderXYZ": [
+        [
+          -0.2524999976158142,
+          -0.2355000078678131,
+          0.0
+        ],
+        [
+          0.2539999783039093,
+          0.18299999833106995,
+          0.22349999845027924
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.5064999759197235,
+        0.41850000619888306,
+        0.22349999845027924
+      ],
+      "meshParts": 25,
+      "sha256": "025c14efbc9671953dc49f75ff33a6b120a0a9f64740263d8c77f231351bd2d3"
+    },
+    {
+      "asset": "photo_honors_display_cabinet",
+      "level": 0,
+      "triangles": 8136,
+      "boundsBlenderXYZ": [
+        [
+          -1.815000057220459,
+          -0.2670000195503235,
+          0.0
+        ],
+        [
+          1.815000057220459,
+          0.2590000033378601,
+          2.3274998664855957
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        3.630000114440918,
+        0.5260000228881836,
+        2.3274998664855957
+      ],
+      "meshParts": 30,
+      "sha256": "6a13fa6c8e748b22a105961299cb7b24f1917ed4a4bab55ad4b8c583a9f4495f",
+      "blendSha256": "a8a8e90777e0781e573d0ce2ac803b0a489bb47ac4773b647610437f6a99a70e"
+    },
+    {
+      "asset": "photo_honors_display_cabinet",
+      "level": 1,
+      "triangles": 2952,
+      "boundsBlenderXYZ": [
+        [
+          -1.815000057220459,
+          -0.2670000195503235,
+          0.0
+        ],
+        [
+          1.815000057220459,
+          0.2590000033378601,
+          2.3274998664855957
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        3.630000114440918,
+        0.5260000228881836,
+        2.3274998664855957
+      ],
+      "meshParts": 30,
+      "sha256": "f3a61aaf904081f762ff3c8d7bcb4c8feea97b1c1040aeac0eb65db22a1bfbc9"
+    },
+    {
+      "asset": "photo_honors_display_cabinet",
+      "level": 2,
+      "triangles": 960,
+      "boundsBlenderXYZ": [
+        [
+          -1.815000057220459,
+          -0.2670000195503235,
+          0.0
+        ],
+        [
+          1.815000057220459,
+          0.2590000033378601,
+          2.3274998664855957
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        3.630000114440918,
+        0.5260000228881836,
+        2.3274998664855957
+      ],
+      "meshParts": 24,
+      "sha256": "7078a58a0631d533cbf065e78de1cfc5e5b7fd3d74c38df47962a4c78c65d0e3"
+    },
+    {
+      "asset": "photo_honors_lightwood_frame",
+      "level": 0,
+      "triangles": 3124,
+      "boundsBlenderXYZ": [
+        [
+          -0.16499999165534973,
+          -0.01599999889731407,
+          0.0
+        ],
+        [
+          0.16499999165534973,
+          0.12999999523162842,
+          0.25200000405311584
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.32999998331069946,
+        0.1459999941289425,
+        0.25200000405311584
+      ],
+      "meshParts": 11,
+      "sha256": "bd9269d155931aa1e58229287d8602c7df23de7feb35e436e690caac57db1b93",
+      "blendSha256": "04101ab1b5b622f29fe11e76c196af0b6f7e316e061f12d912ebcd679c7542aa"
+    },
+    {
+      "asset": "photo_honors_lightwood_frame",
+      "level": 1,
+      "triangles": 1140,
+      "boundsBlenderXYZ": [
+        [
+          -0.16499999165534973,
+          -0.01599999889731407,
+          0.0
+        ],
+        [
+          0.16499999165534973,
+          0.12999999523162842,
+          0.25200000405311584
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.32999998331069946,
+        0.1459999941289425,
+        0.25200000405311584
+      ],
+      "meshParts": 11,
+      "sha256": "8b6cc93a4bc2b17af937efb061c633604562add55a3966f8e3e203f4042c28a7"
+    },
+    {
+      "asset": "photo_honors_lightwood_frame",
+      "level": 2,
+      "triangles": 352,
+      "boundsBlenderXYZ": [
+        [
+          -0.16499999165534973,
+          -0.01599999889731407,
+          0.0
+        ],
+        [
+          0.16499999165534973,
+          0.12999999523162842,
+          0.25200000405311584
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.32999998331069946,
+        0.1459999941289425,
+        0.25200000405311584
+      ],
+      "meshParts": 8,
+      "sha256": "45238a298ba5b114ee5942b41cd60d445cdc01dea18a52a8a875aae539c949a2"
+    },
+    {
+      "asset": "photo_honors_certificate_stand",
+      "level": 0,
+      "triangles": 2100,
+      "boundsBlenderXYZ": [
+        [
+          -0.12999999523162842,
+          -0.02749999798834324,
+          0.0
+        ],
+        [
+          0.12999999523162842,
+          0.07750000059604645,
+          0.3346620202064514
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.25999999046325684,
+        0.10499999858438969,
+        0.3346620202064514
+      ],
+      "meshParts": 7,
+      "sha256": "e1181903024bd0120fd897d7919aa32027c9d56504d8786ad5461d4f1764132c",
+      "blendSha256": "6d190bf186d2484cedd7b3ad3aafa1f878ceb07bd2943b3eb207b9beb081e258"
+    },
+    {
+      "asset": "photo_honors_certificate_stand",
+      "level": 1,
+      "triangles": 756,
+      "boundsBlenderXYZ": [
+        [
+          -0.12999999523162842,
+          -0.02749999798834324,
+          0.0
+        ],
+        [
+          0.12999999523162842,
+          0.07750000059604645,
+          0.3346620202064514
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.25999999046325684,
+        0.10499999858438969,
+        0.3346620202064514
+      ],
+      "meshParts": 7,
+      "sha256": "579134fc5cf8194df1ea54dbbe8fca208abe379c24ee436cce5d1ce585ae2676"
+    },
+    {
+      "asset": "photo_honors_certificate_stand",
+      "level": 2,
+      "triangles": 308,
+      "boundsBlenderXYZ": [
+        [
+          -0.12999999523162842,
+          -0.02749999798834324,
+          0.0
+        ],
+        [
+          0.12999999523162842,
+          0.07750000059604645,
+          0.3346620202064514
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.25999999046325684,
+        0.10499999858438969,
+        0.3346620202064514
+      ],
+      "meshParts": 7,
+      "sha256": "a52ad222373a7a8438c2e8b2420afccd008124f0a356e57f11575c8f89fae9ed"
+    },
+    {
+      "asset": "photo_honors_trophy_silhouette",
+      "level": 0,
+      "triangles": 3732,
+      "boundsBlenderXYZ": [
+        [
+          -0.12999999523162842,
+          -0.08749999850988388,
+          0.0
+        ],
+        [
+          0.12999999523162842,
+          0.08749999850988388,
+          0.36800000071525574
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.25999999046325684,
+        0.17499999701976776,
+        0.36800000071525574
+      ],
+      "meshParts": 15,
+      "sha256": "08e28f7aacbfb2a822d470a9dfebfc2984ec0dadfd985145ebac0052917d037c",
+      "blendSha256": "7f1ed93f84cab77e20542a41a0b7b0bebf27df7fed1454aaeb96405b581c81e1"
+    },
+    {
+      "asset": "photo_honors_trophy_silhouette",
+      "level": 1,
+      "triangles": 1380,
+      "boundsBlenderXYZ": [
+        [
+          -0.12999999523162842,
+          -0.08749999850988388,
+          0.0
+        ],
+        [
+          0.12999999523162842,
+          0.08749999850988388,
+          0.36800000071525574
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.25999999046325684,
+        0.17499999701976776,
+        0.36800000071525574
+      ],
+      "meshParts": 15,
+      "sha256": "69d507d50e938aa10b5c14e0d1e7f1a5b1972c3a239bf193442f5a99a8eb5bc9"
+    },
+    {
+      "asset": "photo_honors_trophy_silhouette",
+      "level": 2,
+      "triangles": 544,
+      "boundsBlenderXYZ": [
+        [
+          -0.12999999523162842,
+          -0.08749999850988388,
+          0.0
+        ],
+        [
+          0.12999999523162842,
+          0.08749999850988388,
+          0.36800000071525574
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.25999999046325684,
+        0.17499999701976776,
+        0.36800000071525574
+      ],
+      "meshParts": 14,
+      "sha256": "3c9abad9ddfbd09bba5fbc09ec2b88e330b10698ced840385a2e4b8deb664d21"
+    },
+    {
+      "asset": "photo_print_white_mfp",
+      "level": 0,
+      "triangles": 16188,
+      "boundsBlenderXYZ": [
+        [
+          -0.22300000488758087,
+          -0.3709999918937683,
+          0.0
+        ],
+        [
+          0.22300000488758087,
+          0.19599999487400055,
+          0.48249998688697815
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.44600000977516174,
+        0.5669999867677689,
+        0.48249998688697815
+      ],
+      "meshParts": 67,
+      "sha256": "b2dae0f4039abc2208a8775c82070593ec7451c89be73ce41513380a2bf0bfc5",
+      "blendSha256": "29e546077021a0d046b216db42e7700c4c8db00c4bb5c3db7b933ec6a18cf84d"
+    },
+    {
+      "asset": "photo_print_white_mfp",
+      "level": 1,
+      "triangles": 5836,
+      "boundsBlenderXYZ": [
+        [
+          -0.22300000488758087,
+          -0.3709999918937683,
+          0.0
+        ],
+        [
+          0.22300000488758087,
+          0.19599999487400055,
+          0.48249998688697815
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.44600000977516174,
+        0.5669999867677689,
+        0.48249998688697815
+      ],
+      "meshParts": 63,
+      "sha256": "48d877db7309c0b4b5a95a3b2e30dbe10820623c33f3d3d9c42904c880406036"
+    },
+    {
+      "asset": "photo_print_white_mfp",
+      "level": 2,
+      "triangles": 2172,
+      "boundsBlenderXYZ": [
+        [
+          -0.22300000488758087,
+          -0.3709999918937683,
+          0.0
+        ],
+        [
+          0.22300000488758087,
+          0.19050000607967377,
+          0.48249998688697815
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.44600000977516174,
+        0.5614999979734421,
+        0.48249998688697815
+      ],
+      "meshParts": 53,
+      "sha256": "3eaf1f0835b91a0c6613a233c4ba052c6e8348de4582e2dcf8191b433eddff7e"
+    }
+  ]
+}

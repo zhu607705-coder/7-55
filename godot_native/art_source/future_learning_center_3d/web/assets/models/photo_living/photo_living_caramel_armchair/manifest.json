@@ -1,0 +1,458 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 940124,
+    "sha256": "ec273bd7a6f80bf25e4e08597aae3b8053ea56f11c4f1e9f977b8b1a86af2844",
+    "triangles": 8100,
+    "primitives": 17,
+    "bounds": {
+      "min": [
+        -0.3124999925494194,
+        0.0029999995604157448,
+        -0.28400001116096973
+      ],
+      "max": [
+        0.3124999925494194,
+        0.8537790179252625,
+        0.2559999991208315
+      ]
+    },
+    "size": [
+      0.6249999850988388,
+      0.8507790183648467,
+      0.5400000102818012
+    ],
+    "materials": [
+      {
+        "name": "Caramel upholstered seat",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.20000000298023224,
+          0.08500000089406967,
+          0.03500000014901161,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.6800000071525574
+      },
+      {
+        "name": "Natural oak plywood",
+        "baseColorTexture": true,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.550000011920929
+      },
+      {
+        "name": "Black powder coated tubular frame",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.00800000037997961,
+          0.010999999940395355,
+          0.009999999776482582,
+          1
+        ],
+        "metallicFactor": 0.05000000074505806,
+        "roughnessFactor": 0.5299999713897705
+      },
+      {
+        "name": "Black matte rubber and polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.017000000923871994,
+          0.019999999552965164,
+          0.01899999938905239,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.7300000190734863
+      }
+    ],
+    "textures": [
+      {
+        "name": "natural_oak_plywood_lod0",
+        "mime": "image/png",
+        "bytes": 735842,
+        "size": [
+          768,
+          768
+        ]
+      }
+    ]
+  },
+  "calibration": {
+    "targetHeight": 0.8507790183648467,
+    "yawDegrees": 0,
+    "uniformScale": 1,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "ec273bd7a6f80bf25e4e08597aae3b8053ea56f11c4f1e9f977b8b1a86af2844",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 1.7695128917694092e-7,
+      "bytes": 775384,
+      "uncompressedBytes": 914276,
+      "sha256": "8a8e94be4e48a8c18770b8ce94998a2fdf6abf3bc7452dfafca2a307fbcbf63f",
+      "triangles": 8100,
+      "primitives": 4,
+      "bounds": {
+        "min": [
+          -0.3125,
+          0,
+          -0.27000001817941666
+        ],
+        "max": [
+          0.3125,
+          0.8507790779694915,
+          0.2700001820921898
+        ]
+      },
+      "size": [
+        0.625,
+        0.8507790779694915,
+        0.5400002002716064
+      ],
+      "materials": [
+        {
+          "name": "Caramel upholstered seat",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.20000000298023224,
+            0.08500000089406967,
+            0.03500000014901161,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.6800000071525574
+        },
+        {
+          "name": "Natural oak plywood",
+          "baseColorTexture": true,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.550000011920929
+        },
+        {
+          "name": "Black powder coated tubular frame",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.010999999940395355,
+            0.009999999776482582,
+            1
+          ],
+          "metallicFactor": 0.05000000074505806,
+          "roughnessFactor": 0.5299999713897705
+        },
+        {
+          "name": "Black matte rubber and polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.017000000923871994,
+            0.019999999552965164,
+            0.01899999938905239,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7300000190734863
+        }
+      ],
+      "textures": [
+        {
+          "name": "natural_oak_plywood_lod0",
+          "mime": "image/png",
+          "bytes": 735842,
+          "size": [
+            768,
+            768
+          ]
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "b286f2d9b5653093ad8573c24fabb9ae7ce265c6c06d18060a7383bc170f0600",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 1.7695128917694092e-7,
+      "bytes": 210572,
+      "uncompressedBytes": 269240,
+      "sha256": "43999d88fcd98269e67a1c3ffb8a8747202b30bef7ff334547597229d6353276",
+      "triangles": 3540,
+      "primitives": 4,
+      "bounds": {
+        "min": [
+          -0.3125,
+          0,
+          -0.27000001817941666
+        ],
+        "max": [
+          0.3125,
+          0.8507774090394378,
+          0.2700001820921898
+        ]
+      },
+      "size": [
+        0.625,
+        0.8507774090394378,
+        0.5400002002716064
+      ],
+      "materials": [
+        {
+          "name": "Caramel upholstered seat",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.20000000298023224,
+            0.08500000089406967,
+            0.03500000014901161,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.6800000071525574
+        },
+        {
+          "name": "Natural oak plywood",
+          "baseColorTexture": true,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.550000011920929
+        },
+        {
+          "name": "Black powder coated tubular frame",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.010999999940395355,
+            0.009999999776482582,
+            1
+          ],
+          "metallicFactor": 0.05000000074505806,
+          "roughnessFactor": 0.5299999713897705
+        },
+        {
+          "name": "Black matte rubber and polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.017000000923871994,
+            0.019999999552965164,
+            0.01899999938905239,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7300000190734863
+        }
+      ],
+      "textures": [
+        {
+          "name": "natural_oak_plywood_lod1",
+          "mime": "image/png",
+          "bytes": 189091,
+          "size": [
+            384,
+            384
+          ]
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "b3b2fe01f0dce2be47fd371f846d5508f39406b378a37072d9def7a17ccd347d",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 1.7695128917694092e-7,
+      "bytes": 61828,
+      "uncompressedBytes": 85192,
+      "sha256": "dff61e68b28cf64c32bb02d8ce89911c15aae8edf46ad7046d756e554ac49c03",
+      "triangles": 1280,
+      "primitives": 4,
+      "bounds": {
+        "min": [
+          -0.3125,
+          0,
+          -0.27000001817941666
+        ],
+        "max": [
+          0.3125,
+          0.8507741903886199,
+          0.2700001820921898
+        ]
+      },
+      "size": [
+        0.625,
+        0.8507741903886199,
+        0.5400002002716064
+      ],
+      "materials": [
+        {
+          "name": "Caramel upholstered seat",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.20000000298023224,
+            0.08500000089406967,
+            0.03500000014901161,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.6800000071525574
+        },
+        {
+          "name": "Natural oak plywood",
+          "baseColorTexture": true,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.550000011920929
+        },
+        {
+          "name": "Black powder coated tubular frame",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.010999999940395355,
+            0.009999999776482582,
+            1
+          ],
+          "metallicFactor": 0.05000000074505806,
+          "roughnessFactor": 0.5299999713897705
+        },
+        {
+          "name": "Black matte rubber and polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.017000000923871994,
+            0.019999999552965164,
+            0.01899999938905239,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7300000190734863
+        }
+      ],
+      "textures": [
+        {
+          "name": "natural_oak_plywood_lod2",
+          "mime": "image/png",
+          "bytes": 49953,
+          "size": [
+            192,
+            192
+          ]
+        }
+      ]
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

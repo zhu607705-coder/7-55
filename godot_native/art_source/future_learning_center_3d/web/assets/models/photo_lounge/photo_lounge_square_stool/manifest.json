@@ -1,0 +1,290 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 161348,
+    "sha256": "a4570058185d0bc43a1921d24799cbeee9a6f04b663584ef1d79820fbaa2a7ba",
+    "triangles": 3900,
+    "primitives": 13,
+    "bounds": {
+      "min": [
+        -0.17249999940395355,
+        0,
+        -0.1525000035762787
+      ],
+      "max": [
+        0.17249999940395355,
+        0.7529999613761902,
+        0.1525000035762787
+      ]
+    },
+    "size": [
+      0.3449999988079071,
+      0.7529999613761902,
+      0.3050000071525574
+    ],
+    "materials": [
+      {
+        "name": "Blue grey painted high stool",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.02199999988079071,
+          0.04699999839067459,
+          0.06800000369548798,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.47999998927116394
+      },
+      {
+        "name": "Black foot glides",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.012000000104308128,
+          0.014000000432133675,
+          0.014999999664723873,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.7799999713897705
+      }
+    ],
+    "textures": []
+  },
+  "calibration": {
+    "targetHeight": 0.7529999613761902,
+    "yawDegrees": 0,
+    "uniformScale": 1,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "a4570058185d0bc43a1921d24799cbeee9a6f04b663584ef1d79820fbaa2a7ba",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 1.4901161193847656e-7,
+      "bytes": 16032,
+      "uncompressedBytes": 108412,
+      "sha256": "d6ef6ffa5209f2aff96cd65a130ad793ffe95025c7677d5361653300c34e20cf",
+      "triangles": 3900,
+      "primitives": 2,
+      "bounds": {
+        "min": [
+          -0.17249999940395355,
+          0,
+          -0.1525000035762787
+        ],
+        "max": [
+          0.1725001484155655,
+          0.753000020980835,
+          0.1524999439716339
+        ]
+      },
+      "size": [
+        0.34500014781951904,
+        0.753000020980835,
+        0.3049999475479126
+      ],
+      "materials": [
+        {
+          "name": "Blue grey painted high stool",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.02199999988079071,
+            0.04699999839067459,
+            0.06800000369548798,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.47999998927116394
+        },
+        {
+          "name": "Black foot glides",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.014000000432133675,
+            0.014999999664723873,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7799999713897705
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "c848cf0d085951a699bb4283dc7a3ff488340c74fb37d6ee2602ae96efe39fbe",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 1.4901161193847656e-7,
+      "bytes": 8300,
+      "uncompressedBytes": 40148,
+      "sha256": "44e478033e55b37dba3d3d06db7ae6514460c74b8e77d32c77f21c5f2c1d046e",
+      "triangles": 1404,
+      "primitives": 2,
+      "bounds": {
+        "min": [
+          -0.17249999940395355,
+          0,
+          -0.1525000035762787
+        ],
+        "max": [
+          0.1725001484155655,
+          0.753000020980835,
+          0.1524999439716339
+        ]
+      },
+      "size": [
+        0.34500014781951904,
+        0.753000020980835,
+        0.3049999475479126
+      ],
+      "materials": [
+        {
+          "name": "Blue grey painted high stool",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.02199999988079071,
+            0.04699999839067459,
+            0.06800000369548798,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.47999998927116394
+        },
+        {
+          "name": "Black foot glides",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.014000000432133675,
+            0.014999999664723873,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7799999713897705
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "be0fc4d80285c8b63655fbefb07b95de09ccff7d5878428b5ffcb802cdef97f2",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 1.4901161193847656e-7,
+      "bytes": 5348,
+      "uncompressedBytes": 25628,
+      "sha256": "421c0b85bf36a556dba8398dfcf996c5581ba363a02aa8442136c00d3ce394d6",
+      "triangles": 572,
+      "primitives": 2,
+      "bounds": {
+        "min": [
+          -0.17249999940395355,
+          0,
+          -0.1525000035762787
+        ],
+        "max": [
+          0.1725001484155655,
+          0.753000020980835,
+          0.1524999439716339
+        ]
+      },
+      "size": [
+        0.34500014781951904,
+        0.753000020980835,
+        0.3049999475479126
+      ],
+      "materials": [
+        {
+          "name": "Blue grey painted high stool",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.02199999988079071,
+            0.04699999839067459,
+            0.06800000369548798,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.47999998927116394
+        },
+        {
+          "name": "Black foot glides",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.014000000432133675,
+            0.014999999664723873,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7799999713897705
+        }
+      ],
+      "textures": []
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

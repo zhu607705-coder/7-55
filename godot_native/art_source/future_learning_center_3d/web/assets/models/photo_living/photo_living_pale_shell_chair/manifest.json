@@ -1,0 +1,330 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 929948,
+    "sha256": "31b9f704270900637973c7b691b85a1c468f97c443cf48e8255cb97b7738eb7e",
+    "triangles": 7712,
+    "primitives": 13,
+    "bounds": {
+      "min": [
+        -0.29200000688433647,
+        0.003999999724328518,
+        -0.2979999892413616
+      ],
+      "max": [
+        0.29200000688433647,
+        0.8531721234321594,
+        0.3069999925792217
+      ]
+    },
+    "size": [
+      0.5840000137686729,
+      0.8491721237078309,
+      0.6049999818205833
+    ],
+    "materials": [
+      {
+        "name": "Pale ash shell",
+        "baseColorTexture": true,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.5299999713897705
+      },
+      {
+        "name": "Black matte rubber and polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.017000000923871994,
+          0.019999999552965164,
+          0.01899999938905239,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.7300000190734863
+      }
+    ],
+    "textures": [
+      {
+        "name": "pale_ash_shell_lod0",
+        "mime": "image/png",
+        "bytes": 738409,
+        "size": [
+          768,
+          768
+        ]
+      }
+    ]
+  },
+  "calibration": {
+    "targetHeight": 0.8491721237078309,
+    "yawDegrees": 0,
+    "uniformScale": 1,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "31b9f704270900637973c7b691b85a1c468f97c443cf48e8255cb97b7738eb7e",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 1.1920928955078125e-7,
+      "bytes": 769820,
+      "uncompressedBytes": 918272,
+      "sha256": "fba19421c55e23f1f58b161c8d7b9bdf2433bd07ea025ff6554f6049f93a88f0",
+      "triangles": 7712,
+      "primitives": 2,
+      "bounds": {
+        "min": [
+          -0.29200000688433647,
+          0,
+          -0.30250000953674316
+        ],
+        "max": [
+          0.2919999063014984,
+          0.8491721237078309,
+          0.30250000953674316
+        ]
+      },
+      "size": [
+        0.5839999131858349,
+        0.8491721237078309,
+        0.6050000190734863
+      ],
+      "materials": [
+        {
+          "name": "Pale ash shell",
+          "baseColorTexture": true,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5299999713897705
+        },
+        {
+          "name": "Black matte rubber and polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.017000000923871994,
+            0.019999999552965164,
+            0.01899999938905239,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7300000190734863
+        }
+      ],
+      "textures": [
+        {
+          "name": "pale_ash_shell_lod0",
+          "mime": "image/png",
+          "bytes": 738409,
+          "size": [
+            768,
+            768
+          ]
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "96dc2c60c259f1c497a502c45c090e98ac8661427b9a9a9df187e8a4fd26c479",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 1.1920928955078125e-7,
+      "bytes": 204872,
+      "uncompressedBytes": 259224,
+      "sha256": "1e13065c4663531d1fc510e3e7d0f183c1bbf5f9a00461a5db3a9d0c534268ab",
+      "triangles": 2832,
+      "primitives": 2,
+      "bounds": {
+        "min": [
+          -0.29200000688433647,
+          0,
+          -0.30250000953674316
+        ],
+        "max": [
+          0.2919999063014984,
+          0.8491769516840577,
+          0.30250000953674316
+        ]
+      },
+      "size": [
+        0.5839999131858349,
+        0.8491769516840577,
+        0.6050000190734863
+      ],
+      "materials": [
+        {
+          "name": "Pale ash shell",
+          "baseColorTexture": true,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5299999713897705
+        },
+        {
+          "name": "Black matte rubber and polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.017000000923871994,
+            0.019999999552965164,
+            0.01899999938905239,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7300000190734863
+        }
+      ],
+      "textures": [
+        {
+          "name": "pale_ash_shell_lod1",
+          "mime": "image/png",
+          "bytes": 189803,
+          "size": [
+            384,
+            384
+          ]
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "9d6376f24ec413401ded3e813920023e69608d3915d60c2be3fcbe0ac9e033cb",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 1.1920928955078125e-7,
+      "bytes": 57888,
+      "uncompressedBytes": 76488,
+      "sha256": "6559e68abeeda59c11f4c22a94df4194712dcf459fa2fb1c9267aa0c8566488d",
+      "triangles": 944,
+      "primitives": 2,
+      "bounds": {
+        "min": [
+          -0.29200000688433647,
+          0,
+          -0.30250000953674316
+        ],
+        "max": [
+          0.2919999063014984,
+          0.8491754019632936,
+          0.30250000953674316
+        ]
+      },
+      "size": [
+        0.5839999131858349,
+        0.8491754019632936,
+        0.6050000190734863
+      ],
+      "materials": [
+        {
+          "name": "Pale ash shell",
+          "baseColorTexture": true,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5299999713897705
+        },
+        {
+          "name": "Black matte rubber and polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.017000000923871994,
+            0.019999999552965164,
+            0.01899999938905239,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7300000190734863
+        }
+      ],
+      "textures": [
+        {
+          "name": "pale_ash_shell_lod2",
+          "mime": "image/png",
+          "bytes": 50151,
+          "size": [
+            192,
+            192
+          ]
+        }
+      ]
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

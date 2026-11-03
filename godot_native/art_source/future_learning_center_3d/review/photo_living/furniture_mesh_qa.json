@@ -1,0 +1,559 @@
+[
+  {
+    "asset": "photo_living_capsule_table",
+    "parts": [
+      {
+        "part": "Long charcoal capsule tabletop",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Broad charcoal capsule pedestal",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Pedestal recessed floor plinth",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Subtle inset under tabletop",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      }
+    ],
+    "renderObjectsExcluded": true,
+    "packedImages": true
+  },
+  {
+    "asset": "photo_living_caramel_armchair",
+    "parts": [
+      {
+        "part": "Caramel upholstered rounded seat",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Seat edge stitched piping",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Curved natural wood backrest",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Front leg -1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Rear leg -1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Continuous tubular arm loop -1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Natural wood arm pad -1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Leg floor glide",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Leg floor glide.001",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Front leg 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Rear leg 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Continuous tubular arm loop 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Natural wood arm pad 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Leg floor glide.002",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Leg floor glide.003",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Seat frame front crossbar",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Seat frame back crossbar",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      }
+    ],
+    "renderObjectsExcluded": true,
+    "packedImages": true
+  },
+  {
+    "asset": "photo_living_pale_shell_chair",
+    "parts": [
+      {
+        "part": "Pale continuous scooped plywood seat and back",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Pale front splayed leg -1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Pale rear splayed leg -1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Underseat wood side stretcher -1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Small pale chair floor glide",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Small pale chair floor glide.001",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Pale front splayed leg 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Pale rear splayed leg 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Underseat wood side stretcher 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Small pale chair floor glide.002",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Small pale chair floor glide.003",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Underseat front wood crosspiece",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Underseat rear wood crosspiece",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      }
+    ],
+    "renderObjectsExcluded": true,
+    "packedImages": true
+  },
+  {
+    "asset": "photo_living_orange_office_chair",
+    "parts": [
+      {
+        "part": "Orange upholstered office seat",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Black contoured office chair back shell",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Molded outer back rim",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Rear upright office support",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Office arm support -1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Wide office armrest -1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Office arm support 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Wide office armrest 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Office central gas lift",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Office lower column cover",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Office seat mechanism housing",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Office five star base spoke 0",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Twin caster wheel 0 -1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Twin caster wheel 0 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Office five star base spoke 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Twin caster wheel 1 -1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Twin caster wheel 1 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Office five star base spoke 2",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Twin caster wheel 2 -1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Twin caster wheel 2 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Office five star base spoke 3",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Twin caster wheel 3 -1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Twin caster wheel 3 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Office five star base spoke 4",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Twin caster wheel 4 -1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Twin caster wheel 4 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      }
+    ],
+    "renderObjectsExcluded": true,
+    "packedImages": true
+  },
+  {
+    "asset": "photo_living_wood_planter",
+    "parts": [
+      {
+        "part": "Cylindrical oak planter with open rim",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Visible dark soil",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Main woody stem 0",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 0 0",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 0 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 0 2",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 0 3",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 0 4",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Main woody stem 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 1 0",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 1 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 1 2",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 1 3",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 1 4",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Main woody stem 2",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 2 0",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 2 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 2 2",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 2 3",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 2 4",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Main woody stem 3",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 3 0",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 3 1",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 3 2",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 3 3",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Secondary branch 3 4",
+        "nonmanifoldEdges": 0,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      },
+      {
+        "part": "Individual small leaves, species unspecified",
+        "nonmanifoldEdges": 4800,
+        "degenerateFaces": 0,
+        "finiteVertices": true
+      }
+    ],
+    "renderObjectsExcluded": true,
+    "packedImages": true
+  }
+]

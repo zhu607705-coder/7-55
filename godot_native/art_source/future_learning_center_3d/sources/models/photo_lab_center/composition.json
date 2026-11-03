@@ -1,0 +1,243 @@
+{
+  "units": "metres",
+  "coordinateSystem": "Blender Z-up",
+  "scope": "Major visible furniture only. Obscured instruments and uncertain functions omitted. Not complete equipment reconstruction.",
+  "instances": [
+    {
+      "assetId": "photo_lab_center_four_leg_table",
+      "sourcePath": "sources/models/photo_lab_center/photo_lab_center_four_leg_table/photo_lab_center_four_leg_table.blend",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "Photographic placement estimate",
+      "sourceSha256": "5914d68b50572ce1dd79d2e54edd508b92df68526d18de36ec7cd34001da8b2d",
+      "instanceId": "lab_center_00"
+    },
+    {
+      "assetId": "photo_lab_center_black_task_chair",
+      "sourcePath": "sources/models/photo_lab_center/photo_lab_center_black_task_chair/photo_lab_center_black_task_chair.blend",
+      "position": [
+        -0.6,
+        -0.86,
+        0
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        3.141592653589793
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "Photographic placement estimate",
+      "sourceSha256": "18251cd6ca1f1ee6582235d7d34d7c6421dfeb443223a82651c8ada88e648a54",
+      "instanceId": "lab_center_01"
+    },
+    {
+      "assetId": "photo_lab_center_open_shelf",
+      "sourcePath": "sources/models/photo_lab_center/photo_lab_center_open_shelf/photo_lab_center_open_shelf.blend",
+      "position": [
+        1.52,
+        0.69,
+        0
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        -1.5707963267948966
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "Photographic placement estimate",
+      "sourceSha256": "73a63ac03cab7e1c92c7d52ddd34f7e0ee0b7d58fb74778059ce1c8330a4ee4b",
+      "instanceId": "lab_center_02"
+    },
+    {
+      "assetId": "photo_lab_center_plain_storage_box",
+      "sourcePath": "sources/models/photo_lab_center/photo_lab_center_plain_storage_box/photo_lab_center_plain_storage_box.blend",
+      "position": [
+        1.48,
+        0.25,
+        0.052
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "Photographic placement estimate",
+      "sourceSha256": "af526ba58f189b4358a83d823f0e64a45dd53864f1a5400ec2360c5246caa53e",
+      "instanceId": "lab_center_03"
+    },
+    {
+      "assetId": "photo_lab_center_plain_storage_box",
+      "sourcePath": "sources/models/photo_lab_center/photo_lab_center_plain_storage_box/photo_lab_center_plain_storage_box.blend",
+      "position": [
+        1.48,
+        0.25,
+        0.492
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "Photographic placement estimate",
+      "sourceSha256": "af526ba58f189b4358a83d823f0e64a45dd53864f1a5400ec2360c5246caa53e",
+      "instanceId": "lab_center_04"
+    },
+    {
+      "assetId": "photo_lab_center_plain_storage_box",
+      "sourcePath": "sources/models/photo_lab_center/photo_lab_center_plain_storage_box/photo_lab_center_plain_storage_box.blend",
+      "position": [
+        0.73,
+        0.12,
+        0.75
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "Photographic placement estimate",
+      "sourceSha256": "af526ba58f189b4358a83d823f0e64a45dd53864f1a5400ec2360c5246caa53e",
+      "instanceId": "lab_center_05"
+    },
+    {
+      "assetId": "photo_lab_center_black_transit_case",
+      "sourcePath": "sources/models/photo_lab_center/photo_lab_center_black_transit_case/photo_lab_center_black_transit_case.blend",
+      "position": [
+        1.43,
+        -0.57,
+        0
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        -0.1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "Photographic placement estimate",
+      "sourceSha256": "cb0b6cce164b07263665422c7c1301315edd6c868b1a94031826520757879011",
+      "instanceId": "lab_center_06"
+    },
+    {
+      "assetId": "photo_monitor_stand",
+      "sourcePath": "sources/models/photo_desktop/photo_monitor_stand/photo_monitor_stand.blend",
+      "position": [
+        -0.47,
+        0.16,
+        0.75
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        3.141592653589793
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {
+        "allSlots": "Black chair and case polymer"
+      },
+      "notes": "Black shell and stand only in this composition",
+      "sourceSha256": "0091bb9f40437aae075f072d0bc8bcc1fea888ae162ea1b624d3f2b2b38ad531",
+      "instanceId": "lab_center_07"
+    },
+    {
+      "assetId": "photo_keyboard",
+      "sourcePath": "sources/models/photo_desktop/photo_keyboard/photo_keyboard.blend",
+      "position": [
+        -0.47,
+        0.38,
+        0.75
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        3.141592653589793
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {
+        "allSlots": "Black chair and case polymer"
+      },
+      "notes": "Neutral black unprinted input device",
+      "sourceSha256": "c01612e66d6e590f4ded60559fe31f7b2c5ba448aa6d16102b702ba2b872e517",
+      "instanceId": "lab_center_08"
+    },
+    {
+      "assetId": "photo_mouse",
+      "sourcePath": "sources/models/photo_desktop/photo_mouse/photo_mouse.blend",
+      "position": [
+        -0.78,
+        0.39,
+        0.75
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        3.141592653589793
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {
+        "allSlots": "Black chair and case polymer"
+      },
+      "notes": "Neutral black unprinted input device",
+      "sourceSha256": "fa209c4308f593308e7f5e3e7666919033d09d32e4c2ed8270ced8ae3be470be",
+      "instanceId": "lab_center_09"
+    }
+  ]
+}

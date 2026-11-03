@@ -1,0 +1,253 @@
+{
+  "checks": 27,
+  "failures": 0,
+  "scope": "GPX public envelope and visual-reference estimates; no exact manufacturer CAD or measured photo scale claim.",
+  "rows": [
+    {
+      "pass": true,
+      "label": "LOD0 shell follows official 125 x 63.5 mm envelope",
+      "actual": [
+        0.06349001824855804,
+        0.03749538352712989,
+        0.125
+      ]
+    },
+    {
+      "pass": true,
+      "label": "LOD0 round shell height follows official 40 mm datum",
+      "actual": 0.039995383471250534
+    },
+    {
+      "pass": true,
+      "label": "LOD0 thin separate underside, not old tall pedestal",
+      "actual": [
+        0.060321491211652756,
+        0.0024999999441206455,
+        0.12200000137090683
+      ]
+    },
+    {
+      "pass": true,
+      "label": "LOD0 two anatomical left-only keys (+X for nose -Y)",
+      "actual": [
+        {
+          "min": [
+            0.029006249678786844,
+            0.0216500002425164,
+            0.006999999284744263
+          ],
+          "max": [
+            0.03070624970132485,
+            0.026350000174716115,
+            0.023000000044703484
+          ]
+        },
+        {
+          "min": [
+            0.029269134101923555,
+            0.0216500002425164,
+            -0.014000000432133675
+          ],
+          "max": [
+            0.03096913412446156,
+            0.026350000174716115,
+            0.0020000003278255463
+          ]
+        }
+      ]
+    },
+    {
+      "pass": true,
+      "label": "LOD0 separate left/right click surfaces"
+    },
+    {
+      "pass": true,
+      "label": "LOD0 continuous raised palm region and descending nose/tail",
+      "actual": {
+        "middle": 0.039995383471250534,
+        "nose": 0.025451170280575752,
+        "tail": 0.021825339645147324
+      }
+    },
+    {
+      "pass": true,
+      "label": "LOD0 separately modeled right navigation island"
+    },
+    {
+      "pass": true,
+      "label": "LOD0 real cap clearance between right island and main keys is 5–8 mm",
+      "actual": {
+        "rightKeys": 6,
+        "gap": 0.005999986082315445
+      }
+    },
+    {
+      "pass": true,
+      "label": "LOD0 no private photo or invented brand pixels"
+    },
+    {
+      "pass": true,
+      "label": "LOD1 shell follows official 125 x 63.5 mm envelope",
+      "actual": [
+        0.06347119063138962,
+        0.03748896857723594,
+        0.125
+      ]
+    },
+    {
+      "pass": true,
+      "label": "LOD1 round shell height follows official 40 mm datum",
+      "actual": 0.03998896852135658
+    },
+    {
+      "pass": true,
+      "label": "LOD1 thin separate underside, not old tall pedestal",
+      "actual": [
+        0.06029895320534706,
+        0.0024999999441206455,
+        0.12200000137090683
+      ]
+    },
+    {
+      "pass": true,
+      "label": "LOD1 two anatomical left-only keys (+X for nose -Y)",
+      "actual": [
+        {
+          "min": [
+            0.029006249678786844,
+            0.0216500002425164,
+            0.006999999284744263
+          ],
+          "max": [
+            0.03070624970132485,
+            0.026350000174716115,
+            0.023000000044703484
+          ]
+        },
+        {
+          "min": [
+            0.029269134101923555,
+            0.0216500002425164,
+            -0.014000000432133675
+          ],
+          "max": [
+            0.03096913412446156,
+            0.026350000174716115,
+            0.0020000003278255463
+          ]
+        }
+      ]
+    },
+    {
+      "pass": true,
+      "label": "LOD1 separate left/right click surfaces"
+    },
+    {
+      "pass": true,
+      "label": "LOD1 continuous raised palm region and descending nose/tail",
+      "actual": {
+        "middle": 0.03998896852135658,
+        "nose": 0.02532537281513214,
+        "tail": 0.02155446633696556
+      }
+    },
+    {
+      "pass": true,
+      "label": "LOD1 separately modeled right navigation island"
+    },
+    {
+      "pass": true,
+      "label": "LOD1 real cap clearance between right island and main keys is 5–8 mm",
+      "actual": {
+        "rightKeys": 6,
+        "gap": 0.005999986082315445
+      }
+    },
+    {
+      "pass": true,
+      "label": "LOD1 no private photo or invented brand pixels"
+    },
+    {
+      "pass": true,
+      "label": "LOD2 shell follows official 125 x 63.5 mm envelope",
+      "actual": [
+        0.06347718089818954,
+        0.037468557711690664,
+        0.125
+      ]
+    },
+    {
+      "pass": true,
+      "label": "LOD2 round shell height follows official 40 mm datum",
+      "actual": 0.03996855765581131
+    },
+    {
+      "pass": true,
+      "label": "LOD2 thin separate underside, not old tall pedestal",
+      "actual": [
+        0.060321491211652756,
+        0.0024999999441206455,
+        0.12200000137090683
+      ]
+    },
+    {
+      "pass": true,
+      "label": "LOD2 two anatomical left-only keys (+X for nose -Y)",
+      "actual": [
+        {
+          "min": [
+            0.029006249678786844,
+            0.0216500002425164,
+            0.006999999284744263
+          ],
+          "max": [
+            0.03070624970132485,
+            0.026350000174716115,
+            0.023000000044703484
+          ]
+        },
+        {
+          "min": [
+            0.029269134101923555,
+            0.0216500002425164,
+            -0.014000000432133675
+          ],
+          "max": [
+            0.03096913412446156,
+            0.026350000174716115,
+            0.0020000003278255463
+          ]
+        }
+      ]
+    },
+    {
+      "pass": true,
+      "label": "LOD2 separate left/right click surfaces"
+    },
+    {
+      "pass": true,
+      "label": "LOD2 continuous raised palm region and descending nose/tail",
+      "actual": {
+        "middle": 0.03996855765581131,
+        "nose": 0.024558328092098236,
+        "tail": 0.019906166940927505
+      }
+    },
+    {
+      "pass": true,
+      "label": "LOD2 separately modeled right navigation island"
+    },
+    {
+      "pass": true,
+      "label": "LOD2 real cap clearance between right island and main keys is 5–8 mm",
+      "actual": {
+        "rightKeys": 6,
+        "gap": 0.005999986082315445
+      }
+    },
+    {
+      "pass": true,
+      "label": "LOD2 no private photo or invented brand pixels"
+    }
+  ]
+}

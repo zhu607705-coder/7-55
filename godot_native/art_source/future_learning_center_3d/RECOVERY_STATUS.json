@@ -1,0 +1,33 @@
+{
+  "archives": [
+    {
+      "name": "照片桌面五件_围板支架补充_Blender与三LOD.zip",
+      "sha256": "2fcfdf9eb5f5fd235dff93d9fc16379ffe07d64b4ce1c92fdf831007e1cb41d5"
+    },
+    {
+      "name": "照片生活区14件_Blender与三LOD.zip",
+      "sha256": "6fa0b2bf4dbf14c52b18eb8704f87a3809da90153d3c8e5c50b440d3cc57a3a7"
+    },
+    {
+      "name": "休闲区六件_可编辑源与三LOD_Draco.tar.xz",
+      "sha256": "7b40f4d22122c1408a18551b8531ebbafb87040cad31f4e9529e0d7d4c05d6a6"
+    },
+    {
+      "name": "打印与荣誉六件_可编辑源与三LOD_Draco.tar.xz",
+      "sha256": "8418a5925ba507c3fbbb21909ba31fc0dd9573ad309ef771a2de741e54119fb0"
+    },
+    {
+      "name": "工具车六件_可编辑源与三LOD_Draco.tar.xz",
+      "sha256": "34136eac6ebcdb31f9d9aca3799bd38f4ffbbaa39d21e484f3a0536b239f84c0"
+    },
+    {
+      "name": "中央实验桌五件及复用依赖_完整源LOD.tar.xz",
+      "sha256": "16c6946908306b658003529a9235c9364d5d606e79ac8b45572c33fb18e1e1bf"
+    },
+    {
+      "name": "电子工位六件及复用依赖_完整源LOD.tar.xz",
+      "sha256": "ba401c1823d49f000879528f12353d553bd7786df89cc9c7831c240113c9bf46"
+    }
+  ],
+  "status": "Restored candidate artifacts only. Original Git objects absent. Not exact repository checkout. New11 not visually accepted; pause modeling pending identification."
+}

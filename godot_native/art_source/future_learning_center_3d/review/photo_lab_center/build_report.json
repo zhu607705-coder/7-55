@@ -1,0 +1,551 @@
+{
+  "blender": "4.3.2",
+  "reference": "63e86027f06d235dc7ce8f8d4806b80c.jpg, visual reference only, not included",
+  "dimensions": "Estimated metres, no manufacturer or survey claim",
+  "scope": "Five independent furniture/prop sources; no scene or runtime edits",
+  "materials": "Packed 128px synthetic grain and PBR factors; no labels, brands or image pixels",
+  "meshValidation": "Each part is a closed outward solid. Part intersections at physical joints are permitted.",
+  "records": [
+    {
+      "asset": "photo_lab_center_four_leg_table",
+      "level": 0,
+      "triangles": 2444,
+      "meshParts": 13,
+      "boundsBlenderXYZ": [
+        [
+          -1.100000023841858,
+          -0.5,
+          0.0
+        ],
+        [
+          1.100000023841858,
+          0.5,
+          0.75
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        2.200000047683716,
+        1.0,
+        0.75
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "materials": [
+        "Black chair and case polymer",
+        "Charcoal powder coated steel",
+        "Pale wood laminate"
+      ],
+      "sha256": "11df212dc85726b8ebbdf4ec68319a9ff193a7f735154a388365815de5d82cf8"
+    },
+    {
+      "asset": "photo_lab_center_four_leg_table",
+      "level": 1,
+      "triangles": 1404,
+      "meshParts": 13,
+      "boundsBlenderXYZ": [
+        [
+          -1.100000023841858,
+          -0.5,
+          0.0
+        ],
+        [
+          1.100000023841858,
+          0.5,
+          0.75
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        2.200000047683716,
+        1.0,
+        0.75
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "materials": [
+        "Black chair and case polymer",
+        "Charcoal powder coated steel",
+        "Pale wood laminate"
+      ],
+      "sha256": "b53b60a196c7364139862605016c64724f73cf11bf79be42a9d328a042852735"
+    },
+    {
+      "asset": "photo_lab_center_four_leg_table",
+      "level": 2,
+      "triangles": 572,
+      "meshParts": 13,
+      "boundsBlenderXYZ": [
+        [
+          -1.100000023841858,
+          -0.5,
+          0.0
+        ],
+        [
+          1.100000023841858,
+          0.5,
+          0.75
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        2.200000047683716,
+        1.0,
+        0.75
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "materials": [
+        "Black chair and case polymer",
+        "Charcoal powder coated steel",
+        "Pale wood laminate"
+      ],
+      "sha256": "c1d1d23574a2f895172db2683fac76b7046aeff939c498ac49ac27ae67885716"
+    },
+    {
+      "asset": "photo_lab_center_black_task_chair",
+      "level": 0,
+      "triangles": 6352,
+      "meshParts": 29,
+      "boundsBlenderXYZ": [
+        [
+          -0.29249998927116394,
+          -0.3173169493675232,
+          -4.589695845602648e-10
+        ],
+        [
+          0.32850003242492676,
+          0.3173169493675232,
+          0.9100000262260437
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.6210000216960907,
+        0.6346338987350464,
+        0.9100000266850132
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "materials": [
+        "Black chair and case polymer",
+        "Charcoal powder coated steel"
+      ],
+      "sha256": "b919d4e47c64dc501c696660a5f70662e3cf9663411cf207cb02c79a41b1b796"
+    },
+    {
+      "asset": "photo_lab_center_black_task_chair",
+      "level": 1,
+      "triangles": 3024,
+      "meshParts": 29,
+      "boundsBlenderXYZ": [
+        [
+          -0.29249998927116394,
+          -0.3173169493675232,
+          -4.589695845602648e-10
+        ],
+        [
+          0.32850003242492676,
+          0.3173169493675232,
+          0.9100000262260437
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.6210000216960907,
+        0.6346338987350464,
+        0.9100000266850132
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "materials": [
+        "Black chair and case polymer",
+        "Charcoal powder coated steel"
+      ],
+      "sha256": "a248615addbfb7f4f9ddaf82c6ca6e1b51fc0f2658174d98f73a4c70d434474e"
+    },
+    {
+      "asset": "photo_lab_center_black_task_chair",
+      "level": 2,
+      "triangles": 1256,
+      "meshParts": 29,
+      "boundsBlenderXYZ": [
+        [
+          -0.29249998927116394,
+          -0.3173169493675232,
+          0.001566189806908369
+        ],
+        [
+          0.32850003242492676,
+          0.3173169493675232,
+          0.9100000262260437
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.6210000216960907,
+        0.6346338987350464,
+        0.9084338364191353
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "materials": [
+        "Black chair and case polymer",
+        "Charcoal powder coated steel"
+      ],
+      "sha256": "8e81eeae4a888326961fb0f78f78a4d2070efc1d90564e5de85bed8c2d84a885"
+    },
+    {
+      "asset": "photo_lab_center_open_shelf",
+      "level": 0,
+      "triangles": 6016,
+      "meshParts": 32,
+      "boundsBlenderXYZ": [
+        [
+          -0.9275000095367432,
+          -0.21250000596046448,
+          0.0
+        ],
+        [
+          0.9275000095367432,
+          0.21250000596046448,
+          2.2009999752044678
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.8550000190734863,
+        0.42500001192092896,
+        2.2009999752044678
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "materials": [
+        "Charcoal powder coated steel",
+        "Warm neutral plywood liner"
+      ],
+      "sha256": "a4e8f61b34bbf5c9b6a746de6017fa3f5c15de57392e7d97bbdc416feb61ed6e"
+    },
+    {
+      "asset": "photo_lab_center_open_shelf",
+      "level": 1,
+      "triangles": 3456,
+      "meshParts": 32,
+      "boundsBlenderXYZ": [
+        [
+          -0.9275000095367432,
+          -0.21250000596046448,
+          0.0
+        ],
+        [
+          0.9275000095367432,
+          0.21250000596046448,
+          2.2009999752044678
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.8550000190734863,
+        0.42500001192092896,
+        2.2009999752044678
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "materials": [
+        "Charcoal powder coated steel",
+        "Warm neutral plywood liner"
+      ],
+      "sha256": "345a7f677ce40afc77e8d97df36f71e111de36a099237279561131fec47c4e32"
+    },
+    {
+      "asset": "photo_lab_center_open_shelf",
+      "level": 2,
+      "triangles": 1408,
+      "meshParts": 32,
+      "boundsBlenderXYZ": [
+        [
+          -0.9275000095367432,
+          -0.21250000596046448,
+          0.0
+        ],
+        [
+          0.9275000095367432,
+          0.21250000596046448,
+          2.2009999752044678
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.8550000190734863,
+        0.42500001192092896,
+        2.2009999752044678
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "materials": [
+        "Charcoal powder coated steel",
+        "Warm neutral plywood liner"
+      ],
+      "sha256": "d6f712e37ad5fc0653ddbc28d52818c4379a5fc760b8eed23a0b2d3bab0fe8d6"
+    },
+    {
+      "asset": "photo_lab_center_plain_storage_box",
+      "level": 0,
+      "triangles": 376,
+      "meshParts": 2,
+      "boundsBlenderXYZ": [
+        [
+          -0.18000000715255737,
+          -0.13500000536441803,
+          0.0
+        ],
+        [
+          0.18000000715255737,
+          0.13500000536441803,
+          0.22200000286102295
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.36000001430511475,
+        0.27000001072883606,
+        0.22200000286102295
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "materials": [
+        "Unmarked warm grey storage box"
+      ],
+      "sha256": "26804a60bd74f3b037c4c869166a3852f05289f51ef39d4cb24dcf807947350c"
+    },
+    {
+      "asset": "photo_lab_center_plain_storage_box",
+      "level": 1,
+      "triangles": 216,
+      "meshParts": 2,
+      "boundsBlenderXYZ": [
+        [
+          -0.18000000715255737,
+          -0.13500000536441803,
+          0.0
+        ],
+        [
+          0.18000000715255737,
+          0.13500000536441803,
+          0.22200000286102295
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.36000001430511475,
+        0.27000001072883606,
+        0.22200000286102295
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "materials": [
+        "Unmarked warm grey storage box"
+      ],
+      "sha256": "1dcd80e1510086837fe78f4629d9d561726de98c0237c9a6359e41699ae5f6fb"
+    },
+    {
+      "asset": "photo_lab_center_plain_storage_box",
+      "level": 2,
+      "triangles": 88,
+      "meshParts": 2,
+      "boundsBlenderXYZ": [
+        [
+          -0.18000000715255737,
+          -0.13500000536441803,
+          0.0
+        ],
+        [
+          0.18000000715255737,
+          0.13500000536441803,
+          0.22200000286102295
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.36000001430511475,
+        0.27000001072883606,
+        0.22200000286102295
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "materials": [
+        "Unmarked warm grey storage box"
+      ],
+      "sha256": "54011e624d189a68bfd99c4e52b3a97d3e5de7ae7cc92b60eab8a29874d72a1d"
+    },
+    {
+      "asset": "photo_lab_center_black_transit_case",
+      "level": 0,
+      "triangles": 1880,
+      "meshParts": 10,
+      "boundsBlenderXYZ": [
+        [
+          -0.3199999928474426,
+          -0.2540000081062317,
+          0.009999990463256836
+        ],
+        [
+          0.3199999928474426,
+          0.20999999344348907,
+          0.4274999797344208
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.6399999856948853,
+        0.46400000154972076,
+        0.41749998927116394
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "materials": [
+        "Black chair and case polymer",
+        "Charcoal powder coated steel"
+      ],
+      "sha256": "f71345bdedda4ee149da9fd9f3437341e1c90ab357ba5d4d31226bfa821b0b7a"
+    },
+    {
+      "asset": "photo_lab_center_black_transit_case",
+      "level": 1,
+      "triangles": 1080,
+      "meshParts": 10,
+      "boundsBlenderXYZ": [
+        [
+          -0.3199999928474426,
+          -0.2540000081062317,
+          0.009999990463256836
+        ],
+        [
+          0.3199999928474426,
+          0.20999999344348907,
+          0.4274999797344208
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.6399999856948853,
+        0.46400000154972076,
+        0.41749998927116394
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "materials": [
+        "Black chair and case polymer",
+        "Charcoal powder coated steel"
+      ],
+      "sha256": "ad85d7408c96d3399572f4e48b093b57b1a16449cc77b05a1ee030c0cf62ce2e"
+    },
+    {
+      "asset": "photo_lab_center_black_transit_case",
+      "level": 2,
+      "triangles": 352,
+      "meshParts": 8,
+      "boundsBlenderXYZ": [
+        [
+          -0.3199999928474426,
+          -0.2540000081062317,
+          0.009999990463256836
+        ],
+        [
+          0.3199999928474426,
+          0.20999999344348907,
+          0.4274999797344208
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.6399999856948853,
+        0.46400000154972076,
+        0.41749998927116394
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "materials": [
+        "Black chair and case polymer",
+        "Charcoal powder coated steel"
+      ],
+      "sha256": "dabd651919d179247182634efc1334ee932f8f1d86ad59534855f209a3d0cac7"
+    }
+  ],
+  "units": "m"
+}

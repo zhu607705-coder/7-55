@@ -1,0 +1,12 @@
+{
+  "woodArmPads": 12,
+  "armPadHeightBlenderZ": [
+    0.648
+  ],
+  "casterWheels": 10,
+  "casterHeightBlenderZ": [
+    0.046
+  ],
+  "assemblyTransformsChecked": true,
+  "renderObjectsExcluded": true
+}

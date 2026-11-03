@@ -1,0 +1,30 @@
+{
+  "status": "Final CPU renders actually viewed, 2026-11-03",
+  "engine": "Blender 4.3.2 Cycles CPU, 32 samples, 1700x1100",
+  "views": [
+    {
+      "file": "photo_bench_contents_composition.png",
+      "sha256": "ca2336607a34a6f8923238ad7567ab9d1e92602109663f393dadb0ab8765fdcc"
+    },
+    {
+      "file": "photo_bench_contents_detail.png",
+      "sha256": "29a1da01acc7e8f80cc77b531e820c6705c21f431c2b0319b9356c217b0bf5ec"
+    },
+    {
+      "file": "photo_bench_contents_composition.blend",
+      "sha256": "c35b06b342b99408d5fcaa71d90226beda7024f2c6a4c60b55673da765693074"
+    }
+  ],
+  "visualChecks": [
+    "Four blue silver motors and static propellers present; landing skids supported by right mat",
+    "Seven instruments: left 3, centre 1, right 3, distinct exteriors and staggered positions",
+    "Solder controller, angled iron holder and sponge visible at centre-left",
+    "No photos used as textures; no reference photo crops included"
+  ],
+  "compositionManifestSha256": "367fed2760c8104650192197ac6b3781060ac729f6b61035d97649dc54cecc40",
+  "knownLimits": [
+    "Unconfirmed product identities and photo-estimated dimensions",
+    "Nonfunctional exterior models; no electrical or flight claims",
+    "Screen faces intentionally unlit; no fabricated readings"
+  ]
+}

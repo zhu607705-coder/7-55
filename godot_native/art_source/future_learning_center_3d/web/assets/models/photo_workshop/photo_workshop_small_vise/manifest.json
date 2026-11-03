@@ -1,0 +1,354 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 216468,
+    "sha256": "19eb83e3f8619cc5dadf7bc69bbcedab4654b63ea701bb2d55ddc302dfbb2aa6",
+    "triangles": 3264,
+    "primitives": 28,
+    "bounds": {
+      "min": [
+        -0.07999999728053808,
+        0,
+        -0.07799999788403511
+      ],
+      "max": [
+        0.07999999728053808,
+        0.1284999968484044,
+        0.16250000335276127
+      ]
+    },
+    "size": [
+      0.15999999456107616,
+      0.1284999968484044,
+      0.24050000123679638
+    ],
+    "materials": [
+      {
+        "name": "Dark cast iron vise",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.03200000151991844,
+          0.03500000014901161,
+          0.03500000014901161,
+          1
+        ],
+        "metallicFactor": 0.6499999761581421,
+        "roughnessFactor": 0.6200000047683716
+      },
+      {
+        "name": "Brushed silver metal",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.5199999809265137,
+          0.5600000023841858,
+          0.5699999928474426,
+          1
+        ],
+        "metallicFactor": 0.8799999952316284,
+        "roughnessFactor": 0.25
+      },
+      {
+        "name": "Grey caster hubs",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.20000000298023224,
+          0.23000000417232513,
+          0.23000000417232513,
+          1
+        ],
+        "metallicFactor": 0.6499999761581421,
+        "roughnessFactor": 0.3199999928474426
+      }
+    ],
+    "textures": []
+  },
+  "calibration": {
+    "targetHeight": 0.12849999964237213,
+    "yawDegrees": 0,
+    "uniformScale": 1.0000000217429401,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "19eb83e3f8619cc5dadf7bc69bbcedab4654b63ea701bb2d55ddc302dfbb2aa6",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 5.7506451156541516e-8,
+      "bytes": 17036,
+      "uncompressedBytes": 142064,
+      "sha256": "28f0cfceafe252585602e45003eef690c4f271a66833f61a89f02fb21ef84dd5",
+      "triangles": 3264,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.07999999821186066,
+          3.4788705943755716e-10,
+          -0.12025000197189627
+        ],
+        "max": [
+          0.07999995350837708,
+          0.1285000562175007,
+          0.12024999174909068
+        ]
+      },
+      "size": [
+        0.15999995172023773,
+        0.12850005586961366,
+        0.24049999372098696
+      ],
+      "materials": [
+        {
+          "name": "Dark cast iron vise",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.03200000151991844,
+            0.03500000014901161,
+            0.03500000014901161,
+            1
+          ],
+          "metallicFactor": 0.6499999761581421,
+          "roughnessFactor": 0.6200000047683716
+        },
+        {
+          "name": "Brushed silver metal",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5199999809265137,
+            0.5600000023841858,
+            0.5699999928474426,
+            1
+          ],
+          "metallicFactor": 0.8799999952316284,
+          "roughnessFactor": 0.25
+        },
+        {
+          "name": "Grey caster hubs",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.20000000298023224,
+            0.23000000417232513,
+            0.23000000417232513,
+            1
+          ],
+          "metallicFactor": 0.6499999761581421,
+          "roughnessFactor": 0.3199999928474426
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "22c54744c3343901ad64bcd07b3a891f4a5f639eb951848729c83fbaf25f8a07",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 5.7506451156541516e-8,
+      "bytes": 10968,
+      "uncompressedBytes": 78024,
+      "sha256": "c7e0fef2ac875522fd5c0f406725e41f61053568694a378c866073c65ddea3ca",
+      "triangles": 1712,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.07999999821186066,
+          3.4788705943755716e-10,
+          -0.12025000197189627
+        ],
+        "max": [
+          0.07999995350837708,
+          0.1285000562175007,
+          0.12024999174909068
+        ]
+      },
+      "size": [
+        0.15999995172023773,
+        0.12850005586961366,
+        0.24049999372098696
+      ],
+      "materials": [
+        {
+          "name": "Dark cast iron vise",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.03200000151991844,
+            0.03500000014901161,
+            0.03500000014901161,
+            1
+          ],
+          "metallicFactor": 0.6499999761581421,
+          "roughnessFactor": 0.6200000047683716
+        },
+        {
+          "name": "Brushed silver metal",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5199999809265137,
+            0.5600000023841858,
+            0.5699999928474426,
+            1
+          ],
+          "metallicFactor": 0.8799999952316284,
+          "roughnessFactor": 0.25
+        },
+        {
+          "name": "Grey caster hubs",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.20000000298023224,
+            0.23000000417232513,
+            0.23000000417232513,
+            1
+          ],
+          "metallicFactor": 0.6499999761581421,
+          "roughnessFactor": 0.3199999928474426
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "5d09e0ceb06898410a8452a6e22c691ac0ac7434178f14ddf57621ab04631dd8",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 4.644291874689177e-8,
+      "bytes": 6616,
+      "uncompressedBytes": 31488,
+      "sha256": "e8a012626b830db262122875cf46bcbfecf4eee17ed680ce0af868476a2f4c52",
+      "triangles": 568,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.07999999821186066,
+          3.4788705943755716e-10,
+          -0.12025000197189627
+        ],
+        "max": [
+          0.07999995350837708,
+          0.1284999909886822,
+          0.12025000095360172
+        ]
+      },
+      "size": [
+        0.15999995172023773,
+        0.12849999064079515,
+        0.240500002925498
+      ],
+      "materials": [
+        {
+          "name": "Dark cast iron vise",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.03200000151991844,
+            0.03500000014901161,
+            0.03500000014901161,
+            1
+          ],
+          "metallicFactor": 0.6499999761581421,
+          "roughnessFactor": 0.6200000047683716
+        },
+        {
+          "name": "Grey caster hubs",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.20000000298023224,
+            0.23000000417232513,
+            0.23000000417232513,
+            1
+          ],
+          "metallicFactor": 0.6499999761581421,
+          "roughnessFactor": 0.3199999928474426
+        },
+        {
+          "name": "Brushed silver metal",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5199999809265137,
+            0.5600000023841858,
+            0.5699999928474426,
+            1
+          ],
+          "metallicFactor": 0.8799999952316284,
+          "roughnessFactor": 0.25
+        }
+      ],
+      "textures": []
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

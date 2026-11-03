@@ -1,0 +1,226 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 119276,
+    "sha256": "d1c6e2368c5abc4dd4b7feb5509aeb488614146d1b8b270b8b9ed873839d84d1",
+    "triangles": 1316,
+    "primitives": 7,
+    "bounds": {
+      "min": [
+        -0.09649999998509884,
+        0,
+        -0.05999999959021807
+      ],
+      "max": [
+        0.09649999998509884,
+        0.09000000357627869,
+        0.05999999959021807
+      ]
+    },
+    "size": [
+      0.19299999997019768,
+      0.09000000357627869,
+      0.11999999918043613
+    ],
+    "materials": [
+      {
+        "name": "Dark polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.014000000432133675,
+          0.01899999938905239,
+          0.020999999716877937,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.5799999833106995
+      }
+    ],
+    "textures": []
+  },
+  "calibration": {
+    "targetHeight": 0.09000000357627869,
+    "yawDegrees": 0,
+    "uniformScale": 1,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "d1c6e2368c5abc4dd4b7feb5509aeb488614146d1b8b270b8b9ed873839d84d1",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 5.21540641784668e-8,
+      "bytes": 6824,
+      "uncompressedBytes": 73736,
+      "sha256": "8f5fdd2cbec3c15673a8e7f7c7102eabe484b29860967fb144c025a00d2b4291",
+      "triangles": 1316,
+      "primitives": 1,
+      "bounds": {
+        "min": [
+          -0.09650000184774399,
+          0,
+          -0.05999999865889549
+        ],
+        "max": [
+          0.09650000184774399,
+          0.09000003430992365,
+          0.06000005081295967
+        ]
+      },
+      "size": [
+        0.19300000369548798,
+        0.09000003430992365,
+        0.12000004947185516
+      ],
+      "materials": [
+        {
+          "name": "Dark polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.014000000432133675,
+            0.01899999938905239,
+            0.020999999716877937,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5799999833106995
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "35115dd9fcdea740ad39ab6628d240ad4e7939e62b4c282fd852214ed257f231",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 5.21540641784668e-8,
+      "bytes": 4476,
+      "uncompressedBytes": 42152,
+      "sha256": "5e0f20f1ac67d7f209eca8b84dd91fb275f3bbd84b6f3d7a3df0cc8bb1051e8b",
+      "triangles": 756,
+      "primitives": 1,
+      "bounds": {
+        "min": [
+          -0.09650000184774399,
+          0,
+          -0.05999999865889549
+        ],
+        "max": [
+          0.09650000184774399,
+          0.09000003430992365,
+          0.06000005081295967
+        ]
+      },
+      "size": [
+        0.19300000369548798,
+        0.09000003430992365,
+        0.12000004947185516
+      ],
+      "materials": [
+        {
+          "name": "Dark polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.014000000432133675,
+            0.01899999938905239,
+            0.020999999716877937,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5799999833106995
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "1b9379afd9a5efadee252c66c97e918ca0e8dda2f747be36d9e7a7e28dac85b3",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 5.21540641784668e-8,
+      "bytes": 2488,
+      "uncompressedBytes": 14164,
+      "sha256": "2063bb5aa1f5e675002815f7c562a11c5ab9ef4b71c4b3825b27a673be9755a5",
+      "triangles": 220,
+      "primitives": 1,
+      "bounds": {
+        "min": [
+          -0.09650000184774399,
+          0,
+          -0.05999999865889549
+        ],
+        "max": [
+          0.09650000184774399,
+          0.09000003430992365,
+          0.06000005081295967
+        ]
+      },
+      "size": [
+        0.19300000369548798,
+        0.09000003430992365,
+        0.12000004947185516
+      ],
+      "materials": [
+        {
+          "name": "Dark polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.014000000432133675,
+            0.01899999938905239,
+            0.020999999716877937,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5799999833106995
+        }
+      ],
+      "textures": []
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

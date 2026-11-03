@@ -1,0 +1,1056 @@
+{
+  "checks": 185,
+  "failures": 0,
+  "scope": "Real Draco decode and source/data checks for two additional candidates; hidden structure and scale remain provisional. Not browser/GPU or certified support/load acceptance.",
+  "preservedBaseline": "3f7ca5ed03339538229e2e6dc1e8dbf768f18baf",
+  "preservedOriginalFiles": [
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_desk_divider/lod0_source.glb",
+      "sha256": "638c94322b43554af9cd0687ef2df658025316297cb455e5b5611d103929da5a",
+      "bytes": 35760
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_desk_divider/lod1_source.glb",
+      "sha256": "7cf44589e1169c5d407d26155543629fc137fd392e5727ff52765ae947cf5167",
+      "bytes": 21280
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_desk_divider/lod2_source.glb",
+      "sha256": "14bd1680bfcfe0120548ad51e472ffadc34686bc06854eab5fd389d2eb7830de",
+      "bytes": 15736
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_desk_divider/photo_desk_divider.blend",
+      "sha256": "42a333803b47dc7c8925728fe391c6341bb68f50eaa29ad8b08d0d12d42b7a6f",
+      "bytes": 540052
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_monitor_arm/lod0_source.glb",
+      "sha256": "845761ae4f70d8d5cbc0c58b0a47bc69ad380a3ece41014ff0dc247ae23b007b",
+      "bytes": 106360
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_monitor_arm/lod1_source.glb",
+      "sha256": "f10b55ad35bbb6d24626498c918cd17590ede182f5e6c7b0b38b8682c2dc5c3e",
+      "bytes": 60512
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_monitor_arm/lod2_source.glb",
+      "sha256": "380ecbf4d736c6fa1cd29906f44a5183b1475123735fe4bac8c1dc2bfe979a11",
+      "bytes": 35912
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_monitor_arm/photo_monitor_arm.blend",
+      "sha256": "f529f7cdf8c5047fdc6bd2a8cdaf2215c6025ec6e805cb8f34100530cdb48691",
+      "bytes": 700876
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_monitor_stand/lod0_source.glb",
+      "sha256": "e5cb7aba43bf7e92e82903c77f69f16b32d8fa83814ce94a4f6cda4c4fd001d8",
+      "bytes": 39996
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_monitor_stand/lod1_source.glb",
+      "sha256": "8d447f74b43df09af1b095a7fe201b577b8007c572b26fb0c3d2b1f32205bbaf",
+      "bytes": 24552
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_monitor_stand/lod2_source.glb",
+      "sha256": "7f52d3b9af40d82ccd6be24cc62c5bf48e643e453690eb077b52e323789006b1",
+      "bytes": 13940
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_monitor_stand/photo_monitor_stand.blend",
+      "sha256": "0091bb9f40437aae075f072d0bc8bcc1fea888ae162ea1b624d3f2b2b38ad531",
+      "bytes": 592260
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_desk_divider/lod0.draco.glb",
+      "sha256": "e36ecdbf4f42259f32d14f78f2c797ef17c260177d1dc448b799ed36cbf3c5de",
+      "bytes": 6112
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_desk_divider/lod0.glb",
+      "sha256": "5d680bb92eceb116c12ca3303fea1fb12f4de65f2e3012389e0bc83b5259df12",
+      "bytes": 27840
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_desk_divider/lod1.draco.glb",
+      "sha256": "60fa6b623fb251c901578e690166ea0f65597c77dd1bfe479dc97e85f6ef2cd7",
+      "bytes": 4788
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_desk_divider/lod1.glb",
+      "sha256": "cbbbebb9af92d5806438f7ce166e2bb4354533de55d74a52e2a7d98e5b5b2117",
+      "bytes": 17324
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_desk_divider/lod2.draco.glb",
+      "sha256": "9152ece51b0160fc7aca938c7e7bbc34e206dc59822a04c3bbab42dbec79c282",
+      "bytes": 3568
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_desk_divider/lod2.glb",
+      "sha256": "d53eaa675ce5909cc5b2691668a4d55b5a052f9a127956dcfb370c6782be653e",
+      "bytes": 10264
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_arm/lod0.draco.glb",
+      "sha256": "001f9f1679d4333bb599d01627fda17601cfd040e56e85feaf53148b8823f50c",
+      "bytes": 15588
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_arm/lod0.glb",
+      "sha256": "f0e84738ac3df24629e5018b9063fb9854bd1c690b82a31bf51a24a0a413aa8e",
+      "bytes": 80636
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_arm/lod1.draco.glb",
+      "sha256": "07003bfa47571f92f999d71e1f0778af14378448cbf53441137dc60c0cd641f8",
+      "bytes": 10580
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_arm/lod1.glb",
+      "sha256": "04d66ee103247be70db50e4fc8b0ed6a256e48691def1b7f4a522157f76cbc84",
+      "bytes": 45828
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_arm/lod2.draco.glb",
+      "sha256": "ef19835554062934b51319712c4f725e9f1f7ca9833fe756687bdbe036965667",
+      "bytes": 6468
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_arm/lod2.glb",
+      "sha256": "bdcf8255144bbd83953b9cfab33ee3d24fd790049943b7ca11c05cab643d809b",
+      "bytes": 22500
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_stand/lod0.draco.glb",
+      "sha256": "3088d7bda740730f3e2b1e85eb9e7a7a894d2e4b49fa3491a111db1f594c7598",
+      "bytes": 8708
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_stand/lod0.glb",
+      "sha256": "43c062aa0a508e58e8c5d9df10eea80b42f000f0ae2f4aac71e0a2f1efa2c9d0",
+      "bytes": 30028
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_stand/lod1.draco.glb",
+      "sha256": "b1032fddd702fd4b47d2462b814f53e7272de99a36107be7290d4963b9dc0071",
+      "bytes": 7176
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_stand/lod1.glb",
+      "sha256": "d57e40589225ce4d61b7f085f63fcf792c16c17ba52daab8088b699cf3fae0f2",
+      "bytes": 19508
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_stand/lod2.draco.glb",
+      "sha256": "6ca71a6af264d79bd44b2a42394fa8a1a805187d480ba9fe11d6542414b3e89c",
+      "bytes": 4400
+    },
+    {
+      "path": "godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_stand/lod2.glb",
+      "sha256": "5e8ac8fff2090ffada0c8cbef630107c4fdb65365a6c38cb7c202d2ad7e51d7b",
+      "bytes": 9764
+    }
+  ],
+  "rows": [
+    {
+      "pass": true,
+      "label": "photo_desk_divider exactly one independent source receipt per LOD"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider three ordered real LODs"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider explicit 20-bit mechanical detail encoding"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider editable native source exists"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider separate authored structure /^Rear divider/i"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider separate authored structure /^Right return/i"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 source bounds independently match Blender receipt",
+      "details": [
+        1.6194999967701733,
+        0.41999998688697815,
+        0.6694999844767153
+      ]
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 fits provisional candidate range, not measured photo scale",
+      "details": [
+        1.6194999967701733,
+        0.41999998688697815,
+        0.6694999844767153
+      ]
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 source triangles independently match receipt"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 input provenance hashes"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 static factor material source, no fabricated image or rig"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 actual Draco-coded primitive bytes"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 GLB is self-contained"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 exact emitted file hash and size"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 triangle primitive topology"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 triangle primitive topology"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 real finite vertices and valid indices"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 real finite unit normals"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 no zero-area decoded triangles",
+      "details": 0
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 actual decoded triangle count",
+      "details": 1128
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 source envelope preserved within 1mm",
+      "details": {
+        "decodedSize": [
+          1.6195000410079956,
+          0.42000070214271545,
+          0.6694994419813156
+        ],
+        "sourceSize": [
+          1.6194999967701733,
+          0.41999998688697815,
+          0.6694999844767153
+        ]
+      }
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 grounded pivot"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 near-source center pivot retained"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 real plain/Draco edge error below 0.1mm",
+      "details": 7.152557373046875e-7
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 encoding leaves triangle count unchanged"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 distinct bounded material groups",
+      "details": 2
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 bounded factor PBR"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD0 no active light or photo texture"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 source bounds independently match Blender receipt",
+      "details": [
+        1.6194999967701733,
+        0.41999998688697815,
+        0.6694999844767153
+      ]
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 fits provisional candidate range, not measured photo scale",
+      "details": [
+        1.6194999967701733,
+        0.41999998688697815,
+        0.6694999844767153
+      ]
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 source triangles independently match receipt"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 input provenance hashes"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 static factor material source, no fabricated image or rig"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 actual Draco-coded primitive bytes"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 GLB is self-contained"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 exact emitted file hash and size"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 triangle primitive topology"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 triangle primitive topology"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 real finite vertices and valid indices"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 real finite unit normals"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 no zero-area decoded triangles",
+      "details": 0
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 actual decoded triangle count",
+      "details": 648
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 source envelope preserved within 1mm",
+      "details": {
+        "decodedSize": [
+          1.6195000410079956,
+          0.42000070214271545,
+          0.6694994419813156
+        ],
+        "sourceSize": [
+          1.6194999967701733,
+          0.41999998688697815,
+          0.6694999844767153
+        ]
+      }
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 grounded pivot"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 near-source center pivot retained"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 real plain/Draco edge error below 0.1mm",
+      "details": 7.152557373046875e-7
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 encoding leaves triangle count unchanged"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 distinct bounded material groups",
+      "details": 2
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 bounded factor PBR"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD1 no active light or photo texture"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 source bounds independently match Blender receipt",
+      "details": [
+        1.6194999967701733,
+        0.41999998688697815,
+        0.6694999844767153
+      ]
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 fits provisional candidate range, not measured photo scale",
+      "details": [
+        1.6194999967701733,
+        0.41999998688697815,
+        0.6694999844767153
+      ]
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 source triangles independently match receipt"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 input provenance hashes"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 static factor material source, no fabricated image or rig"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 actual Draco-coded primitive bytes"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 GLB is self-contained"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 exact emitted file hash and size"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 triangle primitive topology"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 triangle primitive topology"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 real finite vertices and valid indices"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 real finite unit normals"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 no zero-area decoded triangles",
+      "details": 0
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 actual decoded triangle count",
+      "details": 264
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 source envelope preserved within 1mm",
+      "details": {
+        "decodedSize": [
+          1.6195000410079956,
+          0.42000070214271545,
+          0.6694994419813156
+        ],
+        "sourceSize": [
+          1.6194999967701733,
+          0.41999998688697815,
+          0.6694999844767153
+        ]
+      }
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 grounded pivot"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 near-source center pivot retained"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 real plain/Draco edge error below 0.1mm",
+      "details": 7.152557373046875e-7
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 encoding leaves triangle count unchanged"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 distinct bounded material groups",
+      "details": 2
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 bounded factor PBR"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider LOD2 no active light or photo texture"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider genuinely decreasing decoded LOD triangle counts"
+    },
+    {
+      "pass": true,
+      "label": "photo_desk_divider no hidden scale correction"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm exactly one independent source receipt per LOD"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm three ordered real LODs"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm explicit 20-bit mechanical detail encoding"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm editable native source exists"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm separate authored structure /^Lower.*segment/i"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm separate authored structure /^Upper.*segment/i"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm separate authored structure /^Visible elbow joint/i"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm separate authored structure /^Inferred desk clamp/i"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm separate authored structure /^Display tilt joint/i"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 source bounds independently match Blender receipt",
+      "details": [
+        0.2874999977648258,
+        0.5365000101737678,
+        0.09700000006705523
+      ]
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 fits provisional candidate range, not measured photo scale",
+      "details": [
+        0.2874999977648258,
+        0.5365000101737678,
+        0.09700000006705523
+      ]
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 source triangles independently match receipt"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 input provenance hashes"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 static factor material source, no fabricated image or rig"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 actual Draco-coded primitive bytes"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 GLB is self-contained"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 exact emitted file hash and size"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 triangle primitive topology"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 triangle primitive topology"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 triangle primitive topology"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 real finite vertices and valid indices"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 real finite unit normals"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 no zero-area decoded triangles",
+      "details": 0
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 actual decoded triangle count",
+      "details": 3008
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 source envelope preserved within 1mm",
+      "details": {
+        "decodedSize": [
+          0.287500225007534,
+          0.5365000288002193,
+          0.09700010544624796
+        ],
+        "sourceSize": [
+          0.2874999977648258,
+          0.5365000101737678,
+          0.09700000006705523
+        ]
+      }
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 grounded pivot"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 near-source center pivot retained"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 real plain/Draco edge error below 0.1mm",
+      "details": 2.2351741790771484e-7
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 encoding leaves triangle count unchanged"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 distinct bounded material groups",
+      "details": 3
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 bounded factor PBR"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD0 no active light or photo texture"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 source bounds independently match Blender receipt",
+      "details": [
+        0.2874999977648258,
+        0.5365000101737678,
+        0.09700000006705523
+      ]
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 fits provisional candidate range, not measured photo scale",
+      "details": [
+        0.2874999977648258,
+        0.5365000101737678,
+        0.09700000006705523
+      ]
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 source triangles independently match receipt"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 input provenance hashes"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 static factor material source, no fabricated image or rig"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 actual Draco-coded primitive bytes"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 GLB is self-contained"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 exact emitted file hash and size"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 triangle primitive topology"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 triangle primitive topology"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 triangle primitive topology"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 real finite vertices and valid indices"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 real finite unit normals"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 no zero-area decoded triangles",
+      "details": 0
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 actual decoded triangle count",
+      "details": 1632
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 source envelope preserved within 1mm",
+      "details": {
+        "decodedSize": [
+          0.287500225007534,
+          0.5365000288002193,
+          0.09700010544624796
+        ],
+        "sourceSize": [
+          0.2874999977648258,
+          0.5365000101737678,
+          0.09700000006705523
+        ]
+      }
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 grounded pivot"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 near-source center pivot retained"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 real plain/Draco edge error below 0.1mm",
+      "details": 2.2351741790771484e-7
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 encoding leaves triangle count unchanged"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 distinct bounded material groups",
+      "details": 3
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 bounded factor PBR"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD1 no active light or photo texture"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 source bounds independently match Blender receipt",
+      "details": [
+        0.2874999977648258,
+        0.5365000101737678,
+        0.09700000006705523
+      ]
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 fits provisional candidate range, not measured photo scale",
+      "details": [
+        0.2874999977648258,
+        0.5365000101737678,
+        0.09700000006705523
+      ]
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 source triangles independently match receipt"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 input provenance hashes"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 static factor material source, no fabricated image or rig"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 actual Draco-coded primitive bytes"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 GLB is self-contained"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 exact emitted file hash and size"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 triangle primitive topology"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 triangle primitive topology"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 triangle primitive topology"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 real finite vertices and valid indices"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 real finite unit normals"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 no zero-area decoded triangles",
+      "details": 0
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 actual decoded triangle count",
+      "details": 616
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 source envelope preserved within 1mm",
+      "details": {
+        "decodedSize": [
+          0.287500225007534,
+          0.5365000288002193,
+          0.09700010544624796
+        ],
+        "sourceSize": [
+          0.2874999977648258,
+          0.5365000101737678,
+          0.09700000006705523
+        ]
+      }
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 grounded pivot"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 near-source center pivot retained"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 real plain/Draco edge error below 0.1mm",
+      "details": 2.2351741790771484e-7
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 encoding leaves triangle count unchanged"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 distinct bounded material groups",
+      "details": 3
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 bounded factor PBR"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm LOD2 no active light or photo texture"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm genuinely decreasing decoded LOD triangle counts"
+    },
+    {
+      "pass": true,
+      "label": "photo_monitor_arm no hidden scale correction"
+    },
+    {
+      "pass": true,
+      "label": "baseline contains all 30 unaffected monitor/divider/arm files"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_desk_divider/lod0_source.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_desk_divider/lod1_source.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_desk_divider/lod2_source.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_desk_divider/photo_desk_divider.blend"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_monitor_arm/lod0_source.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_monitor_arm/lod1_source.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_monitor_arm/lod2_source.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_monitor_arm/photo_monitor_arm.blend"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_monitor_stand/lod0_source.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_monitor_stand/lod1_source.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_monitor_stand/lod2_source.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/sources/models/photo_desktop/photo_monitor_stand/photo_monitor_stand.blend"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_desk_divider/lod0.draco.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_desk_divider/lod0.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_desk_divider/lod1.draco.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_desk_divider/lod1.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_desk_divider/lod2.draco.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_desk_divider/lod2.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_arm/lod0.draco.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_arm/lod0.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_arm/lod1.draco.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_arm/lod1.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_arm/lod2.draco.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_arm/lod2.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_stand/lod0.draco.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_stand/lod0.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_stand/lod1.draco.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_stand/lod1.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_stand/lod2.draco.glb"
+    },
+    {
+      "pass": true,
+      "label": "unaffected candidate unchanged: godot_native/art_source/future_learning_center_3d/web/assets/models/photo_desktop/photo_monitor_stand/lod2.glb"
+    }
+  ]
+}

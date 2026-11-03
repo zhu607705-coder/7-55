@@ -1,0 +1,48 @@
+{
+  "frozenSourcesUnchanged": true,
+  "reviewImages": [
+    {
+      "path": "review/photo_workshop/photo_workshop_two_carts.png",
+      "pixels": [
+        1440,
+        1080
+      ],
+      "bytes": 2081799,
+      "sha256": "40997ff69ca2ffbf927f8939a6c0d4b29dbc68ac7cd3a7c00b29dc3439bafe75",
+      "renderer": "Blender 4.3.2 CPU Cycles"
+    },
+    {
+      "path": "review/photo_workshop/photo_workshop_square_hole_board.png",
+      "pixels": [
+        1000,
+        800
+      ],
+      "bytes": 1175347,
+      "sha256": "b9f1a7b7dc86dee2a3240e7e092656e19796b60615471395246d3dfa2b61468e",
+      "renderer": "Blender 4.3.2 CPU Cycles"
+    },
+    {
+      "path": "review/photo_workshop/photo_workshop_blue_driver_rack.png",
+      "pixels": [
+        1000,
+        800
+      ],
+      "bytes": 1285393,
+      "sha256": "17cbae01b4c5f01726eea4f9ebe7e24204d47efd8fc7ef4d45eab10a4be3ccd2",
+      "renderer": "Blender 4.3.2 CPU Cycles"
+    },
+    {
+      "path": "review/photo_workshop/photo_workshop_small_vise.png",
+      "pixels": [
+        1000,
+        800
+      ],
+      "bytes": 1044165,
+      "sha256": "2665ccfedbca9eaec3402e77591fdd9fad770f55a97708a529b8ac47343678c7",
+      "renderer": "Blender 4.3.2 CPU Cycles"
+    }
+  ],
+  "blendAssembly": "review/photo_workshop/photo_workshop_composition.blend",
+  "sourceQA": "review/photo_workshop/source_review_qa.json",
+  "independentValidation": "review/photo_expansion/photo_workshop_validation.json"
+}

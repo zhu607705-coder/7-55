@@ -1,0 +1,135 @@
+{
+  "state": "frozen",
+  "sourceFiles": [
+    {
+      "path": "sources/models/photo_lab_center/composition.json",
+      "bytes": 6279,
+      "sha256": "d917d833e0f3e7f4e0e82a0a7eb4b03f6e32348d89714124a77b6f1513e518d7"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_black_task_chair/lod0_source.glb",
+      "bytes": 293704,
+      "sha256": "b919d4e47c64dc501c696660a5f70662e3cf9663411cf207cb02c79a41b1b796"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_black_task_chair/lod1_source.glb",
+      "bytes": 165788,
+      "sha256": "a248615addbfb7f4f9ddaf82c6ca6e1b51fc0f2658174d98f73a4c70d434474e"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_black_task_chair/lod2_source.glb",
+      "bytes": 92532,
+      "sha256": "8e81eeae4a888326961fb0f78f78a4d2070efc1d90564e5de85bed8c2d84a885"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_black_task_chair/photo_lab_center_black_task_chair.blend",
+      "bytes": 939456,
+      "sha256": "18251cd6ca1f1ee6582235d7d34d7c6421dfeb443223a82651c8ada88e648a54"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_black_task_chair/synthetic_wood.png",
+      "bytes": 11736,
+      "sha256": "50bb37e9d5318b19e82fe36bcfe07c74ad7fc21b45b5893732f61f999b306cad"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_black_transit_case/lod0_source.glb",
+      "bytes": 167868,
+      "sha256": "f71345bdedda4ee149da9fd9f3437341e1c90ab357ba5d4d31226bfa821b0b7a"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_black_transit_case/lod1_source.glb",
+      "bytes": 98908,
+      "sha256": "ad85d7408c96d3399572f4e48b093b57b1a16449cc77b05a1ee030c0cf62ce2e"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_black_transit_case/lod2_source.glb",
+      "bytes": 40540,
+      "sha256": "dabd651919d179247182634efc1334ee932f8f1d86ad59534855f209a3d0cac7"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_black_transit_case/photo_lab_center_black_transit_case.blend",
+      "bytes": 656996,
+      "sha256": "cb0b6cce164b07263665422c7c1301315edd6c868b1a94031826520757879011"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_black_transit_case/synthetic_wood.png",
+      "bytes": 11736,
+      "sha256": "50bb37e9d5318b19e82fe36bcfe07c74ad7fc21b45b5893732f61f999b306cad"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_four_leg_table/lod0_source.glb",
+      "bytes": 230944,
+      "sha256": "11df212dc85726b8ebbdf4ec68319a9ff193a7f735154a388365815de5d82cf8"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_four_leg_table/lod1_source.glb",
+      "bytes": 142116,
+      "sha256": "b53b60a196c7364139862605016c64724f73cf11bf79be42a9d328a042852735"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_four_leg_table/lod2_source.glb",
+      "bytes": 77680,
+      "sha256": "c1d1d23574a2f895172db2683fac76b7046aeff939c498ac49ac27ae67885716"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_four_leg_table/photo_lab_center_four_leg_table.blend",
+      "bytes": 743416,
+      "sha256": "5914d68b50572ce1dd79d2e54edd508b92df68526d18de36ec7cd34001da8b2d"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_four_leg_table/synthetic_wood.png",
+      "bytes": 11736,
+      "sha256": "50bb37e9d5318b19e82fe36bcfe07c74ad7fc21b45b5893732f61f999b306cad"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_open_shelf/lod0_source.glb",
+      "bytes": 531500,
+      "sha256": "a4e8f61b34bbf5c9b6a746de6017fa3f5c15de57392e7d97bbdc416feb61ed6e"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_open_shelf/lod1_source.glb",
+      "bytes": 315000,
+      "sha256": "345a7f677ce40afc77e8d97df36f71e111de36a099237279561131fec47c4e32"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_open_shelf/lod2_source.glb",
+      "bytes": 159172,
+      "sha256": "d6f712e37ad5fc0653ddbc28d52818c4379a5fc760b8eed23a0b2d3bab0fe8d6"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_open_shelf/photo_lab_center_open_shelf.blend",
+      "bytes": 1090868,
+      "sha256": "73a63ac03cab7e1c92c7d52ddd34f7e0ee0b7d58fb74778059ce1c8330a4ee4b"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_open_shelf/synthetic_wood.png",
+      "bytes": 11736,
+      "sha256": "50bb37e9d5318b19e82fe36bcfe07c74ad7fc21b45b5893732f61f999b306cad"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_plain_storage_box/lod0_source.glb",
+      "bytes": 35864,
+      "sha256": "26804a60bd74f3b037c4c869166a3852f05289f51ef39d4cb24dcf807947350c"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_plain_storage_box/lod1_source.glb",
+      "bytes": 20680,
+      "sha256": "1dcd80e1510086837fe78f4629d9d561726de98c0237c9a6359e41699ae5f6fb"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_plain_storage_box/lod2_source.glb",
+      "bytes": 10680,
+      "sha256": "54011e624d189a68bfd99c4e52b3a97d3e5de7ae7cc92b60eab8a29874d72a1d"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_plain_storage_box/photo_lab_center_plain_storage_box.blend",
+      "bytes": 475988,
+      "sha256": "af526ba58f189b4358a83d823f0e64a45dd53864f1a5400ec2360c5246caa53e"
+    },
+    {
+      "path": "sources/models/photo_lab_center/photo_lab_center_plain_storage_box/synthetic_wood.png",
+      "bytes": 11736,
+      "sha256": "50bb37e9d5318b19e82fe36bcfe07c74ad7fc21b45b5893732f61f999b306cad"
+    }
+  ]
+}

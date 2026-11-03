@@ -1,0 +1,448 @@
+{
+  "blender": "4.3.2",
+  "objects": [
+    {
+      "name": "Loose unconnected test lead",
+      "vertices": 490,
+      "triangles": 976,
+      "bounds": [
+        [
+          -0.12223449349403381,
+          -0.060896456241607666,
+          0.004623126238584518
+        ],
+        [
+          0.13229961693286896,
+          0.07616575807332993,
+          0.014510994777083397
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Red moulded tool case and latches"
+      ],
+      "properties": {
+        "assetId": "photo_loose_test_leads",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Insulated resting probe",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.17223607003688812,
+          -0.06947213411331177,
+          0.0019999982323497534
+        ],
+        [
+          -0.1177639290690422,
+          -0.03552786260843277,
+          0.012000001966953278
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Red moulded tool case and latches"
+      ],
+      "properties": {
+        "part": "Insulated resting probe",
+        "assetId": "photo_loose_test_leads",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Probe metal point",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.1906260997056961,
+          -0.07625219970941544,
+          0.005599998403340578
+        ],
+        [
+          -0.16937391459941864,
+          -0.06374780088663101,
+          0.00840000156313181
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Brushed silver metal"
+      ],
+      "properties": {
+        "part": "Probe metal point",
+        "assetId": "photo_loose_test_leads",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Disconnected plug",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.05400000140070915,
+          0.01099999900907278,
+          0.007999999448657036
+        ],
+        [
+          -0.04600000008940697,
+          0.02500000037252903,
+          0.01600000075995922
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Red moulded tool case and latches"
+      ],
+      "properties": {
+        "part": "Disconnected plug",
+        "assetId": "photo_loose_test_leads",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Loose unconnected test lead.001",
+      "vertices": 490,
+      "triangles": 976,
+      "bounds": [
+        [
+          -0.10623449832201004,
+          -0.06089645251631737,
+          0.007623125799000263
+        ],
+        [
+          0.14829963445663452,
+          0.07616577297449112,
+          0.017510995268821716
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark moulded polymer"
+      ],
+      "properties": {
+        "assetId": "photo_loose_test_leads",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Insulated resting probe.001",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.15623608231544495,
+          -0.06947213411331177,
+          0.004999998491257429
+        ],
+        [
+          -0.10176394134759903,
+          -0.03552786260843277,
+          0.015000000596046448
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark moulded polymer"
+      ],
+      "properties": {
+        "part": "Insulated resting probe",
+        "assetId": "photo_loose_test_leads",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Probe metal point.001",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.17462609708309174,
+          -0.07625219970941544,
+          0.00859999842941761
+        ],
+        [
+          -0.15337391197681427,
+          -0.06374780088663101,
+          0.011400001123547554
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Brushed silver metal"
+      ],
+      "properties": {
+        "part": "Probe metal point",
+        "assetId": "photo_loose_test_leads",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Disconnected plug.001",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.03800000250339508,
+          0.01099999900907278,
+          0.01099999900907278
+        ],
+        [
+          -0.030000001192092896,
+          0.02500000037252903,
+          0.01899999938905239
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark moulded polymer"
+      ],
+      "properties": {
+        "part": "Disconnected plug",
+        "assetId": "photo_loose_test_leads",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Loose unconnected test lead.002",
+      "vertices": 490,
+      "triangles": 976,
+      "bounds": [
+        [
+          -0.09023449569940567,
+          -0.060896456241607666,
+          0.010623126290738583
+        ],
+        [
+          0.1642996221780777,
+          0.07616575807332993,
+          0.020510995760560036
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Red moulded tool case and latches"
+      ],
+      "properties": {
+        "assetId": "photo_loose_test_leads",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Insulated resting probe.002",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.14023606479167938,
+          -0.06947213411331177,
+          0.007999999448657036
+        ],
+        [
+          -0.08576393127441406,
+          -0.03552786260843277,
+          0.018000001087784767
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Red moulded tool case and latches"
+      ],
+      "properties": {
+        "part": "Insulated resting probe",
+        "assetId": "photo_loose_test_leads",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Probe metal point.002",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.15862610936164856,
+          -0.07625219970941544,
+          0.011599999852478504
+        ],
+        [
+          -0.1373738944530487,
+          -0.06374780088663101,
+          0.014400000683963299
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Brushed silver metal"
+      ],
+      "properties": {
+        "part": "Probe metal point",
+        "assetId": "photo_loose_test_leads",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Disconnected plug.002",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.02199999988079071,
+          0.01099999900907278,
+          0.013999998569488525
+        ],
+        [
+          -0.013999998569488525,
+          0.02500000037252903,
+          0.02199999988079071
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Red moulded tool case and latches"
+      ],
+      "properties": {
+        "part": "Disconnected plug",
+        "assetId": "photo_loose_test_leads",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Loose unconnected test lead.003",
+      "vertices": 490,
+      "triangles": 976,
+      "bounds": [
+        [
+          -0.0742344930768013,
+          -0.060896456241607666,
+          0.013623124919831753
+        ],
+        [
+          0.18029963970184326,
+          0.07616575807332993,
+          0.023510994389653206
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark moulded polymer"
+      ],
+      "properties": {
+        "assetId": "photo_loose_test_leads",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Insulated resting probe.003",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.12423606961965561,
+          -0.06947213411331177,
+          0.01099999900907278
+        ],
+        [
+          -0.06976393610239029,
+          -0.03552786260843277,
+          0.021000003442168236
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark moulded polymer"
+      ],
+      "properties": {
+        "part": "Insulated resting probe",
+        "assetId": "photo_loose_test_leads",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Probe metal point.003",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.1426261067390442,
+          -0.07625219970941544,
+          0.014600000344216824
+        ],
+        [
+          -0.12137389928102493,
+          -0.06374780088663101,
+          0.017400002107024193
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Brushed silver metal"
+      ],
+      "properties": {
+        "part": "Probe metal point",
+        "assetId": "photo_loose_test_leads",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Disconnected plug.003",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.006000000052154064,
+          0.01099999900907278,
+          0.016999999061226845
+        ],
+        [
+          0.0020000000949949026,
+          0.02500000037252903,
+          0.02500000037252903
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark moulded polymer"
+      ],
+      "properties": {
+        "part": "Disconnected plug",
+        "assetId": "photo_loose_test_leads",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    }
+  ],
+  "bounds": [
+    [
+      -0.1906260997056961,
+      -0.07625219970941544,
+      0.0019999982323497534
+    ],
+    [
+      0.18029963970184326,
+      0.07616577297449112,
+      0.02500000037252903
+    ]
+  ],
+  "triangles": 5776,
+  "units": "METRIC",
+  "scaleLength": 1.0
+}

@@ -1,0 +1,4780 @@
+{
+  "blender": "4.3.2",
+  "objects": [
+    {
+      "name": "Closed metal long chassis",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.1665000021457672,
+          0.006999999284744263,
+          0.006999999284744263
+        ],
+        [
+          0.1665000021457672,
+          0.10899999737739563,
+          0.23600000143051147
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "Closed metal long chassis",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Front gasket",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.16899999976158142,
+          -0.0010000001639127731,
+          0.0034999996423721313
+        ],
+        [
+          0.16899999976158142,
+          0.010999999940395355,
+          0.2395000010728836
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Charcoal impact guard"
+      ],
+      "properties": {
+        "part": "Front gasket",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Distinct front fascia",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.16349999606609344,
+          -0.002699999837204814,
+          0.009000003337860107
+        ],
+        [
+          0.16349999606609344,
+          0.002300000051036477,
+          0.23399999737739563
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "Distinct front fascia",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Rubber foot",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.12240000069141388,
+          0.0068800002336502075,
+          0.0
+        ],
+        [
+          -0.09839999675750732,
+          0.03488000109791756,
+          0.00800000037997961
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Rubber foot",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Rubber foot.001",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.12240000069141388,
+          0.08111999928951263,
+          0.0
+        ],
+        [
+          -0.09839999675750732,
+          0.10911999642848969,
+          0.00800000037997961
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Rubber foot",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Rubber foot.002",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.09839999675750732,
+          0.0068800002336502075,
+          0.0
+        ],
+        [
+          0.12240000069141388,
+          0.03488000109791756,
+          0.00800000037997961
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Rubber foot",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Rubber foot.003",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.09839999675750732,
+          0.08111999928951263,
+          0.0
+        ],
+        [
+          0.12240000069141388,
+          0.10911999642848969,
+          0.00800000037997961
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Rubber foot",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Screen recessed surround",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.16249999403953552,
+          -0.004000000189989805,
+          0.044499993324279785
+        ],
+        [
+          0.08250000327825546,
+          0.001999999862164259,
+          0.22949999570846558
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Screen recessed surround",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Blank unlit screen",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.15850000083446503,
+          -0.005499999970197678,
+          0.04849999397993088
+        ],
+        [
+          0.07850000262260437,
+          -0.0034999996423721313,
+          0.2254999876022339
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Neutral unlit glass no content"
+      ],
+      "properties": {
+        "part": "Blank unlit screen",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary collar",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.09504000097513199,
+          -0.004500000271946192,
+          0.20504000782966614
+        ],
+        [
+          0.11296000331640244,
+          -0.0014999996637925506,
+          0.2229599952697754
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary collar",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary raised knob",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.09600000083446503,
+          -0.01100000087171793,
+          0.20600000023841858
+        ],
+        [
+          0.1120000034570694,
+          -0.004999999888241291,
+          0.22200000286102295
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary raised knob",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.11133359372615814,
+          -0.011339999735355377,
+          0.21359999477863312
+        ],
+        [
+          0.1120264083147049,
+          -0.006659999489784241,
+          0.2144000083208084
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.001",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.11074898391962051,
+          -0.011339999735355377,
+          0.21653899550437927
+        ],
+        [
+          0.11144179850816727,
+          -0.006659999489784241,
+          0.21733900904655457
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.002",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.10908417403697968,
+          -0.011339999735355377,
+          0.21903057396411896
+        ],
+        [
+          0.10977698862552643,
+          -0.006659999489784241,
+          0.21983058750629425
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.003",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.10659260302782059,
+          -0.011339999735355377,
+          0.2206953912973404
+        ],
+        [
+          0.10728541761636734,
+          -0.006659999489784241,
+          0.22149540483951569
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.004",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.10365359485149384,
+          -0.011339999735355377,
+          0.22127999365329742
+        ],
+        [
+          0.10434640944004059,
+          -0.006659999489784241,
+          0.22208000719547272
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.005",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.10071458667516708,
+          -0.011339999735355377,
+          0.2206953912973404
+        ],
+        [
+          0.10140740126371384,
+          -0.006659999489784241,
+          0.22149540483951569
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.006",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.098223015666008,
+          -0.011339999735355377,
+          0.21903057396411896
+        ],
+        [
+          0.09891583025455475,
+          -0.006659999489784241,
+          0.21983058750629425
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.007",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.09655819833278656,
+          -0.011339999735355377,
+          0.21653899550437927
+        ],
+        [
+          0.09725101292133331,
+          -0.006659999489784241,
+          0.21733900904655457
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.008",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.09597359597682953,
+          -0.011339999735355377,
+          0.21359999477863312
+        ],
+        [
+          0.09666641056537628,
+          -0.006659999489784241,
+          0.2144000083208084
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.009",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.09655819833278656,
+          -0.011339999735355377,
+          0.21066097915172577
+        ],
+        [
+          0.09725101292133331,
+          -0.006659999489784241,
+          0.21146099269390106
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.010",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.098223015666008,
+          -0.011339999735355377,
+          0.20816941559314728
+        ],
+        [
+          0.09891583025455475,
+          -0.006659999489784241,
+          0.20896942913532257
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.011",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.10071458667516708,
+          -0.011339999735355377,
+          0.20650459825992584
+        ],
+        [
+          0.10140740126371384,
+          -0.006659999489784241,
+          0.20730461180210114
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.012",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.10365359485149384,
+          -0.011339999735355377,
+          0.2059199959039688
+        ],
+        [
+          0.10434640944004059,
+          -0.006659999489784241,
+          0.2067200094461441
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.013",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.10659260302782059,
+          -0.011339999735355377,
+          0.20650459825992584
+        ],
+        [
+          0.10728541761636734,
+          -0.006659999489784241,
+          0.20730461180210114
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.014",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.10908417403697968,
+          -0.011339999735355377,
+          0.20816941559314728
+        ],
+        [
+          0.10977698862552643,
+          -0.006659999489784241,
+          0.20896942913532257
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.015",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.11074898391962051,
+          -0.011339999735355377,
+          0.21066097915172577
+        ],
+        [
+          0.11144179850816727,
+          -0.006659999489784241,
+          0.21146099269390106
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary collar.001",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.1260400116443634,
+          -0.004500000271946192,
+          0.20504000782966614
+        ],
+        [
+          0.14395999908447266,
+          -0.0014999996637925506,
+          0.2229599952697754
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary collar",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary raised knob.001",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.12700000405311584,
+          -0.01100000087171793,
+          0.20600000023841858
+        ],
+        [
+          0.14300000667572021,
+          -0.004999999888241291,
+          0.22200000286102295
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary raised knob",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.016",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14233359694480896,
+          -0.011339999735355377,
+          0.21359999477863312
+        ],
+        [
+          0.1430264115333557,
+          -0.006659999489784241,
+          0.2144000083208084
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.017",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14174899458885193,
+          -0.011339999735355377,
+          0.21653899550437927
+        ],
+        [
+          0.14244180917739868,
+          -0.006659999489784241,
+          0.21733900904655457
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.018",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1400841772556305,
+          -0.011339999735355377,
+          0.21903057396411896
+        ],
+        [
+          0.14077699184417725,
+          -0.006659999489784241,
+          0.21983058750629425
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.019",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1375925987958908,
+          -0.011339999735355377,
+          0.2206953912973404
+        ],
+        [
+          0.13828541338443756,
+          -0.006659999489784241,
+          0.22149540483951569
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.020",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13465359807014465,
+          -0.011339999735355377,
+          0.22127999365329742
+        ],
+        [
+          0.1353464126586914,
+          -0.006659999489784241,
+          0.22208000719547272
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.021",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1317145824432373,
+          -0.011339999735355377,
+          0.2206953912973404
+        ],
+        [
+          0.13240739703178406,
+          -0.006659999489784241,
+          0.22149540483951569
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.022",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1292230188846588,
+          -0.011339999735355377,
+          0.21903057396411896
+        ],
+        [
+          0.12991583347320557,
+          -0.006659999489784241,
+          0.21983058750629425
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.023",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.12755820155143738,
+          -0.011339999735355377,
+          0.21653899550437927
+        ],
+        [
+          0.12825101613998413,
+          -0.006659999489784241,
+          0.21733900904655457
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.024",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.12697359919548035,
+          -0.011339999735355377,
+          0.21359999477863312
+        ],
+        [
+          0.1276664137840271,
+          -0.006659999489784241,
+          0.2144000083208084
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.025",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.12755820155143738,
+          -0.011339999735355377,
+          0.21066097915172577
+        ],
+        [
+          0.12825101613998413,
+          -0.006659999489784241,
+          0.21146099269390106
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.026",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1292230188846588,
+          -0.011339999735355377,
+          0.20816941559314728
+        ],
+        [
+          0.12991583347320557,
+          -0.006659999489784241,
+          0.20896942913532257
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.027",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1317145824432373,
+          -0.011339999735355377,
+          0.20650459825992584
+        ],
+        [
+          0.13240739703178406,
+          -0.006659999489784241,
+          0.20730461180210114
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.028",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13465359807014465,
+          -0.011339999735355377,
+          0.2059199959039688
+        ],
+        [
+          0.1353464126586914,
+          -0.006659999489784241,
+          0.2067200094461441
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.029",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1375925987958908,
+          -0.011339999735355377,
+          0.20650459825992584
+        ],
+        [
+          0.13828541338443756,
+          -0.006659999489784241,
+          0.20730461180210114
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.030",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1400841772556305,
+          -0.011339999735355377,
+          0.20816941559314728
+        ],
+        [
+          0.14077699184417725,
+          -0.006659999489784241,
+          0.20896942913532257
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.031",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14174899458885193,
+          -0.011339999735355377,
+          0.21066097915172577
+        ],
+        [
+          0.14244180917739868,
+          -0.006659999489784241,
+          0.21146099269390106
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary collar.002",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.09504000097513199,
+          -0.004500000271946192,
+          0.17504000663757324
+        ],
+        [
+          0.11296000331640244,
+          -0.0014999996637925506,
+          0.1929599940776825
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary collar",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary raised knob.002",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.09600000083446503,
+          -0.01100000087171793,
+          0.17599999904632568
+        ],
+        [
+          0.1120000034570694,
+          -0.004999999888241291,
+          0.19200000166893005
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary raised knob",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.032",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.11133359372615814,
+          -0.011339999735355377,
+          0.18359999358654022
+        ],
+        [
+          0.1120264083147049,
+          -0.006659999489784241,
+          0.18440000712871552
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.033",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.11074898391962051,
+          -0.011339999735355377,
+          0.18653900921344757
+        ],
+        [
+          0.11144179850816727,
+          -0.006659999489784241,
+          0.18733902275562286
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.034",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.10908417403697968,
+          -0.011339999735355377,
+          0.18903057277202606
+        ],
+        [
+          0.10977698862552643,
+          -0.006659999489784241,
+          0.18983058631420135
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.035",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.10659260302782059,
+          -0.011339999735355377,
+          0.1906953901052475
+        ],
+        [
+          0.10728541761636734,
+          -0.006659999489784241,
+          0.1914954036474228
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.036",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.10365359485149384,
+          -0.011339999735355377,
+          0.19127999246120453
+        ],
+        [
+          0.10434640944004059,
+          -0.006659999489784241,
+          0.19208000600337982
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.037",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.10071458667516708,
+          -0.011339999735355377,
+          0.1906953901052475
+        ],
+        [
+          0.10140740126371384,
+          -0.006659999489784241,
+          0.1914954036474228
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.038",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.098223015666008,
+          -0.011339999735355377,
+          0.18903057277202606
+        ],
+        [
+          0.09891583025455475,
+          -0.006659999489784241,
+          0.18983058631420135
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.039",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.09655819833278656,
+          -0.011339999735355377,
+          0.18653900921344757
+        ],
+        [
+          0.09725101292133331,
+          -0.006659999489784241,
+          0.18733902275562286
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.040",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.09597359597682953,
+          -0.011339999735355377,
+          0.18359999358654022
+        ],
+        [
+          0.09666641056537628,
+          -0.006659999489784241,
+          0.18440000712871552
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.041",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.09655819833278656,
+          -0.011339999735355377,
+          0.18066097795963287
+        ],
+        [
+          0.09725101292133331,
+          -0.006659999489784241,
+          0.18146099150180817
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.042",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.098223015666008,
+          -0.011339999735355377,
+          0.17816941440105438
+        ],
+        [
+          0.09891583025455475,
+          -0.006659999489784241,
+          0.17896942794322968
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.043",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.10071458667516708,
+          -0.011339999735355377,
+          0.17650459706783295
+        ],
+        [
+          0.10140740126371384,
+          -0.006659999489784241,
+          0.17730461061000824
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.044",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.10365359485149384,
+          -0.011339999735355377,
+          0.17591999471187592
+        ],
+        [
+          0.10434640944004059,
+          -0.006659999489784241,
+          0.1767200082540512
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.045",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.10659260302782059,
+          -0.011339999735355377,
+          0.17650459706783295
+        ],
+        [
+          0.10728541761636734,
+          -0.006659999489784241,
+          0.17730461061000824
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.046",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.10908417403697968,
+          -0.011339999735355377,
+          0.17816941440105438
+        ],
+        [
+          0.10977698862552643,
+          -0.006659999489784241,
+          0.17896942794322968
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.047",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.11074898391962051,
+          -0.011339999735355377,
+          0.18066097795963287
+        ],
+        [
+          0.11144179850816727,
+          -0.006659999489784241,
+          0.18146099150180817
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary collar.003",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.1260400116443634,
+          -0.004500000271946192,
+          0.17504000663757324
+        ],
+        [
+          0.14395999908447266,
+          -0.0014999996637925506,
+          0.1929599940776825
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary collar",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary raised knob.003",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.12700000405311584,
+          -0.01100000087171793,
+          0.17599999904632568
+        ],
+        [
+          0.14300000667572021,
+          -0.004999999888241291,
+          0.19200000166893005
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary raised knob",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.048",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14233359694480896,
+          -0.011339999735355377,
+          0.18359999358654022
+        ],
+        [
+          0.1430264115333557,
+          -0.006659999489784241,
+          0.18440000712871552
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.049",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14174899458885193,
+          -0.011339999735355377,
+          0.18653900921344757
+        ],
+        [
+          0.14244180917739868,
+          -0.006659999489784241,
+          0.18733902275562286
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.050",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1400841772556305,
+          -0.011339999735355377,
+          0.18903057277202606
+        ],
+        [
+          0.14077699184417725,
+          -0.006659999489784241,
+          0.18983058631420135
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.051",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1375925987958908,
+          -0.011339999735355377,
+          0.1906953901052475
+        ],
+        [
+          0.13828541338443756,
+          -0.006659999489784241,
+          0.1914954036474228
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.052",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13465359807014465,
+          -0.011339999735355377,
+          0.19127999246120453
+        ],
+        [
+          0.1353464126586914,
+          -0.006659999489784241,
+          0.19208000600337982
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.053",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1317145824432373,
+          -0.011339999735355377,
+          0.1906953901052475
+        ],
+        [
+          0.13240739703178406,
+          -0.006659999489784241,
+          0.1914954036474228
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.054",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1292230188846588,
+          -0.011339999735355377,
+          0.18903057277202606
+        ],
+        [
+          0.12991583347320557,
+          -0.006659999489784241,
+          0.18983058631420135
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.055",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.12755820155143738,
+          -0.011339999735355377,
+          0.18653900921344757
+        ],
+        [
+          0.12825101613998413,
+          -0.006659999489784241,
+          0.18733902275562286
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.056",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.12697359919548035,
+          -0.011339999735355377,
+          0.18359999358654022
+        ],
+        [
+          0.1276664137840271,
+          -0.006659999489784241,
+          0.18440000712871552
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.057",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.12755820155143738,
+          -0.011339999735355377,
+          0.18066097795963287
+        ],
+        [
+          0.12825101613998413,
+          -0.006659999489784241,
+          0.18146099150180817
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.058",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1292230188846588,
+          -0.011339999735355377,
+          0.17816941440105438
+        ],
+        [
+          0.12991583347320557,
+          -0.006659999489784241,
+          0.17896942794322968
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.059",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1317145824432373,
+          -0.011339999735355377,
+          0.17650459706783295
+        ],
+        [
+          0.13240739703178406,
+          -0.006659999489784241,
+          0.17730461061000824
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.060",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13465359807014465,
+          -0.011339999735355377,
+          0.17591999471187592
+        ],
+        [
+          0.1353464126586914,
+          -0.006659999489784241,
+          0.1767200082540512
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.061",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1375925987958908,
+          -0.011339999735355377,
+          0.17650459706783295
+        ],
+        [
+          0.13828541338443756,
+          -0.006659999489784241,
+          0.17730461061000824
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.062",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1400841772556305,
+          -0.011339999735355377,
+          0.17816941440105438
+        ],
+        [
+          0.14077699184417725,
+          -0.006659999489784241,
+          0.17896942794322968
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 upper paired rotary grip scallop.063",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14174899458885193,
+          -0.011339999735355377,
+          0.18066097795963287
+        ],
+        [
+          0.14244180917739868,
+          -0.006659999489784241,
+          0.18146099150180817
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 upper paired rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 vertical key columns",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.0949999988079071,
+          -0.006000000052154064,
+          0.15299999713897705
+        ],
+        [
+          0.10500000417232513,
+          -0.0020000000949949026,
+          0.15900000929832458
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "C1 vertical key columns",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 vertical key columns.001",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.11299999803304672,
+          -0.006000000052154064,
+          0.15299999713897705
+        ],
+        [
+          0.12300000339746475,
+          -0.0020000000949949026,
+          0.15900000929832458
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "C1 vertical key columns",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 vertical key columns.002",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.0949999988079071,
+          -0.006000000052154064,
+          0.1379999965429306
+        ],
+        [
+          0.10500000417232513,
+          -0.0020000000949949026,
+          0.14400000870227814
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "C1 vertical key columns",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 vertical key columns.003",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.11299999803304672,
+          -0.006000000052154064,
+          0.1379999965429306
+        ],
+        [
+          0.12300000339746475,
+          -0.0020000000949949026,
+          0.14400000870227814
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "C1 vertical key columns",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 vertical key columns.004",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.0949999988079071,
+          -0.006000000052154064,
+          0.12300000339746475
+        ],
+        [
+          0.10500000417232513,
+          -0.0020000000949949026,
+          0.1290000081062317
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "C1 vertical key columns",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 vertical key columns.005",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.11299999803304672,
+          -0.006000000052154064,
+          0.12300000339746475
+        ],
+        [
+          0.12300000339746475,
+          -0.0020000000949949026,
+          0.1290000081062317
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "C1 vertical key columns",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 vertical key columns.006",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.0949999988079071,
+          -0.006000000052154064,
+          0.1080000028014183
+        ],
+        [
+          0.10500000417232513,
+          -0.0020000000949949026,
+          0.11400000005960464
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "C1 vertical key columns",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 vertical key columns.007",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.11299999803304672,
+          -0.006000000052154064,
+          0.1080000028014183
+        ],
+        [
+          0.12300000339746475,
+          -0.0020000000949949026,
+          0.11400000005960464
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "C1 vertical key columns",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 vertical key columns.008",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.0949999988079071,
+          -0.006000000052154064,
+          0.09300000220537186
+        ],
+        [
+          0.10500000417232513,
+          -0.0020000000949949026,
+          0.0989999994635582
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "C1 vertical key columns",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 vertical key columns.009",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.11299999803304672,
+          -0.006000000052154064,
+          0.09300000220537186
+        ],
+        [
+          0.12300000339746475,
+          -0.0020000000949949026,
+          0.0989999994635582
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "C1 vertical key columns",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary collar",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.1334800124168396,
+          -0.004500000271946192,
+          0.1374800056219101
+        ],
+        [
+          0.15252000093460083,
+          -0.0014999995473772287,
+          0.15651999413967133
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary collar",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary raised knob",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.13450001180171967,
+          -0.011500000953674316,
+          0.13850000500679016
+        ],
+        [
+          0.15150000154972076,
+          -0.0044999998062849045,
+          0.15549999475479126
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary raised knob",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1507919430732727,
+          -0.01172999944537878,
+          0.14657500386238098
+        ],
+        [
+          0.15152806043624878,
+          -0.00626999931409955,
+          0.14742499589920044
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.001",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.15017080307006836,
+          -0.01172999944537878,
+          0.1496977061033249
+        ],
+        [
+          0.15090692043304443,
+          -0.00626999931409955,
+          0.15054769814014435
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.002",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14840193092823029,
+          -0.01172999944537878,
+          0.15234500169754028
+        ],
+        [
+          0.14913804829120636,
+          -0.00626999931409955,
+          0.15319499373435974
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.003",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1457546353340149,
+          -0.01172999944537878,
+          0.15411385893821716
+        ],
+        [
+          0.14649075269699097,
+          -0.00626999931409955,
+          0.15496385097503662
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.004",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14263194799423218,
+          -0.01172999944537878,
+          0.1547349989414215
+        ],
+        [
+          0.14336806535720825,
+          -0.00626999931409955,
+          0.15558499097824097
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.005",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13950924575328827,
+          -0.01172999944537878,
+          0.15411385893821716
+        ],
+        [
+          0.14024536311626434,
+          -0.00626999931409955,
+          0.15496385097503662
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.006",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13686195015907288,
+          -0.01172999944537878,
+          0.15234500169754028
+        ],
+        [
+          0.13759806752204895,
+          -0.00626999931409955,
+          0.15319499373435974
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.007",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1350930780172348,
+          -0.01172999944537878,
+          0.1496977061033249
+        ],
+        [
+          0.13582919538021088,
+          -0.00626999931409955,
+          0.15054769814014435
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.008",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13447193801403046,
+          -0.01172999944537878,
+          0.14657500386238098
+        ],
+        [
+          0.13520805537700653,
+          -0.00626999931409955,
+          0.14742499589920044
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.009",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1350930780172348,
+          -0.01172999944537878,
+          0.14345230162143707
+        ],
+        [
+          0.13582919538021088,
+          -0.00626999931409955,
+          0.14430229365825653
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.010",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13686195015907288,
+          -0.01172999944537878,
+          0.14080500602722168
+        ],
+        [
+          0.13759806752204895,
+          -0.00626999931409955,
+          0.14165499806404114
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.011",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13950924575328827,
+          -0.01172999944537878,
+          0.1390361487865448
+        ],
+        [
+          0.14024536311626434,
+          -0.00626999931409955,
+          0.13988614082336426
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.012",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14263194799423218,
+          -0.01172999944537878,
+          0.13841500878334045
+        ],
+        [
+          0.14336806535720825,
+          -0.00626999931409955,
+          0.1392650008201599
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.013",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1457546353340149,
+          -0.01172999944537878,
+          0.1390361487865448
+        ],
+        [
+          0.14649075269699097,
+          -0.00626999931409955,
+          0.13988614082336426
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.014",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14840193092823029,
+          -0.01172999944537878,
+          0.14080500602722168
+        ],
+        [
+          0.14913804829120636,
+          -0.00626999931409955,
+          0.14165499806404114
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.015",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.15017080307006836,
+          -0.01172999944537878,
+          0.14345230162143707
+        ],
+        [
+          0.15090692043304443,
+          -0.00626999931409955,
+          0.14430229365825653
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary collar.001",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.1334800124168396,
+          -0.004500000271946192,
+          0.10248000174760818
+        ],
+        [
+          0.15252000093460083,
+          -0.0014999995473772287,
+          0.12152000516653061
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary collar",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary raised knob.001",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.13450001180171967,
+          -0.011500000953674316,
+          0.10350000113248825
+        ],
+        [
+          0.15150000154972076,
+          -0.0044999998062849045,
+          0.12050000578165054
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary raised knob",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.016",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1507919430732727,
+          -0.01172999944537878,
+          0.11157499998807907
+        ],
+        [
+          0.15152806043624878,
+          -0.00626999931409955,
+          0.11242500692605972
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.017",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.15017080307006836,
+          -0.01172999944537878,
+          0.11469769477844238
+        ],
+        [
+          0.15090692043304443,
+          -0.00626999931409955,
+          0.11554770171642303
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.018",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14840193092823029,
+          -0.01172999944537878,
+          0.11734499037265778
+        ],
+        [
+          0.14913804829120636,
+          -0.00626999931409955,
+          0.11819499731063843
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.019",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1457546353340149,
+          -0.01172999944537878,
+          0.11911385506391525
+        ],
+        [
+          0.14649075269699097,
+          -0.00626999931409955,
+          0.1199638620018959
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.020",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14263194799423218,
+          -0.01172999944537878,
+          0.1197349950671196
+        ],
+        [
+          0.14336806535720825,
+          -0.00626999931409955,
+          0.12058500200510025
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.021",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13950924575328827,
+          -0.01172999944537878,
+          0.11911385506391525
+        ],
+        [
+          0.14024536311626434,
+          -0.00626999931409955,
+          0.1199638620018959
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.022",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13686195015907288,
+          -0.01172999944537878,
+          0.11734499037265778
+        ],
+        [
+          0.13759806752204895,
+          -0.00626999931409955,
+          0.11819499731063843
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.023",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1350930780172348,
+          -0.01172999944537878,
+          0.11469769477844238
+        ],
+        [
+          0.13582919538021088,
+          -0.00626999931409955,
+          0.11554770171642303
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.024",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13447193801403046,
+          -0.01172999944537878,
+          0.11157499998807907
+        ],
+        [
+          0.13520805537700653,
+          -0.00626999931409955,
+          0.11242500692605972
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.025",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1350930780172348,
+          -0.01172999944537878,
+          0.10845229774713516
+        ],
+        [
+          0.13582919538021088,
+          -0.00626999931409955,
+          0.10930230468511581
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.026",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13686195015907288,
+          -0.01172999944537878,
+          0.10580500215291977
+        ],
+        [
+          0.13759806752204895,
+          -0.00626999931409955,
+          0.10665500909090042
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.027",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13950924575328827,
+          -0.01172999944537878,
+          0.10403613746166229
+        ],
+        [
+          0.14024536311626434,
+          -0.00626999931409955,
+          0.10488614439964294
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.028",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14263194799423218,
+          -0.01172999944537878,
+          0.10341499745845795
+        ],
+        [
+          0.14336806535720825,
+          -0.00626999931409955,
+          0.1042650043964386
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.029",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1457546353340149,
+          -0.01172999944537878,
+          0.10403613746166229
+        ],
+        [
+          0.14649075269699097,
+          -0.00626999931409955,
+          0.10488614439964294
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.030",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14840193092823029,
+          -0.01172999944537878,
+          0.10580500215291977
+        ],
+        [
+          0.14913804829120636,
+          -0.00626999931409955,
+          0.10665500909090042
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.031",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.15017080307006836,
+          -0.01172999944537878,
+          0.10845229774713516
+        ],
+        [
+          0.15090692043304443,
+          -0.00626999931409955,
+          0.10930230468511581
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary collar.002",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.1334800124168396,
+          -0.004500000271946192,
+          0.06647999584674835
+        ],
+        [
+          0.15252000093460083,
+          -0.0014999995473772287,
+          0.08551999926567078
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary collar",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary raised knob.002",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.13450001180171967,
+          -0.011500000953674316,
+          0.06749999523162842
+        ],
+        [
+          0.15150000154972076,
+          -0.0044999998062849045,
+          0.08449999988079071
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary raised knob",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.032",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1507919430732727,
+          -0.01172999944537878,
+          0.07557499408721924
+        ],
+        [
+          0.15152806043624878,
+          -0.00626999931409955,
+          0.07642500102519989
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.033",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.15017080307006836,
+          -0.01172999944537878,
+          0.07869769632816315
+        ],
+        [
+          0.15090692043304443,
+          -0.00626999931409955,
+          0.0795477032661438
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.034",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14840193092823029,
+          -0.01172999944537878,
+          0.08134498447179794
+        ],
+        [
+          0.14913804829120636,
+          -0.00626999931409955,
+          0.0821949914097786
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.035",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1457546353340149,
+          -0.01172999944537878,
+          0.08311385661363602
+        ],
+        [
+          0.14649075269699097,
+          -0.00626999931409955,
+          0.08396386355161667
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.036",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14263194799423218,
+          -0.01172999944537878,
+          0.08373499661684036
+        ],
+        [
+          0.14336806535720825,
+          -0.00626999931409955,
+          0.08458500355482101
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.037",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13950924575328827,
+          -0.01172999944537878,
+          0.08311385661363602
+        ],
+        [
+          0.14024536311626434,
+          -0.00626999931409955,
+          0.08396386355161667
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.038",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13686195015907288,
+          -0.01172999944537878,
+          0.08134498447179794
+        ],
+        [
+          0.13759806752204895,
+          -0.00626999931409955,
+          0.0821949914097786
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.039",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1350930780172348,
+          -0.01172999944537878,
+          0.07869769632816315
+        ],
+        [
+          0.13582919538021088,
+          -0.00626999931409955,
+          0.0795477032661438
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.040",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13447193801403046,
+          -0.01172999944537878,
+          0.07557499408721924
+        ],
+        [
+          0.13520805537700653,
+          -0.00626999931409955,
+          0.07642500102519989
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.041",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1350930780172348,
+          -0.01172999944537878,
+          0.07245229929685593
+        ],
+        [
+          0.13582919538021088,
+          -0.00626999931409955,
+          0.07330230623483658
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.042",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13686195015907288,
+          -0.01172999944537878,
+          0.06980500370264053
+        ],
+        [
+          0.13759806752204895,
+          -0.00626999931409955,
+          0.07065501064062119
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.043",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.13950924575328827,
+          -0.01172999944537878,
+          0.06803613901138306
+        ],
+        [
+          0.14024536311626434,
+          -0.00626999931409955,
+          0.06888614594936371
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.044",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14263194799423218,
+          -0.01172999944537878,
+          0.06741499900817871
+        ],
+        [
+          0.14336806535720825,
+          -0.00626999931409955,
+          0.06826500594615936
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.045",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.1457546353340149,
+          -0.01172999944537878,
+          0.06803613901138306
+        ],
+        [
+          0.14649075269699097,
+          -0.00626999931409955,
+          0.06888614594936371
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.046",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.14840193092823029,
+          -0.01172999944537878,
+          0.06980500370264053
+        ],
+        [
+          0.14913804829120636,
+          -0.00626999931409955,
+          0.07065501064062119
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 right vertical rotary grip scallop.047",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.15017080307006836,
+          -0.01172999944537878,
+          0.07245229929685593
+        ],
+        [
+          0.15090692043304443,
+          -0.00626999931409955,
+          0.07330230623483658
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "C1 right vertical rotary grip scallop",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 visible lower connection silhouette mounting collar",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.03344999998807907,
+          -0.005000000353902578,
+          0.017550000920891762
+        ],
+        [
+          -0.01655000075697899,
+          -0.000999999581836164,
+          0.03445000201463699
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Satin connector metal"
+      ],
+      "properties": {
+        "part": "C1 visible lower connection silhouette mounting collar",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 visible lower connection silhouette outer ring",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.03150000050663948,
+          -0.009000000543892384,
+          0.019500000402331352
+        ],
+        [
+          -0.01850000023841858,
+          -0.0029999997932463884,
+          0.0325000025331974
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Satin connector metal"
+      ],
+      "properties": {
+        "part": "C1 visible lower connection silhouette outer ring",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 visible lower connection silhouette dark opening",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.029160000383853912,
+          -0.009450000710785389,
+          0.02184000052511692
+        ],
+        [
+          -0.020840000361204147,
+          -0.008949999697506428,
+          0.030160000547766685
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 visible lower connection silhouette dark opening",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 visible lower connection silhouette mounting collar.001",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.01655000075697899,
+          -0.005000000353902578,
+          0.017550000920891762
+        ],
+        [
+          0.03344999998807907,
+          -0.000999999581836164,
+          0.03445000201463699
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Satin connector metal"
+      ],
+      "properties": {
+        "part": "C1 visible lower connection silhouette mounting collar",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 visible lower connection silhouette outer ring.001",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.01850000023841858,
+          -0.009000000543892384,
+          0.019500000402331352
+        ],
+        [
+          0.03150000050663948,
+          -0.0029999997932463884,
+          0.0325000025331974
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Satin connector metal"
+      ],
+      "properties": {
+        "part": "C1 visible lower connection silhouette outer ring",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 visible lower connection silhouette dark opening.001",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.020840000361204147,
+          -0.009450000710785389,
+          0.02184000052511692
+        ],
+        [
+          0.029160000383853912,
+          -0.008949999697506428,
+          0.030160000547766685
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 visible lower connection silhouette dark opening",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 visible lower connection silhouette mounting collar.002",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.06655000150203705,
+          -0.005000000353902578,
+          0.017550000920891762
+        ],
+        [
+          0.08345000445842743,
+          -0.000999999581836164,
+          0.03445000201463699
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Satin connector metal"
+      ],
+      "properties": {
+        "part": "C1 visible lower connection silhouette mounting collar",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 visible lower connection silhouette outer ring.002",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.06850000470876694,
+          -0.009000000543892384,
+          0.019500000402331352
+        ],
+        [
+          0.08150000125169754,
+          -0.0029999997932463884,
+          0.0325000025331974
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Satin connector metal"
+      ],
+      "properties": {
+        "part": "C1 visible lower connection silhouette outer ring",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 visible lower connection silhouette dark opening.002",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.07084000110626221,
+          -0.009450000710785389,
+          0.02184000052511692
+        ],
+        [
+          0.07916000485420227,
+          -0.008949999697506428,
+          0.030160000547766685
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 visible lower connection silhouette dark opening",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 visible lower connection silhouette mounting collar.003",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.11654999852180481,
+          -0.005000000353902578,
+          0.017550000920891762
+        ],
+        [
+          0.1334500014781952,
+          -0.000999999581836164,
+          0.03445000201463699
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Satin connector metal"
+      ],
+      "properties": {
+        "part": "C1 visible lower connection silhouette mounting collar",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 visible lower connection silhouette outer ring.003",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.1185000017285347,
+          -0.009000000543892384,
+          0.019500000402331352
+        ],
+        [
+          0.1315000057220459,
+          -0.0029999997932463884,
+          0.0325000025331974
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Satin connector metal"
+      ],
+      "properties": {
+        "part": "C1 visible lower connection silhouette outer ring",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 visible lower connection silhouette dark opening.003",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.12083999812602997,
+          -0.009450000710785389,
+          0.02184000052511692
+        ],
+        [
+          0.12916000187397003,
+          -0.008949999697506428,
+          0.030160000547766685
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 visible lower connection silhouette dark opening",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 red power indicator",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.15299999713897705,
+          -0.006000000052154064,
+          0.023000000044703484
+        ],
+        [
+          -0.14899998903274536,
+          -0.0020000000949949026,
+          0.029000001028180122
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Red terminal insulator"
+      ],
+      "properties": {
+        "part": "C1 red power indicator",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 dark side grip",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.17100000381469727,
+          0.021500002592802048,
+          0.030500002205371857
+        ],
+        [
+          -0.15700000524520874,
+          0.08650000393390656,
+          0.2134999930858612
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Charcoal impact guard"
+      ],
+      "properties": {
+        "part": "C1 dark side grip",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 dark side grip.001",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.15700000524520874,
+          0.021500002592802048,
+          0.030500002205371857
+        ],
+        [
+          0.17100000381469727,
+          0.08650000393390656,
+          0.2134999930858612
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Charcoal impact guard"
+      ],
+      "properties": {
+        "part": "C1 dark side grip",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 top cooling slot",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.10500000417232513,
+          0.04400000348687172,
+          0.23650000989437103
+        ],
+        [
+          -0.0949999988079071,
+          0.08400000631809235,
+          0.23749999701976776
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 top cooling slot",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 top cooling slot.001",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.08500000089406967,
+          0.04400000348687172,
+          0.23650000989437103
+        ],
+        [
+          -0.07499999552965164,
+          0.08400000631809235,
+          0.23749999701976776
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 top cooling slot",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 top cooling slot.002",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.06499999761581421,
+          0.04400000348687172,
+          0.23650000989437103
+        ],
+        [
+          -0.054999999701976776,
+          0.08400000631809235,
+          0.23749999701976776
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 top cooling slot",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 top cooling slot.003",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.044999998062849045,
+          0.04400000348687172,
+          0.23650000989437103
+        ],
+        [
+          -0.03500000014901161,
+          0.08400000631809235,
+          0.23749999701976776
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 top cooling slot",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 top cooling slot.004",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.02499999850988388,
+          0.04400000348687172,
+          0.23650000989437103
+        ],
+        [
+          -0.014999999664723873,
+          0.08400000631809235,
+          0.23749999701976776
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 top cooling slot",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 top cooling slot.005",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.004999999888241291,
+          0.04400000348687172,
+          0.23650000989437103
+        ],
+        [
+          0.004999999888241291,
+          0.08400000631809235,
+          0.23749999701976776
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 top cooling slot",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 top cooling slot.006",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.014999999664723873,
+          0.04400000348687172,
+          0.23650000989437103
+        ],
+        [
+          0.02499999850988388,
+          0.08400000631809235,
+          0.23749999701976776
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 top cooling slot",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 top cooling slot.007",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.03500000014901161,
+          0.04400000348687172,
+          0.23650000989437103
+        ],
+        [
+          0.044999998062849045,
+          0.08400000631809235,
+          0.23749999701976776
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 top cooling slot",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 top cooling slot.008",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.054999999701976776,
+          0.04400000348687172,
+          0.23650000989437103
+        ],
+        [
+          0.06499999761581421,
+          0.08400000631809235,
+          0.23749999701976776
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 top cooling slot",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "C1 top cooling slot.009",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07499999552965164,
+          0.04400000348687172,
+          0.23650000989437103
+        ],
+        [
+          0.08500000089406967,
+          0.08400000631809235,
+          0.23749999701976776
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "C1 top cooling slot",
+        "assetId": "photo_instrument_c1_wide_scope_candidate",
+        "photoPosition": "C1",
+        "evidenceStatus": "Estimated dimensions; oscilloscope category candidate only",
+        "dimensionsUnit": "m"
+      }
+    }
+  ],
+  "bounds": [
+    [
+      -0.17100000381469727,
+      -0.01172999944537878,
+      0.0
+    ],
+    [
+      0.17100000381469727,
+      0.10911999642848969,
+      0.2395000010728836
+    ]
+  ],
+  "triangles": 12312,
+  "units": "METRIC",
+  "scaleLength": 1.0
+}

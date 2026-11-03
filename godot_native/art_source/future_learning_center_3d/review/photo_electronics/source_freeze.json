@@ -1,0 +1,191 @@
+{
+  "status": "frozen",
+  "files": [
+    {
+      "path": "sources/models/photo_electronics/composition.json",
+      "bytes": 18823,
+      "sha256": "9702f6b5c92b14eea60aec43e4984e5deddf59aa04d130a3a167a2b5afbd5643"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_back_shelf_frame/lod0_source.glb",
+      "bytes": 183856,
+      "sha256": "3697dba8750c01a9fc13127b595608eab2ff889d9b081a962a8f3a1310d78575"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_back_shelf_frame/lod1_source.glb",
+      "bytes": 108952,
+      "sha256": "6f6557fed071b0002a3af65bb5137579d9b4fb119c99e6e775401d2c4bba0d8d"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_back_shelf_frame/lod2_source.glb",
+      "bytes": 54916,
+      "sha256": "df5c897c2fead7551a9052f4108887adfa645c689c974bbcbb024153fe11ff64"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_back_shelf_frame/photo_electronics_back_shelf_frame.blend",
+      "bytes": 667256,
+      "sha256": "1c5f924e310682da4d6b7e715197b2f6c6c8293bb4fbf653f3419c2a38dc3524"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_back_shelf_frame/synthetic_grid_tile.png",
+      "bytes": 916,
+      "sha256": "26bc71b2376d99727da2a174045900b6d68e02dc7fa21b653763a9bf28f9e31b"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_back_shelf_frame/synthetic_wood_tile.png",
+      "bytes": 21837,
+      "sha256": "1a8b25ab2b78d713f56ef263dfcbe80aebfae404a33baed6770a5dc8f7853dfd"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_drawer_bench/lod0_source.glb",
+      "bytes": 521712,
+      "sha256": "9ea0b5bd42035a0c5dd04e773a68092fcb1a01efe5d1954cb03a44508a0d3d11"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_drawer_bench/lod1_source.glb",
+      "bytes": 318188,
+      "sha256": "0e40c92816b0f5833fd1ef816b02ca30a58507a745bd6f10058238c4dea71476"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_drawer_bench/lod2_source.glb",
+      "bytes": 171280,
+      "sha256": "0f46606b83293b5d4fefe531b83de90751bc48d0db18f26f43600443027da104"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_drawer_bench/photo_electronics_drawer_bench.blend",
+      "bytes": 1132036,
+      "sha256": "67a9175e6ed46efc2d48eb661f41cc064c44901a35d5b51f13230fb0932beecc"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_drawer_bench/synthetic_grid_tile.png",
+      "bytes": 916,
+      "sha256": "26bc71b2376d99727da2a174045900b6d68e02dc7fa21b653763a9bf28f9e31b"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_drawer_bench/synthetic_wood_tile.png",
+      "bytes": 21837,
+      "sha256": "1a8b25ab2b78d713f56ef263dfcbe80aebfae404a33baed6770a5dc8f7853dfd"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_green_cutting_mat/lod0_source.glb",
+      "bytes": 19324,
+      "sha256": "05c4d5865c10d04de31ee1435394558b30353ba41c9ed8b55ff904eb613e78c5"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_green_cutting_mat/lod1_source.glb",
+      "bytes": 12120,
+      "sha256": "f2173e4090e0a0b5ca7190b668a0b4741b4ff04b11e0ff51d70534305d25e54e"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_green_cutting_mat/lod2_source.glb",
+      "bytes": 6928,
+      "sha256": "cb5ae4f1b1f02d0ad45a8f2dc181c82cb85f18571101e9b62eea627d73d8fb37"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_green_cutting_mat/photo_electronics_green_cutting_mat.blend",
+      "bytes": 474252,
+      "sha256": "cb0541757e73682cc2f51707d2a1c3712739175d862c49a41e2e0aaa62566a1c"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_green_cutting_mat/synthetic_grid_tile.png",
+      "bytes": 916,
+      "sha256": "26bc71b2376d99727da2a174045900b6d68e02dc7fa21b653763a9bf28f9e31b"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_green_cutting_mat/synthetic_wood_tile.png",
+      "bytes": 21837,
+      "sha256": "1a8b25ab2b78d713f56ef263dfcbe80aebfae404a33baed6770a5dc8f7853dfd"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_open_bin/lod0_source.glb",
+      "bytes": 119276,
+      "sha256": "d1c6e2368c5abc4dd4b7feb5509aeb488614146d1b8b270b8b9ed873839d84d1"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_open_bin/lod1_source.glb",
+      "bytes": 69228,
+      "sha256": "35115dd9fcdea740ad39ab6628d240ad4e7939e62b4c282fd852214ed257f231"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_open_bin/lod2_source.glb",
+      "bytes": 25340,
+      "sha256": "1b9379afd9a5efadee252c66c97e918ca0e8dda2f747be36d9e7a7e28dac85b3"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_open_bin/photo_electronics_open_bin.blend",
+      "bytes": 588420,
+      "sha256": "5ac80494c2d4c5602f78e956b6d9e20b119a72206e2493da6652bd586ab9691f"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_open_bin/synthetic_grid_tile.png",
+      "bytes": 916,
+      "sha256": "26bc71b2376d99727da2a174045900b6d68e02dc7fa21b653763a9bf28f9e31b"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_open_bin/synthetic_wood_tile.png",
+      "bytes": 21837,
+      "sha256": "1a8b25ab2b78d713f56ef263dfcbe80aebfae404a33baed6770a5dc8f7853dfd"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_tall_instrument_shell/lod0_source.glb",
+      "bytes": 407960,
+      "sha256": "6163cd13bda8ad8f87669879c8d7085aae1e91f7bcdd0a522b158a039705cb31"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_tall_instrument_shell/lod1_source.glb",
+      "bytes": 244760,
+      "sha256": "8148336dd5b0829c0469283e31e27aa9ef91b2c2151de43020fb1272af233fa3"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_tall_instrument_shell/lod2_source.glb",
+      "bytes": 100604,
+      "sha256": "fe86be81686d5ac9a993ad665bc12776ccb4d4a7ab36fa5e89be8414716b6b2c"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_tall_instrument_shell/photo_electronics_tall_instrument_shell.blend",
+      "bytes": 1029908,
+      "sha256": "bb756231822661d0758f245d2a986202060bc3b916a9145dc436ac05738ff226"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_tall_instrument_shell/synthetic_grid_tile.png",
+      "bytes": 916,
+      "sha256": "26bc71b2376d99727da2a174045900b6d68e02dc7fa21b653763a9bf28f9e31b"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_tall_instrument_shell/synthetic_wood_tile.png",
+      "bytes": 21837,
+      "sha256": "1a8b25ab2b78d713f56ef263dfcbe80aebfae404a33baed6770a5dc8f7853dfd"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_wide_instrument_shell/lod0_source.glb",
+      "bytes": 300256,
+      "sha256": "1baf02961cc75b774029234b26868277bc8a554df5955826934064d21e33dc59"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_wide_instrument_shell/lod1_source.glb",
+      "bytes": 182468,
+      "sha256": "8769ea5cfd654c0a33b2a1b2498dd4225fd22452f98c6b0d54d321584680b80a"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_wide_instrument_shell/lod2_source.glb",
+      "bytes": 68512,
+      "sha256": "441b6e77e517b32bbeb019b940d6998a60511785ec95068bfab5457d0c0bd269"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_wide_instrument_shell/photo_electronics_wide_instrument_shell.blend",
+      "bytes": 899780,
+      "sha256": "4c9aa21f74152fca75bd7811df206e6f830a05f4a38d67458c47c4ad83182240"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_wide_instrument_shell/synthetic_grid_tile.png",
+      "bytes": 916,
+      "sha256": "26bc71b2376d99727da2a174045900b6d68e02dc7fa21b653763a9bf28f9e31b"
+    },
+    {
+      "path": "sources/models/photo_electronics/photo_electronics_wide_instrument_shell/synthetic_wood_tile.png",
+      "bytes": 21837,
+      "sha256": "1a8b25ab2b78d713f56ef263dfcbe80aebfae404a33baed6770a5dc8f7853dfd"
+    }
+  ],
+  "totalBytes": 7862673
+}

@@ -1,0 +1,151 @@
+{
+  "frozen": true,
+  "scope": "7 new sources, 21 GLBs and composition JSON; no original photos",
+  "files": [
+    {
+      "path": "sources/models/photo_lab_contents/composition.json",
+      "sha256": "7088955b9a031f4e7492f106c73dce0d20ce97a222d7ecb6c9afe8791d2307d3"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_closed_thin_device/lab_closed_thin_device.blend",
+      "sha256": "a8f2cdb91a01437aff18684b4a99f48200d8687602b0c4e12b609086fbf565f2"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_closed_thin_device/lod0_source.glb",
+      "sha256": "1d879250a6caee97c17a9ba28f42d59e16290e479a1ca2a9f85bf81ef62a3b14"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_closed_thin_device/lod1_source.glb",
+      "sha256": "a574e709613ba586bf3f5fab1e34191197dfdfc7dc10fc1ba915aa44554065e4"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_closed_thin_device/lod2_source.glb",
+      "sha256": "ff0b22a9a30754a196ff28d4daedc7cf8bd6f41d5f6691b83fcea3522cc23e93"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_closed_thin_device/synthetic_wood.png",
+      "sha256": "50bb37e9d5318b19e82fe36bcfe07c74ad7fc21b45b5893732f61f999b306cad"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_desktop_small_items/lab_desktop_small_items.blend",
+      "sha256": "06ea9ee26f94937c23e54da61033926cdb1be65c0433b8e8e46d1d8991ebef83"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_desktop_small_items/lod0_source.glb",
+      "sha256": "991caa3e1175d26708d9044ee0190b2faee6ab63f01726c4edfe1e5f8af896d9"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_desktop_small_items/lod1_source.glb",
+      "sha256": "c8b1a3bff5259b6ac55976d017899877f2920daa10fe8abf864696bb21654e13"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_desktop_small_items/lod2_source.glb",
+      "sha256": "f482c04f9333102742f47aeec33f109fa90c2d3560c1ededefc98117f9383bee"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_desktop_small_items/synthetic_wood.png",
+      "sha256": "50bb37e9d5318b19e82fe36bcfe07c74ad7fc21b45b5893732f61f999b306cad"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_hard_transport_case/lab_hard_transport_case.blend",
+      "sha256": "d240980de1e05f68bdd28b76649c999f0fa08c72436fb09b243aab664c91b1ca"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_hard_transport_case/lod0_source.glb",
+      "sha256": "690e8af7df14362606180c54f95b78efa7103a212c855b2f586c33da5b8a135d"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_hard_transport_case/lod1_source.glb",
+      "sha256": "97041afa09818bda97fc1a59ad7d0b711dd1cd96bc1a172002397d274160659e"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_hard_transport_case/lod2_source.glb",
+      "sha256": "832ccc5d399f29a023751d5ca3e2f822bd2d5d18052191ff1aaa652682309cce"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_hard_transport_case/synthetic_wood.png",
+      "sha256": "50bb37e9d5318b19e82fe36bcfe07c74ad7fc21b45b5893732f61f999b306cad"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_open_pc_chassis/lab_open_pc_chassis.blend",
+      "sha256": "4df6ec3ce9fc10f42650d83b9ac76dae4b449ac8c238dc3397f812a5df22f38c"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_open_pc_chassis/lod0_source.glb",
+      "sha256": "0a149bbcfbff5c9cc6e81bbd73d6044f5793efc6875c812ad0b89f8e6f16c42b"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_open_pc_chassis/lod1_source.glb",
+      "sha256": "780dae04b5303a72fca2f67d156d9e0a9fb625e7a40f95f82165a1a66413cef8"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_open_pc_chassis/lod2_source.glb",
+      "sha256": "8614ffd0ca0c1a73729f57bc33f330fb37af1021765eeffdd9b92d8862916287"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_open_pc_chassis/synthetic_wood.png",
+      "sha256": "50bb37e9d5318b19e82fe36bcfe07c74ad7fc21b45b5893732f61f999b306cad"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_stepped_monitor/lab_stepped_monitor.blend",
+      "sha256": "342988acca0e38e20f1b07fd0156477cfc16039be4f10f537d99f0dc45642249"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_stepped_monitor/lod0_source.glb",
+      "sha256": "504408573a8e425bc320e02b1e87dcac21be7a5d691264616011cf2b9fd2cf66"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_stepped_monitor/lod1_source.glb",
+      "sha256": "0f38283a80901cc8aa435e0376d7f1a6ff35ec287d96d4ae203de4af78e33f14"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_stepped_monitor/lod2_source.glb",
+      "sha256": "2ecf05334824c9291aedff66ff8b2d4465a8b60a0ff2ab1141c6f47d3943e577"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_stepped_monitor/synthetic_wood.png",
+      "sha256": "50bb37e9d5318b19e82fe36bcfe07c74ad7fc21b45b5893732f61f999b306cad"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_unknown_white_case/lab_unknown_white_case.blend",
+      "sha256": "530701e058fe49fea37a89ced8c0129a8ed3ae5dffe5422fed38ce458f04c408"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_unknown_white_case/lod0_source.glb",
+      "sha256": "25f2a7277710a9be5da16f0f983a03bec925ff4309a4886352365771b3a466f1"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_unknown_white_case/lod1_source.glb",
+      "sha256": "281619c1ff01b50a9f83dd1caf1485b11c09ec2f2f46cc78b96ff211cf38c307"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_unknown_white_case/lod2_source.glb",
+      "sha256": "b7fbab4fe154e29051c6ca648ae9d097d25b4ae8abec7ecab803cd887b7e386f"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_unknown_white_case/synthetic_wood.png",
+      "sha256": "50bb37e9d5318b19e82fe36bcfe07c74ad7fc21b45b5893732f61f999b306cad"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_window_unknown_enclosure/lab_window_unknown_enclosure.blend",
+      "sha256": "de35877e51eea3ae9105204f7c2b174ff89004e064b1f4d0ded4015e621acb4c"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_window_unknown_enclosure/lod0_source.glb",
+      "sha256": "eb8ec8df757aac6d3922d93fb11c5e6615e7b4532f4bbc50bedab9c24175ef35"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_window_unknown_enclosure/lod1_source.glb",
+      "sha256": "9cc86dc46d9d94624c2f523c431389e5f45d3cb0399e950c7fe0a2ceb94b77fd"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_window_unknown_enclosure/lod2_source.glb",
+      "sha256": "1d5572c2fc33bae53d1db4e8ea154017e954b9bd7069302a34b370a539b2d353"
+    },
+    {
+      "path": "sources/models/photo_lab_contents/lab_window_unknown_enclosure/synthetic_wood.png",
+      "sha256": "50bb37e9d5318b19e82fe36bcfe07c74ad7fc21b45b5893732f61f999b306cad"
+    }
+  ],
+  "revision": "composition-contact-fix-2"
+}

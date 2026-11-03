@@ -1,0 +1,586 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 261156,
+    "sha256": "991caa3e1175d26708d9044ee0190b2faee6ab63f01726c4edfe1e5f8af896d9",
+    "triangles": 4212,
+    "primitives": 15,
+    "bounds": {
+      "min": [
+        -0.4924999885261059,
+        0,
+        -0.27250000089406967
+      ],
+      "max": [
+        0.7099999934434891,
+        0.1419999967329204,
+        0.2749999985098839
+      ]
+    },
+    "size": [
+      1.202499981969595,
+      0.1419999967329204,
+      0.5474999994039536
+    ],
+    "materials": [
+      {
+        "name": "Black chair and case polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": true,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.012000000104308128,
+          0.014999999664723873,
+          0.017000000923871994,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 1
+      },
+      {
+        "name": "Unprinted cardboard",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": true,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.3700000047683716,
+          0.25,
+          0.12999999523162842,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 1
+      },
+      {
+        "name": "Unmarked warm grey storage box",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.5799999833106995,
+          0.550000011920929,
+          0.47999998927116394,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.8600000143051147
+      },
+      {
+        "name": "Warm white enclosure polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": true,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.7799999713897705,
+          0.7900000214576721,
+          0.75,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 1
+      },
+      {
+        "name": "Charcoal powder coated steel",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.03500000014901161,
+          0.04100000113248825,
+          0.0430000014603138,
+          1
+        ],
+        "metallicFactor": 0.30000001192092896,
+        "roughnessFactor": 0.5
+      },
+      {
+        "name": "Pale blue blank sign",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.25999999046325684,
+          0.5699999928474426,
+          0.6499999761581421,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.5
+      }
+    ],
+    "textures": [
+      {
+        "name": "synthetic_wood",
+        "mime": "image/png",
+        "bytes": 5800,
+        "size": [
+          128,
+          128
+        ]
+      }
+    ]
+  },
+  "calibration": {
+    "targetHeight": 0.1419999967329204,
+    "yawDegrees": 0,
+    "uniformScale": 1,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "991caa3e1175d26708d9044ee0190b2faee6ab63f01726c4edfe1e5f8af896d9",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 1.9371509552001953e-7,
+      "bytes": 33016,
+      "uncompressedBytes": 207632,
+      "sha256": "6a5199b92fcdf281cd8aea739a2e90f6e2c71ce565b28c56db76c534e1a9c24a",
+      "triangles": 4212,
+      "primitives": 6,
+      "bounds": {
+        "min": [
+          -0.6012499909847975,
+          0,
+          -0.2737499997019768
+        ],
+        "max": [
+          0.6012499909847975,
+          0.14199993899092078,
+          0.2737501934170723
+        ]
+      },
+      "size": [
+        1.202499981969595,
+        0.14199993899092078,
+        0.5475001931190491
+      ],
+      "materials": [
+        {
+          "name": "Black chair and case polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.014999999664723873,
+            0.017000000923871994,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Unprinted cardboard",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.3700000047683716,
+            0.25,
+            0.12999999523162842,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Unmarked warm grey storage box",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5799999833106995,
+            0.550000011920929,
+            0.47999998927116394,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8600000143051147
+        },
+        {
+          "name": "Warm white enclosure polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.7799999713897705,
+            0.7900000214576721,
+            0.75,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Charcoal powder coated steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.03500000014901161,
+            0.04100000113248825,
+            0.0430000014603138,
+            1
+          ],
+          "metallicFactor": 0.30000001192092896,
+          "roughnessFactor": 0.5
+        },
+        {
+          "name": "Pale blue blank sign",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.25999999046325684,
+            0.5699999928474426,
+            0.6499999761581421,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5
+        }
+      ],
+      "textures": [
+        {
+          "name": "synthetic_wood",
+          "mime": "image/png",
+          "bytes": 5800,
+          "size": [
+            128,
+            128
+          ]
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "c8b1a3bff5259b6ac55976d017899877f2920daa10fe8abf864696bb21654e13",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 1.9371509552001953e-7,
+      "bytes": 24724,
+      "uncompressedBytes": 118652,
+      "sha256": "c6ba2322dd7b2d44212dbf7960c3958bd63dfa3c7a298c6f101d7d79ee97a439",
+      "triangles": 2184,
+      "primitives": 6,
+      "bounds": {
+        "min": [
+          -0.6012499909847975,
+          0,
+          -0.2737499997019768
+        ],
+        "max": [
+          0.6012499909847975,
+          0.14199993899092078,
+          0.2737501934170723
+        ]
+      },
+      "size": [
+        1.202499981969595,
+        0.14199993899092078,
+        0.5475001931190491
+      ],
+      "materials": [
+        {
+          "name": "Black chair and case polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.014999999664723873,
+            0.017000000923871994,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Unprinted cardboard",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.3700000047683716,
+            0.25,
+            0.12999999523162842,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Unmarked warm grey storage box",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5799999833106995,
+            0.550000011920929,
+            0.47999998927116394,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8600000143051147
+        },
+        {
+          "name": "Warm white enclosure polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.7799999713897705,
+            0.7900000214576721,
+            0.75,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Charcoal powder coated steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.03500000014901161,
+            0.04100000113248825,
+            0.0430000014603138,
+            1
+          ],
+          "metallicFactor": 0.30000001192092896,
+          "roughnessFactor": 0.5
+        },
+        {
+          "name": "Pale blue blank sign",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.25999999046325684,
+            0.5699999928474426,
+            0.6499999761581421,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5
+        }
+      ],
+      "textures": [
+        {
+          "name": "synthetic_wood",
+          "mime": "image/png",
+          "bytes": 5800,
+          "size": [
+            128,
+            128
+          ]
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "f482c04f9333102742f47aeec33f109fa90c2d3560c1ededefc98117f9383bee",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 1.9371509552001953e-7,
+      "bytes": 18956,
+      "uncompressedBytes": 58272,
+      "sha256": "28277e07d919ec55611a77d320f780afdb4c651b619e3bc4af8e4538b8b9bc2b",
+      "triangles": 828,
+      "primitives": 6,
+      "bounds": {
+        "min": [
+          -0.6012499909847975,
+          0,
+          -0.2737499997019768
+        ],
+        "max": [
+          0.6012499909847975,
+          0.14199993899092078,
+          0.2737501934170723
+        ]
+      },
+      "size": [
+        1.202499981969595,
+        0.14199993899092078,
+        0.5475001931190491
+      ],
+      "materials": [
+        {
+          "name": "Black chair and case polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.014999999664723873,
+            0.017000000923871994,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Unprinted cardboard",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.3700000047683716,
+            0.25,
+            0.12999999523162842,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Unmarked warm grey storage box",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5799999833106995,
+            0.550000011920929,
+            0.47999998927116394,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8600000143051147
+        },
+        {
+          "name": "Warm white enclosure polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.7799999713897705,
+            0.7900000214576721,
+            0.75,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Charcoal powder coated steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.03500000014901161,
+            0.04100000113248825,
+            0.0430000014603138,
+            1
+          ],
+          "metallicFactor": 0.30000001192092896,
+          "roughnessFactor": 0.5
+        },
+        {
+          "name": "Pale blue blank sign",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.25999999046325684,
+            0.5699999928474426,
+            0.6499999761581421,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5
+        }
+      ],
+      "textures": [
+        {
+          "name": "synthetic_wood",
+          "mime": "image/png",
+          "bytes": 5800,
+          "size": [
+            128,
+            128
+          ]
+        }
+      ]
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

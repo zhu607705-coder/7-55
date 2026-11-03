@@ -1,0 +1,394 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 157100,
+    "sha256": "504408573a8e425bc320e02b1e87dcac21be7a5d691264616011cf2b9fd2cf66",
+    "triangles": 2156,
+    "primitives": 9,
+    "bounds": {
+      "min": [
+        -0.2849999964237213,
+        -0.0015132242115214467,
+        -0.2017483413219452
+      ],
+      "max": [
+        0.31067779660224915,
+        0.5174999982118607,
+        0.10499999672174454
+      ]
+    },
+    "size": [
+      0.5956777930259705,
+      0.5190132224233821,
+      0.30674833804368973
+    ],
+    "materials": [
+      {
+        "name": "Charcoal powder coated steel",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.03500000014901161,
+          0.04100000113248825,
+          0.0430000014603138,
+          1
+        ],
+        "metallicFactor": 0.30000001192092896,
+        "roughnessFactor": 0.5
+      },
+      {
+        "name": "Black chair and case polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": true,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.012000000104308128,
+          0.014999999664723873,
+          0.017000000923871994,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 1
+      },
+      {
+        "name": "Inactive neutral dark display",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.012000000104308128,
+          0.026000000536441803,
+          0.03200000151991844,
+          1
+        ],
+        "metallicFactor": 0.15000000596046448,
+        "roughnessFactor": 0.2199999988079071
+      }
+    ],
+    "textures": [
+      {
+        "name": "synthetic_wood",
+        "mime": "image/png",
+        "bytes": 5800,
+        "size": [
+          128,
+          128
+        ]
+      }
+    ]
+  },
+  "calibration": {
+    "targetHeight": 0.5190132224233821,
+    "yawDegrees": 0,
+    "uniformScale": 1,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "504408573a8e425bc320e02b1e87dcac21be7a5d691264616011cf2b9fd2cf66",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 1.7881393432617188e-7,
+      "bytes": 20236,
+      "uncompressedBytes": 117960,
+      "sha256": "666b97884d635304cef1e5400ff4a0cdfd1d253452cd48f2fa1af94628661cf6",
+      "triangles": 2156,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.29783889651298523,
+          1.1292286217212677e-8,
+          -0.15337417274713516
+        ],
+        "max": [
+          0.29783889651298523,
+          0.5190133826108649,
+          0.1533741094172001
+        ]
+      },
+      "size": [
+        0.5956777930259705,
+        0.5190133713185787,
+        0.30674828216433525
+      ],
+      "materials": [
+        {
+          "name": "Charcoal powder coated steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.03500000014901161,
+            0.04100000113248825,
+            0.0430000014603138,
+            1
+          ],
+          "metallicFactor": 0.30000001192092896,
+          "roughnessFactor": 0.5
+        },
+        {
+          "name": "Black chair and case polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.014999999664723873,
+            0.017000000923871994,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Inactive neutral dark display",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.026000000536441803,
+            0.03200000151991844,
+            1
+          ],
+          "metallicFactor": 0.15000000596046448,
+          "roughnessFactor": 0.2199999988079071
+        }
+      ],
+      "textures": [
+        {
+          "name": "synthetic_wood",
+          "mime": "image/png",
+          "bytes": 5800,
+          "size": [
+            128,
+            128
+          ]
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "0f38283a80901cc8aa435e0376d7f1a6ff35ec287d96d4ae203de4af78e33f14",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 1.7881393432617188e-7,
+      "bytes": 15932,
+      "uncompressedBytes": 69352,
+      "sha256": "9a12adbe0d509ba84d233b28ea90daa0f6e3f120d4b5d28c4e2f17a10e8c700b",
+      "triangles": 1160,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.29783889651298523,
+          -0.00003154936712235212,
+          -0.15346669405698776
+        ],
+        "max": [
+          0.29786649346351624,
+          0.5190133826108649,
+          0.1533741094172001
+        ]
+      },
+      "size": [
+        0.5957053899765015,
+        0.5190449319779873,
+        0.30684080347418785
+      ],
+      "materials": [
+        {
+          "name": "Charcoal powder coated steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.03500000014901161,
+            0.04100000113248825,
+            0.0430000014603138,
+            1
+          ],
+          "metallicFactor": 0.30000001192092896,
+          "roughnessFactor": 0.5
+        },
+        {
+          "name": "Black chair and case polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.014999999664723873,
+            0.017000000923871994,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Inactive neutral dark display",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.026000000536441803,
+            0.03200000151991844,
+            1
+          ],
+          "metallicFactor": 0.15000000596046448,
+          "roughnessFactor": 0.2199999988079071
+        }
+      ],
+      "textures": [
+        {
+          "name": "synthetic_wood",
+          "mime": "image/png",
+          "bytes": 5800,
+          "size": [
+            128,
+            128
+          ]
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "2ecf05334824c9291aedff66ff8b2d4465a8b60a0ff2ab1141c6f47d3943e577",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 1.7881393432617188e-7,
+      "bytes": 12804,
+      "uncompressedBytes": 35532,
+      "sha256": "053e6d5f407d1ab601094b5ee788c3b4ed7c1f9a71276d1674b40026f4fe5265",
+      "triangles": 452,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.29783889651298523,
+          -0.00003667536657303572,
+          -0.15338001400232315
+        ],
+        "max": [
+          0.29784098267555237,
+          0.5190133826108649,
+          0.1533741094172001
+        ]
+      },
+      "size": [
+        0.5956798791885376,
+        0.519050057977438,
+        0.30675412341952324
+      ],
+      "materials": [
+        {
+          "name": "Charcoal powder coated steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.03500000014901161,
+            0.04100000113248825,
+            0.0430000014603138,
+            1
+          ],
+          "metallicFactor": 0.30000001192092896,
+          "roughnessFactor": 0.5
+        },
+        {
+          "name": "Black chair and case polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.014999999664723873,
+            0.017000000923871994,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Inactive neutral dark display",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.026000000536441803,
+            0.03200000151991844,
+            1
+          ],
+          "metallicFactor": 0.15000000596046448,
+          "roughnessFactor": 0.2199999988079071
+        }
+      ],
+      "textures": [
+        {
+          "name": "synthetic_wood",
+          "mime": "image/png",
+          "bytes": 5800,
+          "size": [
+            128,
+            128
+          ]
+        }
+      ]
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

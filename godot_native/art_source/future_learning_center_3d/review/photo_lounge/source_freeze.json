@@ -1,0 +1,197 @@
+{
+  "sourceFreeze": "2026-11-03T02:39:00Z",
+  "referenceImageActuallyViewed": true,
+  "allFinalReviewImagesActuallyViewed": true,
+  "buildReportSha256": "ef24dd4678ab28b576c28ef7516417a18d52319598994455c82c210f23a11c30",
+  "renderEngine": "Blender 4.3.2 Cycles CPU",
+  "images": [
+    {
+      "path": "review/photo_lounge/photo_lounge_grey_bar_chair.png",
+      "sha256": "051665851077bdb83375a74b04cd8c6a797deb4413a44a04084a56d0eaca5124"
+    },
+    {
+      "path": "review/photo_lounge/photo_lounge_near_view.png",
+      "sha256": "061b29abfd9edd1c7d393fc45e373fadf8afae066f8b2b1e5028c6abd069c928"
+    },
+    {
+      "path": "review/photo_lounge/photo_lounge_orange_double.png",
+      "sha256": "0b230e2a04227d998947bf10e7c534d367b80406c43c5611ad1a597aa00903b2"
+    },
+    {
+      "path": "review/photo_lounge/photo_lounge_orange_single.png",
+      "sha256": "577ef6cf8c47eb727a0e8842783f2fbebfc6d1dba50179f1abd4c0c353d2eb5e"
+    },
+    {
+      "path": "review/photo_lounge/photo_lounge_orange_single_rear.png",
+      "sha256": "5fc6121b710ef30c889f50984ab342e3ddf5908a5e922d951b2a76b69280eb05"
+    },
+    {
+      "path": "review/photo_lounge/photo_lounge_round_table.png",
+      "sha256": "87662953e8c4429d96e4d78fb530351deb70c19ae0fabbcd4d5d9023ef30b405"
+    },
+    {
+      "path": "review/photo_lounge/photo_lounge_square_stool.png",
+      "sha256": "7c8685cdcebb6de00441030c8542d36b8cadf7bdb1fad749aa9e9ecce3324583"
+    },
+    {
+      "path": "review/photo_lounge/photo_lounge_window_counter.png",
+      "sha256": "c65fec724b53e07df43c234894b65b16b9162ddac8f0d606d93f0728467216f9"
+    }
+  ],
+  "checks": [
+    "Six independent assets, three strictly decreasing LODs each.",
+    "All source SHA256 match report.",
+    "All asset floor minima equal 0 within 1e-7 metres.",
+    "Final front and rear single-chair images show the cushion contained by the thin outer shell.",
+    "White round table column contacts one closed cross-foot mesh.",
+    "Same-photo-direction composition uses one geometry for both square-stool colours.",
+    "No source photograph pixels in textures."
+  ],
+  "sources": [
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_grey_bar_chair/lod0_source.glb",
+      "bytes": 96640,
+      "sha256": "463da22a1330f8df278cfd837a0cc66f51405a0fdc2ba8079296157a68cdaf53"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_grey_bar_chair/lod1_source.glb",
+      "bytes": 62392,
+      "sha256": "866fb6b2b889cf5fcb8690855410fa004cc0238c589e9af539c46826a77e3d8e"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_grey_bar_chair/lod2_source.glb",
+      "bytes": 40696,
+      "sha256": "5122a571a1b6129aaa35ed6db02408c5491c2d594202c84b1e41dc13118196ba"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_grey_bar_chair/photo_lounge_grey_bar_chair.blend",
+      "bytes": 706516,
+      "sha256": "24996b2561639425077a28134946ca89a9c0864cf674b4fffd889929a28287e7"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_orange_double/lod0_source.glb",
+      "bytes": 454284,
+      "sha256": "b011504641f54d8d3a99acd1de1ad883d3dab104cb120d30de41a91a1c513319"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_orange_double/lod1_source.glb",
+      "bytes": 205172,
+      "sha256": "48f434390ff21b925216f0bb3bb791c71139b11bb5775b96ef38f824781cae71"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_orange_double/lod2_source.glb",
+      "bytes": 83728,
+      "sha256": "7978bfee341d75e5dd42097a139f15ffc1cffd2444d0b4b7148b2fcdd4f88ff1"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_orange_double/photo_lounge_orange_double.blend",
+      "bytes": 1473260,
+      "sha256": "de816c53630a0aea99964f2b50f448ee184ff1ad990960c3be707c5cf3e49251"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_orange_double/terracotta_woven_upholstery_base.png",
+      "bytes": 21216,
+      "sha256": "1327d8648b6e7bb8693483dc2a801d526cc49deaa7a8c520f62b538568a97c71"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_orange_double/terracotta_woven_upholstery_normal.png",
+      "bytes": 3290,
+      "sha256": "d5abf1255670179b8def4717008adb8adc2d6ec02d74f10b49f45d14a07ae584"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_orange_single/lod0_source.glb",
+      "bytes": 447960,
+      "sha256": "6b3dcae90633c9410b6f06402be6c403061dbbc89f7ef74c14be92fed674e468"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_orange_single/lod1_source.glb",
+      "bytes": 198848,
+      "sha256": "56607d09d685112b90ecb41231bf6dc8a71473fc7e19f0191095c15c2ed787e7"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_orange_single/lod2_source.glb",
+      "bytes": 83748,
+      "sha256": "91d80656bcfd1ee2e4440f57dec976924bfa9d367890b8c782798c2c2020d737"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_orange_single/photo_lounge_orange_single.blend",
+      "bytes": 1455804,
+      "sha256": "fe2547e5dd6cc512e68e28d424b88c14044c99ca8ac506e1cd9284e7767252bc"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_orange_single/terracotta_woven_upholstery_base.png",
+      "bytes": 21216,
+      "sha256": "1327d8648b6e7bb8693483dc2a801d526cc49deaa7a8c520f62b538568a97c71"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_orange_single/terracotta_woven_upholstery_normal.png",
+      "bytes": 3290,
+      "sha256": "d5abf1255670179b8def4717008adb8adc2d6ec02d74f10b49f45d14a07ae584"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_round_table/lod0_source.glb",
+      "bytes": 148392,
+      "sha256": "d55204e903de77bbcdca6057473f5755f8da9ba43d80a53bcea358fae1a5002c"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_round_table/lod1_source.glb",
+      "bytes": 59692,
+      "sha256": "3f83f1ad52008cf52523c4de67f5cbcbdb4365c151d1998469d5f196a4e2daf9"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_round_table/lod2_source.glb",
+      "bytes": 26200,
+      "sha256": "e4e83cbe00bc9f1b949ade6a18b9aaa2627a5690117f06187a1a2ff06f4fb959"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_round_table/photo_lounge_round_table.blend",
+      "bytes": 704184,
+      "sha256": "93b11da1c96d748c4d4b1dac0e6ba7dad418d9a77fd94b11a9153b483b09e9b9"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_square_stool/lod0_source.glb",
+      "bytes": 161348,
+      "sha256": "f4811c3da61757c8cc2ff7f1ab3e303d0fa3813566cacd2f8ef1a02c752a83be"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_square_stool/lod1_source.glb",
+      "bytes": 66680,
+      "sha256": "baa61f2432d208948ea52a589e979394afaea6c778e147f1862334ac2e160794"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_square_stool/lod2_source.glb",
+      "bytes": 48848,
+      "sha256": "a3452d6030961048b7b4c865ead4b12495d66ea2121c91ac80c1e908da03fa83"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_square_stool/photo_lounge_square_stool.blend",
+      "bytes": 824796,
+      "sha256": "c088b08b856f663538bcc9ad92357cd5e47dfd0055b3b8020ce5defb79ba7241"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_window_counter/lod0_source.glb",
+      "bytes": 171436,
+      "sha256": "08b43b946ef80b66ad24ad21c71d07b2fb263ffaf206e0986b6437b6952161a6"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_window_counter/lod1_source.glb",
+      "bytes": 73408,
+      "sha256": "64fb30ac2f2ed6404275cfc471571bf332276e2fcdf146384e42d7de267f91b6"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_window_counter/lod2_source.glb",
+      "bytes": 55480,
+      "sha256": "89f2534ed67176ec5855fadea005fcb7be035a7a109d05927330eec05cae12b2"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_window_counter/pale_wood_bar_counter_base.png",
+      "bytes": 5755,
+      "sha256": "3ba7125a098438a68ca3c75b17ba1cda9396c8cf423325253f0ce1e0b3800b81"
+    },
+    {
+      "path": "sources/models/photo_lounge/photo_lounge_window_counter/photo_lounge_window_counter.blend",
+      "bytes": 836856,
+      "sha256": "7e02a806ee819efb8286ed7c50a8ae8eeb2e1c2d5b7bbfe9f4e4927ab8d5bb01"
+    }
+  ]
+}
