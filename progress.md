@@ -5875,3 +5875,11 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - Added only the `flc_activity` production lazy family. Other research-campus resources remain excluded. A real pinned Godot 4.7.1 Web export and PCK audit passed: 89 PCK files, 2986 entries and 13 FLC lazy packs. The shared desktop Chrome cannot run WebGL2, so its loading-page screenshot is not a running-Web acceptance result. Focused actual-browser acceptance is being added to the repository's existing CI path.
 - Local final room/model run passed all original 25 suites, retained external models, 307 station integration checks, 1740 floor checks and 143 physical-workbench checks. The 27-validator source critical suite passed. The local release run passed 35/38 validators including the production source build; its offline single-file process was terminated with exit 137, so the dependent artifact check and browser smoke had no artifact. This is not a full release pass; standard CI must verify those gates. Save validation passed 1196 codec/schema checks and 19 real-file integration checks, plus existing save-domain regressions. Real native GUI entry, apparatus manipulation, return and re-entry preserved a 30-degree setting. Injected touch tests are not physical-phone acceptance.
 - Testing identified and fixed an optional-content loading cancellation gap. The scoped FLC cancellation suite passed 21 checks; the existing loader passed 84 and the final host passed 37. Cancel preserves independently waiting story loads and prevents late activity callbacks from reopening the canceled entry. Final PR/CI evidence and remaining boundaries will be recorded separately. No merge, deployment or hosted Codex review is requested or performed.
+
+
+## 20261103 共创平台与玩家账号云存档整合
+
+- 在 main `72fe2ed3dab84c99cedb2e427a4d639fca135472` 上接入独立 `platform/`、Authing 会话、每账号云存档、照片与个人编辑同步、游客显式带入、冲突选择及备份恢复。游戏仍独立校验剧情，平台只负责本人存储及业务。
+- 保留 4.7.1、晨札字体、当前开场和未来学习中心；适配 v36 并复用 v35 迁移，压缩控制中心入口以保留截图按钮的可点击空间。
+- 本地验证覆盖平台、真实数据库、网页发布、原生连续主线与存档、实际 Godot Web 桌面/手机保存及刷新继续；详细证据范围见 `platform/docs/integration-20261103.md`。
+- 通过功能分支/PR 提交代码；不自动合并、部署或上传密钥、玩家档、数据库及游戏导出包。实体手机、正式域名及实际生产账号跨设备仍需上线验收。

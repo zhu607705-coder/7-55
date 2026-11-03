@@ -2,8 +2,10 @@ extends Node
 ## Browser capabilities only. State remains the sole save/progression authority.
 signal import_finished(message: String)
 signal save_feedback(message: String)
-const IMPORT_PATH := "user://web-save-import.json"
-const EXPORT_PATH := "user://web-save-export.json"
+var IMPORT_PATH: String:
+	get: return state.ProfileStorage.file("web-save-import.json")
+var EXPORT_PATH: String:
+	get: return state.ProfileStorage.file("web-save-export.json")
 const MAX_SAVE_BYTES := 48 * 1024 * 1024
 const SNAPSHOT_INTERVAL := 0.25
 const SAVE_SYNC_INTERVAL_MS := 2000

@@ -1,0 +1,50 @@
+name: Platform CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scope:
+    uses: ./.github/workflows/product-scope.yml
+  verify-platform:
+    name: Verify co-creation platform
+    needs: scope
+    if: needs.scope.outputs.platform == 'true'
+    concurrency:
+      group: platform-ci-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: platform
+          POSTGRES_PASSWORD: ci_only
+          POSTGRES_DB: platform_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U platform -d platform_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    defaults:
+      run:
+        working-directory: platform
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            platform
+            .github/scripts
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: platform/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run validate
+      - run: npm run test:database
+        env:
+          TEST_DATABASE_URL: postgresql://platform:ci_only@127.0.0.1:5432/platform_test

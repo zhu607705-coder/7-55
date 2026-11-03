@@ -1,5 +1,6 @@
 extends Control
 const SelectedUi=preload("res://scripts/ui/selected_ui_theme.gd")
+const CommunityPortal=preload("res://scripts/platform/community_portal.gd")
 ## Native phone and RPG shell. All story changes pass through State.
 var phone: PanelContainer
 var phone_page_margin: MarginContainer
@@ -1889,6 +1890,20 @@ func _show_settings() -> void:
 	var actions_scroll:=box.get_parent() as ScrollContainer
 	actions_scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_RESERVE
 	_layout_modal()
+	if OS.has_feature("web"):
+		var player_links:=HBoxContainer.new()
+		player_links.add_theme_constant_override("separation",8);box.add_child(player_links)
+		var manage_link:=_button("存档",CloudSaves.show_manager)
+		manage_link.tooltip_text="存档管理与备份恢复"
+		manage_link.name="OpenSaveManager";manage_link.size_flags_horizontal=Control.SIZE_EXPAND_FILL;player_links.add_child(manage_link)
+		if CommunityPortal.available():
+			var community_link:=_button("共创 ↗",CommunityPortal.open_community)
+			community_link.name="OpenCommunity";community_link.size_flags_horizontal=Control.SIZE_EXPAND_FILL;player_links.add_child(community_link)
+			var account_link:=_button("账号",CommunityPortal.open_account)
+			account_link.tooltip_text="玩家账号 / 登录"
+			account_link.name="OpenPlayerAccount";account_link.size_flags_horizontal=Control.SIZE_EXPAND_FILL;player_links.add_child(account_link)
+		for link: Button in player_links.get_children():
+			NativeUi.apply_button(link,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.PAPER_EDGE,0,1,16,Vector2(8,8))
 	box.add_child(_button("当前：%s → 切换%s" % ["深色观察" if State.d.native.mode == "dark" else "浅色操作","浅色操作" if State.d.native.mode == "dark" else "深色观察"],func(): State.toggle_mode(); _show_settings()))
 	save_progress_button = _button("保存进度", _save_progress)
 	save_progress_button.name = "SaveNativeProgress"
@@ -1900,7 +1915,7 @@ func _show_settings() -> void:
 	box.add_child(_button("重新开始",func():
 		var confirm := _modal_base("确认重新开始？")
 		confirm.add_child(_label("将重置故事进度。此操作不会退出应用。",17))
-		confirm.add_child(_button("确认重置",func(): State.new_game(); _close_modal()))
+		confirm.add_child(_button("确认重置",func(): _reset_progress(); _close_modal()))
 	))
 	box.add_child(_button("全屏 / 窗口",func(): DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN else DisplayServer.WINDOW_MODE_FULLSCREEN)))
 	if State.developer_tools_available(): box.add_child(_button("DEV · 独立场景检查",_show_developer))
@@ -1925,8 +1940,13 @@ func _capture_after_menu() -> void:
 	_capture.call_deferred()
 
 func _save_progress() -> void:
-	if is_instance_valid(web_platform): web_platform.request_save()
+	if OS.has_feature("web") and not CloudSaves.member_id.is_empty(): CloudSaves.save_now()
+	elif is_instance_valid(web_platform): web_platform.request_save()
 	else: _feedback("已保存" if State.save_game() else "测试会话不覆盖正式存档")
+
+func _reset_progress() -> void:
+	if OS.has_feature("web"): CloudSaves.restart_confirmed()
+	else: State.new_game()
 
 func _on_web_save_feedback(message: String) -> void:
 	# Keep this receipt beside its own action. Queued story notices or an older
@@ -2692,8 +2712,9 @@ func _capture_world(config: Dictionary) -> void:
 	var metadata: Dictionary = {}
 	var photograph := world_viewport.get_texture().get_image()
 	if not photograph.is_empty():
-		DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://qizhen_journal"))
-		path = "user://qizhen_journal/"+str(Time.get_ticks_usec())+".png"
+		var folder: String=State.ProfileStorage.journal_folder()
+		DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(folder))
+		path = folder+str(Time.get_ticks_usec())+".png"
 		if photograph.save_png(path) != OK: path = ""
 		metadata = {"source":"world_viewport_crop","width":photograph.get_width(),"height":photograph.get_height(),"scene":str(world.scene_id),"zone":str(State.d.qizhenLake.zone),"player":State.d.native.player.duplicate(true),"camera":{"x":world.camera.x,"y":world.camera.y,"zoom":world.zoom},"speed":float(world.kayak.speed) if world.kayak else 0.0,"roll":float(world.kayak.roll) if world.kayak else 0.0,"heading":float(world.kayak.heading) if world.kayak else 0.0,"capturedAtSeconds":int(floor(Time.get_ticks_msec()/1000.0))}
 	world.capture_mode = false
@@ -2784,6 +2805,9 @@ func _on_phone_page(page: String) -> void:
 func _on_phone_action(id: String,value: Variant) -> void:
 	if is_instance_valid(phone_object_pickup): phone_object_pickup.capture_action(id,page_body,State.d)
 	match id:
+		"native_save_manager": CloudSaves.show_manager(); return
+		"native_open_community": CommunityPortal.open_community(); return
+		"native_player_account": CommunityPortal.open_account(); return
 		"native_control_center_close":
 			State.d.ui.controlCenterOpen=false
 			_preview_phone_brightness(-1)
@@ -2791,7 +2815,7 @@ func _on_phone_action(id: String,value: Variant) -> void:
 			return
 		"native_save_tools": _show_settings(); return
 		"native_save_now": _save_progress(); return
-		"native_reset_progress": State.new_game(); return
+		"native_reset_progress": _reset_progress(); return
 	if id=="c1_checkin" and value!=null:
 		# Keep the accepted controller/log result; the form owns wrong-code copy.
 		checkin_feedback_depth+=1

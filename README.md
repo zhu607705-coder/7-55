@@ -1,5 +1,23 @@
 # 7:55
 
+## 共创平台
+
+玩家反馈与后续章节共创平台位于 [`platform/`](platform/README.md)，与游戏并列。
+当前提供像素风界面、本章说/卡点反馈/经历分享、匿名授权、投稿进度、运营回复、点赞评分及 PostgreSQL 持久化。认证使用 Authing；游戏与共创复用玩家账号，提供账号云存档、重开前备份及恢复。正式域名和服务器仍需部署。
+平台使用自己的依赖锁文件和检查流程，不需要安装或导出游戏资源。
+
+```bash
+cd platform
+npm ci
+cp .env.example .env
+npm run build
+npm run db:up
+npm run db:migrate
+npm run dev
+```
+
+完整数据库启动与配置步骤见 [平台 README](platform/README.md)，游戏联通及验收见 [云存档说明](platform/docs/game-cloud-save.md) 与 [20261103 整合记录](platform/docs/integration-20261103.md)。根目录命令继续服务游戏。
+
 20261026北教整合：[A1–A3对象接入、墙面修复及草稿合流](godot_native/docs/NORTH_PRODUCTION_OBJECTS_20261026.md)。
 
 [![Web CI](https://github.com/zhu607705-coder/7-55/actions/workflows/web-ci.yml/badge.svg?branch=main)](https://github.com/zhu607705-coder/7-55/actions/workflows/web-ci.yml)

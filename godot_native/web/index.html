@@ -98,6 +98,17 @@
     @media (prefers-reduced-motion: reduce) {
       #loading .boot-sunlight, #loading .boot-wake-glow, #loading .boot-dust, #loading .boot-status::after { animation: none !important; }
     }
+    #player-account { position: fixed; z-index: 20; top: max(16px, env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); width: min(360px, calc(100vw - 32px)); max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); overflow: auto; overscroll-behavior: contain; padding: 16px; color: #253743; background: #f3ebd9; border: 3px solid #263945; box-shadow: 5px 5px #101e28, inset 0 0 0 2px #d6c6a6; color-scheme: light; font: 14px/1.6 "755 Morning Note", monospace; }
+    #player-account[hidden], #player-account [hidden] { display: none; }
+    #player-account summary { color: #526456; cursor: pointer; font: 15px/2 "755 Morning Note", monospace; }
+    .player-ticket { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 8px; padding-bottom: 12px; border-bottom: 2px dashed #b6a888; }
+    .player-ticket h2 { margin: 0; font: 24px/1.35 "755 Morning Note", monospace; }
+    .player-ticket-stamp { border: 2px solid #a44b3d; padding: 0 5px; color: #a44b3d; font: 16px/1.6 "755 Morning Note", monospace; }
+    #player-account [role="status"] { padding: 7px 9px; background: #dce5cc; border-left: 3px solid #60795a; }
+    .player-ticket-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .player-ticket-actions button { flex: 1; min-width: 105px; padding: 8px; border: 2px solid #263945; border-radius: 0; background: #263945; color: #f3ebd9; font: 15px/1.4 "755 Morning Note", monospace; }
+    .player-ticket-actions button:last-child { background: #f3ebd9; color: #263945; }
+    #player-account a { display: inline-block; padding-top: 10px; color: #304e42; text-underline-offset: 4px; }
   </style>
 </head>
 <body>
@@ -162,6 +173,8 @@
   </section>
   <noscript id="boot-noscript">请启用 JavaScript 后重新打开游戏。</noscript>
   <script src="boot-intro.js"></script>
+  <script defer src="player-account.js"></script>
+  <script defer src="cloud-saves.js"></script>
   <script src="$GODOT_URL" onerror="document.documentElement.dataset.loaderFailed='true'"></script>
   <script src="content-loader.js"></script>
   <script src="scene-orientation.js"></script>

@@ -11,10 +11,13 @@ signal world_effect_requested(config: Dictionary)
 signal capture_requested(config: Dictionary)
 signal battery_reserve_used(percent: int)
 signal story_reset
+signal snapshot_saved
 signal battery_recharged
 signal action_completed(action: String,previous: Dictionary,next: Dictionary,result: Dictionary)
-const SAVE_PATH := "user://save.json"
-const BACKUP_PATH := "user://save.previous.json"
+const ProfileStorage = preload("res://scripts/platform/profile_storage.gd")
+var SAVE_PATH := "user://save.json"
+var BACKUP_PATH := "user://save.previous.json"
+var persistence_ready := true
 const SOURCE_VERSION := 36
 const FLCRoomSave = preload("res://scripts/flc_room_save.gd")
 const SaveDomainGuard = preload("res://scripts/save_domain_guard.gd")
@@ -39,6 +42,9 @@ func _ready() -> void:
 			var script = load(path)
 			if script and script.can_instantiate(): modules.append(script.new())
 	d = initial()
+	if OS.has_feature("web"):
+		persistence_ready=false
+		return
 	if not (developer_tools_available() and OS.get_cmdline_user_args().has("--fresh")):
 		load_game()
 
@@ -403,6 +409,117 @@ func _matches_shape(template: Variant, value: Variant, depth: int = 0, location:
 		return value == null or value is String or value is bool or ((value is int or value is float) and is_finite(float(value)))
 	return false
 
+func activate_profile(key: String, read_existing: bool=true) -> Dictionary:
+	if not ProfileStorage.valid_key(key) or key=="legacy": return {"ok":false,"message":"存档账号标识无效。"}
+	var stores=load("res://scripts/data/cc98_store.gd")
+	var legacy: Dictionary={}
+	var destination: String="user://profiles/"+key+"/"
+	if key=="guest" and read_existing and not FileAccess.file_exists(destination+"save.json"):
+		var old: Dictionary=_read_native_save("user://save.json")
+		if not old.is_empty():
+			ProfileStorage.profile="legacy";SAVE_PATH="user://save.json";BACKUP_PATH="user://save.previous.json"
+			stores.posts_path="user://cc98-posts.json";stores.quest_path="user://cc98-quest-post-overrides.json"
+			d=merge_defaults(initial(),old.state)
+			legacy=capture_cloud_bundle()
+	ProfileStorage.profile=key
+	SAVE_PATH=ProfileStorage.file("save.json");BACKUP_PATH=ProfileStorage.file("save.previous.json")
+	stores.posts_path=ProfileStorage.file("cc98-posts.json");stores.quest_path=ProfileStorage.file("cc98-quest-post-overrides.json")
+	if DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(ProfileStorage.folder()))!=OK: return {"ok":false,"message":"无法准备本机存档目录。"}
+	d=initial();developer_mode=false;formal_snapshot={};persistence_ready=true
+	var had_file:=FileAccess.file_exists(SAVE_PATH)
+	if read_existing:
+		for existing_path: String in [SAVE_PATH,BACKUP_PATH]:
+			if not FileAccess.file_exists(existing_path): continue
+			var handle:=FileAccess.open(existing_path,FileAccess.READ)
+			if handle==null: continue
+			var envelope: Variant=JSON.parse_string(handle.get_as_text()) if handle.get_length()<=8*1024*1024 else null
+			handle.close()
+			if envelope is Dictionary and float(envelope.get("sourceVersion",0))>SOURCE_VERSION:
+				persistence_ready=false
+				return {"ok":false,"message":"本机存档或备份来自较新游戏版本，请更新游戏；原文件未改动。"}
+	var loaded: bool=load_game() if read_existing else false
+	if not loaded and legacy.get("ok",false):
+		var prepared:=prepare_cloud_bundle(legacy.bundle,legacy.images)
+		if not prepared.get("ok",false): return prepared
+		var installed:=install_cloud_bundle(prepared)
+		if not installed.get("ok",false): return installed
+		loaded=true
+	return {"ok":true,"hasSave":loaded,"corrupt":read_existing and had_file and not loaded}
+
+func capture_cloud_bundle(fresh: bool=false) -> Dictionary:
+	if developer_mode: return {"ok":false,"message":"开发预览不能覆盖正式存档。"}
+	var clean: Dictionary=initial() if fresh else d.duplicate(true)
+	if fresh and d.get("cc98") is Dictionary: clean.cc98=d.cc98.duplicate(true)
+	clean.ui.controlCenterOpen=false;clean.ui.inventoryOpen=false;clean.ui.selectedItem=null;clean.native.selected_item=""
+	if not validate_snapshot(clean): return {"ok":false,"message":"当前进度尚未通过存档校验。"}
+	var service=load("res://scripts/data/cc98_store.gd")
+	var posts: String=FileAccess.get_file_as_string(service.posts_path) if FileAccess.file_exists(service.posts_path) else "[]"
+	var overrides: String=FileAccess.get_file_as_string(service.quest_path) if FileAccess.file_exists(service.quest_path) else "{}"
+	if posts.to_utf8_buffer().size()>8*1024*1024 or overrides.to_utf8_buffer().size()>8*1024*1024: return {"ok":false,"message":"个人编辑文档过大。"}
+	if not service.validate_bundle({"posts":JSON.parse_string(posts),"questPostOverrides":JSON.parse_string(overrides)}): return {"ok":false,"message":"个人编辑文档无效。"}
+	var archive: Dictionary=JOURNAL_ARCHIVE.pack(clean)
+	if not archive.ok: return {"ok":false,"message":"存档照片缺失或损坏。"}
+	var assets: Array=archive.images.keys();assets.sort()
+	var files: Array=[]
+	if not fresh:
+		for path: String in [SAVE_PATH,service.posts_path,service.quest_path]:
+			if FileAccess.file_exists(path): files.append({"path":ProjectSettings.globalize_path(path),"digest":FileAccess.get_sha256(path)})
+		for photo: Dictionary in JOURNAL_ARCHIVE.photos(clean):
+			if photo.has("nativeImagePath"): files.append({"path":ProjectSettings.globalize_path(photo.nativeImagePath),"digest":str(photo.nativeImageSha256)})
+	# Cloud paths are portable and do not identify another local account folder.
+	for photo: Dictionary in JOURNAL_ARCHIVE.photos(clean):
+		if photo.has("nativeImagePath"): photo.nativeImagePath="user://qizhen_journal/imported-"+str(photo.nativeImageSha256)+".png"
+	var core:=JSON.stringify({"format":"7-55-godot-native","version":1,"sourceVersion":SOURCE_VERSION,"state":clean})
+	if core.to_utf8_buffer().size()>8*1024*1024: return {"ok":false,"message":"核心存档过大。"}
+	return {"ok":true,"bundle":{"bundleVersion":1,"stateText":core,"stores":{"posts":posts,"questPostOverrides":overrides},"assets":assets,
+		"summary":{"chapter":int(clean.native.chapter),"task":("新的校园故事" if fresh else objective()).left(200)}},"images":archive.images,"files":files}
+
+func prepare_cloud_bundle(bundle: Variant, images: Dictionary) -> Dictionary:
+	if not bundle is Dictionary or bundle.get("bundleVersion")!=1 or not bundle.get("stateText") is String or not bundle.get("stores") is Dictionary: return {"ok":false,"message":"存档封装不兼容。"}
+	var raw: String=bundle.stateText
+	if raw.to_utf8_buffer().size()>8*1024*1024 or not load("res://scripts/save_json_guard.gd").new().accepts(raw): return {"ok":false,"message":"核心存档格式无效。"}
+	var envelope: Variant=JSON.parse_string(raw)
+	if not envelope is Dictionary or envelope.get("format")!="7-55-godot-native" or envelope.get("version")!=1 or int(envelope.get("sourceVersion",0))<1 or int(envelope.sourceVersion)>SOURCE_VERSION: return {"ok":false,"message":"此存档需要兼容的游戏版本，请保留原档并更新游戏。"}
+	if not validate_snapshot(envelope.get("state"),envelope.get("sourceVersion")==35) or not _valid_native_v36_fields(envelope): return {"ok":false,"message":"剧情或道具存档无效，当前进度未改变。"}
+	var documents: Dictionary={}
+	for key: String in ["posts","questPostOverrides"]:
+		var text: Variant=bundle.stores.get(key)
+		if not text is String or text.to_utf8_buffer().size()>8*1024*1024: return {"ok":false,"message":"个人编辑文档无效。"}
+		documents[key]=JSON.parse_string(text)
+	if not load("res://scripts/data/cc98_store.gd").validate_bundle(documents): return {"ok":false,"message":"个人编辑文档未通过校验。"}
+	_upgrade_legacy_net_receipt(envelope.state);_upgrade_legacy_v36_fields(envelope.state)
+	var candidate: Dictionary=merge_defaults(initial(),envelope.state)
+	_sanitize_runtime_resume(candidate)
+	var archive: Dictionary=JOURNAL_ARCHIVE.prepare(candidate,images)
+	if not archive.ok: return {"ok":false,"message":"照片未下载完整或校验失败，当前进度未改变。"}
+	return {"ok":true,"state":candidate,"images":archive.images,"stores":documents}
+
+func install_cloud_bundle(prepared: Dictionary) -> Dictionary:
+	if not prepared.get("ok",false) or not validate_snapshot(prepared.get("state")): return {"ok":false,"message":"不能载入未经校验的存档。"}
+	var candidate: Dictionary=prepared.state.duplicate(true)
+	var installed: Dictionary=JOURNAL_ARCHIVE.install(candidate,prepared.images)
+	if not installed.ok: return {"ok":false,"message":"照片写入失败，当前进度未改变。"}
+	var service=load("res://scripts/data/cc98_store.gd")
+	var paths: Array[String]=[SAVE_PATH,BACKUP_PATH,service.posts_path,service.quest_path]
+	var prior: Dictionary={}
+	for path in paths: prior[path]=FileAccess.get_file_as_bytes(path) if FileAccess.file_exists(path) else null
+	var previous: Dictionary=d.duplicate(true)
+	var document_error: Error=service.import_bundle(prepared.stores)
+	if document_error==OK:
+		d=candidate
+		if save_game():
+			story_reset.emit();changed.emit()
+			return {"ok":true}
+	d=previous
+	for path in prior:
+		if prior[path]==null:
+			if FileAccess.file_exists(path): DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+		else:
+			var file:=FileAccess.open(path,FileAccess.WRITE)
+			if file: file.store_buffer(prior[path]);file.close()
+	JOURNAL_ARCHIVE.rollback(installed.created)
+	return {"ok":false,"message":"本机写入失败，原进度已保留，请重试或导出备份。"}
+
 func _safe_json(value: Variant, depth: int = 0) -> bool:
 	if depth > 24: return false
 	if value is Dictionary:
@@ -543,7 +660,7 @@ func _valid_stair_proof(value: Dictionary) -> bool:
 	return load("res://scripts/games/chapter4_stair_model.gd").validate_result(proof)
 
 func save_game() -> bool:
-	if developer_mode or _saving or not validate_snapshot(d): return false
+	if not persistence_ready or developer_mode or _saving or not validate_snapshot(d): return false
 	_saving = true
 	var clean := d.duplicate(true)
 	clean.ui.controlCenterOpen = false
@@ -574,6 +691,7 @@ func save_game() -> bool:
 			backup.close()
 	var error := DirAccess.rename_absolute(ProjectSettings.globalize_path(SAVE_PATH + ".tmp"),ProjectSettings.globalize_path(SAVE_PATH))
 	_saving = false
+	if error==OK: snapshot_saved.emit()
 	return error == OK
 
 func _read_native_save(path: String) -> Dictionary:
@@ -628,6 +746,9 @@ func _sanitize_runtime_resume(snapshot: Dictionary) -> void:
 		if str(key).begins_with("qizhen_lake:"): positions.erase(key)
 	if snapshot.native.scene=="qizhen_lake": snapshot.native.player={}
 
+func at_unstarted_opening() -> bool:
+	return int(d.native.chapter) == 1 and d.native.page == "alarm" and d.native.scene == "" and not d.native.get("alarm_ringing", false)
+
 func load_game() -> bool:
 	for path in [SAVE_PATH,BACKUP_PATH]:
 		var envelope := _read_native_save(path)
@@ -640,9 +761,12 @@ func load_game() -> bool:
 
 func export_save(path: String) -> Error:
 	if not validate_snapshot(d): return ERR_INVALID_DATA
-	var archive: Dictionary=JOURNAL_ARCHIVE.pack(d)
-	if not archive.ok: return archive.error
-	var payload := JSON.stringify({"format":"7-55-godot-native","version":1,"sourceVersion":SOURCE_VERSION,"state":d,"journalImages":archive.images},"\t")
+	var captured:=capture_cloud_bundle()
+	if not captured.get("ok",false): return ERR_INVALID_DATA
+	var envelope: Dictionary=JSON.parse_string(captured.bundle.stateText)
+	envelope.journalImages=captured.images
+	envelope.cc98Stores={"posts":JSON.parse_string(captured.bundle.stores.posts),"questPostOverrides":JSON.parse_string(captured.bundle.stores.questPostOverrides)}
+	var payload := JSON.stringify(envelope,"\t")
 	if payload.to_utf8_buffer().size() > MAX_PORTABLE_SAVE_BYTES or not load("res://scripts/save_json_guard.gd").new().accepts(payload): return ERR_INVALID_DATA
 	var file := FileAccess.open(path,FileAccess.WRITE)
 	if not file: return FileAccess.get_open_error()
@@ -678,6 +802,10 @@ func import_save(path: String) -> Dictionary:
 		_upgrade_legacy_net_receipt(envelope.state)
 		_upgrade_legacy_v36_fields(envelope.state)
 		candidate = merge_defaults(initial(),envelope.state)
+		if envelope.has("cc98Stores"):
+			store_service=load("res://scripts/data/cc98_store.gd")
+			if not store_service.validate_bundle(envelope.cc98Stores): return {"ok":false,"message":"个人编辑内容无效，当前进度未改变。"}
+			pending_stores=envelope.cc98Stores
 		if envelope.has("journalImages"):
 			var prepared: Dictionary=JOURNAL_ARCHIVE.prepare(candidate,envelope.journalImages)
 			if not prepared.ok: return {"ok":false,"message":"存档照片损坏或不完整，当前进度未改变。"}
