@@ -38,6 +38,7 @@ jobs:
           sparse-checkout: |
             platform
             .github/scripts
+            godot_native/web
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

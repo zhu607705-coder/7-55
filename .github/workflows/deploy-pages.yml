@@ -16,6 +16,8 @@ on:
     branches:
       - main
       - codex/godot-complete-20261019
+    paths-ignore:
+      - 'platform/**'
   workflow_dispatch:
 
 permissions:
@@ -27,11 +29,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  scope:
-    uses: ./.github/workflows/product-scope.yml
   build:
-    needs: scope
-    if: needs.scope.outputs.game == 'true'
     name: Build Godot Web game
     runs-on: ubuntu-latest
     timeout-minutes: 25

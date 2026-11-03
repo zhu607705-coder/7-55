@@ -7,7 +7,8 @@ export function changedProducts(paths) {
   let platform = false;
   for (const file of paths) {
     if (['AGENTS.md', 'README.md', 'CONTRIBUTING.md', '.gitignore', '.github/workflows/product-scope.yml'].includes(file)
-        || file.startsWith('.github/scripts/product-scope')) {
+        || file.startsWith('.github/scripts/product-scope')
+        || ['godot_native/web/player-account.js', 'godot_native/web/cloud-saves.js'].includes(file)) {
       game = platform = true;
     } else if (file.startsWith('platform/') || file === '.github/workflows/platform-ci.yml') {
       platform = true;

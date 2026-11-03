@@ -10,6 +10,8 @@ test('game, mixed, shared, renamed and deleted paths are conservative', () => {
   assert.deepEqual(changedProducts(['src/App.tsx', 'platform/apps/web/src/main.tsx']), { game: true, platform: true });
   assert.deepEqual(changedProducts(['.github/scripts/product-scope.mjs']), { game: true, platform: true });
   assert.deepEqual(changedProducts(['README.md']), { game: true, platform: true });
+  assert.deepEqual(changedProducts(['godot_native/web/player-account.js']), { game: true, platform: true });
+  assert.deepEqual(changedProducts(['godot_native/web/cloud-saves.js']), { game: true, platform: true });
   assert.deepEqual(changedProducts(['platform/deleted-file.ts']), { game: false, platform: true });
 });
 test('PRs compare explicit base/head; manual and new branches run both', () => {
