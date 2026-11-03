@@ -147,8 +147,8 @@ try{
  document.hidden=false;emit(documentListeners,'visibilitychange');now+=30000;api.frame(now);
  check(timedDesk.currentHeight===beforePause,'visibility resume first frame has no catch-up jump');
  now+=1000;api.frame(now);check(Math.abs(timedDesk.currentHeight-beforePause-.12)<1e-8,'visible animation resumes at authored speed');
- emit(windowListeners,'blur');const beforeBlur=timedDesk.currentHeight;now+=2000;api.frame(now);
- check(timedDesk.currentHeight===beforeBlur,'visible but blurred window pauses desk animation');
+ emit(windowListeners,'blur');const beforeBlur=timedDesk.currentHeight;now+=30000;api.frame(now);
+ check(timedDesk.currentHeight===beforeBlur,'visible but blurred window pauses desk animation through a 30s gap');
  const pausedDraws=context.flcReview.snapshot().renderedFrames;
  const pausedMatrixVersions=timedDesk.parts.map(part=>part.batch.instanceMatrix.version);
  now+=2000;api.frame(now);
@@ -156,8 +156,7 @@ try{
  check(timedDesk.parts.every((part,i)=>part.batch.instanceMatrix.version===pausedMatrixVersions[i]),'paused desk does not rewrite instance matrices');
 
  emit(windowListeners,'focus');now+=30000;api.frame(now);check(timedDesk.currentHeight===beforeBlur,'focus resume first frame has no catch-up jump');
- now+=60000;api.frame(now);check(timedDesk.currentHeight===beforeBlur,'unannounced long suspension does not jump');
- now+=2000;api.frame(now);check(timedDesk.currentHeight===1.10,'animation completes after pause');
+ now+=60000;api.frame(now);check(timedDesk.currentHeight===1.10,'foreground 60s gap after resume reaches exact target; duration alone cannot imply suspension');
  clockNow=now;api.toggleDesk(deskNode);now+=4000;api.frame(now);check(timedDesk.currentHeight===.73,'reset seated before 60fps run');
  clockNow=now;api.toggleDesk(deskNode);const sixtyStart=now;let sixtyFrames=0;
  while(timedDesk.currentHeight<1.10-.0001&&sixtyFrames<200){sixtyFrames++;now=sixtyStart+sixtyFrames*1000/60;api.frame(now);}
@@ -173,9 +172,43 @@ try{
  const otherDesk=api.deskRoots.find(d=>d!==deskNode);clockNow=now;api.toggleDesk(otherDesk);
  clockNow=now+1900;api.toggleDesk(deskNode);now+=2000;api.frame(now);
  check(Math.abs(otherDesk.userData.currentHeight-.97)<1e-8&&Math.abs(timedDesk.currentHeight-.742)<1e-8,'each desk owns its own target start time');
+ // Long foreground frames are real elapsed time, not implicit pause signals.
+ // Keep the target-change timestamp independent of the preceding RAF.
+ clockNow=now;api.toggleDesk(deskNode);now+=4000;api.frame(now);
+ check(timedDesk.currentHeight===.73,'seated before long-frame timing cases');
+ for(const gap of [6000,10000,30000]){
+  clockNow=now;api.toggleDesk(deskNode);now+=gap;api.frame(now);
+  check(timedDesk.currentHeight===1.10,'foreground '+gap+'ms lift reaches exact standing target');
+  clockNow=now;api.toggleDesk(deskNode);now+=gap;api.frame(now);
+  check(timedDesk.currentHeight===.73,'foreground '+gap+'ms lowering reaches exact seated target');
+  clockNow=now+gap-100;api.toggleDesk(deskNode);now+=gap;api.frame(now);
+  check(Math.abs(timedDesk.currentHeight-.742)<1e-8,'late click in '+gap+'ms frame receives only post-click 100ms');
+  clockNow=now+gap-50;api.toggleDesk(deskNode);now+=gap;api.frame(now);
+  check(Math.abs(timedDesk.currentHeight-.736)<1e-8,'late reversal in '+gap+'ms frame receives only post-click 50ms');
+  now+=100;api.frame(now);check(timedDesk.currentHeight===.73,'late reversal clamps at exact seated target');
+  for(const pause of ['hidden','blur']){
+   clockNow=now;api.toggleDesk(deskNode);now+=1000;api.frame(now);
+   const height=timedDesk.currentHeight;
+   if(pause==='hidden'){document.hidden=true;emit(documentListeners,'visibilitychange');}else emit(windowListeners,'blur');
+   now+=gap;api.frame(now);check(timedDesk.currentHeight===height,pause+' '+gap+'ms gap does not animate');
+   const draws=context.flcReview.snapshot().renderedFrames,versions=timedDesk.parts.map(part=>part.batch.instanceMatrix.version);
+   now+=gap;api.frame(now);
+   check(context.flcReview.snapshot().renderedFrames===draws,pause+' repeated long frame does not dirty render');
+   check(timedDesk.parts.every((part,i)=>part.batch.instanceMatrix.version===versions[i]),pause+' repeated long frame does not write matrices');
+   if(pause==='hidden'){document.hidden=false;emit(documentListeners,'visibilitychange');}else emit(windowListeners,'focus');
+   now+=gap;api.frame(now);check(timedDesk.currentHeight===height,pause+' resume first frame discards gap');
+   now+=gap;api.frame(now);check(timedDesk.currentHeight===1.10,pause+' next foreground frame reaches exact target');
+   clockNow=now;api.toggleDesk(deskNode);now+=gap;api.frame(now);
+   check(timedDesk.currentHeight===.73,pause+' case restores exact seated target');
+  }
+ }
+ api.enterWalk();clockNow=now;api.toggleDesk(deskNode);now+=1000;api.frame(now);
+ elements.get('overview').onclick();
+ check(api.state.mode==='overview'&&timedDesk.currentHeight<timedDesk.targetHeight,'ordinary overview exit remains immediate before long foreground frame');
+ now+=10000;api.frame(now);check(timedDesk.currentHeight===1.10,'unfinished lift reaches exact target after overview exit and 10s foreground frame');
  api.enterWalk();let measuredMove=null;const realMove=context.moveBody;context.moveBody=(...args)=>{measuredMove=Math.hypot(args[3],args[4]);return realMove(...args);};
- api.keys.add('KeyW');now+=2000;api.frame(now);api.keys.clear();context.moveBody=realMove;
- check(Math.abs(measuredMove-api.layout.speed*.05)<1e-8,'real moveBody displacement still uses 50ms collision dt at two-second RAF');
+ api.keys.add('KeyW');now+=30000;api.frame(now);api.keys.clear();context.moveBody=realMove;
+ check(Math.abs(measuredMove-api.layout.speed*.05)<1e-8,'real moveBody displacement still uses 50ms collision dt at thirty-second foreground RAF');
  api.setOverview();
  check(fs.readFileSync(path.join(web,'assets/'+(process.env.PHOTO_TEST_BUILDING||'building.glb'))).equals(originalGLB),'source GLB bytes untouched');check(JSON.stringify(api.layout)===physicalBefore,'source layout/colliders untouched by viewer actions');check(JSON.stringify(Object.keys(api.catalog.objects))===JSON.stringify(ids),'object identities stable across selection');check(errors.length===0,'no later logged exceptions');
  console.log(JSON.stringify({passed,sourceNodes,sourceMeshes,registeredObjects:ids.length,scope:'Actual '+(process.env.PHOTO_TEST_BUILDING||'building.glb')+' hierarchy/geometry and viewer state integration in Node VM. Renderer, DOM, network and chair/static generated assets mocked; photo assets use actual uncompressed GLBs via forced Draco fallback; embedded textures stripped in memory. NOT browser/GPU/pointer acceptance.'},null,2));

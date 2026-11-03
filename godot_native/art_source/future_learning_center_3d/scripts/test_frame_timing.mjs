@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import {frameTimeSteps} from '../web/frame_timing.js';
 let passed=0;
 const check=(ok,message)=>{assert.ok(ok,message);passed++;};
-for(const interval of [1000/60,1000,2000]){
+for(const interval of [1000/60,1000,2000,6000,10000,30000]){
  let previous=null,height=.73,now=0,frames=0;
- for(;height<1.10;frames++,now+=interval){
+ for(;height<1.10&&frames<1000;frames++,now+=interval){
   const step=frameTimeSteps(now,previous);previous=step.previous;
   height+=Math.min(1.10-height,.12*step.deskDt);
   check(step.walkDt<=.05,'walk dt never exceeds 50ms');
@@ -16,7 +16,7 @@ for(const interval of [1000/60,1000,2000]){
 }
 check(frameTimeSteps(2000,0).deskDt===2,'timestamp zero is a valid previous frame');
 check(frameTimeSteps(3000,2000).deskDt===1,'one-second foreground frame');
-check(frameTimeSteps(62000,2000).deskDt===0,'long suspension is discarded');
+check(frameTimeSteps(62000,2000).deskDt===60,'foreground duration alone is not evidence of suspension');
 check(frameTimeSteps(62000,2000).walkDt===.05,'long frame retains collision clamp');
 check(frameTimeSteps(1000,2000).deskDt===0,'backwards clock cannot reverse animation');
 check(frameTimeSteps(NaN,2000).deskDt===0,'non-finite interval cannot move furniture');
