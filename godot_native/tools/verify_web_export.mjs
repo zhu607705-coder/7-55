@@ -236,10 +236,10 @@ async function clickControl(nameOrText, match = 'either') {
   await clickPoint(point); await interval(350);
 }
 async function screenshot(name) { const data = (await active.cdp.send('Page.captureScreenshot', { format: 'png' }, 10000)).data; const bytes = Buffer.from(data, 'base64'); await writeFile(path.join(output, `${name}.png`), bytes); return { path: `${name}.png`, bytes: bytes.length, sha256: hash(bytes) }; }
-// Diagnostic only: one fixed-key readonly transaction, never a save/sync API.
+// Standalone guest acceptance: one fixed-key readonly transaction, never a save/sync API.
 // Its own bounded lifetime does not alter either acceptance deadline.
 function readOnlySaveProbe(identity) {
-  const result = { ...identity, database: '/userfs', key: '/userfs/SevenFiftyFiveNative/save.json', timings: {} };
+  const result = { ...identity, database: '/userfs', key: '/userfs/SevenFiftyFiveNative/profiles/guest/save.json', timings: {} };
   const mark = phase => { result.timings[phase] = { wallMs: Date.now(), monotonicMs: performance.now() }; };
   mark('started'); result.documentHidden = document.hidden;
   return new Promise(resolve => {

@@ -416,6 +416,7 @@ func activate_profile(key: String, read_existing: bool=true) -> Dictionary:
 	var destination: String="user://profiles/"+key+"/"
 	if key=="guest" and read_existing and not FileAccess.file_exists(destination+"save.json"):
 		var old: Dictionary=_read_native_save("user://save.json")
+		if old.is_empty(): old=_read_native_save("user://save.previous.json")
 		if not old.is_empty():
 			ProfileStorage.profile="legacy";SAVE_PATH="user://save.json";BACKUP_PATH="user://save.previous.json"
 			stores.posts_path="user://cc98-posts.json";stores.quest_path="user://cc98-quest-post-overrides.json"

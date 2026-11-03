@@ -87,5 +87,13 @@ func run() -> void:
 	handle=FileAccess.open(state.BACKUP_PATH,FileAccess.WRITE);handle.store_buffer(future_bytes);handle.close()
 	check(not state.activate_profile(a).ok,"future backup also blocks automatic replacement")
 	check(FileAccess.get_file_as_string(disk_path)==valid_disk and FileAccess.get_file_as_bytes(state.BACKUP_PATH)==future_bytes,"valid main and future backup both remain intact")
+	var legacy: Dictionary=state.initial();legacy.native.page="phone_home"
+	var legacy_bytes:=JSON.stringify({"format":"7-55-godot-native","version":1,"sourceVersion":state.SOURCE_VERSION,"state":legacy})
+	handle=FileAccess.open("user://save.json",FileAccess.WRITE);handle.store_string("{broken");handle.close()
+	handle=FileAccess.open("user://save.previous.json",FileAccess.WRITE);handle.store_string(legacy_bytes);handle.close()
+	var guest: Dictionary=state.activate_profile("guest")
+	check(guest.get("hasSave",false) and state.d.native.page=="phone_home","legacy guest migration recovers its valid previous save when main is corrupt")
+	check(FileAccess.get_file_as_string("user://save.json")=="{broken" and FileAccess.get_file_as_string("user://save.previous.json")==legacy_bytes,"legacy migration preserves both original files")
+	check(Posts.load_posts().all(func(entry):return str(entry.id)!="cloud-personal-note"),"legacy guest recovery does not borrow account A documents")
 	print("CLOUD_PROFILES ",checks," checks; ",failures," failures")
 	quit(0 if failures==0 else 1)
