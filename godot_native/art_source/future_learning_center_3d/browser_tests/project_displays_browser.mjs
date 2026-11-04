@@ -33,6 +33,7 @@ try{
    await page.screenshot({path:path.join(out,name+'-poster.png')});
    await page.getByRole('button',{name:'关闭项目展示'}).click();
    await page.locator('#project-display-dialog').waitFor({state:'hidden'});
+   await page.waitForFunction(()=>document.getElementById('result').textContent.includes('已关闭'));
    assert.match(await page.locator('#result').innerText(),/已关闭/);
    await page.locator('#monitor').click();
    await page.locator('#project-display-dialog').waitFor({state:'visible'});

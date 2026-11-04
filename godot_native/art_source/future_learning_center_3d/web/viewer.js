@@ -309,6 +309,42 @@ function hitIsVisible(hit){
  const material=Array.isArray(hit.object.material)?hit.object.material[hit.face?.materialIndex||0]:hit.object.material;
  return !material.clippingPlanes?.some(plane=>plane.distanceToPoint(hit.point)<0);
 }
+/** Read-only acceptance diagnostics. Projects actual live geometry and reports the
+ * same nearest visible ray hit used by picking. It never moves the camera,
+ * alters visibility, opens content or synthesizes input. */
+function projectDisplayDiagnostics({geometry=true}={}){
+ scene.updateMatrixWorld(true);camera.updateMatrixWorld();
+ const ray=new THREE.Raycaster(),ndc=new THREE.Vector2(),matrix=new THREE.Matrix4();
+ const visibleRoots=[...roots.values(),placeholder].filter(r=>r?.visible);
+ const hitsAt=(x,y)=>{ndc.set(x/innerWidth*2-1,-y/innerHeight*2+1);ray.setFromCamera(ndc,camera);return ray.intersectObjects(visibleRoots,true).filter(hitIsVisible);};
+ const firstAt=(x,y)=>hitsAt(x,y)[0];
+ const describe=hit=>{if(!hit)return null;const entry=hit.object.userData.deskEntries?.[hit.instanceId];return {kind:hit.object.userData.kind||null,name:hit.object.name,instanceId:hit.instanceId??null,distance:hit.distance,display:displayTargetFromHit(hit),control:!!entry?.control,deskId:entry?.desk?.userData.spatialId||null};};
+ const view={active:projectDisplay?.active||null,camera:{position:camera.position.toArray(),quaternion:camera.quaternion.toArray()},mode:state.mode,inspect:state.inspect};
+ if(!geometry)return view;
+ const targets=[],occluded=[];
+ for(const root of visibleRoots)root.traverse(mesh=>{
+  if(!mesh.isMesh)return;for(let owner=mesh;owner;owner=owner.parent)if(!owner.visible)return;
+  const entries=mesh.isInstancedMesh?mesh.userData.deskEntries:null;
+  const count=entries?.length||(mesh.userData.reviewPoster?1:0);
+  for(let index=0;index<count;index++){
+   const instanceId=entries?index:undefined,target=displayTargetFromHit({object:mesh,instanceId});if(!target)continue;
+   mesh.geometry.computeBoundingBox();const box=mesh.geometry.boundingBox,center=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3());
+   if(entries){mesh.getMatrixAt(index,matrix);matrix.premultiply(mesh.matrixWorld);}else matrix.copy(mesh.matrixWorld);
+   const samples=[[0,0,0],[.3,0,0],[-.3,0,0],[0,.3,0],[0,-.3,0],[0,0,.3],[0,0,-.3]];
+   for(const sample of samples){
+    const world=center.clone().add(new THREE.Vector3(...sample).multiply(size)).applyMatrix4(matrix),point=world.clone().project(camera);
+    if(point.z < -1||point.z>1||Math.abs(point.x)>=.98||Math.abs(point.y)>=.98)continue;
+    const x=(point.x+1)*innerWidth/2,y=(1-point.y)*innerHeight/2;
+    if(document.elementFromPoint(x,y)!==canvas)continue;
+    const hits=hitsAt(x,y),hit=hits[0],nearest=describe(hit),row={...target,x,y,world:world.toArray(),distance:world.distanceTo(camera.position),nearest};
+    if(nearest?.display?.id===target.id){targets.push(row);break;}
+    if(nearest?.kind==='wall'&&hit.distance<row.distance-.02&&hits.some(h=>displayTargetFromHit(h)?.id===target.id))occluded.push({...row,behindWall:true});
+   }
+  }
+ });
+ const controls=deskControls().filter(c=>c.inFront&&c.distance<3&&document.elementFromPoint(c.x,c.y)===canvas).map(c=>({id:c.desk.userData.spatialId,x:c.x,y:c.y,height:c.height,target:c.target,distance:c.distance,nearest:describe(firstAt(c.x,c.y))}));
+ return {...view,targets,occluded,controls};
+}
 function pick(e){
  pointer.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);raycaster.setFromCamera(pointer,camera);
  const hits=raycaster.intersectObjects([...roots.values(),placeholder].filter(r=>r.visible),true).filter(hitIsVisible);if(!hits.length)return;
@@ -357,7 +393,7 @@ function updateStick(e){const r=joystick.getBoundingClientRect(),max=r.width*.30
 for(const event of ['pointerup','pointercancel','lostpointercapture'])joystick.addEventListener(event,e=>{if(joy.pointer!==e.pointerId)return;joy.pointer=null;joy.x=joy.y=0;$('stick').style.transform='';});
 canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();failure('画面连接已中断，请重新载入当前空间。');});
 // Read-only diagnostics for acceptance; tests exercise ordinary pointer/key/touch input.
-window.flcReview={retainedRoomFurniture:()=>[...roots.entries()].flatMap(([floor,root])=>root.children.filter(m=>m.isMesh&&m.userData.retainedSourceNames?.length).map(m=>({floor,visible:root.visible&&m.visible,sourceNames:m.userData.retainedSourceNames,geometryUUID:m.geometry.uuid,triangles:(m.geometry.index?.count||m.geometry.attributes.position.count)/3,collider:layout.floors[floor].colliders.find(c=>c.id==='Vending machine')}))),placedAssets:()=>staticInstances.filter(i=>i.root.userData.photoBinding).map(i=>{
+window.flcReview={projectDisplays:projectDisplayDiagnostics,retainedRoomFurniture:()=>[...roots.entries()].flatMap(([floor,root])=>root.children.filter(m=>m.isMesh&&m.userData.retainedSourceNames?.length).map(m=>({floor,visible:root.visible&&m.visible,sourceNames:m.userData.retainedSourceNames,geometryUUID:m.geometry.uuid,triangles:(m.geometry.index?.count||m.geometry.attributes.position.count)/3,collider:layout.floors[floor].colliders.find(c=>c.id==='Vending machine')}))),placedAssets:()=>staticInstances.filter(i=>i.root.userData.photoBinding).map(i=>{
  const root=i.root,room=spatialCatalog?.objects?.[root.userData.spatialId]?.room;
  const parts=new Map();root.traverse(m=>{if(!m.isMesh)return;const id=m.userData.photoAsset||i.slot.asset;if(!parts.has(id))parts.set(id,{asset:id,geometryUUIDs:[],materialUUIDs:[]});parts.get(id).geometryUUIDs.push(m.geometry.uuid);parts.get(id).materialUUIDs.push(m.material.uuid);});
  return {id:root.userData.photoBinding,floor:root.userData.floor,room:room||layout.floors[root.userData.floor].rooms.find(r=>root.position.x>=r.bounds[0]&&root.position.x<=r.bounds[2]&&root.position.z>=r.bounds[1]&&root.position.z<=r.bounds[3])?.id,visible:root.visible&&root.parent.visible,spatialId:root.userData.spatialId,worldPosition:root.getWorldPosition(new THREE.Vector3()).toArray(),placementAssets:root.userData.photoParts||[i.slot.asset],parts:[...parts.values()]};

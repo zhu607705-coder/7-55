@@ -10,13 +10,14 @@ permissions:
 jobs:
   spatial-browser:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: godot_native/art_source/future_learning_center_3d
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           sparse-checkout: godot_native/art_source/future_learning_center_3d
       - uses: actions/setup-node@v4
@@ -41,6 +42,18 @@ jobs:
           name: flc-project-displays-browser
           path: godot_native/art_source/future_learning_center_3d/review/project_displays_browser/
           if-no-files-found: warn
+      - name: Actual building screen and poster pointer and touch acceptance
+        if: always()
+        env:
+          TEST_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node browser_tests/project_displays_building_browser.mjs
+      - name: Preserve actual building display evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flc-project-displays-building
+          path: godot_native/art_source/future_learning_center_3d/review/project_displays_building/
+          if-no-files-found: error
       - name: Actual WebGL pointer and touch acceptance
         if: always()
         env:

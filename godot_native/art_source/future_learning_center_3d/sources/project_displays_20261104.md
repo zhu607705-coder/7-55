@@ -32,3 +32,11 @@ The reference ramen website's interaction was not observed, so this candidate ma
 
 Run the registered CI tests on the exact final commit, then in the real building tap visible screen panels in both overview and walk modes, test two different workstation owners, lift a desk and retest the moving screen, close and reopen, verify walls occlude clicks, and check 4F posters. Capture actual scene screenshots. Do not call this candidate browser-accepted before those results are available.
 
+
+## Added actual-building acceptance (publication follow-on)
+
+`project_displays_building_browser.mjs` now loads the actual building GLBs for independent desktop and simulated-touch runs. The test uses ordinary canvas clicks/taps and camera drags, never forced clicks or direct content-opening hooks. Read-only diagnostics project current instanced geometry and check the same nearest visible ray hit as the real picker. They also verify that a blocked sample intersects an actual wall before an actual display on the same ray.
+
+The gate requires two different overview monitor owners, walk-mode screen opening, close/Escape/reopen, an actual desk-edge control followed by a moving screen click, real full-height wall occlusion, and a corridor poster. It saves exact head/checkout/tree provenance, screenshots, per-check results and traces, including failure evidence. Existing DOM and spatial tests remain independent. The workflow checks out the exact PR head.
+
+The DOM fixture now waits for the native asynchronous close event before checking its onClose result. No UI behavior or action timeout was changed for that correction. New actual-building tests have passed syntax checks only in this sparse workspace; exact-head hosted execution is required.
