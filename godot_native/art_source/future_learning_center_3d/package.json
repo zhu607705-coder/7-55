@@ -28,6 +28,8 @@
     "test:photo-browser": "node browser_tests/photo_browser.mjs",
     "test:workstation": "node scripts/test_workstation_review.mjs",
     "test:workstation-browser": "node browser_tests/workstation_browser.mjs",
-    "test:frame-timing": "node scripts/test_frame_timing.mjs"
+    "test:frame-timing": "node scripts/test_frame_timing.mjs",
+    "test:placed-assets": "node scripts/test_placed_assets.mjs",
+    "test:placed-assets-browser": "node browser_tests/placed_assets_browser.mjs"
   }
 }

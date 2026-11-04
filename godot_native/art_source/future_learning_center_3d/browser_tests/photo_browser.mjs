@@ -28,7 +28,7 @@ try{
    window.__startPhotoTiming=()=>{d.active=true;d.observerRaf=[];d.before=state();let previous=null;const sample=now=>{if(!d.active)return;d.observerRaf.push({timeMs:now,gapMs:previous===null?0:now-previous,hidden:document.hidden,focused:document.hasFocus()});if(d.observerRaf.length>64)d.observerRaf.shift();previous=now;requestAnimationFrame(sample);};requestAnimationFrame(sample);return d.before;};
   });
   await p.goto(base+'/?floor=3&room=studio_1&mode=walk');await p.waitForFunction(()=>flcReview?.snapshot().ready,null,{timeout:90000});
-  const info=await photos(p);check(info.desks.length===40,'forty photo desktops '+mobile);check(info.static.length===4,'sofa, two pantry appliances and fridge '+mobile);check(info.errors.length===0,'all photo assets decoded '+mobile);
+  const info=await photos(p);check(info.desks.length===40,'forty photo desktops '+mobile);check(info.static.length===7,'four original bindings plus two seats and one workshop composition '+mobile);for(const id of ['rest/pantry-sofa','pantry/photo_pantry_grey_roundfront_appliance','pantry/photo_pantry_white_cleartop_appliance','pantry/fridge'])check(info.static.filter(s=>s.binding===id).length===1,'original binding retained once '+id+' '+mobile);check(info.errors.length===0,'all photo assets decoded '+mobile);
   check(info.pending.some(item=>item.id==='hardware-304'),'unmapped hardware remains pending '+mobile);
   await p.screenshot({path:path.join(out,`studio-${mobile?'mobile':'desktop'}.png`)});
   if(!mobile){

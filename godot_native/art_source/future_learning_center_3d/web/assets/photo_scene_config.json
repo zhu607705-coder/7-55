@@ -23,6 +23,33 @@
     },
     "photo_side_by_side_fridge": {
       "folder": "models/photo_scene_20261103/photo_side_by_side_fridge"
+    },
+    "lounge_single_corrected": {
+      "folder": "models/photo_lounge_corrected/lounge_single_corrected"
+    },
+    "lounge_loose_cushion": {
+      "folder": "models/photo_lounge_corrected/lounge_loose_cushion"
+    },
+    "photo_workshop_green_tool_cart": {
+      "folder": "models/photo_workshop/photo_workshop_green_tool_cart"
+    },
+    "photo_workshop_small_vise": {
+      "folder": "models/photo_workshop/photo_workshop_small_vise"
+    },
+    "photo_workshop_blue_driver_rack": {
+      "folder": "models/photo_workshop/photo_workshop_blue_driver_rack"
+    },
+    "photo_workshop_red_flat_case": {
+      "folder": "models/photo_workshop/photo_workshop_red_flat_case"
+    },
+    "photo_solder_station_set": {
+      "folder": "models/photo_bench_contents/photo_solder_station_set"
+    },
+    "photo_wire_spool": {
+      "folder": "models/photo_bench_contents/photo_wire_spool"
+    },
+    "photo_loose_test_leads": {
+      "folder": "models/photo_bench_contents/photo_loose_test_leads"
     }
   },
   "bindings": [
@@ -1558,6 +1585,163 @@
         }
       ],
       "placementNote": "Original centre moved 10 mm left; matching Refrigerator collider updated only. East wall clearance is 9 mm in approximate model, not a construction tolerance."
+    },
+    {
+      "id": "rest/single-43",
+      "floor": "3",
+      "sourceNodeName": "office_chair.043",
+      "status": "active",
+      "kind": "static",
+      "label": "照片单座与靠枕（候选摆放）",
+      "parts": [
+        {
+          "asset": "lounge_single_corrected",
+          "position": [
+            0,
+            0,
+            -0.1
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "lounge_loose_cushion",
+          "position": [
+            0,
+            0.45675,
+            -0.225
+          ],
+          "yaw": 3.141592653589793
+        }
+      ],
+      "collision": {
+        "replaceCenter": [
+          14.8734104,
+          38.0008696
+        ]
+      },
+      "placementNote": "Existing pantry conversation chair anchor; 0.10 m outward offset keeps the unscaled photo chair clear of the original table. Photo proportion, not surveyed placement."
+    },
+    {
+      "id": "rest/single-44",
+      "floor": "3",
+      "sourceNodeName": "office_chair.044",
+      "status": "active",
+      "kind": "static",
+      "label": "照片单座（候选摆放）",
+      "parts": [
+        {
+          "asset": "lounge_single_corrected",
+          "position": [
+            0,
+            0,
+            -0.1
+          ],
+          "yaw": 3.141592653589793
+        }
+      ],
+      "collision": {
+        "replaceCenter": [
+          16.2734104,
+          38.0008696
+        ]
+      },
+      "placementNote": "Existing pantry conversation chair anchor; 0.10 m outward offset keeps the unscaled photo chair clear of the original table. Photo proportion, not surveyed placement."
+    },
+    {
+      "id": "xlab/workshop-candidate",
+      "floor": "3",
+      "sourceNodeName": "xlab window base",
+      "status": "active",
+      "kind": "static",
+      "label": "工具车与机械电子工具（X-Lab候选摆放）",
+      "retainOriginal": true,
+      "floorSpace": true,
+      "parts": [
+        {
+          "asset": "photo_workshop_green_tool_cart",
+          "position": [
+            24.9,
+            0,
+            18
+          ],
+          "yaw": -1.5707963267948966
+        },
+        {
+          "asset": "photo_workshop_green_tool_cart",
+          "position": [
+            24.9,
+            0,
+            22
+          ],
+          "yaw": -1.5707963267948966
+        },
+        {
+          "asset": "photo_workshop_small_vise",
+          "position": [
+            24.84,
+            0.8875,
+            17.82
+          ],
+          "yaw": -1.5707963267948966
+        },
+        {
+          "asset": "photo_workshop_blue_driver_rack",
+          "position": [
+            25.02,
+            0.8875,
+            17.88
+          ],
+          "yaw": -1.5707963267948966
+        },
+        {
+          "asset": "photo_workshop_red_flat_case",
+          "position": [
+            24.85,
+            0.8875,
+            18.2
+          ],
+          "yaw": -1.5707963267948966
+        },
+        {
+          "asset": "photo_solder_station_set",
+          "position": [
+            24.88,
+            0.8875,
+            21.86
+          ],
+          "yaw": -1.5707963267948966
+        },
+        {
+          "asset": "photo_wire_spool",
+          "position": [
+            24.78,
+            0.8875,
+            22.12
+          ],
+          "yaw": -1.5707963267948966
+        },
+        {
+          "asset": "photo_loose_test_leads",
+          "position": [
+            24.96,
+            0.8875,
+            22.22
+          ],
+          "yaw": -1.5707963267948966
+        }
+      ],
+      "collision": {
+        "partIndices": [
+          0,
+          1
+        ]
+      },
+      "placementNote": "User-approved long 3F X-Lab range; candidate east-side placement only. Does not identify room 304 or imply measured 3F equipment inventory. Existing window and all desks remain. The second cart provisionally supports the electronics set; the photographed long bench and instrument stacks are not claimed reconstructed.",
+      "floorAnchor": [
+        24.9,
+        0,
+        20
+      ]
     }
   ],
   "pending": [
@@ -1565,11 +1749,6 @@
       "id": "hardware-304",
       "status": "pending",
       "reason": "Room mapping and placement await confirmation; no floor reassignment."
-    },
-    {
-      "id": "lounge-single-and-cushion",
-      "status": "pending",
-      "reason": "No verified existing anchor."
     },
     {
       "id": "desktop/monitor-arm",
@@ -1592,6 +1771,11 @@
       "id": "pantry/fridge-surround",
       "status": "pending",
       "reason": "Wood surround width 1.558 m requires confirmed placement; not attached to refrigerator."
+    },
+    {
+      "id": "remaining-photo-equipment",
+      "status": "pending",
+      "reason": "Other instruments, drone, pegboard and large counters still need individual support/room mapping; no blind whole-batch placement."
     }
   ]
 }

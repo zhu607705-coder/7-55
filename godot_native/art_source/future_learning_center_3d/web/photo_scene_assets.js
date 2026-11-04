@@ -12,6 +12,9 @@ export function validatePhotoConfig(config){
   const key=binding.floor+'/'+binding.sourceNodeName;
   if(anchors.has(key))throw Error('Duplicate photo anchor');anchors.add(key);
   if(!['deskDesktop','static'].includes(binding.kind)||!binding.sourceNodeName||!binding.parts?.length)throw Error('Missing photo anchor/parts');
+  if(binding.floorSpace&&(!Array.isArray(binding.floorAnchor)||binding.floorAnchor.length!==3||!binding.floorAnchor.every(Number.isFinite)||binding.kind!=='static'||!binding.retainOriginal))throw Error('Floor placement needs an explicit metric anchor and retained source');
+  if(binding.collision?.partIndices?.some(i=>!Number.isInteger(i)||i<0||i>=binding.parts.length))throw Error('Invalid collision part');
+  if(binding.collision?.replaceCenter&&(!Array.isArray(binding.collision.replaceCenter)||binding.collision.replaceCenter.length!==2||!binding.collision.replaceCenter.every(Number.isFinite)))throw Error('Invalid collision source center');
   for(const part of binding.parts){
    if(!config.assets[part.asset]||!Array.isArray(part.position)||part.position.length!==3||!part.position.every(Number.isFinite)||part.scale!==undefined||(part.yaw!==undefined&&!Number.isFinite(part.yaw)))throw Error('Photo asset requires metric translation, not scaling');
   }

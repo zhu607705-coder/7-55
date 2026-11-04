@@ -101,3 +101,10 @@ Only the original `Refrigerator` collider X bounds change:
 Its Z range [41.4762609, 42.1762609] stays unchanged. Tests check all LODs
 inside the collider, the 9 mm wall gap, the front approach, impassable body and
 repeated floor expansion/collapse without placement drift.
+
+## 2026-11-04 placement follow-up
+
+The earlier single-seat/cushion pending note is superseded by
+`photo_placed_assets_20261104.md`: two pantry single seats, one cushion and an
+explicit 3F X-Lab workshop candidate are now default scene bindings. Room 304
+identification, large counters and remaining unsupported instruments stay pending.
