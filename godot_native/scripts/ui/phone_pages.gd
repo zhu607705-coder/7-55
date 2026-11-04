@@ -77,6 +77,7 @@ var zjuding_detail = ""
 var zjuding_visitor = {"name":"","date":"","purpose":"校园参观"}
 var zjuding_feedback = {"category":"功能建议","content":""}
 var zjuding_feedback_status = ""
+const JumpNotice=preload("res://scripts/ui/phone_jump_notice.gd")
 const HomeButton = preload("res://scripts/ui/home_app_button.gd")
 const PhoneChrome = preload("res://scripts/ui/phone_chrome.gd")
 const Posts = preload("res://scripts/data/cc98_store.gd")
@@ -486,17 +487,18 @@ func _home() -> Control:
 	# Source page dots remain decorative and cannot route or advance progression.
 	for i in range(3): _panel(root,_home_rect(184+i*22,828,10,10),INK if i==0 else Color("c5c3b9"),INK,0,2)
 	if s.qizhenLake.phase=="complete" and not s.chapterThreeInterlude.completed:
-		var note=_button(root,"",_home_rect(12,48,400,62),func(): page_requested.emit("c35_recovery"),Color("fffdf4"),INK,0,INK); note.name="HomeInterludeTopNotice"
+		var note=_button(root,"",_home_rect(12,48,400,62),func(): page_requested.emit("c35_recovery"),Color("fffdf4"),INK,0,INK); note.name="HomeInterludeTopNotice"; JumpNotice.routed_banner(note)
 		_panel(note,Rect2(10,10,34,34),Color("4d7ed9"),INK,0,2)
 		for i in range(3): _panel(note,Rect2(16,17+i*7,22-i*4,3),Color("d9f2e6"))
 		_label(note,"记录恢复",Rect2(54,7,230,21),16)
-		_label(note,"检测到 7 分 55 秒未同步记录",Rect2(54,30,268,19),10,MUTED)
-		_label(note,"现在",Rect2(317,7,32,20),10,Color("c85454"))
+		_label(note,"检测到 7 分 55 秒未同步记录",Rect2(54,30,268,19),10,JumpNotice.DETAIL)
+		_label(note,"现在",Rect2(317,7,32,20),10,JumpNotice.TIME)
 	elif (_friend_stage()=="prologue" and not s.flags.codeScattered) or (_friend_stage()=="followup" and s.actOne.phase=="friend_message_required"):
 		var note = _page(root,"",Rect2(12,4,352,50),"wechat",Color("f6f2e7"))
+		note.name="HomeFriendTopNotice"; JumpNotice.routed_banner(note)
 		_app_icon(_panel(note,Rect2(10,8,34,34),Color("61b58c"),INK,4,1),"wechat",.7)
 		_label(note,"朋友",Rect2(54,4,232,22),16)
-		_label(note,"签上了吗？？" if s.actOne.phase=="friend_message_required" else "速来！老师开始雷达签到！",Rect2(54,26,275,19),12,MUTED)
+		_label(note,"签上了吗？？" if s.actOne.phase=="friend_message_required" else "速来！老师开始雷达签到！",Rect2(54,26,275,19),12,JumpNotice.DETAIL)
 
 	return root
 
