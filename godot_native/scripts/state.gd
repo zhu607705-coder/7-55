@@ -373,6 +373,9 @@ func activate_profile(key: String, read_existing: bool=true) -> Dictionary:
 
 func capture_cloud_bundle(fresh: bool=false) -> Dictionary:
 	if developer_mode: return {"ok":false,"message":"开发预览不能覆盖正式存档。"}
+	return _capture_portable_bundle(fresh)
+
+func _capture_portable_bundle(fresh: bool=false) -> Dictionary:
 	var clean: Dictionary=initial() if fresh else d.duplicate(true)
 	if fresh and d.get("cc98") is Dictionary: clean.cc98=d.cc98.duplicate(true)
 	clean.ui.controlCenterOpen=false;clean.ui.inventoryOpen=false;clean.ui.selectedItem=null;clean.native.selected_item=""
@@ -686,7 +689,7 @@ func load_game() -> bool:
 
 func export_save(path: String) -> Error:
 	if not validate_snapshot(d): return ERR_INVALID_DATA
-	var captured:=capture_cloud_bundle()
+	var captured:=_capture_portable_bundle()
 	if not captured.get("ok",false): return ERR_INVALID_DATA
 	var envelope: Dictionary=JSON.parse_string(captured.bundle.stateText)
 	envelope.journalImages=captured.images
