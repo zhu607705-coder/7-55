@@ -47,6 +47,11 @@ func configure(definition:Dictionary)->void:
 		if object.get("mounted",false):continue
 		var box:Rect2=Space.rect(object.footprint)
 		_bin(obstacle_bins,box.grow(24),obstacles.size());obstacles.append(box)
+	# Stationary people share the exact foot collision and cached route grid.
+	for person:Dictionary in data.get("npcs",[]):
+		var foot:=Vector2(person.foot[0],person.foot[1])
+		var box:=Body.foot_rect(foot-Body.FOOT_CENTER_OFFSET)
+		_bin(obstacle_bins,box.grow(24),obstacles.size());obstacles.append(box)
 
 func _bin(target:Dictionary,bounds:Rect2,index:int)->void:
 	for y:int in range(floori(bounds.position.y/BIN),floori(bounds.end.y/BIN)+1):
