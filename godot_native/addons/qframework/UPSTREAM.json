@@ -1,0 +1,17 @@
+{
+  "repository": "https://github.com/liangxiegame/QFramework",
+  "commit": "965630644db2b9cb2c4523a0bfe6952fc01f770c",
+  "upstream_directory": "QFramework.Godot4.5+",
+  "license": "MIT",
+  "scope": "Official architecture runtime only; editor, examples and optional toolkits excluded",
+  "local_modifications": [],
+  "files": {
+    "LICENSE": "e08fca856c308d6438ad37d850f7c1872a04d63bc712997da1ee0407a541635e",
+    "framework/architecture/abstract_command.gd": "164b2cc33e25ec40a352dc279c49cc68502830fb825cc0017d060f40b6f521f7",
+    "framework/architecture/abstract_model.gd": "dfa406bf1ff37c22ed51de34e4e2a7a9c3bf267d1d747dd2c19810ca2283a06e",
+    "framework/architecture/abstract_query.gd": "397791d0f2114af97b487bb7974f4ef9d0afaaaf634415c1f816085100c7cc14",
+    "framework/architecture/abstract_system.gd": "0ead5013805efa1a8f4724b444dbaa1ef117600e9c634c33071f2d84a894e5fb",
+    "framework/architecture/abstract_utility.gd": "71af3195281c7a05f33bd5b624d0f98c7d719be5d8a62b85cc835ca42d6a703c",
+    "framework/architecture/architecture.gd": "b0f3da533ffad97af7eabd424e58523eca17c37c96672578db3adfc993401120"
+  }
+}

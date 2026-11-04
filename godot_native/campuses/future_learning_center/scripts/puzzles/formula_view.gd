@@ -3,7 +3,8 @@ signal closed
 const Model=preload("res://campuses/future_learning_center/scripts/puzzles/formula_model.gd")
 const ApparatusStyle=preload("res://campuses/future_learning_center/scripts/apparatus_style.gd")
 const Miniature=preload("res://campuses/future_learning_center/scripts/formula_miniature.gd")
-const INK:=ApparatusStyle.INK
+const WORKTOP=preload("res://campuses/future_learning_center/assets/puzzles/solar_bench_worktop_20261102.png")
+const INK:=Color("202b35") # Local ink stays readable on the generated worktop.
 const PAPER:=ApparatusStyle.PAPER
 const BENCH_CAR:=Vector2(480,365)
 const TILT_KNOB:=Vector2(593,386)
@@ -29,6 +30,12 @@ var hint_level:=0
 func _ready()->void:
 	font=ApparatusStyle.font();size=Vector2(960,540);mouse_filter=Control.MOUSE_FILTER_STOP
 	texture_filter=CanvasItem.TEXTURE_FILTER_LINEAR
+	# Presentation-only background: never receives pointer input or changes grips.
+	var worktop:=TextureRect.new();worktop.name="SolarBenchWorktop";worktop.texture=WORKTOP
+	worktop.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+	worktop.size=Vector2(960,540);worktop.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	worktop.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
+	worktop.show_behind_parent=true;add_child(worktop)
 	miniature=Miniature.new();add_child(miniature)
 	exit_navigation=ApparatusStyle.configure_exit(self,close)
 	visibility_changed.connect(_sync_renderer_visibility)

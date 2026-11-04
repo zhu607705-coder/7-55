@@ -1,0 +1,12 @@
+{$DOMAIN} {
+    encode zstd gzip
+    header Strict-Transport-Security "max-age=31536000"
+    redir /game /game/ 308
+    handle_path /game/* {
+        root * /srv/game
+        file_server
+    }
+    handle {
+        reverse_proxy app:3001
+    }
+}

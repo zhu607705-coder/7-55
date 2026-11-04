@@ -2,8 +2,10 @@ extends Node
 ## Browser capabilities only. State remains the sole save/progression authority.
 signal import_finished(message: String)
 signal save_feedback(message: String)
-const IMPORT_PATH := "user://web-save-import.json"
-const EXPORT_PATH := "user://web-save-export.json"
+var IMPORT_PATH: String:
+	get: return state.ProfileStorage.file("web-save-import.json")
+var EXPORT_PATH: String:
+	get: return state.ProfileStorage.file("web-save-export.json")
 const MAX_SAVE_BYTES := 48 * 1024 * 1024
 const SNAPSHOT_INTERVAL := 0.25
 const SAVE_SYNC_INTERVAL_MS := 2000
@@ -282,6 +284,9 @@ func _remember_audio(node: Node) -> void:
 		var director: Node = shell.audio_director
 		var prefix_paused: bool = is_instance_valid(director) and director.is_ancestor_of(node) and director._id_paused(str(node.get_meta("cue_id", "")))
 		_hidden_audio.append({"player": weakref(node), "playback": weakref(node.get_stream_playback()), "manual_paused": node.stream_paused and not prefix_paused})
+		# Freeze this playback before later nodes and focus handlers can spend time.
+		# Its original pause ownership has already been captured above.
+		node.stream_paused = true
 	for child: Node in node.get_children(): _remember_audio(child)
 
 func _same_hidden_playback(record: Dictionary) -> AudioStreamPlayer:
@@ -563,3 +568,4 @@ func _exit_tree() -> void:
 	_save_callback = null
 	_save_token += 1
 	_save_pending = false
+

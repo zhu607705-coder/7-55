@@ -1,0 +1,29 @@
+{
+  "schema": "755-solar-bench-background/v1",
+  "tool": "OpenAI builtin image_gen",
+  "created": "2026-11-02",
+  "original": "godot_native/art_source/solar_bench_worktop_20261102/generated_source.png",
+  "originalSha256": "ace558a7afbb7196dbe843f03d142224bbe7570effb2b02c0f9b62febd336150",
+  "sourceSize": [
+    1672,
+    941
+  ],
+  "runtime": "godot_native/campuses/future_learning_center/assets/puzzles/solar_bench_worktop_20261102.png",
+  "runtimeSize": [
+    1440,
+    810
+  ],
+  "runtimeSha256": "63122e59d55a1295baf390da8cd33c981d07800306efb5becefced7b501180a6",
+  "normalization": "crop [116,38,1556,848], no resample, no repaint",
+  "runtimeDisplay": [
+    960,
+    540
+  ],
+  "uniformDisplayScale": 0.6666666666666666,
+  "uiBaked": false,
+  "collisionRole": "none; decorative, ignores mouse",
+  "styleBoundary": "fine-textured raster worktop beneath retained native 3D apparatus; no claim of globally locked 32-color compliance",
+  "sourceMain": "72fe2ed3dab84c99cedb2e427a4d639fca135472",
+  "sourceTree": "a6ff943809253e255e1bb549b8c69a7ad35dacde",
+  "generationRights": "Original generated asset requested for this project; no external reference art or fonts copied."
+}

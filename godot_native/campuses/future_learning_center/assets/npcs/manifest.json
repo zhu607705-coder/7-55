@@ -1,0 +1,32 @@
+[
+  {
+    "filename": "student_phone_glance_2frame.png",
+    "source_path": "src/assets/rpg/npcs/finale/student_phone_glance_2frame.png",
+    "sha256": "f2813f220d47c73d0880b95ba056881c09886f901a9fce7371fcacd2321c29b0",
+    "original_bytes_preserved": true,
+    "source_size": [
+      192,
+      128
+    ],
+    "frame_size": [
+      96,
+      128
+    ],
+    "reuse_note": "Existing project character, not newly generated. Byte-identical local copy keeps optional FLC independent of unopened story chapter packs."
+  },
+  {
+    "filename": "canteen_queue_student_01_front.png",
+    "source_path": "src/assets/rpg/npcs/canteen/canteen_queue_student_01_front.png",
+    "sha256": "49d4daca70722f224ea126214a6a46583c1aadd495174ecc563dea397ff45a0a",
+    "original_bytes_preserved": true,
+    "source_size": [
+      192,
+      128
+    ],
+    "frame_size": [
+      96,
+      128
+    ],
+    "reuse_note": "Existing project character, not newly generated. Byte-identical local copy keeps optional FLC independent of unopened story chapter packs."
+  }
+]

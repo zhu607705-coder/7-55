@@ -28,6 +28,7 @@ TactileButtons="*res://scripts/ui/tactile_button_registry.gd"
 WebDisplay="*res://scripts/platform/web_display.gd"
 State="*res://scripts/state.gd"
 WebContent="*res://scripts/platform/web_content.gd"
+CloudSaves="*res://scripts/platform/cloud_saves.gd"
 
 [display]
 

@@ -3,6 +3,7 @@ const Layout=preload("res://scripts/ui/selected_dialogue_layout.gd")
 const Selected=preload("res://scripts/ui/selected_ui_theme.gd")
 const Narrative=preload("res://scripts/presentation/c3_narrative_view.gd")
 const Library=preload("res://scripts/presentation/library_story_view.gd")
+const PaperInk=preload("res://scripts/ui/paper_ink_material.gd")
 var checks:=0
 var failures:=0
 class Line extends RefCounted:
@@ -32,12 +33,13 @@ func run()->void:
 			await process_frame
 			view.tick();await process_frame;view.tick()
 			check(is_equal_approx(view.panel.get_rect().end.y,extent.y-(8 if script==Narrative else 16)),"actual short dialogue uses the bottom safe edge")
-			check(view.panel.get_theme_stylebox("panel") is StyleBoxEmpty,"none surface has no paper or scrim")
-			check(is_equal_approx(view.panel.modulate.a,1),"none surface does not dim text to background opacity")
+			var paper:StyleBox=view.panel.get_theme_stylebox("panel")
+			check(paper is StyleBoxFlat and paper.bg_color==PaperInk.PAPER and paper.get_minimum_size()==Vector2.ZERO,"paper uses the unchanged dialogue rectangle without added margins")
+			check(is_equal_approx(view.panel.modulate.a,1),"paper surface does not compound text opacity")
 			check(view.speaker.get_theme_font("font")==Selected.font("dialogue","heading"),"heading uses real selected bold face")
-			check(view.body.get_theme_color("font_color")==Color("f1efdd"),"locked body color")
+			check(view.body.get_theme_color("font_color")==PaperInk.INK,"dialogue body uses shared paper ink")
 			check(view.body.get_theme_constant("outline_size")==0,"no glyph outline")
-			check(view.body.get_theme_constant("shadow_offset_y")==1,"locked shadow remains enabled")
+			check(view.body.get_theme_constant("shadow_offset_y")==1 and view.body.get_theme_color("font_shadow_color").a==0,"paper text keeps its metrics without a dark halo")
 			check(view.body.text==view.session.snapshot().text,"source words unchanged")
 			view.session.content="原始故事文字保留完整。".repeat(300)
 			view.tick();await process_frame;await process_frame;view.tick()

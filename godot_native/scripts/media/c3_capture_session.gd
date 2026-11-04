@@ -1,4 +1,5 @@
 extends RefCounted
+const ProfileStorage=preload("res://scripts/platform/profile_storage.gd")
 ## Runtime-only capability. Never serialize this object into the save dictionary.
 ## The real world host supplies its rendered Image; the journal retains and checks
 ## this exact object identity before accepting the capture or writing a photo.
@@ -21,7 +22,7 @@ func supply(captured_image: Image, captured_metadata: Dictionary) -> bool:
 	return true
 
 func receive_capture(path: String, captured_metadata: Dictionary) -> bool:
-	if supplied or consumed or not path.begins_with("user://qizhen_journal/") or path.contains("..") or not FileAccess.file_exists(path): return false
+	if supplied or consumed or not ProfileStorage.owns_photo(path) or not FileAccess.file_exists(path): return false
 	var loaded: Image = Image.load_from_file(path)
 	if not supply(loaded, captured_metadata): return false
 	result = {"imagePath":path,"metadata":metadata.duplicate(true)}

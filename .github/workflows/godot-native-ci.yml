@@ -2,6 +2,7 @@ name: Godot native migration
 on:
   push:
     branches: [main, godot-version]
+    paths-ignore: ['platform/**']
   pull_request:
     paths: ['package.json', 'package-lock.json', 'godot_native/**', 'src/assets/**', 'src/data/**', 'src/core/**', 'src/modules/**', 'src/scenes/**', 'src/components/**', '.github/workflows/godot-native-ci.yml', 'scripts/ensure-ci-media-tools.mjs', 'scripts/test-ci-media-tools.mjs', 'scripts/check-buct-changping-wenli.mjs', 'scripts/test-buct-changping-wenli.sh', 'scripts/build-buct-changping-wenli.py', 'scripts/check-buct-changping-hd-region.mjs', 'scripts/test-buct-changping-hd-region.sh', 'scripts/check-buct-changping-north-region.mjs', 'scripts/check-buct-hd-region-registry.mjs', 'scripts/test-buct-changping-north-region.sh', 'docs/BUCT_*']
   workflow_dispatch:
@@ -22,6 +23,8 @@ jobs:
       - name: Verify fail-closed planning, transport, sharding and aggregation
         run: |
           node --test godot_native/tests/test_native_validation_runner.mjs godot_native/tests/test_native_validation_registration.mjs godot_native/tests/test_native_validation_bundle.mjs godot_native/tests/test_native_validation_shards.mjs godot_native/tests/test_native_validation_workflow.mjs
+          node --test godot_native/tests/test_native_source_transport_integration.mjs
+          python3 -B godot_native/tests/test_native_source_transport.py
           node scripts/test-ci-media-tools.mjs
           node --test godot_native/tests/test_preparation_pipeline.mjs godot_native/tests/test_media_conversion_cache.mjs godot_native/tests/test_resource_import_cache.mjs
 
@@ -33,13 +36,38 @@ jobs:
       bundle_name: ${{ steps.bundle.outputs.bundle_name }}
       receipt_sha: ${{ steps.bundle.outputs.receipt_sha }}
       producer_attempt: ${{ steps.bundle.outputs.producer_attempt }}
+      source_artifact_id: ${{ steps.source-upload.outputs.artifact-id }}
+      source_manifest_sha: ${{ steps.source.outputs.manifest_sha }}
+      source_archive_sha: ${{ steps.source.outputs.archive_sha }}
+      source_bytes: ${{ steps.source.outputs.source_bytes }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '24.21.0'
+      - name: Capture every original tracked source byte before preparation
+        id: source
+        run: |
+          mkdir -p "$RUNNER_TEMP/native-preparation"
+          python3 -B godot_native/tools/native_source_transport.py capture \
+            --root "$GITHUB_WORKSPACE" --bundle-dir "$RUNNER_TEMP/native-source" \
+            --head '${{ github.event.pull_request.head.sha || github.sha }}' \
+            --base '${{ github.event.pull_request.base.sha || '' }}' | tee "$RUNNER_TEMP/native-preparation/source-capture.jsonl"
+      - name: Upload immutable same-run source once
+        id: source-upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/native-source
+          include-hidden-files: true
+          compression-level: 0
+          retention-days: 1
+          if-no-files-found: error
+      - name: Release uploaded source archive disk
+        run: rm "$RUNNER_TEMP/native-source/source.tar"
       - name: Install pinned official Godot
         run: |
           curl --fail --location --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip
@@ -125,6 +153,36 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: /godot_native/tools/native_source_transport.py
+      - name: Authenticate exact-commit bootstrap and bound source disk
+        run: |
+          [[ '${{ needs.prepare.outputs.source_artifact_id }}' =~ ^[1-9][0-9]*$ ]]
+          [[ '${{ needs.prepare.outputs.source_manifest_sha }}' =~ ^[0-9a-f]{64}$ ]]
+          [[ '${{ needs.prepare.outputs.source_archive_sha }}' =~ ^[0-9a-f]{64}$ ]]
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object --no-filters godot_native/tools/native_source_transport.py)" = "$(git rev-parse HEAD:godot_native/tools/native_source_transport.py)"
+          python3 -B godot_native/tools/native_source_transport.py download-disk \
+            --root "$GITHUB_WORKSPACE" --bundle-dir "$RUNNER_TEMP/native-source" \
+            --source-bytes '${{ needs.prepare.outputs.source_bytes }}' \
+            --head '${{ github.event.pull_request.head.sha || github.sha }}' \
+            --base '${{ github.event.pull_request.base.sha || '' }}'
+      - name: Download this producer source artifact by immutable ID
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.prepare.outputs.source_artifact_id }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/native-source
+      - name: Verify complete source and populate ordinary Git blobs
+        run: |
+          python3 -B godot_native/tools/native_source_transport.py restore \
+            --root "$GITHUB_WORKSPACE" --bundle-dir "$RUNNER_TEMP/native-source" \
+            --head '${{ github.event.pull_request.head.sha || github.sha }}' \
+            --base '${{ github.event.pull_request.base.sha || '' }}' \
+            --manifest-sha '${{ needs.prepare.outputs.source_manifest_sha }}' \
+            --archive-sha '${{ needs.prepare.outputs.source_archive_sha }}'
+          test ! -e "$RUNNER_TEMP/native-source/source.tar"
       - uses: actions/setup-node@v4
         with:
           node-version: '24.21.0'
@@ -144,6 +202,8 @@ jobs:
           path: ${{ runner.temp }}/native-inputs
       - name: Verify and restore same-run prepared project
         run: |
+          python3 -B godot_native/tools/native_source_transport.py prepared-disk \
+            --root "$GITHUB_WORKSPACE" --bundle-dir "$RUNNER_TEMP/native-inputs"
           base='${{ github.event.pull_request.base.sha || '' }}'
           args=(); if test -n "$base"; then args+=(--base "$base"); fi
           node godot_native/tools/native_validation_bundle.mjs restore \
@@ -164,6 +224,13 @@ jobs:
             --receipt-sha '${{ needs.prepare.outputs.receipt_sha }}' \
             --producer-attempt '${{ needs.prepare.outputs.producer_attempt }}' \
             --head '${{ github.event.pull_request.head.sha || github.sha }}' "${args[@]}"
+      - name: Preserve source transport timing and byte evidence
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/native-result"
+          if test -f "$RUNNER_TEMP/native-source/restore-metrics.json"; then
+            cp "$RUNNER_TEMP/native-source/restore-metrics.json" "$RUNNER_TEMP/native-result/source-transport.json"
+          fi
       - name: Preserve exact shard evidence, including failures
         if: always()
         uses: actions/upload-artifact@v4

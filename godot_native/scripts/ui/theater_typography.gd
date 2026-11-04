@@ -2,10 +2,11 @@ extends RefCounted
 ## Theater shares Morning Note with the phone and HUD; stage layout stays local.
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
-const PAPER=Color("F4EAD5")
-const INK=Color("202B35")
-const EDGE=Color("A39B87")
-const ACCENT=Color("9A514A")
+const PaperInk=preload("res://scripts/ui/paper_ink_material.gd")
+const PAPER=PaperInk.PAPER
+const INK=PaperInk.INK
+const EDGE=PaperInk.EDGE
+const ACCENT=PaperInk.FOCUS
 static var regular: Font
 static var semibold: Font
 
@@ -31,5 +32,6 @@ static func text(control: Control) -> void:
 	Ui.enable_scale_aware_text(control)
 
 static func button(control: Button,primary: bool=false) -> void:
-	Ui.apply_button(control,ACCENT if primary else PAPER,PAPER if primary else INK,ACCENT if primary else EDGE,2,1,16,Vector2(14,8),Color("C79B62"))
+	control.set_meta("tactile_paper_ink",true)
+	Ui.apply_button(control,ACCENT if primary else PAPER,PAPER if primary else INK,ACCENT if primary else EDGE,2,1,16,Vector2(14,8),PaperInk.FOCUS)
 	text(control)

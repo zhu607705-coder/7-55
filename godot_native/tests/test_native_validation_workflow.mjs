@@ -59,3 +59,35 @@ test('package artifacts retain proofs without copying runtime inputs or intermed
  assert.doesNotMatch(paths,/^            \.buct-north-ci\/\s*$/m);
  assert.doesNotMatch(paths,/\*\*|\.pck/);
 });
+
+
+test('source transport captures original tracked bytes once before all preparation',()=>{
+ const body=jobs.prepare;
+ assert.ok(body.indexOf('native_source_transport.py capture') < body.indexOf('npm ci'));
+ assert.ok(body.indexOf('native_source_transport.py capture') < body.indexOf('sync_source.mjs'));
+ assert.match(body,/name: native-source-\$\{\{ github.run_id \}\}-\$\{\{ github.run_attempt \}\}/);
+ assert.match(body,/source_artifact_id: \$\{\{ steps.source-upload.outputs.artifact-id \}\}/);
+ for(const output of ['source_manifest_sha','source_archive_sha','source_bytes'])assert.ok(body.includes(output));
+ assert.equal((body.match(/id: source-upload/g)||[]).length,1);
+ const upload=body.split('id: source-upload')[1].split('      - name:')[0];
+ for(const text of ['retention-days: 1','compression-level: 0','if-no-files-found: error'])assert.ok(upload.includes(text));
+ assert.match(jobs.contracts,/python3 -B godot_native\/tests\/test_native_source_transport.py/);
+});
+test('runtime authenticates bootstrap before source parsing without fetching a full checkout',()=>{
+ const body=jobs.runtime;
+ assert.equal((body.match(/actions\/checkout@v4/g)||[]).length,1);
+ for(const text of ['persist-credentials: false','sparse-checkout-cone-mode: false',
+  'sparse-checkout: /godot_native/tools/native_source_transport.py','git hash-object --no-filters',
+  'artifact-ids: ${{ needs.prepare.outputs.source_artifact_id }}','native_source_transport.py download-disk',
+  'native_source_transport.py restore','native_source_transport.py prepared-disk',
+  "--manifest-sha '${{ needs.prepare.outputs.source_manifest_sha }}'", "--archive-sha '${{ needs.prepare.outputs.source_archive_sha }}'"])
+  assert.ok(body.includes(text),text);
+ assert.ok(body.indexOf('git hash-object') < body.indexOf('native_source_transport.py restore'));
+ assert.ok(body.includes("[[ '${{ needs.prepare.outputs.source_artifact_id }}' =~ ^[1-9][0-9]*$ ]]"));
+ assert.ok(body.indexOf('source_artifact_id') < body.indexOf('actions/download-artifact'));
+ assert.doesNotMatch(body,/github-token:|run-id:|repository:/);
+ assert.match(jobs.contracts,/test_native_source_transport_integration.mjs/);
+ assert.ok(body.indexOf('test ! -e "$RUNNER_TEMP/native-source/source.tar"') < body.indexOf('native_validation_bundle.mjs restore'));
+ assert.match(body,/timeout-minutes: 10/);
+ assert.doesNotMatch(body,/sparse-checkout disable|git checkout|git reset --hard|fetch.*unshallow/);
+});

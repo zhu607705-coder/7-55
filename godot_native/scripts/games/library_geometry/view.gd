@@ -26,7 +26,7 @@ func _ready()->void:
 		media_query.addEventListener("change",media_callback)
 	intro_play=not session_seen;intro_seen=true
 	mouse_filter=Control.MOUSE_FILTER_STOP
-	var paper=ColorRect.new();paper.color=Color("f8f8f5");paper.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var paper=ColorRect.new();paper.color=Color("f6efe2");paper.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	add_child(paper);paper.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var font=FontVariation.new();font.base_font=load("res://assets/native/library_geometry/InterVariable.woff2")
 	font.fallbacks=[load("res://scripts/ui/native_typography.gd").body_font()]

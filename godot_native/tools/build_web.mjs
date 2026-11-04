@@ -34,7 +34,7 @@ const limits = { siteBytes: 950_000_000, packBytes: 800_000_000, wasmBytes: 70_0
 const deliveryTools = ['tools/web_button_material.mjs', 'tools/build_web.mjs', 'tools/managed_validation_process.mjs', 'tools/build_panorama_tiles.mjs', 'tools/convert_media.sh', 'tools/media_conversion_cache.cjs', 'tools/resource_import_cache.mjs', 'tools/plan_web_content.mjs', 'tools/partition_web_pack.mjs', 'tools/partition_web_pack.gd', 'tools/web_content_delivery.mjs', 'tools/web_content_chunks.mjs', 'tools/web_story_content_policy.mjs', 'tools/web_boot_chunks.mjs', 'tools/web_audio_compat.mjs', 'tools/web_boot_typography.mjs', 'tools/web_precompress.mjs', 'tools/serve_web.mjs'];
 const bootArtSource = 'web/boot_art/morning_room.webp';
 const bootArtPlaceholder = '__755_BOOT_ART_MORNING_ROOM__';
-const browserSources = [buttonMaterialSource, 'web/index.html', 'web/content_loader.js', 'web/scene_orientation.js', 'web/boot_intro.js', 'web/boot_art/.gdignore', bootArtSource, ...bootTypographySources];
+const browserSources = [buttonMaterialSource, 'web/index.html', 'web/player-account.js', 'web/cloud-saves.js', 'web/content_loader.js', 'web/scene_orientation.js', 'web/boot_intro.js', 'web/boot_art/.gdignore', bootArtSource, ...bootTypographySources];
 // Exports are hosting artifacts, not editor resources. Git ignores do not stop
 // Godot's resource scanner from creating sidecars inside immutable site output.
 // Establish the parent boundary before the editor/import/export process runs.
@@ -235,6 +235,10 @@ if (!verifyOnly) {
   fs.copyFileSync(path.join(project, 'web/content_loader.js'), path.join(output, 'content-loader.js'));
   fs.copyFileSync(path.join(project, 'web/scene_orientation.js'), path.join(output, 'scene-orientation.js'));
   bindScript('content-loader.js');
+  fs.copyFileSync(path.join(project, 'web/player-account.js'), path.join(output, 'player-account.js'));
+  bindScript('player-account.js');
+  fs.copyFileSync(path.join(project, 'web/cloud-saves.js'), path.join(output, 'cloud-saves.js'));
+  bindScript('cloud-saves.js');
   bindScript('scene-orientation.js');
   inlineBootPresentation();
   inlineButtonMaterial(project, output);
@@ -266,6 +270,14 @@ const buttonMaterial = verifyButtonMaterial(project, html);
 const contentLoaderUrl = `content-loader.js?v=${contentLoaderSha256}`;
 const loaderReferences = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/g)].map(match => match[1]).filter(value => /(?:^|\/)content-loader\.js(?:[?#]|$)/.test(value));
 if (loaderReferences.length !== 1 || loaderReferences[0] !== contentLoaderUrl) throw new Error('Exported HTML content-loader URL is not bound to its actual SHA-256');
+const playerAccountSha256 = fileSha256(path.join(output, 'player-account.js'));
+const playerAccountUrl = `player-account.js?v=${playerAccountSha256}`;
+const playerAccountReferences = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/g)].map(match => match[1]).filter(value => /(?:^|\/)player-account\.js(?:[?#]|$)/.test(value));
+if (playerAccountReferences.length !== 1 || playerAccountReferences[0] !== playerAccountUrl) throw new Error('Exported HTML player-account URL is not bound to its actual SHA-256');
+const cloudSavesSha256 = fileSha256(path.join(output, 'cloud-saves.js'));
+const cloudSavesUrl = `cloud-saves.js?v=${cloudSavesSha256}`;
+const cloudSavesReferences = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/g)].map(match => match[1]).filter(value => /(?:^|\/)cloud-saves\.js(?:[?#]|$)/.test(value));
+if (cloudSavesReferences.length !== 1 || cloudSavesReferences[0] !== cloudSavesUrl) throw new Error('Exported HTML cloud-saves URL is not bound to its actual SHA-256');
 const engineLoaderSha256 = fileSha256(path.join(output, 'index.js'));
 const engineLoaderUrl = `index.js?v=${engineLoaderSha256}`;
 const engineReferences = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/g)].map(match => match[1]).filter(value => /(?:^|\/)index\.js(?:[?#]|$)/.test(value));
@@ -341,6 +353,8 @@ if (verifyOnly) {
   if (previous.delivery !== (streaming ? 'chapter-content-packs' : 'internal-monolithic') || previous.initialPayloadBytes !== initialPayloadBytes || previous.totalPayloadBytes !== siteBytes) throw new Error('Delivery layout or byte budget differs from its build manifest');
   if (previous.logicalPayloadBytes !== logicalPayloadBytes || (streaming && previous.storyOnly !== true)) throw new Error('Logical payload or story-only release policy differs from its build manifest');
   if (previous.contentLoader?.sha256 !== contentLoaderSha256 || previous.contentLoader?.url !== contentLoaderUrl) throw new Error('Content-loader version differs from its build provenance');
+  if (previous.playerAccount?.sha256 !== playerAccountSha256 || previous.playerAccount?.url !== playerAccountUrl) throw new Error('Player-account version differs from its build provenance');
+  if (previous.cloudSaves?.sha256 !== cloudSavesSha256 || previous.cloudSaves?.url !== cloudSavesUrl) throw new Error('Cloud-saves version differs from its build provenance');
   if (previous.orientationPresentation?.sha256 !== orientationSha256 || previous.orientationPresentation?.url !== orientationUrl) throw new Error('Orientation presentation differs from its build provenance');
   if (JSON.stringify(previous.bootIntroPresentation) !== JSON.stringify(bootIntroPresentation)) throw new Error('Boot presentation differs from its build provenance');
   if (JSON.stringify(previous.buttonMaterial) !== JSON.stringify(buttonMaterial)) throw new Error('Button material differs from its build provenance');
@@ -362,6 +376,8 @@ const manifest = {
   excludedSourceFiles: source.excludedFiles.length, excludedSourceBytes: source.excludedFiles.reduce((sum, file) => sum + file.bytes, 0),
   delivery: streaming ? 'chapter-content-packs' : 'internal-monolithic', totalPayloadBytes: siteBytes, logicalPayloadBytes, initialPayloadBytes, initialGzipPayloadBytes, transportCompression, limits, files,
   contentLoader: { file: 'content-loader.js', sha256: contentLoaderSha256, url: contentLoaderUrl },
+  playerAccount: { file: 'player-account.js', sha256: playerAccountSha256, url: playerAccountUrl },
+  cloudSaves: { file: 'cloud-saves.js', sha256: cloudSavesSha256, url: cloudSavesUrl },
   orientationPresentation: { file: 'scene-orientation.js', sha256: orientationSha256, url: orientationUrl },
   bootIntroPresentation,
   bootTypography,

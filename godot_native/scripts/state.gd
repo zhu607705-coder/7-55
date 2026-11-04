@@ -11,10 +11,13 @@ signal world_effect_requested(config: Dictionary)
 signal capture_requested(config: Dictionary)
 signal battery_reserve_used(percent: int)
 signal story_reset
+signal snapshot_saved
 signal battery_recharged
 signal action_completed(action: String,previous: Dictionary,next: Dictionary,result: Dictionary)
-const SAVE_PATH := "user://save.json"
-const BACKUP_PATH := "user://save.previous.json"
+const ProfileStorage = preload("res://scripts/platform/profile_storage.gd")
+var SAVE_PATH := "user://save.json"
+var BACKUP_PATH := "user://save.previous.json"
+var persistence_ready := true
 const SOURCE_VERSION := 36
 const FLCRoomSave = preload("res://scripts/flc_room_save.gd")
 const SaveDomainGuard = preload("res://scripts/save_domain_guard.gd")
@@ -22,9 +25,18 @@ const DeveloperTools = preload("res://scripts/developer_tools_policy.gd")
 var _domain_guard: RefCounted = SaveDomainGuard.new()
 const JOURNAL_ARCHIVE = preload("res://scripts/media/journal_archive.gd")
 const MAX_PORTABLE_SAVE_BYTES := 48*1024*1024
-var d: Dictionary = {}
-var modules: Array = []
-var _content_cache: Dictionary = {}
+const GameArchitecture = preload("res://scripts/architecture/game_architecture.gd")
+const NavigationCommand = preload("res://scripts/architecture/commands/navigation_command.gd")
+const StoryActionCommand = preload("res://scripts/architecture/commands/story_action_command.gd")
+const ChapterQuery = preload("res://scripts/architecture/queries/chapter_query.gd")
+var _architecture: GameArchitecture
+# Legacy callers retain one shared dictionary; there is no parallel model/save.
+var d: Dictionary:
+	get: return game_architecture().get_model("Progression").snapshot
+	set(value): game_architecture().get_model("Progression").snapshot = value
+var modules: Array:
+	get: return game_architecture().get_system("Chapters").modules
+	set(value): game_architecture().get_system("Chapters").modules = value
 var developer_mode := false
 var formal_snapshot: Dictionary = {}
 var last_result: Dictionary = {}
@@ -33,12 +45,27 @@ var _journal_validator: RefCounted
 var _migration: RefCounted
 var _import_proof_cache: Dictionary = {}
 
+func game_architecture() -> GameArchitecture:
+	if _architecture == null:
+		_architecture = GameArchitecture.new()
+		_architecture.name = "GameArchitecture"
+		_architecture.init()
+		add_child(_architecture)
+		_architecture.get_system("Chapters").navigation_changed.connect(_on_navigation_changed)
+	return _architecture
+
+func _on_navigation_changed(persist: bool) -> void:
+	if persist: save_game()
+	changed.emit()
+
+func read_snapshot() -> Dictionary:
+	return game_architecture().send_query(ChapterQuery.new("snapshot"))
+
 func _ready() -> void:
-	for path in ["res://scripts/chapters/chapter4.gd", "res://scripts/chapters/chapter3.gd", "res://scripts/chapters/chapter1_2.gd"]:
-		if ResourceLoader.exists(path):
-			var script = load(path)
-			if script and script.can_instantiate(): modules.append(script.new())
 	d = initial()
+	if OS.has_feature("web"):
+		persistence_ready=false
+		return
 	if not (developer_tools_available() and OS.get_cmdline_user_args().has("--fresh")):
 		load_game()
 
@@ -100,56 +127,25 @@ func asset(path: String) -> String:
 	return "res://assets/" + path.trim_prefix("src/assets/").trim_prefix("assets/").trim_prefix("/")
 
 func content(name: String) -> Variant:
-	var normalized := name.trim_prefix("src/data/").trim_prefix("data/source/")
-	if not normalized.ends_with(".json"): normalized += ".json"
-	if not _content_cache.has(normalized):
-		var path := "res://data/source/" + normalized
-		_content_cache[normalized] = JSON.parse_string(FileAccess.get_file_as_string(path)) if FileAccess.file_exists(path) else {}
-	return _content_cache[normalized]
+	return game_architecture().get_utility("Content").read(name)
 
 func get_pages() -> Array:
-	var result: Array = []
-	var seen: Dictionary = {}
-	for module in modules:
-		if not module.has_method("pages"): continue
-		for page in module.pages(d):
-			if page is Dictionary and not seen.has(page.get("id", "")):
-				seen[page.id] = true
-				result.append(page)
-	return result
+	return game_architecture().send_query(ChapterQuery.new("pages"))
 
 func get_view(page: String) -> Dictionary:
-	for module in modules:
-		if module.has_method("view"):
-			var found: Dictionary = module.view(page, d)
-			if not found.is_empty(): return found
-	return {"title": "7:55", "body": "请选择一个应用。"}
+	return game_architecture().send_query(ChapterQuery.new("view", page))
 
 func get_actions(page: String) -> Array:
-	var result: Array = []
-	var seen: Dictionary = {}
-	for module in modules:
-		if not module.has_method("actions"): continue
-		for action in module.actions(page, d):
-			if action is Dictionary and not seen.has(action.get("id", "")):
-				seen[action.id] = true
-				result.append(action)
-	return result
+	return game_architecture().send_query(ChapterQuery.new("actions", page))
 
-func get_c3_narrative_session(delta_ms: float=0) -> RefCounted:
-	for module in modules:
-		if module.has_method("narrative_session"): return module.narrative_session(d,delta_ms)
-	return null
+func get_c3_narrative_session(delta_ms: float = 0) -> RefCounted:
+	return game_architecture().get_system("Chapters").narrative_session(delta_ms)
 
-func get_library_story_session(delta_ms: float=0) -> RefCounted:
-	for module in modules:
-		if module.get("library")!=null: return module.library.story_session(d,delta_ms)
-	return null
+func get_library_story_session(delta_ms: float = 0) -> RefCounted:
+	return game_architecture().get_system("Chapters").library_session(delta_ms)
 
 func get_phone_entry_session() -> RefCounted:
-	for module in modules:
-		if module.has_method("phone_entry_session"): return module.phone_entry_session(d)
-	return null
+	return game_architecture().get_system("Chapters").get_phone_entry_session()
 
 func get_home_desk_controller() -> RefCounted:
 	for module in modules:
@@ -182,29 +178,17 @@ func get_scene_session() -> RefCounted:
 	return null
 
 func get_targets(scene: String) -> Array:
-	var result: Array = []
-	for module in modules:
-		if module.has_method("targets"):
-			result.append_array(module.targets(scene,d))
-	return result
+	return game_architecture().send_query(ChapterQuery.new("targets", scene))
 
 func objective() -> String:
-	for module in modules:
-		if module.has_method("objective"):
-			var value: String = module.objective(d)
-			if not value.is_empty(): return value
-	return "调查被打散的签到记录。"
+	return game_architecture().send_query(ChapterQuery.new("objective"))
 
 func act(action: String, value: Variant = null) -> Dictionary:
-	if action!="lib_story_complete" and get_library_story_session()!=null: return {"handled":true,"message":""}
-	if action not in ["c3_story_complete","c3_promo_visual_complete","c3_reversal_visual_complete","c3_reversal_inspect_closed"] and get_c3_narrative_session()!=null: return {"handled":true,"message":""}
-	var previous_state: Dictionary=d.duplicate(true)
-	for module in modules:
-		if not module.has_method("dispatch"): continue
-		var result: Dictionary=module.dispatch(d,action,value)
-		if not result.is_empty(): return _accept_result(action,previous_state,result)
-	feedback.emit("这个操作暂时不可用。")
-	return {"handled":false,"message":"这个操作暂时不可用。"}
+	var outcome: Dictionary = game_architecture().send_command(StoryActionCommand.new(action, value))
+	var result: Dictionary = outcome.result
+	if outcome.status == "accepted": return _accept_result(action, outcome.previous, result)
+	if outcome.status == "unhandled": feedback.emit(str(result.message))
+	return result
 
 func _accept_result(action: String,previous_state: Dictionary,result: Dictionary) -> Dictionary:
 	var ephemeral: bool=action in ["c4_clock_begin","c4_clock_event","c4_clock_cancel","c3_rehearsal_begin","c3_rehearsal_result","c3_rehearsal_cancel","c3_chest_begin","c3_chest_clear","c3_chest_take","c3_chest_clue","c3_chest_inspect","c3_chest_place","c3_chest_turn","c3_chest_open","c3_chest_cancel"] and result.get("ephemeral",false)==true
@@ -236,9 +220,7 @@ func _accept_result(action: String,previous_state: Dictionary,result: Dictionary
 	return result
 
 func lake_module() -> RefCounted:
-	for module in modules:
-		if module.get("lake")!=null: return module.lake
-	return null
+	return game_architecture().get_system("Chapters").lake_module()
 
 func lake_world_stroke(world: Node,side: String,reverse: bool=false) -> Dictionary:
 	var owner:=lake_module()
@@ -255,16 +237,7 @@ func lake_world_tick(world: Node,delta: float) -> Dictionary:
 	return _accept_result("c3_world_tick",previous,result) if not result.is_empty() else {}
 
 func source_app(page: String) -> String:
-	var apps := ["alarm","desktop","phone_home","ending","wechat","cc98","zjuding","tiyi","weather","settings","bonsai","checkin","campus_card","photos","timeline_recovery","voice_memos","clock"]
-	if page in apps: return page
-	if page.begins_with("library_") or page in ["directory","c35_network","c3_campus_map"]: return "zjuding"
-	if page in ["c35_recovery"]: return "timeline_recovery"
-	if page in ["c35_voice"]: return "voice_memos"
-	if page in ["c35_photos"]: return "photos"
-	if page=="system_chat": return "zjuding"
-	if page in ["c35_official","c35_messages"]: return "wechat"
-	if page in ["c35_journal","c3_ticket_post"]: return "cc98"
-	return ""
+	return game_architecture().get_system("Chapters").source_app(page)
 
 func _consume_scene_open(_previous: String, _next: String) -> void:
 	# Navigation is not a battery drain. In particular, opening an app must not
@@ -275,16 +248,7 @@ func story_input_locked() -> bool:
 	return get_library_story_session()!=null or get_c3_narrative_session()!=null
 
 func _invalidate_progressive_activities() -> void:
-	for module in modules:
-		if module.has_method("invalidate_chest_mechanism"):
-			module.invalidate_chest_mechanism()
-		if module.has_method("invalidate_rehearsal_session"):
-			module.invalidate_rehearsal_session()
-		if module.has_method("invalidate_progressive_session"):
-			module.invalidate_progressive_session()
-	var lake = lake_module()
-	if lake != null and lake.has_method("invalidate_logistics_session"):
-		lake.invalidate_logistics_session()
+	game_architecture().get_system("Chapters").invalidate_progressive_activities()
 
 func cancel_progressive_activity(action: String, value: Dictionary) -> bool:
 	# Retire only a matching runtime capability. Closing or replacing a view
@@ -308,54 +272,20 @@ func cancel_progressive_activity(action: String, value: Dictionary) -> bool:
 	return false
 
 func open_page(page: String) -> void:
-	if story_input_locked(): return
-	_invalidate_progressive_activities()
-	# P10's revealed flower digit is local to its mounted page.
-	if str(d.native.page)=="bonsai" and page!="bonsai": d.native.erase("flower_eight_visible")
-	_consume_scene_open(str(d.native.page),page)
-	d.native.page = page
-	get_phone_entry_session()
-	var app := source_app(page)
-	if not app.is_empty(): d.currentScene = app
-	save_game()
-	changed.emit()
+	game_architecture().send_command(NavigationCommand.new("open_page", page))
 
 func open_scene(scene: String) -> void:
-	if story_input_locked(): return
-	_invalidate_progressive_activities()
-	d.native.scene = scene
-	d.rpgScene = scene
-	d.runtimeMode = "rpg"
-	save_game()
-	changed.emit()
+	game_architecture().send_command(NavigationCommand.new("open_scene", scene))
 
 func toggle_mode() -> void:
-	if story_input_locked(): return
-	_invalidate_progressive_activities()
-	d.native.mode = "dark" if d.native.mode == "light" else "light"
-	d.themeMode = "dark" if d.native.mode == "dark" else "normal"
-	d.chapter4.mode = d.native.mode
-	d.canteenHunt.mode = d.native.mode
-	d.theaterHunt.mode = d.native.mode
-	d.qizhenLake.mode = d.native.mode
-	save_game()
-	changed.emit()
+	game_architecture().send_command(NavigationCommand.new("toggle_mode", ""))
 
 func _record(message: String) -> void:
 	d.native.log.append({"text":message,"time":Time.get_datetime_string_from_system()})
 	while d.native.log.size() > 200: d.native.log.pop_front()
 
 func select_item(id: String) -> void:
-	if story_input_locked(): return
-	if id.is_empty():
-		d.native.selected_item = ""
-		d.ui.selectedItem = null
-		changed.emit()
-		return
-	if not d.items.get(id,false): return
-	d.native.selected_item = id
-	d.ui.selectedItem = id
-	changed.emit()
+	game_architecture().send_command(NavigationCommand.new("select_item", id))
 
 func merge_defaults(base: Dictionary, incoming: Dictionary) -> Dictionary:
 	var result := base.duplicate(true)
@@ -402,6 +332,121 @@ func _matches_shape(template: Variant, value: Variant, depth: int = 0, location:
 	if template == null:
 		return value == null or value is String or value is bool or ((value is int or value is float) and is_finite(float(value)))
 	return false
+
+func activate_profile(key: String, read_existing: bool=true) -> Dictionary:
+	if not ProfileStorage.valid_key(key) or key=="legacy": return {"ok":false,"message":"存档账号标识无效。"}
+	var stores=load("res://scripts/data/cc98_store.gd")
+	var legacy: Dictionary={}
+	var destination: String="user://profiles/"+key+"/"
+	if key=="guest" and read_existing and not FileAccess.file_exists(destination+"save.json"):
+		var old: Dictionary=_read_native_save("user://save.json")
+		if old.is_empty(): old=_read_native_save("user://save.previous.json")
+		if not old.is_empty():
+			ProfileStorage.profile="legacy";SAVE_PATH="user://save.json";BACKUP_PATH="user://save.previous.json"
+			stores.posts_path="user://cc98-posts.json";stores.quest_path="user://cc98-quest-post-overrides.json"
+			d=merge_defaults(initial(),old.state)
+			legacy=capture_cloud_bundle()
+	ProfileStorage.profile=key
+	SAVE_PATH=ProfileStorage.file("save.json");BACKUP_PATH=ProfileStorage.file("save.previous.json")
+	stores.posts_path=ProfileStorage.file("cc98-posts.json");stores.quest_path=ProfileStorage.file("cc98-quest-post-overrides.json")
+	if DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(ProfileStorage.folder()))!=OK: return {"ok":false,"message":"无法准备本机存档目录。"}
+	d=initial();developer_mode=false;formal_snapshot={};persistence_ready=true
+	var had_file:=FileAccess.file_exists(SAVE_PATH)
+	if read_existing:
+		for existing_path: String in [SAVE_PATH,BACKUP_PATH]:
+			if not FileAccess.file_exists(existing_path): continue
+			var handle:=FileAccess.open(existing_path,FileAccess.READ)
+			if handle==null: continue
+			var envelope: Variant=JSON.parse_string(handle.get_as_text()) if handle.get_length()<=8*1024*1024 else null
+			handle.close()
+			if envelope is Dictionary and float(envelope.get("sourceVersion",0))>SOURCE_VERSION:
+				persistence_ready=false
+				return {"ok":false,"message":"本机存档或备份来自较新游戏版本，请更新游戏；原文件未改动。"}
+	var loaded: bool=load_game() if read_existing else false
+	if not loaded and legacy.get("ok",false):
+		var prepared:=prepare_cloud_bundle(legacy.bundle,legacy.images)
+		if not prepared.get("ok",false): return prepared
+		var installed:=install_cloud_bundle(prepared)
+		if not installed.get("ok",false): return installed
+		loaded=true
+	return {"ok":true,"hasSave":loaded,"corrupt":read_existing and had_file and not loaded}
+
+func capture_cloud_bundle(fresh: bool=false) -> Dictionary:
+	if developer_mode: return {"ok":false,"message":"开发预览不能覆盖正式存档。"}
+	return _capture_portable_bundle(fresh)
+
+func _capture_portable_bundle(fresh: bool=false) -> Dictionary:
+	var clean: Dictionary=initial() if fresh else d.duplicate(true)
+	if fresh and d.get("cc98") is Dictionary: clean.cc98=d.cc98.duplicate(true)
+	clean.ui.controlCenterOpen=false;clean.ui.inventoryOpen=false;clean.ui.selectedItem=null;clean.native.selected_item=""
+	if not validate_snapshot(clean): return {"ok":false,"message":"当前进度尚未通过存档校验。"}
+	var service=load("res://scripts/data/cc98_store.gd")
+	var posts: String=FileAccess.get_file_as_string(service.posts_path) if FileAccess.file_exists(service.posts_path) else "[]"
+	var overrides: String=FileAccess.get_file_as_string(service.quest_path) if FileAccess.file_exists(service.quest_path) else "{}"
+	if posts.to_utf8_buffer().size()>8*1024*1024 or overrides.to_utf8_buffer().size()>8*1024*1024: return {"ok":false,"message":"个人编辑文档过大。"}
+	if not service.validate_bundle({"posts":JSON.parse_string(posts),"questPostOverrides":JSON.parse_string(overrides)}): return {"ok":false,"message":"个人编辑文档无效。"}
+	var archive: Dictionary=JOURNAL_ARCHIVE.pack(clean)
+	if not archive.ok: return {"ok":false,"message":"存档照片缺失或损坏。"}
+	var assets: Array=archive.images.keys();assets.sort()
+	var files: Array=[]
+	if not fresh:
+		for path: String in [SAVE_PATH,service.posts_path,service.quest_path]:
+			if FileAccess.file_exists(path): files.append({"path":ProjectSettings.globalize_path(path),"digest":FileAccess.get_sha256(path)})
+		for photo: Dictionary in JOURNAL_ARCHIVE.photos(clean):
+			if photo.has("nativeImagePath"): files.append({"path":ProjectSettings.globalize_path(photo.nativeImagePath),"digest":str(photo.nativeImageSha256)})
+	# Cloud paths are portable and do not identify another local account folder.
+	for photo: Dictionary in JOURNAL_ARCHIVE.photos(clean):
+		if photo.has("nativeImagePath"): photo.nativeImagePath="user://qizhen_journal/imported-"+str(photo.nativeImageSha256)+".png"
+	var core:=JSON.stringify({"format":"7-55-godot-native","version":1,"sourceVersion":SOURCE_VERSION,"state":clean})
+	if core.to_utf8_buffer().size()>8*1024*1024: return {"ok":false,"message":"核心存档过大。"}
+	return {"ok":true,"bundle":{"bundleVersion":1,"stateText":core,"stores":{"posts":posts,"questPostOverrides":overrides},"assets":assets,
+		"summary":{"chapter":int(clean.native.chapter),"task":("新的校园故事" if fresh else objective()).left(200)}},"images":archive.images,"files":files}
+
+func prepare_cloud_bundle(bundle: Variant, images: Dictionary) -> Dictionary:
+	if not bundle is Dictionary or bundle.get("bundleVersion")!=1 or not bundle.get("stateText") is String or not bundle.get("stores") is Dictionary: return {"ok":false,"message":"存档封装不兼容。"}
+	var raw: String=bundle.stateText
+	if raw.to_utf8_buffer().size()>8*1024*1024 or not load("res://scripts/save_json_guard.gd").new().accepts(raw): return {"ok":false,"message":"核心存档格式无效。"}
+	var envelope: Variant=JSON.parse_string(raw)
+	if not envelope is Dictionary or envelope.get("format")!="7-55-godot-native" or envelope.get("version")!=1 or int(envelope.get("sourceVersion",0))<1 or int(envelope.sourceVersion)>SOURCE_VERSION: return {"ok":false,"message":"此存档需要兼容的游戏版本，请保留原档并更新游戏。"}
+	if not validate_snapshot(envelope.get("state"),envelope.get("sourceVersion")==35) or not _valid_native_v36_fields(envelope): return {"ok":false,"message":"剧情或道具存档无效，当前进度未改变。"}
+	var documents: Dictionary={}
+	for key: String in ["posts","questPostOverrides"]:
+		var text: Variant=bundle.stores.get(key)
+		if not text is String or text.to_utf8_buffer().size()>8*1024*1024: return {"ok":false,"message":"个人编辑文档无效。"}
+		documents[key]=JSON.parse_string(text)
+	if not load("res://scripts/data/cc98_store.gd").validate_bundle(documents): return {"ok":false,"message":"个人编辑文档未通过校验。"}
+	_upgrade_legacy_net_receipt(envelope.state);_upgrade_legacy_v36_fields(envelope.state)
+	var candidate: Dictionary=merge_defaults(initial(),envelope.state)
+	_sanitize_runtime_resume(candidate)
+	var archive: Dictionary=JOURNAL_ARCHIVE.prepare(candidate,images)
+	if not archive.ok: return {"ok":false,"message":"照片未下载完整或校验失败，当前进度未改变。"}
+	return {"ok":true,"state":candidate,"images":archive.images,"stores":documents}
+
+func install_cloud_bundle(prepared: Dictionary) -> Dictionary:
+	if not prepared.get("ok",false) or not validate_snapshot(prepared.get("state")): return {"ok":false,"message":"不能载入未经校验的存档。"}
+	var candidate: Dictionary=prepared.state.duplicate(true)
+	var installed: Dictionary=JOURNAL_ARCHIVE.install(candidate,prepared.images)
+	if not installed.ok: return {"ok":false,"message":"照片写入失败，当前进度未改变。"}
+	var service=load("res://scripts/data/cc98_store.gd")
+	var paths: Array[String]=[SAVE_PATH,BACKUP_PATH,service.posts_path,service.quest_path]
+	var prior: Dictionary={}
+	for path in paths: prior[path]=FileAccess.get_file_as_bytes(path) if FileAccess.file_exists(path) else null
+	var previous: Dictionary=d.duplicate(true)
+	var document_error: Error=service.import_bundle(prepared.stores)
+	if document_error==OK:
+		d=candidate
+		if save_game():
+			story_reset.emit();changed.emit()
+			return {"ok":true}
+	d=previous
+	for path in prior:
+		if prior[path]==null:
+			if FileAccess.file_exists(path): DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+		else:
+			var file:=FileAccess.open(path,FileAccess.WRITE)
+			if file: file.store_buffer(prior[path]);file.close()
+	JOURNAL_ARCHIVE.rollback(installed.created)
+	return {"ok":false,"message":"本机写入失败，原进度已保留，请重试或导出备份。"}
 
 func _safe_json(value: Variant, depth: int = 0) -> bool:
 	if depth > 24: return false
@@ -543,7 +588,7 @@ func _valid_stair_proof(value: Dictionary) -> bool:
 	return load("res://scripts/games/chapter4_stair_model.gd").validate_result(proof)
 
 func save_game() -> bool:
-	if developer_mode or _saving or not validate_snapshot(d): return false
+	if not persistence_ready or developer_mode or _saving or not validate_snapshot(d): return false
 	_saving = true
 	var clean := d.duplicate(true)
 	clean.ui.controlCenterOpen = false
@@ -574,6 +619,7 @@ func save_game() -> bool:
 			backup.close()
 	var error := DirAccess.rename_absolute(ProjectSettings.globalize_path(SAVE_PATH + ".tmp"),ProjectSettings.globalize_path(SAVE_PATH))
 	_saving = false
+	if error==OK: snapshot_saved.emit()
 	return error == OK
 
 func _read_native_save(path: String) -> Dictionary:
@@ -628,6 +674,9 @@ func _sanitize_runtime_resume(snapshot: Dictionary) -> void:
 		if str(key).begins_with("qizhen_lake:"): positions.erase(key)
 	if snapshot.native.scene=="qizhen_lake": snapshot.native.player={}
 
+func at_unstarted_opening() -> bool:
+	return int(d.native.chapter) == 1 and d.native.page == "alarm" and d.native.scene == "" and not d.native.get("alarm_ringing", false)
+
 func load_game() -> bool:
 	for path in [SAVE_PATH,BACKUP_PATH]:
 		var envelope := _read_native_save(path)
@@ -640,9 +689,12 @@ func load_game() -> bool:
 
 func export_save(path: String) -> Error:
 	if not validate_snapshot(d): return ERR_INVALID_DATA
-	var archive: Dictionary=JOURNAL_ARCHIVE.pack(d)
-	if not archive.ok: return archive.error
-	var payload := JSON.stringify({"format":"7-55-godot-native","version":1,"sourceVersion":SOURCE_VERSION,"state":d,"journalImages":archive.images},"\t")
+	var captured:=_capture_portable_bundle()
+	if not captured.get("ok",false): return ERR_INVALID_DATA
+	var envelope: Dictionary=JSON.parse_string(captured.bundle.stateText)
+	envelope.journalImages=captured.images
+	envelope.cc98Stores={"posts":JSON.parse_string(captured.bundle.stores.posts),"questPostOverrides":JSON.parse_string(captured.bundle.stores.questPostOverrides)}
+	var payload := JSON.stringify(envelope,"\t")
 	if payload.to_utf8_buffer().size() > MAX_PORTABLE_SAVE_BYTES or not load("res://scripts/save_json_guard.gd").new().accepts(payload): return ERR_INVALID_DATA
 	var file := FileAccess.open(path,FileAccess.WRITE)
 	if not file: return FileAccess.get_open_error()
@@ -678,6 +730,10 @@ func import_save(path: String) -> Dictionary:
 		_upgrade_legacy_net_receipt(envelope.state)
 		_upgrade_legacy_v36_fields(envelope.state)
 		candidate = merge_defaults(initial(),envelope.state)
+		if envelope.has("cc98Stores"):
+			store_service=load("res://scripts/data/cc98_store.gd")
+			if not store_service.validate_bundle(envelope.cc98Stores): return {"ok":false,"message":"个人编辑内容无效，当前进度未改变。"}
+			pending_stores=envelope.cc98Stores
 		if envelope.has("journalImages"):
 			var prepared: Dictionary=JOURNAL_ARCHIVE.prepare(candidate,envelope.journalImages)
 			if not prepared.ok: return {"ok":false,"message":"存档照片损坏或不完整，当前进度未改变。"}
@@ -750,13 +806,7 @@ func restore_formal() -> void:
 
 func developer_checkpoints() -> Array:
 	if not developer_tools_available(): return []
-	if not _content_cache.has("_developer_checkpoints"):
-		var file := FileAccess.open("res://data/native/developer_checkpoints.json.gz",FileAccess.READ)
-		if not file: return []
-		var decoded := file.get_buffer(file.get_length()).decompress_dynamic(4*1024*1024,FileAccess.COMPRESSION_GZIP)
-		var parsed = JSON.parse_string(decoded.get_string_from_utf8())
-		_content_cache["_developer_checkpoints"] = parsed.get("checkpoints",[]) if parsed is Dictionary else []
-	return _content_cache["_developer_checkpoints"]
+	return game_architecture().get_utility("Content").developer_checkpoints()
 
 func begin_checkpoint(id: String) -> bool:
 	if not developer_tools_available(): return false

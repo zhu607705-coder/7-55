@@ -1,0 +1,33 @@
+{
+  "name": "seven-fifty-five-platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0 <23"
+  },
+  "workspaces": [
+    "packages/contracts",
+    "packages/database",
+    "apps/api",
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "npm run build:shared && node --env-file-if-exists=.env scripts/dev.mjs",
+    "build:shared": "npm run build -w @755/contracts && npm run build -w @755/database",
+    "build": "npm run build --workspaces",
+    "start": "node --env-file-if-exists=.env apps/api/dist/server.js",
+    "db:migrate": "node --env-file-if-exists=.env packages/database/dist/cli.js",
+    "db:up": "docker compose -f deploy/compose.dev.yml up -d --wait",
+    "db:down": "docker compose -f deploy/compose.dev.yml down",
+    "check:boundaries": "node scripts/check-boundaries.mjs",
+    "test": "node --test tests/*.test.mjs ../.github/scripts/product-scope.test.mjs",
+    "test:database": "node --env-file-if-exists=.env --test tests/integration/*.test.mjs",
+    "validate": "npm run check:boundaries && npm run build && npm test"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "jose": "^6.2.13",
+    "typescript": "5.9.3"
+  }
+}

@@ -26,7 +26,7 @@ const scenarios = option('scenarios', 'all');
 const phoneGroup = option('phone-group', 'all');
 phoneGroups(phoneGroup);
 if (phoneGroup !== 'all' && scenarios !== 'phone-recovery') throw Error('--phone-group requires phone-recovery');
-if (!['all', 'bike', 'media', 'durability', 'durability-switch', 'streaming', 'mobile-world', 'phone-recovery', 'phone-navigation', 'corners', 'checkin', 'words', 'library', 'boot-font-failure', 'resource-loading', 'flc-activity'].includes(scenarios)) throw new Error(`Unknown scenario: ${scenarios}`);
+if (!['all', 'baseline', 'bike', 'media', 'durability', 'durability-switch', 'streaming', 'mobile-world', 'phone-recovery', 'phone-navigation', 'corners', 'checkin', 'words', 'library', 'boot-font-failure', 'resource-loading', 'flc-activity'].includes(scenarios)) throw new Error(`Unknown scenario: ${scenarios}`);
 const importSettleMs = Number(option('import-settle-ms', 1600));
 const bootTimeout = Number(option('boot-timeout', 360000));
 const chromeArgs = args.flatMap((arg, i) => arg.startsWith('--chrome-arg=') ? [arg.slice('--chrome-arg='.length)] : arg === '--chrome-arg' && args[i + 1] ? [args[i + 1]] : []);
@@ -236,10 +236,10 @@ async function clickControl(nameOrText, match = 'either') {
   await clickPoint(point); await interval(350);
 }
 async function screenshot(name) { const data = (await active.cdp.send('Page.captureScreenshot', { format: 'png' }, 10000)).data; const bytes = Buffer.from(data, 'base64'); await writeFile(path.join(output, `${name}.png`), bytes); return { path: `${name}.png`, bytes: bytes.length, sha256: hash(bytes) }; }
-// Diagnostic only: one fixed-key readonly transaction, never a save/sync API.
+// Standalone guest acceptance: one fixed-key readonly transaction, never a save/sync API.
 // Its own bounded lifetime does not alter either acceptance deadline.
 function readOnlySaveProbe(identity) {
-  const result = { ...identity, database: '/userfs', key: '/userfs/SevenFiftyFiveNative/save.json', timings: {} };
+  const result = { ...identity, database: '/userfs', key: '/userfs/SevenFiftyFiveNative/profiles/guest/save.json', timings: {} };
   const mark = phase => { result.timings[phase] = { wallMs: Date.now(), monotonicMs: performance.now() }; };
   mark('started'); result.documentHidden = document.hidden;
   return new Promise(resolve => {
@@ -1941,7 +1941,15 @@ async function browserCase(id, width, height, touch, dpr = 1) {
     const chunkedOriginals = new Set(delivery.content.packs.filter(pack => pack.transportChunks).map(pack => new URL(pack.file, new URL('.', url)).href));
     check(!active.requests.some(request => chunkedOriginals.has(request.url)), `${id}: chunk-capable loader never downloads duplicate original large PCKs`);
     check(active.coldBoot?.responses.length === delivery.bootByUrl.size, `${id}: actual Godot engine boot and ordinary input used the verified complete static boot chunk set`, { chunks: active.coldBoot?.responses.length, expected: delivery.bootByUrl.size, freshInput: active.fresh?.inputs });
-    check(![...network.values()].some(n => n.status >= 400), `${id}: no failed HTTP resources`, [...network.values()].filter(n => n.status >= 400));
+    // Pages/static exports deliberately have no account API. The shipped game
+    // accepts this exact session 404 as guest mode; it must not hide an API 500,
+    // a failed game asset, or a missing API on the canonical integrated /game/.
+    const standaloneGuest = !['/game/', '/game/index.html'].includes(new URL(url).pathname);
+    const optionalGuestProbe = n => standaloneGuest && n.status === 404 && n.url === new URL('/api/v1/session', url).href;
+    const optionalAccountProbes = [...network.values()].filter(optionalGuestProbe);
+    if (optionalAccountProbes.length) check(true, `${id}: standalone account API absent; guest flow only, no login/cloud acceptance`, optionalAccountProbes);
+    const failedResources = [...network.values()].filter(n => n.status >= 400 && !optionalGuestProbe(n));
+    check(failedResources.length === 0, `${id}: no failed HTTP resources`, failedResources);
     check(errors.length === 0, `${id}: no page, runtime, script or uncancelled network errors`, errors);
     const renderer = await evaluate(`(()=>{const c=document.getElementById('canvas')||document.querySelector('canvas');const gl=c.getContext('webgl2');if(!gl)return{webgl2:false};const e=gl.getExtension('WEBGL_debug_renderer_info');return{webgl2:true,vendor:e?gl.getParameter(e.UNMASKED_VENDOR_WEBGL):gl.getParameter(gl.VENDOR),renderer:e?gl.getParameter(e.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER)};})()`);
     check(renderer.webgl2, `${id}: actual WebGL2 context available`, renderer);

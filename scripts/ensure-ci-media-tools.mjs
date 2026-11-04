@@ -7,6 +7,9 @@ import { fileURLToPath } from 'node:url';
 const SOURCE = '/etc/apt/sources.list.d/ubuntu.sources';
 const MIRRORS = '/etc/apt/apt-mirrors.txt';
 const MIRROR_URI = `mirror+file:${MIRRORS}`;
+// Ubuntu's documented security pocket; runner-images only rewrites the Azure URI.
+// https://ubuntu.com/server/docs/how-to/software/snapshot-service/
+const DIRECT_SECURITY_URI = 'http://security.ubuntu.com/ubuntu';
 const KEYRING = '/usr/share/keyrings/ubuntu-archive-keyring.gpg';
 const HTTPS_MIRRORS = ['https://archive.ubuntu.com/ubuntu/', 'https://security.ubuntu.com/ubuntu/'];
 const KNOWN_MIRRORS = ['http://azure.archive.ubuntu.com/ubuntu/', ...HTTPS_MIRRORS];
@@ -22,6 +25,26 @@ function requireCondition(condition, message) {
   if (!condition) throw new Error(`CI media tools: ${message}`);
 }
 
+// Diagnostic labels never authorize a source. Do not log raw URI text, arbitrary
+// hosts/paths, credentials, queries, fragments or unknown scheme names.
+function sourceUriDiagnostic(value, source, stanza) {
+  const hash = text => createHash('sha256').update(text).digest('hex');
+  const entries = value.split(/\s+/);
+  const hosts = new Set(KNOWN_MIRRORS.map(uri => new URL(uri).hostname));
+  const shapes = entries.slice(0, 4).map(uri => {
+    let parsed;
+    try { parsed = new URL(uri); } catch {}
+    const scheme = ['http:', 'https:', 'file:', 'mirror+file:'].includes(parsed?.protocol) ? parsed.protocol.slice(0, -1) : 'other';
+    const redacted = !parsed || Boolean(parsed.username || parsed.password || /[?#@]/.test(uri));
+    const host = redacted ? 'redacted' : hosts.has(parsed.hostname) ? parsed.hostname : parsed.hostname ? 'other' : 'none';
+    const pathKind = redacted ? 'redacted' : parsed.pathname === MIRRORS ? 'expected-mirror-list'
+      : parsed.pathname === '/ubuntu/' ? 'ubuntu-root-with-slash' : parsed.pathname === '/ubuntu' ? 'ubuntu-root' : 'other';
+    return {scheme, host, pathKind, authority: /^[A-Za-z][A-Za-z0-9+.-]*:\/\//.test(uri), redacted};
+  });
+  return {stanza, sourceSha256: hash(source), expectedUri: MIRROR_URI,
+    uriSha256: hash(value), uriBytes: Buffer.byteLength(value), uriCount: entries.length, shapes};
+}
+
 // Only the public Ubuntu deb822 shape is accepted. No vendor sources,
 // embedded keys, authentication, trust overrides or newly introduced mirrors.
 export function prepareFallback(source, mirrors, temporaryMirrorPath) {
@@ -33,11 +56,20 @@ export function prepareFallback(source, mirrors, temporaryMirrorPath) {
   let codename;
   let fields = new Map();
   let stanzas = 0;
+  let mirrorStanzas = 0;
   function finish() {
     if (fields.size === 0) return;
     for (const key of ['Types', 'URIs', 'Suites', 'Components', 'Signed-By']) requireCondition(fields.has(key), `source missing ${key}`);
     requireCondition(fields.get('Types') === 'deb', 'unsupported source Types');
-    requireCondition(fields.get('URIs') === MIRROR_URI, 'unsupported source URI');
+    const uri = fields.get('URIs');
+    if (uri !== MIRROR_URI && uri !== DIRECT_SECURITY_URI) {
+      requireCondition(false, `unsupported source URI: ${JSON.stringify(sourceUriDiagnostic(fields.get('URIs'), source, stanzas + 1))}`);
+    }
+    if (uri === DIRECT_SECURITY_URI) {
+      requireCondition(/^[a-z][a-z0-9]*-security$/.test(fields.get('Suites')), 'direct security URI requires one security-only suite');
+    } else {
+      mirrorStanzas += 1;
+    }
     requireCondition(fields.get('Signed-By') === KEYRING, 'unsupported signing keyring');
     requireCondition(!fields.has('Architectures') || fields.get('Architectures') === 'amd64', 'unsupported source architecture');
     for (const suite of fields.get('Suites').split(/\s+/)) {
@@ -57,6 +89,9 @@ export function prepareFallback(source, mirrors, temporaryMirrorPath) {
     if (line.startsWith('#')) continue;
     const match = /^([A-Za-z-]+):[ \t]+([^\r\n]+)$/.exec(line);
     requireCondition(match && allowed.has(match[1]) && !fields.has(match[1]), 'unknown, duplicate or continued source field');
+    if (match[1] === 'URIs' && match[2].trim() === DIRECT_SECURITY_URI) {
+      requireCondition(match[2].replace(/[ \t]+$/, '') === DIRECT_SECURITY_URI, 'unsupported security URI whitespace');
+    }
     fields.set(match[1], match[2].trim());
   }
   finish();
@@ -75,11 +110,11 @@ export function prepareFallback(source, mirrors, temporaryMirrorPath) {
   requireCondition(HTTPS_MIRRORS.every(uri => seen.has(uri)), 'official HTTPS fallback mirrors are not already present');
   const temporaryUri = `mirror+file:${temporaryMirrorPath}`;
   requireCondition(!source.includes(temporaryUri), 'temporary URI already present');
-  // Replace only exact URIs field values, not comments or any other source bytes.
+  // Replace only mirror-list URIs. Preserve direct security stanzas and all other bytes.
   let replacements = 0;
   const sourceCopy = source.replace(/^(URIs:[ \t]+)mirror\+file:\/etc\/apt\/apt-mirrors\.txt([ \t]*\r?)$/gm, (_, prefix, suffix) => { replacements += 1; return `${prefix}${temporaryUri}${suffix}`; });
   const inverse = sourceCopy.replaceAll(temporaryUri, MIRROR_URI);
-  requireCondition(replacements === stanzas && inverse === source, 'source inverse replacement mismatch');
+  requireCondition(replacements === mirrorStanzas && mirrorStanzas > 0 && inverse === source, 'source inverse replacement mismatch');
   return { source: sourceCopy, mirrors: selected.join(''), stanzas };
 }
 
@@ -154,7 +189,7 @@ export function ensureCiMediaTools({ execute = runCommand, sourcePath = SOURCE, 
     // Keep the public result shape: fallback reports use of the second route,
     // which is now the unchanged original APT configuration.
     let fallback = false;
-    if (!acquire('existing official HTTPS mirrors only', options, 180)) {
+    if (!acquire('existing official HTTPS mirrors; original security source preserved', options, 180)) {
       fallback = true;
       options = [];
       requireCondition(acquire('original APT configuration', options, 120), 'both bounded acquisition attempts failed; installation not attempted');

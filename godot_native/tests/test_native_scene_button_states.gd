@@ -1,4 +1,5 @@
 extends SceneTree
+const PaperInk=preload("res://scripts/ui/paper_ink_material.gd")
 ## Actual scene controls adopt neutral materials without changing behavior or focus.
 var checks:=0
 var failures:=0
@@ -14,17 +15,19 @@ func assert_palette(button: Button,_fill: Color,_ink: Color,_border: Color,_widt
 	var normal: StyleBox=button.get_theme_stylebox("normal")
 	check(normal.get_script()==load("res://scripts/ui/tactile_button_material.gd"),label+" uses shared native material")
 	if normal.get_script()!=load("res://scripts/ui/tactile_button_material.gd"):return
-	var palette: Array=normal.PALETTES[normal.variant]
-	var ink: Color=palette[3]
+	check(normal.paper_ink,label+" inherits the reviewed story paper material")
+	var ink: Color=PaperInk.label_color(normal.variant)
 	for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]:
 		check(button.get_theme_stylebox(mode)==normal,label+" "+mode+" same animated layer stack")
 	for role: String in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color"]:
 		check(button.get_theme_color(role).is_equal_approx(ink),label+" "+role+" neutral variant ink")
-	check(button.get_theme_color("font_disabled_color").is_equal_approx((Color("c3c2be") if normal.variant=="primary" else Color("62645f"))),label+" disabled ink")
+	check(button.get_theme_color("font_disabled_color").is_equal_approx(PaperInk.label_color(normal.variant,true)),label+" exact paper disabled ink")
 	if normal.variant not in ["ghost","text"]:
-		check(contrast(ink,palette[0])>=4.5 and contrast(ink,palette[1])>=4.5,label+" gradient text contrast")
+		check(contrast(ink,PaperInk.face_color(normal.variant,0,0))>=4.5 and contrast(ink,PaperInk.face_color(normal.variant,1,0))>=4.5,label+" normal and hover paper contrast")
+		check(contrast(PaperInk.label_color(normal.variant,true),PaperInk.face_color(normal.variant,0,1))>=4.5,label+" disabled paper contrast")
 	var focus: StyleBox=button.get_theme_stylebox("focus")
 	check(focus!=null,label+" existing focus indicator retained")
+	check(focus is StyleBoxFlat and focus.bg_color.a==0 and focus.border_color==PaperInk.FOCUS and focus.get_border_width_min()>=1 and contrast(focus.border_color,PaperInk.PAPER)>=3,label+" paper focus is visible and does not cover the label")
 func assert_transparent_pause(button: Button,_ink: Color,label: String) -> void:
 	# Previously light text floated on dark art. A neutral light key is needed
 	# now: the requested gray ghost ink would lose contrast on that world art.
@@ -42,7 +45,7 @@ func run() -> void:
 	for button: Button in [opening.advance_button,opening.skip_button]:
 		assert_palette(button,Color("101e28",.94),Color("f4edd6"),Color("cfbd74"),2,"opening "+button.text)
 		var focus: StyleBoxFlat=button.get_theme_stylebox("focus")
-		check(focus.border_color.is_equal_approx(Color("9ee7f1")) and focus.border_width_left==3,"opening authored focus outline retained")
+		check(focus.border_color.is_equal_approx(PaperInk.FOCUS) and focus.border_width_left==2,"opening retains focus through the reviewed two-pixel ink outline")
 	opening.queue_free();await frames()
 	for ready: bool in [false,true]:
 		var ring=load("res://scripts/ui/c3_investigation_ring.gd").new();main.add_child(ring)

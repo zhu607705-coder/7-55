@@ -1,5 +1,12 @@
 # 7:55 Project Rules
 
+## Product boundaries (2026-10-23)
+
+- `platform/` is the user-approved 7:55 co-creation platform, a sibling of the game. Its frontend, API, contracts, database, dependencies, docs and tests stay there. See `platform/AGENTS.md`.
+- The game runtime, viewport, assets, save and chapter rules below apply to the game directories, not the platform. Neither product imports the other's runtime or persistence code. Root package files remain game-owned.
+- Platform-only validation is `cd platform && npm ci && npm run validate`, plus `npm run test:database` against a disposable PostgreSQL database when persistence changes. No game release build is required for platform-only changes. Shared workflow routing changes also require the product-scope tests. Mixed runtime changes still require each affected product's existing validation.
+- Submission approval rules below continue to apply across the repository. Platform work does not authorize staging, committing, pushing or deploying. Record platform progress in `platform/docs/progress.md`.
+
 ## Structure
 
 - `src/scenes/phone/`: phone scenes and scene-local interaction state.

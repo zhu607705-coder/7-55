@@ -7,6 +7,8 @@ const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
 const Typography = preload("res://scripts/ui/native_typography.gd")
 const UiMaterial = preload("res://scripts/ui/campus_ui_material.gd")
 const PaperPanel = preload("res://scripts/ui/campus_paper_panel.gd")
+const PaperInk = preload("res://scripts/ui/paper_ink_material.gd")
+const CommunityPortal = preload("res://scripts/platform/community_portal.gd")
 const BUCT_SCENE := "res://campuses/buct/scenes/playable.tscn"
 const HAIDIAN_SCENE := "res://campuses/buct_haidian/scenes/playable.tscn"
 const CHANGPING_SCENE := "res://campuses/buct_changping/scenes/playable.tscn"
@@ -30,6 +32,12 @@ var preview_button: Button
 var subtitle: Label
 var card: PanelContainer
 var story_button: Button
+var community_button: Button
+var account_button: Button
+var community_note: Label
+var save_label: Label
+var restart_button: Button
+var manage_button: Button
 var campus_button: Button
 var haidian_button: Button
 var changping_button: Button
@@ -41,6 +49,7 @@ var campus_heading: Label
 var title_rule: ColorRect
 
 func _ready() -> void:
+	set_meta("paper_ink_scope",true)
 	# Activity owners already finish their save handshake before returning here.
 	# No Main close-request listener survives this independent chooser.
 	get_tree().auto_accept_quit=true
@@ -70,6 +79,10 @@ func _ready() -> void:
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);add_child(shade)
 	card=PaperPanel.new();add_child(card)
 	var style:=UiMaterial.panel_style("paper",{},Vector2(28,24))
+	card.set_meta("tactile_paper_ink",true)
+	style.bg_color=PaperInk.PAPER;style.border_color=Color.TRANSPARENT
+	style.set_corner_radius_all(2);style.anti_aliasing=true
+	style.shadow_color=Color(PaperInk.INK,0.48);style.shadow_size=1;style.shadow_offset=Vector2(3,4)
 	card.add_theme_stylebox_override("panel",style)
 	content=VBoxContainer.new();content.add_theme_constant_override("separation",18);card.add_child(content)
 	title=Label.new();title.text="7:55";Typography.apply_display(title)
@@ -79,12 +92,27 @@ func _ready() -> void:
 	title_rule.mouse_filter=Control.MOUSE_FILTER_IGNORE;content.add_child(title_rule)
 	subtitle=Label.new();subtitle.text="选择入口";subtitle.add_theme_color_override("font_color",UiMaterial.WOOD);content.add_child(subtitle)
 	story_heading=_section_title("主线故事");content.add_child(story_heading)
-	story_button=_button("进入主线故事",open_story);story_button.name="ContinueStory";content.add_child(story_button)
+	story_button=_button("进入主线故事",open_story);story_button.name="ContinueStory";story_button.set_meta("tactile_paper_ink",true);content.add_child(story_button)
 	NativeUi.apply_button(story_button,UiMaterial.NAVY,UiMaterial.PAPER,UiMaterial.NAVY,0,1,20)
+	_paper_focus(story_button)
 	detail=Label.new();detail.text="" if ReleaseContent.story_only() else "不影响主线进度"
 	detail.add_theme_font_size_override("font_size",17);detail.add_theme_color_override("font_color",Color("665e52"));content.add_child(detail)
 	detail.visible=not ReleaseContent.story_only()
-	flc_button=_button("未来学习中心 · 自由探索",open_flc);flc_button.name="OpenFutureLearningCenter";content.add_child(flc_button)
+	if OS.has_feature("web"):
+		save_label=Label.new();save_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;save_label.add_theme_font_size_override("font_size",14);content.add_child(save_label)
+		var save_row:=HBoxContainer.new();save_row.add_theme_constant_override("separation",8);content.add_child(save_row)
+		restart_button=_button("重新开始",CloudSaves.request_restart);restart_button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;save_row.add_child(restart_button)
+		manage_button=_button("存档管理",CloudSaves.show_manager);manage_button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;save_row.add_child(manage_button)
+		CloudSaves.status_changed.connect(_sync_cloud_controls);_sync_cloud_controls()
+	if CommunityPortal.available():
+		var community_row:=HBoxContainer.new();community_row.add_theme_constant_override("separation",8);content.add_child(community_row)
+		community_button=_button("共创平台 ↗",CommunityPortal.open_community);community_button.name="OpenCommunity"
+		community_button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;community_row.add_child(community_button)
+		account_button=_button("玩家账号",CommunityPortal.open_account);account_button.name="OpenPlayerAccount";account_button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;community_row.add_child(account_button)
+		community_note=Label.new();community_note.text="分享经历 · 反馈卡点 · 看制作进展"
+		community_note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;community_note.add_theme_color_override("font_color",UiMaterial.WOOD);content.add_child(community_note)
+	flc_button=_button("未来学习中心 · 自由探索",open_flc);flc_button.name="OpenFutureLearningCenter";flc_button.set_meta("tactile_paper_ink",true);content.add_child(flc_button)
+	_paper_focus(flc_button)
 	if ReleaseContent.campuses_available():
 		campus_heading=_section_title("独立校园漫游");content.add_child(campus_heading)
 		content.move_child(campus_heading,detail.get_index())
@@ -137,6 +165,11 @@ func _section_title(text: String) -> Label:
 	label.add_theme_font_size_override("font_size",20);label.add_theme_color_override("font_color",UiMaterial.NAVY)
 	return label
 
+func _paper_focus(button: Button) -> void:
+	var focus:=StyleBoxFlat.new();focus.bg_color=Color.TRANSPARENT
+	focus.border_color=PaperInk.FOCUS;focus.set_border_width_all(2);focus.set_corner_radius_all(2)
+	button.add_theme_stylebox_override("focus",focus)
+
 func _layout() -> void:
 	if not is_inside_tree() or not is_instance_valid(card) or not card.visible:return
 	var available:=get_viewport_rect().size
@@ -152,9 +185,10 @@ func _layout() -> void:
 	story_heading.add_theme_font_size_override("font_size",14 if short_window else 17 if compact else 20)
 	if is_instance_valid(campus_heading):campus_heading.add_theme_font_size_override("font_size",14 if short_window else 17 if compact else 20)
 	detail.add_theme_font_size_override("font_size",13 if short_window else 15 if compact else 17)
+	if is_instance_valid(community_note):community_note.add_theme_font_size_override("font_size",13 if compact else 15)
 	subtitle.visible=available.y>=420
 	title_rule.visible=not short_window
-	for button: Button in [story_button,flc_button,campus_button,haidian_button,changping_button,preview_button]:
+	for button: Button in [story_button,flc_button,restart_button,manage_button,community_button,account_button,campus_button,haidian_button,changping_button,preview_button]:
 		if is_instance_valid(button):
 			button.custom_minimum_size.y=44 if compact else 58
 			button.add_theme_font_size_override("font_size",16 if compact else 20 if button==story_button else 18)
@@ -260,9 +294,23 @@ func _unhandled_input(event: InputEvent) -> void:
 		close_previews();get_viewport().set_input_as_handled()
 
 func open_story() -> void:
+	if OS.has_feature("web") and not CloudSaves.can_enter(): CloudSaves.show_manager();return
 	_open(STORY_SCENE)
 
+func _sync_cloud_controls() -> void:
+	if not is_instance_valid(save_label): return
+	save_label.text=CloudSaves.card_text()
+	story_button.disabled=not CloudSaves.can_enter()
+	if story_button.disabled:
+		story_button.text = "正在读取存档…"
+	elif not CloudSaves.has_save or State.at_unstarted_opening():
+		story_button.text = "开始游戏"
+	else:
+		story_button.text = "继续游客游戏" if CloudSaves.member_id.is_empty() else "继续游戏"
+	restart_button.disabled=not CloudSaves.ready_for_play;manage_button.disabled=not CloudSaves.ready_for_play
+
 func open_flc() -> void:
+	if OS.has_feature("web") and not CloudSaves.can_enter(): CloudSaves.show_manager();return
 	if opening:return
 	opening=true
 	if OS.has_feature("web") and not await WebContent.ensure_families(["chapter2","flc_activity"],true):

@@ -1,0 +1,62 @@
+name: seven-fifty-five-community
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: platform
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a random URL-safe database password}
+      POSTGRES_DB: platform
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U platform -d platform"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  migrate:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    command: [node, packages/database/dist/cli.js]
+    environment:
+      DATABASE_URL: postgresql://platform:${POSTGRES_PASSWORD}@db:5432/platform
+    depends_on:
+      db:
+        condition: service_healthy
+  app:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://platform:${POSTGRES_PASSWORD}@db:5432/platform
+      PUBLIC_ORIGIN: https://${DOMAIN:?Set your domain name}
+      TRUST_PROXY: '1'
+      AUTHING_ISSUER: ${AUTHING_ISSUER:-}
+      AUTHING_CLIENT_ID: ${AUTHING_CLIENT_ID:-}
+      AUTHING_CLIENT_SECRET: ${AUTHING_CLIENT_SECRET:-}
+      OPERATOR_SUBJECTS: ${OPERATOR_SUBJECTS:-}
+      GAME_URL: ${GAME_URL:-}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+  gateway:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN}
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - certificates:/data
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+volumes:
+  database:
+  certificates:
+  caddy_config:

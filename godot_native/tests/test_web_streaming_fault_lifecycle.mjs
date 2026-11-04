@@ -16,7 +16,7 @@ const unblock = between("  active.faultPhase = 'c2-deferred-unblock-pending';", 
 const handlerPrefix = '    active.cdp = await connect(target.webSocketDebuggerUrl, ({ method, params }) => {\n';
 const eventHandler = between(handlerPrefix, '    });\n    // Confirm durable body observation').slice(handlerPrefix.length);
 const checkSource = between('function check(ok, label, details)', 'async function persist()');
-const finalGates = between('    check(![...network.values()].some(n => n.status >= 400)', '    const renderer = await evaluate(');
+const finalGates = between('    const standaloneGuest = ', '    const renderer = await evaluate(');
 const url = 'https://synthetic.invalid/7-55/content/chapter2_013-exact.pck';
 const settle = async () => { for (let i = 0; i < 8; i++) await Promise.resolve(); };
 const clone = value => structuredClone(value);
@@ -26,7 +26,7 @@ function deferred() {
   return { promise, resolve, reject };
 }
 
-function fixture() {
+function fixture(pageUrl = 'https://synthetic.invalid/7-55/') {
   let time = 1000;
   const ack = deferred(), calls = [], errors = [], network = new Map();
   const active = {
@@ -39,7 +39,7 @@ function fixture() {
       return ack.promise;
     } },
   };
-  const context = vm.createContext({ active, errors, network, responses: new Map(),
+  const context = vm.createContext({ active, errors, network, responses: new Map(), url: pageUrl, URL,
     delivery: { bootByUrl: new Map(), deferredChunksByUrl: new Map() },
     Date: { now: () => time++ }, report: { checks: [] }, id: 'synthetic-streaming',
     clickControl: async (name, field) => { calls.push({ method: 'clickControl', name, field }); },
@@ -53,6 +53,20 @@ function fixture() {
   });
   return { active, ack, calls, errors, network, request, fail, ...functions };
 }
+
+for (const [label, page, responseUrl, status, accepted] of [
+  ['static session 404 is an explicit guest probe', 'https://synthetic.invalid/7-55/', 'https://synthetic.invalid/api/v1/session', 404, true],
+  ['static game asset 404 remains fatal', 'https://synthetic.invalid/7-55/', url, 404, false],
+  ['static session 500 remains fatal', 'https://synthetic.invalid/7-55/', 'https://synthetic.invalid/api/v1/session', 500, false],
+  ['another origin is not a guest probe', 'https://synthetic.invalid/7-55/', 'https://other.invalid/api/v1/session', 404, false],
+  ['integrated session 404 remains fatal', 'https://synthetic.invalid/game/', 'https://synthetic.invalid/api/v1/session', 404, false],
+  ['integrated index session 404 remains fatal', 'https://synthetic.invalid/game/index.html', 'https://synthetic.invalid/api/v1/session', 404, false],
+]) test(label, () => {
+  const f = fixture(page);
+  f.network.set(responseUrl, {url: responseUrl, status});
+  if (accepted) assert.doesNotThrow(f.finish);
+  else assert.throws(f.finish, /no failed HTTP resources/);
+});
 
 test('a pending unblock retains exact injected requests; Retry begins only after acknowledgement', async () => {
   const f = fixture(); let restored = false;

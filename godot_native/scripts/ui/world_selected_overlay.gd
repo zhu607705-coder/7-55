@@ -4,12 +4,10 @@ extends Control
 const Selected = preload("res://scripts/ui/selected_ui_theme.gd")
 class Scrim extends PanelContainer:
 	func _draw()->void:
-		# The selected scrim fades left-to-right, not an opaque paper card.
-		for x:int in range(ceili(size.x)):
-			var edge:float=minf(x,size.x-1-x)
-			var cut:float=6-sqrt(maxf(0,36-pow(maxf(0,6-edge),2))) if edge<6 else 0
-			var color:=Color("20352d");color.a=.9*maxf(0,1-float(x)/maxf(1,size.x))
-			draw_line(Vector2(x+.5,cut),Vector2(x+.5,size.y-cut),color,1)
+		# Keep the exact passive HUD rectangle and its scrolling/input contract.
+		var paper=preload("res://scripts/ui/paper_ink_material.gd")
+		draw_rect(Rect2(Vector2.ZERO,size),paper.PAPER)
+		paper.draw_panel(get_canvas_item(),Rect2(Vector2.ZERO,size))
 
 var task: PanelContainer
 var task_scroll: ScrollContainer

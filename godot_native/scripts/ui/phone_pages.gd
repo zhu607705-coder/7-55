@@ -1,6 +1,7 @@
 extends RefCounted
 const PixelEdges = preload("res://scripts/ui/pixel_edges.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
+const CommunityPortal=preload("res://scripts/platform/community_portal.gd")
 ## Native reconstructions of original phone app hierarchies. Source CSS colors and art.
 ## All hotspots emit intents; this builder never changes story state.
 signal action_requested(action_id: String, value: Variant)
@@ -11,6 +12,7 @@ signal brightness_preview_requested(value: float)
 const OpeningPresentation = preload("res://scripts/ui/native_opening_presentation.gd")
 const PhoneNotice = preload("res://scripts/ui/native_phone_notice.gd")
 const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
+const PaperInk = preload("res://scripts/ui/paper_ink_material.gd")
 const PhonePalette = preload("res://scripts/ui/phone_palette.gd")
 const WechatBubble=preload("res://scripts/ui/wechat_message_bubble.gd")
 const WechatSocial=preload("res://scripts/ui/wechat_social_pages.gd")
@@ -76,6 +78,7 @@ var zjuding_detail = ""
 var zjuding_visitor = {"name":"","date":"","purpose":"校园参观"}
 var zjuding_feedback = {"category":"功能建议","content":""}
 var zjuding_feedback_status = ""
+const JumpNotice=preload("res://scripts/ui/phone_jump_notice.gd")
 const HomeButton = preload("res://scripts/ui/home_app_button.gd")
 const PhoneChrome = preload("res://scripts/ui/phone_chrome.gd")
 const Posts = preload("res://scripts/data/cc98_store.gd")
@@ -103,8 +106,10 @@ var s: Dictionary = {}
 var previous_page = ""
 var home_desk: RefCounted
 var displayed_balance_shifted = false
+var paper_ink_page := false
 
 func build(page: String, view: Dictionary, state: Dictionary) -> Control:
+	paper_ink_page = page in ["phone_home","checkin","zjuding","control_center"] or page.begins_with("library_")
 	s = state
 	bonsai_growth.route(page)
 	entry_session.route(s)
@@ -178,7 +183,7 @@ func _base(color: Color, height: float = 570) -> Control:
 	root.size = root.custom_minimum_size
 	root.clip_contents = true
 	var background = ColorRect.new()
-	background.color = color
+	background.color = PaperInk.PAPER if paper_ink_page and color.a>.95 and color.get_luminance()>.65 else color
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.add_child(background)
@@ -199,6 +204,17 @@ func _panel(root: Control, rect: Rect2, color: Color, border: Color = Color.TRAN
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_theme_stylebox_override("panel",_style(color,border,radius,width))
 	root.add_child(panel)
+	return panel
+
+func _paper_style(color: Color = PaperInk.PAPER, border: Color = PaperInk.EDGE, radius: int = 0, width: int = 1) -> StyleBoxFlat:
+	# Keep the original inset contract even when the visual pen is finer.
+	var style := PaperInk.panel_style(Vector2(width,width),color,border)
+	return style
+
+func _paper_panel(root: Control, rect: Rect2, color: Color = PaperInk.PAPER, border: Color = PaperInk.EDGE, radius: int = 0, width: int = 1) -> Panel:
+	var panel := _panel(root,rect,color,border,radius,width)
+	panel.add_theme_stylebox_override("panel",_paper_style(color,border,radius,width))
+	panel.set_meta("paper_ink_surface",true)
 	return panel
 
 func _label(root: Control, text: String, rect: Rect2, fs: int = 18, color: Color = INK, align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT) -> Label:
@@ -304,7 +320,11 @@ func _return_zjuding(page: String = "hub") -> void:
 	page_requested.emit("zjuding")
 
 func _header(root: Control, title: String, color: Color = Color.WHITE, ink: Color = INK, back: Callable = Callable(), kind: String = "back", label: String = "返回手机主页") -> void:
-	_panel(root,Rect2(0,0,378,54),color)
+	if paper_ink_page:
+		ink=PaperInk.INK
+		_paper_panel(root,Rect2(0,0,378,54),PaperInk.PAPER,Color.TRANSPARENT,0,0)
+	else:
+		_panel(root,Rect2(0,0,378,54),color)
 	_nav(root,kind,label,back if back.is_valid() else func(): page_requested.emit("phone_home"),Rect2(7,5,40,44),color,ink)
 	var heading=_label(root,title,Rect2(50,5,278,44),16,ink,HORIZONTAL_ALIGNMENT_CENTER)
 	heading.autowrap_mode=TextServer.AUTOWRAP_OFF; heading.clip_text=true; heading.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -468,17 +488,18 @@ func _home() -> Control:
 	# Source page dots remain decorative and cannot route or advance progression.
 	for i in range(3): _panel(root,_home_rect(184+i*22,828,10,10),INK if i==0 else Color("c5c3b9"),INK,0,2)
 	if s.qizhenLake.phase=="complete" and not s.chapterThreeInterlude.completed:
-		var note=_button(root,"",_home_rect(12,48,400,62),func(): page_requested.emit("c35_recovery"),Color("fffdf4"),INK,0,INK); note.name="HomeInterludeTopNotice"
+		var note=_button(root,"",_home_rect(12,48,400,62),func(): page_requested.emit("c35_recovery"),Color("fffdf4"),INK,0,INK); note.name="HomeInterludeTopNotice"; JumpNotice.routed_banner(note)
 		_panel(note,Rect2(10,10,34,34),Color("4d7ed9"),INK,0,2)
 		for i in range(3): _panel(note,Rect2(16,17+i*7,22-i*4,3),Color("d9f2e6"))
 		_label(note,"记录恢复",Rect2(54,7,230,21),16)
-		_label(note,"检测到 7 分 55 秒未同步记录",Rect2(54,30,268,19),10,MUTED)
-		_label(note,"现在",Rect2(317,7,32,20),10,Color("c85454"))
+		_label(note,"检测到 7 分 55 秒未同步记录",Rect2(54,30,268,19),10,JumpNotice.DETAIL)
+		_label(note,"现在",Rect2(317,7,32,20),10,JumpNotice.TIME)
 	elif (_friend_stage()=="prologue" and not s.flags.codeScattered) or (_friend_stage()=="followup" and s.actOne.phase=="friend_message_required"):
 		var note = _page(root,"",Rect2(12,4,352,50),"wechat",Color("f6f2e7"))
+		note.name="HomeFriendTopNotice"; JumpNotice.routed_banner(note)
 		_app_icon(_panel(note,Rect2(10,8,34,34),Color("61b58c"),INK,4,1),"wechat",.7)
 		_label(note,"朋友",Rect2(54,4,232,22),16)
-		_label(note,"签上了吗？？" if s.actOne.phase=="friend_message_required" else "速来！老师开始雷达签到！",Rect2(54,26,275,19),12,MUTED)
+		_label(note,"签上了吗？？" if s.actOne.phase=="friend_message_required" else "速来！老师开始雷达签到！",Rect2(54,26,275,19),12,JumpNotice.DETAIL)
 
 	return root
 
@@ -897,7 +918,9 @@ func _controls() -> Control:
 	backdrop.name="ControlCenterBackdrop"
 	for mode in ["normal","hover","pressed","focus"]: backdrop.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 	var panel_height=580.0+(53 if control_reset_confirm else 0)+(21 if int(s.phoneBattery.percent)==1 else 0)
-	var panel=_panel(root,Rect2(0,0,378,panel_height),Color("e9e5da"),INK,0,2)
+	var community_y=panel_height-8
+	if CommunityPortal.available(): panel_height+=64
+	var panel=_paper_panel(root,Rect2(0,0,378,panel_height),PaperInk.PAPER,PaperInk.EDGE,0,2)
 	panel.mouse_filter=Control.MOUSE_FILTER_STOP; panel.name="ControlCenterPanel"
 	_label(panel,"7月9日 周四",Rect2(14,13,260,27),16)
 	var close_button=_nav(panel,"close","收起控制中心",close,Rect2(337,12,27,27),PAPER)
@@ -907,6 +930,8 @@ func _controls() -> Control:
 		var active=(network=="campus_wifi" if i==0 else network=="cellular")
 		var button=_act(panel,"",Rect2(14+i*180,51,170,56),"c1_network","校园网" if i==0 else "移动数据",Color("4d7ed9") if active else Color("cfd3d9"),Color.WHITE if active else INK,0,INK)
 		button.name="ControlNetwork_"+("wifi" if i==0 else "cellular")
+		# Nested labels keep their selected white ink on an explicit dark face.
+		button.set_meta("tactile_variant","primary" if active else "secondary")
 		_panel(button,Rect2(9,10,34,34),Color.WHITE,INK,0,2)
 		if i==0:
 			Symbols.add_wifi(button,Rect2(9,10,34,34))
@@ -914,7 +939,7 @@ func _controls() -> Control:
 			for bar in range(4): _panel(button,Rect2(15+bar*5,34-bar*4,3,5+bar*4),INK)
 		_label(button,"ZJUWLAN" if i==0 else "移动数据",Rect2(50,12,115,19),12,Color.WHITE if active else INK)
 		_label(button,("已连接" if active else "未连接") if i==0 else ("使用中" if active else "已关闭"),Rect2(50,33,115,14),10,Color.WHITE if active else MUTED)
-	var music=_panel(panel,Rect2(14,117,284,104),Color("cfd3d9"),INK,0,2)
+	var music=_paper_panel(panel,Rect2(14,117,284,104),PaperInk.PAPER,PaperInk.EDGE,0,2)
 	_source_icon(music,"music",Rect2(11,9,27,27))
 	_label(music,"正在播放：早八进行曲" if s.ui.musicPlaying else "未在播放",Rect2(47,12,225,25),12)
 	_act(music,"❚❚" if s.ui.musicPlaying else "▶",Rect2(12,51,49,40),"c1_music",null,INK,PAPER,0,INK).name="ControlMusicPlay"
@@ -969,7 +994,7 @@ func _controls() -> Control:
 		_label(button,data[1],Rect2(0,48,80,18),12,INK,HORIZONTAL_ALIGNMENT_CENTER)
 	handled.append("c1_auto_rotate")
 	var critical=int(s.phoneBattery.percent)<=5
-	var power=_panel(panel,Rect2(14,313,350,141+(21 if int(s.phoneBattery.percent)==1 else 0)),Color("edd2cf") if critical else Color("d8eadb") if s.phoneBattery.lowPowerMode else Color("d9dde2"),INK,0,2)
+	var power=_paper_panel(panel,Rect2(14,313,350,141+(21 if int(s.phoneBattery.percent)==1 else 0)),Color("edd2cf") if critical else Color("d8eadb") if s.phoneBattery.lowPowerMode else PaperInk.PAPER,PaperInk.EDGE,0,2)
 	_label(power,"电池 %d%%" % int(s.phoneBattery.percent),Rect2(9,8,267,20),13)
 	_label(power,"打开应用不额外扣电",Rect2(9,30,267,17),10,MUTED)
 	_panel(power,Rect2(305,10,35,28),Color("c85454") if critical else Color("2d7a52"),INK,0,2)
@@ -982,13 +1007,13 @@ func _controls() -> Control:
 	_label(power,"剧场入口左侧设有充电服务站，需走到设备旁接线。" if s.get("rpgScene","")=="theater_interior" else "可从主页或盆栽放下手机，点桌面充电座接线。" if s.actOne.phase=="prologue" else "充电需要在现场与充电服务站交互。",Rect2(9,118,332,18),10)
 	if int(s.phoneBattery.percent)==1: _label(power,"电量仅剩 1%，请寻找现场充电服务站。",Rect2(9,139,332,18),10,Color("7a241f"))
 	var save_y=467+(21 if int(s.phoneBattery.percent)==1 else 0)
-	var saves=_panel(panel,Rect2(14,save_y,350,95+(53 if control_reset_confirm else 0)),Color("cfd3d9"),INK,0,2)
+	var saves=_paper_panel(panel,Rect2(14,save_y,350,95+(53 if control_reset_confirm else 0)),PaperInk.PAPER,PaperInk.EDGE,0,2)
 	_label(saves,"游戏进度",Rect2(9,8,267,20),13)
 	_label(saves,"自动保存已开启",Rect2(9,30,267,17),10,MUTED)
 	_panel(saves,Rect2(299,10,41,28),Color("1e5da8"),INK,0,2)
 	_label(saves,"SAVE",Rect2(299,10,41,28),9,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
 	if control_reset_confirm:
-		_label(saves,"将清除章节、道具和谜题进度。编辑过的 CC98 帖子会保留。",Rect2(9,55,332,44),12,Color("5d2424"))
+		_label(saves,"将重新开始主线，旧账号进度保留为备份。个人编辑内容保留。" if OS.has_feature("web") else "将清除章节、道具和谜题进度。编辑过的 CC98 帖子会保留。",Rect2(9,55,332,44),12,Color("5d2424"))
 		_button(saves,"取消",Rect2(9,107,162,31),func(): control_reset_confirm=false; action_requested.emit("phone_refresh",{}),PAPER).name="ControlResetCancel"
 		_act(saves,"确认重置",Rect2(179,107,162,31),"native_reset_progress",null,Color("b64b4b"),Color.WHITE,0).name="ControlResetConfirm"
 	else:
@@ -996,6 +1021,13 @@ func _controls() -> Control:
 		_button(saves,"重置剧情进度",Rect2(179,56,162,31),func(): control_reset_confirm=true; action_requested.emit("phone_refresh",{}),Color("b64b4b"),Color.WHITE,0).name="ControlResetOpen"
 	for button in [saves.get_node_or_null("ControlSaveNow"),saves.get_node_or_null("ControlResetOpen"),saves.get_node_or_null("ControlResetCancel"),saves.get_node_or_null("ControlResetConfirm")]:
 		if button: button.add_theme_font_size_override("font_size",12)
+	if CommunityPortal.available():
+		var community_link=_act(panel,"共创平台 ↗",Rect2(14,community_y,144,44),"native_open_community",null,PAPER)
+		community_link.name="OpenCommunity";community_link.add_theme_font_size_override("font_size",14)
+		var account_link=_act(panel,"玩家账号",Rect2(166,community_y,94,44),"native_player_account",null,PAPER)
+		account_link.name="OpenPlayerAccount";account_link.add_theme_font_size_override("font_size",14)
+		var saves_link=_act(panel,"存档管理",Rect2(268,community_y,96,44),"native_save_manager",null,PAPER)
+		saves_link.name="OpenSaveManager";saves_link.add_theme_font_size_override("font_size",14)
 	return root
 
 func _source_icon(root: Control, id: String, rect: Rect2) -> Control:

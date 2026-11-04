@@ -1,4 +1,5 @@
 extends "res://scripts/chapters/c3_base.gd"
+const ProfileStorage=preload("res://scripts/platform/profile_storage.gd")
 ## Native port of QizhenJournalModel + ChapterThreeQizhenLakeController journal.
 ## Capture is a two-phase runtime capability, not a callable photo-forging action.
 const CaptureSession = preload("res://scripts/media/c3_capture_session.gd")
@@ -203,7 +204,7 @@ func finish_capture(s: Dictionary, value: Variant) -> Dictionary:
 		last_capture_result=duplicate_result.duplicate(true)
 		session.invalidate()
 		return duplicate_result
-	var folder: String="user://qizhen_journal"
+	var folder: String=ProfileStorage.journal_folder().trim_suffix("/")
 	if DirAccess.make_dir_recursive_absolute(folder)!=OK:
 		session.invalidate()
 		return reject("capture_failed")
@@ -486,7 +487,7 @@ func persona_name(id: Variant) -> String:
 func image_for(photo: Variant) -> Image:
 	if not photo is Dictionary: return null
 	var path: String=str(photo.get("nativeImagePath",""))
-	if not path.begins_with("user://qizhen_journal/") or path.contains("..") or not FileAccess.file_exists(path): return null
+	if not ProfileStorage.owns_photo(path) or not FileAccess.file_exists(path): return null
 	if FileAccess.get_sha256(path)!=str(photo.get("nativeImageSha256","")): return null
 	var result: Image=Image.load_from_file(path)
 	return result if result!=null and not result.is_empty() else null
@@ -519,7 +520,7 @@ func validate_photo_record(value: Variant) -> bool:
 		if not value.get("nativeImagePath") is String or not value.get("nativeImageSha256") is String: return false
 		var path: String=value.nativeImagePath
 		var digest: String=value.nativeImageSha256
-		if not path.begins_with("user://qizhen_journal/") or path.contains("..") or not path.ends_with(".png") or digest.length()!=64: return false
+		if not ProfileStorage.valid_photo_path(path) or digest.length()!=64: return false
 		for i: int in range(digest.length()):
 			if "0123456789abcdef".find(digest.substr(i,1))<0: return false
 	if value.has("nativeCapture"):
