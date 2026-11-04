@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {selectPhotoDesk,selectedDeskHasNearLod} from '../browser_tests/desk_test_target.mjs';
+const objects={cart:{id:'cart',kind:'tool',floor:'3',room:'xlab'},desk:{id:'desk',kind:'desk',floor:'3',room:'xlab'},other:{id:'other',kind:'desk',floor:'3',room:'studio_1'}};
+const desks=[{id:'other',level:0},{id:'desk',level:2}];
+assert.equal(selectPhotoDesk(['cart','desk','other'],objects,desks,'3','xlab'),'desk');
+assert.equal(selectPhotoDesk(['desk','cart'],objects,desks,'3','xlab'),'desk');
+assert.throws(()=>selectPhotoDesk(['cart'],objects,desks,'3','xlab'),/No selectable/);
+assert.throws(()=>selectPhotoDesk(['cart','desk'],objects,[],'3','xlab'),/No selectable/);
+assert.throws(()=>selectPhotoDesk(['cart','other'],objects,desks,'3','xlab'),/No selectable/);
+assert.equal(selectedDeskHasNearLod(desks,'desk'),false);
+assert.equal(selectedDeskHasNearLod(desks,'missing'),false);
+assert.equal(selectedDeskHasNearLod([{id:'desk',level:0}], 'desk'),true);
+console.log('Spatial desk target: 8 checks passed');

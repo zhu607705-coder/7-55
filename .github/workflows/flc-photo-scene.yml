@@ -57,6 +57,7 @@ jobs:
         run: |
           git rev-parse HEAD | tee "$RUNNER_TEMP/flc-photo-node/checkout-sha.txt"
           node scripts/test_photo_scene_assets.mjs 2>&1 | tee "$RUNNER_TEMP/flc-photo-node/photo-assets.log"
+          node scripts/test_spatial_desk_target.mjs 2>&1 | tee "$RUNNER_TEMP/flc-photo-node/desk-target.log"
       - name: Test workstation actual GLB geometry in Node
         if: ${{ !cancelled() && steps.node.outcome == 'success' }}
         run: |
