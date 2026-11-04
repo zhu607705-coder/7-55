@@ -1,0 +1,10 @@
+{
+  "package": "three",
+  "version": "0.185.1",
+  "license": "MIT",
+  "additionalVendoredFile": "addons/environments/RoomEnvironment.js",
+  "source": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/environments/RoomEnvironment.js",
+  "sha256": "9f0a30045d3649ea0bbe7e6a8ec29cb0aab71a3e73c463b94fb7ba169c576e83",
+  "upstreamSha256": "55f466192cc84298755a424c5e040345006b2ee1455589b3b54126c2ea4123f4",
+  "localEdit": "Leading whitespace normalized for repository diff checks; code unchanged."
+}

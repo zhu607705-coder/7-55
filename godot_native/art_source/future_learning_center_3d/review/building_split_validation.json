@@ -1,0 +1,112 @@
+{
+  "source": {
+    "file": "web/assets/building.glb",
+    "bytes": 9190620,
+    "sha256": "487166ab6c0e04402bb660c1194cbe13bf3aed7e76af43a9a284fb6cb51c0b3a"
+  },
+  "output": {
+    "file": "web/assets/building.web.glb",
+    "bytes": 7540552,
+    "sha256": "d088bc5adac65da994511b710a34385eb065e957d782fde36259d3f8d705f268"
+  },
+  "chairAnchors": 125,
+  "staticSlots": [
+    {
+      "id": "display_table_125",
+      "asset": "mobile_exhibition_table",
+      "origin": [
+        11.229190751445088,
+        0,
+        2.921217391304348
+      ],
+      "target": [
+        1.25,
+        0.6,
+        1
+      ],
+      "fallbackParts": 32,
+      "worldBoundsErrorM": 8.881784197001252e-16
+    },
+    {
+      "id": "display_table_135",
+      "asset": "mobile_exhibition_table",
+      "origin": [
+        12.876300578034682,
+        0,
+        1.8712173913043477
+      ],
+      "target": [
+        1.35,
+        0.6,
+        1
+      ],
+      "fallbackParts": 32,
+      "worldBoundsErrorM": 8.881784197001252e-16
+    },
+    {
+      "id": "display_table_120",
+      "asset": "mobile_exhibition_table",
+      "origin": [
+        14.326300578034683,
+        0,
+        1.9712173913043478
+      ],
+      "target": [
+        1.2,
+        0.6,
+        1
+      ],
+      "fallbackParts": 32,
+      "worldBoundsErrorM": 2.220446049250313e-16
+    },
+    {
+      "id": "display_table_150",
+      "asset": "mobile_exhibition_table",
+      "origin": [
+        15.673410404624278,
+        0,
+        2.571217391304348
+      ],
+      "target": [
+        1.5,
+        0.65,
+        1
+      ],
+      "fallbackParts": 32,
+      "worldBoundsErrorM": 0
+    },
+    {
+      "id": "silver_exhibit",
+      "asset": "silver_covered_exhibit",
+      "origin": [
+        12.876300578034682,
+        1.03,
+        1.8712173913043477
+      ],
+      "target": [
+        0.88,
+        0.54,
+        0.54
+      ],
+      "fallbackParts": 1,
+      "worldBoundsErrorM": 0
+    },
+    {
+      "id": "pantry_sofa",
+      "asset": "rest_sofa",
+      "origin": [
+        12.876300578034682,
+        0,
+        40.42626086956522
+      ],
+      "target": [
+        1.8,
+        0.85,
+        0.95
+      ],
+      "fallbackParts": 7,
+      "worldBoundsErrorM": 0
+    }
+  ],
+  "anchorContract": "Chair matrices/names/extras and static fallback world bounds retained. Layout and collision proxies remain separate."
+}

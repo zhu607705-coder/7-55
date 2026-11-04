@@ -1,0 +1,76 @@
+{
+  "browser": "156.0.8078.79",
+  "checks": 17,
+  "failures": 0,
+  "rows": [
+    {
+      "label": "electrical lab starts on a physically safe in-room point",
+      "pass": true
+    },
+    {
+      "label": "two source-requested H2C instances are exposed",
+      "pass": true
+    },
+    {
+      "label": "H2C remains visible in room overview",
+      "pass": true
+    },
+    {
+      "label": "ordinary H2C geometry click opens inspection",
+      "pass": true
+    },
+    {
+      "label": "machine inspector exposes all three manufacturer dimensions",
+      "pass": true
+    },
+    {
+      "label": "co_creation has a safe ordinary walk entry",
+      "pass": true
+    },
+    {
+      "label": "conference_seminar has a safe ordinary walk entry",
+      "pass": true
+    },
+    {
+      "label": "interview has a safe ordinary walk entry",
+      "pass": true
+    },
+    {
+      "label": "open_office has a safe ordinary walk entry",
+      "pass": true
+    },
+    {
+      "label": "open_discussion has a safe ordinary walk entry",
+      "pass": true
+    },
+    {
+      "label": "recording has a safe ordinary walk entry",
+      "pass": true
+    },
+    {
+      "label": "pantry has a safe ordinary walk entry",
+      "pass": true
+    },
+    {
+      "label": "storage has a safe ordinary walk entry",
+      "pass": true
+    },
+    {
+      "label": "both actually read Feishu requirement sources are available in the viewer",
+      "pass": true
+    },
+    {
+      "label": "missing formal conference geometry is disclosed in the review interface",
+      "pass": true
+    },
+    {
+      "label": "source dialog remains readable within mobile viewport",
+      "pass": true
+    },
+    {
+      "label": "source-specific views have no page or console errors",
+      "pass": true
+    }
+  ],
+  "errors": []
+}

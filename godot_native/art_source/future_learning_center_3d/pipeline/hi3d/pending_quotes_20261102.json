@@ -1,0 +1,91 @@
+{
+  "generationSubmitted": true,
+  "totalPoints": 135,
+  "policy": "A user-confirmed amount is required. Expired quotes must be refreshed before submission; ask again if price or scope changes. Do not automatically retry submissions.",
+  "quotes": [
+    {
+      "asset": "mobile_exhibition_table",
+      "quoteId": "quote_DKTZZrhmJv5xebdLhi77KI08_nmIzBnQYY-4pkFDksM",
+      "estimatedPoints": 45,
+      "expiresAtUTC": "2026-11-02T00:36:31.690Z",
+      "status": "historical_quote_superseded_by_completed_batch",
+      "submitted": false,
+      "normalizedParameters": {
+        "prompt": "All three views depict one mobile exhibition table, not three tables. Reconstruct one pale ash rounded tabletop on two satin silver steel T-frames with exactly four black rubber casters and real brackets. Approx1.50m wide,0.65m deep,1.00m high. Keep open frame and manufactured joints. PBR wood, brushed steel and rubber.",
+        "source_image_index": 0,
+        "version": "v3.0",
+        "model_type": "standard",
+        "generation_type": "both",
+        "output_format": "GLB",
+        "license": "private",
+        "pbr": true
+      },
+      "requestedParameters": {
+        "prompt": "All three views depict one mobile exhibition table, not three tables. Reconstruct one pale ash rounded tabletop on two satin silver steel T-frames with exactly four black rubber casters and real brackets. Approx1.50m wide,0.65m deep,1.00m high. Keep open frame and manufactured joints. PBR wood, brushed steel and rubber.",
+        "version": "v3.0",
+        "model_type": "high_quality",
+        "generation_type": "model_with_texture",
+        "license": "private",
+        "pbr": true
+      },
+      "note": "Normalized server output is recorded separately. Re-upload/reuse current file_tokens privately when rebuilding the original quote input."
+    },
+    {
+      "asset": "silver_covered_exhibit",
+      "quoteId": "quote_dPe0vkUNGo1kuxxQ0XnjdgsaeSg5N9bpGdnojLJDzNg",
+      "estimatedPoints": 45,
+      "expiresAtUTC": "2026-11-02T00:36:30.744Z",
+      "status": "historical_quote_superseded_by_completed_batch",
+      "submitted": false,
+      "normalizedParameters": {
+        "prompt": "One generic silver foil-covered exhibition form, approximate broad irregular silhouette0.88m wide,0.54m deep,0.54m high. Large asymmetric folded creases, thin reflective silver material, readable open lower edge. No background, plinth, table or duplicate object. Keep the reference folds; this is an approximation of an art-installation silhouette.",
+        "source_image_index": 0,
+        "version": "v3.0",
+        "model_type": "standard",
+        "generation_type": "both",
+        "output_format": "GLB",
+        "license": "private",
+        "pbr": true
+      },
+      "requestedParameters": {
+        "prompt": "One generic silver foil-covered exhibition form, approximate broad irregular silhouette0.88m wide,0.54m deep,0.54m high. Large asymmetric folded creases, thin reflective silver material, readable open lower edge. No background, plinth, table or duplicate object. Keep the reference folds; this is an approximation of an art-installation silhouette.",
+        "version": "v3.0",
+        "model_type": "high_quality",
+        "generation_type": "model_with_texture",
+        "license": "private",
+        "pbr": true
+      },
+      "note": "Normalized server output is recorded separately. Re-upload/reuse current file_tokens privately when rebuilding the original quote input."
+    },
+    {
+      "asset": "rest_sofa",
+      "quoteId": "quote_B7EtEIBjDpYNW7Jbf_IWBC8SxBbGeztge9aWZprbA6Y",
+      "estimatedPoints": 45,
+      "expiresAtUTC": "2026-11-02T00:36:30.749Z",
+      "status": "historical_quote_superseded_by_completed_batch",
+      "submitted": false,
+      "normalizedParameters": {
+        "prompt": "One compact two-seat rest sofa, approx1.80m wide,0.82m deep,0.86m high,seat0.43m high. Muted sage-gray fine woven upholstery; two seat cushions,two back cushions,padded low arms,subtle piping and four slender dark metal legs. Preserve cushion seams and textile material, no room or other furniture.",
+        "source_image_index": 0,
+        "version": "v3.0",
+        "model_type": "standard",
+        "generation_type": "both",
+        "output_format": "GLB",
+        "license": "private",
+        "pbr": true
+      },
+      "requestedParameters": {
+        "prompt": "One compact two-seat rest sofa, approx1.80m wide,0.82m deep,0.86m high,seat0.43m high. Muted sage-gray fine woven upholstery; two seat cushions,two back cushions,padded low arms,subtle piping and four slender dark metal legs. Preserve cushion seams and textile material, no room or other furniture.",
+        "version": "v3.0",
+        "model_type": "high_quality",
+        "generation_type": "model_with_texture",
+        "license": "private",
+        "pbr": true
+      },
+      "note": "Normalized server output is recorded separately. Re-upload/reuse current file_tokens privately when rebuilding the original quote input."
+    }
+  ],
+  "status": "completed",
+  "actualPoints": 135,
+  "currentRecord": "pipeline/hi3d/batch_20261102.json"
+}

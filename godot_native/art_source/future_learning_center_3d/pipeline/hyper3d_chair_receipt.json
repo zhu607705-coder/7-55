@@ -1,0 +1,32 @@
+{
+  "provider": "Hyper3D Rodin",
+  "generation_id": "bbd66ef7-bd49-48c3-ab58-de53c841c21e",
+  "tier": "standard",
+  "producer": "n-gons",
+  "status": "completed",
+  "submittedLocalDate": "2026-11-02",
+  "reference": "sources/concepts/ergonomic_chair_turnaround_20261102.png",
+  "referenceSHA256": "9d4972e7a7557c612da8dfeb446f271a8bec76fb077a25b478fbc1ed1245a60f",
+  "referenceGenerator": "Built-in imagegen; exact model version not exposed",
+  "acceptance": "Authoring-preview integration checked; raw structural parts, decoded LOD geometry and browser interactions verified. No complete PBR maps, survey or formal game-release acceptance.",
+  "display_url": "https://hyper3d.ai/workspace/rodin/bbd66ef7-bd49-48c3-ab58-de53c841c21e",
+  "originalFile": "sources/models/hyper3d_ergonomic_chair_original.glb",
+  "sourceBytes": 4040632,
+  "sourceSHA256": "a81cba4313a48d177549418f12b60330169eff713dc25334a03a2edd88731525",
+  "calibration": {
+    "heightM": 1.29,
+    "yawDegrees": 180,
+    "uniformScaleOnly": true
+  },
+  "materialResult": {
+    "factorBasedPBRMaterials": 5,
+    "textureImages": 0
+  },
+  "derivatives": "web/assets/models/ergonomic_chair/hyper3d/manifest.json",
+  "generationPrompt": "Create ONE unbranded ergonomic office chair matching this coherent front/right/back reference sheet. Preserve the fine woven mesh back, separate headrest, curved lumbar support, cushioned seat, two adjustable armrests, central gas lift, exactly five base spokes and five twin casters. Retain open negative spaces and fine cloth texture rather than thick grille bars. Clean physically based materials with separate metal, polymer, upholstery and mesh appearance; no baked lights, floor, shadow plane, labels or extra objects. Keep major structural parts separate when feasible. Approximate target dimensions 0.71m wide, 0.69m deep, 1.29m high; uniform metric calibration and local LOD optimization will follow. This is a new generic asset, not manufacturer CAD.",
+  "preservedConceptInput": {
+    "file": "sources/concepts/authored_chair_reference_20261102.png",
+    "baseCommit": "4c226d34",
+    "sha256": "06eb5acb2963f71c124e2bbf88180dc621e45c010acae8a103f8668f5dbc4308"
+  }
+}

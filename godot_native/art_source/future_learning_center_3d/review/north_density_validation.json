@@ -1,0 +1,118 @@
+{
+  "checks": 13,
+  "failures": 0,
+  "rows": [
+    {
+      "pass": true,
+      "label": "north room outline and scale are retained"
+    },
+    {
+      "pass": true,
+      "label": "four mobile high tables and one rounded low table follow the photo"
+    },
+    {
+      "pass": true,
+      "label": "two photographed white high stools have physical proxies"
+    },
+    {
+      "pass": true,
+      "label": "right-side visitor route retains at least one meter between furniture envelopes",
+      "details": 1.0221098265895954
+    },
+    {
+      "pass": true,
+      "label": "visitor route is traversable at every5cm sample",
+      "details": {
+        "samples": 50
+      }
+    },
+    {
+      "pass": true,
+      "label": "foreground display can be approached without entering furniture"
+    },
+    {
+      "pass": true,
+      "label": "photo-based furnishings occupy more floor area",
+      "details": {
+        "baselineArea": 6.1450000000000005,
+        "newArea": 8.027500000000002
+      }
+    },
+    {
+      "pass": true,
+      "label": "walk lens has a bounded horizontal field of view",
+      "details": {
+        "ready": true,
+        "floor": "3",
+        "room": "seminar",
+        "mode": "walk",
+        "position": [
+          13.276300578034682,
+          5.396608695652173
+        ],
+        "yaw": 0,
+        "pitch": -0.14,
+        "eyeHeight": 1.65,
+        "verticalFov": 60,
+        "horizontalFov": 81.78678929826181,
+        "inspect": null,
+        "joystick": [
+          0,
+          0
+        ],
+        "drawCalls": 238,
+        "triangles": 626906,
+        "renderedMeshes": 248
+      }
+    },
+    {
+      "pass": true,
+      "label": "ultrawide screen does not expand the first-person lens beyond82degrees",
+      "details": {
+        "ready": true,
+        "floor": "3",
+        "room": "seminar",
+        "mode": "walk",
+        "position": [
+          13.276300578034682,
+          5.396608695652173
+        ],
+        "yaw": 0,
+        "pitch": -0.14,
+        "eyeHeight": 1.65,
+        "verticalFov": 40.279038696090886,
+        "horizontalFov": 82.00000000000001,
+        "inspect": null,
+        "joystick": [
+          0,
+          0
+        ],
+        "drawCalls": 309,
+        "triangles": 686858,
+        "renderedMeshes": 248
+      }
+    },
+    {
+      "pass": true,
+      "label": "portrait walk retains a usable vertical field of view"
+    },
+    {
+      "pass": true,
+      "label": "ordinary movement works beside the denser display group"
+    },
+    {
+      "pass": true,
+      "label": "ordinary movement remains outside furniture"
+    },
+    {
+      "pass": true,
+      "label": "north composition and camera checks have no page/console errors",
+      "details": []
+    }
+  ],
+  "roomArea": 44.82184026137219,
+  "baselineOccupiedArea": 6.1450000000000005,
+  "occupiedArea": 8.027500000000002,
+  "mainRouteClearance": 1.0221098265895954,
+  "scope": "photo-based local furnishings and lens refinement; no surveyed room-dimension claim"
+}

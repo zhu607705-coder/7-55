@@ -1,0 +1,289 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "original_0.glb",
+    "bytes": 47740136,
+    "sha256": "c5e56526b26a6574cce96fea494095d55525c0280f1afcba7c90e5c4a7f6ceb0",
+    "triangles": 1976618,
+    "primitives": 1,
+    "bounds": {
+      "min": [
+        -0.5000141263008118,
+        -0.2422379106283188,
+        -0.27146774530410767
+      ],
+      "max": [
+        0.5000521540641785,
+        0.24251674115657806,
+        0.2716729938983917
+      ]
+    },
+    "size": [
+      1.0000662803649902,
+      0.48475465178489685,
+      0.5431407392024994
+    ],
+    "materials": [
+      {
+        "name": "pbr_material",
+        "baseColorTexture": true,
+        "normalTexture": false,
+        "metalRoughTexture": true,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 1,
+        "roughnessFactor": 1
+      }
+    ],
+    "textures": [
+      {
+        "name": "",
+        "mime": "image/jpeg",
+        "bytes": 2530552,
+        "size": [
+          8192,
+          8192
+        ]
+      },
+      {
+        "name": "",
+        "mime": "image/jpeg",
+        "bytes": 1220284,
+        "size": [
+          8192,
+          8192
+        ]
+      }
+    ]
+  },
+  "calibration": {
+    "targetHeight": 0.86,
+    "yawDegrees": 180,
+    "uniformScale": 1.7740933415149835,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 0.000010045699324834345,
+      "bytes": 201116,
+      "uncompressedBytes": 624896,
+      "sha256": "730c658e6d847f0115dc9e2911d2f11de62b5e1da50b9c8108dde58050994a4d",
+      "triangles": 27326,
+      "primitives": 1,
+      "bounds": {
+        "min": [
+          -0.8870171681247377,
+          0.00016300468957097802,
+          -0.4815700733329903
+        ],
+        "max": [
+          0.8870524866886799,
+          0.8595181765371195,
+          0.48162775679595565
+        ]
+      },
+      "size": [
+        1.7740696548134176,
+        0.8593551718475485,
+        0.9631978301289459
+      ],
+      "materials": [
+        {
+          "name": "pbr_material",
+          "baseColorTexture": true,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "metallicFactor": 1,
+          "roughnessFactor": 1
+        }
+      ],
+      "textures": [
+        {
+          "name": "",
+          "mime": "image/jpeg",
+          "bytes": 78158,
+          "size": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "name": "",
+          "mime": "image/jpeg",
+          "bytes": 18592,
+          "size": [
+            1024,
+            1024
+          ]
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 0.000005498698577799388,
+      "bytes": 67944,
+      "uncompressedBytes": 198436,
+      "sha256": "bdca843b1f5af62456546a051843304e966a8a68d1060f50649bb561e9aac1ac",
+      "triangles": 8000,
+      "primitives": 1,
+      "bounds": {
+        "min": [
+          -0.8870171681247377,
+          0.00026777075910872083,
+          -0.48179139595074705
+        ],
+        "max": [
+          0.8870145773917539,
+          0.8595233844391379,
+          0.4815212723831123
+        ]
+      },
+      "size": [
+        1.7740317455164916,
+        0.8592556136800291,
+        0.9633126683338593
+      ],
+      "materials": [
+        {
+          "name": "pbr_material",
+          "baseColorTexture": true,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "metallicFactor": 1,
+          "roughnessFactor": 1
+        }
+      ],
+      "textures": [
+        {
+          "name": "",
+          "mime": "image/jpeg",
+          "bytes": 26215,
+          "size": [
+            512,
+            512
+          ]
+        },
+        {
+          "name": "",
+          "mime": "image/jpeg",
+          "bytes": 6010,
+          "size": [
+            512,
+            512
+          ]
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 0.000012424943901800933,
+      "bytes": 23836,
+      "uncompressedBytes": 60248,
+      "sha256": "a4244e3f980b302ee870c1df8a733e99f6298dd2374214d04b33d7a50fdaa6df",
+      "triangles": 2000,
+      "primitives": 1,
+      "bounds": {
+        "min": [
+          -0.8868513083416745,
+          0.00026777075910872083,
+          -0.4812258230787585
+        ],
+        "max": [
+          0.8870145773917539,
+          0.859226507588038,
+          0.4792088052706355
+        ]
+      },
+      "size": [
+        1.7738658857334284,
+        0.8589587368289293,
+        0.960434628349394
+      ],
+      "materials": [
+        {
+          "name": "pbr_material",
+          "baseColorTexture": true,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "metallicFactor": 1,
+          "roughnessFactor": 1
+        }
+      ],
+      "textures": [
+        {
+          "name": "",
+          "mime": "image/jpeg",
+          "bytes": 9694,
+          "size": [
+            256,
+            256
+          ]
+        },
+        {
+          "name": "",
+          "mime": "image/jpeg",
+          "bytes": 2248,
+          "size": [
+            256,
+            256
+          ]
+        }
+      ]
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

@@ -1,0 +1,18 @@
+{
+  "provider": "Hi3D",
+  "taskId": "d0d4c88ae6c444f8bdc3ff66e144560a",
+  "modelPage": "https://www.hi3d.cn/3d-model/d0d4c88ae6c444f8bdc3ff66e144560a",
+  "actualPoints": 45,
+  "files": [
+    {
+      "file": "original_0.glb",
+      "bytes": 47576028,
+      "sha256": "c8ab1c7b021d955c49d2756a1c4c26cc42f15521b8ccbd509b09a91b8631e5e3"
+    },
+    {
+      "file": "original_1.glb",
+      "bytes": 9988840,
+      "sha256": "dbc6844337c60983a4cfab77e6d44863369cacc0867d8a999b438ccf6c691147"
+    }
+  ]
+}

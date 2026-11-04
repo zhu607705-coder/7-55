@@ -1,0 +1,358 @@
+{
+  "checks": 88,
+  "failures": 0,
+  "rows": [
+    {
+      "label": "2F corridor spawn",
+      "pass": true
+    },
+    {
+      "label": "2F exterior is blocked",
+      "pass": true
+    },
+    {
+      "label": "2F seminar safe start",
+      "pass": true
+    },
+    {
+      "label": "2F seminar spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "2F formula safe start",
+      "pass": true
+    },
+    {
+      "label": "2F formula spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "2F team safe start",
+      "pass": true
+    },
+    {
+      "label": "2F team spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "2F robotics safe start",
+      "pass": true
+    },
+    {
+      "label": "2F robotics spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "2F mechatronics safe start",
+      "pass": true
+    },
+    {
+      "label": "2F mechatronics spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "2F koala safe start",
+      "pass": true
+    },
+    {
+      "label": "2F koala spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "2F swept movement remains valid",
+      "pass": true
+    },
+    {
+      "label": "2F high-speed wall crossing blocked",
+      "pass": true
+    },
+    {
+      "label": "2F seminar joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "2F formula joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "2F team joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "2F robotics joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "2F mechatronics joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "2F koala joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "lab partition electrical side clear floor",
+      "pass": true
+    },
+    {
+      "label": "lab partition electrical side reaches corridor through an actual doorway",
+      "pass": true
+    },
+    {
+      "label": "lab partition machining side clear floor",
+      "pass": true
+    },
+    {
+      "label": "lab partition machining side reaches corridor through an actual doorway",
+      "pass": true
+    },
+    {
+      "label": "1.2m acoustic-partition opening is walkable at eye-body radius",
+      "pass": true
+    },
+    {
+      "label": "3F corridor spawn",
+      "pass": true
+    },
+    {
+      "label": "3F exterior is blocked",
+      "pass": true
+    },
+    {
+      "label": "3F seminar safe start",
+      "pass": true
+    },
+    {
+      "label": "3F seminar spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "3F studio_1 safe start",
+      "pass": true
+    },
+    {
+      "label": "3F studio_1 spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "3F studio_2 safe start",
+      "pass": true
+    },
+    {
+      "label": "3F studio_2 spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "3F studio_3 safe start",
+      "pass": true
+    },
+    {
+      "label": "3F studio_3 spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "3F studio_4 safe start",
+      "pass": true
+    },
+    {
+      "label": "3F studio_4 spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "3F recording safe start",
+      "pass": true
+    },
+    {
+      "label": "3F recording spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "3F pantry safe start",
+      "pass": true
+    },
+    {
+      "label": "3F pantry spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "3F xlab safe start",
+      "pass": true
+    },
+    {
+      "label": "3F xlab spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "3F atrium has no walkable floor",
+      "pass": true
+    },
+    {
+      "label": "3F swept movement remains valid",
+      "pass": true
+    },
+    {
+      "label": "3F seminar joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "3F studio_1 joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "3F studio_2 joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "3F studio_3 joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "3F studio_4 joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "3F recording joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "3F pantry joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "3F xlab joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "4F corridor spawn",
+      "pass": true
+    },
+    {
+      "label": "4F exterior is blocked",
+      "pass": true
+    },
+    {
+      "label": "4F storage safe start",
+      "pass": true
+    },
+    {
+      "label": "4F storage spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "4F seminar_1 safe start",
+      "pass": true
+    },
+    {
+      "label": "4F seminar_1 spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "4F seminar_2 safe start",
+      "pass": true
+    },
+    {
+      "label": "4F seminar_2 spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "4F seminar_3 safe start",
+      "pass": true
+    },
+    {
+      "label": "4F seminar_3 spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "4F focus safe start",
+      "pass": true
+    },
+    {
+      "label": "4F focus spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "4F collab safe start",
+      "pass": true
+    },
+    {
+      "label": "4F collab spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "4F flex safe start",
+      "pass": true
+    },
+    {
+      "label": "4F flex spawn remains in selected room",
+      "pass": true
+    },
+    {
+      "label": "4F atrium has no walkable floor",
+      "pass": true
+    },
+    {
+      "label": "4F atrium has no walkable floor",
+      "pass": true
+    },
+    {
+      "label": "4F atrium has no walkable floor",
+      "pass": true
+    },
+    {
+      "label": "4F swept movement remains valid",
+      "pass": true
+    },
+    {
+      "label": "4F storage joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "4F seminar_1 joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "4F seminar_2 joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "4F seminar_3 joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "4F focus joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "4F collab joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "4F flex joins common door/corridor network",
+      "pass": true
+    },
+    {
+      "label": "focus remains a connected open work zone",
+      "pass": true
+    },
+    {
+      "label": "collab remains a connected open work zone",
+      "pass": true
+    },
+    {
+      "label": "flex remains a connected open work zone",
+      "pass": true
+    },
+    {
+      "label": "open zones focus/collab have no inherited dividing wall",
+      "pass": true
+    },
+    {
+      "label": "open zones collab/flex have no inherited dividing wall",
+      "pass": true
+    },
+    {
+      "label": "reverse/away motion is not suppressed by a stale blocked flag",
+      "pass": true
+    }
+  ]
+}

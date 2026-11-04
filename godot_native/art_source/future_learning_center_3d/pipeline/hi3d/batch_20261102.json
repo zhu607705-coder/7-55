@@ -1,0 +1,109 @@
+{
+  "provider": "Hi3D",
+  "region": "cn",
+  "endpoint": "https://agent.hi3d.cn/mcp",
+  "userApproval": "三件一起做：135 积分",
+  "approvedTotalPoints": 135,
+  "version": "v3.0",
+  "modelType": "high_quality/standard",
+  "generationType": "model_with_texture",
+  "pbr": true,
+  "license": "private",
+  "submittedAtUTC": "2026-11-02T03:15:22.991485+00:00",
+  "assets": [
+    {
+      "asset": "mobile_exhibition_table",
+      "targetWidthDepthHeightM": [
+        1.5,
+        0.65,
+        1.0
+      ],
+      "quotedPoints": 45,
+      "status": "succeeded",
+      "quoteId": "quote__rCOHZUosr6jTreuqwaBILJxZiphjsBlg66kUr759Lk",
+      "responseFields": [
+        "view",
+        "task_id",
+        "task_type",
+        "status",
+        "stage",
+        "progress",
+        "summary",
+        "created_at",
+        "next_poll_after",
+        "actual_points",
+        "preview_url",
+        "model_page_url",
+        "assets",
+        "error",
+        "notice",
+        "schema_version",
+        "request_id",
+        "trace_id"
+      ],
+      "taskId": "d0d4c88ae6c444f8bdc3ff66e144560a",
+      "model_page_url": "https://www.hi3d.cn/3d-model/d0d4c88ae6c444f8bdc3ff66e144560a",
+      "next_poll_after": 10,
+      "progress": 100,
+      "actualPoints": 45,
+      "stage": "succeeded"
+    },
+    {
+      "asset": "silver_covered_exhibit",
+      "targetWidthDepthHeightM": [
+        0.88,
+        0.54,
+        0.54
+      ],
+      "quotedPoints": 45,
+      "status": "succeeded",
+      "quoteId": "quote_oPbDSsoZmiexFjfX8YntwO5iWPBJTxlH5wcksF8PTGo",
+      "reconciliation": "Rejected request reconciled: no task and no charge. Submitted once under a fresh45point quote after the first task finished; succeeded.",
+      "attempts": [
+        {
+          "quoteId": "quote_0A93ZOJfyJqJJXSGGYJXDLuKDlzg8_WrNa8VrJN_pTw",
+          "status": "rejected",
+          "error": {
+            "code": "GATEWAY_REJECTED",
+            "upstreamCode": 1003,
+            "domainCode": 10030106,
+            "taskCreated": false,
+            "chargedPoints": 0,
+            "reconciledBy": "list_tasks returned only the known table task; balance95 after45point table charge"
+          },
+          "chargedPoints": 0
+        },
+        {
+          "quoteId": "quote_oPbDSsoZmiexFjfX8YntwO5iWPBJTxlH5wcksF8PTGo",
+          "status": "succeeded",
+          "taskId": "dcdd1e8a91ed4571aa4e3c706d5d1abd"
+        }
+      ],
+      "taskId": "dcdd1e8a91ed4571aa4e3c706d5d1abd",
+      "stage": "succeeded",
+      "actualPoints": 45,
+      "progress": 100,
+      "model_page_url": "https://www.hi3d.cn/3d-model/dcdd1e8a91ed4571aa4e3c706d5d1abd"
+    },
+    {
+      "asset": "rest_sofa",
+      "targetWidthDepthHeightM": [
+        1.8,
+        0.82,
+        0.86
+      ],
+      "quotedPoints": 45,
+      "status": "succeeded",
+      "quoteId": "quote_jJvXW-zMk1skRtEWPqollHMVOApYkXEoPrqhkxaCHT8",
+      "taskId": "ed018de298f64816945e46b92a6b295b",
+      "stage": "succeeded",
+      "actualPoints": 45,
+      "progress": 100,
+      "model_page_url": "https://www.hi3d.cn/3d-model/ed018de298f64816945e46b92a6b295b"
+    }
+  ],
+  "actualTotalPoints": 135,
+  "finalAvailablePoints": 25,
+  "billingNote": "Task receipts each report45points, total135. Final main-site balance reports25; starting140 was historical and is not used to infer account credits or extra charges.",
+  "localPreviewValidation": "review/hi3d_asset_validation.json"
+}

@@ -1,0 +1,424 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "hyper3d_ergonomic_chair_original.glb",
+    "bytes": 4040632,
+    "sha256": "a81cba4313a48d177549418f12b60330169eff713dc25334a03a2edd88731525",
+    "triangles": 208132,
+    "primitives": 97,
+    "bounds": {
+      "min": [
+        -0.35499998927116394,
+        -0.6460000164806843,
+        -0.3140000104904175
+      ],
+      "max": [
+        0.35499998927116394,
+        0.6459999680519104,
+        0.3500000238418579
+      ]
+    },
+    "size": [
+      0.7099999785423279,
+      1.2919999845325947,
+      0.6640000343322754
+    ],
+    "materials": [
+      {
+        "name": "Graphite structural polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "baseColorFactor": [
+          0.010816383175551891,
+          0.012510408647358418,
+          0.0134117491543293,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.3700000047683716
+      },
+      {
+        "name": "Woven charcoal fibers",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "baseColorFactor": [
+          0.059253521263599396,
+          0.06603033095598221,
+          0.06838485598564148,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.800000011920929
+      },
+      {
+        "name": "Caster rubber",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "baseColorFactor": [
+          0.005422868765890598,
+          0.005866865627467632,
+          0.006331374868750572,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.6200000047683716
+      },
+      {
+        "name": "Satin steel",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "baseColorFactor": [
+          0.13286831974983215,
+          0.15487249195575714,
+          0.17064493894577026,
+          1
+        ],
+        "metallicFactor": 0.8999999761581421,
+        "roughnessFactor": 0.2800000011920929
+      },
+      {
+        "name": "Charcoal upholstery",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "baseColorFactor": [
+          0.0300741046667099,
+          0.03310476616024971,
+          0.03468407690525055,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.8199999928474426
+      }
+    ],
+    "textures": []
+  },
+  "calibration": {
+    "targetHeight": 1.29,
+    "yawDegrees": 180,
+    "uniformScale": 0.998452024337045,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 0.0000029161065335792102,
+      "bytes": 199860,
+      "uncompressedBytes": 709644,
+      "sha256": "09a89ddc1f32a598cf27114ad5d8991c627eebe39d11c549107de9d4f0e18077",
+      "triangles": 28616,
+      "primitives": 5,
+      "bounds": {
+        "min": [
+          -0.35431750727444394,
+          6.375108774214766e-17,
+          -0.3314831731129303
+        ],
+        "max": [
+          0.35411980715394437,
+          1.29,
+          0.3314860892194639
+        ]
+      },
+      "size": [
+        0.7084373144283883,
+        1.29,
+        0.6629692623323942
+      ],
+      "materials": [
+        {
+          "name": "Graphite structural polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "baseColorFactor": [
+            0.010816383175551891,
+            0.012510408647358418,
+            0.0134117491543293,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3700000047683716
+        },
+        {
+          "name": "Woven charcoal fibers",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "baseColorFactor": [
+            0.059253521263599396,
+            0.06603033095598221,
+            0.06838485598564148,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.800000011920929
+        },
+        {
+          "name": "Caster rubber",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "baseColorFactor": [
+            0.005422868765890598,
+            0.005866865627467632,
+            0.006331374868750572,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.6200000047683716
+        },
+        {
+          "name": "Satin steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "baseColorFactor": [
+            0.13286831974983215,
+            0.15487249195575714,
+            0.17064493894577026,
+            1
+          ],
+          "metallicFactor": 0.8999999761581421,
+          "roughnessFactor": 0.2800000011920929
+        },
+        {
+          "name": "Charcoal upholstery",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "baseColorFactor": [
+            0.0300741046667099,
+            0.03310476616024971,
+            0.03468407690525055,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8199999928474426
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 1,
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 0.000004403915989437124,
+      "bytes": 93948,
+      "uncompressedBytes": 274616,
+      "sha256": "b441b5e8724bb2645d731b8092e0434073190f5daee8ed6fc1e63f955de7387c",
+      "triangles": 8826,
+      "primitives": 5,
+      "bounds": {
+        "min": [
+          -0.3524432839466614,
+          6.375108774214766e-17,
+          -0.3314831731129303
+        ],
+        "max": [
+          0.35411980715394437,
+          1.2890733922708675,
+          0.33002387008620837
+        ]
+      },
+      "size": [
+        0.7065630911006058,
+        1.2890733922708675,
+        0.6615070431991387
+      ],
+      "materials": [
+        {
+          "name": "Graphite structural polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "baseColorFactor": [
+            0.010816383175551891,
+            0.012510408647358418,
+            0.0134117491543293,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3700000047683716
+        },
+        {
+          "name": "Woven charcoal fibers",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "baseColorFactor": [
+            0.059253521263599396,
+            0.06603033095598221,
+            0.06838485598564148,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.800000011920929
+        },
+        {
+          "name": "Caster rubber",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "baseColorFactor": [
+            0.005422868765890598,
+            0.005866865627467632,
+            0.006331374868750572,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.6200000047683716
+        },
+        {
+          "name": "Satin steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "baseColorFactor": [
+            0.13286831974983215,
+            0.15487249195575714,
+            0.17064493894577026,
+            1
+          ],
+          "metallicFactor": 0.8999999761581421,
+          "roughnessFactor": 0.2800000011920929
+        },
+        {
+          "name": "Charcoal upholstery",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "baseColorFactor": [
+            0.0300741046667099,
+            0.03310476616024971,
+            0.03468407690525055,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8199999928474426
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 2,
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 0.000003570742694136708,
+      "bytes": 39972,
+      "uncompressedBytes": 106912,
+      "sha256": "c3b6fefd5955cd00bb64d84871fb14d540c6e2e7118fe73ef87f6bc95933961f",
+      "triangles": 2802,
+      "primitives": 5,
+      "bounds": {
+        "min": [
+          -0.34816511761241875,
+          6.375108774214766e-17,
+          -0.33148638678135506
+        ],
+        "max": [
+          0.35244768786265085,
+          1.2890733922708675,
+          0.33002387008620837
+        ]
+      },
+      "size": [
+        0.7006128054750695,
+        1.2890733922708675,
+        0.6615102568675635
+      ],
+      "materials": [
+        {
+          "name": "Graphite structural polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "baseColorFactor": [
+            0.010816383175551891,
+            0.012510408647358418,
+            0.0134117491543293,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3700000047683716
+        },
+        {
+          "name": "Woven charcoal fibers",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "baseColorFactor": [
+            0.059253521263599396,
+            0.06603033095598221,
+            0.06838485598564148,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.800000011920929
+        },
+        {
+          "name": "Caster rubber",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "baseColorFactor": [
+            0.005422868765890598,
+            0.005866865627467632,
+            0.006331374868750572,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.6200000047683716
+        },
+        {
+          "name": "Satin steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "baseColorFactor": [
+            0.13286831974983215,
+            0.15487249195575714,
+            0.17064493894577026,
+            1
+          ],
+          "metallicFactor": 0.8999999761581421,
+          "roughnessFactor": 0.2800000011920929
+        },
+        {
+          "name": "Charcoal upholstery",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "baseColorFactor": [
+            0.0300741046667099,
+            0.03310476616024971,
+            0.03468407690525055,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8199999928474426
+        }
+      ],
+      "textures": []
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

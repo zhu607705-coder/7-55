@@ -1,5 +1,6 @@
 # Future Learning Center · three-floor object and gameplay review
 
+**3D spatial authoring, 2026-11-01:** [meter-scale building and first-person walkthrough](../../art_source/future_learning_center_3d/README.md) provides the editable Blender/GLB source, dimension-driven shared tools and browser review. This independent authoring viewer does not replace the integrated activity below.
 **Integrated runtime, 2026-10-31:** current `main` already includes the [formal optional activity and durable room saves](docs/FORMAL_INTEGRATION_20261030.md) for 25 rooms and 29 existing mechanisms. This delivery preserves that runtime and adds two extra Studio 2 stations (coupling tray and shape-based locker), unified temporary subtitles, and the furnished ASABE room with its corrected glass frontage. The two extra stations currently retain only session state; the existing 29 saved mechanisms keep their original save contract. The standalone launchers remain save-isolated.
 
 The descriptions below document the standalone samples and their original review evidence.

@@ -1,0 +1,126 @@
+{
+  "reviewDate": "2026-11-02",
+  "baselineCommit": "4c226d34",
+  "scope": "Independent metric authoring viewer; no formal native game, controller, save or Web export acceptance.",
+  "checks": 275,
+  "failures": 0,
+  "reports": {
+    "asset_geometry": {
+      "checks": 54,
+      "failures": 0,
+      "file": "review/asset_geometry_validation.json"
+    },
+    "asset_browser": {
+      "checks": 16,
+      "failures": 0,
+      "file": "review/asset_pipeline_browser_validation.json"
+    },
+    "browser": {
+      "checks": 36,
+      "failures": 0,
+      "file": "review/browser_validation.json"
+    },
+    "collision": {
+      "checks": 88,
+      "failures": 0,
+      "file": "review/collision_validation.json"
+    },
+    "floor_assets": {
+      "checks": 40,
+      "failures": 0,
+      "file": "review/floor_material_asset_validation.json"
+    },
+    "floor_browser": {
+      "checks": 13,
+      "failures": 0,
+      "file": "review/floor_material_browser_validation.json"
+    },
+    "furniture": {
+      "checks": 15,
+      "failures": 0,
+      "file": "review/furniture_browser_validation.json"
+    },
+    "north_density": {
+      "checks": 13,
+      "failures": 0,
+      "file": "review/north_density_validation.json"
+    }
+  },
+  "unchangedSourceScope": {
+    "web/assets/building.glb": {
+      "unchangedFrom": "4c226d34",
+      "pass": true,
+      "sha256": "78f966e98631bf52ed81a220bf192dd950163a8fbfa99e40cbada2061d83bf4f"
+    },
+    "flc_walkthrough.blend": {
+      "unchangedFrom": "4c226d34",
+      "pass": true,
+      "sha256": "cf506f18e8722f100c58df9e6e101dd0ec8b1afff1b40c020e796f906cf4a5fc"
+    },
+    "web/assets/layout.json": {
+      "unchangedFrom": "4c226d34",
+      "pass": true,
+      "sha256": "28a2b4bb0c83c10bae5e1e7e29b21572db843d75045db9e01f23dedb8d9eccf1"
+    }
+  },
+  "comparison": [
+    {
+      "route": "?floor=4",
+      "beforeTriangles": 3665110,
+      "afterTriangles": 1344238,
+      "triangleReduction": 0.6332339274946728,
+      "beforeDrawCalls": 407,
+      "afterDrawCalls": 435,
+      "beforeMedianFrameMs": 16.699999999999818,
+      "afterMedianFrameMs": 16.699999999999818,
+      "beforeCpuTaskSeconds": 0.188666,
+      "afterCpuTaskSeconds": 0.18121199999999993
+    },
+    {
+      "route": "?floor=3&room=studio_1&mode=walk",
+      "beforeTriangles": 2133030,
+      "afterTriangles": 614998,
+      "triangleReduction": 0.7116786918139923,
+      "beforeDrawCalls": 214,
+      "afterDrawCalls": 222,
+      "beforeMedianFrameMs": 16.699999999999818,
+      "afterMedianFrameMs": 16.699999999999818,
+      "beforeCpuTaskSeconds": 0.11883300000000002,
+      "afterCpuTaskSeconds": 0.17571499999999995
+    }
+  ],
+  "limitations": [
+    "Headless local Chrome156 desktop and emulated touch, not physical phones or all browser engines.",
+    "Draw calls rose slightly and frame samples remain refresh-capped around16.7ms; no FPS improvement claimed.",
+    "Factor-only PBR materials have no texture images. Fine weave still needs baking/antialias refinement.",
+    "Approximate product-scale reference; not surveyed or identified on-site chair.",
+    "Per-camera instance culling omits off-screen chair shadows."
+  ],
+  "artifact_sha256": {
+    "web/viewer.js": "bd17893cb81ffda8a8dbbc7506ed538df995a21af74f3f9f722c1bb4ddf7ea9f",
+    "web/chair_assets.js": "c9b65d1978abc9c072385a5a9211d97a90d462865922b6d8ad340c2b18244733",
+    "web/assets/building.web.glb": "fd7a70f5d6b992312adffd559361c629fd91cdce153bf6906421513c57840e89",
+    "web/assets/asset_catalog.json": "bb5150f5eb3a3c1da46809c3c151b68105f1fa29e2eec4b4191e72d01d35d03f",
+    "pipeline/build_asset.mjs": "98926ab542315803817c564c947d7fbb793afceb65bbdb66f60ff0c4c1e36470",
+    "pipeline/split_building.mjs": "b580657ea4443baa05676261a0770d06566e7679b50d9f686dabe7825bddd979",
+    "pipeline/package-lock.json": "a3d712f64357e1e2dbcffb87ab3c7e698c2fe365b6faf97ce8bbb5e0a9d0f17c",
+    "pipeline/hyper3d_chair_receipt.json": "2cda86c83f9b5f6ed7834bc6dac5f34d0e08969f69d0d8bf78bce3ac29573721",
+    "sources/models/hyper3d_ergonomic_chair_original.glb": "a81cba4313a48d177549418f12b60330169eff713dc25334a03a2edd88731525",
+    "sources/concepts/ergonomic_chair_turnaround_20261102.png": "9d4972e7a7557c612da8dfeb446f271a8bec76fb077a25b478fbc1ed1245a60f",
+    "review/hyper3d_chair_inspection.png": "3f747d486219e5ab766b832e8ef60d734eb72eedadc2aa2d9940c1307ccaeef5",
+    "web/assets/models/ergonomic_chair/authored/lod0.glb": "37118a1a9bc2c80b210f6cf04ac2e4aa7936d6e8e05d2bb4727ee2c965965f6d",
+    "web/assets/models/ergonomic_chair/authored/lod1.glb": "48e22e41b64fcbf5cf9d45e3d2e33faa183836c5bc0f6b9300f39659c71078da",
+    "web/assets/models/ergonomic_chair/authored/lod2.glb": "6b1cf99729cd4863fb3429c830f587b251c4a6ab40d3058219df89841d03fac5",
+    "web/assets/models/ergonomic_chair/authored/lod2.draco.glb": "7dd540b642ab52a4dbbd02f9e844a6c4253c50f9b0aa8d5d86411f09d4b8cfcf",
+    "web/assets/models/ergonomic_chair/authored/lod1.draco.glb": "96649a66e699b7480f83ab49467212e0ac5a9605e6fd762f6328317d19b211ec",
+    "web/assets/models/ergonomic_chair/authored/manifest.json": "fe1238a3d5ea8c966da9a64eb3be217ed147fb5a4ffaaf85d329a4229704a4c6",
+    "web/assets/models/ergonomic_chair/authored/lod0.draco.glb": "e3f36f49688829230ffb55e6d1b7dc4f5ef603ed270ef60c94378060d42be60c",
+    "web/assets/models/ergonomic_chair/hyper3d/lod0.glb": "76d894bbb5b3ecc241aa09270796f5d7d1569b77f86706cef04e98e22dc1d81f",
+    "web/assets/models/ergonomic_chair/hyper3d/lod1.glb": "4aa7830ad4ab4e8204d15c6d5871753c405c40f40ce7cc7f68515eee82eaf16c",
+    "web/assets/models/ergonomic_chair/hyper3d/lod2.glb": "46a6ae6d20352db742cf02de6f0a8587ba7d9bb9fe87dd0b15fc354affaff1b2",
+    "web/assets/models/ergonomic_chair/hyper3d/lod2.draco.glb": "c3b6fefd5955cd00bb64d84871fb14d540c6e2e7118fe73ef87f6bc95933961f",
+    "web/assets/models/ergonomic_chair/hyper3d/lod1.draco.glb": "b441b5e8724bb2645d731b8092e0434073190f5daee8ed6fc1e63f955de7387c",
+    "web/assets/models/ergonomic_chair/hyper3d/manifest.json": "d3794926b26aca9e1cb1860af0295e0a6e1b52f34bbdc2e23d868f1e09304459",
+    "web/assets/models/ergonomic_chair/hyper3d/lod0.draco.glb": "09a89ddc1f32a598cf27114ad5d8991c627eebe39d11c549107de9d4f0e18077"
+  }
+}

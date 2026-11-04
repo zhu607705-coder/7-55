@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "provider": "Hi3D",
+  "assets": {
+    "mobile_exhibition_table": {
+      "name": "带轮展示桌",
+      "folder": "models/hi3d/table_150",
+      "acceptedForPreview": true,
+      "modelPage": "https://www.hi3d.cn/3d-model/d0d4c88ae6c444f8bdc3ff66e144560a",
+      "status": "local_preview_reviewed",
+      "acceptance": "review/hi3d_asset_validation.json"
+    },
+    "silver_covered_exhibit": {
+      "name": "银色覆膜展件",
+      "folder": "models/hi3d/silver_covered_exhibit",
+      "acceptedForPreview": true,
+      "modelPage": "https://www.hi3d.cn/3d-model/dcdd1e8a91ed4571aa4e3c706d5d1abd",
+      "status": "local_preview_reviewed",
+      "acceptance": "review/hi3d_asset_validation.json"
+    },
+    "mobile_exhibition_table_135": {
+      "name": "带轮展示桌",
+      "folder": "models/hi3d/table_135",
+      "acceptedForPreview": true,
+      "modelPage": "https://www.hi3d.cn/3d-model/d0d4c88ae6c444f8bdc3ff66e144560a",
+      "status": "local_preview_reviewed",
+      "derivedFrom": "mobile_exhibition_table",
+      "localWidthM": 1.35,
+      "acceptance": "review/hi3d_asset_validation.json"
+    },
+    "mobile_exhibition_table_125": {
+      "name": "带轮展示桌",
+      "folder": "models/hi3d/table_125",
+      "acceptedForPreview": true,
+      "modelPage": "https://www.hi3d.cn/3d-model/d0d4c88ae6c444f8bdc3ff66e144560a",
+      "status": "local_preview_reviewed",
+      "derivedFrom": "mobile_exhibition_table",
+      "localWidthM": 1.25,
+      "acceptance": "review/hi3d_asset_validation.json"
+    },
+    "mobile_exhibition_table_120": {
+      "name": "带轮展示桌",
+      "folder": "models/hi3d/table_120",
+      "acceptedForPreview": true,
+      "modelPage": "https://www.hi3d.cn/3d-model/d0d4c88ae6c444f8bdc3ff66e144560a",
+      "status": "local_preview_reviewed",
+      "derivedFrom": "mobile_exhibition_table",
+      "localWidthM": 1.2,
+      "acceptance": "review/hi3d_asset_validation.json"
+    },
+    "rest_sofa": {
+      "name": "双人休息沙发",
+      "folder": "models/hi3d/rest_sofa_metric",
+      "acceptedForPreview": true,
+      "modelPage": "https://www.hi3d.cn/3d-model/ed018de298f64816945e46b92a6b295b",
+      "status": "local_preview_reviewed",
+      "acceptance": "review/hi3d_asset_validation.json"
+    }
+  },
+  "slots": {
+    "display_table_150": {
+      "asset": "mobile_exhibition_table",
+      "uniformScale": 1
+    },
+    "silver_exhibit": {
+      "asset": "silver_covered_exhibit",
+      "uniformScale": 0.8647770933362644
+    },
+    "display_table_135": {
+      "asset": "mobile_exhibition_table_135",
+      "uniformScale": 1
+    },
+    "display_table_125": {
+      "asset": "mobile_exhibition_table_125",
+      "uniformScale": 1
+    },
+    "display_table_120": {
+      "asset": "mobile_exhibition_table_120",
+      "uniformScale": 1
+    },
+    "pantry_sofa": {
+      "asset": "rest_sofa",
+      "uniformScale": 1
+    }
+  },
+  "scope": "Independent local3D art preview; generated approximations and locally authored metric variants, not surveyed furniture or native Godot release."
+}

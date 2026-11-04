@@ -1,5 +1,6 @@
 # 7:55 — native Godot migration (work in progress)
 
+The QFramework architecture migration starts at [QFRAMEWORK_ARCHITECTURE.md](docs/QFRAMEWORK_ARCHITECTURE.md): official Godot runtime, shared model, command/query entry points and remaining migration boundaries.
 This is an independent Godot migration of the existing game. It uses Godot Controls and Canvas rendering, with the same controllers available to native executables and a standalone Godot WebAssembly export. Original React/Phaser source and build tools remain available at repository root as a separate behavioral reference.
 
 Original project source code is licensed under [Apache License 2.0](LICENSE). See [NOTICE](NOTICE) for attribution and the third-party license boundary; Godot, dependencies, fonts and assets retain their own terms.

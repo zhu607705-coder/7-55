@@ -1,0 +1,280 @@
+{
+  "checks": 54,
+  "failures": 0,
+  "rows": [
+    {
+      "pass": true,
+      "label": "source has five independent base spokes"
+    },
+    {
+      "pass": true,
+      "label": "source has ten wheels in five twin casters"
+    },
+    {
+      "pass": true,
+      "label": "source includes Curved floating lumbar support_export"
+    },
+    {
+      "pass": true,
+      "label": "source includes Headrest woven textile_export"
+    },
+    {
+      "pass": true,
+      "label": "source includes Contoured seat cushion_export"
+    },
+    {
+      "pass": true,
+      "label": "source includes Left arm pad_export"
+    },
+    {
+      "pass": true,
+      "label": "source includes Right arm pad_export"
+    },
+    {
+      "pass": true,
+      "label": "LOD0 binds exact compressed file hash"
+    },
+    {
+      "pass": true,
+      "label": "LOD0 Cylinder.099 positions are finite"
+    },
+    {
+      "pass": true,
+      "label": "LOD0 Cylinder.099 indices address real vertices"
+    },
+    {
+      "pass": true,
+      "label": "LOD0 Back woven textile.001 positions are finite"
+    },
+    {
+      "pass": true,
+      "label": "LOD0 Back woven textile.001 indices address real vertices"
+    },
+    {
+      "pass": true,
+      "label": "LOD0 Cylinder.057 positions are finite"
+    },
+    {
+      "pass": true,
+      "label": "LOD0 Cylinder.057 indices address real vertices"
+    },
+    {
+      "pass": true,
+      "label": "LOD0 Cylinder.054 positions are finite"
+    },
+    {
+      "pass": true,
+      "label": "LOD0 Cylinder.054 indices address real vertices"
+    },
+    {
+      "pass": true,
+      "label": "LOD0 Contoured seat cushion.001 positions are finite"
+    },
+    {
+      "pass": true,
+      "label": "LOD0 Contoured seat cushion.001 indices address real vertices"
+    },
+    {
+      "pass": true,
+      "label": "LOD0 decoded triangle count matches receipt",
+      "details": 28616
+    },
+    {
+      "pass": true,
+      "label": "LOD0 stays at metric head/foot heights",
+      "details": {
+        "min": [
+          -0.35431750727444394,
+          6.375108774214766e-17,
+          -0.3314831731129303
+        ],
+        "max": [
+          0.35411980715394437,
+          1.29,
+          0.3314860892194639
+        ]
+      }
+    },
+    {
+      "pass": true,
+      "label": "LOD0 fits original chair collision footprint",
+      "details": [
+        0.7084373144283883,
+        1.29,
+        0.6629692623323942
+      ]
+    },
+    {
+      "pass": true,
+      "label": "LOD0 Draco envelope error below 1mm",
+      "details": 0.0000029161065335792102
+    },
+    {
+      "pass": true,
+      "label": "LOD1 binds exact compressed file hash"
+    },
+    {
+      "pass": true,
+      "label": "LOD1 Cylinder.099 positions are finite"
+    },
+    {
+      "pass": true,
+      "label": "LOD1 Cylinder.099 indices address real vertices"
+    },
+    {
+      "pass": true,
+      "label": "LOD1 Back woven textile.001 positions are finite"
+    },
+    {
+      "pass": true,
+      "label": "LOD1 Back woven textile.001 indices address real vertices"
+    },
+    {
+      "pass": true,
+      "label": "LOD1 Cylinder.057 positions are finite"
+    },
+    {
+      "pass": true,
+      "label": "LOD1 Cylinder.057 indices address real vertices"
+    },
+    {
+      "pass": true,
+      "label": "LOD1 Cylinder.054 positions are finite"
+    },
+    {
+      "pass": true,
+      "label": "LOD1 Cylinder.054 indices address real vertices"
+    },
+    {
+      "pass": true,
+      "label": "LOD1 Contoured seat cushion.001 positions are finite"
+    },
+    {
+      "pass": true,
+      "label": "LOD1 Contoured seat cushion.001 indices address real vertices"
+    },
+    {
+      "pass": true,
+      "label": "LOD1 decoded triangle count matches receipt",
+      "details": 8826
+    },
+    {
+      "pass": true,
+      "label": "LOD1 stays at metric head/foot heights",
+      "details": {
+        "min": [
+          -0.3524432839466614,
+          6.375108774214766e-17,
+          -0.3314831731129303
+        ],
+        "max": [
+          0.35411980715394437,
+          1.2890733922708675,
+          0.33002387008620837
+        ]
+      }
+    },
+    {
+      "pass": true,
+      "label": "LOD1 fits original chair collision footprint",
+      "details": [
+        0.7065630911006058,
+        1.2890733922708675,
+        0.6615070431991387
+      ]
+    },
+    {
+      "pass": true,
+      "label": "LOD1 Draco envelope error below 1mm",
+      "details": 0.000004403915989437124
+    },
+    {
+      "pass": true,
+      "label": "LOD2 binds exact compressed file hash"
+    },
+    {
+      "pass": true,
+      "label": "LOD2 Cylinder.099 positions are finite"
+    },
+    {
+      "pass": true,
+      "label": "LOD2 Cylinder.099 indices address real vertices"
+    },
+    {
+      "pass": true,
+      "label": "LOD2 Back woven textile.001 positions are finite"
+    },
+    {
+      "pass": true,
+      "label": "LOD2 Back woven textile.001 indices address real vertices"
+    },
+    {
+      "pass": true,
+      "label": "LOD2 Cylinder.057 positions are finite"
+    },
+    {
+      "pass": true,
+      "label": "LOD2 Cylinder.057 indices address real vertices"
+    },
+    {
+      "pass": true,
+      "label": "LOD2 Cylinder.054 positions are finite"
+    },
+    {
+      "pass": true,
+      "label": "LOD2 Cylinder.054 indices address real vertices"
+    },
+    {
+      "pass": true,
+      "label": "LOD2 Contoured seat cushion.001 positions are finite"
+    },
+    {
+      "pass": true,
+      "label": "LOD2 Contoured seat cushion.001 indices address real vertices"
+    },
+    {
+      "pass": true,
+      "label": "LOD2 decoded triangle count matches receipt",
+      "details": 2802
+    },
+    {
+      "pass": true,
+      "label": "LOD2 stays at metric head/foot heights",
+      "details": {
+        "min": [
+          -0.34816511761241875,
+          6.375108774214766e-17,
+          -0.33148638678135506
+        ],
+        "max": [
+          0.35244768786265085,
+          1.2890733922708675,
+          0.33002387008620837
+        ]
+      }
+    },
+    {
+      "pass": true,
+      "label": "LOD2 fits original chair collision footprint",
+      "details": [
+        0.7006128054750695,
+        1.2890733922708675,
+        0.6615102568675635
+      ]
+    },
+    {
+      "pass": true,
+      "label": "LOD2 Draco envelope error below 1mm",
+      "details": 0.000003570742694136708
+    },
+    {
+      "pass": true,
+      "label": "detail levels reduce real geometry"
+    },
+    {
+      "pass": true,
+      "label": "receipt accurately records factor-only PBR, without inventing texture maps"
+    }
+  ],
+  "scope": "Geometry/decode/source-part checks plus separate screenshot review; no survey or production-asset certification."
+}

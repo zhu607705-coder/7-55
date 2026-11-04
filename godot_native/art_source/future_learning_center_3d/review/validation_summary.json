@@ -1,0 +1,129 @@
+{
+  "date": "2026-11-02",
+  "baselineCommit": "0e370af6",
+  "scope": "Independent3D art viewer: three approved Hi3D jobs completed for135points, six placements, local manufacturing cleanup, true polygon LODs, texture budgets, Draco and actual browser inspection/fallback tests.",
+  "checks": 334,
+  "failures": 0,
+  "reports": {
+    "model": {
+      "checks": 37,
+      "failures": 0,
+      "file": "review/model_validation.json"
+    },
+    "collision": {
+      "checks": 88,
+      "failures": 0,
+      "file": "review/collision_validation.json"
+    },
+    "browser": {
+      "checks": 36,
+      "failures": 0,
+      "file": "review/browser_validation.json"
+    },
+    "floor_browser": {
+      "checks": 13,
+      "failures": 0,
+      "file": "review/floor_material_browser_validation.json"
+    },
+    "furniture": {
+      "checks": 15,
+      "failures": 0,
+      "file": "review/furniture_browser_validation.json"
+    },
+    "north_density": {
+      "checks": 13,
+      "failures": 0,
+      "file": "review/north_density_validation.json"
+    },
+    "asset_browser": {
+      "checks": 16,
+      "failures": 0,
+      "file": "review/asset_pipeline_browser_validation.json"
+    },
+    "exhibition_pantry": {
+      "checks": 46,
+      "failures": 0,
+      "file": "review/exhibition_pantry_validation.json"
+    },
+    "hi3d_assets": {
+      "file": "review/hi3d_asset_validation.json",
+      "checks": 70,
+      "failures": 0
+    }
+  },
+  "connection": "pipeline/hi3d/connection_20261102.json",
+  "geometryScope": "2F/4F source data, all room bounds/doors/spawns and layout collision proxies retained. Three Hi3D sources replace six3F static placements via separate local assets. Full authored blend/building unchanged, fallbacks retained.",
+  "historicalProfiles": {
+    "commit": "743d0b98",
+    "file": "review/asset_pipeline_hyper3d_lod_profile.json",
+    "status": "Historical chair-optimization profile; not a new performance measurement of this furniture revision."
+  },
+  "limitations": [
+    "Local Chrome156 desktop and mobile emulation, not physical mobile or other engines.",
+    "Independent art preview; no native Godot gameplay integration, release or whole-game parity claim.",
+    "Exhibits and dimensions are reference-led approximations, not survey or exact student-art reconstruction.",
+    "Provider originals have color and metallic/roughness maps, no normal or AO maps. Sofa response and table top locally corrected.",
+    "Historical chair performance profile is retained as historical; no new full-device FPS acceptance claimed."
+  ],
+  "artifact_sha256": {
+    "flc_walkthrough.blend": "9f4cd6b19117e69ad6e545a513cfbdb4ca8705737f68ac41b242b7ed1fb82baa",
+    "web/assets/building.glb": "487166ab6c0e04402bb660c1194cbe13bf3aed7e76af43a9a284fb6cb51c0b3a",
+    "web/assets/building.web.glb": "d088bc5adac65da994511b710a34385eb065e957d782fde36259d3f8d705f268",
+    "web/assets/layout.json": "6a135651f3469d96f66f78de9925db07985c2653af2c1dbbbce5d65b95d25fb8",
+    "scripts/build_scene.py": "0a16e74d8d271d10d78b5993d25a346dad8e8d3c1bdd5bdf754a38c7c854ca17",
+    "scripts/refine_exhibition_pantry.py": "239cea175e8819b8b490d29b269754ce495ae883dd3f4b755206a9f2ac7af374",
+    "pipeline/hi3d/client.py": "ee9806fb900072acc60245d663243007fcc3399b6a211c8fed6778f6d5f18cd6",
+    "pipeline/hi3d/connection_20261102.json": "8fd108c3479fd2a989a9f186b743de3d0b833164cd603b0f747dc743bcd98f24",
+    "pipeline/hi3d/pending_quotes_20261102.json": "4f5f52decb3f92e661c1f5106132e82f11b2f5121e49f0d28db99394999aea2a",
+    "review/pantry_20261102_desktop_walk.png": "d753d0df9db2fce18257bde35f0ba86b062eae9a117a0705ae629537fcdaf701",
+    "review/seminar_20261102_desktop_walk.png": "b4e65daed3c041309758097d01a1ae147141adb4322d7de7db0edb4d7646107b",
+    "sources/concepts/20261102_exhibition_rest/silver_covered_exhibit.png": "ce8dd182623dff23f214b837115853eb260a781f2569caee56aee4817be97516",
+    "sources/concepts/20261102_exhibition_rest/thread_cube_exhibit.prompt.md": "ff726356cc813fc89f181b59db190c798e4bba8588156a9ade07d28321f03cd3",
+    "sources/concepts/20261102_exhibition_rest/mobile_exhibition_table_turnaround.prompt.md": "dd79b06df90e528c12836fcc80510b709670f354e26884991bfbfcfdb54f464d",
+    "sources/concepts/20261102_exhibition_rest/thread_cube_exhibit.png": "762bf8195b7b884e7def802f1177d8d2bb9bae68e74ce81d88d720d6855bc6b7",
+    "sources/concepts/20261102_exhibition_rest/rest_sofa.png": "10407c06bef17c29282d8b4c10e064df9f380cac64d05498db1293f0065d358a",
+    "sources/concepts/20261102_exhibition_rest/pantry_rest_direction.prompt.md": "d0463b2b14f0ef79473e5dbb6d968cd9d9af5610b3ad707db68130345c5eaec6",
+    "sources/concepts/20261102_exhibition_rest/asset_batch.json": "cf7793beafd8273a7bfa2e5e052b78d54964f6efb7078b8594fefa46fc5a14c6",
+    "sources/concepts/20261102_exhibition_rest/mobile_exhibition_table_three_quarter.png": "cfd9f63485d0e2fed1dde87f2ea0c89aa1e2ff6d5e8b5e5b52660e85053029be",
+    "sources/concepts/20261102_exhibition_rest/mobile_exhibition_table_side.png": "f0e4fff070d8731c62782f8e2afdf1bf8c276f914127a04ea30a340b5637bf3d",
+    "sources/concepts/20261102_exhibition_rest/silver_covered_exhibit.prompt.md": "ceddbe26e144ec0066909282a4f5ecec6395dade0c30d458e8debf3cd2162c83",
+    "sources/concepts/20261102_exhibition_rest/pantry_rest_direction.png": "cc0412186f92972ef3cd89f2f1ae7aa5489d23fd0a3703a35aa271f2dde8de9c",
+    "sources/concepts/20261102_exhibition_rest/mobile_exhibition_table_front.png": "2981403cc88547e1bd18e7ad4e6fc63d36b6031920dff5743cafe7897b33e47d",
+    "sources/concepts/20261102_exhibition_rest/rest_sofa.prompt.md": "e38182dca3d6b32dc5b7403f02bcfd5b4dd44e210b2b9d43ae6815c864052561",
+    "sources/concepts/20261102_exhibition_rest/mobile_exhibition_table_turnaround.png": "3400e46bcf0ff3d2fe87b7b94c28981be8b5c24e860c5f28e321365edc53f377",
+    "web/viewer.js": "88c12c5da5f0d533b3460061a25805f2822a21bb5d5f105dd0f427668f72bf67",
+    "web/static_assets.js": "7611387ab9eb8094e2295fc5f6ca9e034d4b5df4a4b94f9d57384d85295bb297",
+    "web/model_loader.js": "379b6d9ccdf760413f8fb4c986d5b863d7258f20ff0bc6e38b83359f822cdb7a",
+    "web/assets/generated_furniture_catalog.json": "95fa814e8c4e97ca4477e196e24cc7e9c642c95102040d159c7a592466ca8505",
+    "pipeline/build_asset.mjs": "3e4700234a024d21e8474810c62ca091b06a8ba2a7f937faaf6628e86b4eb247",
+    "pipeline/refine_table.py": "29e8892f3b28e0287a4cb11cd5b61769e99b4e0d28840e133573777e1263ed9f",
+    "pipeline/refine_sofa.py": "b73f25805bacf7825030dcd0a7d34d9b4bdc3f31fb6c4dacc147d788f69ad6fe",
+    "pipeline/decimate_static.py": "f421d06ba7b3b6375224b20e37bc05541b8ec05bf2f1ca0cdf92d72b0cd0f307",
+    "pipeline/rebuild_hi3d.py": "a7193087ac004df39c8f3c1e395e80696a5f7d81a27aac4cc75be735027f54d0",
+    "pipeline/hi3d/batch_20261102.json": "515cc3edf6985bc49e2c5673d129649e2c201a805e055f2b8f5160a8864f35d5",
+    "scripts/test_hi3d_assets.mjs": "7a0cba5dc7a5fb9e09352c95bb43cad312ad7f23fc494bdfe10091580e3eedce",
+    "web/assets/models/hi3d/table_120/manifest.json": "b5e136769fb274d97d058d3b771885c6ba2785c3213901d9e3acdc06bdf34f46",
+    "web/assets/models/hi3d/rest_sofa_metric/manifest.json": "a063deb382aaaba37e97ead4d8eed2e824dc8240f28c4ecb3fe0979fc3c5b786",
+    "web/assets/models/hi3d/table_135/manifest.json": "cf5a04e6dac690b9b7064946edb27e5d5637a79d9160a7c9b2b15d082b9817fd",
+    "web/assets/models/hi3d/silver_covered_exhibit/manifest.json": "115d10e91416e5f6decf7df6b32265031e0fc884a241dd8bb938b0d7e719fda3",
+    "web/assets/models/hi3d/table_150/manifest.json": "64da82d8d2c3ce24639c97f4ca097c6affe6214eb4dda4c4b58d89dbb0f3a200",
+    "web/assets/models/hi3d/table_125/manifest.json": "f8e10970e79792d1631bc8a290ac39d9813374780d8323508dcb02551a895a15",
+    "web/assets/models/hi3d/rest_sofa/manifest.json": "8b38e4ab206a9e8d7722a2aad7cbe8714212f8cad3a953169cb26860eb10c081",
+    "web/assets/models/hi3d/mobile_exhibition_table/manifest.json": "187ee23f7c50f6dc8500882bf6208ef8c1b0db351c3290a000cbc406a24c4686",
+    "sources/models/hi3d/silver_covered_exhibit/source_receipt.json": "149efa64989308f421310dfbfbea7c951aa258404d0d1cea8ed5a000265cf81f",
+    "sources/models/hi3d/rest_sofa/source_receipt.json": "f91b1e6f336218c3f541c2b659a792a98611cfae557ecf924f04cc4fccd16077",
+    "sources/models/hi3d/mobile_exhibition_table/source_receipt.json": "162b114b301a963a5de10511efdd97b597cf7a33a97988e9f786fa6ffcbfd04b",
+    "review/hi3d_north_overview.png": "506099e5cfd0058800cffca2326ed32fc728b57c081dc2e97f63ebc108e62431",
+    "review/hi3d_pantry_overview.png": "232a7b2e2ed9e9a5976f0fc4faecc91daa219a678aa6ea9a73460fefc221ce77",
+    "review/hi3d_pantry_sofa_front.png": "43f631ca1d33b9f5afe570fc2db8621dd9c523c64830743d8180b9e34776e431",
+    "web/vendor/three/addons/environments/RoomEnvironment.js": "9f0a30045d3649ea0bbe7e6a8ec29cb0aab71a3e73c463b94fb7ba169c576e83",
+    "web/vendor/three/room_environment_source.json": "b263c8d06a6a1da1850fac47772ce8a214b01c1df1437f097d1115fb45f30443"
+  },
+  "paidGenerationRecord": "pipeline/hi3d/batch_20261102.json",
+  "rebuild": {
+    "command": "python3 pipeline/rebuild_hi3d.py",
+    "verified": true,
+    "paidCalls": 0,
+    "log": "Private local build transcript; no credentials copied."
+  }
+}

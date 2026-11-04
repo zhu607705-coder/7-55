@@ -1,0 +1,165 @@
+{
+  "browser": "156.0.8078.79",
+  "checks": 36,
+  "failures": 0,
+  "rows": [
+    {
+      "label": "4F overview route opens",
+      "pass": true
+    },
+    {
+      "label": "all three ceilings stay hidden in overview, including multi-material GLB groups",
+      "pass": true
+    },
+    {
+      "label": "4F retains seven room/area entries and whole floor entry",
+      "pass": true
+    },
+    {
+      "label": "desktop has no document overflow",
+      "pass": true
+    },
+    {
+      "label": "floor explosion is reversible navigation",
+      "pass": true
+    },
+    {
+      "label": "room opens at meter-scale eye height",
+      "pass": true
+    },
+    {
+      "label": "ordinary keyboard moves observer",
+      "pass": true,
+      "distance": 0.6748499999999948
+    },
+    {
+      "label": "ordinary movement stays collision-valid",
+      "pass": true
+    },
+    {
+      "label": "held movement cannot enter furniture/walls",
+      "pass": true
+    },
+    {
+      "label": "observer can back away after collision",
+      "pass": true
+    },
+    {
+      "label": "ordinary pointer drag changes look direction",
+      "pass": true
+    },
+    {
+      "label": "focus loss clears held movement",
+      "pass": true
+    },
+    {
+      "label": "optional help is available",
+      "pass": true
+    },
+    {
+      "label": "help returns to the same view",
+      "pass": true
+    },
+    {
+      "label": "escape returns from walkthrough",
+      "pass": true
+    },
+    {
+      "label": "room walk deep link restores safe room entry",
+      "pass": true
+    },
+    {
+      "label": "real-scale tool can be approached and is visible",
+      "pass": true
+    },
+    {
+      "label": "ordinary tool click opens anchored close inspection",
+      "pass": true
+    },
+    {
+      "label": "inspection returns to exact observer position",
+      "pass": true
+    },
+    {
+      "label": "walk keyboard focus restored after inspection",
+      "pass": true
+    },
+    {
+      "label": "six manufacturer dimension sources are exposed",
+      "pass": true
+    },
+    {
+      "label": "lost WebGL context offers recovery",
+      "pass": true
+    },
+    {
+      "label": "context reload restores room walk route",
+      "pass": true
+    },
+    {
+      "label": "mobile exposes analog locomotion",
+      "pass": true
+    },
+    {
+      "label": "mobile walkthrough has no overflow",
+      "pass": true
+    },
+    {
+      "label": "left thumb moves observer",
+      "pass": true
+    },
+    {
+      "label": "second touch looks while first thumb moves",
+      "pass": true
+    },
+    {
+      "label": "releasing both touches stops locomotion",
+      "pass": true
+    },
+    {
+      "label": "touch cancel clears joystick",
+      "pass": true
+    },
+    {
+      "label": "mobile whole-floor view has no overflow",
+      "pass": true
+    },
+    {
+      "label": "landscape touch has no overflow",
+      "pass": true
+    },
+    {
+      "label": "non-16:9 desktop has no overflow",
+      "pass": true
+    },
+    {
+      "label": "reduced motion retains ordinary walkthrough",
+      "pass": true
+    },
+    {
+      "label": "geometry failure has readable retry state",
+      "pass": true
+    },
+    {
+      "label": "failed geometry load can recover",
+      "pass": true
+    },
+    {
+      "label": "zero unexpected page/console errors",
+      "pass": true,
+      "errors": []
+    }
+  ],
+  "captures": [
+    "floor_4",
+    "building_exploded",
+    "office_overview",
+    "office_walk",
+    "tool_inspection",
+    "mobile_walk",
+    "mobile_floor_4",
+    "mobile_landscape",
+    "desktop_903"
+  ],
+  "scope": "Chrome desktop and emulated multi-touch; not physical mobile acceptance"
+}

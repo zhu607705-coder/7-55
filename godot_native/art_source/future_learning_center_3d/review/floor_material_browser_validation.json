@@ -1,0 +1,120 @@
+{
+  "browser": "156.0.8078.79",
+  "checks": 13,
+  "failures": 0,
+  "rows": [
+    {
+      "pass": true,
+      "label": "all base floors load actual color/normal/roughness maps",
+      "details": [
+        {
+          "floor": "2",
+          "profile": "warm_gray_fine",
+          "specialFinishes": [
+            "FLC floor esd_gray_green"
+          ],
+          "surfaces": [
+            {
+              "material": "FLC floor warm_gray_fine",
+              "hasColor": true,
+              "hasNormal": true,
+              "hasRoughness": true,
+              "uvCount": 24,
+              "uvSpan": [
+                -34.333335876464844,
+                21.75
+              ]
+            }
+          ]
+        },
+        {
+          "floor": "3",
+          "profile": "warm_gray_fine",
+          "specialFinishes": [
+            "FLC floor studio_charcoal"
+          ],
+          "surfaces": [
+            {
+              "material": "FLC floor warm_gray_fine",
+              "hasColor": true,
+              "hasNormal": true,
+              "hasRoughness": true,
+              "uvCount": 48,
+              "uvSpan": [
+                -34.333335876464844,
+                21.75
+              ]
+            }
+          ]
+        },
+        {
+          "floor": "4",
+          "profile": "warm_gray_fine",
+          "specialFinishes": [],
+          "surfaces": [
+            {
+              "material": "FLC floor warm_gray_fine",
+              "hasColor": true,
+              "hasNormal": true,
+              "hasRoughness": true,
+              "uvCount": 100,
+              "uvSpan": [
+                -34.333335876464844,
+                21.75
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "pass": true,
+      "label": "floor textures use repeated meter-space UVs instead of stretching one image across a building"
+    },
+    {
+      "pass": true,
+      "label": "electrical ESD finish remains separate"
+    },
+    {
+      "pass": true,
+      "label": "recording finish remains separate"
+    },
+    {
+      "pass": true,
+      "label": "material comparison preserves observer pose, movement mode and camera"
+    },
+    {
+      "pass": true,
+      "label": "ordinary sample control changes current-floor finish"
+    },
+    {
+      "pass": true,
+      "label": "preview does not silently change another floor"
+    },
+    {
+      "pass": true,
+      "label": "common-floor preview preserves dedicated room finish"
+    },
+    {
+      "pass": true,
+      "label": "shared sample deep link restores selected preview"
+    },
+    {
+      "pass": true,
+      "label": "returning to photo baseline restores imported PBR material"
+    },
+    {
+      "pass": true,
+      "label": "ordinary movement remains available after sample dialog"
+    },
+    {
+      "pass": true,
+      "label": "material choices fit narrow mobile viewport"
+    },
+    {
+      "pass": true,
+      "label": "PBR and candidate loads produce zero page/console errors",
+      "details": []
+    }
+  ]
+}

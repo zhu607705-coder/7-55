@@ -1,0 +1,128 @@
+{
+  "browser": "156.0.8078.79",
+  "checks": 16,
+  "failures": 0,
+  "rows": [
+    {
+      "pass": true,
+      "label": "default preview actually loads generated Draco assets",
+      "details": {
+        "loaded": true,
+        "variant": "hyper3d",
+        "systems": [
+          {
+            "floor": "2",
+            "variant": "hyper3d",
+            "total": 27,
+            "visibleByLod": [
+              0,
+              0,
+              27
+            ],
+            "trianglesPerLod": [
+              28616,
+              8826,
+              2802
+            ]
+          },
+          {
+            "floor": "3",
+            "variant": "hyper3d",
+            "total": 43,
+            "visibleByLod": [
+              0,
+              0,
+              43
+            ],
+            "trianglesPerLod": [
+              28616,
+              8826,
+              2802
+            ]
+          },
+          {
+            "floor": "4",
+            "variant": "hyper3d",
+            "total": 54,
+            "visibleByLod": [
+              0,
+              0,
+              54
+            ],
+            "trianglesPerLod": [
+              28616,
+              8826,
+              2802
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "pass": true,
+      "label": "all124 ordinary chairs share prototypes, plus one inspectable chair"
+    },
+    {
+      "pass": true,
+      "label": "whole-floor camera selects distant detail levels"
+    },
+    {
+      "pass": true,
+      "label": "local WASM Draco decoder actually runs"
+    },
+    {
+      "pass": true,
+      "label": "normal route uses the assembly with separate chair anchors"
+    },
+    {
+      "pass": true,
+      "label": "overview submits at least30percent fewer triangles than the recorded baseline",
+      "details": {
+        "before": 3665110,
+        "after": 1381338
+      }
+    },
+    {
+      "pass": true,
+      "label": "walking camera selects near detail on real room furniture"
+    },
+    {
+      "pass": true,
+      "label": "ordinary first-person movement survives model replacement"
+    },
+    {
+      "pass": true,
+      "label": "camera remains outside the original furniture proxies"
+    },
+    {
+      "pass": true,
+      "label": "ordinary pointer opens the generated chair close view"
+    },
+    {
+      "pass": true,
+      "label": "generated preview labels its calibrated envelope, not surveyed dimensions"
+    },
+    {
+      "pass": true,
+      "label": "new chair inspection has no mobile document overflow"
+    },
+    {
+      "pass": true,
+      "label": "mobile exit restores the room"
+    },
+    {
+      "pass": true,
+      "label": "normal generated-asset routes have no page or console errors",
+      "details": []
+    },
+    {
+      "pass": true,
+      "label": "missing optional LOD falls back to the complete authored furniture"
+    },
+    {
+      "pass": true,
+      "label": "asset failure fallback has no uncaught page error",
+      "details": []
+    }
+  ]
+}

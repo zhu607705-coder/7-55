@@ -1,0 +1,10 @@
+# 人体工学椅三视图 · 2026-11-02
+
+Mode: built-in imagegen. Exact underlying model version is not exposed by the available tool; do not label the output GPT-Image-2.5 without a returned model receipt.
+
+Purpose: proposed high-detail geometry/material reference for a future Hi3D asset; not a photograph or identification of the site's actual chair brand.
+
+Reference image: `review/ergonomic_chair_inspection.png`, an actual render of the project's current locally authored chair. Reference role: preserve basic structure, silhouette, proportion, material family, five-spoke base and wheel count. The surrounding webpage and floor are not part of the asset.
+
+Prompt:
+Create a clean industrial-design three-view reference sheet of ONE unbranded ergonomic office chair based on the supplied geometry reference. Three isolated, evenly spaced, orthographic views: FRONT, RIGHT SIDE, BACK. All views must show the exact same chair with matching geometry, same proportions, same height and aligned feet. Preserve a single adjustable headrest on two sliding stems, curved breathable mesh back, independent adjustable lumbar support, open breathable mesh seat with rounded waterfall rim, two adjustable arm pads, visible tilt housing and gas cylinder, five curved base spokes with five twin-wheel casters. Improve material fidelity and manufacturing details: fine woven dark charcoal textile mesh rather than coarse metal grid, matte injection-molded graphite frame, restrained brushed metal adjustment stems, rubber caster tires, realistic seams and small adjustment controls. Product-scale proportions: approximately0.71m wide,0.69m deep,1.29m high, seat around0.49m. No people, hands, desk, room, branding, logos, invented mechanisms, extra headrests, extra spokes or decorative parts. Neutral off-white studio background, soft neutral light, minimal contact shadow, all three chairs fully visible without cropping. Labels only FRONT / RIGHT SIDE / BACK. This is a coherent proposed concept reference, not an assertion of exact site inventory. High-resolution, precise, photorealistic product rendering suitable for image-to-3D preparation.
