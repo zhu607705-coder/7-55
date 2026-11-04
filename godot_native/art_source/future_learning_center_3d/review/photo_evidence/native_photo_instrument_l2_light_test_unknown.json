@@ -1,0 +1,5816 @@
+{
+  "blender": "4.3.2",
+  "objects": [
+    {
+      "name": "Closed metal long chassis",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13500000536441803,
+          0.006999999284744263,
+          0.007000003010034561
+        ],
+        [
+          0.13500000536441803,
+          0.3179999887943268,
+          0.10500000417232513
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "Closed metal long chassis",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Front gasket",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13750000298023224,
+          -0.0010000001639127731,
+          0.00350000336766243
+        ],
+        [
+          0.13750000298023224,
+          0.010999999940395355,
+          0.10850000381469727
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Charcoal impact guard"
+      ],
+      "properties": {
+        "part": "Front gasket",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Distinct front fascia",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13199999928474426,
+          -0.002699999837204814,
+          0.009000003337860107
+        ],
+        [
+          0.13199999928474426,
+          0.002300000051036477,
+          0.10300000011920929
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm light moulded fascia"
+      ],
+      "properties": {
+        "part": "Distinct front fascia",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Rounded protective corner",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.14100000262260437,
+          0.0,
+          0.0
+        ],
+        [
+          -0.11300000548362732,
+          0.02800000086426735,
+          0.02800000086426735
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Charcoal impact guard"
+      ],
+      "properties": {
+        "part": "Rounded protective corner",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Rounded protective corner.001",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.14100000262260437,
+          0.296999990940094,
+          0.0
+        ],
+        [
+          -0.11300000548362732,
+          0.32499998807907104,
+          0.02800000086426735
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Charcoal impact guard"
+      ],
+      "properties": {
+        "part": "Rounded protective corner",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Rounded protective corner.002",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.14100000262260437,
+          0.0,
+          0.08399999886751175
+        ],
+        [
+          -0.11300000548362732,
+          0.02800000086426735,
+          0.1119999960064888
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Charcoal impact guard"
+      ],
+      "properties": {
+        "part": "Rounded protective corner",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Rounded protective corner.003",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.14100000262260437,
+          0.296999990940094,
+          0.08399999886751175
+        ],
+        [
+          -0.11300000548362732,
+          0.32499998807907104,
+          0.1119999960064888
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Charcoal impact guard"
+      ],
+      "properties": {
+        "part": "Rounded protective corner",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Rounded protective corner.004",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.11300000548362732,
+          0.0,
+          0.0
+        ],
+        [
+          0.14100000262260437,
+          0.02800000086426735,
+          0.02800000086426735
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Charcoal impact guard"
+      ],
+      "properties": {
+        "part": "Rounded protective corner",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Rounded protective corner.005",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.11300000548362732,
+          0.296999990940094,
+          0.0
+        ],
+        [
+          0.14100000262260437,
+          0.32499998807907104,
+          0.02800000086426735
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Charcoal impact guard"
+      ],
+      "properties": {
+        "part": "Rounded protective corner",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Rounded protective corner.006",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.11300000548362732,
+          0.0,
+          0.08399999886751175
+        ],
+        [
+          0.14100000262260437,
+          0.02800000086426735,
+          0.1119999960064888
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Charcoal impact guard"
+      ],
+      "properties": {
+        "part": "Rounded protective corner",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Rounded protective corner.007",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.11300000548362732,
+          0.296999990940094,
+          0.08399999886751175
+        ],
+        [
+          0.14100000262260437,
+          0.32499998807907104,
+          0.1119999960064888
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Charcoal impact guard"
+      ],
+      "properties": {
+        "part": "Rounded protective corner",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Rubber foot",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.10224000364542007,
+          0.04450000077486038,
+          0.0
+        ],
+        [
+          -0.07823999971151352,
+          0.07249999791383743,
+          0.00800000037997961
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Rubber foot",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Rubber foot.001",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.10224000364542007,
+          0.2524999976158142,
+          0.0
+        ],
+        [
+          -0.07823999971151352,
+          0.28049999475479126,
+          0.00800000037997961
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Rubber foot",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Rubber foot.002",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07823999971151352,
+          0.04450000077486038,
+          0.0
+        ],
+        [
+          0.10224000364542007,
+          0.07249999791383743,
+          0.00800000037997961
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Rubber foot",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Rubber foot.003",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07823999971151352,
+          0.2524999976158142,
+          0.0
+        ],
+        [
+          0.10224000364542007,
+          0.28049999475479126,
+          0.00800000037997961
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Rubber foot",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Screen recessed surround",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.12950000166893005,
+          -0.004000000189989805,
+          0.028999999165534973
+        ],
+        [
+          -0.010499998927116394,
+          0.001999999862164259,
+          0.09700000286102295
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Screen recessed surround",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Blank unlit screen",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.12549999356269836,
+          -0.005499999970197678,
+          0.032999999821186066
+        ],
+        [
+          -0.014499999582767487,
+          -0.0034999996423721313,
+          0.09300000220537186
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Neutral unlit glass no content"
+      ],
+      "properties": {
+        "part": "Blank unlit screen",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 screen bottom keys",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.12399999797344208,
+          -0.006000000052154064,
+          0.020500000566244125
+        ],
+        [
+          -0.10999999940395355,
+          -0.0020000000949949026,
+          0.025499999523162842
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 screen bottom keys",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 screen bottom keys.001",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.10199999809265137,
+          -0.006000000052154064,
+          0.020500000566244125
+        ],
+        [
+          -0.08799999952316284,
+          -0.0020000000949949026,
+          0.025499999523162842
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 screen bottom keys",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 screen bottom keys.002",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.07999999821186066,
+          -0.006000000052154064,
+          0.020500000566244125
+        ],
+        [
+          -0.06599999964237213,
+          -0.0020000000949949026,
+          0.025499999523162842
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 screen bottom keys",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 screen bottom keys.003",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.057999998331069946,
+          -0.006000000052154064,
+          0.020500000566244125
+        ],
+        [
+          -0.04399999976158142,
+          -0.0020000000949949026,
+          0.025499999523162842
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 screen bottom keys",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 screen bottom keys.004",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.035999998450279236,
+          -0.006000000052154064,
+          0.020500000566244125
+        ],
+        [
+          -0.02199999988079071,
+          -0.0020000000949949026,
+          0.025499999523162842
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 screen bottom keys",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control collar",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.0028000008314847946,
+          -0.004500000737607479,
+          0.07179999351501465
+        ],
+        [
+          0.025200000032782555,
+          -0.0014999995473772287,
+          0.094200000166893
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control collar",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control raised knob",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.0040000006556510925,
+          -0.013000000268220901,
+          0.0729999989271164
+        ],
+        [
+          0.024000000208616257,
+          -0.003000000026077032,
+          0.09299999475479126
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control raised knob",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.023166988044977188,
+          -0.012899999506771564,
+          0.08249999582767487
+        ],
+        [
+          0.024033013731241226,
+          -0.0050999997183680534,
+          0.08349999785423279
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.001",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.0224362313747406,
+          -0.012899999506771564,
+          0.08617375791072845
+        ],
+        [
+          0.02330225706100464,
+          -0.0050999997183680534,
+          0.08717375993728638
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.002",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.020355211570858955,
+          -0.012899999506771564,
+          0.08928822726011276
+        ],
+        [
+          0.021221237257122993,
+          -0.0050999997183680534,
+          0.09028822928667068
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.003",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.017240747809410095,
+          -0.012899999506771564,
+          0.09136924147605896
+        ],
+        [
+          0.018106773495674133,
+          -0.0050999997183680534,
+          0.09236924350261688
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.004",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.013566987589001656,
+          -0.012899999506771564,
+          0.09210000187158585
+        ],
+        [
+          0.014433013275265694,
+          -0.0050999997183680534,
+          0.09310000389814377
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.005",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.009893226437270641,
+          -0.012899999506771564,
+          0.09136924147605896
+        ],
+        [
+          0.01075925212353468,
+          -0.0050999997183680534,
+          0.09236924350261688
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.006",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.006778762210160494,
+          -0.012899999506771564,
+          0.08928822726011276
+        ],
+        [
+          0.007644787896424532,
+          -0.0050999997183680534,
+          0.09028822928667068
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.007",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.004697743803262711,
+          -0.012899999506771564,
+          0.08617375791072845
+        ],
+        [
+          0.005563769489526749,
+          -0.0050999997183680534,
+          0.08717375993728638
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.008",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.003966987133026123,
+          -0.012899999506771564,
+          0.08249999582767487
+        ],
+        [
+          0.004833012819290161,
+          -0.0050999997183680534,
+          0.08349999785423279
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.009",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.004697743803262711,
+          -0.012899999506771564,
+          0.07882624119520187
+        ],
+        [
+          0.005563769489526749,
+          -0.0050999997183680534,
+          0.0798262432217598
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.010",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.006778762210160494,
+          -0.012899999506771564,
+          0.07571177184581757
+        ],
+        [
+          0.007644787896424532,
+          -0.0050999997183680534,
+          0.07671177387237549
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.011",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.009893226437270641,
+          -0.012899999506771564,
+          0.07363075762987137
+        ],
+        [
+          0.01075925212353468,
+          -0.0050999997183680534,
+          0.07463075965642929
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.012",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.013566987589001656,
+          -0.012899999506771564,
+          0.07289999723434448
+        ],
+        [
+          0.014433013275265694,
+          -0.0050999997183680534,
+          0.0738999992609024
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.013",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.017240747809410095,
+          -0.012899999506771564,
+          0.07363075762987137
+        ],
+        [
+          0.018106773495674133,
+          -0.0050999997183680534,
+          0.07463075965642929
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.014",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.020355211570858955,
+          -0.012899999506771564,
+          0.07571177184581757
+        ],
+        [
+          0.021221237257122993,
+          -0.0050999997183680534,
+          0.07671177387237549
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.015",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.0224362313747406,
+          -0.012899999506771564,
+          0.07882624119520187
+        ],
+        [
+          0.02330225706100464,
+          -0.0050999997183680534,
+          0.0798262432217598
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control collar.001",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.005040000192821026,
+          -0.004500000271946192,
+          0.04903999716043472
+        ],
+        [
+          0.02295999974012375,
+          -0.0014999996637925506,
+          0.06695999950170517
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control collar",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control raised knob.001",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.006000000052154064,
+          -0.013000000268220901,
+          0.04999999701976776
+        ],
+        [
+          0.02199999988079071,
+          -0.003000000026077032,
+          0.06599999964237213
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control raised knob",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.016",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.021333588287234306,
+          -0.012899999506771564,
+          0.0575999990105629
+        ],
+        [
+          0.022026410326361656,
+          -0.0050999997183680534,
+          0.058399997651576996
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.017",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.020748984068632126,
+          -0.012899999506771564,
+          0.06053901091217995
+        ],
+        [
+          0.021441806107759476,
+          -0.0050999997183680534,
+          0.061339009553194046
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.018",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.01908416859805584,
+          -0.012899999506771564,
+          0.06303057819604874
+        ],
+        [
+          0.01977699063718319,
+          -0.0050999997183680534,
+          0.06383057683706284
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.019",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.01659259758889675,
+          -0.012899999506771564,
+          0.06469539552927017
+        ],
+        [
+          0.0172854196280241,
+          -0.0050999997183680534,
+          0.06549539417028427
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.020",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.013653590343892574,
+          -0.012899999506771564,
+          0.0652799978852272
+        ],
+        [
+          0.014346410520374775,
+          -0.0050999997183680534,
+          0.0660799965262413
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.021",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.010714581236243248,
+          -0.012899999506771564,
+          0.06469539552927017
+        ],
+        [
+          0.011407401412725449,
+          -0.0050999997183680534,
+          0.06549539417028427
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.022",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.00822301022708416,
+          -0.012899999506771564,
+          0.06303057819604874
+        ],
+        [
+          0.00891583040356636,
+          -0.0050999997183680534,
+          0.06383057683706284
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.023",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.006558195222169161,
+          -0.012899999506771564,
+          0.06053901091217995
+        ],
+        [
+          0.0072510153986513615,
+          -0.0050999997183680534,
+          0.061339009553194046
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.024",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.005973590072244406,
+          -0.012899999506771564,
+          0.0575999990105629
+        ],
+        [
+          0.006666410248726606,
+          -0.0050999997183680534,
+          0.058399997651576996
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.025",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.006558195222169161,
+          -0.012899999506771564,
+          0.054660990834236145
+        ],
+        [
+          0.0072510153986513615,
+          -0.0050999997183680534,
+          0.055460989475250244
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.026",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.00822301022708416,
+          -0.012899999506771564,
+          0.05216941982507706
+        ],
+        [
+          0.00891583040356636,
+          -0.0050999997183680534,
+          0.052969418466091156
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.027",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.010714581236243248,
+          -0.012899999506771564,
+          0.05050460621714592
+        ],
+        [
+          0.011407401412725449,
+          -0.0050999997183680534,
+          0.05130460485816002
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.028",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.013653590343892574,
+          -0.012899999506771564,
+          0.04992000013589859
+        ],
+        [
+          0.014346410520374775,
+          -0.0050999997183680534,
+          0.05071999877691269
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.029",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.01659259758889675,
+          -0.012899999506771564,
+          0.05050460621714592
+        ],
+        [
+          0.0172854196280241,
+          -0.0050999997183680534,
+          0.05130460485816002
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.030",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.01908416859805584,
+          -0.012899999506771564,
+          0.05216941982507706
+        ],
+        [
+          0.01977699063718319,
+          -0.0050999997183680534,
+          0.052969418466091156
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 near-screen circular control grip scallop.031",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds": [
+        [
+          0.020748984068632126,
+          -0.012899999506771564,
+          0.054660990834236145
+        ],
+        [
+          0.021441806107759476,
+          -0.0050999997183680534,
+          0.055460989475250244
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 near-screen circular control grip scallop",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 right matrix",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.04149999842047691,
+          -0.006000000052154064,
+          0.08300000429153442
+        ],
+        [
+          0.05249999836087227,
+          -0.0020000000949949026,
+          0.08900000154972076
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 right matrix",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 right matrix.001",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.060499999672174454,
+          -0.006000000052154064,
+          0.08300000429153442
+        ],
+        [
+          0.07150000333786011,
+          -0.0020000000949949026,
+          0.08900000154972076
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 right matrix",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 right matrix.002",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07950000464916229,
+          -0.006000000052154064,
+          0.08300000429153442
+        ],
+        [
+          0.09049999713897705,
+          -0.0020000000949949026,
+          0.08900000154972076
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 right matrix",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 right matrix.003",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.09849999845027924,
+          -0.006000000052154064,
+          0.08300000429153442
+        ],
+        [
+          0.10950000584125519,
+          -0.0020000000949949026,
+          0.08900000154972076
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 right matrix",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 right matrix.004",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.04149999842047691,
+          -0.006000000052154064,
+          0.0689999982714653
+        ],
+        [
+          0.05249999836087227,
+          -0.0020000000949949026,
+          0.07499999552965164
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 right matrix",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 right matrix.005",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.060499999672174454,
+          -0.006000000052154064,
+          0.0689999982714653
+        ],
+        [
+          0.07150000333786011,
+          -0.0020000000949949026,
+          0.07499999552965164
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 right matrix",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 right matrix.006",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07950000464916229,
+          -0.006000000052154064,
+          0.0689999982714653
+        ],
+        [
+          0.09049999713897705,
+          -0.0020000000949949026,
+          0.07499999552965164
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 right matrix",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 right matrix.007",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.09849999845027924,
+          -0.006000000052154064,
+          0.0689999982714653
+        ],
+        [
+          0.10950000584125519,
+          -0.0020000000949949026,
+          0.07499999552965164
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 right matrix",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 right matrix.008",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.04149999842047691,
+          -0.006000000052154064,
+          0.054999999701976776
+        ],
+        [
+          0.05249999836087227,
+          -0.0020000000949949026,
+          0.060999996960163116
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 right matrix",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 right matrix.009",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.060499999672174454,
+          -0.006000000052154064,
+          0.054999999701976776
+        ],
+        [
+          0.07150000333786011,
+          -0.0020000000949949026,
+          0.060999996960163116
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 right matrix",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 right matrix.010",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07950000464916229,
+          -0.006000000052154064,
+          0.054999999701976776
+        ],
+        [
+          0.09049999713897705,
+          -0.0020000000949949026,
+          0.060999996960163116
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 right matrix",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 right matrix.011",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.09849999845027924,
+          -0.006000000052154064,
+          0.054999999701976776
+        ],
+        [
+          0.10950000584125519,
+          -0.0020000000949949026,
+          0.060999996960163116
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 right matrix",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 right matrix.012",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.04149999842047691,
+          -0.006000000052154064,
+          0.04100000113248825
+        ],
+        [
+          0.05249999836087227,
+          -0.0020000000949949026,
+          0.04699999839067459
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 right matrix",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 right matrix.013",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.060499999672174454,
+          -0.006000000052154064,
+          0.04100000113248825
+        ],
+        [
+          0.07150000333786011,
+          -0.0020000000949949026,
+          0.04699999839067459
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 right matrix",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 right matrix.014",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07950000464916229,
+          -0.006000000052154064,
+          0.04100000113248825
+        ],
+        [
+          0.09049999713897705,
+          -0.0020000000949949026,
+          0.04699999839067459
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 right matrix",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 right matrix.015",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.09849999845027924,
+          -0.006000000052154064,
+          0.04100000113248825
+        ],
+        [
+          0.10950000584125519,
+          -0.0020000000949949026,
+          0.04699999839067459
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Light neutral keys"
+      ],
+      "properties": {
+        "part": "L2 right matrix",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 lower visible round element mounting collar",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.0044999998062849045,
+          -0.005000000353902578,
+          0.013499999418854713
+        ],
+        [
+          0.017500000074505806,
+          -0.0009999996982514858,
+          0.026499999687075615
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Satin connector metal"
+      ],
+      "properties": {
+        "part": "L2 lower visible round element mounting collar",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 lower visible round element outer ring",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.006000000052154064,
+          -0.009000000543892384,
+          0.014999999664723873
+        ],
+        [
+          0.01599999889731407,
+          -0.0029999997932463884,
+          0.02500000037252903
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Satin connector metal"
+      ],
+      "properties": {
+        "part": "L2 lower visible round element outer ring",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 lower visible round element dark opening",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.007799999788403511,
+          -0.009450000710785389,
+          0.01679999940097332
+        ],
+        [
+          0.0142000000923872,
+          -0.008949999697506428,
+          0.02319999970495701
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "L2 lower visible round element dark opening",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 lower visible round element mounting collar.001",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.03450000286102295,
+          -0.005000000353902578,
+          0.013499999418854713
+        ],
+        [
+          0.04749999940395355,
+          -0.0009999996982514858,
+          0.026499999687075615
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Satin connector metal"
+      ],
+      "properties": {
+        "part": "L2 lower visible round element mounting collar",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 lower visible round element outer ring.001",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.036000002175569534,
+          -0.009000000543892384,
+          0.014999999664723873
+        ],
+        [
+          0.04600000008940697,
+          -0.0029999997932463884,
+          0.02500000037252903
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Satin connector metal"
+      ],
+      "properties": {
+        "part": "L2 lower visible round element outer ring",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 lower visible round element dark opening.001",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.037800002843141556,
+          -0.009450000710785389,
+          0.01679999940097332
+        ],
+        [
+          0.044199999421834946,
+          -0.008949999697506428,
+          0.02319999970495701
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "L2 lower visible round element dark opening",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 lower visible round element mounting collar.002",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.06750000268220901,
+          -0.005000000353902578,
+          0.013499999418854713
+        ],
+        [
+          0.08049999922513962,
+          -0.0009999996982514858,
+          0.026499999687075615
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Satin connector metal"
+      ],
+      "properties": {
+        "part": "L2 lower visible round element mounting collar",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 lower visible round element outer ring.002",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.0689999982714653,
+          -0.009000000543892384,
+          0.014999999664723873
+        ],
+        [
+          0.07900000363588333,
+          -0.0029999997932463884,
+          0.02500000037252903
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Satin connector metal"
+      ],
+      "properties": {
+        "part": "L2 lower visible round element outer ring",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 lower visible round element dark opening.002",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.07079999893903732,
+          -0.009450000710785389,
+          0.01679999940097332
+        ],
+        [
+          0.07720000296831131,
+          -0.008949999697506428,
+          0.02319999970495701
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "L2 lower visible round element dark opening",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 lower visible round element mounting collar.003",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.09950000047683716,
+          -0.005000000353902578,
+          0.013499999418854713
+        ],
+        [
+          0.11249999701976776,
+          -0.0009999996982514858,
+          0.026499999687075615
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Satin connector metal"
+      ],
+      "properties": {
+        "part": "L2 lower visible round element mounting collar",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 lower visible round element outer ring.003",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.10099999606609344,
+          -0.009000000543892384,
+          0.014999999664723873
+        ],
+        [
+          0.11100000143051147,
+          -0.0029999997932463884,
+          0.02500000037252903
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Satin connector metal"
+      ],
+      "properties": {
+        "part": "L2 lower visible round element outer ring",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 lower visible round element dark opening.003",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          0.10279999673366547,
+          -0.009450000710785389,
+          0.01679999940097332
+        ],
+        [
+          0.10920000076293945,
+          -0.008949999697506428,
+          0.02319999970495701
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "L2 lower visible round element dark opening",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "L2 visible red lower-left point",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.12550000846385956,
+          -0.006000000052154064,
+          0.013500001281499863
+        ],
+        [
+          -0.12050000578165054,
+          -0.0020000000949949026,
+          0.01850000023841858
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Red terminal insulator"
+      ],
+      "properties": {
+        "part": "L2 visible red lower-left point",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.0832500010728836,
+          0.030980002135038376
+        ],
+        [
+          -0.13500000536441803,
+          0.09225000441074371,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.001",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.09657499939203262,
+          0.030980002135038376
+        ],
+        [
+          -0.13500000536441803,
+          0.10557500272989273,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.002",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.10989999771118164,
+          0.030980002135038376
+        ],
+        [
+          -0.13500000536441803,
+          0.11890000104904175,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.003",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.12322500348091125,
+          0.030980002135038376
+        ],
+        [
+          -0.13500000536441803,
+          0.13222500681877136,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.004",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.13654999434947968,
+          0.030980002135038376
+        ],
+        [
+          -0.13500000536441803,
+          0.14554999768733978,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.005",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.1498750001192093,
+          0.030980002135038376
+        ],
+        [
+          -0.13500000536441803,
+          0.1588750034570694,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.006",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.1631999909877777,
+          0.030980002135038376
+        ],
+        [
+          -0.13500000536441803,
+          0.17219999432563782,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.007",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.17652499675750732,
+          0.030980002135038376
+        ],
+        [
+          -0.13500000536441803,
+          0.18552500009536743,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.008",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.18985000252723694,
+          0.030980002135038376
+        ],
+        [
+          -0.13500000536441803,
+          0.19885000586509705,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.009",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.20317499339580536,
+          0.030980002135038376
+        ],
+        [
+          -0.13500000536441803,
+          0.21217499673366547,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.010",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.21649999916553497,
+          0.030980002135038376
+        ],
+        [
+          -0.13500000536441803,
+          0.22550000250339508,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.011",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.2298250049352646,
+          0.030980002135038376
+        ],
+        [
+          -0.13500000536441803,
+          0.2388250082731247,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.012",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.0832500010728836,
+          0.04098000004887581
+        ],
+        [
+          -0.13500000536441803,
+          0.09225000441074371,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.013",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.09657499939203262,
+          0.04098000004887581
+        ],
+        [
+          -0.13500000536441803,
+          0.10557500272989273,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.014",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.10989999771118164,
+          0.04098000004887581
+        ],
+        [
+          -0.13500000536441803,
+          0.11890000104904175,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.015",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.12322500348091125,
+          0.04098000004887581
+        ],
+        [
+          -0.13500000536441803,
+          0.13222500681877136,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.016",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.13654999434947968,
+          0.04098000004887581
+        ],
+        [
+          -0.13500000536441803,
+          0.14554999768733978,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.017",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.1498750001192093,
+          0.04098000004887581
+        ],
+        [
+          -0.13500000536441803,
+          0.1588750034570694,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.018",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.1631999909877777,
+          0.04098000004887581
+        ],
+        [
+          -0.13500000536441803,
+          0.17219999432563782,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.019",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.17652499675750732,
+          0.04098000004887581
+        ],
+        [
+          -0.13500000536441803,
+          0.18552500009536743,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.020",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.18985000252723694,
+          0.04098000004887581
+        ],
+        [
+          -0.13500000536441803,
+          0.19885000586509705,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.021",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.20317499339580536,
+          0.04098000004887581
+        ],
+        [
+          -0.13500000536441803,
+          0.21217499673366547,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.022",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.21649999916553497,
+          0.04098000004887581
+        ],
+        [
+          -0.13500000536441803,
+          0.22550000250339508,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.023",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.2298250049352646,
+          0.04098000004887581
+        ],
+        [
+          -0.13500000536441803,
+          0.2388250082731247,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.024",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.0832500010728836,
+          0.05098000168800354
+        ],
+        [
+          -0.13500000536441803,
+          0.09225000441074371,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.025",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.09657499939203262,
+          0.05098000168800354
+        ],
+        [
+          -0.13500000536441803,
+          0.10557500272989273,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.026",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.10989999771118164,
+          0.05098000168800354
+        ],
+        [
+          -0.13500000536441803,
+          0.11890000104904175,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.027",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.12322500348091125,
+          0.05098000168800354
+        ],
+        [
+          -0.13500000536441803,
+          0.13222500681877136,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.028",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.13654999434947968,
+          0.05098000168800354
+        ],
+        [
+          -0.13500000536441803,
+          0.14554999768733978,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.029",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.1498750001192093,
+          0.05098000168800354
+        ],
+        [
+          -0.13500000536441803,
+          0.1588750034570694,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.030",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.1631999909877777,
+          0.05098000168800354
+        ],
+        [
+          -0.13500000536441803,
+          0.17219999432563782,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.031",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.17652499675750732,
+          0.05098000168800354
+        ],
+        [
+          -0.13500000536441803,
+          0.18552500009536743,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.032",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.18985000252723694,
+          0.05098000168800354
+        ],
+        [
+          -0.13500000536441803,
+          0.19885000586509705,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.033",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.20317499339580536,
+          0.05098000168800354
+        ],
+        [
+          -0.13500000536441803,
+          0.21217499673366547,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.034",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.21649999916553497,
+          0.05098000168800354
+        ],
+        [
+          -0.13500000536441803,
+          0.22550000250339508,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.035",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.2298250049352646,
+          0.05098000168800354
+        ],
+        [
+          -0.13500000536441803,
+          0.2388250082731247,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.036",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.0832500010728836,
+          0.06097999960184097
+        ],
+        [
+          -0.13500000536441803,
+          0.09225000441074371,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.037",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.09657499939203262,
+          0.06097999960184097
+        ],
+        [
+          -0.13500000536441803,
+          0.10557500272989273,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.038",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.10989999771118164,
+          0.06097999960184097
+        ],
+        [
+          -0.13500000536441803,
+          0.11890000104904175,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.039",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.12322500348091125,
+          0.06097999960184097
+        ],
+        [
+          -0.13500000536441803,
+          0.13222500681877136,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.040",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.13654999434947968,
+          0.06097999960184097
+        ],
+        [
+          -0.13500000536441803,
+          0.14554999768733978,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.041",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.1498750001192093,
+          0.06097999960184097
+        ],
+        [
+          -0.13500000536441803,
+          0.1588750034570694,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.042",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.1631999909877777,
+          0.06097999960184097
+        ],
+        [
+          -0.13500000536441803,
+          0.17219999432563782,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.043",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.17652499675750732,
+          0.06097999960184097
+        ],
+        [
+          -0.13500000536441803,
+          0.18552500009536743,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.044",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.18985000252723694,
+          0.06097999960184097
+        ],
+        [
+          -0.13500000536441803,
+          0.19885000586509705,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.045",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.20317499339580536,
+          0.06097999960184097
+        ],
+        [
+          -0.13500000536441803,
+          0.21217499673366547,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.046",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.21649999916553497,
+          0.06097999960184097
+        ],
+        [
+          -0.13500000536441803,
+          0.22550000250339508,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.047",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.2298250049352646,
+          0.06097999960184097
+        ],
+        [
+          -0.13500000536441803,
+          0.2388250082731247,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.048",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.0832500010728836,
+          0.0709799975156784
+        ],
+        [
+          -0.13500000536441803,
+          0.09225000441074371,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.049",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.09657499939203262,
+          0.0709799975156784
+        ],
+        [
+          -0.13500000536441803,
+          0.10557500272989273,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.050",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.10989999771118164,
+          0.0709799975156784
+        ],
+        [
+          -0.13500000536441803,
+          0.11890000104904175,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.051",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.12322500348091125,
+          0.0709799975156784
+        ],
+        [
+          -0.13500000536441803,
+          0.13222500681877136,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.052",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.13654999434947968,
+          0.0709799975156784
+        ],
+        [
+          -0.13500000536441803,
+          0.14554999768733978,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.053",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.1498750001192093,
+          0.0709799975156784
+        ],
+        [
+          -0.13500000536441803,
+          0.1588750034570694,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.054",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.1631999909877777,
+          0.0709799975156784
+        ],
+        [
+          -0.13500000536441803,
+          0.17219999432563782,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.055",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.17652499675750732,
+          0.0709799975156784
+        ],
+        [
+          -0.13500000536441803,
+          0.18552500009536743,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.056",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.18985000252723694,
+          0.0709799975156784
+        ],
+        [
+          -0.13500000536441803,
+          0.19885000586509705,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.057",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.20317499339580536,
+          0.0709799975156784
+        ],
+        [
+          -0.13500000536441803,
+          0.21217499673366547,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.058",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.21649999916553497,
+          0.0709799975156784
+        ],
+        [
+          -0.13500000536441803,
+          0.22550000250339508,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.059",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13599999248981476,
+          0.2298250049352646,
+          0.0709799975156784
+        ],
+        [
+          -0.13500000536441803,
+          0.2388250082731247,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.060",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.0832500010728836,
+          0.030980002135038376
+        ],
+        [
+          0.13599999248981476,
+          0.09225000441074371,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.061",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.09657499939203262,
+          0.030980002135038376
+        ],
+        [
+          0.13599999248981476,
+          0.10557500272989273,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.062",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.10989999771118164,
+          0.030980002135038376
+        ],
+        [
+          0.13599999248981476,
+          0.11890000104904175,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.063",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.12322500348091125,
+          0.030980002135038376
+        ],
+        [
+          0.13599999248981476,
+          0.13222500681877136,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.064",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.13654999434947968,
+          0.030980002135038376
+        ],
+        [
+          0.13599999248981476,
+          0.14554999768733978,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.065",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.1498750001192093,
+          0.030980002135038376
+        ],
+        [
+          0.13599999248981476,
+          0.1588750034570694,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.066",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.1631999909877777,
+          0.030980002135038376
+        ],
+        [
+          0.13599999248981476,
+          0.17219999432563782,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.067",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.17652499675750732,
+          0.030980002135038376
+        ],
+        [
+          0.13599999248981476,
+          0.18552500009536743,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.068",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.18985000252723694,
+          0.030980002135038376
+        ],
+        [
+          0.13599999248981476,
+          0.19885000586509705,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.069",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.20317499339580536,
+          0.030980002135038376
+        ],
+        [
+          0.13599999248981476,
+          0.21217499673366547,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.070",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.21649999916553497,
+          0.030980002135038376
+        ],
+        [
+          0.13599999248981476,
+          0.22550000250339508,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.071",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.2298250049352646,
+          0.030980002135038376
+        ],
+        [
+          0.13599999248981476,
+          0.2388250082731247,
+          0.033980000764131546
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.072",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.0832500010728836,
+          0.04098000004887581
+        ],
+        [
+          0.13599999248981476,
+          0.09225000441074371,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.073",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.09657499939203262,
+          0.04098000004887581
+        ],
+        [
+          0.13599999248981476,
+          0.10557500272989273,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.074",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.10989999771118164,
+          0.04098000004887581
+        ],
+        [
+          0.13599999248981476,
+          0.11890000104904175,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.075",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.12322500348091125,
+          0.04098000004887581
+        ],
+        [
+          0.13599999248981476,
+          0.13222500681877136,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.076",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.13654999434947968,
+          0.04098000004887581
+        ],
+        [
+          0.13599999248981476,
+          0.14554999768733978,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.077",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.1498750001192093,
+          0.04098000004887581
+        ],
+        [
+          0.13599999248981476,
+          0.1588750034570694,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.078",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.1631999909877777,
+          0.04098000004887581
+        ],
+        [
+          0.13599999248981476,
+          0.17219999432563782,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.079",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.17652499675750732,
+          0.04098000004887581
+        ],
+        [
+          0.13599999248981476,
+          0.18552500009536743,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.080",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.18985000252723694,
+          0.04098000004887581
+        ],
+        [
+          0.13599999248981476,
+          0.19885000586509705,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.081",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.20317499339580536,
+          0.04098000004887581
+        ],
+        [
+          0.13599999248981476,
+          0.21217499673366547,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.082",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.21649999916553497,
+          0.04098000004887581
+        ],
+        [
+          0.13599999248981476,
+          0.22550000250339508,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.083",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.2298250049352646,
+          0.04098000004887581
+        ],
+        [
+          0.13599999248981476,
+          0.2388250082731247,
+          0.04397999867796898
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.084",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.0832500010728836,
+          0.05098000168800354
+        ],
+        [
+          0.13599999248981476,
+          0.09225000441074371,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.085",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.09657499939203262,
+          0.05098000168800354
+        ],
+        [
+          0.13599999248981476,
+          0.10557500272989273,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.086",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.10989999771118164,
+          0.05098000168800354
+        ],
+        [
+          0.13599999248981476,
+          0.11890000104904175,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.087",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.12322500348091125,
+          0.05098000168800354
+        ],
+        [
+          0.13599999248981476,
+          0.13222500681877136,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.088",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.13654999434947968,
+          0.05098000168800354
+        ],
+        [
+          0.13599999248981476,
+          0.14554999768733978,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.089",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.1498750001192093,
+          0.05098000168800354
+        ],
+        [
+          0.13599999248981476,
+          0.1588750034570694,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.090",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.1631999909877777,
+          0.05098000168800354
+        ],
+        [
+          0.13599999248981476,
+          0.17219999432563782,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.091",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.17652499675750732,
+          0.05098000168800354
+        ],
+        [
+          0.13599999248981476,
+          0.18552500009536743,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.092",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.18985000252723694,
+          0.05098000168800354
+        ],
+        [
+          0.13599999248981476,
+          0.19885000586509705,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.093",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.20317499339580536,
+          0.05098000168800354
+        ],
+        [
+          0.13599999248981476,
+          0.21217499673366547,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.094",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.21649999916553497,
+          0.05098000168800354
+        ],
+        [
+          0.13599999248981476,
+          0.22550000250339508,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.095",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.2298250049352646,
+          0.05098000168800354
+        ],
+        [
+          0.13599999248981476,
+          0.2388250082731247,
+          0.05398000031709671
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.096",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.0832500010728836,
+          0.06097999960184097
+        ],
+        [
+          0.13599999248981476,
+          0.09225000441074371,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.097",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.09657499939203262,
+          0.06097999960184097
+        ],
+        [
+          0.13599999248981476,
+          0.10557500272989273,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.098",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.10989999771118164,
+          0.06097999960184097
+        ],
+        [
+          0.13599999248981476,
+          0.11890000104904175,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.099",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.12322500348091125,
+          0.06097999960184097
+        ],
+        [
+          0.13599999248981476,
+          0.13222500681877136,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.100",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.13654999434947968,
+          0.06097999960184097
+        ],
+        [
+          0.13599999248981476,
+          0.14554999768733978,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.101",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.1498750001192093,
+          0.06097999960184097
+        ],
+        [
+          0.13599999248981476,
+          0.1588750034570694,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.102",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.1631999909877777,
+          0.06097999960184097
+        ],
+        [
+          0.13599999248981476,
+          0.17219999432563782,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.103",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.17652499675750732,
+          0.06097999960184097
+        ],
+        [
+          0.13599999248981476,
+          0.18552500009536743,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.104",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.18985000252723694,
+          0.06097999960184097
+        ],
+        [
+          0.13599999248981476,
+          0.19885000586509705,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.105",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.20317499339580536,
+          0.06097999960184097
+        ],
+        [
+          0.13599999248981476,
+          0.21217499673366547,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.106",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.21649999916553497,
+          0.06097999960184097
+        ],
+        [
+          0.13599999248981476,
+          0.22550000250339508,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.107",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.2298250049352646,
+          0.06097999960184097
+        ],
+        [
+          0.13599999248981476,
+          0.2388250082731247,
+          0.06397999823093414
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.108",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.0832500010728836,
+          0.0709799975156784
+        ],
+        [
+          0.13599999248981476,
+          0.09225000441074371,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.109",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.09657499939203262,
+          0.0709799975156784
+        ],
+        [
+          0.13599999248981476,
+          0.10557500272989273,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.110",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.10989999771118164,
+          0.0709799975156784
+        ],
+        [
+          0.13599999248981476,
+          0.11890000104904175,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.111",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.12322500348091125,
+          0.0709799975156784
+        ],
+        [
+          0.13599999248981476,
+          0.13222500681877136,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.112",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.13654999434947968,
+          0.0709799975156784
+        ],
+        [
+          0.13599999248981476,
+          0.14554999768733978,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.113",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.1498750001192093,
+          0.0709799975156784
+        ],
+        [
+          0.13599999248981476,
+          0.1588750034570694,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.114",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.1631999909877777,
+          0.0709799975156784
+        ],
+        [
+          0.13599999248981476,
+          0.17219999432563782,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.115",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.17652499675750732,
+          0.0709799975156784
+        ],
+        [
+          0.13599999248981476,
+          0.18552500009536743,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.116",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.18985000252723694,
+          0.0709799975156784
+        ],
+        [
+          0.13599999248981476,
+          0.19885000586509705,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.117",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.20317499339580536,
+          0.0709799975156784
+        ],
+        [
+          0.13599999248981476,
+          0.21217499673366547,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.118",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.21649999916553497,
+          0.0709799975156784
+        ],
+        [
+          0.13599999248981476,
+          0.22550000250339508,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    },
+    {
+      "name": "Visible side ventilation dark recess.119",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.13500000536441803,
+          0.2298250049352646,
+          0.0709799975156784
+        ],
+        [
+          0.13599999248981476,
+          0.2388250082731247,
+          0.07398000359535217
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark face polymer"
+      ],
+      "properties": {
+        "part": "Visible side ventilation dark recess",
+        "assetId": "photo_instrument_l2_light_test_unknown",
+        "photoPosition": "L2",
+        "evidenceStatus": "Estimated dimensions; type and manufacturer unknown",
+        "dimensionsUnit": "m"
+      }
+    }
+  ],
+  "bounds": [
+    [
+      -0.14100000262260437,
+      -0.013000000268220901,
+      0.0
+    ],
+    [
+      0.14100000262260437,
+      0.32499998807907104,
+      0.1119999960064888
+    ]
+  ],
+  "triangles": 33028,
+  "units": "METRIC",
+  "scaleLength": 1.0
+}

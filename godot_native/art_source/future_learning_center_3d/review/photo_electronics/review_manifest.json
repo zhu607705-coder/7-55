@@ -1,0 +1,45 @@
+{
+  "images": [
+    {
+      "path": "review/photo_electronics/photo_electronics_back_shelf_frame.png",
+      "sha256": "89c4c53e2d4ff800a377b7393b777d46024be6f6cf8a5d9ace235d6886177d1d",
+      "type": "actual CPU Cycles render, not runtime acceptance"
+    },
+    {
+      "path": "review/photo_electronics/photo_electronics_bench_composition.png",
+      "sha256": "4939a13496599fb3a9f12b654bbccd53fd317a8b0103840885e47e01cb7d5b3f",
+      "type": "actual CPU Cycles render, not runtime acceptance"
+    },
+    {
+      "path": "review/photo_electronics/photo_electronics_drawer_bench.png",
+      "sha256": "cf2b7e1d460ca8e91d545b96ba4f4572f60f8039528e08250c42fb3abdf30029",
+      "type": "actual CPU Cycles render, not runtime acceptance"
+    },
+    {
+      "path": "review/photo_electronics/photo_electronics_green_cutting_mat.png",
+      "sha256": "cfc6f0f6915c9ac23ccb48df611a5ee6078cfbe7f0c09b3a8a5e767dca7cb53f",
+      "type": "actual CPU Cycles render, not runtime acceptance"
+    },
+    {
+      "path": "review/photo_electronics/photo_electronics_open_bin.png",
+      "sha256": "8486d1dd9ed012558c6145887193932a138f6a6f84e86896eccf9c5542870541",
+      "type": "actual CPU Cycles render, not runtime acceptance"
+    },
+    {
+      "path": "review/photo_electronics/photo_electronics_tall_instrument_shell.png",
+      "sha256": "1e45cd3b8abdfaff7b8ec90ad2f438540b661d30a6161bf6bd78242b6a1abd0c",
+      "type": "actual CPU Cycles render, not runtime acceptance"
+    },
+    {
+      "path": "review/photo_electronics/photo_electronics_wide_instrument_shell.png",
+      "sha256": "cf3718ec98f82ef996dfad2dc46cb73622bf53da300cdb1d726ae21a35b491d0",
+      "type": "actual CPU Cycles render, not runtime acceptance"
+    }
+  ],
+  "actuallyViewed": [
+    "photo_electronics_drawer_bench.png",
+    "photo_electronics_tall_instrument_shell.png",
+    "photo_electronics_green_cutting_mat.png",
+    "photo_electronics_bench_composition.png"
+  ]
+}

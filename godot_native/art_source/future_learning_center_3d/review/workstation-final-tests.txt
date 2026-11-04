@@ -1,0 +1,35 @@
+Passed: actual GLB, candidates, overlap, lift, repeat cleanup, panel parts, immutable bases; 18 variants
+{
+  "passed": 113,
+  "sourceNodes": 12862,
+  "sourceMeshes": 12656,
+  "registeredObjects": 79,
+  "scope": "Actual building.glb hierarchy/geometry and viewer state integration in Node VM. Renderer, DOM, network and chair/static generated assets mocked; photo assets use actual uncompressed GLBs via forced Draco fallback; embedded textures stripped in memory. NOT browser/GPU/pointer acceptance."
+}
+{
+  "passed": 114,
+  "sourceNodes": 4368,
+  "sourceMeshes": 4156,
+  "registeredObjects": 80,
+  "scope": "Actual building.web.glb hierarchy/geometry and viewer state integration in Node VM. Renderer, DOM, network and chair/static generated assets mocked; photo assets use actual uncompressed GLBs via forced Draco fallback; embedded textures stripped in memory. NOT browser/GPU/pointer acceptance."
+}
+{
+  "passed": 18,
+  "scope": "Config and loader failure semantics; no browser acceptance"
+}
+{
+  "passed": 165,
+  "scope": "Pure spatial identity, reversible selection, independent content config and immutable source geometry. Not browser/GPU acceptance."
+}
+{
+  "passed": 126,
+  "scope": "Actual Three.js transforms, clipping planes, material ownership, repeated transitions; not browser/GPU rendering."
+}
+{
+  "passed": 14,
+  "scope": "Configuration projection and approved local raster paths; not DOM/browser rendering"
+}
+{
+  "passed": 42,
+  "scope": "Render-request lifecycle only; not GPU timing or browser input acceptance"
+}

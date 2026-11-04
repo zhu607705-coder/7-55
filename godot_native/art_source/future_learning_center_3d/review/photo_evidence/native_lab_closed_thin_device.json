@@ -1,0 +1,155 @@
+{
+  "blender": "4.3.2",
+  "objects": [
+    {
+      "name": "Closed lower chassis",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.17499999701976776,
+          -0.11999999731779099,
+          0.0
+        ],
+        [
+          0.17499999701976776,
+          0.11999999731779099,
+          0.012000000104308128
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Black chair and case polymer"
+      ],
+      "properties": {
+        "part": "Closed lower chassis",
+        "assetId": "lab_closed_thin_device",
+        "scaleStatus": "Photograph estimate, not measured",
+        "reference": "Photo 3, original visually inspected; no photo pixels included"
+      }
+    },
+    {
+      "name": "Closed lid distinct seam",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.17299999296665192,
+          -0.11699999868869781,
+          0.012000000104308128
+        ],
+        [
+          0.17299999296665192,
+          0.11900000274181366,
+          0.017999999225139618
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Charcoal powder coated steel"
+      ],
+      "properties": {
+        "part": "Closed lid distinct seam",
+        "assetId": "lab_closed_thin_device",
+        "scaleStatus": "Photograph estimate, not measured",
+        "reference": "Photo 3, original visually inspected; no photo pixels included"
+      }
+    },
+    {
+      "name": "Rear hinge",
+      "vertices": 80,
+      "triangles": 156,
+      "bounds": [
+        [
+          -0.14499999582767487,
+          0.1080000028014183,
+          0.006999993231147528
+        ],
+        [
+          0.14499999582767487,
+          0.11600000411272049,
+          0.015000006183981895
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Charcoal powder coated steel"
+      ],
+      "properties": {
+        "part": "Rear hinge",
+        "assetId": "lab_closed_thin_device",
+        "scaleStatus": "Photograph estimate, not measured",
+        "reference": "Photo 3, original visually inspected; no photo pixels included"
+      }
+    },
+    {
+      "name": "Underside foot",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.13249999284744263,
+          -0.08100000023841858,
+          0.0
+        ],
+        [
+          -0.10749999433755875,
+          -0.0690000057220459,
+          0.0020000000949949026
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Black chair and case polymer"
+      ],
+      "properties": {
+        "part": "Underside foot",
+        "assetId": "lab_closed_thin_device",
+        "scaleStatus": "Photograph estimate, not measured",
+        "reference": "Photo 3, original visually inspected; no photo pixels included"
+      }
+    },
+    {
+      "name": "Underside foot.001",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.10749999433755875,
+          -0.08100000023841858,
+          0.0
+        ],
+        [
+          0.13249999284744263,
+          -0.0690000057220459,
+          0.0020000000949949026
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Black chair and case polymer"
+      ],
+      "properties": {
+        "part": "Underside foot",
+        "assetId": "lab_closed_thin_device",
+        "scaleStatus": "Photograph estimate, not measured",
+        "reference": "Photo 3, original visually inspected; no photo pixels included"
+      }
+    }
+  ],
+  "bounds": [
+    [
+      -0.17499999701976776,
+      -0.11999999731779099,
+      0.0
+    ],
+    [
+      0.17499999701976776,
+      0.11999999731779099,
+      0.017999999225139618
+    ]
+  ],
+  "triangles": 908,
+  "units": "METRIC",
+  "scaleLength": 1.0
+}

@@ -1,0 +1,778 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 1766316,
+    "sha256": "a4f6ad1edb19cf267821dacbce021360582953ffe04cb208a5d879650ba7f94d",
+    "triangles": 22948,
+    "primitives": 399,
+    "bounds": {
+      "min": [
+        -0.11950000189244747,
+        0,
+        -0.41800001449882984
+      ],
+      "max": [
+        0.11950000189244747,
+        0.1570000071078539,
+        0.011500003112605323
+      ]
+    },
+    "size": [
+      0.23900000378489494,
+      0.1570000071078539,
+      0.4295000176114352
+    ],
+    "materials": [
+      {
+        "name": "Warm light moulded fascia",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": true,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.6600000262260437,
+          0.6499999761581421,
+          0.5899999737739563,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 1
+      },
+      {
+        "name": "Charcoal impact guard",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": true,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.1599999964237213,
+          0.17000000178813934,
+          0.17000000178813934,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 1
+      },
+      {
+        "name": "Dark face polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": true,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.04500000178813934,
+          0.05000000074505806,
+          0.05000000074505806,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 1
+      },
+      {
+        "name": "Neutral unlit glass no content",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.008999999612569809,
+          0.014000000432133675,
+          0.017999999225139618,
+          1
+        ],
+        "metallicFactor": 0.15000000596046448,
+        "roughnessFactor": 0.1899999976158142
+      },
+      {
+        "name": "Yellow channel and socket ring",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.75,
+          0.550000011920929,
+          0.02500000037252903,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.4399999976158142
+      },
+      {
+        "name": "Light neutral keys",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.44999998807907104,
+          0.46000000834465027,
+          0.4300000071525574,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.5400000214576721
+      },
+      {
+        "name": "Green channel and earth",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.03500000014901161,
+          0.36000001430511475,
+          0.20000000298023224,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.44999998807907104
+      },
+      {
+        "name": "Satin connector metal",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.4399999976158142,
+          0.4699999988079071,
+          0.46000000834465027,
+          1
+        ],
+        "metallicFactor": 0.8199999928474426,
+        "roughnessFactor": 0.30000001192092896
+      },
+      {
+        "name": "Red terminal insulator",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.5799999833106995,
+          0.02500000037252903,
+          0.020999999716877937,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.44999998807907104
+      }
+    ],
+    "textures": [
+      {
+        "name": "synthetic_roughness",
+        "mime": "image/png",
+        "bytes": 1487,
+        "size": [
+          32,
+          32
+        ]
+      }
+    ]
+  },
+  "calibration": {
+    "targetHeight": 0.1570000071078539,
+    "yawDegrees": 0,
+    "uniformScale": 1,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "a4f6ad1edb19cf267821dacbce021360582953ffe04cb208a5d879650ba7f94d",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 2.086162567138672e-7,
+      "bytes": 124404,
+      "uncompressedBytes": 1198844,
+      "sha256": "a63e7a130bac7820a5dcd7e0b471ad2e5cc91e8276b2d6fc7556f8129406156e",
+      "triangles": 21620,
+      "primitives": 9,
+      "bounds": {
+        "min": [
+          -0.11950000375509262,
+          0,
+          -0.21475001159968532
+        ],
+        "max": [
+          0.11950003355741501,
+          0.15700021386146545,
+          0.21475000664678656
+        ]
+      },
+      "size": [
+        0.23900003731250763,
+        0.15700021386146545,
+        0.4295000182464719
+      ],
+      "materials": [
+        {
+          "name": "Warm light moulded fascia",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.6600000262260437,
+            0.6499999761581421,
+            0.5899999737739563,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Charcoal impact guard",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.1599999964237213,
+            0.17000000178813934,
+            0.17000000178813934,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Dark face polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.04500000178813934,
+            0.05000000074505806,
+            0.05000000074505806,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Neutral unlit glass no content",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.008999999612569809,
+            0.014000000432133675,
+            0.017999999225139618,
+            1
+          ],
+          "metallicFactor": 0.15000000596046448,
+          "roughnessFactor": 0.1899999976158142
+        },
+        {
+          "name": "Yellow channel and socket ring",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.75,
+            0.550000011920929,
+            0.02500000037252903,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4399999976158142
+        },
+        {
+          "name": "Light neutral keys",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.44999998807907104,
+            0.46000000834465027,
+            0.4300000071525574,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5400000214576721
+        },
+        {
+          "name": "Green channel and earth",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.03500000014901161,
+            0.36000001430511475,
+            0.20000000298023224,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.44999998807907104
+        },
+        {
+          "name": "Satin connector metal",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.4399999976158142,
+            0.4699999988079071,
+            0.46000000834465027,
+            1
+          ],
+          "metallicFactor": 0.8199999928474426,
+          "roughnessFactor": 0.30000001192092896
+        },
+        {
+          "name": "Red terminal insulator",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5799999833106995,
+            0.02500000037252903,
+            0.020999999716877937,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.44999998807907104
+        }
+      ],
+      "textures": [
+        {
+          "name": "synthetic_roughness",
+          "mime": "image/png",
+          "bytes": 1487,
+          "size": [
+            32,
+            32
+          ]
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "85c5fea85f56b4d7ba3b46b37e5e3f714152fd543061e74836814f6036fd08f4",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 2.086162567138672e-7,
+      "bytes": 64372,
+      "uncompressedBytes": 572620,
+      "sha256": "db1ee9b9d9cff36cf9b6107e86d1e085b23b5adb4b140e9b1bd30703a0dcae6b",
+      "triangles": 9450,
+      "primitives": 9,
+      "bounds": {
+        "min": [
+          -0.11950000375509262,
+          0,
+          -0.21475001159968532
+        ],
+        "max": [
+          0.11950003355741501,
+          0.15700021386146545,
+          0.21475000664678656
+        ]
+      },
+      "size": [
+        0.23900003731250763,
+        0.15700021386146545,
+        0.4295000182464719
+      ],
+      "materials": [
+        {
+          "name": "Warm light moulded fascia",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.6600000262260437,
+            0.6499999761581421,
+            0.5899999737739563,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Charcoal impact guard",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.1599999964237213,
+            0.17000000178813934,
+            0.17000000178813934,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Dark face polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.04500000178813934,
+            0.05000000074505806,
+            0.05000000074505806,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Neutral unlit glass no content",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.008999999612569809,
+            0.014000000432133675,
+            0.017999999225139618,
+            1
+          ],
+          "metallicFactor": 0.15000000596046448,
+          "roughnessFactor": 0.1899999976158142
+        },
+        {
+          "name": "Yellow channel and socket ring",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.75,
+            0.550000011920929,
+            0.02500000037252903,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4399999976158142
+        },
+        {
+          "name": "Light neutral keys",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.44999998807907104,
+            0.46000000834465027,
+            0.4300000071525574,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5400000214576721
+        },
+        {
+          "name": "Green channel and earth",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.03500000014901161,
+            0.36000001430511475,
+            0.20000000298023224,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.44999998807907104
+        },
+        {
+          "name": "Satin connector metal",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.4399999976158142,
+            0.4699999988079071,
+            0.46000000834465027,
+            1
+          ],
+          "metallicFactor": 0.8199999928474426,
+          "roughnessFactor": 0.30000001192092896
+        },
+        {
+          "name": "Red terminal insulator",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5799999833106995,
+            0.02500000037252903,
+            0.020999999716877937,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.44999998807907104
+        }
+      ],
+      "textures": [
+        {
+          "name": "synthetic_roughness",
+          "mime": "image/png",
+          "bytes": 1487,
+          "size": [
+            32,
+            32
+          ]
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "90401f548e8478df3595239ade131bf250f1a1af9c5f959210aa01567a026df5",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 2.086162567138672e-7,
+      "bytes": 32772,
+      "uncompressedBytes": 223548,
+      "sha256": "125f84854b4af7db4bd4168ce95d72f36b287a1abe8bc3f00baac047f1320936",
+      "triangles": 3162,
+      "primitives": 9,
+      "bounds": {
+        "min": [
+          -0.11950000375509262,
+          0,
+          -0.21475001159968532
+        ],
+        "max": [
+          0.11950003355741501,
+          0.15700021386146545,
+          0.21475000664678656
+        ]
+      },
+      "size": [
+        0.23900003731250763,
+        0.15700021386146545,
+        0.4295000182464719
+      ],
+      "materials": [
+        {
+          "name": "Warm light moulded fascia",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.6600000262260437,
+            0.6499999761581421,
+            0.5899999737739563,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Charcoal impact guard",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.1599999964237213,
+            0.17000000178813934,
+            0.17000000178813934,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Dark face polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": true,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.04500000178813934,
+            0.05000000074505806,
+            0.05000000074505806,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 1
+        },
+        {
+          "name": "Neutral unlit glass no content",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.008999999612569809,
+            0.014000000432133675,
+            0.017999999225139618,
+            1
+          ],
+          "metallicFactor": 0.15000000596046448,
+          "roughnessFactor": 0.1899999976158142
+        },
+        {
+          "name": "Yellow channel and socket ring",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.75,
+            0.550000011920929,
+            0.02500000037252903,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4399999976158142
+        },
+        {
+          "name": "Light neutral keys",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.44999998807907104,
+            0.46000000834465027,
+            0.4300000071525574,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5400000214576721
+        },
+        {
+          "name": "Green channel and earth",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.03500000014901161,
+            0.36000001430511475,
+            0.20000000298023224,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.44999998807907104
+        },
+        {
+          "name": "Satin connector metal",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.4399999976158142,
+            0.4699999988079071,
+            0.46000000834465027,
+            1
+          ],
+          "metallicFactor": 0.8199999928474426,
+          "roughnessFactor": 0.30000001192092896
+        },
+        {
+          "name": "Red terminal insulator",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5799999833106995,
+            0.02500000037252903,
+            0.020999999716877937,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.44999998807907104
+        }
+      ],
+      "textures": [
+        {
+          "name": "synthetic_roughness",
+          "mime": "image/png",
+          "bytes": 1487,
+          "size": [
+            32,
+            32
+          ]
+        }
+      ]
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

@@ -115,12 +115,17 @@ test('exact input identity detects edits, new untracked inputs, environment, too
   assert.equal(spawnSync('git', ['init', '-q', root]).status, 0);
   const binary = path.join(root, 'fake-godot'); fs.writeFileSync(binary, '#!/bin/sh\nprintf "4.7.1.test\\n"\n', {mode: 0o755});
   fs.writeFileSync(path.join(root, 'source.gd'), 'original');
-  const env = {PATH: process.env.PATH, LANG: 'C'};
+  const env = {PATH: process.env.PATH, LANG: 'C', GITHUB_REPOSITORY: 'fixture/repo', GITHUB_WORKFLOW: 'Native validation'};
   const snapshot = () => validationIdentity(root, {executable: binary, jobs: 2, env});
   const original = snapshot(); assert.equal(snapshot().sha256, original.sha256);
   fs.writeFileSync(path.join(root, 'new-helper.gd'), 'new untracked'); assert.notEqual(snapshot().sha256, original.sha256); fs.unlinkSync(path.join(root, 'new-helper.gd'));
   fs.writeFileSync(path.join(root, 'source.gd'), 'changed'); assert.notEqual(snapshot().sha256, original.sha256); fs.writeFileSync(path.join(root, 'source.gd'), 'original');
   assert.notEqual(validationIdentity(root, {executable: binary, jobs: 2, env: {...env, SOME_OPTION: '1'}}).sha256, original.sha256);
+  for (const name of ['GITHUB_REPOSITORY', 'GITHUB_WORKFLOW']) {
+   const changed = validationIdentity(root, {executable: binary, jobs: 2, env: {...env, [name]: `${env[name]}-changed`}});
+   assert.notEqual(changed.environmentSha256, original.environmentSha256, name);
+   assert.notEqual(changed.sha256, original.sha256, name);
+  }
   fs.appendFileSync(binary, '# binary changed\n'); assert.notEqual(snapshot().sha256, original.sha256);
   const stage = {id: 'test_minigame_models.gd', command: binary, args: ['--headless']};
   const beforeFixture = fixtureIdentity(root, stage.id);
@@ -159,6 +164,30 @@ test('hosted browser/account defaults do not serialize native readers or hide re
  for (const name of ['WORLD_SCRIPT_PATH','LAMP_SOURCE_FRAMES','CANTEEN_SOURCE_ROOT','SOURCE_REPO_ROOT']) {
   assert.deepEqual(inheritedTestOverrides(path.dirname(project), {...env,[name]:'/tmp/mutable-input'}), [name]);
  }
+});
+
+test('source transport provenance is metadata, while external source/output overrides still refuse preparation and resume', () => {
+ const metadata = {GITHUB_REPOSITORY:'fixture/repo', GITHUB_WORKFLOW:'Native validation'};
+ assert.deepEqual(inheritedTestOverrides(path.dirname(project), metadata), []);
+ for (const name of ['SOURCE_REPO_ROOT', 'WORLD_SCRIPT_PATH', 'PHOTO_CONSUMER_FIXTURE', 'CONTINUITY_OUTPUT']) {
+  const env = {PATH:process.env.PATH, ...metadata, [name]:'/tmp/mutable-input', GODOT_TEST_REPORT:'/tmp/nonexistent-external-override-report.json'};
+  assert.deepEqual(inheritedTestOverrides(path.dirname(project), {...metadata, [name]:env[name]}), [name]);
+  for (const args of [['--profile','prepare'], ['--resume','--filter','^Native save isolation$']]) {
+   const r = spawnSync(process.execPath, [path.join(project,'tools/validate_native.mjs'), ...args], {encoding:'utf8', env});
+   assert.notEqual(r.status, 0);
+   assert.match(r.stderr, /(?:Prepared validation|Resume) refused with external/);
+   assert.match(r.stderr, new RegExp(`overrides: ${name}(?:\\n|$)`));
+  }
+ }
+});
+
+test('GitHub metadata classification is exact-key only, not a GITHUB prefix exemption', () => {
+ const root = fs.mkdtempSync(path.join(os.tmpdir(), '755-metadata-override-test-'));
+ try {
+  const directory = path.join(root, 'godot_native/tools'); fs.mkdirSync(directory, {recursive:true});
+  fs.writeFileSync(path.join(directory, 'external.mjs'), 'const source = process.env.GITHUB_SOURCE_ROOT;\n');
+  assert.deepEqual(inheritedTestOverrides(root, {GITHUB_REPOSITORY:'fixture/repo', GITHUB_WORKFLOW:'Native validation', GITHUB_SOURCE_ROOT:'/tmp/mutable-input'}), ['GITHUB_SOURCE_ROOT']);
+ } finally {fs.rmSync(root, {recursive:true, force:true});}
 });
 
 test('workspace lock excludes a second process and can be released without stale ownership', async () => {

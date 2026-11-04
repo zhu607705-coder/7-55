@@ -1,0 +1,67 @@
+{
+  "blender": "4.3.2",
+  "assets": [
+    {
+      "asset": "photo_lounge_grey_bar_chair",
+      "meshParts": 16,
+      "triangles": 3312,
+      "packedImages": [],
+      "noCamerasLights": true,
+      "identityTransforms": true,
+      "sha256Blend": "24996b2561639425077a28134946ca89a9c0864cf674b4fffd889929a28287e7"
+    },
+    {
+      "asset": "photo_lounge_orange_double",
+      "meshParts": 14,
+      "triangles": 16552,
+      "packedImages": [
+        "Terracotta woven upholstery synthetic normal tile",
+        "Terracotta woven upholstery synthetic tile"
+      ],
+      "noCamerasLights": true,
+      "identityTransforms": true,
+      "sha256Blend": "de816c53630a0aea99964f2b50f448ee184ff1ad990960c3be707c5cf3e49251"
+    },
+    {
+      "asset": "photo_lounge_orange_single",
+      "meshParts": 13,
+      "triangles": 16316,
+      "packedImages": [
+        "Terracotta woven upholstery synthetic normal tile",
+        "Terracotta woven upholstery synthetic tile"
+      ],
+      "noCamerasLights": true,
+      "identityTransforms": true,
+      "sha256Blend": "fe2547e5dd6cc512e68e28d424b88c14044c99ca8ac506e1cd9284e7767252bc"
+    },
+    {
+      "asset": "photo_lounge_round_table",
+      "meshParts": 8,
+      "triangles": 3440,
+      "packedImages": [],
+      "noCamerasLights": true,
+      "identityTransforms": true,
+      "sha256Blend": "93b11da1c96d748c4d4b1dac0e6ba7dad418d9a77fd94b11a9153b483b09e9b9"
+    },
+    {
+      "asset": "photo_lounge_square_stool",
+      "meshParts": 13,
+      "triangles": 3900,
+      "packedImages": [],
+      "noCamerasLights": true,
+      "identityTransforms": true,
+      "sha256Blend": "c088b08b856f663538bcc9ad92357cd5e47dfd0055b3b8020ce5defb79ba7241"
+    },
+    {
+      "asset": "photo_lounge_window_counter",
+      "meshParts": 13,
+      "triangles": 3900,
+      "packedImages": [
+        "Pale wood bar counter synthetic tile"
+      ],
+      "noCamerasLights": true,
+      "identityTransforms": true,
+      "sha256Blend": "7e02a806ee819efb8286ed7c50a8ae8eeb2e1c2d5b7bbfe9f4e4927ab8d5bb01"
+    }
+  ]
+}

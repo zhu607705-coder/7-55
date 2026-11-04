@@ -1,0 +1,147 @@
+{
+  "purpose": "Seven-instrument photo-aligned review group, NOT final electronics bench layout",
+  "units": "m",
+  "dimensions": "DP800 family real envelope; remaining five photo-relative estimates",
+  "instances": [
+    {
+      "instanceId": "L3",
+      "assetId": "photo_instrument_dp800_series_candidate",
+      "position": [
+        -0.42,
+        0.025,
+        0
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        -0.025
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "sourceSha256": "330692ce9f21acf64c1398f54387738668e1d9f006b2de1ea0c979f891d89837"
+    },
+    {
+      "instanceId": "L2",
+      "assetId": "photo_instrument_l2_light_test_unknown",
+      "position": [
+        -0.434,
+        0.041,
+        0.157
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        -0.018
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "sourceSha256": "2b07ec0f6912c3a16069b82480791d535a59d1e8fd5fa8b2aeca3d460c276384"
+    },
+    {
+      "instanceId": "L1",
+      "assetId": "photo_instrument_l1_dark_signal_candidate",
+      "position": [
+        -0.426,
+        0.052,
+        0.269
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        -0.031
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "sourceSha256": "d89563622afef9ac998868a59ba10ae907100d6949b0104eeba643f992d4f2f6"
+    },
+    {
+      "instanceId": "C1",
+      "assetId": "photo_instrument_c1_wide_scope_candidate",
+      "position": [
+        0.016,
+        -0.025,
+        0
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0.014
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "sourceSha256": "f3eff9b3d19f888fbf85c1af3962057dc6e2c062ec8a2854d5d25bd413a5711c"
+    },
+    {
+      "instanceId": "R3",
+      "assetId": "photo_instrument_dp800_series_candidate",
+      "position": [
+        0.422,
+        0.002,
+        0
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0.035
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "sourceSha256": "330692ce9f21acf64c1398f54387738668e1d9f006b2de1ea0c979f891d89837"
+    },
+    {
+      "instanceId": "R2",
+      "assetId": "photo_instrument_r2_light_test_unknown",
+      "position": [
+        0.43,
+        0.024,
+        0.157
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0.016
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "sourceSha256": "772c959b9a5ae7c851ec2b37f60191d01ebd98c169177967dadb5cbe4df0690a"
+    },
+    {
+      "instanceId": "R1",
+      "assetId": "photo_instrument_r1_dark_rf_candidate",
+      "position": [
+        0.442,
+        0.044,
+        0.275
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0.027
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "sourceSha256": "36a6c7c955e4d03aa323015a5eb70280a9dc992d2f96d7999edf87f5a108cf94"
+    }
+  ]
+}

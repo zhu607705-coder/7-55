@@ -1,0 +1,627 @@
+{
+  "blender": "4.3.2",
+  "units": "m",
+  "frontAxisBlender": "-Y",
+  "upAxisBlender": "+Z",
+  "scope": "This builder creates only two static reusable photo-referenced waste-bin variants. It does not modify the original five asset builders or runtime integration.",
+  "reference": {
+    "library_file_id": "src_ref_e87f09491a0bf10060c8c575d9c03672",
+    "sha256": "9cfaad191fdc2ef00dd2ff277fe461a67378d5b32dafd36c5d63d88d5166f38a",
+    "pixelsInspected": true
+  },
+  "assumptions": [
+    "Approximate scale and proportions; no ruler, brand, capacity or manufacturer identification.",
+    "Only visible front and top features are reconstructed. Closed-lid props do not assert hidden operating mechanics.",
+    "Small disposal pictograms are not legible enough to reproduce reliably and are omitted.",
+    "Grey and blue share construction with separate material variants. Chinese and English category text is mesh geometry."
+  ],
+  "textures": {
+    "photographBaked": false,
+    "imageTextureCount": 0
+  },
+  "render": {
+    "engine": "Cycles",
+    "device": "CPU",
+    "samples": 96,
+    "denoising": false,
+    "visualInspection": "Checked CPU previews; no browser acceptance",
+    "checkedPreviews": [
+      "waste_bin_grey.png",
+      "waste_bin_blue.png",
+      "waste_bins_pair.png"
+    ],
+    "notes": [
+      "Compared actual rendered pixels with the supplied photograph: tapered body, stepped lid shoulder, black liner band and recessed foot pedal are legible.",
+      "Resized Chinese and English labels by actual glyph width. The final labels are flat mesh print with no tiny or degenerate exported triangles.",
+      "Corrected local collar penetration through the black liner before final rendering.",
+      "Material colors and physical dimensions are approximate; preview uses neutral studio lighting. Small unreadable disposal pictograms are intentionally omitted."
+    ]
+  },
+  "records": [
+    {
+      "asset": "waste_bin_grey",
+      "level": 0,
+      "triangles": 18613,
+      "boundsBlenderXYZ": [
+        [
+          -0.2517377734184265,
+          -0.2846953570842743,
+          0.0
+        ],
+        [
+          0.25178930163383484,
+          0.28463447093963623,
+          0.8239767551422119
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.5035270750522614,
+        0.5693298280239105,
+        0.8239767551422119
+      ],
+      "meshParts": 19,
+      "sha256": "0654420c455832913fd6aebff350b34b9d69cf32663eb22e961d94168e723a63",
+      "sourceGLB": "sources/models/photo_living/waste_bin_grey/lod0_source.glb"
+    },
+    {
+      "asset": "waste_bin_grey",
+      "level": 1,
+      "triangles": 8515,
+      "boundsBlenderXYZ": [
+        [
+          -0.25193026661872864,
+          -0.2847089469432831,
+          0.0
+        ],
+        [
+          0.2516244649887085,
+          0.2845701575279236,
+          0.8239766955375671
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.5035547316074371,
+        0.5692791044712067,
+        0.8239766955375671
+      ],
+      "meshParts": 19,
+      "sha256": "474268f400baeb8760f404b8a245f9f61ef58fe8d4a7d2b35f146060383d0c62",
+      "sourceGLB": "sources/models/photo_living/waste_bin_grey/lod1_source.glb"
+    },
+    {
+      "asset": "waste_bin_grey",
+      "level": 2,
+      "triangles": 3831,
+      "boundsBlenderXYZ": [
+        [
+          -0.25085899233818054,
+          -0.28368818759918213,
+          0.0
+        ],
+        [
+          0.25046905875205994,
+          0.2835908532142639,
+          0.8239767551422119
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.5013280510902405,
+        0.567279040813446,
+        0.8239767551422119
+      ],
+      "meshParts": 17,
+      "sha256": "70815259eae5365e7442171c41bd63e7884a0af01b140742685ace762b7c9961",
+      "sourceGLB": "sources/models/photo_living/waste_bin_grey/lod2_source.glb"
+    },
+    {
+      "asset": "waste_bin_blue",
+      "level": 0,
+      "triangles": 18550,
+      "boundsBlenderXYZ": [
+        [
+          -0.2517377734184265,
+          -0.2846953570842743,
+          0.0
+        ],
+        [
+          0.25178930163383484,
+          0.28463447093963623,
+          0.8239767551422119
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.5035270750522614,
+        0.5693298280239105,
+        0.8239767551422119
+      ],
+      "meshParts": 19,
+      "sha256": "36c9837218cb1ec602974c0df440f59da5aae6cab01da97d3af026836fee2aeb",
+      "sourceGLB": "sources/models/photo_living/waste_bin_blue/lod0_source.glb"
+    },
+    {
+      "asset": "waste_bin_blue",
+      "level": 1,
+      "triangles": 8460,
+      "boundsBlenderXYZ": [
+        [
+          -0.25193026661872864,
+          -0.2847089469432831,
+          0.0
+        ],
+        [
+          0.2516244649887085,
+          0.2845701575279236,
+          0.8239766955375671
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.5035547316074371,
+        0.5692791044712067,
+        0.8239766955375671
+      ],
+      "meshParts": 19,
+      "sha256": "0328026cd366fe44ef1f277bd738a16df159119b0d984ccf706fd364f4fe941b",
+      "sourceGLB": "sources/models/photo_living/waste_bin_blue/lod1_source.glb"
+    },
+    {
+      "asset": "waste_bin_blue",
+      "level": 2,
+      "triangles": 3782,
+      "boundsBlenderXYZ": [
+        [
+          -0.25085899233818054,
+          -0.28368818759918213,
+          0.0
+        ],
+        [
+          0.25046905875205994,
+          0.2835908532142639,
+          0.8239767551422119
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.5013280510902405,
+        0.567279040813446,
+        0.8239767551422119
+      ],
+      "meshParts": 17,
+      "sha256": "e95d8e578ee3a0567daa0b39cecb8b369bf9a7a41ca453b39dbf705eba8da1d3",
+      "sourceGLB": "sources/models/photo_living/waste_bin_blue/lod2_source.glb"
+    }
+  ],
+  "validation": {
+    "checks": 74,
+    "failures": 0,
+    "rows": [
+      {
+        "pass": true,
+        "label": "lod0_source.glb waste_bin_grey recorded hash",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD0 has no baked photograph or other image textures",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD0 is static and unrigged",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD0 exported triangle count equals receipt",
+        "detail": {
+          "exported": 18613,
+          "recorded": 18613
+        }
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD0 reimported actual vertex bounds match receipt",
+        "detail": 0.0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD0 vertices are finite",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD0 no triangles below cross-product norm 1e-12 square metres",
+        "detail": 0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD0 grounded origin",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD0 asset has no preview camera, light or rig",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD0 main shell outward winding",
+        "detail": 0.12494326732831644
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD0 main shell closed after exported-vertex welding",
+        "detail": 0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD0 geometric front pedal recess depth",
+        "detail": 0.0783529281616211
+      },
+      {
+        "pass": true,
+        "label": "lod1_source.glb waste_bin_grey recorded hash",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD1 has no baked photograph or other image textures",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD1 is static and unrigged",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD1 exported triangle count equals receipt",
+        "detail": {
+          "exported": 8515,
+          "recorded": 8515
+        }
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD1 reimported actual vertex bounds match receipt",
+        "detail": 0.0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD1 vertices are finite",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD1 no triangles below cross-product norm 1e-12 square metres",
+        "detail": 0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD1 grounded origin",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD1 asset has no preview camera, light or rig",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD1 main shell outward winding",
+        "detail": 0.1249214758736539
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD1 main shell closed after exported-vertex welding",
+        "detail": 0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD1 geometric front pedal recess depth",
+        "detail": 0.0783529281616211
+      },
+      {
+        "pass": true,
+        "label": "lod2_source.glb waste_bin_grey recorded hash",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD2 has no baked photograph or other image textures",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD2 is static and unrigged",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD2 exported triangle count equals receipt",
+        "detail": {
+          "exported": 3831,
+          "recorded": 3831
+        }
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD2 reimported actual vertex bounds match receipt",
+        "detail": 0.0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD2 vertices are finite",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD2 no triangles below cross-product norm 1e-12 square metres",
+        "detail": 0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD2 grounded origin",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD2 asset has no preview camera, light or rig",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD2 main shell outward winding",
+        "detail": 0.12481047192000194
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD2 main shell closed after exported-vertex welding",
+        "detail": 0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey LOD2 geometric front pedal recess depth",
+        "detail": 0.0783529281616211
+      },
+      {
+        "pass": true,
+        "label": "lod0_source.glb waste_bin_blue recorded hash",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD0 has no baked photograph or other image textures",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD0 is static and unrigged",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD0 exported triangle count equals receipt",
+        "detail": {
+          "exported": 18550,
+          "recorded": 18550
+        }
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD0 reimported actual vertex bounds match receipt",
+        "detail": 0.0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD0 vertices are finite",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD0 no triangles below cross-product norm 1e-12 square metres",
+        "detail": 0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD0 grounded origin",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD0 asset has no preview camera, light or rig",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD0 main shell outward winding",
+        "detail": 0.12494326732831644
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD0 main shell closed after exported-vertex welding",
+        "detail": 0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD0 geometric front pedal recess depth",
+        "detail": 0.0783529281616211
+      },
+      {
+        "pass": true,
+        "label": "lod1_source.glb waste_bin_blue recorded hash",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD1 has no baked photograph or other image textures",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD1 is static and unrigged",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD1 exported triangle count equals receipt",
+        "detail": {
+          "exported": 8460,
+          "recorded": 8460
+        }
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD1 reimported actual vertex bounds match receipt",
+        "detail": 0.0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD1 vertices are finite",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD1 no triangles below cross-product norm 1e-12 square metres",
+        "detail": 0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD1 grounded origin",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD1 asset has no preview camera, light or rig",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD1 main shell outward winding",
+        "detail": 0.1249214758736539
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD1 main shell closed after exported-vertex welding",
+        "detail": 0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD1 geometric front pedal recess depth",
+        "detail": 0.0783529281616211
+      },
+      {
+        "pass": true,
+        "label": "lod2_source.glb waste_bin_blue recorded hash",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD2 has no baked photograph or other image textures",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD2 is static and unrigged",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD2 exported triangle count equals receipt",
+        "detail": {
+          "exported": 3782,
+          "recorded": 3782
+        }
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD2 reimported actual vertex bounds match receipt",
+        "detail": 0.0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD2 vertices are finite",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD2 no triangles below cross-product norm 1e-12 square metres",
+        "detail": 0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD2 grounded origin",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD2 asset has no preview camera, light or rig",
+        "detail": null
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD2 main shell outward winding",
+        "detail": 0.12481047192000194
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD2 main shell closed after exported-vertex welding",
+        "detail": 0
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue LOD2 geometric front pedal recess depth",
+        "detail": 0.0783529281616211
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_blue three strictly decreasing LOD counts",
+        "detail": [
+          18550,
+          8460,
+          3782
+        ]
+      },
+      {
+        "pass": true,
+        "label": "waste_bin_grey three strictly decreasing LOD counts",
+        "detail": [
+          18613,
+          8515,
+          3831
+        ]
+      }
+    ]
+  },
+  "previews": [
+    {
+      "file": "review/photo_living/waste_bin_grey.png",
+      "width": 1100,
+      "height": 1100,
+      "bytes": 1580856,
+      "sha256": "0dc7e7bb7901d572eebf1f09584d1da8823faad3d88cedc3841dae52a9714550",
+      "inspected": true
+    },
+    {
+      "file": "review/photo_living/waste_bin_blue.png",
+      "width": 1100,
+      "height": 1100,
+      "bytes": 1756159,
+      "sha256": "aec2d36a6ebfa2e00f49cd9f61866f855b3318981e2633b462d645f22cc6625d",
+      "inspected": true
+    },
+    {
+      "file": "review/photo_living/waste_bins_pair.png",
+      "width": 1400,
+      "height": 1100,
+      "bytes": 2284555,
+      "sha256": "1c204a02e72f9083c2fd8c66135d45efb337d8f898a04797d9185b4a51e84351",
+      "inspected": true
+    }
+  ],
+  "builder": {
+    "file": "scripts/build_photo_waste_bins.py",
+    "sha256": "6fd1e7a3eb86a05720993c5a0d189073f0b752f9d008bcdf5445c97eeda61430",
+    "helperFile": "scripts/build_photo_desktop.py",
+    "helperSha256": "b6c65fa72b67894a28f316d12d05de067e69c0c685f9494be46366c63a746a8a",
+    "helperModifiedByBuilder": false
+  }
+}

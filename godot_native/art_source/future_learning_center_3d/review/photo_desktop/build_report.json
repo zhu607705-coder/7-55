@@ -1,0 +1,224 @@
+{
+  "blender": "4.3.2",
+  "units": "m",
+  "scope": "Photo desk candidate source receipts: monitor preserved, keyboard right island and GPX-inspired mouse revised 2026-11-03. Public GPX outer dimensions; other dimensions provisional.",
+  "records": [
+    {
+      "asset": "photo_monitor_stand",
+      "level": 0,
+      "triangles": 1140,
+      "boundsBlenderXYZ": [
+        [
+          -0.3070000112056732,
+          -0.0650000050663948,
+          0.0
+        ],
+        [
+          0.3070000112056732,
+          0.11500000208616257,
+          0.48250001668930054
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.6140000224113464,
+        0.18000000715255737,
+        0.48250001668930054
+      ],
+      "meshParts": 7,
+      "sha256": "e5cb7aba43bf7e92e82903c77f69f16b32d8fa83814ce94a4f6cda4c4fd001d8"
+    },
+    {
+      "asset": "photo_monitor_stand",
+      "level": 1,
+      "triangles": 660,
+      "boundsBlenderXYZ": [
+        [
+          -0.3070000112056732,
+          -0.0650000050663948,
+          0.0
+        ],
+        [
+          0.3070000112056732,
+          0.11500000208616257,
+          0.48250001668930054
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.6140000224113464,
+        0.18000000715255737,
+        0.48250001668930054
+      ],
+      "meshParts": 7,
+      "sha256": "8d447f74b43df09af1b095a7fe201b577b8007c572b26fb0c3d2b1f32205bbaf"
+    },
+    {
+      "asset": "photo_monitor_stand",
+      "level": 2,
+      "triangles": 220,
+      "boundsBlenderXYZ": [
+        [
+          -0.3070000112056732,
+          -0.0650000050663948,
+          0.0
+        ],
+        [
+          0.3070000112056732,
+          0.11500000208616257,
+          0.48250001668930054
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.6140000224113464,
+        0.18000000715255737,
+        0.48250001668930054
+      ],
+      "meshParts": 5,
+      "sha256": "7f52d3b9af40d82ccd6be24cc62c5bf48e643e453690eb077b52e323789006b1"
+    },
+    {
+      "asset": "photo_keyboard",
+      "level": 0,
+      "triangles": 32712,
+      "boundsBlenderXYZ": [
+        [
+          -0.1850000023841858,
+          -0.07249999791383743,
+          0.0
+        ],
+        [
+          0.1850000023841858,
+          0.07249999791383743,
+          0.03931034356355667
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3700000047683716,
+        0.14499999582767487,
+        0.03931034356355667
+      ],
+      "meshParts": 174,
+      "sha256": "0e391966a0c82d8da3f528008574236cee13943ab4d867ffadee0d7074181f67"
+    },
+    {
+      "asset": "photo_keyboard",
+      "level": 1,
+      "triangles": 9828,
+      "boundsBlenderXYZ": [
+        [
+          -0.1850000023841858,
+          -0.07249999791383743,
+          0.0
+        ],
+        [
+          0.1850000023841858,
+          0.07249999791383743,
+          0.039110347628593445
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3700000047683716,
+        0.14499999582767487,
+        0.039110347628593445
+      ],
+      "meshParts": 91,
+      "sha256": "779e4b87f4b57e2030c3a15293142df8b47d1f3ea7242a67d15625c7556eda64"
+    },
+    {
+      "asset": "photo_keyboard",
+      "level": 2,
+      "triangles": 3828,
+      "boundsBlenderXYZ": [
+        [
+          -0.1850000023841858,
+          -0.07249999791383743,
+          0.0
+        ],
+        [
+          0.1850000023841858,
+          0.07249999791383743,
+          0.039110347628593445
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3700000047683716,
+        0.14499999582767487,
+        0.039110347628593445
+      ],
+      "meshParts": 87,
+      "sha256": "cf2f1336f180c3189c74410b64f591eba88255e71c34eabc7d9b5baa4e62d0af"
+    },
+    {
+      "asset": "photo_mouse",
+      "level": 0,
+      "triangles": 20726,
+      "boundsBlenderXYZ": [
+        [
+          -0.03174500912427902,
+          -0.06257828325033188,
+          0.0
+        ],
+        [
+          0.03174500912427902,
+          0.0625,
+          0.04044103994965553
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.06349001824855804,
+        0.12507828325033188,
+        0.04044103994965553
+      ],
+      "meshParts": 46,
+      "sha256": "a5f3d6220275dfae06810770b18e14d8757f71cf672284b1a5a1278145a486fc"
+    },
+    {
+      "asset": "photo_mouse",
+      "level": 1,
+      "triangles": 7898,
+      "boundsBlenderXYZ": [
+        [
+          -0.03173559531569481,
+          -0.06256917864084244,
+          0.0
+        ],
+        [
+          0.03173559531569481,
+          0.0625,
+          0.04041251167654991
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.06347119063138962,
+        0.12506917864084244,
+        0.04041251167654991
+      ],
+      "meshParts": 30,
+      "sha256": "6de74b5babad202d49f31b343da0025aac2a736d561236c87b4c6d576631eeb3"
+    },
+    {
+      "asset": "photo_mouse",
+      "level": 2,
+      "triangles": 2946,
+      "boundsBlenderXYZ": [
+        [
+          -0.03173859044909477,
+          -0.06257590651512146,
+          0.0
+        ],
+        [
+          0.03173859044909477,
+          0.0625,
+          0.04041299968957901
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.06347718089818954,
+        0.12507590651512146,
+        0.04041299968957901
+      ],
+      "meshParts": 14,
+      "sha256": "314a5956b459b274c5981a3f5d8047e4fa19e4f269da019ff55d7a38068b817f"
+    }
+  ],
+  "revision": "2026-11-03 GPX photo-profile shell and separated keyboard right island"
+}

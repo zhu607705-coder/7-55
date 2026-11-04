@@ -1,0 +1,468 @@
+{
+  "tested": "21 exported GLBs: independent parsed world vertex bounds, triangle counts, normals, hashes, embedded buffers, LOD reductions",
+  "pass": true,
+  "records": [
+    {
+      "asset": "photo_pantry_counter",
+      "level": 0,
+      "triangles": 4924,
+      "glTFBoundsXYZ": [
+        [
+          -1.2000000476837158,
+          0.0,
+          -0.3309999965131283
+        ],
+        [
+          1.2000000476837158,
+          0.950000012293458,
+          0.33000001311302185
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 2.421438694000244e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_pantry_counter",
+      "level": 1,
+      "triangles": 2484,
+      "glTFBoundsXYZ": [
+        [
+          -1.2000000476837158,
+          0.0,
+          -0.3309999965131283
+        ],
+        [
+          1.2000000476837158,
+          0.950000012293458,
+          0.33000001311302185
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 2.421438694000244e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_pantry_counter",
+      "level": 2,
+      "triangles": 1012,
+      "glTFBoundsXYZ": [
+        [
+          -1.2000000476837158,
+          0.0,
+          -0.3309999965131283
+        ],
+        [
+          1.2000000476837158,
+          0.950000012293458,
+          0.33000001311302185
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 2.421438694000244e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_pantry_sink_faucets",
+      "level": 0,
+      "triangles": 6596,
+      "glTFBoundsXYZ": [
+        [
+          -0.3825000049546361,
+          -0.1940000019967556,
+          -0.32699999026954174
+        ],
+        [
+          0.3429999928921461,
+          0.3937903046607971,
+          0.2625000001862645
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 1.210719347000122e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_pantry_sink_faucets",
+      "level": 1,
+      "triangles": 3644,
+      "glTFBoundsXYZ": [
+        [
+          -0.3825000049546361,
+          -0.1940000019967556,
+          -0.32699999026954174
+        ],
+        [
+          0.3429999928921461,
+          0.3944999873638153,
+          0.2625000001862645
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 1.210719347000122e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_pantry_sink_faucets",
+      "level": 2,
+      "triangles": 1384,
+      "glTFBoundsXYZ": [
+        [
+          -0.3825000049546361,
+          -0.1940000019967556,
+          -0.32699999026954174
+        ],
+        [
+          0.3429999928921461,
+          0.3925573527812958,
+          0.2625000001862645
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 1.210719347000122e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_pantry_grey_roundfront_appliance",
+      "level": 0,
+      "triangles": 3864,
+      "glTFBoundsXYZ": [
+        [
+          -0.19499999284744263,
+          0.0,
+          -0.2175000011920929
+        ],
+        [
+          0.20574999872222563,
+          0.35999999940395355,
+          0.2499999962747097
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 1.4901161193847656e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_pantry_grey_roundfront_appliance",
+      "level": 1,
+      "triangles": 2104,
+      "glTFBoundsXYZ": [
+        [
+          -0.19499999284744263,
+          0.0,
+          -0.2175000011920929
+        ],
+        [
+          0.20574999872222563,
+          0.35999999940395355,
+          0.2499999962747097
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 1.4901161193847656e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_pantry_grey_roundfront_appliance",
+      "level": 2,
+      "triangles": 584,
+      "glTFBoundsXYZ": [
+        [
+          -0.19499999284744263,
+          0.0,
+          -0.2175000011920929
+        ],
+        [
+          0.19499999284744263,
+          0.35999999940395355,
+          0.2499999962747097
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 1.4901161193847656e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_pantry_white_cleartop_appliance",
+      "level": 0,
+      "triangles": 8956,
+      "glTFBoundsXYZ": [
+        [
+          -0.17000000178813934,
+          0.0,
+          -0.1850000023841858
+        ],
+        [
+          0.1799999992363155,
+          0.44749999418854713,
+          0.2024999987334013
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 6.984919309616089e-09,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_pantry_white_cleartop_appliance",
+      "level": 1,
+      "triangles": 4504,
+      "glTFBoundsXYZ": [
+        [
+          -0.17000000178813934,
+          0.0,
+          -0.1850000023841858
+        ],
+        [
+          0.1799999992363155,
+          0.44749999418854713,
+          0.2024999987334013
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 6.984919309616089e-09,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_pantry_white_cleartop_appliance",
+      "level": 2,
+      "triangles": 1788,
+      "glTFBoundsXYZ": [
+        [
+          -0.17000000178813934,
+          0.0,
+          -0.1850000023841858
+        ],
+        [
+          0.1799999992363155,
+          0.44749999418854713,
+          0.2024999987334013
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 6.984919309616089e-09,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_pantry_backsplash_shelves",
+      "level": 0,
+      "triangles": 18604,
+      "glTFBoundsXYZ": [
+        [
+          -1.230000033043325,
+          -0.0004999935626983643,
+          -0.3760000132024288
+        ],
+        [
+          1.2000000476837158,
+          1.4199999710544944,
+          0.11999999731779099
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 1.3969838619232178e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_pantry_backsplash_shelves",
+      "level": 1,
+      "triangles": 10496,
+      "glTFBoundsXYZ": [
+        [
+          -1.230000033043325,
+          -0.0004999935626983643,
+          -0.3760000132024288
+        ],
+        [
+          1.2000000476837158,
+          1.4199999710544944,
+          0.11999999731779099
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 1.3969838619232178e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_pantry_backsplash_shelves",
+      "level": 2,
+      "triangles": 4292,
+      "glTFBoundsXYZ": [
+        [
+          -1.230000033043325,
+          -0.0004999935626983643,
+          -0.3760000132024288
+        ],
+        [
+          1.2000000476837158,
+          1.4199999710544944,
+          0.11999999731779099
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 1.3969838619232178e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_side_by_side_fridge",
+      "level": 0,
+      "triangles": 3008,
+      "glTFBoundsXYZ": [
+        [
+          -0.45100000500679016,
+          0.015000000596046448,
+          -0.34899999760091305
+        ],
+        [
+          0.45100000500679016,
+          1.8290000269189477,
+          0.35100000351667404
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 3.073364496231079e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_side_by_side_fridge",
+      "level": 1,
+      "triangles": 1728,
+      "glTFBoundsXYZ": [
+        [
+          -0.45100000500679016,
+          0.015000000596046448,
+          -0.34899999760091305
+        ],
+        [
+          0.45100000500679016,
+          1.8290000269189477,
+          0.35100000351667404
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 3.073364496231079e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_side_by_side_fridge",
+      "level": 2,
+      "triangles": 660,
+      "glTFBoundsXYZ": [
+        [
+          -0.45100000500679016,
+          0.015000000596046448,
+          -0.34899999760091305
+        ],
+        [
+          0.45100000500679016,
+          1.819000005722046,
+          0.35100000351667404
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 9.313225746154785e-09,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_fridge_wood_surround",
+      "level": 0,
+      "triangles": 7020,
+      "glTFBoundsXYZ": [
+        [
+          -0.5039999922737479,
+          0.0,
+          -0.38500000163912773
+        ],
+        [
+          1.0539999902248383,
+          2.700000047683716,
+          0.35400000773370266
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 2.9802322387695312e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_fridge_wood_surround",
+      "level": 1,
+      "triangles": 3332,
+      "glTFBoundsXYZ": [
+        [
+          -0.5039999922737479,
+          0.0,
+          -0.38500000163912773
+        ],
+        [
+          1.0539999902248383,
+          2.700000047683716,
+          0.35400000773370266
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 2.9802322387695312e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    },
+    {
+      "asset": "photo_fridge_wood_surround",
+      "level": 2,
+      "triangles": 1232,
+      "glTFBoundsXYZ": [
+        [
+          -0.5039999922737479,
+          0.0,
+          -0.38500000163912773
+        ],
+        [
+          1.0539999902248383,
+          2.700000047683716,
+          0.35400000773370266
+        ]
+      ],
+      "worldBoundsMaxErrorMeters": 2.9802322387695312e-08,
+      "sha256Matches": true,
+      "finiteUnitNormals": true,
+      "selfContainedBuffer": true,
+      "privateOrExternalTextures": false
+    }
+  ]
+}

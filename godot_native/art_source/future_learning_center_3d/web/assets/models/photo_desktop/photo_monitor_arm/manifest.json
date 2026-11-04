@@ -1,0 +1,354 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 106360,
+    "sha256": "845761ae4f70d8d5cbc0c58b0a47bc69ad380a3ece41014ff0dc247ae23b007b",
+    "triangles": 3008,
+    "primitives": 16,
+    "bounds": {
+      "min": [
+        -0.03999999910593033,
+        -0.06899999780580401,
+        -0.08700000029057264
+      ],
+      "max": [
+        0.2474999986588955,
+        0.4675000123679638,
+        0.009999999776482582
+      ]
+    },
+    "size": [
+      0.2874999977648258,
+      0.5365000101737678,
+      0.09700000006705523
+    ],
+    "materials": [
+      {
+        "name": "Dark structural arm",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.023000000044703484,
+          0.03099999949336052,
+          0.032999999821186066,
+          1
+        ],
+        "metallicFactor": 0.550000011920929,
+        "roughnessFactor": 0.3199999928474426
+      },
+      {
+        "name": "Silver grey support shell",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.36000001430511475,
+          0.4000000059604645,
+          0.4099999964237213,
+          1
+        ],
+        "metallicFactor": 0.6499999761581421,
+        "roughnessFactor": 0.3400000035762787
+      },
+      {
+        "name": "Matte joint covers",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.03700000047683716,
+          0.0430000014603138,
+          0.04500000178813934,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.550000011920929
+      }
+    ],
+    "textures": []
+  },
+  "calibration": {
+    "targetHeight": 0.5364999994635582,
+    "yawDegrees": 0,
+    "uniformScale": 0.9999999800368884,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "845761ae4f70d8d5cbc0c58b0a47bc69ad380a3ece41014ff0dc247ae23b007b",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 2.2845828806516977e-7,
+      "bytes": 15588,
+      "uncompressedBytes": 80636,
+      "sha256": "001f9f1679d4333bb599d01627fda17601cfd040e56e85feaf53148b8823f50c",
+      "triangles": 3008,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.14374999681124007,
+          -7.985244410146919e-11,
+          -0.048499997648803694
+        ],
+        "max": [
+          0.14375022819629396,
+          0.5365000287203668,
+          0.048500107797444264
+        ]
+      },
+      "size": [
+        0.287500225007534,
+        0.5365000288002193,
+        0.09700010544624796
+      ],
+      "materials": [
+        {
+          "name": "Dark structural arm",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.023000000044703484,
+            0.03099999949336052,
+            0.032999999821186066,
+            1
+          ],
+          "metallicFactor": 0.550000011920929,
+          "roughnessFactor": 0.3199999928474426
+        },
+        {
+          "name": "Silver grey support shell",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.36000001430511475,
+            0.4000000059604645,
+            0.4099999964237213,
+            1
+          ],
+          "metallicFactor": 0.6499999761581421,
+          "roughnessFactor": 0.3400000035762787
+        },
+        {
+          "name": "Matte joint covers",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.03700000047683716,
+            0.0430000014603138,
+            0.04500000178813934,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.550000011920929
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "f10b55ad35bbb6d24626498c918cd17590ede182f5e6c7b0b38b8682c2dc5c3e",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 2.2845828806516977e-7,
+      "bytes": 10580,
+      "uncompressedBytes": 45828,
+      "sha256": "07003bfa47571f92f999d71e1f0778af14378448cbf53441137dc60c0cd641f8",
+      "triangles": 1632,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.14374999681124007,
+          -7.985244410146919e-11,
+          -0.048499997648803694
+        ],
+        "max": [
+          0.14375022819629396,
+          0.5365000287203668,
+          0.048500107797444264
+        ]
+      },
+      "size": [
+        0.287500225007534,
+        0.5365000288002193,
+        0.09700010544624796
+      ],
+      "materials": [
+        {
+          "name": "Dark structural arm",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.023000000044703484,
+            0.03099999949336052,
+            0.032999999821186066,
+            1
+          ],
+          "metallicFactor": 0.550000011920929,
+          "roughnessFactor": 0.3199999928474426
+        },
+        {
+          "name": "Silver grey support shell",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.36000001430511475,
+            0.4000000059604645,
+            0.4099999964237213,
+            1
+          ],
+          "metallicFactor": 0.6499999761581421,
+          "roughnessFactor": 0.3400000035762787
+        },
+        {
+          "name": "Matte joint covers",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.03700000047683716,
+            0.0430000014603138,
+            0.04500000178813934,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.550000011920929
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "380ecbf4d736c6fa1cd29906f44a5183b1475123735fe4bac8c1dc2bfe979a11",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 2.2845828806516977e-7,
+      "bytes": 6468,
+      "uncompressedBytes": 22500,
+      "sha256": "ef19835554062934b51319712c4f725e9f1f7ca9833fe756687bdbe036965667",
+      "triangles": 616,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.14374999681124007,
+          -7.985244410146919e-11,
+          -0.048499997648803694
+        ],
+        "max": [
+          0.14375022819629396,
+          0.5365000287203668,
+          0.048500107797444264
+        ]
+      },
+      "size": [
+        0.287500225007534,
+        0.5365000288002193,
+        0.09700010544624796
+      ],
+      "materials": [
+        {
+          "name": "Dark structural arm",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.023000000044703484,
+            0.03099999949336052,
+            0.032999999821186066,
+            1
+          ],
+          "metallicFactor": 0.550000011920929,
+          "roughnessFactor": 0.3199999928474426
+        },
+        {
+          "name": "Silver grey support shell",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.36000001430511475,
+            0.4000000059604645,
+            0.4099999964237213,
+            1
+          ],
+          "metallicFactor": 0.6499999761581421,
+          "roughnessFactor": 0.3400000035762787
+        },
+        {
+          "name": "Matte joint covers",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.03700000047683716,
+            0.0430000014603138,
+            0.04500000178813934,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.550000011920929
+        }
+      ],
+      "textures": []
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

@@ -1,0 +1,418 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 414428,
+    "sha256": "37a8535854d05afc9ba4519bc64e62580f903f2e8f618bc06c183ab09a272f77",
+    "triangles": 4700,
+    "primitives": 25,
+    "bounds": {
+      "min": [
+        -0.07349999895086512,
+        0,
+        -0.06750000268220901
+      ],
+      "max": [
+        0.07399999897461385,
+        0.041499999118968844,
+        0.06750000268220901
+      ]
+    },
+    "size": [
+      0.14749999792547897,
+      0.041499999118968844,
+      0.13500000536441803
+    ],
+    "materials": [
+      {
+        "name": "Blue anodised driver grips",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.012000000104308128,
+          0.3100000023841858,
+          0.4399999976158142,
+          1
+        ],
+        "metallicFactor": 0.6499999761581421,
+        "roughnessFactor": 0.3100000023841858
+      },
+      {
+        "name": "Dark moulded polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.008999999612569809,
+          0.012000000104308128,
+          0.012000000104308128,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.6899999976158142
+      },
+      {
+        "name": "Unlit black display",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.008999999612569809,
+          0.019999999552965164,
+          0.024000000208616257,
+          1
+        ],
+        "metallicFactor": 0.10000000149011612,
+        "roughnessFactor": 0.20000000298023224
+      },
+      {
+        "name": "Grey caster hubs",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.20000000298023224,
+          0.23000000417232513,
+          0.23000000417232513,
+          1
+        ],
+        "metallicFactor": 0.6499999761581421,
+        "roughnessFactor": 0.3199999928474426
+      }
+    ],
+    "textures": []
+  },
+  "calibration": {
+    "targetHeight": 0.041499999118968844,
+    "yawDegrees": 0,
+    "uniformScale": 1,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "37a8535854d05afc9ba4519bc64e62580f903f2e8f618bc06c183ab09a272f77",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 1.4901161193847656e-8,
+      "bytes": 23476,
+      "uncompressedBytes": 263372,
+      "sha256": "67f64660b3c9cb778a8619a85e59eae5a1e18a4966ccb47c3296e2948dce132d",
+      "triangles": 4700,
+      "primitives": 4,
+      "bounds": {
+        "min": [
+          -0.07374999995226972,
+          0,
+          -0.06750000268220901
+        ],
+        "max": [
+          0.07375000094179995,
+          0.041500008665025234,
+          0.06750001758337021
+        ]
+      },
+      "size": [
+        0.14750000089406967,
+        0.041500008665025234,
+        0.13500002026557922
+      ],
+      "materials": [
+        {
+          "name": "Blue anodised driver grips",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.3100000023841858,
+            0.4399999976158142,
+            1
+          ],
+          "metallicFactor": 0.6499999761581421,
+          "roughnessFactor": 0.3100000023841858
+        },
+        {
+          "name": "Dark moulded polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.008999999612569809,
+            0.012000000104308128,
+            0.012000000104308128,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.6899999976158142
+        },
+        {
+          "name": "Unlit black display",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.008999999612569809,
+            0.019999999552965164,
+            0.024000000208616257,
+            1
+          ],
+          "metallicFactor": 0.10000000149011612,
+          "roughnessFactor": 0.20000000298023224
+        },
+        {
+          "name": "Grey caster hubs",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.20000000298023224,
+            0.23000000417232513,
+            0.23000000417232513,
+            1
+          ],
+          "metallicFactor": 0.6499999761581421,
+          "roughnessFactor": 0.3199999928474426
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "129b8b2442a01da39d080ceb6f1bbf734e58ed75dbd6b300a5eb66c4b2cdfad7",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 1.4901161193847656e-8,
+      "bytes": 15484,
+      "uncompressedBytes": 150564,
+      "sha256": "cf626bde894d86d2bfec00b81cd28dfbaf363aec25a76aa75a3743d4041bf664",
+      "triangles": 2700,
+      "primitives": 4,
+      "bounds": {
+        "min": [
+          -0.07374999995226972,
+          0,
+          -0.06750000268220901
+        ],
+        "max": [
+          0.07375000094179995,
+          0.041500008665025234,
+          0.06750001758337021
+        ]
+      },
+      "size": [
+        0.14750000089406967,
+        0.041500008665025234,
+        0.13500002026557922
+      ],
+      "materials": [
+        {
+          "name": "Blue anodised driver grips",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.3100000023841858,
+            0.4399999976158142,
+            1
+          ],
+          "metallicFactor": 0.6499999761581421,
+          "roughnessFactor": 0.3100000023841858
+        },
+        {
+          "name": "Dark moulded polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.008999999612569809,
+            0.012000000104308128,
+            0.012000000104308128,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.6899999976158142
+        },
+        {
+          "name": "Unlit black display",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.008999999612569809,
+            0.019999999552965164,
+            0.024000000208616257,
+            1
+          ],
+          "metallicFactor": 0.10000000149011612,
+          "roughnessFactor": 0.20000000298023224
+        },
+        {
+          "name": "Grey caster hubs",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.20000000298023224,
+            0.23000000417232513,
+            0.23000000417232513,
+            1
+          ],
+          "metallicFactor": 0.6499999761581421,
+          "roughnessFactor": 0.3199999928474426
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "6425ef441e85e178200e3d794c0761b10fdd16d4f71e1c33ae950f01bf402790",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 2.9802322387695312e-8,
+      "bytes": 8048,
+      "uncompressedBytes": 40696,
+      "sha256": "e7130901219c24f7602c14304719154e21bfc611cf8f51f2c8501df8c5f1f90f",
+      "triangles": 616,
+      "primitives": 4,
+      "bounds": {
+        "min": [
+          -0.07374999995226972,
+          0,
+          -0.06750000268220901
+        ],
+        "max": [
+          0.07174999688868411,
+          0.041500008665025234,
+          0.06749997287988663
+        ]
+      },
+      "size": [
+        0.14549999684095383,
+        0.041500008665025234,
+        0.13499997556209564
+      ],
+      "materials": [
+        {
+          "name": "Blue anodised driver grips",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.3100000023841858,
+            0.4399999976158142,
+            1
+          ],
+          "metallicFactor": 0.6499999761581421,
+          "roughnessFactor": 0.3100000023841858
+        },
+        {
+          "name": "Dark moulded polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.008999999612569809,
+            0.012000000104308128,
+            0.012000000104308128,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.6899999976158142
+        },
+        {
+          "name": "Unlit black display",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.008999999612569809,
+            0.019999999552965164,
+            0.024000000208616257,
+            1
+          ],
+          "metallicFactor": 0.10000000149011612,
+          "roughnessFactor": 0.20000000298023224
+        },
+        {
+          "name": "Grey caster hubs",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.20000000298023224,
+            0.23000000417232513,
+            0.23000000417232513,
+            1
+          ],
+          "metallicFactor": 0.6499999761581421,
+          "roughnessFactor": 0.3199999928474426
+        }
+      ],
+      "textures": []
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

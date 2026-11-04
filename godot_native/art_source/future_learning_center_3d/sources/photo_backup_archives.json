@@ -1,0 +1,29 @@
+{
+  "format": "gzip; decompress before opening in Blender",
+  "archives": [
+    {
+      "path": "review/photo_bench_contents/photo_bench_contents_composition.blend.gz",
+      "restoredPath": "review/photo_bench_contents/photo_bench_contents_composition.blend",
+      "originalBytes": 59345772,
+      "archiveBytes": 9070886,
+      "restoredSha256": "c35b06b342b99408d5fcaa71d90226beda7024f2c6a4c60b55673da765693074",
+      "archiveSha256": "0f0a0e3db0f544112ae9486938449863dce8cb016c066282092a6b86f0790421"
+    },
+    {
+      "path": "review/photo_lab_contents/lab_contents_composition.blend.gz",
+      "restoredPath": "review/photo_lab_contents/lab_contents_composition.blend",
+      "originalBytes": 10625584,
+      "archiveBytes": 1093626,
+      "restoredSha256": "37bd0fc353eb64b85af9882111281fe4eb8e9cff691a0036783234af9019f1c0",
+      "archiveSha256": "e38babf142477b5f195b8f15b11ccf9e0d4326f6e9348f697897791764a74c64"
+    },
+    {
+      "path": "review/photo_instruments/seven_instrument_comparison.blend.gz",
+      "restoredPath": "review/photo_instruments/seven_instrument_comparison.blend",
+      "originalBytes": 24261264,
+      "archiveBytes": 1431164,
+      "restoredSha256": "f7322f4b5cd018f804506dc6d89379a98426955baa1c3e01480eb9356e26e9ac",
+      "archiveSha256": "a8a5da7250776a42001a4da4c5a7b4b9e92b051523b6069d9b4620bda2a11d68"
+    }
+  ]
+}

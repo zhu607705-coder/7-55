@@ -1,0 +1,482 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 408244,
+    "sha256": "36c9837218cb1ec602974c0df440f59da5aae6cab01da97d3af026836fee2aeb",
+    "triangles": 18550,
+    "primitives": 19,
+    "bounds": {
+      "min": [
+        -0.2517377734184265,
+        0,
+        -0.28463447093963623
+      ],
+      "max": [
+        0.25178930163383484,
+        0.8239767551422119,
+        0.2846953570842743
+      ]
+    },
+    "size": [
+      0.5035270750522614,
+      0.8239767551422119,
+      0.5693298280239105
+    ],
+    "materials": [
+      {
+        "name": "blue molded bin plastic",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.012000000104308128,
+          0.07999999821186066,
+          0.2199999988079071,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.28999999165534973
+      },
+      {
+        "name": "blue lid molded plastic",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.012959999963641167,
+          0.08640000224113464,
+          0.23759999871253967,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.25
+      },
+      {
+        "name": "Black folded liner plastic",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.00800000037997961,
+          0.008999999612569809,
+          0.009999999776482582,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.3799999952316284
+      },
+      {
+        "name": "blue foot pedal plastic",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.0081599997356534,
+          0.0544000007212162,
+          0.14959999918937683,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.3799999952316284
+      },
+      {
+        "name": "Warm white category print",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.7799999713897705,
+          0.8100000023841858,
+          0.7300000190734863,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.6499999761581421
+      }
+    ],
+    "textures": []
+  },
+  "calibration": {
+    "targetHeight": 0.8239767551422119,
+    "yawDegrees": 0,
+    "uniformScale": 1,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "36c9837218cb1ec602974c0df440f59da5aae6cab01da97d3af026836fee2aeb",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 2.384185791015625e-7,
+      "bytes": 81636,
+      "uncompressedBytes": 381428,
+      "sha256": "9bfb3ab8526aacb83b21f0c42b94613b4013ff6e63ae91b25d59a48c2cc626ba",
+      "triangles": 18550,
+      "primitives": 5,
+      "bounds": {
+        "min": [
+          -0.2517635375261307,
+          0,
+          -0.28466491401195526
+        ],
+        "max": [
+          0.25176332890987396,
+          0.8239765167236328,
+          0.28466494381427765
+        ]
+      },
+      "size": [
+        0.5035268664360046,
+        0.8239765167236328,
+        0.5693298578262329
+      ],
+      "materials": [
+        {
+          "name": "blue molded bin plastic",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.07999999821186066,
+            0.2199999988079071,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.28999999165534973
+        },
+        {
+          "name": "blue lid molded plastic",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012959999963641167,
+            0.08640000224113464,
+            0.23759999871253967,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.25
+        },
+        {
+          "name": "Black folded liner plastic",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.008999999612569809,
+            0.009999999776482582,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3799999952316284
+        },
+        {
+          "name": "blue foot pedal plastic",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.0081599997356534,
+            0.0544000007212162,
+            0.14959999918937683,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3799999952316284
+        },
+        {
+          "name": "Warm white category print",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.7799999713897705,
+            0.8100000023841858,
+            0.7300000190734863,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.6499999761581421
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "0328026cd366fe44ef1f277bd738a16df159119b0d984ccf706fd364f4fe941b",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 1.7881393432617188e-7,
+      "bytes": 42008,
+      "uncompressedBytes": 173628,
+      "sha256": "71d1cf94feccb6e76c1505b1c2fcc7bbd3fefa774e208f807b26cd99ee5aa33e",
+      "triangles": 7994,
+      "primitives": 5,
+      "bounds": {
+        "min": [
+          -0.2519560307264328,
+          0,
+          -0.2846006006002426
+        ],
+        "max": [
+          0.25159867107868195,
+          0.8239765167236328,
+          0.28467847406864166
+        ]
+      },
+      "size": [
+        0.5035547018051147,
+        0.8239765167236328,
+        0.5692790746688843
+      ],
+      "materials": [
+        {
+          "name": "blue molded bin plastic",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.07999999821186066,
+            0.2199999988079071,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.28999999165534973
+        },
+        {
+          "name": "blue lid molded plastic",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012959999963641167,
+            0.08640000224113464,
+            0.23759999871253967,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.25
+        },
+        {
+          "name": "Black folded liner plastic",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.008999999612569809,
+            0.009999999776482582,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3799999952316284
+        },
+        {
+          "name": "blue foot pedal plastic",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.0081599997356534,
+            0.0544000007212162,
+            0.14959999918937683,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3799999952316284
+        },
+        {
+          "name": "Warm white category print",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.7799999713897705,
+            0.8100000023841858,
+            0.7300000190734863,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.6499999761581421
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "e95d8e578ee3a0567daa0b39cecb8b369bf9a7a41ca453b39dbf705eba8da1d3",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 2.384185791015625e-7,
+      "bytes": 17508,
+      "uncompressedBytes": 52616,
+      "sha256": "33ba1dee4a222df22cd5b6d44e40580a0bca9b2c66331a72eeaedc4f9eddb753",
+      "triangles": 2020,
+      "primitives": 5,
+      "bounds": {
+        "min": [
+          -0.2508847564458847,
+          0,
+          -0.28362129628658295
+        ],
+        "max": [
+          0.25044311583042145,
+          0.8239765167236328,
+          0.2836577445268631
+        ]
+      },
+      "size": [
+        0.5013278722763062,
+        0.8239765167236328,
+        0.567279040813446
+      ],
+      "materials": [
+        {
+          "name": "blue molded bin plastic",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.07999999821186066,
+            0.2199999988079071,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.28999999165534973
+        },
+        {
+          "name": "blue lid molded plastic",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012959999963641167,
+            0.08640000224113464,
+            0.23759999871253967,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.25
+        },
+        {
+          "name": "Black folded liner plastic",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.008999999612569809,
+            0.009999999776482582,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3799999952316284
+        },
+        {
+          "name": "blue foot pedal plastic",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.0081599997356534,
+            0.0544000007212162,
+            0.14959999918937683,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3799999952316284
+        },
+        {
+          "name": "Warm white category print",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.7799999713897705,
+            0.8100000023841858,
+            0.7300000190734863,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.6499999761581421
+        }
+      ],
+      "textures": []
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

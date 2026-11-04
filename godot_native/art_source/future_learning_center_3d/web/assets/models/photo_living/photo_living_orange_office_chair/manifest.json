@@ -1,0 +1,354 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 284620,
+    "sha256": "432369b6227e192266c482d6e0715811b04d9ce13da868c1dc72689ad2ef0873",
+    "triangles": 10476,
+    "primitives": 26,
+    "bounds": {
+      "min": [
+        -0.3217757762065993,
+        0.012999997324926474,
+        -0.34824076294898987
+      ],
+      "max": [
+        0.3408315539594827,
+        0.986535370349884,
+        0.31020968107678176
+      ]
+    },
+    "size": [
+      0.662607330166082,
+      0.9735353730249575,
+      0.6584504440257717
+    ],
+    "materials": [
+      {
+        "name": "Burnt orange woven seat",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.44999998807907104,
+          0.07999999821186066,
+          0.014000000432133675,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.8799999952316284
+      },
+      {
+        "name": "Black matte rubber and polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.017000000923871994,
+          0.019999999552965164,
+          0.01899999938905239,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.7300000190734863
+      },
+      {
+        "name": "Black powder coated tubular frame",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.00800000037997961,
+          0.010999999940395355,
+          0.009999999776482582,
+          1
+        ],
+        "metallicFactor": 0.05000000074505806,
+        "roughnessFactor": 0.5299999713897705
+      }
+    ],
+    "textures": []
+  },
+  "calibration": {
+    "targetHeight": 0.9735353710129857,
+    "yawDegrees": 0,
+    "uniformScale": 0.9999999979333347,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "432369b6227e192266c482d6e0715811b04d9ce13da868c1dc72689ad2ef0873",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 4.165281287105138e-7,
+      "bytes": 46264,
+      "uncompressedBytes": 229760,
+      "sha256": "afe6bfa76a34c64308d3faf724d36bb3cf49ad2e109b7a63c860b0611871b5d7",
+      "triangles": 10476,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.3313036530836642,
+          -7.551292282442779e-10,
+          -0.3292252220521846
+        ],
+        "max": [
+          0.33130324188627597,
+          0.9735353730518242,
+          0.32922493439808703
+        ]
+      },
+      "size": [
+        0.6626068949699402,
+        0.9735353738069534,
+        0.6584501564502716
+      ],
+      "materials": [
+        {
+          "name": "Burnt orange woven seat",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.44999998807907104,
+            0.07999999821186066,
+            0.014000000432133675,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8799999952316284
+        },
+        {
+          "name": "Black matte rubber and polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.017000000923871994,
+            0.019999999552965164,
+            0.01899999938905239,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7300000190734863
+        },
+        {
+          "name": "Black powder coated tubular frame",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.010999999940395355,
+            0.009999999776482582,
+            1
+          ],
+          "metallicFactor": 0.05000000074505806,
+          "roughnessFactor": 0.5299999713897705
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "36443b0b11d72f1ff3ced78da6368d799332c41e7ca4c45249ed79c9f1c2339d",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 4.1793689814495494e-7,
+      "bytes": 23152,
+      "uncompressedBytes": 102128,
+      "sha256": "2f3f1677dc02de29a3d6a2fab9bf1ef3d2881fab54d7cdbe3a877bd5997382b7",
+      "triangles": 4420,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.3313036530836642,
+          -7.551292282442779e-10,
+          -0.32928005832537793
+        ],
+        "max": [
+          0.3313040763513028,
+          0.9734369061786553,
+          0.3292249940027318
+        ]
+      },
+      "size": [
+        0.662607729434967,
+        0.9734369069337845,
+        0.6585050523281097
+      ],
+      "materials": [
+        {
+          "name": "Burnt orange woven seat",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.44999998807907104,
+            0.07999999821186066,
+            0.014000000432133675,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8799999952316284
+        },
+        {
+          "name": "Black matte rubber and polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.017000000923871994,
+            0.019999999552965164,
+            0.01899999938905239,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7300000190734863
+        },
+        {
+          "name": "Black powder coated tubular frame",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.010999999940395355,
+            0.009999999776482582,
+            1
+          ],
+          "metallicFactor": 0.05000000074505806,
+          "roughnessFactor": 0.5299999713897705
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "6585e1c9b67e6d5dcfb8889a646bc303c4fe17723693b82c58041998b151e933",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 1.49652711556314e-7,
+      "bytes": 12780,
+      "uncompressedBytes": 48576,
+      "sha256": "185aa1f6e0ec815047b84d92913de055b87886360d90b9dd10063107e5ec4479",
+      "triangles": 1864,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.3313036530836642,
+          -7.551292282442779e-10,
+          -0.3283380069147029
+        ],
+        "max": [
+          0.33130371872343417,
+          0.9732734106380364,
+          0.32922538143292285
+        ]
+      },
+      "size": [
+        0.6626073718070984,
+        0.9732734113931656,
+        0.6575633883476257
+      ],
+      "materials": [
+        {
+          "name": "Burnt orange woven seat",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.44999998807907104,
+            0.07999999821186066,
+            0.014000000432133675,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8799999952316284
+        },
+        {
+          "name": "Black matte rubber and polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.017000000923871994,
+            0.019999999552965164,
+            0.01899999938905239,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7300000190734863
+        },
+        {
+          "name": "Black powder coated tubular frame",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.010999999940395355,
+            0.009999999776482582,
+            1
+          ],
+          "metallicFactor": 0.05000000074505806,
+          "roughnessFactor": 0.5299999713897705
+        }
+      ],
+      "textures": []
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

@@ -1,0 +1,103 @@
+{
+  "scope": "Local Node geometry/state and syntax acceptance only. Browser blocked by Chromium socket permission; not passed.",
+  "results": [
+    {
+      "command": "node scripts/test_collision.mjs",
+      "exitCode": 0,
+      "stdout": "Collision/navigation: 88 checks passed\n",
+      "stderr": ""
+    },
+    {
+      "command": "node scripts/test_spatial_state.mjs",
+      "exitCode": 0,
+      "stdout": "{\n  \"passed\": 165,\n  \"scope\": \"Pure spatial identity, reversible selection, independent content config and immutable source geometry. Not browser/GPU acceptance.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": "node scripts/test_spatial_presentation.mjs",
+      "exitCode": 0,
+      "stdout": "{\n  \"passed\": 126,\n  \"scope\": \"Actual Three.js transforms, clipping planes, material ownership, repeated transitions; not browser/GPU rendering.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": "node scripts/test_spatial_viewer_integration.mjs",
+      "exitCode": 0,
+      "stdout": "{\n  \"passed\": 83,\n  \"sourceNodes\": 12862,\n  \"sourceMeshes\": 12656,\n  \"registeredObjects\": 79,\n  \"scope\": \"Actual building.glb hierarchy/geometry and viewer state integration in Node VM. Renderer, DOM, network and chair/static generated assets mocked; photo assets use actual uncompressed GLBs via forced Draco fallback; embedded textures stripped in memory. NOT browser/GPU/pointer acceptance.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": "PHOTO_TEST_BUILDING=building.web.glb node scripts/test_spatial_viewer_integration.mjs",
+      "exitCode": 0,
+      "stdout": "{\n  \"passed\": 84,\n  \"sourceNodes\": 4368,\n  \"sourceMeshes\": 4156,\n  \"registeredObjects\": 80,\n  \"scope\": \"Actual building.web.glb hierarchy/geometry and viewer state integration in Node VM. Renderer, DOM, network and chair/static generated assets mocked; photo assets use actual uncompressed GLBs via forced Draco fallback; embedded textures stripped in memory. NOT browser/GPU/pointer acceptance.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": "node scripts/test_spatial_overlay.mjs",
+      "exitCode": 0,
+      "stdout": "{\n  \"passed\": 14,\n  \"scope\": \"Configuration projection and approved local raster paths; not DOM/browser rendering\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": "node scripts/test_render_gate.mjs",
+      "exitCode": 0,
+      "stdout": "{\n  \"passed\": 42,\n  \"scope\": \"Render-request lifecycle only; not GPU timing or browser input acceptance\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": "node scripts/test_photo_scene_assets.mjs",
+      "exitCode": 0,
+      "stdout": "{\n  \"passed\": 18,\n  \"scope\": \"Config and loader failure semantics; no browser acceptance\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": "node scripts/test_props_review.mjs",
+      "exitCode": 0,
+      "stdout": "{\n  \"passed\": 95,\n  \"scope\": \"Node loader lifetime/fallback/retry, actual Three clone sharing, all six source paths and local ES dependency graph. Not browser/GPU acceptance.\",\n  \"modules\": 11\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": "node pipeline/test_table_dimensions.mjs",
+      "exitCode": 0,
+      "stdout": "Table dimensions: 52 checks passed\n",
+      "stderr": ""
+    },
+    {
+      "command": "node pipeline/test_small_props.mjs",
+      "exitCode": 0,
+      "stdout": "Small props: 90 checks passed\n",
+      "stderr": ""
+    },
+    {
+      "command": "node pipeline/test_lab_tools.mjs",
+      "exitCode": 0,
+      "stdout": "Lab tool samples: 105 checks passed\n",
+      "stderr": ""
+    },
+    {
+      "command": "node pipeline/test_default_precision.mjs",
+      "exitCode": 0,
+      "stdout": "Default encoding:6 files byte-identical\n",
+      "stderr": ""
+    },
+    {
+      "command": "node --check browser_tests/photo_browser.mjs",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "node --check browser_tests/spatial_browser.mjs",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "browserBlocker": "CHROME_PATH=/usr/bin/chromium node browser_tests/spatial_browser.mjs: socket() failed: Operation not permitted",
+  "legacyBlocker": "Old scripts use unavailable /private/tmp/flc-viewer-qa/node_modules/playwright-core/index.mjs"
+}

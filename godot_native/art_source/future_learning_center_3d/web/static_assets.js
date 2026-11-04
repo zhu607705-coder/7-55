@@ -29,9 +29,10 @@ export class StaticAssetInstance{
    inspectable:true,floor:parent.userData.floor,kind:'furniture'};
   this.root.position.copy(anchor.position);this.root.quaternion.copy(anchor.quaternion);
   this.root.scale.copy(anchor.scale).multiplyScalar(slot.uniformScale??1);
-  this.levels=asset.levels.map(parts=>{const g=new THREE.Group();for(const {geometry,material} of parts){
+  this.levels=asset.levels.map(parts=>{const g=new THREE.Group();for(const {geometry,material,transform,asset:photoAsset} of parts){
    const m=new THREE.Mesh(geometry,material.clone());m.castShadow=true;m.receiveShadow=true;
-   m.userData={kind:'furniture',floor:parent.userData.floor};g.add(m);
+   if(transform){m.matrix.copy(transform);m.matrixAutoUpdate=false;}
+   m.userData={kind:'furniture',floor:parent.userData.floor,photoAsset};g.add(m);
   }this.root.add(g);return g;});
   this.center=new THREE.Vector3();parent.add(this.root);
  }

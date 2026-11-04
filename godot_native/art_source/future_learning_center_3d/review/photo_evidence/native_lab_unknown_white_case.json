@@ -1,0 +1,155 @@
+{
+  "blender": "4.3.2",
+  "objects": [
+    {
+      "name": "Unknown rounded white equipment body",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.1599999964237213,
+          -0.14499999582767487,
+          0.015000015497207642
+        ],
+        [
+          0.1599999964237213,
+          0.14499999582767487,
+          0.5249999761581421
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm white enclosure polymer"
+      ],
+      "properties": {
+        "part": "Unknown rounded white equipment body",
+        "assetId": "lab_unknown_white_case",
+        "scaleStatus": "Photograph estimate, not measured",
+        "reference": "Photo 3, original visually inspected; no photo pixels included"
+      }
+    },
+    {
+      "name": "Dark bottom plinth",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.15000000596046448,
+          -0.13500000536441803,
+          0.0
+        ],
+        [
+          0.15000000596046448,
+          0.13500000536441803,
+          0.035999998450279236
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Charcoal powder coated steel"
+      ],
+      "properties": {
+        "part": "Dark bottom plinth",
+        "assetId": "lab_unknown_white_case",
+        "scaleStatus": "Photograph estimate, not measured",
+        "reference": "Photo 3, original visually inspected; no photo pixels included"
+      }
+    },
+    {
+      "name": "Plain rear label silhouette",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.04500000178813934,
+          -0.14749999344348907,
+          0.07500000298023224
+        ],
+        [
+          0.04500000178813934,
+          -0.14650000631809235,
+          0.11499999463558197
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Unmarked warm grey storage box"
+      ],
+      "properties": {
+        "part": "Plain rear label silhouette",
+        "assetId": "lab_unknown_white_case",
+        "scaleStatus": "Photograph estimate, not measured",
+        "reference": "Photo 3, original visually inspected; no photo pixels included"
+      }
+    },
+    {
+      "name": "Small muted label silhouette",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.057500001043081284,
+          -0.14749999344348907,
+          0.07349999994039536
+        ],
+        [
+          0.08250000327825546,
+          -0.14650000631809235,
+          0.08649999648332596
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Muted wire insulation red"
+      ],
+      "properties": {
+        "part": "Small muted label silhouette",
+        "assetId": "lab_unknown_white_case",
+        "scaleStatus": "Photograph estimate, not measured",
+        "reference": "Photo 3, original visually inspected; no photo pixels included"
+      }
+    },
+    {
+      "name": "Loose white equipment cable",
+      "vertices": 408,
+      "triangles": 812,
+      "bounds": [
+        [
+          0.0976252406835556,
+          -0.43128830194473267,
+          -0.00595841882750392
+        ],
+        [
+          0.3278003931045532,
+          -0.14760500192642212,
+          0.3006404936313629
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Warm white enclosure polymer"
+      ],
+      "properties": {
+        "part": "Loose white equipment cable",
+        "assetId": "lab_unknown_white_case",
+        "scaleStatus": "Photograph estimate, not measured",
+        "reference": "Photo 3, original visually inspected; no photo pixels included"
+      }
+    }
+  ],
+  "bounds": [
+    [
+      -0.1599999964237213,
+      -0.43128830194473267,
+      -0.00595841882750392
+    ],
+    [
+      0.3278003931045532,
+      0.14499999582767487,
+      0.5249999761581421
+    ]
+  ],
+  "triangles": 1564,
+  "units": "METRIC",
+  "scaleLength": 1.0
+}

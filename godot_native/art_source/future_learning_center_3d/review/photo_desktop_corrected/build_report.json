@@ -1,0 +1,38 @@
+{
+  "revision": "Rounded GPX-family nose/tail, rounded wheel slot, curved side buttons",
+  "units": "metres",
+  "frontBlender": "-Y",
+  "frontGltf": "+Z",
+  "records": [
+    {
+      "level": 0,
+      "sizeBlenderXYZ": [
+        0.06350000202655792,
+        0.125,
+        0.03999999910593033
+      ],
+      "triangles": 31446,
+      "sha256": "20dcf6f9823a7f42acff0aca2319051083d5728eef4b49ffb64a204d26ec219d"
+    },
+    {
+      "level": 1,
+      "sizeBlenderXYZ": [
+        0.06350000202655792,
+        0.125,
+        0.03999999910593033
+      ],
+      "triangles": 11898,
+      "sha256": "603c905818881f32d1ef8405cb9b752f96b0ffdb212387c54381dadd49465deb"
+    },
+    {
+      "level": 2,
+      "sizeBlenderXYZ": [
+        0.06350000202655792,
+        0.125,
+        0.03999999910593033
+      ],
+      "triangles": 4354,
+      "sha256": "0867a609185c9e9de36b4912fbaa1722b239bd597df546af30f17056b719b98f"
+    }
+  ]
+}

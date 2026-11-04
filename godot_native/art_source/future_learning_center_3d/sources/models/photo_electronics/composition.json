@@ -1,0 +1,714 @@
+{
+  "reference": "Photo 6 viewed original 2048x1151",
+  "units": "metres",
+  "coordinateSystem": "Blender Z-up",
+  "note": "Estimated spacing; grey_board changes material only. No source geometry stretched. Repeated parts remain instances in this manifest.",
+  "instances": [
+    {
+      "instanceId": "photo_electronics_drawer_bench_00",
+      "assetId": "photo_electronics_drawer_bench",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_drawer_bench/photo_electronics_drawer_bench.blend",
+      "sourceSha256": "67a9175e6ed46efc2d48eb661f41cc064c44901a35d5b51f13230fb0932beecc",
+      "position": [
+        -0.835,
+        0,
+        0
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_electronics_back_shelf_frame_01",
+      "assetId": "photo_electronics_back_shelf_frame",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_back_shelf_frame/photo_electronics_back_shelf_frame.blend",
+      "sourceSha256": "1c5f924e310682da4d6b7e715197b2f6c6c8293bb4fbf653f3419c2a38dc3524",
+      "position": [
+        -0.835,
+        0,
+        0.802
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_workshop_square_hole_board_02",
+      "assetId": "photo_workshop_square_hole_board",
+      "sourcePath": "sources/models/photo_workshop/photo_workshop_square_hole_board/photo_workshop_square_hole_board.blend",
+      "sourceSha256": "b53aee9b39defeac8e92ed6507677028cee2da8b178f72c71c5ab708a49f1f83",
+      "position": [
+        -1.2349999999999999,
+        0.335,
+        0.802
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {
+        "Black powder coated sheet steel": "Graphite grey enamel"
+      },
+      "notes": "grey_board"
+    },
+    {
+      "instanceId": "photo_workshop_square_hole_board_03",
+      "assetId": "photo_workshop_square_hole_board",
+      "sourcePath": "sources/models/photo_workshop/photo_workshop_square_hole_board/photo_workshop_square_hole_board.blend",
+      "sourceSha256": "b53aee9b39defeac8e92ed6507677028cee2da8b178f72c71c5ab708a49f1f83",
+      "position": [
+        -1.2349999999999999,
+        0.335,
+        1.437
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {
+        "Black powder coated sheet steel": "Graphite grey enamel"
+      },
+      "notes": "grey_board"
+    },
+    {
+      "instanceId": "photo_workshop_square_hole_board_04",
+      "assetId": "photo_workshop_square_hole_board",
+      "sourcePath": "sources/models/photo_workshop/photo_workshop_square_hole_board/photo_workshop_square_hole_board.blend",
+      "sourceSha256": "b53aee9b39defeac8e92ed6507677028cee2da8b178f72c71c5ab708a49f1f83",
+      "position": [
+        -0.43499999999999994,
+        0.335,
+        0.802
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {
+        "Black powder coated sheet steel": "Graphite grey enamel"
+      },
+      "notes": "grey_board"
+    },
+    {
+      "instanceId": "photo_workshop_square_hole_board_05",
+      "assetId": "photo_workshop_square_hole_board",
+      "sourcePath": "sources/models/photo_workshop/photo_workshop_square_hole_board/photo_workshop_square_hole_board.blend",
+      "sourceSha256": "b53aee9b39defeac8e92ed6507677028cee2da8b178f72c71c5ab708a49f1f83",
+      "position": [
+        -0.43499999999999994,
+        0.335,
+        1.437
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {
+        "Black powder coated sheet steel": "Graphite grey enamel"
+      },
+      "notes": "grey_board"
+    },
+    {
+      "instanceId": "photo_electronics_green_cutting_mat_06",
+      "assetId": "photo_electronics_green_cutting_mat",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_green_cutting_mat/photo_electronics_green_cutting_mat.blend",
+      "sourceSha256": "cb0541757e73682cc2f51707d2a1c3712739175d862c49a41e2e0aaa62566a1c",
+      "position": [
+        -0.835,
+        -0.13,
+        0.802
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_electronics_drawer_bench_07",
+      "assetId": "photo_electronics_drawer_bench",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_drawer_bench/photo_electronics_drawer_bench.blend",
+      "sourceSha256": "67a9175e6ed46efc2d48eb661f41cc064c44901a35d5b51f13230fb0932beecc",
+      "position": [
+        0.835,
+        0,
+        0
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_electronics_back_shelf_frame_08",
+      "assetId": "photo_electronics_back_shelf_frame",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_back_shelf_frame/photo_electronics_back_shelf_frame.blend",
+      "sourceSha256": "1c5f924e310682da4d6b7e715197b2f6c6c8293bb4fbf653f3419c2a38dc3524",
+      "position": [
+        0.835,
+        0,
+        0.802
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_workshop_square_hole_board_09",
+      "assetId": "photo_workshop_square_hole_board",
+      "sourcePath": "sources/models/photo_workshop/photo_workshop_square_hole_board/photo_workshop_square_hole_board.blend",
+      "sourceSha256": "b53aee9b39defeac8e92ed6507677028cee2da8b178f72c71c5ab708a49f1f83",
+      "position": [
+        0.43499999999999994,
+        0.335,
+        0.802
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {
+        "Black powder coated sheet steel": "Graphite grey enamel"
+      },
+      "notes": "grey_board"
+    },
+    {
+      "instanceId": "photo_workshop_square_hole_board_10",
+      "assetId": "photo_workshop_square_hole_board",
+      "sourcePath": "sources/models/photo_workshop/photo_workshop_square_hole_board/photo_workshop_square_hole_board.blend",
+      "sourceSha256": "b53aee9b39defeac8e92ed6507677028cee2da8b178f72c71c5ab708a49f1f83",
+      "position": [
+        0.43499999999999994,
+        0.335,
+        1.437
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {
+        "Black powder coated sheet steel": "Graphite grey enamel"
+      },
+      "notes": "grey_board"
+    },
+    {
+      "instanceId": "photo_workshop_square_hole_board_11",
+      "assetId": "photo_workshop_square_hole_board",
+      "sourcePath": "sources/models/photo_workshop/photo_workshop_square_hole_board/photo_workshop_square_hole_board.blend",
+      "sourceSha256": "b53aee9b39defeac8e92ed6507677028cee2da8b178f72c71c5ab708a49f1f83",
+      "position": [
+        1.2349999999999999,
+        0.335,
+        0.802
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {
+        "Black powder coated sheet steel": "Graphite grey enamel"
+      },
+      "notes": "grey_board"
+    },
+    {
+      "instanceId": "photo_workshop_square_hole_board_12",
+      "assetId": "photo_workshop_square_hole_board",
+      "sourcePath": "sources/models/photo_workshop/photo_workshop_square_hole_board/photo_workshop_square_hole_board.blend",
+      "sourceSha256": "b53aee9b39defeac8e92ed6507677028cee2da8b178f72c71c5ab708a49f1f83",
+      "position": [
+        1.2349999999999999,
+        0.335,
+        1.437
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {
+        "Black powder coated sheet steel": "Graphite grey enamel"
+      },
+      "notes": "grey_board"
+    },
+    {
+      "instanceId": "photo_electronics_green_cutting_mat_13",
+      "assetId": "photo_electronics_green_cutting_mat",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_green_cutting_mat/photo_electronics_green_cutting_mat.blend",
+      "sourceSha256": "cb0541757e73682cc2f51707d2a1c3712739175d862c49a41e2e0aaa62566a1c",
+      "position": [
+        0.835,
+        -0.13,
+        0.802
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_electronics_wide_instrument_shell_14",
+      "assetId": "photo_electronics_wide_instrument_shell",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_wide_instrument_shell/photo_electronics_wide_instrument_shell.blend",
+      "sourceSha256": "4c9aa21f74152fca75bd7811df206e6f830a05f4a38d67458c47c4ad83182240",
+      "position": [
+        -0.25,
+        0.17,
+        0.81
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_electronics_wide_instrument_shell_15",
+      "assetId": "photo_electronics_wide_instrument_shell",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_wide_instrument_shell/photo_electronics_wide_instrument_shell.blend",
+      "sourceSha256": "4c9aa21f74152fca75bd7811df206e6f830a05f4a38d67458c47c4ad83182240",
+      "position": [
+        -0.25,
+        0.17,
+        0.971
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_electronics_wide_instrument_shell_16",
+      "assetId": "photo_electronics_wide_instrument_shell",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_wide_instrument_shell/photo_electronics_wide_instrument_shell.blend",
+      "sourceSha256": "4c9aa21f74152fca75bd7811df206e6f830a05f4a38d67458c47c4ad83182240",
+      "position": [
+        -0.25,
+        0.17,
+        1.132
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_electronics_wide_instrument_shell_17",
+      "assetId": "photo_electronics_wide_instrument_shell",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_wide_instrument_shell/photo_electronics_wide_instrument_shell.blend",
+      "sourceSha256": "4c9aa21f74152fca75bd7811df206e6f830a05f4a38d67458c47c4ad83182240",
+      "position": [
+        0.72,
+        0.17,
+        0.81
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_electronics_wide_instrument_shell_18",
+      "assetId": "photo_electronics_wide_instrument_shell",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_wide_instrument_shell/photo_electronics_wide_instrument_shell.blend",
+      "sourceSha256": "4c9aa21f74152fca75bd7811df206e6f830a05f4a38d67458c47c4ad83182240",
+      "position": [
+        0.72,
+        0.17,
+        0.971
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_electronics_wide_instrument_shell_19",
+      "assetId": "photo_electronics_wide_instrument_shell",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_wide_instrument_shell/photo_electronics_wide_instrument_shell.blend",
+      "sourceSha256": "4c9aa21f74152fca75bd7811df206e6f830a05f4a38d67458c47c4ad83182240",
+      "position": [
+        0.72,
+        0.17,
+        1.132
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_electronics_tall_instrument_shell_20",
+      "assetId": "photo_electronics_tall_instrument_shell",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_tall_instrument_shell/photo_electronics_tall_instrument_shell.blend",
+      "sourceSha256": "bb756231822661d0758f245d2a986202060bc3b916a9145dc436ac05738ff226",
+      "position": [
+        0.22,
+        0.18,
+        0.81
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_monitor_stand_21",
+      "assetId": "photo_monitor_stand",
+      "sourcePath": "sources/models/photo_desktop/photo_monitor_stand/photo_monitor_stand.blend",
+      "sourceSha256": "0091bb9f40437aae075f072d0bc8bcc1fea888ae162ea1b624d3f2b2b38ad531",
+      "position": [
+        -1.23,
+        0.18,
+        0.802
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_electronics_open_bin_22",
+      "assetId": "photo_electronics_open_bin",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_open_bin/photo_electronics_open_bin.blend",
+      "sourceSha256": "5ac80494c2d4c5602f78e956b6d9e20b119a72206e2493da6652bd586ab9691f",
+      "position": [
+        -1.15,
+        0.22,
+        1.386
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_electronics_open_bin_23",
+      "assetId": "photo_electronics_open_bin",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_open_bin/photo_electronics_open_bin.blend",
+      "sourceSha256": "5ac80494c2d4c5602f78e956b6d9e20b119a72206e2493da6652bd586ab9691f",
+      "position": [
+        -0.94,
+        0.22,
+        1.386
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_electronics_open_bin_24",
+      "assetId": "photo_electronics_open_bin",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_open_bin/photo_electronics_open_bin.blend",
+      "sourceSha256": "5ac80494c2d4c5602f78e956b6d9e20b119a72206e2493da6652bd586ab9691f",
+      "position": [
+        0.99,
+        0.22,
+        1.386
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_electronics_open_bin_25",
+      "assetId": "photo_electronics_open_bin",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_open_bin/photo_electronics_open_bin.blend",
+      "sourceSha256": "5ac80494c2d4c5602f78e956b6d9e20b119a72206e2493da6652bd586ab9691f",
+      "position": [
+        1.2,
+        0.22,
+        1.386
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_electronics_open_bin_26",
+      "assetId": "photo_electronics_open_bin",
+      "sourcePath": "sources/models/photo_electronics/photo_electronics_open_bin/photo_electronics_open_bin.blend",
+      "sourceSha256": "5ac80494c2d4c5602f78e956b6d9e20b119a72206e2493da6652bd586ab9691f",
+      "position": [
+        1.41,
+        0.22,
+        1.386
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_workshop_blue_driver_rack_27",
+      "assetId": "photo_workshop_blue_driver_rack",
+      "sourcePath": "sources/models/photo_workshop/photo_workshop_blue_driver_rack/photo_workshop_blue_driver_rack.blend",
+      "sourceSha256": "c2b58abd2b69ecafd61b4e4bc04b445fb9e36dd3223c5203d37205a97b7dd165",
+      "position": [
+        -0.6,
+        0.2,
+        1.386
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_workshop_red_flat_case_28",
+      "assetId": "photo_workshop_red_flat_case",
+      "sourcePath": "sources/models/photo_workshop/photo_workshop_red_flat_case/photo_workshop_red_flat_case.blend",
+      "sourceSha256": "fcdd8470da497571e7978a1342accbf26a766e7d8b7710e55a671aad1ecec378",
+      "position": [
+        0.56,
+        0.2,
+        1.386
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    },
+    {
+      "instanceId": "photo_workshop_red_flat_case_29",
+      "assetId": "photo_workshop_red_flat_case",
+      "sourcePath": "sources/models/photo_workshop/photo_workshop_red_flat_case/photo_workshop_red_flat_case.blend",
+      "sourceSha256": "fcdd8470da497571e7978a1342accbf26a766e7d8b7710e55a671aad1ecec378",
+      "position": [
+        0.56,
+        0.2,
+        1.446
+      ],
+      "rotationEuler": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "materialOverrides": {},
+      "notes": "original"
+    }
+  ]
+}

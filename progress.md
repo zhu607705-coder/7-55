@@ -5890,3 +5890,9 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - 保留 4.7.1、晨札字体、当前开场和未来学习中心；适配 v36 并复用 v35 迁移，压缩控制中心入口以保留截图按钮的可点击空间。
 - 本地验证覆盖平台、真实数据库、网页发布、原生连续主线与存档、实际 Godot Web 桌面/手机保存及刷新继续；详细证据范围见 `platform/docs/integration-20261103.md`。
 - 通过功能分支/PR 提交代码；不自动合并、部署或上传密钥、玩家档、数据库及游戏导出包。实体手机、正式域名及实际生产账号跨设备仍需上线验收。
+
+## 2026-11-04 — placed-object acceptance corrections
+
+- The permanent lounge seats and laboratory carts passed their new actual Chromium desktop/mobile-viewport placement checks. The older spatial test selected the first object, now a cart, while asserting desk LOD. Select a photo-bound desk by stable catalog ID and verify that same desk's near LOD; retain ordinary input and the 30-second action limit. Eight positive/negative target tests pass and are registered in photo-scene CI.
+- Native preparation rejected GitHub repository/workflow provenance as external fixture overrides. Classify only those two exact metadata keys, retaining both in environment identity and all provenance checks. Runner 21/21, bundle/shard/transport contracts 148/148, and Python transport 18/18 pass. True external input/output overrides and unknown GitHub-prefixed override keys remain rejected.
+- The prior head's full Godot Web acceptance passed, but its spatial target check and native preparation failed. Preserve those failures; exact-head full CI is required again. The sparse validation-tools copy could not run the five retained-Web quick validators because source/dependencies were missing. This correction changes no game models or scene assets and does not authorize merge or deployment.

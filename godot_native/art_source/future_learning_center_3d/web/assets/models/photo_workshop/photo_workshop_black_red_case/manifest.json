@@ -1,0 +1,354 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 329868,
+    "sha256": "3eba8ede7a012afe5601d0eb3f8acb2d63936f9cd51390465b68674d6559dab9",
+    "triangles": 3884,
+    "primitives": 21,
+    "bounds": {
+      "min": [
+        -0.1655000001192093,
+        0,
+        -0.10700000170618296
+      ],
+      "max": [
+        0.1655000001192093,
+        0.07050000363960862,
+        0.13599999528378248
+      ]
+    },
+    "size": [
+      0.3310000002384186,
+      0.07050000363960862,
+      0.24299999698996544
+    ],
+    "materials": [
+      {
+        "name": "Dark moulded polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.008999999612569809,
+          0.012000000104308128,
+          0.012000000104308128,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.6899999976158142
+      },
+      {
+        "name": "Black powder coated sheet steel",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.013000000268220901,
+          0.017000000923871994,
+          0.017999999225139618,
+          1
+        ],
+        "metallicFactor": 0.25,
+        "roughnessFactor": 0.47999998927116394
+      },
+      {
+        "name": "Red moulded tool case and latches",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.5299999713897705,
+          0.024000000208616257,
+          0.03099999949336052,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.46000000834465027
+      }
+    ],
+    "textures": []
+  },
+  "calibration": {
+    "targetHeight": 0.07050000131130219,
+    "yawDegrees": 0,
+    "uniformScale": 0.9999999669743785,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "3eba8ede7a012afe5601d0eb3f8acb2d63936f9cd51390465b68674d6559dab9",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 1.296189664767855e-7,
+      "bytes": 19100,
+      "uncompressedBytes": 209824,
+      "sha256": "c8189b78c2f9573f01427887417faba331ceda7b352d93cabe5034459ecf0d1d",
+      "triangles": 3884,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.1655000001192093,
+          -6.274867882238855e-10,
+          -0.12149999708478874
+        ],
+        "max": [
+          0.1655000001192093,
+          0.07050008077755682,
+          0.12149986206943565
+        ]
+      },
+      "size": [
+        0.3310000002384186,
+        0.0705000814050436,
+        0.2429998591542244
+      ],
+      "materials": [
+        {
+          "name": "Dark moulded polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.008999999612569809,
+            0.012000000104308128,
+            0.012000000104308128,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.6899999976158142
+        },
+        {
+          "name": "Black powder coated sheet steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.013000000268220901,
+            0.017000000923871994,
+            0.017999999225139618,
+            1
+          ],
+          "metallicFactor": 0.25,
+          "roughnessFactor": 0.47999998927116394
+        },
+        {
+          "name": "Red moulded tool case and latches",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5299999713897705,
+            0.024000000208616257,
+            0.03099999949336052,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.46000000834465027
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "970b1d839a5b907f75b09599e8612b3b7fbe95a9f5f7a3e6c6880389b20014a7",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 1.296189664767855e-7,
+      "bytes": 10932,
+      "uncompressedBytes": 95960,
+      "sha256": "a763854a9481f1107fcb59a5f62a3df95addf69f4f13227cf3b177ce33e17f0f",
+      "triangles": 1772,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.1655000001192093,
+          -6.274867882238855e-10,
+          -0.12149999708478874
+        ],
+        "max": [
+          0.1655000001192093,
+          0.07050008077755682,
+          0.12149986206943565
+        ]
+      },
+      "size": [
+        0.3310000002384186,
+        0.0705000814050436,
+        0.2429998591542244
+      ],
+      "materials": [
+        {
+          "name": "Dark moulded polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.008999999612569809,
+            0.012000000104308128,
+            0.012000000104308128,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.6899999976158142
+        },
+        {
+          "name": "Black powder coated sheet steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.013000000268220901,
+            0.017000000923871994,
+            0.017999999225139618,
+            1
+          ],
+          "metallicFactor": 0.25,
+          "roughnessFactor": 0.47999998927116394
+        },
+        {
+          "name": "Red moulded tool case and latches",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5299999713897705,
+            0.024000000208616257,
+            0.03099999949336052,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.46000000834465027
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "769b5408950f99a92b36dfe6ac4249a649fc70360fd7a0ef5b7f75b08258f8f6",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 1.296189664767855e-7,
+      "bytes": 6520,
+      "uncompressedBytes": 34316,
+      "sha256": "d7f1e8e18b9c0099cf10d14493f9513b41dc2d7e649386ac39416482e53f3d2b",
+      "triangles": 556,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.1655000001192093,
+          -6.274867882238855e-10,
+          -0.12149999708478874
+        ],
+        "max": [
+          0.1655000001192093,
+          0.07050008077755682,
+          0.12149986206943565
+        ]
+      },
+      "size": [
+        0.3310000002384186,
+        0.0705000814050436,
+        0.2429998591542244
+      ],
+      "materials": [
+        {
+          "name": "Dark moulded polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.008999999612569809,
+            0.012000000104308128,
+            0.012000000104308128,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.6899999976158142
+        },
+        {
+          "name": "Black powder coated sheet steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.013000000268220901,
+            0.017000000923871994,
+            0.017999999225139618,
+            1
+          ],
+          "metallicFactor": 0.25,
+          "roughnessFactor": 0.47999998927116394
+        },
+        {
+          "name": "Red moulded tool case and latches",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.5299999713897705,
+            0.024000000208616257,
+            0.03099999949336052,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.46000000834465027
+        }
+      ],
+      "textures": []
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

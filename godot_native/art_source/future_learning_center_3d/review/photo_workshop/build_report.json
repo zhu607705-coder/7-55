@@ -1,0 +1,597 @@
+{
+  "blender": "4.3.2",
+  "units": "m",
+  "referenceLibraryIds": [
+    "src_ref_750145fd053312e5110b3b2e85b0f9f3",
+    "src_ref_e93491da63b7c6cd6a712c836ff473a8"
+  ],
+  "referencePixelsViewed": true,
+  "dimensions": "Photo-proportion estimates only. No claimed manufacturer measurements, brand, model or tool performance specifications.",
+  "scope": "Six separate workshop prop sources. Cabinet variants share one model. No old assets, main scene, UI, Godot, collision or runtime integration touched.",
+  "materials": "Metallic-roughness PBR factors; cabinet mat uses a packed, authored 128-square repeating normal tile. No photograph pixels, personal text, brands or labels.",
+  "render": "Actual CPU Cycles single assets and two-cart assembly.",
+  "simplifications": [
+    "Closed drawers and cases; no hidden slide mechanisms or inferred contents.",
+    "Eight representative blue drivers preserve the photographed cluster; full inventory and tip types are not asserted.",
+    "Square holes remain genuine continuous perforations at all three LODs.",
+    "Partially obscured goggles, electronics, calipers and suspended circular items are omitted."
+  ],
+  "records": [
+    {
+      "asset": "photo_workshop_green_tool_cart",
+      "level": 0,
+      "triangles": 11204,
+      "boundsBlenderXYZ": [
+        [
+          -0.5690000057220459,
+          -0.2775000035762787,
+          0.004000000189989805
+        ],
+        [
+          0.4440000057220459,
+          0.23000000417232513,
+          0.9079999923706055
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.0130000114440918,
+        0.5075000077486038,
+        0.9039999921806157
+      ],
+      "meshParts": 67,
+      "sha256": "25b022b0960d2fb7b0834076d23fb6593910c83a551764dc182727bf76d3914e",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_green_tool_cart",
+      "level": 1,
+      "triangles": 6068,
+      "boundsBlenderXYZ": [
+        [
+          -0.5690000057220459,
+          -0.2775000035762787,
+          0.004000000189989805
+        ],
+        [
+          0.4440000057220459,
+          0.23000000417232513,
+          0.9079999923706055
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.0130000114440918,
+        0.5075000077486038,
+        0.9039999921806157
+      ],
+      "meshParts": 63,
+      "sha256": "ea61bf29a7f8c7f17eebc077df034878b5825f152dee8c48536849171dcbf67b",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_green_tool_cart",
+      "level": 2,
+      "triangles": 2204,
+      "boundsBlenderXYZ": [
+        [
+          -0.5690000057220459,
+          -0.2775000035762787,
+          0.0065450589172542095
+        ],
+        [
+          0.443314790725708,
+          0.23000000417232513,
+          0.9079999923706055
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.012314796447754,
+        0.5075000077486038,
+        0.9014549334533513
+      ],
+      "meshParts": 53,
+      "sha256": "edcde13cda82a4117185268103bf54a2f4e00a16499c824f15d740ba19f542a2",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_square_hole_board",
+      "level": 0,
+      "triangles": 53540,
+      "boundsBlenderXYZ": [
+        [
+          -0.39399999380111694,
+          -0.0060000005178153515,
+          -0.002499999478459358
+        ],
+        [
+          0.39399999380111694,
+          0.02500000037252903,
+          0.6424999833106995
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.7879999876022339,
+        0.03100000089034438,
+        0.6449999827891588
+      ],
+      "meshParts": 11,
+      "sha256": "e3ea1cb891b538ebdcc0264a23398f203481040c9a26f79f4b0a5ea99ddf87c7",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_square_hole_board",
+      "level": 1,
+      "triangles": 24548,
+      "boundsBlenderXYZ": [
+        [
+          -0.39399999380111694,
+          -0.0060000005178153515,
+          -0.002499999478459358
+        ],
+        [
+          0.39399999380111694,
+          0.02500000037252903,
+          0.6424999833106995
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.7879999876022339,
+        0.03100000089034438,
+        0.6449999827891588
+      ],
+      "meshParts": 11,
+      "sha256": "ee66e265adf73d7f038b27fac03b83ae7674c35e12f242dc34101859504492d3",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_square_hole_board",
+      "level": 2,
+      "triangles": 9612,
+      "boundsBlenderXYZ": [
+        [
+          -0.39399999380111694,
+          -0.0060000005178153515,
+          -0.002499999478459358
+        ],
+        [
+          0.39399999380111694,
+          0.02500000037252903,
+          0.6424999833106995
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.7879999876022339,
+        0.03100000089034438,
+        0.6449999827891588
+      ],
+      "meshParts": 9,
+      "sha256": "af292f46b78dabf5cccd802dd511b9b77cdb7d714b47648bd58ca9de7f3e7dc3",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_blue_driver_rack",
+      "level": 0,
+      "triangles": 26932,
+      "boundsBlenderXYZ": [
+        [
+          -0.15700000524520874,
+          -0.05000000074505806,
+          0.0
+        ],
+        [
+          0.15700000524520874,
+          0.050999999046325684,
+          0.29600000381469727
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3140000104904175,
+        0.10099999979138374,
+        0.29600000381469727
+      ],
+      "meshParts": 179,
+      "sha256": "420b17009e9cd78c5cb7a1670b92baf28e3332c6e2b662fdc74597f69d66c190",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_blue_driver_rack",
+      "level": 1,
+      "triangles": 9412,
+      "boundsBlenderXYZ": [
+        [
+          -0.15700000524520874,
+          -0.05000000074505806,
+          0.0
+        ],
+        [
+          0.15700000524520874,
+          0.050999999046325684,
+          0.29600000381469727
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3140000104904175,
+        0.10099999979138374,
+        0.29600000381469727
+      ],
+      "meshParts": 83,
+      "sha256": "ca36923525365c2c1379ffb331785e4ceb2bdbd69326ae55a0c068ab145a885e",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_blue_driver_rack",
+      "level": 2,
+      "triangles": 2964,
+      "boundsBlenderXYZ": [
+        [
+          -0.15700000524520874,
+          -0.05000000074505806,
+          0.0
+        ],
+        [
+          0.15700000524520874,
+          0.050999999046325684,
+          0.29600000381469727
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3140000104904175,
+        0.10099999979138374,
+        0.29600000381469727
+      ],
+      "meshParts": 59,
+      "sha256": "5ed211deac56fc668f31fce2081c31061fd7dcc7684ccbb8942dbba5fc036d6f",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_red_flat_case",
+      "level": 0,
+      "triangles": 2756,
+      "boundsBlenderXYZ": [
+        [
+          -0.20999999344348907,
+          -0.10949999839067459,
+          0.0
+        ],
+        [
+          0.20999999344348907,
+          0.10499999672174454,
+          0.054999999701976776
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.41999998688697815,
+        0.21449999511241913,
+        0.054999999701976776
+      ],
+      "meshParts": 15,
+      "sha256": "ea523ba1f2a0f3d8949c4c21d3970fdce676513450cc7b4983bcb73dc738ed3f",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_red_flat_case",
+      "level": 1,
+      "triangles": 1340,
+      "boundsBlenderXYZ": [
+        [
+          -0.20999999344348907,
+          -0.10949999839067459,
+          0.0
+        ],
+        [
+          0.20999999344348907,
+          0.10499999672174454,
+          0.054999999701976776
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.41999998688697815,
+        0.21449999511241913,
+        0.054999999701976776
+      ],
+      "meshParts": 13,
+      "sha256": "065e9d39e081f0f4e1071a941c7fa3962767542fd1ceaff213b72af0e1268316",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_red_flat_case",
+      "level": 2,
+      "triangles": 468,
+      "boundsBlenderXYZ": [
+        [
+          -0.20999999344348907,
+          -0.10450000315904617,
+          0.0
+        ],
+        [
+          0.20999999344348907,
+          0.10499999672174454,
+          0.054999999701976776
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.41999998688697815,
+        0.2094999998807907,
+        0.054999999701976776
+      ],
+      "meshParts": 11,
+      "sha256": "c533ab7164a3fa73aa57e51ab233db15134c1addf35538101d12d13e69a0535d",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_black_red_case",
+      "level": 0,
+      "triangles": 3884,
+      "boundsBlenderXYZ": [
+        [
+          -0.1655000001192093,
+          -0.13599999248981476,
+          0.0
+        ],
+        [
+          0.1655000001192093,
+          0.10700000077486038,
+          0.07050000131130219
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3310000002384186,
+        0.24299999326467514,
+        0.07050000131130219
+      ],
+      "meshParts": 21,
+      "sha256": "3eba8ede7a012afe5601d0eb3f8acb2d63936f9cd51390465b68674d6559dab9",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_black_red_case",
+      "level": 1,
+      "triangles": 1772,
+      "boundsBlenderXYZ": [
+        [
+          -0.1655000001192093,
+          -0.13599999248981476,
+          0.0
+        ],
+        [
+          0.1655000001192093,
+          0.10700000077486038,
+          0.07050000131130219
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3310000002384186,
+        0.24299999326467514,
+        0.07050000131130219
+      ],
+      "meshParts": 17,
+      "sha256": "970b1d839a5b907f75b09599e8612b3b7fbe95a9f5f7a3e6c6880389b20014a7",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_black_red_case",
+      "level": 2,
+      "triangles": 556,
+      "boundsBlenderXYZ": [
+        [
+          -0.1655000001192093,
+          -0.13599999248981476,
+          0.0
+        ],
+        [
+          0.1655000001192093,
+          0.10700000077486038,
+          0.07050000131130219
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3310000002384186,
+        0.24299999326467514,
+        0.07050000131130219
+      ],
+      "meshParts": 13,
+      "sha256": "769b5408950f99a92b36dfe6ac4249a649fc70360fd7a0ef5b7f75b08258f8f6",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_small_vise",
+      "level": 0,
+      "triangles": 3264,
+      "boundsBlenderXYZ": [
+        [
+          -0.07999999821186066,
+          -0.16250000894069672,
+          0.0
+        ],
+        [
+          0.07999999821186066,
+          0.07799999415874481,
+          0.12849999964237213
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.1599999964237213,
+        0.24050000309944153,
+        0.12849999964237213
+      ],
+      "meshParts": 28,
+      "sha256": "19eb83e3f8619cc5dadf7bc69bbcedab4654b63ea701bb2d55ddc302dfbb2aa6",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_small_vise",
+      "level": 1,
+      "triangles": 1712,
+      "boundsBlenderXYZ": [
+        [
+          -0.07999999821186066,
+          -0.16250000894069672,
+          0.0
+        ],
+        [
+          0.07999999821186066,
+          0.07799999415874481,
+          0.12849999964237213
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.1599999964237213,
+        0.24050000309944153,
+        0.12849999964237213
+      ],
+      "meshParts": 24,
+      "sha256": "22c54744c3343901ad64bcd07b3a891f4a5f639eb951848729c83fbaf25f8a07",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    },
+    {
+      "asset": "photo_workshop_small_vise",
+      "level": 2,
+      "triangles": 568,
+      "boundsBlenderXYZ": [
+        [
+          -0.07999999821186066,
+          -0.16250000894069672,
+          0.0
+        ],
+        [
+          0.07999999821186066,
+          0.07799999415874481,
+          0.12849999964237213
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.1599999964237213,
+        0.24050000309944153,
+        0.12849999964237213
+      ],
+      "meshParts": 14,
+      "sha256": "5d09e0ceb06898410a8452a6e22c691ac0ac7434178f14ddf57621ab04631dd8",
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      }
+    }
+  ]
+}

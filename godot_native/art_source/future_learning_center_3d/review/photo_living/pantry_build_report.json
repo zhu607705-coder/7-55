@@ -1,0 +1,567 @@
+{
+  "blender": "4.3.2",
+  "units": "m",
+  "scope": "Photo-informed separate reusable pantry and fridge meshes. CPU renders only. No browser or Godot integration.",
+  "records": [
+    {
+      "asset": "photo_pantry_counter",
+      "level": 0,
+      "triangles": 4924,
+      "boundsBlenderXYZ": [
+        [
+          -1.2000000476837158,
+          -0.33000001311302185,
+          0.0
+        ],
+        [
+          1.2000000476837158,
+          0.3310000002384186,
+          0.949999988079071
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        2.4000000953674316,
+        0.6610000133514404,
+        0.949999988079071
+      ],
+      "meshParts": 73,
+      "sha256": "38990df73c2995010444fd084f62d02ee9d170ed0b3d7fa5a669303f7d3b6686"
+    },
+    {
+      "asset": "photo_pantry_counter",
+      "level": 1,
+      "triangles": 2484,
+      "boundsBlenderXYZ": [
+        [
+          -1.2000000476837158,
+          -0.33000001311302185,
+          0.0
+        ],
+        [
+          1.2000000476837158,
+          0.3310000002384186,
+          0.949999988079071
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        2.4000000953674316,
+        0.6610000133514404,
+        0.949999988079071
+      ],
+      "meshParts": 23,
+      "sha256": "0eb3e663d29c43197cd89026c2454dd61debb50d415589eeb708cfb104c171f4"
+    },
+    {
+      "asset": "photo_pantry_counter",
+      "level": 2,
+      "triangles": 1012,
+      "boundsBlenderXYZ": [
+        [
+          -1.2000000476837158,
+          -0.33000001311302185,
+          0.0
+        ],
+        [
+          1.2000000476837158,
+          0.3310000002384186,
+          0.949999988079071
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        2.4000000953674316,
+        0.6610000133514404,
+        0.949999988079071
+      ],
+      "meshParts": 23,
+      "sha256": "8b0802afcfb72058094b49d4827e7f0cccd93c7676e4e0fe7e5fa38dc17beef2"
+    },
+    {
+      "asset": "photo_pantry_sink_faucets",
+      "level": 0,
+      "triangles": 6596,
+      "boundsBlenderXYZ": [
+        [
+          -0.3824999928474426,
+          -0.26249998807907104,
+          -0.1940000057220459
+        ],
+        [
+          0.34299999475479126,
+          0.3269999921321869,
+          0.3937903046607971
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.7254999876022339,
+        0.5894999802112579,
+        0.587790310382843
+      ],
+      "meshParts": 44,
+      "sha256": "524d450d5e20f3c34ccf18709ca7ac3484da19fb4c0e37cd05fcb00466b8df75"
+    },
+    {
+      "asset": "photo_pantry_sink_faucets",
+      "level": 1,
+      "triangles": 3644,
+      "boundsBlenderXYZ": [
+        [
+          -0.3824999928474426,
+          -0.26249998807907104,
+          -0.1940000057220459
+        ],
+        [
+          0.34299999475479126,
+          0.3269999921321869,
+          0.3944999873638153
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.7254999876022339,
+        0.5894999802112579,
+        0.5884999930858612
+      ],
+      "meshParts": 41,
+      "sha256": "f604a18bf918ed36e1d1e43ee45ddc3c155701e8beb624571f55fdfa1b54061a"
+    },
+    {
+      "asset": "photo_pantry_sink_faucets",
+      "level": 2,
+      "triangles": 1384,
+      "boundsBlenderXYZ": [
+        [
+          -0.3824999928474426,
+          -0.26249998807907104,
+          -0.1940000057220459
+        ],
+        [
+          0.34299999475479126,
+          0.3269999921321869,
+          0.3925573527812958
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.7254999876022339,
+        0.5894999802112579,
+        0.5865573585033417
+      ],
+      "meshParts": 29,
+      "sha256": "d2fe24269850e6a0ab046cc813769154afc43fc74cc1e4588ee5e6c8c9f9093a"
+    },
+    {
+      "asset": "photo_pantry_white_cleartop_appliance",
+      "level": 0,
+      "triangles": 8956,
+      "boundsBlenderXYZ": [
+        [
+          -0.17000000178813934,
+          -0.20250000059604645,
+          0.0
+        ],
+        [
+          0.17999999225139618,
+          0.1850000023841858,
+          0.44749999046325684
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3499999940395355,
+        0.38750000298023224,
+        0.44749999046325684
+      ],
+      "meshParts": 53,
+      "sha256": "e55e7f1ee04009e4d5be4c2bd2dcfe3e510e32e4dd2d19efc17fabf79e819f34"
+    },
+    {
+      "asset": "photo_pantry_white_cleartop_appliance",
+      "level": 1,
+      "triangles": 4504,
+      "boundsBlenderXYZ": [
+        [
+          -0.17000000178813934,
+          -0.20250000059604645,
+          0.0
+        ],
+        [
+          0.17999999225139618,
+          0.1850000023841858,
+          0.44749999046325684
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3499999940395355,
+        0.38750000298023224,
+        0.44749999046325684
+      ],
+      "meshParts": 46,
+      "sha256": "3f2ca8713eb15429e9bb7a8dfbd0b3f299f7626aada4011bcfee58f15f7d74bc"
+    },
+    {
+      "asset": "photo_pantry_white_cleartop_appliance",
+      "level": 2,
+      "triangles": 1788,
+      "boundsBlenderXYZ": [
+        [
+          -0.17000000178813934,
+          -0.20250000059604645,
+          0.0
+        ],
+        [
+          0.17999999225139618,
+          0.1850000023841858,
+          0.44749999046325684
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3499999940395355,
+        0.38750000298023224,
+        0.44749999046325684
+      ],
+      "meshParts": 41,
+      "sha256": "c3cdffadaf36c23fe6e892992ed323fc90dd80ff7dd2e2252de13ee97e9167cc"
+    },
+    {
+      "asset": "photo_pantry_backsplash_shelves",
+      "level": 0,
+      "triangles": 18604,
+      "boundsBlenderXYZ": [
+        [
+          -1.2300000190734863,
+          -0.11999999731779099,
+          -0.0004999935626983643
+        ],
+        [
+          1.2000000476837158,
+          0.3760000169277191,
+          1.4199999570846558
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        2.430000066757202,
+        0.4960000142455101,
+        1.4204999506473541
+      ],
+      "meshParts": 173,
+      "sha256": "afd68b68ea6b985332793120770bff400a38fd704e3ab4d8faffca191efc44b7"
+    },
+    {
+      "asset": "photo_pantry_backsplash_shelves",
+      "level": 1,
+      "triangles": 10496,
+      "boundsBlenderXYZ": [
+        [
+          -1.2300000190734863,
+          -0.11999999731779099,
+          -0.0004999935626983643
+        ],
+        [
+          1.2000000476837158,
+          0.3760000169277191,
+          1.4199999570846558
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        2.430000066757202,
+        0.4960000142455101,
+        1.4204999506473541
+      ],
+      "meshParts": 120,
+      "sha256": "bddd748ad4315316ac45e69800f3125e423ef35830965ab5af86a24e04493912"
+    },
+    {
+      "asset": "photo_pantry_backsplash_shelves",
+      "level": 2,
+      "triangles": 4292,
+      "boundsBlenderXYZ": [
+        [
+          -1.2300000190734863,
+          -0.11999999731779099,
+          -0.0004999935626983643
+        ],
+        [
+          1.2000000476837158,
+          0.3760000169277191,
+          1.4199999570846558
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        2.430000066757202,
+        0.4960000142455101,
+        1.4204999506473541
+      ],
+      "meshParts": 99,
+      "sha256": "8b2bda44609d2c71f326da7d6fd7a3dd97361eb254ce86db228f9cc9e079bc20"
+    },
+    {
+      "asset": "photo_side_by_side_fridge",
+      "level": 0,
+      "triangles": 3008,
+      "boundsBlenderXYZ": [
+        [
+          -0.45100000500679016,
+          -0.35100001096725464,
+          0.015000000596046448
+        ],
+        [
+          0.45100000500679016,
+          0.3490000069141388,
+          1.8289999961853027
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.9020000100135803,
+        0.7000000178813934,
+        1.8139999955892563
+      ],
+      "meshParts": 16,
+      "sha256": "6ec88b1bc0da9273e0e72e176e2ab499831266603f22247436002fae36c109e0"
+    },
+    {
+      "asset": "photo_side_by_side_fridge",
+      "level": 1,
+      "triangles": 1728,
+      "boundsBlenderXYZ": [
+        [
+          -0.45100000500679016,
+          -0.35100001096725464,
+          0.015000000596046448
+        ],
+        [
+          0.45100000500679016,
+          0.3490000069141388,
+          1.8289999961853027
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.9020000100135803,
+        0.7000000178813934,
+        1.8139999955892563
+      ],
+      "meshParts": 16,
+      "sha256": "15a571ee051927a29b11a21ac81d3a88df42c365c3b1e2453dde5f40d00e6e3b"
+    },
+    {
+      "asset": "photo_side_by_side_fridge",
+      "level": 2,
+      "triangles": 660,
+      "boundsBlenderXYZ": [
+        [
+          -0.45100000500679016,
+          -0.35100001096725464,
+          0.015000000596046448
+        ],
+        [
+          0.45100000500679016,
+          0.3490000069141388,
+          1.819000005722046
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.9020000100135803,
+        0.7000000178813934,
+        1.8040000051259995
+      ],
+      "meshParts": 15,
+      "sha256": "276e782782b574d45899d7ed0ea71ab9de5535a106aa4eaff2f9489d870e526d"
+    },
+    {
+      "asset": "photo_fridge_wood_surround",
+      "level": 0,
+      "triangles": 7020,
+      "boundsBlenderXYZ": [
+        [
+          -0.5040000081062317,
+          -0.3540000021457672,
+          0.0
+        ],
+        [
+          1.0540000200271606,
+          0.38499999046325684,
+          2.700000047683716
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.5580000281333923,
+        0.738999992609024,
+        2.700000047683716
+      ],
+      "meshParts": 89,
+      "sha256": "cba57bc0ef444d4edb8749af6a059755a85c11dd77f1298d98efa6435dc6ed80"
+    },
+    {
+      "asset": "photo_fridge_wood_surround",
+      "level": 1,
+      "triangles": 3332,
+      "boundsBlenderXYZ": [
+        [
+          -0.5040000081062317,
+          -0.3540000021457672,
+          0.0
+        ],
+        [
+          1.0540000200271606,
+          0.38499999046325684,
+          2.700000047683716
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.5580000281333923,
+        0.738999992609024,
+        2.700000047683716
+      ],
+      "meshParts": 31,
+      "sha256": "f2685517b23551da8766a806ae4f03ac2d3af852362db04f99a25538c38cc4e9"
+    },
+    {
+      "asset": "photo_fridge_wood_surround",
+      "level": 2,
+      "triangles": 1232,
+      "boundsBlenderXYZ": [
+        [
+          -0.5040000081062317,
+          -0.3540000021457672,
+          0.0
+        ],
+        [
+          1.0540000200271606,
+          0.38499999046325684,
+          2.700000047683716
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.5580000281333923,
+        0.738999992609024,
+        2.700000047683716
+      ],
+      "meshParts": 28,
+      "sha256": "6ebd39728b315f3f64749eee3cb599d6caca8e6dedee9eb9df6eced1d671e4a9"
+    },
+    {
+      "asset": "photo_pantry_grey_roundfront_appliance",
+      "level": 0,
+      "triangles": 3728,
+      "boundsBlenderXYZ": [
+        [
+          -0.19499999284744263,
+          -0.24400000274181366,
+          0.0
+        ],
+        [
+          0.19599999487400055,
+          0.2175000011920929,
+          0.36000001430511475
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3909999877214432,
+        0.46150000393390656,
+        0.36000001430511475
+      ],
+      "meshParts": 17,
+      "sha256": "ed57856312c3aebc477ade396985cb6cd8504d9ec450a0aa056915dd2a87f8bf"
+    },
+    {
+      "asset": "photo_pantry_grey_roundfront_appliance",
+      "level": 1,
+      "triangles": 2016,
+      "boundsBlenderXYZ": [
+        [
+          -0.19499999284744263,
+          -0.24400000274181366,
+          0.0
+        ],
+        [
+          0.19599999487400055,
+          0.2175000011920929,
+          0.36000001430511475
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.3909999877214432,
+        0.46150000393390656,
+        0.36000001430511475
+      ],
+      "meshParts": 17,
+      "sha256": "11fd249baa811a29ed0f8af85a2b15d371aad4094d345be654cc5c832956a985"
+    },
+    {
+      "asset": "photo_pantry_grey_roundfront_appliance",
+      "level": 2,
+      "triangles": 664,
+      "boundsBlenderXYZ": [
+        [
+          -0.19499999284744263,
+          -0.24400000274181366,
+          0.0
+        ],
+        [
+          0.19499999284744263,
+          0.2175000011920929,
+          0.36000001430511475
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.38999998569488525,
+        0.46150000393390656,
+        0.36000001430511475
+      ],
+      "meshParts": 11,
+      "sha256": "8fc233f2a7a6ce0274153b6e4dea2e36cef0589a28b35363e69e01c8cc636183"
+    }
+  ],
+  "evidence": {
+    "counter": "20cf5f2245e7838e162e09cd159d821e.jpg",
+    "fridge": "abcec3406673d164144a91b9aa23ce0d.jpg",
+    "imagesVisuallyInspected": true,
+    "dimensions": "All dimensions are proportional estimates; cropped or hidden surfaces simplified.",
+    "privateTextures": false,
+    "brandsLabelsQR": false,
+    "unknownAppliances": "The user identifies the grey unit as a microwave. The white clear-top vented unit is identified by visible appearance only. Exact manufacturers and models are unverified.",
+    "fridgeDispenser": "The adjacent black dispenser recess is modeled only as part of the independent wood cabinet surround, not the fridge."
+  },
+  "validation": {
+    "boundsMethod": "Actual transformed mesh vertices, not object bounding boxes",
+    "bevelCap": ".45 * smallest component dimension",
+    "renderEngine": "Cycles CPU",
+    "browserTested": false,
+    "runtimeIntegrated": false
+  },
+  "assemblyPlacementBlenderXYZ": {
+    "photo_pantry_counter": [
+      0,
+      0,
+      0
+    ],
+    "photo_pantry_sink_faucets": [
+      0,
+      0,
+      0.9
+    ],
+    "photo_pantry_grey_roundfront_appliance": [
+      -0.82,
+      0.04,
+      0.9
+    ],
+    "photo_pantry_white_cleartop_appliance": [
+      0.76,
+      0.04,
+      0.9
+    ],
+    "photo_pantry_backsplash_shelves": [
+      0,
+      0,
+      0.9
+    ],
+    "photo_side_by_side_fridge": [
+      0,
+      0,
+      0
+    ],
+    "photo_fridge_wood_surround": [
+      0,
+      0,
+      0
+    ]
+  },
+  "composedSceneLayoutFile": "sources/photo_pantry_composition.json",
+  "revisionReport": "review/photo_living/pantry_shape_revision_report.json"
+}

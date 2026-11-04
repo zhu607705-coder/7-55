@@ -1,0 +1,156 @@
+{
+  "views": {
+    "photo_microwave_before_same_camera": {
+      "file": "review/photo_living/photo_microwave_before_same_camera.png",
+      "sha256": "64231cf7725593f6968d038fffdbe2cbda0dcf16c1cd079107b32c4d3d7bbd3d",
+      "resolution": [
+        1000,
+        850
+      ],
+      "boundsBlenderXYZ": [
+        [
+          -0.19499999284744263,
+          -0.25,
+          0.0
+        ],
+        [
+          0.2057500034570694,
+          0.2175000011920929,
+          0.36000001430511475
+        ]
+      ],
+      "cameraLocation": [
+        0.75,
+        -1.100000023841858,
+        0.6399999856948853
+      ],
+      "cameraTarget": [
+        0.0,
+        0.0,
+        0.1899999976158142
+      ],
+      "cameraLens": 60,
+      "orthoScale": 0.75,
+      "render": "Cycles CPU 64 samples",
+      "geometrySource": "existing independent GLB assets",
+      "visualInspection": "inspected",
+      "assetSha256": "f878c3cedaf6776d640831400d1fbba7f456b36ca4fbfb4008a3d4b3411a4d18",
+      "visualFinding": "No obvious shape, placement or clipping problem in the requested reconstruction scope."
+    },
+    "photo_microwave_after_same_camera": {
+      "file": "review/photo_living/photo_microwave_after_same_camera.png",
+      "sha256": "b0f1a6a891019a8e30da6ab424d0979a5c862188169a7a40246a906b53e35e71",
+      "resolution": [
+        1000,
+        850
+      ],
+      "boundsBlenderXYZ": [
+        [
+          -0.19499999284744263,
+          -0.24400000274181366,
+          0.0
+        ],
+        [
+          0.19599999487400055,
+          0.2175000011920929,
+          0.36000001430511475
+        ]
+      ],
+      "cameraLocation": [
+        0.75,
+        -1.100000023841858,
+        0.6399999856948853
+      ],
+      "cameraTarget": [
+        0.0,
+        0.0,
+        0.1899999976158142
+      ],
+      "cameraLens": 60,
+      "orthoScale": 0.75,
+      "render": "Cycles CPU 64 samples",
+      "geometrySource": "existing independent GLB assets",
+      "visualInspection": "inspected",
+      "assetSha256": "ed57856312c3aebc477ade396985cb6cd8504d9ec450a0aa056915dd2a87f8bf",
+      "visualFinding": "No obvious shape, placement or clipping problem in the requested reconstruction scope."
+    },
+    "photo_pantry_combined_revision": {
+      "file": "review/photo_living/photo_pantry_combined_revision.png",
+      "sha256": "df1cf2598ba9b2305d2269fea09c1330e8f0aeea58480392cac32a9d9893393b",
+      "resolution": [
+        1900,
+        1150
+      ],
+      "boundsBlenderXYZ": [
+        [
+          -2.7880001068115234,
+          -0.3630000054836273,
+          0.0
+        ],
+        [
+          1.2000000476837158,
+          0.3760000169277191,
+          2.700000047683716
+        ]
+      ],
+      "cameraLocation": [
+        3.299999952316284,
+        -6.5,
+        3.0999999046325684
+      ],
+      "cameraTarget": [
+        -0.800000011920929,
+        0.0,
+        1.2999999523162842
+      ],
+      "cameraLens": 50,
+      "orthoScale": null,
+      "render": "Cycles CPU 64 samples",
+      "geometrySource": "existing independent GLB assets",
+      "visualInspection": "inspected",
+      "visualFinding": "No obvious shape, placement or clipping problem in the requested reconstruction scope."
+    },
+    "photo_pantry_counter_near_final": {
+      "file": "review/photo_living/photo_pantry_counter_near_final.png",
+      "sha256": "b703666ba82d57d7d006a2e17bad3605d7d450fba4ad20e31a33a45d1d5d512d",
+      "resolution": [
+        1400,
+        1000
+      ],
+      "boundsBlenderXYZ": [
+        [
+          -1.2300000190734863,
+          -0.33000001311302185,
+          0.0
+        ],
+        [
+          1.2000000476837158,
+          0.3760000169277191,
+          2.319999933242798
+        ]
+      ],
+      "cameraLocation": [
+        2.4800000190734863,
+        -3.130000114440918,
+        2.299999952316284
+      ],
+      "cameraTarget": [
+        0.0,
+        0.0,
+        1.1799999475479126
+      ],
+      "cameraLens": 47,
+      "orthoScale": null,
+      "render": "Cycles CPU 64 samples",
+      "geometrySource": "existing independent GLB assets",
+      "visualInspection": "inspected",
+      "visualFinding": "No obvious shape, placement or clipping problem in the requested reconstruction scope."
+    }
+  },
+  "layout": "sources/photo_pantry_composition.json",
+  "newCombined3DAssets": 0,
+  "browserTested": false,
+  "runtimeIntegrated": false,
+  "conceptAssemblyNote": "Adjacency is photograph-supported; exact joint angle, cabinet widths and surveyed positions remain estimates.",
+  "layoutSha256": "b704f436b022bd98fe0cf000b765c4ff12accb3df7b67bd028f9aa1c46c1443e"
+}

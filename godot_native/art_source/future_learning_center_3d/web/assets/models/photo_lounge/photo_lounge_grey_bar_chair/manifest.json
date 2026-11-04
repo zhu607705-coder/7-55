@@ -1,0 +1,354 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 96640,
+    "sha256": "e3b6e9018c77bc3cdcf93916f6241e06976db6242fbc64f93eb998c983f5b6b2",
+    "triangles": 3312,
+    "primitives": 16,
+    "bounds": {
+      "min": [
+        -0.2409999966621399,
+        0,
+        -0.25347039103507996
+      ],
+      "max": [
+        0.2409999966621399,
+        1.027999997138977,
+        0.24399998784065247
+      ]
+    },
+    "size": [
+      0.4819999933242798,
+      1.027999997138977,
+      0.4974703788757324
+    ],
+    "materials": [
+      {
+        "name": "Grey molded bar chair shell",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.04500000178813934,
+          0.04800000041723251,
+          0.05000000074505806,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.550000011920929
+      },
+      {
+        "name": "Black powder coated steel",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.00800000037997961,
+          0.010999999940395355,
+          0.012000000104308128,
+          1
+        ],
+        "metallicFactor": 0.11999999731779099,
+        "roughnessFactor": 0.5099999904632568
+      },
+      {
+        "name": "Black foot glides",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.012000000104308128,
+          0.014000000432133675,
+          0.014999999664723873,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.7799999713897705
+      }
+    ],
+    "textures": []
+  },
+  "calibration": {
+    "targetHeight": 1.027999997138977,
+    "yawDegrees": 0,
+    "uniformScale": 1,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "e3b6e9018c77bc3cdcf93916f6241e06976db6242fbc64f93eb998c983f5b6b2",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 2.384185791015625e-7,
+      "bytes": 17880,
+      "uncompressedBytes": 73456,
+      "sha256": "9a94b2ba390b455032cd900f00f310ee3384ac95d8ac9a3b6bddea236ebdca51",
+      "triangles": 3312,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.2409999966621399,
+          0,
+          -0.2487351894378662
+        ],
+        "max": [
+          0.24100014567375183,
+          1.0280002355575562,
+          0.2487351894378662
+        ]
+      },
+      "size": [
+        0.4820001423358917,
+        1.0280002355575562,
+        0.4974703788757324
+      ],
+      "materials": [
+        {
+          "name": "Grey molded bar chair shell",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.04500000178813934,
+            0.04800000041723251,
+            0.05000000074505806,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.550000011920929
+        },
+        {
+          "name": "Black powder coated steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.010999999940395355,
+            0.012000000104308128,
+            1
+          ],
+          "metallicFactor": 0.11999999731779099,
+          "roughnessFactor": 0.5099999904632568
+        },
+        {
+          "name": "Black foot glides",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.014000000432133675,
+            0.014999999664723873,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7799999713897705
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "e9bc557c092cd2e1ce0d482618b5e49ed8977c04c1af1c6645906a4dae88b9a7",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 2.384185791015625e-7,
+      "bytes": 12632,
+      "uncompressedBytes": 43788,
+      "sha256": "9b00f7c09212fdcf67d8d77932f061d4158baa02f7ff8f16c7566ffefaee4180",
+      "triangles": 1920,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.2409999966621399,
+          0,
+          -0.2487351894378662
+        ],
+        "max": [
+          0.24100014567375183,
+          1.0280002355575562,
+          0.2487351894378662
+        ]
+      },
+      "size": [
+        0.4820001423358917,
+        1.0280002355575562,
+        0.4974703788757324
+      ],
+      "materials": [
+        {
+          "name": "Grey molded bar chair shell",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.04500000178813934,
+            0.04800000041723251,
+            0.05000000074505806,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.550000011920929
+        },
+        {
+          "name": "Black powder coated steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.010999999940395355,
+            0.012000000104308128,
+            1
+          ],
+          "metallicFactor": 0.11999999731779099,
+          "roughnessFactor": 0.5099999904632568
+        },
+        {
+          "name": "Black foot glides",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.014000000432133675,
+            0.014999999664723873,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7799999713897705
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "d458c3e47e71ba1bddd3061729543d0c3344b1a596c9efacea6d2d465b307832",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 2.384185791015625e-7,
+      "bytes": 8796,
+      "uncompressedBytes": 25204,
+      "sha256": "59248c1bb0279ce88281dfb71e7d5cb49c934e43dbbadfa7262640097fd58732",
+      "triangles": 1016,
+      "primitives": 3,
+      "bounds": {
+        "min": [
+          -0.2409999966621399,
+          0,
+          -0.2487351894378662
+        ],
+        "max": [
+          0.24100014567375183,
+          1.0280002355575562,
+          0.2487351894378662
+        ]
+      },
+      "size": [
+        0.4820001423358917,
+        1.0280002355575562,
+        0.4974703788757324
+      ],
+      "materials": [
+        {
+          "name": "Grey molded bar chair shell",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.04500000178813934,
+            0.04800000041723251,
+            0.05000000074505806,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.550000011920929
+        },
+        {
+          "name": "Black powder coated steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.010999999940395355,
+            0.012000000104308128,
+            1
+          ],
+          "metallicFactor": 0.11999999731779099,
+          "roughnessFactor": 0.5099999904632568
+        },
+        {
+          "name": "Black foot glides",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.012000000104308128,
+            0.014000000432133675,
+            0.014999999664723873,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7799999713897705
+        }
+      ],
+      "textures": []
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

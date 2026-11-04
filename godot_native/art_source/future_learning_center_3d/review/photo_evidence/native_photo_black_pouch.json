@@ -1,0 +1,101 @@
+{
+  "blender": "4.3.2",
+  "objects": [
+    {
+      "name": "Rounded black storage pouch",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.0949999988079071,
+          -0.057500001043081284,
+          0.0
+        ],
+        [
+          0.0949999988079071,
+          0.057500001043081284,
+          0.06800000369548798
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Small tiled rubber work mat"
+      ],
+      "properties": {
+        "part": "Rounded black storage pouch",
+        "assetId": "photo_black_pouch",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Zipper seam",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.09549999982118607,
+          -0.057999998331069946,
+          0.0325000025331974
+        ],
+        [
+          0.09549999982118607,
+          0.057999998331069946,
+          0.03550000116229057
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark moulded polymer"
+      ],
+      "properties": {
+        "part": "Zipper seam",
+        "assetId": "photo_black_pouch",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Small zipper pull",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07999999821186066,
+          -0.05550000071525574,
+          0.032999999821186066
+        ],
+        [
+          0.09800000488758087,
+          -0.048500001430511475,
+          0.03700000047683716
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Grey caster hubs"
+      ],
+      "properties": {
+        "part": "Small zipper pull",
+        "assetId": "photo_black_pouch",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    }
+  ],
+  "bounds": [
+    [
+      -0.09549999982118607,
+      -0.057999998331069946,
+      0.0
+    ],
+    [
+      0.09800000488758087,
+      0.057999998331069946,
+      0.06800000369548798
+    ]
+  ],
+  "triangles": 564,
+  "units": "METRIC",
+  "scaleLength": 1.0
+}

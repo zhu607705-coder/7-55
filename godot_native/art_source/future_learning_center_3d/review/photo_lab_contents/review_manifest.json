@@ -1,0 +1,32 @@
+{
+  "renderer": "Blender 4.3.2 Cycles CPU, 32 samples, no denoise",
+  "visuallyInspected": [
+    "lab_contents_composition_1.png",
+    "lab_contents_composition_2.png"
+  ],
+  "runtimeAcceptance": false,
+  "compositionRevision": "composition-contact-fix-2",
+  "notes": "Complete assembled silhouettes in both final frames. First view reveals open PC interior; second shows shelf fronts and two transport case orientations. No private image payload.",
+  "files": [
+    {
+      "path": "review/photo_lab_contents/lab_contents_composition_1.png",
+      "sha256": "fd965496eb2c25099286694f9446257026861093e1cd658493d98c65807bebcf"
+    },
+    {
+      "path": "review/photo_lab_contents/lab_contents_composition_2.png",
+      "sha256": "b83f18ddb72ebb86fa494073920cb0f592decb014a62918b51ddc6d5f275a6eb"
+    },
+    {
+      "path": "review/photo_lab_contents/lab_contents_composition.blend",
+      "sha256": "37bd0fc353eb64b85af9882111281fe4eb8e9cff691a0036783234af9019f1c0"
+    },
+    {
+      "path": "scripts/build_photo_lab_contents.py",
+      "sha256": "b896b8fbe40433fc13cb8f651fe4afcb138f47c2157e57a218578a40419acdcd"
+    },
+    {
+      "path": "sources/photo_lab_contents_20261103.md",
+      "sha256": "9ecbb9bf4fd6933ad3f1c3132c1068dfbd9cb2852243cadf1fca00c5ac060f48"
+    }
+  ]
+}

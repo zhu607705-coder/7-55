@@ -23,6 +23,13 @@
     "test:spatial-integration": "node scripts/test_spatial_viewer_integration.mjs",
     "test:spatial-browser": "node browser_tests/spatial_browser.mjs",
     "test:spatial-overlay": "node scripts/test_spatial_overlay.mjs",
-    "test:render-gate": "node scripts/test_render_gate.mjs"
+    "test:render-gate": "node scripts/test_render_gate.mjs",
+    "test:photo-scene": "node scripts/test_photo_scene_assets.mjs",
+    "test:photo-browser": "node browser_tests/photo_browser.mjs",
+    "test:workstation": "node scripts/test_workstation_review.mjs",
+    "test:workstation-browser": "node browser_tests/workstation_browser.mjs",
+    "test:frame-timing": "node scripts/test_frame_timing.mjs",
+    "test:placed-assets": "node scripts/test_placed_assets.mjs",
+    "test:placed-assets-browser": "node browser_tests/placed_assets_browser.mjs"
   }
 }

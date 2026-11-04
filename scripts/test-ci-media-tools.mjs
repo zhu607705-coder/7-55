@@ -223,6 +223,52 @@ test('source hash and approved HTTPS only are logged, not source comments or ven
   assert(r.logs.some(line => line.includes(hash(SOURCE)) && line.includes(hash(MIRRORS))));
   assert(!r.logs.join('\n').includes('Public Ubuntu source'));
 });
+test('unsupported URI diagnostics identify the stanza and source hash without accepting direct official hosts', () => {
+  for (const [stanza, uri] of [[1, 'https://archive.ubuntu.com/ubuntu/'], [2, 'http://security.ubuntu.com/ubuntu']]) {
+    let index = 0;
+    const source = SOURCE.replaceAll('URIs: mirror+file:/etc/apt/apt-mirrors.txt', value => ++index === stanza ? `URIs: ${uri}` : value);
+    const r = scenario({ source });
+    assert.match(r.error?.message ?? '', /^CI media tools: unsupported source URI: /);
+    const details = JSON.parse(r.error.message.split('unsupported source URI: ')[1]);
+    assert.equal(details.stanza, stanza);
+    assert.equal(details.sourceSha256, hash(source));
+    assert.equal(details.expectedUri, 'mirror+file:/etc/apt/apt-mirrors.txt');
+    assert.equal(details.uriSha256, hash(uri));
+    assert.equal(details.uriBytes, Buffer.byteLength(uri));
+    assert.equal(details.uriCount, 1);
+    assert.deepEqual(details.shapes, [{scheme: stanza === 1 ? 'https' : 'http', host: stanza === 1 ? 'archive.ubuntu.com' : 'security.ubuntu.com', pathKind: stanza === 1 ? 'ubuntu-root-with-slash' : 'ubuntu-root', authority: true, redacted: false}]);
+    assert.equal(r.calls.filter(c => c.command === 'sudo').length, 0);
+  }
+});
+test('alternate mirror URI syntax is diagnosed but remains refused', () => {
+  const uri = 'mirror+file:///etc/apt/apt-mirrors.txt';
+  const r = scenario({source: SOURCE.replace('mirror+file:/etc/apt/apt-mirrors.txt', uri)});
+  const details = JSON.parse(r.error.message.split('unsupported source URI: ')[1]);
+  assert.deepEqual(details.shapes, [{scheme:'mirror+file', host:'none', pathKind:'expected-mirror-list', authority:true, redacted:false}]);
+  assert.equal(r.calls.filter(c => c.command === 'sudo').length, 0);
+});
+test('URI diagnostics redact credentials, query, fragment, unknown hosts, paths and schemes', () => {
+  const secret = 'private-marker-755';
+  for (const uri of [`https://${secret}:password@archive.ubuntu.com/ubuntu/`, `https://archive.ubuntu.com/ubuntu/?token=${secret}`, `https://archive.ubuntu.com/ubuntu/#${secret}`, `https://${secret}.example.invalid/${secret}`, `https://archive.ubuntu.com/${secret}`, `${secret}:opaque`, `not-a-url-${secret}`, 'https://@archive.ubuntu.com/ubuntu/?#']) {
+    const source = SOURCE.replace('mirror+file:/etc/apt/apt-mirrors.txt', uri);
+    const r = scenario({source});
+    const output = [r.error.message, ...r.logs].join('\n');
+    assert(!output.includes(secret)); assert(!output.includes('password')); assert(!output.includes(uri));
+    assert(!output.includes('Public Ubuntu source'));
+    const details = JSON.parse(r.error.message.split('unsupported source URI: ')[1]);
+    assert.equal(details.uriSha256, hash(uri));
+    if (/[?#@]/.test(uri)) assert.equal(details.shapes[0].redacted, true);
+    assert.equal(r.calls.filter(c => c.command === 'sudo').length, 0);
+  }
+});
+test('multiple URI diagnostics are bounded and never allow APT acquisition', () => {
+  const uris = Array.from({length:20}, (_, index) => `https://private-${index}.example.invalid/opaque`).join(' ');
+  const r = scenario({source:SOURCE.replace('mirror+file:/etc/apt/apt-mirrors.txt', uris)});
+  const details = JSON.parse(r.error.message.split('unsupported source URI: ')[1]);
+  assert.equal(details.uriCount, 20); assert.equal(details.shapes.length, 4);
+  assert(r.error.message.length < 1500); assert(!r.error.message.includes('example.invalid'));
+  assert.equal(r.calls.filter(c => c.command === 'sudo').length, 0);
+});
 for (const [name, source] of Object.entries({
   'new source URI': SOURCE.replaceAll('mirror+file:/etc/apt/apt-mirrors.txt', 'https://example.com/ubuntu/'),
   'unsigned': SOURCE.replaceAll('Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n', ''),

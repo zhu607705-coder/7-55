@@ -22,6 +22,26 @@ function requireCondition(condition, message) {
   if (!condition) throw new Error(`CI media tools: ${message}`);
 }
 
+// Diagnostic labels never authorize a source. Do not log raw URI text, arbitrary
+// hosts/paths, credentials, queries, fragments or unknown scheme names.
+function sourceUriDiagnostic(value, source, stanza) {
+  const hash = text => createHash('sha256').update(text).digest('hex');
+  const entries = value.split(/\s+/);
+  const hosts = new Set(KNOWN_MIRRORS.map(uri => new URL(uri).hostname));
+  const shapes = entries.slice(0, 4).map(uri => {
+    let parsed;
+    try { parsed = new URL(uri); } catch {}
+    const scheme = ['http:', 'https:', 'file:', 'mirror+file:'].includes(parsed?.protocol) ? parsed.protocol.slice(0, -1) : 'other';
+    const redacted = !parsed || Boolean(parsed.username || parsed.password || /[?#@]/.test(uri));
+    const host = redacted ? 'redacted' : hosts.has(parsed.hostname) ? parsed.hostname : parsed.hostname ? 'other' : 'none';
+    const pathKind = redacted ? 'redacted' : parsed.pathname === MIRRORS ? 'expected-mirror-list'
+      : parsed.pathname === '/ubuntu/' ? 'ubuntu-root-with-slash' : parsed.pathname === '/ubuntu' ? 'ubuntu-root' : 'other';
+    return {scheme, host, pathKind, authority: /^[A-Za-z][A-Za-z0-9+.-]*:\/\//.test(uri), redacted};
+  });
+  return {stanza, sourceSha256: hash(source), expectedUri: MIRROR_URI,
+    uriSha256: hash(value), uriBytes: Buffer.byteLength(value), uriCount: entries.length, shapes};
+}
+
 // Only the public Ubuntu deb822 shape is accepted. No vendor sources,
 // embedded keys, authentication, trust overrides or newly introduced mirrors.
 export function prepareFallback(source, mirrors, temporaryMirrorPath) {
@@ -37,7 +57,9 @@ export function prepareFallback(source, mirrors, temporaryMirrorPath) {
     if (fields.size === 0) return;
     for (const key of ['Types', 'URIs', 'Suites', 'Components', 'Signed-By']) requireCondition(fields.has(key), `source missing ${key}`);
     requireCondition(fields.get('Types') === 'deb', 'unsupported source Types');
-    requireCondition(fields.get('URIs') === MIRROR_URI, 'unsupported source URI');
+    if (fields.get('URIs') !== MIRROR_URI) {
+      requireCondition(false, `unsupported source URI: ${JSON.stringify(sourceUriDiagnostic(fields.get('URIs'), source, stanzas + 1))}`);
+    }
     requireCondition(fields.get('Signed-By') === KEYRING, 'unsupported signing keyring');
     requireCondition(!fields.has('Architectures') || fields.get('Architectures') === 'amd64', 'unsupported source architecture');
     for (const suite of fields.get('Suites').split(/\s+/)) {

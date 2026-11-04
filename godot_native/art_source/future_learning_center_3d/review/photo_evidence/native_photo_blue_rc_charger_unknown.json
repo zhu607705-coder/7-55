@@ -1,0 +1,695 @@
+{
+  "blender": "4.3.2",
+  "objects": [
+    {
+      "name": "Blue flat charger body",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.07199999690055847,
+          -0.06750000268220901,
+          0.0
+        ],
+        [
+          0.07199999690055847,
+          0.06750000268220901,
+          0.035999998450279236
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Blue anodised driver grips"
+      ],
+      "properties": {
+        "part": "Blue flat charger body",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Black top panel",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.060499999672174454,
+          -0.050999999046325684,
+          0.03550000116229057
+        ],
+        [
+          0.060499999672174454,
+          0.050999999046325684,
+          0.03849999979138374
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark moulded polymer"
+      ],
+      "properties": {
+        "part": "Black top panel",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Unlit top screen",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.03550000116229057,
+          0.008999999612569809,
+          0.03824999928474426
+        ],
+        [
+          0.03550000116229057,
+          0.03500000014901161,
+          0.039750002324581146
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Unlit black display"
+      ],
+      "properties": {
+        "part": "Unlit top screen",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Unlabelled top key",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.04749999940395355,
+          -0.03400000184774399,
+          0.03849999979138374
+        ],
+        [
+          -0.032499998807907104,
+          -0.02199999988079071,
+          0.04149999842047691
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Grey caster hubs"
+      ],
+      "properties": {
+        "part": "Unlabelled top key",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Unlabelled top key.001",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.0215000007301569,
+          -0.03400000184774399,
+          0.03849999979138374
+        ],
+        [
+          -0.006500000599771738,
+          -0.02199999988079071,
+          0.04149999842047691
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Grey caster hubs"
+      ],
+      "properties": {
+        "part": "Unlabelled top key",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Unlabelled top key.002",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.006500000599771738,
+          -0.03400000184774399,
+          0.03849999979138374
+        ],
+        [
+          0.0215000007301569,
+          -0.02199999988079071,
+          0.04149999842047691
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Grey caster hubs"
+      ],
+      "properties": {
+        "part": "Unlabelled top key",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Unlabelled top key.003",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.032499998807907104,
+          -0.03400000184774399,
+          0.03849999979138374
+        ],
+        [
+          0.04749999940395355,
+          -0.02199999988079071,
+          0.04149999842047691
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Grey caster hubs"
+      ],
+      "properties": {
+        "part": "Unlabelled top key",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Side dark opening",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.07349999994039536,
+          -0.032499998807907104,
+          0.012000001035630703
+        ],
+        [
+          -0.07249999791383743,
+          -0.019500000402331352,
+          0.02199999988079071
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark moulded polymer"
+      ],
+      "properties": {
+        "part": "Side dark opening",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Side dark opening.001",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.07349999994039536,
+          -0.006500000134110451,
+          0.012000001035630703
+        ],
+        [
+          -0.07249999791383743,
+          0.006500000134110451,
+          0.02199999988079071
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark moulded polymer"
+      ],
+      "properties": {
+        "part": "Side dark opening",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Side dark opening.002",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.07349999994039536,
+          0.019500000402331352,
+          0.012000001035630703
+        ],
+        [
+          -0.07249999791383743,
+          0.032499998807907104,
+          0.02199999988079071
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark moulded polymer"
+      ],
+      "properties": {
+        "part": "Side dark opening",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Short rubber foot",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.0625,
+          -0.0560000017285347,
+          0.0
+        ],
+        [
+          -0.045500002801418304,
+          -0.035999998450279236,
+          0.004000000189989805
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark moulded polymer"
+      ],
+      "properties": {
+        "part": "Short rubber foot",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Short rubber foot.001",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          -0.0625,
+          0.035999998450279236,
+          0.0
+        ],
+        [
+          -0.045500002801418304,
+          0.0560000017285347,
+          0.004000000189989805
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark moulded polymer"
+      ],
+      "properties": {
+        "part": "Short rubber foot",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Short rubber foot.002",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.045500002801418304,
+          -0.0560000017285347,
+          0.0
+        ],
+        [
+          0.0625,
+          -0.035999998450279236,
+          0.004000000189989805
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark moulded polymer"
+      ],
+      "properties": {
+        "part": "Short rubber foot",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Short rubber foot.003",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.045500002801418304,
+          0.035999998450279236,
+          0.0
+        ],
+        [
+          0.0625,
+          0.0560000017285347,
+          0.004000000189989805
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Dark moulded polymer"
+      ],
+      "properties": {
+        "part": "Short rubber foot",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Side cooling rib",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07199999690055847,
+          -0.051500000059604645,
+          0.005499999038875103
+        ],
+        [
+          0.07400000095367432,
+          -0.048500001430511475,
+          0.030499998480081558
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Blue anodised driver grips"
+      ],
+      "properties": {
+        "part": "Side cooling rib",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Side cooling rib.001",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07199999690055847,
+          -0.04149999842047691,
+          0.005499999038875103
+        ],
+        [
+          0.07400000095367432,
+          -0.03849999979138374,
+          0.030499998480081558
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Blue anodised driver grips"
+      ],
+      "properties": {
+        "part": "Side cooling rib",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Side cooling rib.002",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07199999690055847,
+          -0.03150000050663948,
+          0.005499999038875103
+        ],
+        [
+          0.07400000095367432,
+          -0.02850000001490116,
+          0.030499998480081558
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Blue anodised driver grips"
+      ],
+      "properties": {
+        "part": "Side cooling rib",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Side cooling rib.003",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07199999690055847,
+          -0.02149999886751175,
+          0.005499999038875103
+        ],
+        [
+          0.07400000095367432,
+          -0.01850000023841858,
+          0.030499998480081558
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Blue anodised driver grips"
+      ],
+      "properties": {
+        "part": "Side cooling rib",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Side cooling rib.004",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07199999690055847,
+          -0.011500000022351742,
+          0.005499999038875103
+        ],
+        [
+          0.07400000095367432,
+          -0.008499999530613422,
+          0.030499998480081558
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Blue anodised driver grips"
+      ],
+      "properties": {
+        "part": "Side cooling rib",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Side cooling rib.005",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07199999690055847,
+          -0.001500000013038516,
+          0.005499999038875103
+        ],
+        [
+          0.07400000095367432,
+          0.001500000013038516,
+          0.030499998480081558
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Blue anodised driver grips"
+      ],
+      "properties": {
+        "part": "Side cooling rib",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Side cooling rib.006",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07199999690055847,
+          0.008499999530613422,
+          0.005499999038875103
+        ],
+        [
+          0.07400000095367432,
+          0.011500000022351742,
+          0.030499998480081558
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Blue anodised driver grips"
+      ],
+      "properties": {
+        "part": "Side cooling rib",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Side cooling rib.007",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07199999690055847,
+          0.01850000023841858,
+          0.005499999038875103
+        ],
+        [
+          0.07400000095367432,
+          0.02149999886751175,
+          0.030499998480081558
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Blue anodised driver grips"
+      ],
+      "properties": {
+        "part": "Side cooling rib",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Side cooling rib.008",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07199999690055847,
+          0.02850000001490116,
+          0.005499999038875103
+        ],
+        [
+          0.07400000095367432,
+          0.03150000050663948,
+          0.030499998480081558
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Blue anodised driver grips"
+      ],
+      "properties": {
+        "part": "Side cooling rib",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Side cooling rib.009",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07199999690055847,
+          0.03849999979138374,
+          0.005499999038875103
+        ],
+        [
+          0.07400000095367432,
+          0.04149999842047691,
+          0.030499998480081558
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Blue anodised driver grips"
+      ],
+      "properties": {
+        "part": "Side cooling rib",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    },
+    {
+      "name": "Side cooling rib.010",
+      "vertices": 96,
+      "triangles": 188,
+      "bounds": [
+        [
+          0.07199999690055847,
+          0.048500001430511475,
+          0.005499999038875103
+        ],
+        [
+          0.07400000095367432,
+          0.051500000059604645,
+          0.030499998480081558
+        ]
+      ],
+      "finite": true,
+      "materials": [
+        "Blue anodised driver grips"
+      ],
+      "properties": {
+        "part": "Side cooling rib",
+        "assetId": "photo_blue_rc_charger_unknown",
+        "scaleStatus": "Photo estimate, not exact identified product",
+        "reference": "Photo 6 visually inspected; no photo textures"
+      }
+    }
+  ],
+  "bounds": [
+    [
+      -0.07349999994039536,
+      -0.06750000268220901,
+      0.0
+    ],
+    [
+      0.07400000095367432,
+      0.06750000268220901,
+      0.04149999842047691
+    ]
+  ],
+  "triangles": 4700,
+  "units": "METRIC",
+  "scaleLength": 1.0
+}

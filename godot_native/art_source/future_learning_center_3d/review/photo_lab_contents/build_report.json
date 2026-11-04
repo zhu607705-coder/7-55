@@ -1,0 +1,572 @@
+{
+  "blender": "4.3.2",
+  "records": [
+    {
+      "asset": "lab_closed_thin_device",
+      "level": 0,
+      "triangles": 908,
+      "meshParts": 5,
+      "boundsBlenderXYZ": [
+        [
+          -0.17499999701976776,
+          -0.11999999731779099,
+          0.0
+        ],
+        [
+          0.17499999701976776,
+          0.11999999731779099,
+          0.017999999225139618
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "1d879250a6caee97c17a9ba28f42d59e16290e479a1ca2a9f85bf81ef62a3b14"
+    },
+    {
+      "asset": "lab_closed_thin_device",
+      "level": 1,
+      "triangles": 508,
+      "meshParts": 5,
+      "boundsBlenderXYZ": [
+        [
+          -0.17499999701976776,
+          -0.11999999731779099,
+          0.0
+        ],
+        [
+          0.17499999701976776,
+          0.11999999731779099,
+          0.017999999225139618
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "a574e709613ba586bf3f5fab1e34191197dfdfc7dc10fc1ba915aa44554065e4"
+    },
+    {
+      "asset": "lab_closed_thin_device",
+      "level": 2,
+      "triangles": 212,
+      "meshParts": 5,
+      "boundsBlenderXYZ": [
+        [
+          -0.17499999701976776,
+          -0.11999999731779099,
+          0.0
+        ],
+        [
+          0.17499999701976776,
+          0.11999999731779099,
+          0.017999999225139618
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "ff0b22a9a30754a196ff28d4daedc7cf8bd6f41d5f6691b83fcea3522cc23e93"
+    },
+    {
+      "asset": "lab_stepped_monitor",
+      "level": 0,
+      "triangles": 2156,
+      "meshParts": 9,
+      "boundsBlenderXYZ": [
+        [
+          -0.2849999964237213,
+          -0.10499999672174454,
+          -0.0015132242115214467
+        ],
+        [
+          0.31067779660224915,
+          0.2017483413219452,
+          0.5174999833106995
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "504408573a8e425bc320e02b1e87dcac21be7a5d691264616011cf2b9fd2cf66"
+    },
+    {
+      "asset": "lab_stepped_monitor",
+      "level": 1,
+      "triangles": 1160,
+      "meshParts": 9,
+      "boundsBlenderXYZ": [
+        [
+          -0.2849999964237213,
+          -0.10499999672174454,
+          -0.0015447884798049927
+        ],
+        [
+          0.31070542335510254,
+          0.2018408626317978,
+          0.5174999833106995
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "0f38283a80901cc8aa435e0376d7f1a6ff35ec287d96d4ae203de4af78e33f14"
+    },
+    {
+      "asset": "lab_stepped_monitor",
+      "level": 2,
+      "triangles": 452,
+      "meshParts": 9,
+      "boundsBlenderXYZ": [
+        [
+          -0.2849999964237213,
+          -0.10499999672174454,
+          -0.0015499094733968377
+        ],
+        [
+          0.31067991256713867,
+          0.20175418257713318,
+          0.5174999833106995
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "2ecf05334824c9291aedff66ff8b2d4465a8b60a0ff2ab1141c6f47d3943e577"
+    },
+    {
+      "asset": "lab_open_pc_chassis",
+      "level": 0,
+      "triangles": 4976,
+      "meshParts": 20,
+      "boundsBlenderXYZ": [
+        [
+          -0.10499999672174454,
+          -0.2110000103712082,
+          0.0
+        ],
+        [
+          0.10499999672174454,
+          0.20999999344348907,
+          0.44749999046325684
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "0a149bbcfbff5c9cc6e81bbd73d6044f5793efc6875c812ad0b89f8e6f16c42b"
+    },
+    {
+      "asset": "lab_open_pc_chassis",
+      "level": 1,
+      "triangles": 2624,
+      "meshParts": 20,
+      "boundsBlenderXYZ": [
+        [
+          -0.10499999672174454,
+          -0.2110000103712082,
+          0.0
+        ],
+        [
+          0.10499999672174454,
+          0.20999999344348907,
+          0.44749999046325684
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "780dae04b5303a72fca2f67d156d9e0a9fb625e7a40f95f82165a1a66413cef8"
+    },
+    {
+      "asset": "lab_open_pc_chassis",
+      "level": 2,
+      "triangles": 1008,
+      "meshParts": 20,
+      "boundsBlenderXYZ": [
+        [
+          -0.10499999672174454,
+          -0.2110000103712082,
+          0.0
+        ],
+        [
+          0.10499999672174454,
+          0.20999999344348907,
+          0.44749999046325684
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "8614ffd0ca0c1a73729f57bc33f330fb37af1021765eeffdd9b92d8862916287"
+    },
+    {
+      "asset": "lab_unknown_white_case",
+      "level": 0,
+      "triangles": 1564,
+      "meshParts": 5,
+      "boundsBlenderXYZ": [
+        [
+          -0.1599999964237213,
+          -0.43128830194473267,
+          -0.00595841882750392
+        ],
+        [
+          0.3278003931045532,
+          0.14499999582767487,
+          0.5249999761581421
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "25f2a7277710a9be5da16f0f983a03bec925ff4309a4886352365771b3a466f1"
+    },
+    {
+      "asset": "lab_unknown_white_case",
+      "level": 1,
+      "triangles": 800,
+      "meshParts": 5,
+      "boundsBlenderXYZ": [
+        [
+          -0.1599999964237213,
+          -0.4308229684829712,
+          -0.005797568708658218
+        ],
+        [
+          0.32750627398490906,
+          0.14499999582767487,
+          0.5249999761581421
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "281619c1ff01b50a9f83dd1caf1485b11c09ec2f2f46cc78b96ff211cf38c307"
+    },
+    {
+      "asset": "lab_unknown_white_case",
+      "level": 2,
+      "triangles": 300,
+      "meshParts": 5,
+      "boundsBlenderXYZ": [
+        [
+          -0.1599999964237213,
+          -0.42979860305786133,
+          -0.006032278761267662
+        ],
+        [
+          0.32663726806640625,
+          0.14499999582767487,
+          0.5249999761581421
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "b7fbab4fe154e29051c6ca648ae9d097d25b4ae8abec7ecab803cd887b7e386f"
+    },
+    {
+      "asset": "lab_desktop_small_items",
+      "level": 0,
+      "triangles": 4212,
+      "meshParts": 15,
+      "boundsBlenderXYZ": [
+        [
+          -0.492499977350235,
+          -0.2750000059604645,
+          0.0
+        ],
+        [
+          0.7099999785423279,
+          0.27250000834465027,
+          0.1419999897480011
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "991caa3e1175d26708d9044ee0190b2faee6ab63f01726c4edfe1e5f8af896d9"
+    },
+    {
+      "asset": "lab_desktop_small_items",
+      "level": 1,
+      "triangles": 2184,
+      "meshParts": 15,
+      "boundsBlenderXYZ": [
+        [
+          -0.492499977350235,
+          -0.2750000059604645,
+          0.0
+        ],
+        [
+          0.7099999785423279,
+          0.27250000834465027,
+          0.1419999897480011
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "c8b1a3bff5259b6ac55976d017899877f2920daa10fe8abf864696bb21654e13"
+    },
+    {
+      "asset": "lab_desktop_small_items",
+      "level": 2,
+      "triangles": 828,
+      "meshParts": 15,
+      "boundsBlenderXYZ": [
+        [
+          -0.492499977350235,
+          -0.2750000059604645,
+          0.0
+        ],
+        [
+          0.7099999785423279,
+          0.27250000834465027,
+          0.1419999897480011
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "f482c04f9333102742f47aeec33f109fa90c2d3560c1ededefc98117f9383bee"
+    },
+    {
+      "asset": "lab_hard_transport_case",
+      "level": 0,
+      "triangles": 2632,
+      "meshParts": 14,
+      "boundsBlenderXYZ": [
+        [
+          -0.3199999928474426,
+          -0.2540000081062317,
+          0.009999990463256836
+        ],
+        [
+          0.3199999928474426,
+          0.20999999344348907,
+          0.4274999797344208
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "690e8af7df14362606180c54f95b78efa7103a212c855b2f586c33da5b8a135d"
+    },
+    {
+      "asset": "lab_hard_transport_case",
+      "level": 1,
+      "triangles": 1512,
+      "meshParts": 14,
+      "boundsBlenderXYZ": [
+        [
+          -0.3199999928474426,
+          -0.2540000081062317,
+          0.009999990463256836
+        ],
+        [
+          0.3199999928474426,
+          0.20999999344348907,
+          0.4274999797344208
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "97041afa09818bda97fc1a59ad7d0b711dd1cd96bc1a172002397d274160659e"
+    },
+    {
+      "asset": "lab_hard_transport_case",
+      "level": 2,
+      "triangles": 528,
+      "meshParts": 12,
+      "boundsBlenderXYZ": [
+        [
+          -0.3199999928474426,
+          -0.2540000081062317,
+          0.009999990463256836
+        ],
+        [
+          0.3199999928474426,
+          0.20999999344348907,
+          0.4274999797344208
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "832ccc5d399f29a023751d5ca3e2f822bd2d5d18052191ff1aaa652682309cce"
+    },
+    {
+      "asset": "lab_window_unknown_enclosure",
+      "level": 0,
+      "triangles": 1432,
+      "meshParts": 6,
+      "boundsBlenderXYZ": [
+        [
+          -0.19499999284744263,
+          -0.2914842367172241,
+          -0.0006224116077646613
+        ],
+        [
+          0.19499999284744263,
+          0.14000000059604645,
+          0.32999998331069946
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "eb8ec8df757aac6d3922d93fb11c5e6615e7b4532f4bbc50bedab9c24175ef35"
+    },
+    {
+      "asset": "lab_window_unknown_enclosure",
+      "level": 1,
+      "triangles": 764,
+      "meshParts": 6,
+      "boundsBlenderXYZ": [
+        [
+          -0.19499999284744263,
+          -0.2914848029613495,
+          -0.0006125741638243198
+        ],
+        [
+          0.19499999284744263,
+          0.14000000059604645,
+          0.32999998331069946
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "9cc86dc46d9d94624c2f523c431389e5f45d3cb0399e950c7fe0a2ceb94b77fd"
+    },
+    {
+      "asset": "lab_window_unknown_enclosure",
+      "level": 2,
+      "triangles": 296,
+      "meshParts": 6,
+      "boundsBlenderXYZ": [
+        [
+          -0.19499999284744263,
+          -0.29148876667022705,
+          -0.0006590867415070534
+        ],
+        [
+          0.19499999284744263,
+          0.14000000059604645,
+          0.32999998331069946
+        ]
+      ],
+      "validation": {
+        "nonFiniteVertices": 0,
+        "degenerateFaces": 0,
+        "nonManifoldEdges": 0,
+        "inconsistentEdgeWinding": 0,
+        "inwardSolids": 0,
+        "unappliedModifiers": 0
+      },
+      "sha256": "1d5572c2fc33bae53d1db4e8ea154017e954b9bd7069302a34b370a539b2d353"
+    }
+  ]
+}

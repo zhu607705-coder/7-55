@@ -1,0 +1,418 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 300256,
+    "sha256": "1baf02961cc75b774029234b26868277bc8a554df5955826934064d21e33dc59",
+    "triangles": 3412,
+    "primitives": 23,
+    "bounds": {
+      "min": [
+        -0.17000000178813934,
+        0,
+        -0.15300000458955765
+      ],
+      "max": [
+        0.17099999537458643,
+        0.15299999713897705,
+        0.16400000416363417
+      ]
+    },
+    "size": [
+      0.3409999971627258,
+      0.15299999713897705,
+      0.3170000087531918
+    ],
+    "materials": [
+      {
+        "name": "Neutral warm grey instrument housing",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.6299999952316284,
+          0.6399999856948853,
+          0.5899999737739563,
+          1
+        ],
+        "metallicFactor": 0.07999999821186066,
+        "roughnessFactor": 0.47999998927116394
+      },
+      {
+        "name": "Dark polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.014000000432133675,
+          0.01899999938905239,
+          0.020999999716877937,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.5799999833106995
+      },
+      {
+        "name": "Blank dark glass no display content",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.00800000037997961,
+          0.014000000432133675,
+          0.017999999225139618,
+          1
+        ],
+        "metallicFactor": 0.11999999731779099,
+        "roughnessFactor": 0.20000000298023224
+      },
+      {
+        "name": "Neutral button polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.25,
+          0.2800000011920929,
+          0.27000001072883606,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.5
+      }
+    ],
+    "textures": []
+  },
+  "calibration": {
+    "targetHeight": 0.15299999713897705,
+    "yawDegrees": 0,
+    "uniformScale": 1,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "1baf02961cc75b774029234b26868277bc8a554df5955826934064d21e33dc59",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 8.940696716308594e-8,
+      "bytes": 19432,
+      "uncompressedBytes": 188676,
+      "sha256": "123e1a6c887af50ba25d4a36f6886cfedae600c3ec5549f016985a8d71259190",
+      "triangles": 3412,
+      "primitives": 4,
+      "bounds": {
+        "min": [
+          -0.1704999985813629,
+          0,
+          -0.1585000043765959
+        ],
+        "max": [
+          0.17050000702147372,
+          0.1530000865459442,
+          0.1585000215067211
+        ]
+      },
+      "size": [
+        0.3410000056028366,
+        0.1530000865459442,
+        0.317000025883317
+      ],
+      "materials": [
+        {
+          "name": "Neutral warm grey instrument housing",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.6299999952316284,
+            0.6399999856948853,
+            0.5899999737739563,
+            1
+          ],
+          "metallicFactor": 0.07999999821186066,
+          "roughnessFactor": 0.47999998927116394
+        },
+        {
+          "name": "Dark polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.014000000432133675,
+            0.01899999938905239,
+            0.020999999716877937,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5799999833106995
+        },
+        {
+          "name": "Blank dark glass no display content",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.014000000432133675,
+            0.017999999225139618,
+            1
+          ],
+          "metallicFactor": 0.11999999731779099,
+          "roughnessFactor": 0.20000000298023224
+        },
+        {
+          "name": "Neutral button polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.25,
+            0.2800000011920929,
+            0.27000001072883606,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "8769ea5cfd654c0a33b2a1b2498dd4225fd22452f98c6b0d54d321584680b80a",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 8.940696716308594e-8,
+      "bytes": 13304,
+      "uncompressedBytes": 109572,
+      "sha256": "3351e08d70a8c1cd9e9042e0e50a84cfc7eba81ea969615d5656ef71d93954a6",
+      "triangles": 1972,
+      "primitives": 4,
+      "bounds": {
+        "min": [
+          -0.1704999985813629,
+          0,
+          -0.1585000043765959
+        ],
+        "max": [
+          0.17050000702147372,
+          0.1530000865459442,
+          0.1585000215067211
+        ]
+      },
+      "size": [
+        0.3410000056028366,
+        0.1530000865459442,
+        0.317000025883317
+      ],
+      "materials": [
+        {
+          "name": "Neutral warm grey instrument housing",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.6299999952316284,
+            0.6399999856948853,
+            0.5899999737739563,
+            1
+          ],
+          "metallicFactor": 0.07999999821186066,
+          "roughnessFactor": 0.47999998927116394
+        },
+        {
+          "name": "Dark polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.014000000432133675,
+            0.01899999938905239,
+            0.020999999716877937,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5799999833106995
+        },
+        {
+          "name": "Blank dark glass no display content",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.014000000432133675,
+            0.017999999225139618,
+            1
+          ],
+          "metallicFactor": 0.11999999731779099,
+          "roughnessFactor": 0.20000000298023224
+        },
+        {
+          "name": "Neutral button polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.25,
+            0.2800000011920929,
+            0.27000001072883606,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "441b6e77e517b32bbeb019b940d6998a60511785ec95068bfab5457d0c0bd269",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 8.940696716308594e-8,
+      "bytes": 8040,
+      "uncompressedBytes": 39360,
+      "sha256": "cf7deffab220caec507022c06611377d302eda635ae7c1346d29e5d5a2e8c542",
+      "triangles": 608,
+      "primitives": 4,
+      "bounds": {
+        "min": [
+          -0.1704999985813629,
+          0,
+          -0.1585000043765959
+        ],
+        "max": [
+          0.1695000049949158,
+          0.1530000865459442,
+          0.1585000215067211
+        ]
+      },
+      "size": [
+        0.3400000035762787,
+        0.1530000865459442,
+        0.317000025883317
+      ],
+      "materials": [
+        {
+          "name": "Neutral warm grey instrument housing",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.6299999952316284,
+            0.6399999856948853,
+            0.5899999737739563,
+            1
+          ],
+          "metallicFactor": 0.07999999821186066,
+          "roughnessFactor": 0.47999998927116394
+        },
+        {
+          "name": "Dark polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.014000000432133675,
+            0.01899999938905239,
+            0.020999999716877937,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5799999833106995
+        },
+        {
+          "name": "Blank dark glass no display content",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.00800000037997961,
+            0.014000000432133675,
+            0.017999999225139618,
+            1
+          ],
+          "metallicFactor": 0.11999999731779099,
+          "roughnessFactor": 0.20000000298023224
+        },
+        {
+          "name": "Neutral button polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.25,
+            0.2800000011920929,
+            0.27000001072883606,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5
+        }
+      ],
+      "textures": []
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

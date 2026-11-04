@@ -1,0 +1,482 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 703360,
+    "sha256": "20dcf6f9823a7f42acff0aca2319051083d5728eef4b49ffb64a204d26ec219d",
+    "triangles": 31446,
+    "primitives": 46,
+    "bounds": {
+      "min": [
+        -0.03175000101327896,
+        0,
+        -0.0625
+      ],
+      "max": [
+        0.03175000101327896,
+        0.03999999910593033,
+        0.0625
+      ]
+    },
+    "size": [
+      0.06350000202655792,
+      0.03999999910593033,
+      0.125
+    ],
+    "materials": [
+      {
+        "name": "Photo coral rear gradient on GPX shaped shell",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.4000000059604645
+      },
+      {
+        "name": "Warm ivory molded shell",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.699999988079071,
+          0.7099999785423279,
+          0.6600000262260437,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.3799999952316284
+      },
+      {
+        "name": "Charcoal matte bezel",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.013000000268220901,
+          0.017000000923871994,
+          0.020999999716877937,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.3199999928474426
+      },
+      {
+        "name": "Dark underside elastomer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.02500000037252903,
+          0.028999999165534973,
+          0.029999999329447746,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.7599999904632568
+      },
+      {
+        "name": "Coral accent polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.9300000071525574,
+          0.14000000059604645,
+          0.10999999940395355,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.4300000071525574
+      }
+    ],
+    "textures": []
+  },
+  "calibration": {
+    "targetHeight": 0.04,
+    "yawDegrees": 0,
+    "uniformScale": 1.0000000223517422,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 18
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "20dcf6f9823a7f42acff0aca2319051083d5728eef4b49ffb64a204d26ec219d",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 7.590278985891707e-8,
+      "bytes": 75160,
+      "uncompressedBytes": 429024,
+      "sha256": "04c0fe2e392c12308ed42992523bebe01af9157d82fafea9d402d4e667a51e77",
+      "triangles": 20086,
+      "primitives": 5,
+      "bounds": {
+        "min": [
+          -0.03175000101327896,
+          0,
+          -0.0625
+        ],
+        "max": [
+          0.031750064343214035,
+          0.039999984204769135,
+          0.06249992549419403
+        ]
+      },
+      "size": [
+        0.063500065356493,
+        0.039999984204769135,
+        0.12499992549419403
+      ],
+      "materials": [
+        {
+          "name": "Photo coral rear gradient on GPX shaped shell",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4000000059604645
+        },
+        {
+          "name": "Warm ivory molded shell",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.699999988079071,
+            0.7099999785423279,
+            0.6600000262260437,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3799999952316284
+        },
+        {
+          "name": "Charcoal matte bezel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.013000000268220901,
+            0.017000000923871994,
+            0.020999999716877937,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3199999928474426
+        },
+        {
+          "name": "Dark underside elastomer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.02500000037252903,
+            0.028999999165534973,
+            0.029999999329447746,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7599999904632568
+        },
+        {
+          "name": "Coral accent polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.9300000071525574,
+            0.14000000059604645,
+            0.10999999940395355,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4300000071525574
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "603c905818881f32d1ef8405cb9b752f96b0ffdb212387c54381dadd49465deb",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 5.3048133850930324e-8,
+      "bytes": 35696,
+      "uncompressedBytes": 174320,
+      "sha256": "48da6e12036597a24e497f546fe8f87cdada66be2bb192903b175e36230a85f6",
+      "triangles": 7997,
+      "primitives": 5,
+      "bounds": {
+        "min": [
+          -0.03175000101327896,
+          0,
+          -0.0625
+        ],
+        "max": [
+          0.03174996003508568,
+          0.03999994695186615,
+          0.06250004470348358
+        ]
+      },
+      "size": [
+        0.06349996104836464,
+        0.03999994695186615,
+        0.12500004470348358
+      ],
+      "materials": [
+        {
+          "name": "Photo coral rear gradient on GPX shaped shell",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4000000059604645
+        },
+        {
+          "name": "Warm ivory molded shell",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.699999988079071,
+            0.7099999785423279,
+            0.6600000262260437,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3799999952316284
+        },
+        {
+          "name": "Charcoal matte bezel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.013000000268220901,
+            0.017000000923871994,
+            0.020999999716877937,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3199999928474426
+        },
+        {
+          "name": "Dark underside elastomer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.02500000037252903,
+            0.028999999165534973,
+            0.029999999329447746,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7599999904632568
+        },
+        {
+          "name": "Coral accent polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.9300000071525574,
+            0.14000000059604645,
+            0.10999999940395355,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4300000071525574
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "0867a609185c9e9de36b4912fbaa1722b239bd597df546af30f17056b719b98f",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 5.355104806814559e-8,
+      "bytes": 14552,
+      "uncompressedBytes": 48488,
+      "sha256": "df8c78e35612c0aea04bd0a172c6299120d4de6b923e7696842a879859befd23",
+      "triangles": 1996,
+      "primitives": 5,
+      "bounds": {
+        "min": [
+          -0.03175000101327896,
+          0,
+          -0.0625
+        ],
+        "max": [
+          0.031750019639730453,
+          0.03999994695186615,
+          0.06249994784593582
+        ]
+      },
+      "size": [
+        0.06350002065300941,
+        0.03999994695186615,
+        0.12499994784593582
+      ],
+      "materials": [
+        {
+          "name": "Photo coral rear gradient on GPX shaped shell",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4000000059604645
+        },
+        {
+          "name": "Warm ivory molded shell",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.699999988079071,
+            0.7099999785423279,
+            0.6600000262260437,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3799999952316284
+        },
+        {
+          "name": "Charcoal matte bezel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.013000000268220901,
+            0.017000000923871994,
+            0.020999999716877937,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3199999928474426
+        },
+        {
+          "name": "Dark underside elastomer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.02500000037252903,
+            0.028999999165534973,
+            0.029999999329447746,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.7599999904632568
+        },
+        {
+          "name": "Coral accent polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.9300000071525574,
+            0.14000000059604645,
+            0.10999999940395355,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4300000071525574
+        }
+      ],
+      "textures": []
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

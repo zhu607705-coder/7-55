@@ -1,0 +1,377 @@
+{
+  "blender": "4.3.2",
+  "units": "m",
+  "referenceLibraryId": "src_ref_553e32da74bbe8adeb78cfb9fbeb32e1",
+  "referencePixelsViewed": true,
+  "dimensions": "All sizes are authoring estimates from a single photograph; no surveyed or manufacturer dimensions are claimed.",
+  "scope": "Five independent furniture and planter sources. No main scene, UI, Godot, collision or runtime integration.",
+  "materials": "Metallic-roughness PBR factors and synthetic wood base-color maps; the table also has a synthetic tangent-space normal map. No AO maps or photograph pixels.",
+  "render": "CPU Cycles studio renders, not browser captures.",
+  "omissions": [
+    "Rear orange lounge chairs and rear bar stools are not included in this furniture batch.",
+    "The raised black shelf behind the planter is omitted; its junction and support are obscured.",
+    "Kitchen counter and appliances are separate reusable assets in this package."
+  ],
+  "records": [
+    {
+      "asset": "photo_living_caramel_armchair",
+      "level": 0,
+      "triangles": 8100,
+      "boundsBlenderXYZ": [
+        [
+          -0.3125,
+          -0.25600001215934753,
+          0.0029999995604157448
+        ],
+        [
+          0.3125,
+          0.2840000092983246,
+          0.8537790179252625
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.625,
+        0.5400000214576721,
+        0.8507790183648467
+      ],
+      "meshParts": 17,
+      "sha256": "ec273bd7a6f80bf25e4e08597aae3b8053ea56f11c4f1e9f977b8b1a86af2844"
+    },
+    {
+      "asset": "photo_living_caramel_armchair",
+      "level": 1,
+      "triangles": 3540,
+      "boundsBlenderXYZ": [
+        [
+          -0.3125,
+          -0.25600001215934753,
+          0.0029999995604157448
+        ],
+        [
+          0.3125,
+          0.2840000092983246,
+          0.8537775278091431
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.625,
+        0.5400000214576721,
+        0.8507775282487273
+      ],
+      "meshParts": 17,
+      "sha256": "b286f2d9b5653093ad8573c24fabb9ae7ce265c6c06d18060a7383bc170f0600"
+    },
+    {
+      "asset": "photo_living_caramel_armchair",
+      "level": 2,
+      "triangles": 1280,
+      "boundsBlenderXYZ": [
+        [
+          -0.3125,
+          -0.25600001215934753,
+          0.0029999995604157448
+        ],
+        [
+          0.3125,
+          0.2840000092983246,
+          0.8537740707397461
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.625,
+        0.5400000214576721,
+        0.8507740711793303
+      ],
+      "meshParts": 16,
+      "sha256": "b3b2fe01f0dce2be47fd371f846d5508f39406b378a37072d9def7a17ccd347d"
+    },
+    {
+      "asset": "photo_living_pale_shell_chair",
+      "level": 0,
+      "triangles": 7712,
+      "boundsBlenderXYZ": [
+        [
+          -0.2919999957084656,
+          -0.30699998140335083,
+          0.003999999724328518
+        ],
+        [
+          0.2919999957084656,
+          0.2979999780654907,
+          0.8531721234321594
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.5839999914169312,
+        0.6049999594688416,
+        0.8491721237078309
+      ],
+      "meshParts": 13,
+      "sha256": "31b9f704270900637973c7b691b85a1c468f97c443cf48e8255cb97b7738eb7e"
+    },
+    {
+      "asset": "photo_living_pale_shell_chair",
+      "level": 1,
+      "triangles": 2832,
+      "boundsBlenderXYZ": [
+        [
+          -0.2919999957084656,
+          -0.30699998140335083,
+          0.003999999724328518
+        ],
+        [
+          0.2919999957084656,
+          0.2979999780654907,
+          0.8531769514083862
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.5839999914169312,
+        0.6049999594688416,
+        0.8491769516840577
+      ],
+      "meshParts": 13,
+      "sha256": "96dc2c60c259f1c497a502c45c090e98ac8661427b9a9a9df187e8a4fd26c479"
+    },
+    {
+      "asset": "photo_living_pale_shell_chair",
+      "level": 2,
+      "triangles": 944,
+      "boundsBlenderXYZ": [
+        [
+          -0.2919999957084656,
+          -0.30699998140335083,
+          0.003999999724328518
+        ],
+        [
+          0.2919999957084656,
+          0.2979999780654907,
+          0.8531754016876221
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.5839999914169312,
+        0.6049999594688416,
+        0.8491754019632936
+      ],
+      "meshParts": 13,
+      "sha256": "9d6376f24ec413401ded3e813920023e69608d3915d60c2be3fcbe0ac9e033cb"
+    },
+    {
+      "asset": "photo_living_capsule_table",
+      "level": 0,
+      "triangles": 5264,
+      "boundsBlenderXYZ": [
+        [
+          -0.5799999833106995,
+          -1.6749999523162842,
+          0.004000000189989805
+        ],
+        [
+          0.5799999833106995,
+          1.6749999523162842,
+          0.7649999856948853
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.159999966621399,
+        3.3499999046325684,
+        0.7609999855048954
+      ],
+      "meshParts": 4,
+      "sha256": "a0e94ba80fce4ca88b5c8bb5c1854993d408db379af4eb18efad702ee0708138"
+    },
+    {
+      "asset": "photo_living_capsule_table",
+      "level": 1,
+      "triangles": 1616,
+      "boundsBlenderXYZ": [
+        [
+          -0.5799999833106995,
+          -1.6749999523162842,
+          0.004000000189989805
+        ],
+        [
+          0.5799999833106995,
+          1.6749999523162842,
+          0.7649999856948853
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.159999966621399,
+        3.3499999046325684,
+        0.7609999855048954
+      ],
+      "meshParts": 4,
+      "sha256": "4449222e69b51c6483a85a5092f532d57ef1b891cf1c54e3fc77509df2983f4f"
+    },
+    {
+      "asset": "photo_living_capsule_table",
+      "level": 2,
+      "triangles": 560,
+      "boundsBlenderXYZ": [
+        [
+          -0.5799999833106995,
+          -1.6749999523162842,
+          0.004000000189989805
+        ],
+        [
+          0.5799999833106995,
+          1.6749999523162842,
+          0.7649999856948853
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.159999966621399,
+        3.3499999046325684,
+        0.7609999855048954
+      ],
+      "meshParts": 4,
+      "sha256": "84244f27bea136132f37571e9ca130a0492cb4f551a45b26f408fc99b294bcfa"
+    },
+    {
+      "asset": "photo_living_orange_office_chair",
+      "level": 0,
+      "triangles": 10476,
+      "boundsBlenderXYZ": [
+        [
+          -0.32177576422691345,
+          -0.3102096915245056,
+          0.012999999336898327
+        ],
+        [
+          0.34083154797554016,
+          0.34824076294898987,
+          0.986535370349884
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.6626073122024536,
+        0.6584504544734955,
+        0.9735353710129857
+      ],
+      "meshParts": 26,
+      "sha256": "432369b6227e192266c482d6e0715811b04d9ce13da868c1dc72689ad2ef0873"
+    },
+    {
+      "asset": "photo_living_orange_office_chair",
+      "level": 1,
+      "triangles": 4420,
+      "boundsBlenderXYZ": [
+        [
+          -0.32177576422691345,
+          -0.3102096915245056,
+          0.012999999336898327
+        ],
+        [
+          0.34083154797554016,
+          0.3482955992221832,
+          0.9864369034767151
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.6626073122024536,
+        0.6585052907466888,
+        0.9734369041398168
+      ],
+      "meshParts": 26,
+      "sha256": "36443b0b11d72f1ff3ced78da6368d799332c41e7ca4c45249ed79c9f1c2339d"
+    },
+    {
+      "asset": "photo_living_orange_office_chair",
+      "level": 2,
+      "triangles": 1864,
+      "boundsBlenderXYZ": [
+        [
+          -0.32177576422691345,
+          -0.3102096915245056,
+          0.012999999336898327
+        ],
+        [
+          0.34083154797554016,
+          0.3473535478115082,
+          0.9862734079360962
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.6626073122024536,
+        0.6575632393360138,
+        0.9732734085991979
+      ],
+      "meshParts": 26,
+      "sha256": "6585e1c9b67e6d5dcfb8889a646bc303c4fe17723693b82c58041998b151e933"
+    },
+    {
+      "asset": "photo_living_wood_planter",
+      "level": 0,
+      "triangles": 14040,
+      "boundsBlenderXYZ": [
+        [
+          -0.3733956217765808,
+          -0.37873685359954834,
+          0.0
+        ],
+        [
+          0.357487291097641,
+          0.3375476896762848,
+          1.5358234643936157
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.7308829128742218,
+        0.7162845432758331,
+        1.5358234643936157
+      ],
+      "meshParts": 27,
+      "sha256": "423c373d19f3404ee574d8d2cb79cf40147ec6f085f116cdc79d7ae94972b7a1"
+    },
+    {
+      "asset": "photo_living_wood_planter",
+      "level": 1,
+      "triangles": 5944,
+      "boundsBlenderXYZ": [
+        [
+          -0.3733956217765808,
+          -0.37873685359954834,
+          0.0
+        ],
+        [
+          0.357487291097641,
+          0.33674314618110657,
+          1.5352863073349
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.7308829128742218,
+        0.7154799997806549,
+        1.5352863073349
+      ],
+      "meshParts": 27,
+      "sha256": "e2208d68afdac4afc79b84f5107df22f62e30eb74cba6e013bba736d953581a9"
+    },
+    {
+      "asset": "photo_living_wood_planter",
+      "level": 2,
+      "triangles": 2352,
+      "boundsBlenderXYZ": [
+        [
+          -0.3733956217765808,
+          -0.37873685359954834,
+          0.0
+        ],
+        [
+          0.357487291097641,
+          0.3281553387641907,
+          1.5352863073349
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.7308829128742218,
+        0.706892192363739,
+        1.5352863073349
+      ],
+      "meshParts": 27,
+      "sha256": "7cbcc8d5389a8c54052c954bb9d6c80453e398a30ecee901e95d7da8fd975efa"
+    }
+  ]
+}

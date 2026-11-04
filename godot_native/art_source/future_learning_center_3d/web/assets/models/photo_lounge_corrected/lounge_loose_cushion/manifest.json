@@ -1,0 +1,350 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 73868,
+    "sha256": "b716e1b8071a9a836b6105e47d3a79ad40938d566b0624ee76f22cb60e104e2b",
+    "triangles": 2084,
+    "primitives": 2,
+    "bounds": {
+      "min": [
+        -0.18181999027729034,
+        0,
+        -0.07100000232458115
+      ],
+      "max": [
+        0.18181997537612915,
+        0.3636400103569031,
+        0.07100000232458115
+      ]
+    },
+    "size": [
+      0.3636399656534195,
+      0.3636400103569031,
+      0.1420000046491623
+    ],
+    "materials": [
+      {
+        "name": "Terracotta woven upholstery",
+        "baseColorTexture": true,
+        "normalTexture": true,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.8600000143051147
+      },
+      {
+        "name": "Terracotta welt",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.38999998569488525,
+          0.07199999690055847,
+          0.03400000184774399,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.8600000143051147
+      }
+    ],
+    "textures": [
+      {
+        "name": "terracotta_woven_upholstery_normal",
+        "mime": "image/png",
+        "bytes": 3290,
+        "size": [
+          128,
+          128
+        ]
+      },
+      {
+        "name": "terracotta_woven_upholstery_base",
+        "mime": "image/png",
+        "bytes": 21216,
+        "size": [
+          128,
+          128
+        ]
+      }
+    ]
+  },
+  "calibration": {
+    "targetHeight": 0.3636400103569031,
+    "yawDegrees": 180,
+    "uniformScale": 1,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 512,
+    "midMaxPx": 256,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "encoding": {
+    "positionBits": 20
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "b716e1b8071a9a836b6105e47d3a79ad40938d566b0624ee76f22cb60e104e2b",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 1.341104507446289e-7,
+      "bytes": 38496,
+      "uncompressedBytes": 69844,
+      "sha256": "b9b931be746453214365c5e2e5d6633405cae6b34e8f1544f81bfe2ba4cda1f2",
+      "triangles": 2084,
+      "primitives": 2,
+      "bounds": {
+        "min": [
+          -0.18182002007961273,
+          0,
+          -0.07100013643503189
+        ],
+        "max": [
+          0.18181999027729034,
+          0.3636400103569031,
+          0.07100000232458115
+        ]
+      },
+      "size": [
+        0.3636400103569031,
+        0.3636400103569031,
+        0.14200013875961304
+      ],
+      "materials": [
+        {
+          "name": "Terracotta woven upholstery",
+          "baseColorTexture": true,
+          "normalTexture": true,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8600000143051147
+        },
+        {
+          "name": "Terracotta welt",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.38999998569488525,
+            0.07199999690055847,
+            0.03400000184774399,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8600000143051147
+        }
+      ],
+      "textures": [
+        {
+          "name": "terracotta_woven_upholstery_normal",
+          "mime": "image/png",
+          "bytes": 3290,
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "name": "terracotta_woven_upholstery_base",
+          "mime": "image/png",
+          "bytes": 21216,
+          "size": [
+            128,
+            128
+          ]
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "9e152dc42221b8ee4c82f4995728cf5bc20fbbd71478f54827c5d2ed44584f26",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 1.341104507446289e-7,
+      "bytes": 34504,
+      "uncompressedBytes": 53072,
+      "sha256": "c5467f5e23b41bc2c3b72d22ff2369b4433e599991c4a883dfa7ac5f43e7e8b1",
+      "triangles": 1252,
+      "primitives": 2,
+      "bounds": {
+        "min": [
+          -0.18182002007961273,
+          0,
+          -0.07100013643503189
+        ],
+        "max": [
+          0.18181999027729034,
+          0.3636400103569031,
+          0.07100000232458115
+        ]
+      },
+      "size": [
+        0.3636400103569031,
+        0.3636400103569031,
+        0.14200013875961304
+      ],
+      "materials": [
+        {
+          "name": "Terracotta woven upholstery",
+          "baseColorTexture": true,
+          "normalTexture": true,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8600000143051147
+        },
+        {
+          "name": "Terracotta welt",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.38999998569488525,
+            0.07199999690055847,
+            0.03400000184774399,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8600000143051147
+        }
+      ],
+      "textures": [
+        {
+          "name": "terracotta_woven_upholstery_normal",
+          "mime": "image/png",
+          "bytes": 3290,
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "name": "terracotta_woven_upholstery_base",
+          "mime": "image/png",
+          "bytes": 21216,
+          "size": [
+            128,
+            128
+          ]
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "3d3a22ff6fc0eacc7fc0bc01ddfc56631d9b700cc530d1aff948c72828fdeaad",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 1.341104507446289e-7,
+      "bytes": 28944,
+      "uncompressedBytes": 34040,
+      "sha256": "d512616b5b414da68b26d81b194fbf32ebac9844cb017358884bede237f59e69",
+      "triangles": 332,
+      "primitives": 1,
+      "bounds": {
+        "min": [
+          -0.18031999468803406,
+          0,
+          -0.07100013643503189
+        ],
+        "max": [
+          0.18031999468803406,
+          0.3606399893760681,
+          0.07100000232458115
+        ]
+      },
+      "size": [
+        0.3606399893760681,
+        0.3606399893760681,
+        0.14200013875961304
+      ],
+      "materials": [
+        {
+          "name": "Terracotta woven upholstery",
+          "baseColorTexture": true,
+          "normalTexture": true,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8600000143051147
+        }
+      ],
+      "textures": [
+        {
+          "name": "terracotta_woven_upholstery_normal",
+          "mime": "image/png",
+          "bytes": 3290,
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "name": "terracotta_woven_upholstery_base",
+          "mime": "image/png",
+          "bytes": 21216,
+          "size": [
+            128,
+            128
+          ]
+        }
+      ]
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

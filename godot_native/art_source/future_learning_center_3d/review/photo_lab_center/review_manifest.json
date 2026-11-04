@@ -1,0 +1,37 @@
+{
+  "renderer": "Blender 4.3.2 Cycles CPU",
+  "runtimeAcceptance": false,
+  "visuallyInspected": [
+    "photo_lab_center_composition.png",
+    "photo_lab_center_black_task_chair.png",
+    "photo_lab_center_four_leg_table.png",
+    "photo_lab_center_open_shelf.png"
+  ],
+  "files": [
+    {
+      "file": "photo_lab_center_black_task_chair.png",
+      "sha256": "6c2f97ff529bab78b6c2f73a4b47b6a96b7936a92e521c412e2d93615472fa7f"
+    },
+    {
+      "file": "photo_lab_center_black_transit_case.png",
+      "sha256": "6dd89efdd11246f248713f8ec2ce1532b5711ccfdd8f12d0c114fb926c9e381c"
+    },
+    {
+      "file": "photo_lab_center_composition.png",
+      "sha256": "1510f202e080968a05193baf5bf42948d4d830757656591438648c22fb68fd04"
+    },
+    {
+      "file": "photo_lab_center_four_leg_table.png",
+      "sha256": "d0c3c2be95c70e2256d12ae813574d2416adcd3c9bb47aae53baba52e0e93ac0"
+    },
+    {
+      "file": "photo_lab_center_open_shelf.png",
+      "sha256": "d9cdf658d940d276631341fd0f2a7f9970a405c15b1e02e2d891108dc163f9df"
+    },
+    {
+      "file": "photo_lab_center_plain_storage_box.png",
+      "sha256": "1f29c561a2c228edc4824debddd9e8449052ffb367a2394b3121ff92952b0353"
+    }
+  ],
+  "compositionCameraLensMm": 30
+}
