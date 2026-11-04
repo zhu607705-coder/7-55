@@ -30,6 +30,9 @@
     "test:workstation-browser": "node browser_tests/workstation_browser.mjs",
     "test:frame-timing": "node scripts/test_frame_timing.mjs",
     "test:placed-assets": "node scripts/test_placed_assets.mjs",
-    "test:placed-assets-browser": "node browser_tests/placed_assets_browser.mjs"
+    "test:placed-assets-browser": "node browser_tests/placed_assets_browser.mjs",
+    "test:project-displays": "node scripts/test_project_displays.mjs",
+    "test:project-displays-browser": "node browser_tests/project_displays_browser.mjs",
+    "test:project-displays-building": "node browser_tests/project_displays_building_browser.mjs"
   }
 }

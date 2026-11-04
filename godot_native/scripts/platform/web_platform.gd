@@ -284,6 +284,9 @@ func _remember_audio(node: Node) -> void:
 		var director: Node = shell.audio_director
 		var prefix_paused: bool = is_instance_valid(director) and director.is_ancestor_of(node) and director._id_paused(str(node.get_meta("cue_id", "")))
 		_hidden_audio.append({"player": weakref(node), "playback": weakref(node.get_stream_playback()), "manual_paused": node.stream_paused and not prefix_paused})
+		# Freeze this playback before later nodes and focus handlers can spend time.
+		# Its original pause ownership has already been captured above.
+		node.stream_paused = true
 	for child: Node in node.get_children(): _remember_audio(child)
 
 func _same_hidden_playback(record: Dictionary) -> AudioStreamPlayer:
@@ -565,3 +568,4 @@ func _exit_tree() -> void:
 	_save_callback = null
 	_save_token += 1
 	_save_pending = false
+

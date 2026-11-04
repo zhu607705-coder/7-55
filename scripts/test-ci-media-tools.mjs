@@ -110,7 +110,7 @@ test('HTTPS timeout causes exactly one original-route fallback with unchanged ro
   assert.deepEqual(sourceOptions(apt[1]), sourceOptions(apt[0]));
   for (const call of apt.slice(2)) assert.deepEqual(sourceOptions(call), []);
   const routes = r.logs.filter(line => line.includes(' index (60s)'));
-  assert.match(routes[0], /existing official HTTPS mirrors only/);
+  assert.match(routes[0], /existing official HTTPS mirrors; original security source preserved/);
   assert.match(routes[1], /original APT configuration/);
 });
 test('HTTPS index failure skips its download, then acquires once from original configuration', () => {
@@ -223,8 +223,8 @@ test('source hash and approved HTTPS only are logged, not source comments or ven
   assert(r.logs.some(line => line.includes(hash(SOURCE)) && line.includes(hash(MIRRORS))));
   assert(!r.logs.join('\n').includes('Public Ubuntu source'));
 });
-test('unsupported URI diagnostics identify the stanza and source hash without accepting direct official hosts', () => {
-  for (const [stanza, uri] of [[1, 'https://archive.ubuntu.com/ubuntu/'], [2, 'http://security.ubuntu.com/ubuntu']]) {
+test('unsupported URI diagnostics identify the stanza and source hash without accepting unsupported direct official hosts', () => {
+  for (const [stanza, uri] of [[1, 'https://archive.ubuntu.com/ubuntu/'], [2, 'http://security.ubuntu.com/ubuntu/']]) {
     let index = 0;
     const source = SOURCE.replaceAll('URIs: mirror+file:/etc/apt/apt-mirrors.txt', value => ++index === stanza ? `URIs: ${uri}` : value);
     const r = scenario({ source });
@@ -236,7 +236,7 @@ test('unsupported URI diagnostics identify the stanza and source hash without ac
     assert.equal(details.uriSha256, hash(uri));
     assert.equal(details.uriBytes, Buffer.byteLength(uri));
     assert.equal(details.uriCount, 1);
-    assert.deepEqual(details.shapes, [{scheme: stanza === 1 ? 'https' : 'http', host: stanza === 1 ? 'archive.ubuntu.com' : 'security.ubuntu.com', pathKind: stanza === 1 ? 'ubuntu-root-with-slash' : 'ubuntu-root', authority: true, redacted: false}]);
+    assert.deepEqual(details.shapes, [{scheme: stanza === 1 ? 'https' : 'http', host: stanza === 1 ? 'archive.ubuntu.com' : 'security.ubuntu.com', pathKind: 'ubuntu-root-with-slash', authority: true, redacted: false}]);
     assert.equal(r.calls.filter(c => c.command === 'sudo').length, 0);
   }
 });
@@ -340,6 +340,69 @@ test('module import did not invoke the real CLI', () => {
   assert.equal(typeof prepareFallback, 'function');
   assert.equal(existsSync('/tmp/755-ci-media-fixture'), false);
 });
+// Observed runner layout: archive mirror list plus unchanged direct security pocket.
+const SECURITY_URI = 'http://security.ubuntu.com/ubuntu';
+const SECURITY_SOURCE = SOURCE.replace('URIs: mirror+file:/etc/apt/apt-mirrors.txt\nSuites: noble-security', `URIs: ${SECURITY_URI}\nSuites: noble-security`);
+for (const responses of [{}, { index1: 100 }, { download1: 124 }]) test(`direct security pocket survives both bounded routes: ${JSON.stringify(responses)}`, () => {
+  const r = scenario({ source: SECURITY_SOURCE, responses, inspect(call) {
+    const option = call.args.find(arg => arg.startsWith('Dir::Etc::sourcelist='));
+    if (!option) return;
+    const copy = readFileSync(option.slice('Dir::Etc::sourcelist='.length), 'utf8');
+    const temporary = /^URIs: (mirror\+file:.+)$/m.exec(copy)[1];
+    assert.equal(copy.replaceAll(temporary, 'mirror+file:/etc/apt/apt-mirrors.txt'), SECURITY_SOURCE);
+    assert.equal(copy.split('\n\n')[1], SECURITY_SOURCE.split('\n\n')[1]);
+    assert.equal((copy.match(/^URIs: mirror\+file:/gm) ?? []).length, 1);
+    for (const value of ['APT::Get::AllowUnauthenticated=false', 'Acquire::AllowInsecureRepositories=false', 'Acquire::AllowDowngradeToInsecureRepositories=false', 'Acquire::https::Verify-Peer=true', 'Acquire::https::Verify-Host=true', 'Acquire::Check-Valid-Until=true', 'Acquire::Check-Date=true']) assert(call.args.includes(value));
+  } });
+  assert.ifError(r.error);
+  assert.deepEqual(r.result, { installed: true, fallback: Object.keys(responses).length > 0 });
+  assert.equal(r.calls.filter(c => c.phase === 'install').length, 1);
+  assert(r.logs.some(line => line.includes('original security source preserved')));
+});
+for (const variant of [
+  'http://security.ubuntu.com/ubuntu/', 'https://security.ubuntu.com/ubuntu',
+  'http://security.ubuntu.com:80/ubuntu', 'http://security.ubuntu.com:443/ubuntu',
+  'http://security.ubuntu.com./ubuntu', 'http://Security.ubuntu.com/ubuntu',
+  'HTTP://security.ubuntu.com/ubuntu', 'http://security.ubuntu.com.evil.invalid/ubuntu',
+  'http://security.ubuntU.com/ubuntu', 'http://user@security.ubuntu.com/ubuntu',
+  'http://user:password@security.ubuntu.com/ubuntu', 'http://security.ubuntu.com/ubuntu?x=1',
+  'http://security.ubuntu.com/ubuntu#fragment', 'http://security.ubuntu.com/ubuntu?',
+  'http://security.ubuntu.com/ubuntu#', 'http://security.ubuntu.com/ubuntu/../ubuntu',
+  'http://security.ubuntu.com/%75buntu', 'http://security.ubuntu.com//ubuntu',
+  'http://security.ubuntu.com/other', SECURITY_URI + ' https://example.invalid/ubuntu',
+  SECURITY_URI + ' ' + SECURITY_URI, SECURITY_URI + '\u00a0',
+]) test(`direct security URI near miss is refused: ${JSON.stringify(variant)}`, () => {
+  const r = scenario({ source: SECURITY_SOURCE.replace(SECURITY_URI, variant) });
+  assert(r.error);
+  assert.equal(r.calls.filter(c => c.command === 'sudo').length, 0);
+});
+for (const suite of ['noble', 'noble-updates', 'noble-backports', 'noble-security noble', 'noble-security noble-security', 'jammy-security', 'noble-proposed', 'noble-security/']) test(`direct security suite mismatch is refused: ${suite}`, () => {
+  const r = scenario({ source: SECURITY_SOURCE.replace('Suites: noble-security', `Suites: ${suite}`) });
+  assert(r.error);
+  assert.equal(r.calls.filter(c => c.command === 'sudo').length, 0);
+});
+for (const [name, source] of Object.entries({
+  'wrong keyring': SECURITY_SOURCE.replaceAll('ubuntu-archive-keyring.gpg', 'other.gpg'),
+  'missing keyring': SECURITY_SOURCE.replaceAll('Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n', ''),
+  'trust bypass': SECURITY_SOURCE + 'Trusted: yes\n',
+  'expiry bypass': SECURITY_SOURCE + 'Check-Valid-Until: no\n',
+  'insecure bypass': SECURITY_SOURCE + 'Allow-Insecure: yes\n',
+  'wrong architecture': SECURITY_SOURCE + 'Architectures: arm64\n',
+  'foreign component': SECURITY_SOURCE.replaceAll('universe', 'foreign'),
+  'missing archive pockets': SECURITY_SOURCE.split('\n\n')[1],
+  'direct security on archive stanza': SOURCE.replaceAll('mirror+file:/etc/apt/apt-mirrors.txt', SECURITY_URI),
+})) test(`direct security layout still rejects ${name}`, () => {
+  const r = scenario({ source });
+  assert(r.error);
+  assert.equal(r.calls.filter(c => c.command === 'sudo').length, 0);
+});
+for (const ending of ['\n', '\r\n']) test(`direct security inverse preserves comments, tabs and ${JSON.stringify(ending)}`, () => {
+  const source = SECURITY_SOURCE.replace('Public Ubuntu source;', `Comment ${SECURITY_URI};`).replaceAll('URIs: ', 'URIs:\t').replaceAll('\n', ending);
+  const p = prepareFallback(source, MIRRORS, TEMP_MIRROR);
+  assert.equal(p.stanzas, 2);
+  assert.equal(p.source.replaceAll(`mirror+file:${TEMP_MIRROR}`, 'mirror+file:/etc/apt/apt-mirrors.txt'), source);
+});
+
 const WORKFLOWS = [
   ['web-ci.yml', /run: npm run validate:release/, /timeout-minutes: 20/],
   ['godot-native-ci.yml', /node godot_native\/tools\/validate_native\.mjs/],

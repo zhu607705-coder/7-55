@@ -8,6 +8,14 @@ var state: Node
 var shell: Control
 var bridge: Node
 
+class PauseBoundaryProbe:
+	extends Node
+	var watched: AudioStreamPlayer
+	var paused_at_focus_out := false
+	func _notification(what: int) -> void:
+		if what == NOTIFICATION_APPLICATION_FOCUS_OUT and is_instance_valid(watched):
+			paused_at_focus_out = watched.stream_paused
+
 func _initialize() -> void: call_deferred("run")
 func check(value: bool, message: String) -> void:
 	checks += 1
@@ -56,14 +64,23 @@ func run() -> void:
 	await create_timer(.08).timeout
 	var position := ordinary.get_playback_position()
 	check(position > .015, "real playhead first advances while foreground playback is active")
+	var boundary_probe := PauseBoundaryProbe.new()
+	boundary_probe.watched = ordinary; shell.add_child(boundary_probe)
+	var visibility_started_us := Time.get_ticks_usec()
 	bridge._apply_visibility(true)
+	var visibility_finished_us := Time.get_ticks_usec()
+	var boundary_position := ordinary.get_playback_position()
+	check(boundary_probe.paused_at_focus_out, "captured playback is already paused when focus handlers run")
+	boundary_probe.queue_free()
 	check(not paused, "platform leaves the previously running SceneTree running")
 	check(ordinary.stream_paused and manual.stream_paused and owned.stream_paused, "hidden boundary immediately pauses actual live audio")
 	check(not shell.audio_director.pause_for_platform(), "repeated platform pause does not acquire another clock lease")
 	var frozen: int = shell.audio_director.presentation_clock()
 	await create_timer(.14).timeout
 	check(shell.audio_director.presentation_clock() == frozen, "director clock excludes actual hidden wall time")
-	check(absf(ordinary.get_playback_position() - position) < .06, "actual player playhead does not advance during the hidden interval")
+	var hidden_position := ordinary.get_playback_position()
+	var visibility_evidence := str({"before": position, "boundary": boundary_position, "hidden": hidden_position, "boundary_ms": (visibility_finished_us - visibility_started_us) / 1000.0, "observed_ms": (Time.get_ticks_usec() - visibility_finished_us) / 1000.0, "paused": ordinary.stream_paused})
+	check(absf(hidden_position - position) < .06, "actual player playhead does not advance during the hidden interval: " + visibility_evidence)
 	# A legitimate owner resume while hidden cannot override the platform pause.
 	shell.audio_director.resume_prefix("web_visibility_")
 	check(owned.stream_paused, "prefix resume during hiding cannot restart audio")
@@ -198,3 +215,4 @@ func test_director_clock() -> void:
 	var remaining: int = director.voice_deadline - director.presentation_clock()
 	check(remaining >= 460 and remaining <= 520, "overlap retains the authored remaining cutoff rather than adding background duration twice")
 	await director.shutdown(); director.queue_free(); await process_frame
+

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": "2026-11-02-spatial-review-1",
+  "revision": "2026-11-04-configurable-project-displays",
   "scope": "Visitor review configuration only. Space identity and geometry are independent of team/exhibit assignments. No artwork or team membership asserted.",
   "teams": [],
   "exhibits": [
@@ -8,6 +8,11 @@
     {"id":"exhibit/north-display","title":"展厅与荣誉内容 · 待配置","status":"placeholder","image":null,"body":"现有北侧展示区可承载可替换内容；尚无已核准荣誉名单或艺术作品图片。","source":"assets/layout.json#floors/3/rooms/seminar"},
     {"id":"exhibit/life-area","title":"Lab 生活区 · 介绍位","status":"placeholder","image":null,"body":"当前仅沿用已有茶水与休息区，不代表新的改造方案。","source":"assets/layout.json#floors/3/rooms/pantry"},
     {"id":"exhibit/office-corridor-poster","title":"走廊海报 · 图片待补","status":"placeholder","image":null,"body":"4F 保留办公空间轮廓；海报位置与图片尚未核准，不展示虚构团队或成果。","source":"User direction 2026-11-02; no verified poster image or placement"}
+  ],
+  "displayAssignments": [
+    {"targetId":"flc/f4/poster/seminar_1","exhibitId":"exhibit/office-corridor-poster"},
+    {"targetId":"flc/f4/poster/seminar_2","exhibitId":"exhibit/office-corridor-poster"},
+    {"targetId":"flc/f4/poster/seminar_3","exhibitId":"exhibit/office-corridor-poster"}
   ],
   "roomAssignments": [
     {"spaceId":"flc/f3/r08","teamIds":[],"exhibitIds":["exhibit/lab-introduction"]},
@@ -17,3 +22,4 @@
   ],
   "floorVersions": {"1":{"revision":"pending-1","status":"pending-reference","geometry":null,"note":"改造尚未核准；不生成虚构房间或施工方案。"}}
 }
+

@@ -27,6 +27,8 @@ class Transport(unittest.TestCase):
         self.files = {'plain.txt': b'original\n', '.hidden': b'hidden\n', 'art_source/.gdignore': b'',
                       'art_source/model.bin': bytes(range(256)) * 4096,
                       'script.sh': b'#!/bin/sh\nexit 0\n', t.HELPER: Path(t.__file__).read_bytes(),
+                      'space name.txt': b'space\n', '"quoted".txt': b'quote\n',
+                      '中文/é "quoted" file.txt': b'unicode\n', '-leading-option': b'option\n',
                       'long/' + 'directory/' * 14 + 'file.txt': b'long path\n'}
         for name, data in self.files.items():
             p = self.src / name; p.parent.mkdir(parents=True, exist_ok=True); p.write_bytes(data)
@@ -100,6 +102,34 @@ class Transport(unittest.TestCase):
                     self.restore(context)
         self.resign(lambda m: m['source'].update(tree='c'*40))
         self.assertRejected()
+
+    def test_blob_population_uses_one_batch_with_exact_ordered_oids(self):
+        original = t.git
+        with patch.object(t, 'git', wraps=original) as calls:
+            self.restore()
+        writes = [call for call in calls.call_args_list if call.args[1:3] == ('hash-object', '-w')]
+        self.assertEqual(len(writes), 1)
+        self.assertEqual(writes[0].args[1:], ('hash-object', '-w', '--no-filters', '--stdin-paths'))
+        paths = [json.loads(line) for line in writes[0].kwargs['data'].decode('utf-8').splitlines()]
+        entries = t.tree_entries(self.dst)
+        self.assertEqual(len(paths), len(entries))
+        staged = Path(paths[0]).parents[len(Path(entries[0]['path']).parts) - 1]
+        self.assertEqual([str(Path(p).relative_to(staged)) for p in paths],
+                         [e['path'] for e in entries])
+
+    def test_blob_batch_rejects_missing_extra_reordered_and_wrong_oids(self):
+        original = t.git
+        entries = t.tree_entries(self.dst)
+        expected = b''.join(e['oid'].encode() + b'\n' for e in entries)
+        rows = expected.splitlines(keepends=True)
+        for bad in [b'', b''.join(rows[:-1]), expected + rows[0],
+                    b''.join(reversed(rows)), b'0'*40 + b'\n' + b''.join(rows[1:])]:
+            def changed(root, *args, **kwargs):
+                if args[:2] == ('hash-object', '-w'):
+                    return bad
+                return original(root, *args, **kwargs)
+            with self.subTest(output=bad[:41]), patch.object(t, 'git', side_effect=changed):
+                self.assertRejected()
 
     def test_manifest_digest_mismatch(self):
         self.receipt['manifest_sha'] = '0'*64
@@ -214,3 +244,4 @@ class Transport(unittest.TestCase):
 
 if __name__=='__main__':
     unittest.main(verbosity=2)
+
