@@ -1,5 +1,10 @@
 # 参与开发
 
+共创平台的开发目录和命令见 [`platform/README.md`](platform/README.md)，规则见
+[`platform/AGENTS.md`](platform/AGENTS.md)。平台改动运行 `cd platform && npm run validate`；
+持久化改动还需运行真实 PostgreSQL 集成测试。下文游戏构建与章节验证要求只适用于游戏改动。
+平台与游戏混合改动分别验证；所有提交仍须遵守根 `AGENTS.md` 的范围确认规则。
+
 本项目由 4 名协作者共同维护。完整规则见
 [版本管理规范](docs/VERSION_MANAGEMENT.md)。
 

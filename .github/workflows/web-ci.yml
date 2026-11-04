@@ -16,12 +16,15 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: web-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
 jobs:
+  scope:
+    uses: ./.github/workflows/product-scope.yml
   verify-web:
+    needs: scope
+    if: needs.scope.outputs.game == 'true'
+    concurrency:
+      group: web-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
     name: Verify web build
     runs-on: ubuntu-latest
     timeout-minutes: 20

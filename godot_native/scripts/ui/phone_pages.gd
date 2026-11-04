@@ -1,6 +1,7 @@
 extends RefCounted
 const PixelEdges = preload("res://scripts/ui/pixel_edges.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
+const CommunityPortal=preload("res://scripts/platform/community_portal.gd")
 ## Native reconstructions of original phone app hierarchies. Source CSS colors and art.
 ## All hotspots emit intents; this builder never changes story state.
 signal action_requested(action_id: String, value: Variant)
@@ -917,6 +918,8 @@ func _controls() -> Control:
 	backdrop.name="ControlCenterBackdrop"
 	for mode in ["normal","hover","pressed","focus"]: backdrop.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 	var panel_height=580.0+(53 if control_reset_confirm else 0)+(21 if int(s.phoneBattery.percent)==1 else 0)
+	var community_y=panel_height-8
+	if CommunityPortal.available(): panel_height+=64
 	var panel=_paper_panel(root,Rect2(0,0,378,panel_height),PaperInk.PAPER,PaperInk.EDGE,0,2)
 	panel.mouse_filter=Control.MOUSE_FILTER_STOP; panel.name="ControlCenterPanel"
 	_label(panel,"7月9日 周四",Rect2(14,13,260,27),16)
@@ -1010,7 +1013,7 @@ func _controls() -> Control:
 	_panel(saves,Rect2(299,10,41,28),Color("1e5da8"),INK,0,2)
 	_label(saves,"SAVE",Rect2(299,10,41,28),9,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
 	if control_reset_confirm:
-		_label(saves,"将清除章节、道具和谜题进度。编辑过的 CC98 帖子会保留。",Rect2(9,55,332,44),12,Color("5d2424"))
+		_label(saves,"将重新开始主线，旧账号进度保留为备份。个人编辑内容保留。" if OS.has_feature("web") else "将清除章节、道具和谜题进度。编辑过的 CC98 帖子会保留。",Rect2(9,55,332,44),12,Color("5d2424"))
 		_button(saves,"取消",Rect2(9,107,162,31),func(): control_reset_confirm=false; action_requested.emit("phone_refresh",{}),PAPER).name="ControlResetCancel"
 		_act(saves,"确认重置",Rect2(179,107,162,31),"native_reset_progress",null,Color("b64b4b"),Color.WHITE,0).name="ControlResetConfirm"
 	else:
@@ -1018,6 +1021,13 @@ func _controls() -> Control:
 		_button(saves,"重置剧情进度",Rect2(179,56,162,31),func(): control_reset_confirm=true; action_requested.emit("phone_refresh",{}),Color("b64b4b"),Color.WHITE,0).name="ControlResetOpen"
 	for button in [saves.get_node_or_null("ControlSaveNow"),saves.get_node_or_null("ControlResetOpen"),saves.get_node_or_null("ControlResetCancel"),saves.get_node_or_null("ControlResetConfirm")]:
 		if button: button.add_theme_font_size_override("font_size",12)
+	if CommunityPortal.available():
+		var community_link=_act(panel,"共创平台 ↗",Rect2(14,community_y,144,44),"native_open_community",null,PAPER)
+		community_link.name="OpenCommunity";community_link.add_theme_font_size_override("font_size",14)
+		var account_link=_act(panel,"玩家账号",Rect2(166,community_y,94,44),"native_player_account",null,PAPER)
+		account_link.name="OpenPlayerAccount";account_link.add_theme_font_size_override("font_size",14)
+		var saves_link=_act(panel,"存档管理",Rect2(268,community_y,96,44),"native_save_manager",null,PAPER)
+		saves_link.name="OpenSaveManager";saves_link.add_theme_font_size_override("font_size",14)
 	return root
 
 func _source_icon(root: Control, id: String, rect: Rect2) -> Control:

@@ -16,6 +16,8 @@ on:
     branches:
       - main
       - codex/godot-complete-20261019
+    paths-ignore:
+      - 'platform/**'
   workflow_dispatch:
 
 permissions:

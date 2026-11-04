@@ -1,4 +1,5 @@
 extends RefCounted
+const ProfileStorage=preload("res://scripts/platform/profile_storage.gd")
 ## Portable native save attachments. Paths never come from archive entries;
 ## every imported PNG is verified and installed under its own SHA-256 name.
 const MAX_IMAGE_BYTES:=12*1024*1024
@@ -21,7 +22,7 @@ static func pack(state: Dictionary) -> Dictionary:
 		var sha: String=str(photo.get("nativeImageSha256",""))
 		if images.has(sha): continue
 		var path: String=photo.nativeImagePath
-		if not path.begins_with("user://qizhen_journal/") or path.contains("..") or not FileAccess.file_exists(path): return {"ok":false,"error":ERR_FILE_NOT_FOUND}
+		if not ProfileStorage.owns_photo(path) or not FileAccess.file_exists(path): return {"ok":false,"error":ERR_FILE_NOT_FOUND}
 		var bytes:=FileAccess.get_file_as_bytes(path); total+=bytes.size()
 		if bytes.size()>MAX_IMAGE_BYTES or total>MAX_TOTAL_BYTES or digest(bytes)!=sha: return {"ok":false,"error":ERR_INVALID_DATA}
 		images[sha]={"mime":"image/png","data":Marshalls.raw_to_base64(bytes)}
@@ -56,9 +57,9 @@ static func prepare(state: Dictionary, archive: Variant) -> Dictionary:
 	return {"ok":true,"images":images}
 static func install(state: Dictionary, images: Dictionary) -> Dictionary:
 	var created: Array=[]
-	if DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://qizhen_journal"))!=OK: return {"ok":false,"created":created}
+	if DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(ProfileStorage.journal_folder()))!=OK: return {"ok":false,"created":created}
 	for sha: String in images:
-		var path: String="user://qizhen_journal/imported-"+sha+".png"
+		var path: String=ProfileStorage.journal_folder()+"imported-"+sha+".png"
 		if FileAccess.file_exists(path):
 			if FileAccess.get_sha256(path)!=sha: rollback(created); return {"ok":false,"created":[]}
 		else:
@@ -67,8 +68,8 @@ static func install(state: Dictionary, images: Dictionary) -> Dictionary:
 			created.append(path); file.store_buffer(images[sha]); file.flush(); var error:=file.get_error(); file.close()
 			if error!=OK or FileAccess.get_sha256(path)!=sha: rollback(created); return {"ok":false,"created":[]}
 	for photo: Dictionary in photos(state):
-		if photo.has("nativeImagePath"): photo.nativeImagePath="user://qizhen_journal/imported-"+str(photo.nativeImageSha256)+".png"
+		if photo.has("nativeImagePath"): photo.nativeImagePath=ProfileStorage.journal_folder()+"imported-"+str(photo.nativeImageSha256)+".png"
 	return {"ok":true,"created":created}
 static func rollback(created: Array) -> void:
 	for path: String in created:
-		if path.begins_with("user://qizhen_journal/imported-"): DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+		if ProfileStorage.owns_photo(path) and path.get_file().begins_with("imported-"): DirAccess.remove_absolute(ProjectSettings.globalize_path(path))

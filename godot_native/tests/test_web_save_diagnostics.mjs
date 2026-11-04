@@ -33,7 +33,7 @@ function browserFixture(options = {}) {
         assert.equal(storeName, 'FILE_DATA');
         return { put: forbidden, delete: forbidden, clear: forbidden, getAll: forbidden, getAllKeys: forbidden, count: forbidden,
           get(key) {
-            assert.equal(key, '/userfs/SevenFiftyFiveNative/save.json'); calls.push(['get', key, now]);
+            assert.equal(key, '/userfs/SevenFiftyFiveNative/profiles/guest/save.json'); calls.push(['get', key, now]);
             const request = { result: record, error: new Error('fake get failure') };
             schedule(() => {
               if (options.getError) request.onerror?.();
@@ -242,7 +242,14 @@ for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'p
 }
 const project = readFileSync(new URL('../project.godot', import.meta.url), 'utf8');
 const stateSource = readFileSync(new URL('../scripts/state.gd', import.meta.url), 'utf8');
-check('fixed key is grounded in current actual custom user directory and save path', () => { assert(project.includes('config/use_custom_user_dir=true')); assert(project.includes('config/custom_user_dir_name=\"SevenFiftyFiveNative\"')); assert(stateSource.includes('const SAVE_PATH := \"user://save.json\"')); });
+check('guest diagnostic key follows the actual profile namespace and custom user directory', () => {
+  assert(project.includes('config/use_custom_user_dir=true'));
+  assert(project.includes('config/custom_user_dir_name="SevenFiftyFiveNative"'));
+  assert(stateSource.includes('var SAVE_PATH := "user://save.json"'));
+  assert(stateSource.includes('SAVE_PATH=ProfileStorage.file("save.json")'));
+  const profiles = readFileSync(new URL('../scripts/platform/profile_storage.gd', import.meta.url), 'utf8');
+  assert(profiles.includes('"user://profiles/"+profile+"/"'));
+});
 const webPlatformSource = readFileSync(new URL('../scripts/platform/web_platform.gd', import.meta.url), 'utf8');
 check('main 1322d941 production contract remains 60s with 2s sync interval and at most 30 requests', () => {
   assert.match(webPlatformSource, /^const SAVE_ATTEMPT_MS := 60000$/m);
@@ -303,7 +310,7 @@ function saveClickFixture(options = {}) {
     },
     evaluate: async expression => { assert(expression.includes('getBoundingClientRect()')); canvasReads.push({ at: now, expression, beforeIndex }); return structuredClone(canvas); },
     createSaveDiagnostics: () => ({ observe() {}, stop() {} }),
-    readPersistentSaveEntries: async () => { diskReads.push(now); now += options.diskDelay || 0; return { entries: [{ key: '/userfs/SevenFiftyFiveNative/save.json', sha256: options.diskDigest || targetDigest }], readDurationMs: options.diskDelay || 0 }; },
+    readPersistentSaveEntries: async () => { diskReads.push(now); now += options.diskDelay || 0; return { entries: [{ key: '/userfs/SevenFiftyFiveNative/profiles/guest/save.json', sha256: options.diskDigest || targetDigest }], readDurationMs: options.diskDelay || 0 }; },
     check: (ok, label) => { assert(ok, label); accepted.push(label); }
   });
   vm.runInContext(pollSource + '\n' + clickSource + '\n' + saveSource, context);

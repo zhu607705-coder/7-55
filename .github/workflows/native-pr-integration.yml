@@ -18,6 +18,8 @@ on:
       - 'scripts/ensure-ci-media-tools.mjs'
       - 'scripts/test-ci-media-tools.mjs'
       - '.github/workflows/native-pr-integration.yml'
+      - '.github/workflows/product-scope.yml'
+      - '.github/scripts/product-scope*'
   workflow_dispatch:
 
 permissions:
@@ -28,7 +30,11 @@ defaults:
     shell: bash
 
 jobs:
+  scope:
+    uses: ./.github/workflows/product-scope.yml
   source-and-formal-handoffs:
+    needs: scope
+    if: needs.scope.outputs.game == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:

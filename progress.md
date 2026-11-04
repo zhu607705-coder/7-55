@@ -5883,3 +5883,10 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - Eight-pose/four-colour cues use real painted actor geometry and actual UI-panel exclusions. Approach dwell/cooldown, per-actor priority and a three-cue budget keep them brief. Reduced motion, focus pause, hidden worlds, state replacement, scene/mode/floor changes and teardown have explicit handling. The deduction page can retain one same-owner completion receipt until direct return.
 - Godot 4.7.1 focused native validation passed153 checks: new feedback108, existing NPC motion26, presentation lifecycle12 and modal world input7, with isolated user data and unchanged source hashes. Inspected actual renders at1280×720,390×844 and844×390, including ordinary canteen dialogue. When the narrow viewport cannot fit a cue around an actor, it is omitted. These are presentation fixtures with held cue ages, not physical-phone or campaign acceptance; cloud CI status is recorded separately in the PR.
 - `godot_native/docs/NPC_PIXEL_FEEDBACK.md` records exact coverage, lifecycle and the pinned pixelfx reference (`a8415968`,244 effects). GDScript cues are independently authored; no upstream JavaScript/assets/fonts or runtime dependency is imported. Existing CI discovery includes the new regression suite and retains full changed-path expansion for the shared world file.
+
+## 20261103 共创平台与玩家账号云存档整合
+
+- 在 main `72fe2ed3dab84c99cedb2e427a4d639fca135472` 上接入独立 `platform/`、Authing 会话、每账号云存档、照片与个人编辑同步、游客显式带入、冲突选择及备份恢复。游戏仍独立校验剧情，平台只负责本人存储及业务。
+- 保留 4.7.1、晨札字体、当前开场和未来学习中心；适配 v36 并复用 v35 迁移，压缩控制中心入口以保留截图按钮的可点击空间。
+- 本地验证覆盖平台、真实数据库、网页发布、原生连续主线与存档、实际 Godot Web 桌面/手机保存及刷新继续；详细证据范围见 `platform/docs/integration-20261103.md`。
+- 通过功能分支/PR 提交代码；不自动合并、部署或上传密钥、玩家档、数据库及游戏导出包。实体手机、正式域名及实际生产账号跨设备仍需上线验收。
