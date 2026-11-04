@@ -1,3 +1,4 @@
+import {removeRoomFurnitureCollision} from './photo_room_replacement.js';
 /** Metric, default-on photo compositions. Source meshes remain shared across LOD instances. */
 import * as THREE from './vendor/three/three.module.js';
 export function photoComposition(library,binding){
@@ -19,6 +20,7 @@ export function photoComposition(library,binding){
 export function installPhotoCollision(layout,binding,composition,anchorMatrix){
  if(!binding.collision)return;
  const floor=layout.floors[binding.floor],c=binding.collision;
+ if(c.replaceRoom)removeRoomFurnitureCollision(layout,binding);
  if(c.replaceCenter){
   const [x,z]=c.replaceCenter;
   const index=floor.colliders.findIndex(v=>v.rect&&Math.abs((v.rect[0]+v.rect[2])/2-x)<.001&&Math.abs((v.rect[1]+v.rect[3])/2-z)<.001);

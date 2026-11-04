@@ -16,13 +16,13 @@
       "folder": "models/photo_lounge_corrected/lounge_double_corrected"
     },
     "photo_pantry_grey_roundfront_appliance": {
-      "folder": "models/photo_scene_20261103/photo_pantry_grey_roundfront_appliance"
+      "folder": "models/photo_living/photo_pantry_grey_roundfront_appliance"
     },
     "photo_pantry_white_cleartop_appliance": {
-      "folder": "models/photo_scene_20261103/photo_pantry_white_cleartop_appliance"
+      "folder": "models/photo_living/photo_pantry_white_cleartop_appliance"
     },
     "photo_side_by_side_fridge": {
-      "folder": "models/photo_scene_20261103/photo_side_by_side_fridge"
+      "folder": "models/photo_living/photo_side_by_side_fridge"
     },
     "lounge_single_corrected": {
       "folder": "models/photo_lounge_corrected/lounge_single_corrected"
@@ -50,6 +50,36 @@
     },
     "photo_loose_test_leads": {
       "folder": "models/photo_bench_contents/photo_loose_test_leads"
+    },
+    "photo_pantry_counter": {
+      "folder": "models/photo_living/photo_pantry_counter"
+    },
+    "photo_pantry_sink_faucets": {
+      "folder": "models/photo_living/photo_pantry_sink_faucets"
+    },
+    "photo_pantry_backsplash_shelves": {
+      "folder": "models/photo_living/photo_pantry_backsplash_shelves"
+    },
+    "photo_fridge_wood_surround": {
+      "folder": "models/photo_living/photo_fridge_wood_surround"
+    },
+    "photo_living_capsule_table": {
+      "folder": "models/photo_living/photo_living_capsule_table"
+    },
+    "photo_living_caramel_armchair": {
+      "folder": "models/photo_living/photo_living_caramel_armchair"
+    },
+    "photo_living_wood_planter": {
+      "folder": "models/photo_living/photo_living_wood_planter"
+    },
+    "photo_lounge_round_table": {
+      "folder": "models/photo_lounge/photo_lounge_round_table"
+    },
+    "photo_lounge_window_counter": {
+      "folder": "models/photo_lounge/photo_lounge_window_counter"
+    },
+    "photo_lounge_grey_bar_chair": {
+      "folder": "models/photo_lounge/photo_lounge_grey_bar_chair"
     }
   },
   "bindings": [
@@ -1494,160 +1524,6 @@
       ]
     },
     {
-      "id": "rest/pantry-sofa",
-      "floor": "3",
-      "sourceNodeName": "Static asset pantry_sofa",
-      "status": "active",
-      "kind": "static",
-      "label": "照片双座沙发（比例参照）",
-      "parts": [
-        {
-          "asset": "lounge_double_corrected",
-          "position": [
-            0,
-            0,
-            0
-          ],
-          "yaw": 0
-        }
-      ]
-    },
-    {
-      "id": "pantry/photo_pantry_grey_roundfront_appliance",
-      "floor": "3",
-      "sourceNodeName": "Coffee machine",
-      "replaceNodes": [
-        "Coffee machine",
-        "Coffee cup niche"
-      ],
-      "status": "active",
-      "kind": "static",
-      "label": "灰色圆前壳台面电器（类型未定）",
-      "parts": [
-        {
-          "asset": "photo_pantry_grey_roundfront_appliance",
-          "position": [
-            0,
-            -0.16,
-            0
-          ],
-          "yaw": 3.141592653589793
-        }
-      ]
-    },
-    {
-      "id": "pantry/photo_pantry_white_cleartop_appliance",
-      "floor": "3",
-      "sourceNodeName": "Microwave",
-      "replaceNodes": [
-        "Microwave",
-        "Microwave door"
-      ],
-      "status": "active",
-      "kind": "static",
-      "label": "白色透明顶台面电器（类型未定）",
-      "parts": [
-        {
-          "asset": "photo_pantry_white_cleartop_appliance",
-          "position": [
-            0,
-            -0.16,
-            0
-          ],
-          "yaw": 3.141592653589793
-        }
-      ]
-    },
-    {
-      "id": "pantry/fridge",
-      "floor": "3",
-      "sourceNodeName": "Pantry refrigerator",
-      "replaceNodes": [
-        "Pantry refrigerator",
-        "Fridge upper door panel",
-        "Fridge lower door panel",
-        "Fridge door gasket seam",
-        "Fridge handle",
-        "Fridge handle.001"
-      ],
-      "status": "active",
-      "kind": "static",
-      "label": "照片对开门冰箱（比例参照）",
-      "parts": [
-        {
-          "asset": "photo_side_by_side_fridge",
-          "position": [
-            -0.01,
-            -1,
-            0
-          ],
-          "yaw": 3.141592653589793
-        }
-      ],
-      "placementNote": "Original centre moved 10 mm left; matching Refrigerator collider updated only. East wall clearance is 9 mm in approximate model, not a construction tolerance."
-    },
-    {
-      "id": "rest/single-43",
-      "floor": "3",
-      "sourceNodeName": "office_chair.043",
-      "status": "active",
-      "kind": "static",
-      "label": "照片单座与靠枕（候选摆放）",
-      "parts": [
-        {
-          "asset": "lounge_single_corrected",
-          "position": [
-            0,
-            0,
-            -0.1
-          ],
-          "yaw": 3.141592653589793
-        },
-        {
-          "asset": "lounge_loose_cushion",
-          "position": [
-            0,
-            0.45675,
-            -0.225
-          ],
-          "yaw": 3.141592653589793
-        }
-      ],
-      "collision": {
-        "replaceCenter": [
-          14.8734104,
-          38.0008696
-        ]
-      },
-      "placementNote": "Existing pantry conversation chair anchor; 0.10 m outward offset keeps the unscaled photo chair clear of the original table. Photo proportion, not surveyed placement."
-    },
-    {
-      "id": "rest/single-44",
-      "floor": "3",
-      "sourceNodeName": "office_chair.044",
-      "status": "active",
-      "kind": "static",
-      "label": "照片单座（候选摆放）",
-      "parts": [
-        {
-          "asset": "lounge_single_corrected",
-          "position": [
-            0,
-            0,
-            -0.1
-          ],
-          "yaw": 3.141592653589793
-        }
-      ],
-      "collision": {
-        "replaceCenter": [
-          16.2734104,
-          38.0008696
-        ]
-      },
-      "placementNote": "Existing pantry conversation chair anchor; 0.10 m outward offset keeps the unscaled photo chair clear of the original table. Photo proportion, not surveyed placement."
-    },
-    {
       "id": "xlab/workshop-candidate",
       "floor": "3",
       "sourceNodeName": "xlab window base",
@@ -1741,6 +1617,260 @@
         24.9,
         0,
         20
+      ]
+    },
+    {
+      "id": "rest/photo-room-composition",
+      "floor": "3",
+      "sourceNodeName": "office_chair.043",
+      "status": "active",
+      "kind": "static",
+      "label": "共享长桌、休闲座椅与连续茶水吧台",
+      "retainOriginal": true,
+      "floorSpace": true,
+      "floorAnchor": [
+        13.25,
+        0,
+        39
+      ],
+      "replaceRoomFurniture": "pantry",
+      "parts": [
+        {
+          "asset": "photo_pantry_counter",
+          "position": [
+            13.85,
+            0,
+            41.85
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_pantry_sink_faucets",
+          "position": [
+            13.85,
+            0.9,
+            41.85
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_pantry_grey_roundfront_appliance",
+          "position": [
+            14.67,
+            0.9,
+            41.89
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_pantry_white_cleartop_appliance",
+          "position": [
+            13.09,
+            0.9,
+            41.89
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_pantry_backsplash_shelves",
+          "position": [
+            13.85,
+            0.9,
+            41.85
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_side_by_side_fridge",
+          "position": [
+            16.134,
+            0,
+            41.841
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_fridge_wood_surround",
+          "position": [
+            16.134,
+            0,
+            41.841
+          ],
+          "yaw": 3.141592653589793
+        },
+        {
+          "asset": "photo_living_capsule_table",
+          "position": [
+            13.25,
+            0,
+            38.95
+          ],
+          "yaw": 0
+        },
+        {
+          "asset": "photo_living_caramel_armchair",
+          "position": [
+            12.23,
+            0,
+            37.9
+          ],
+          "yaw": 1.5707963267948966
+        },
+        {
+          "asset": "photo_living_caramel_armchair",
+          "position": [
+            14.27,
+            0,
+            37.9
+          ],
+          "yaw": -1.5707963267948966
+        },
+        {
+          "asset": "photo_living_caramel_armchair",
+          "position": [
+            12.23,
+            0,
+            38.95
+          ],
+          "yaw": 1.5707963267948966
+        },
+        {
+          "asset": "photo_living_caramel_armchair",
+          "position": [
+            14.27,
+            0,
+            38.95
+          ],
+          "yaw": -1.5707963267948966
+        },
+        {
+          "asset": "photo_living_caramel_armchair",
+          "position": [
+            12.23,
+            0,
+            40.0
+          ],
+          "yaw": 1.5707963267948966
+        },
+        {
+          "asset": "photo_living_caramel_armchair",
+          "position": [
+            14.27,
+            0,
+            40.0
+          ],
+          "yaw": -1.5707963267948966
+        },
+        {
+          "asset": "photo_living_wood_planter",
+          "position": [
+            13.25,
+            0.761002,
+            40.0
+          ],
+          "yaw": 0
+        },
+        {
+          "asset": "lounge_single_corrected",
+          "position": [
+            10.1,
+            0,
+            39.45
+          ],
+          "yaw": -1.5707963267948966
+        },
+        {
+          "asset": "lounge_single_corrected",
+          "position": [
+            10.1,
+            0,
+            41.65
+          ],
+          "yaw": -1.5707963267948966
+        },
+        {
+          "asset": "photo_lounge_round_table",
+          "position": [
+            10.35,
+            0,
+            38.65
+          ],
+          "yaw": 0
+        },
+        {
+          "asset": "photo_lounge_window_counter",
+          "position": [
+            16.7,
+            0,
+            38.9
+          ],
+          "yaw": -1.5707963267948966
+        },
+        {
+          "asset": "photo_lounge_grey_bar_chair",
+          "position": [
+            15.95,
+            0,
+            38.4
+          ],
+          "yaw": 1.5707963267948966
+        },
+        {
+          "asset": "photo_lounge_grey_bar_chair",
+          "position": [
+            15.95,
+            0,
+            39.4
+          ],
+          "yaw": 1.5707963267948966
+        },
+        {
+          "asset": "lounge_single_corrected",
+          "position": [
+            10.1,
+            0,
+            37.55
+          ],
+          "yaw": -1.5707963267948966
+        },
+        {
+          "asset": "lounge_loose_cushion",
+          "position": [
+            9.975,
+            0.45675,
+            39.45
+          ],
+          "yaw": -1.5707963267948966
+        }
+      ],
+      "collision": {
+        "replaceRoom": "pantry",
+        "partIndices": [
+          0,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21
+        ],
+        "preserveIds": [
+          "Vending machine"
+        ]
+      },
+      "placementNote": "Photo-informed open furniture arrangement inside the preserved traced room boundary. All dimensions are estimates. The latest two photographs establish shared-table/lounge and adjacent pantry; refrigerator adjacency reuses the existing pantry composition evidence. Not a surveyed reconstruction. Retains the existing vending-machine geometry and collider without new products or branding. The double seat, two single seats and one cushion remain on the left-wall side. Their longitudinal candidate arrangement avoids the fixed original vending machine; exact site positions are not measured. The three orange lounge chairs use the same corrected single-chair geometry at unit scale per user clarification; the historical wide-chair source is retained but not instantiated. Original vending machine geometry and collision are retained; products remain prior schematic content.",
+      "preserveSourcePrefixes": [
+        "Vending "
       ]
     }
   ],

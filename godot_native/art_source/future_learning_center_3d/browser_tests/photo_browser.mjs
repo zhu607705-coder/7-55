@@ -28,7 +28,7 @@ try{
    window.__startPhotoTiming=()=>{d.active=true;d.observerRaf=[];d.before=state();let previous=null;const sample=now=>{if(!d.active)return;d.observerRaf.push({timeMs:now,gapMs:previous===null?0:now-previous,hidden:document.hidden,focused:document.hasFocus()});if(d.observerRaf.length>64)d.observerRaf.shift();previous=now;requestAnimationFrame(sample);};requestAnimationFrame(sample);return d.before;};
   });
   await p.goto(base+'/?floor=3&room=studio_1&mode=walk');await p.waitForFunction(()=>flcReview?.snapshot().ready,null,{timeout:90000});
-  const info=await photos(p);check(info.desks.length===40,'forty photo desktops '+mobile);check(info.static.length===7,'four original bindings plus two seats and one workshop composition '+mobile);for(const id of ['rest/pantry-sofa','pantry/photo_pantry_grey_roundfront_appliance','pantry/photo_pantry_white_cleartop_appliance','pantry/fridge'])check(info.static.filter(s=>s.binding===id).length===1,'original binding retained once '+id+' '+mobile);check(info.errors.length===0,'all photo assets decoded '+mobile);
+  const info=await photos(p);check(info.desks.length===40,'forty photo desktops '+mobile);check(info.static.length===2,'complete shared lounge and workshop compositions '+mobile);for(const id of ['rest/photo-room-composition','xlab/workshop-candidate'])check(info.static.filter(s=>s.binding===id).length===1,'complete binding present once '+id+' '+mobile);check(info.errors.length===0,'all photo assets decoded '+mobile);
   check(info.pending.some(item=>item.id==='hardware-304'),'unmapped hardware remains pending '+mobile);
   await p.screenshot({path:path.join(out,`studio-${mobile?'mobile':'desktop'}.png`)});
   if(!mobile){
@@ -41,6 +41,23 @@ try{
    check((await p.evaluate(()=>flcReview.desks())).every(d=>d.partOffsets.every(part=>Math.abs(part.offset-(d.height-.73)*part.factor)<1e-4)),'all photo and authored parts follow lift factors');
   }
   await p.locator('#overview')[mobile?'tap':'click']();check((await snapshot(p)).mode==='overview','ordinary walk exit '+mobile);
+  // Ordinary room view and ordinary wheel navigation, never a model-review proxy.
+  await p.screenshot({path:path.join(out,`studio-room-overview-${mobile?'mobile':'desktop'}.png`)});
+  if(!mobile){
+   await p.mouse.move(640,520);
+   for(let step=0;step<5;step++)await p.mouse.wheel(0,-120);
+   await p.screenshot({path:path.join(out,'studio-four-workstations-oblique-desktop.png')});
+   const multi=await p.evaluate(()=>{
+    const controls=flcReview.desks(),photo=flcReview.photoAssets().desks,objects=flcReview.spatial().catalog.objects;
+    // Both public arrays follow the same 3F deskRoots order; reject incomplete bindings.
+    if(controls.length!==photo.length)return {matched:false,visible:[]};
+    return {matched:true,visible:controls.flatMap((d,i)=>objects[photo[i].id]?.room==='studio_1'&&d.inFront&&d.x>0&&d.x<innerWidth&&d.y>0&&d.y<innerHeight?[photo[i].id]:[]),snapshot:flcReview.snapshot()};
+   });
+   timingDiagnostics.push({viewport:'desktop',multiWorkstationView:multi,note:'Projected desk control anchors; screenshot review must still check occlusion. Monitor arms and dividers are not claimed integrated.'});
+   check(multi.matched&&multi.visible.length>=4,'ordinary studio oblique view includes at least four bound desk anchors');
+   check(multi.snapshot.inspect===null&&multi.snapshot.mode==='overview'&&multi.snapshot.room==='studio_1','multi-workstation view is the actual ordinary room, not close-view proxy');
+   await p.locator('#room').selectOption('studio_1');
+  }
   await p.locator('#spatial-details summary')[mobile?'tap':'click']();const id=await p.locator('#spatial-object option').evaluateAll(options=>options.find(o=>o.value&&o.textContent.includes('工位'))?.value);check(!!id,'desk object has stable selectable ID '+mobile);
   for(let i=0;i<3;i++){
    await p.locator('#spatial-object').selectOption(id);check((await snapshot(p)).inspect!==null,'desk close view '+mobile+'/'+i);

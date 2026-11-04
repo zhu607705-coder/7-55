@@ -96,7 +96,7 @@ jobs:
         run: |
           git rev-parse HEAD | tee "$RUNNER_TEMP/flc-placed-assets-node/checkout-sha.txt"
           test "$(git rev-parse HEAD)" = "$TEST_HEAD_SHA"
-          rm -f review/placed-assets-node.json
+          rm -f review/placed-assets-node.json review/lounge-room-node.json
           mkdir -p review
           node scripts/test_placed_assets.mjs 2>&1 | tee "$RUNNER_TEMP/flc-placed-assets-node/test.log"
       - name: Preserve Node contract report and failure evidence
@@ -107,4 +107,5 @@ jobs:
           path: |
             ${{ runner.temp }}/flc-placed-assets-node/
             godot_native/art_source/future_learning_center_3d/review/placed-assets-node.json
+            godot_native/art_source/future_learning_center_3d/review/lounge-room-node.json
           if-no-files-found: error

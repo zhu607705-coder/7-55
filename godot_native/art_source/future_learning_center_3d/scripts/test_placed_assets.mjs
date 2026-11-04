@@ -1,3 +1,4 @@
+import './test_lounge_room.mjs';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import * as THREE from '../web/vendor/three/three.module.js';
@@ -9,8 +10,8 @@ const web=new URL('../web/',import.meta.url),config=JSON.parse(fs.readFileSync(n
 const json=async u=>JSON.parse(fs.readFileSync(new URL(u,web)));
 const codec={loader:{async loadAsync(u){if(u.endsWith('.draco.glb'))throw Error('forced fallback');return parse(new URL(u,web));}}};
 const library=await loadPhotoSceneAssets(codec,{fetchJSON:json});assert.deepEqual(library.errors,[]);
-const added=config.bindings.filter(b=>b.collision),reports=[];
-assert.equal(added.length,3);assert.deepEqual(added.map(b=>b.parts.length),[2,1,8]);
+const added=config.bindings.filter(b=>b.id==='xlab/workshop-candidate'),reports=[];
+assert.equal(added.length,1);assert.deepEqual(added.map(b=>b.parts.length),[8]);
 for(const building of ['building.glb','building.web.glb']){
  const source=parse(new URL('assets/'+building,web)).scene,layout=await json('assets/layout.json');
  let floor;source.traverse(n=>{if(n.userData.floorRoot===3||n.userData.floorRoot==='3')floor=n;});assert.ok(floor);
@@ -34,7 +35,7 @@ for(const building of ['building.glb','building.web.glb']){
  }
  // Test exact decoded mat surfaces rather than the cart's highest handles/rims.
  const cart=library.assets.get('photo_workshop_green_tool_cart');
- const workshop=added[2],cartBoxes=boxes.filter(b=>b.binding===workshop.id&&b.index<2);
+ const workshop=added[0],cartBoxes=boxes.filter(b=>b.binding===workshop.id&&b.index<2);
  for(let level=0;level<3;level++){
   const mat=cart.levels[level].find(p=>p.sourcePart==='Rubber top work mat');assert.ok(mat,'real support mesh');
   for(let cartIndex=0;cartIndex<2;cartIndex++){
@@ -60,20 +61,11 @@ for(const building of ['building.glb','building.web.glb']){
  for(const goal of [[19.508381502890174,14],[19.508381502890174,41],[24.1,41],[24.1,14]]){
   pos=moveBody(layout,'3',pos,goal[0]-pos[0],goal[1]-pos[1]);assert.ok(Math.hypot(pos[0]-goal[0],pos[1]-goal[1])<.0001,'continuous aisle route reaches '+goal);
  }
- let pantry=[11.352745664739885,37.15086956521739];assert.ok(canStand(layout,'3',...pantry));
- const pantryRoute=[[14.7734104,37.15],[16.3734104,37.15],[13.5,37.15],[13.5,39],[14.15,39],[14.15,41],[16.61,41],[14.15,41]];
- for(const goal of pantryRoute){pantry=moveBody(layout,'3',pantry,goal[0]-pantry[0],goal[1]-pantry[1]);assert.ok(Math.hypot(pantry[0]-goal[0],pantry[1]-goal[1])<.0001,'pantry approach reaches '+goal);}
  for(const body of bodies){const c=body.box.getCenter(new THREE.Vector3());assert.equal(canStand(layout,'3',c.x,c.z),false,'solid body blocks walking');}
  const originals=JSON.parse(fs.readFileSync(new URL('assets/layout.json',web)));assert.deepEqual(layout.floors['2'],originals.floors['2']);assert.deepEqual(layout.floors['4'],originals.floors['4']);
- reports.push({building,parts:boxes.map(({box,...b})=>({...b,min:box.min.toArray(),max:box.max.toArray()})),furnitureComparisons,pantryRoute,route:'west entrance to north/south; east aisle x=24.1 across full room'});
-}
-// Pillow rests on the actual seat surface, including reduced LOD geometry.
-for(let level=0;level<3;level++){
- const scene=parse(new URL('assets/models/photo_lounge_corrected/lounge_single_corrected/lod'+level+'.glb',web)).scene;
- const ray=new THREE.Raycaster(new THREE.Vector3(0,.55,.125),new THREE.Vector3(0,-1,0));
- const hit=ray.intersectObject(scene,true)[0];assert.ok(hit);assert.ok(Math.abs(hit.point.y-added[0].parts[1].position[1])<.0005,'cushion/seat contact within 0.5 mm LOD tolerance');
+ reports.push({building,parts:boxes.map(({box,...b})=>({...b,min:box.min.toArray(),max:box.max.toArray()})),furnitureComparisons,route:'west entrance to north/south; east aisle x=24.1 across full room'});
 }
 // Asset loss makes the entire composition unavailable, so runtime never replaces collision or source.
-const broken=await loadPhotoSceneAssets({loader:{async loadAsync(u){if(u.includes('photo_workshop_small_vise'))throw Error('missing vise');return codec.loader.loadAsync(u);}}},{fetchJSON:json});assert.ok(![...broken.bindings.values()].some(b=>b.id==='xlab/workshop-candidate'));assert.ok([...broken.bindings.values()].some(b=>b.id==='rest/single-43'));
+const broken=await loadPhotoSceneAssets({loader:{async loadAsync(u){if(u.includes('photo_workshop_small_vise'))throw Error('missing vise');return codec.loader.loadAsync(u);}}},{fetchJSON:json});assert.ok(![...broken.bindings.values()].some(b=>b.id==='xlab/workshop-candidate'));assert.ok([...broken.bindings.values()].some(b=>b.id==='rest/photo-room-composition'));
 fs.writeFileSync(new URL('../review/placed-assets-node.json',import.meta.url),JSON.stringify({passed:true,reports,scope:'Actual uncompressed GLB geometry, support, full-aisle collision stepping and atomic fallback. Not browser visual acceptance.'},null,2));
-console.log('Passed: both building sources, 11 placed parts, all LODs, ground/mat contact, room/wall/furniture clearance, continuous navigation and partial failure.');
+console.log('Passed: both building sources, 8 workshop parts, all LODs, ground/mat contact, room/wall/furniture clearance, continuous navigation and partial failure.');

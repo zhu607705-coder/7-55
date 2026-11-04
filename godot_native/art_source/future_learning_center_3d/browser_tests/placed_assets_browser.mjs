@@ -44,7 +44,8 @@ async function runCase(name,mobile,run){
   if(context){await context.tracing.stop({path:path.join(out,`trace-${name}.zip`)}).catch(()=>{});await context.close();}
  }
 }
-const expectedBindings=['rest/single-43','rest/single-44','xlab/workshop-candidate'];
+const config=JSON.parse(fs.readFileSync(path.join(web,'assets/photo_scene_config.json')));
+const expectedBindings=['rest/photo-room-composition','xlab/workshop-candidate'];
 const placed=page=>page.evaluate(()=>flcReview.placedAssets());
 function identity(items){
  return items.filter(item=>expectedBindings.includes(item.id)).map(item=>({id:item.id,parts:item.parts.map(part=>({asset:part.asset,geometryUUIDs:part.geometryUUIDs,materialUUIDs:part.materialUUIDs}))}));
@@ -69,12 +70,15 @@ async function rendererEvidence(page,label){
  diagnostics.push({case:label,webgl:info});
  check(info&&!info.contextLost&&info.width>0&&info.height>0&&info.snapshot.drawCalls>0,`${label}: actual live WebGL draw calls`);
 }
-const expectedParts={
- 'rest/single-43':['lounge_single_corrected','lounge_loose_cushion'],
- 'rest/single-44':['lounge_single_corrected'],
- 'xlab/workshop-candidate':['photo_workshop_green_tool_cart','photo_workshop_green_tool_cart','photo_workshop_small_vise','photo_workshop_blue_driver_rack','photo_workshop_red_flat_case','photo_solder_station_set','photo_wire_spool','photo_loose_test_leads']
-};
-const originalBindings=['rest/pantry-sofa','pantry/photo_pantry_grey_roundfront_appliance','pantry/photo_pantry_white_cleartop_appliance','pantry/fridge'];
+const expectedParts=Object.fromEntries(config.bindings.filter(b=>expectedBindings.includes(b.id)).map(b=>[b.id,b.parts.map(p=>p.asset)]));
+// Independent acceptance inventory: do not derive preservation promises from config.
+const loungeRequired={lounge_single_corrected:3,lounge_loose_cushion:1};
+function checkVending(items,label){
+ const visible=items.filter(i=>i.floor==='3'&&i.visible&&i.triangles>0);
+ check(new Set(visible.flatMap(i=>i.sourceNames)).size>=29,`${label}: original vending geometry remains rendered`);
+ check(visible.some(i=>i.collider?.id==='Vending machine'&&JSON.stringify(i.collider.rect)===JSON.stringify([9.654190751445087,40.20126086956522,10.504190751445089,40.95126086956522])),`${label}: original vending collision retained`);
+}
+const originalBindings=[];
 async function residentCase(page,mobile){
  await page.goto(base+'/?view=building');await ready(page);
  const initial=await placed(page);
@@ -89,11 +93,10 @@ async function residentCase(page,mobile){
  }
  await shot(page,`${mobile?'mobile':'desktop'}-resident-building`);
  await rendererEvidence(page,mobile?'mobile-default':'desktop-default');
- const seatGeometry=initial.find(item=>item.id==='rest/single-43').parts.find(part=>part.asset==='lounge_single_corrected').geometryUUIDs;
- const otherSeatGeometry=initial.find(item=>item.id==='rest/single-44').parts.find(part=>part.asset==='lounge_single_corrected').geometryUUIDs;
- check(seatGeometry.some(id=>otherSeatGeometry.includes(id)),'two resident seats share source geometry');
  const cartGeometry=initial.find(item=>item.id==='xlab/workshop-candidate').parts.find(part=>part.asset==='photo_workshop_green_tool_cart').geometryUUIDs;
  check(cartGeometry.length===2*new Set(cartGeometry).size,'two carts reuse each LOD source geometry exactly twice');
+ const lounge=initial.find(i=>i.id==='rest/photo-room-composition');for(const [asset,count] of Object.entries(loungeRequired))check(lounge.placementAssets.filter(id=>id===asset).length===count,'preserved lounge inventory '+asset);
+ const seats=lounge.parts.find(p=>p.asset==='lounge_single_corrected');check(seats.geometryUUIDs.length===3*new Set(seats.geometryUUIDs).size,'three equal seats share the identical source geometry');
  const resources=identity(initial);
  await page.locator('#floor').selectOption('3');
  for(const room of ['pantry','xlab']){
@@ -102,6 +105,18 @@ async function residentCase(page,mobile){
   check(inRoom.every(item=>item.visible),`${room}: permanent assets visible through ordinary room navigation`);
   await shot(page,`${mobile?'mobile':'desktop'}-${room}-resident`);
   for(const item of inRoom)for(let cycle=0;cycle<2;cycle++)await inspectAndReturn(page,item,mobile);
+  if(room==='pantry'){
+   checkVending(await page.evaluate(()=>flcReview.retainedRoomFurniture()),'loaded pantry');
+   await click(page,'#walk',mobile);
+   check((await snapshot(page)).mode==='walk','ordinary pantry walk entry');
+   await shot(page,`${mobile?'mobile':'desktop'}-pantry-walk`);
+   const blocked=await page.evaluate(()=>{
+    const route=[[11.35,37.15],[11.35,41],[14.67,41],[16.134,41],[15.2,41],[15.2,36.9],[11.35,36.9]],bad=[];
+    for(let i=1;i<route.length;i++){const a=route[i-1],b=route[i],n=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.07);for(let k=0;k<=n;k++){const x=a[0]+(b[0]-a[0])*k/n,z=a[1]+(b[1]-a[1])*k/n;if(!flcReview.canStand(x,z))bad.push([x,z]);}}return bad;
+   });
+   check(blocked.length===0,'runtime pantry complete circulation loop is clear',{blocked});
+   await click(page,'#overview',mobile);
+  }
   if(room==='xlab'){
    const label=await page.locator('#spatial-object option').allTextContents();
    check(label.some(text=>text.includes('候选')), 'laboratory placement remains explicitly a candidate');
@@ -142,23 +157,24 @@ async function residentCase(page,mobile){
  await page.locator('#floor').selectOption('4');
  check((await placed(page)).filter(item=>expectedBindings.includes(item.id)).every(item=>!item.visible),'3F placements do not leak onto 4F');
  await page.locator('#floor').selectOption('3');await page.locator('#room').selectOption('pantry');
- check((await placed(page)).filter(item=>item.id.startsWith('rest/single-')).every(item=>item.visible),'floor round trip restores permanent lounge seats');
+ check((await placed(page)).filter(item=>item.id==='rest/photo-room-composition').every(item=>item.visible),'floor round trip restores permanent lounge seats');
  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'viewport has no horizontal document overflow');
  await rendererEvidence(page,mobile?'mobile-final':'desktop-final');
 }
 async function fallbackCase(page,context,kind){
- const lounge=kind==='lounge',pattern=lounge?'**/models/photo_lounge_corrected/lounge_loose_cushion/**':'**/models/photo_workshop/photo_workshop_green_tool_cart/**';
+ const lounge=kind==='lounge',pattern=lounge?'**/models/photo_living/photo_pantry_counter/**':'**/models/photo_workshop/photo_workshop_green_tool_cart/**';
  await context.route(pattern,route=>route.abort());
  await page.goto(base+`/?floor=3&room=${lounge?'pantry':'xlab'}&mode=walk`);await ready(page);
- const items=await placed(page),missing=lounge?'rest/single-43':'xlab/workshop-candidate';
+ const items=await placed(page),missing=lounge?'rest/photo-room-composition':'xlab/workshop-candidate';
  check(!items.some(item=>item.id===missing),`${kind} failure: no half-loaded composition`);
- check(items.some(item=>item.id==='rest/single-44'),`${kind} failure: independent seat and shared source remain loaded`);
+ check(items.some(item=>item.id===(lounge?'xlab/workshop-candidate':'rest/photo-room-composition')),`${kind} failure: independent composition remains loaded`);
  for(const id of originalBindings)check(items.some(item=>item.id===id),`${kind} failure: retain original binding ${id}`);
  check((await snapshot(page)).mode==='walk'&&await page.evaluate(()=>flcReview.canStand(...flcReview.snapshot().position)),`${kind} failure: authored scene remains walkable`);
+ if(lounge)checkVending(await page.evaluate(()=>flcReview.retainedRoomFurniture()),'atomic fallback');
  await shot(page,`${kind}-missing-asset-fallback`);
  await click(page,'#overview',false);
- await page.locator('#room').selectOption('pantry');
- await inspectAndReturn(page,(await placed(page)).find(item=>item.id==='rest/single-44'),false);
+ await page.locator('#room').selectOption(lounge?'xlab':'pantry');
+ await inspectAndReturn(page,(await placed(page)).find(item=>item.id===(lounge?'xlab/workshop-candidate':'rest/photo-room-composition')),false);
  await rendererEvidence(page,`${kind}-fallback`);
  await context.unroute(pattern);await page.reload();await ready(page);
  check((await placed(page)).some(item=>item.id===missing),`${kind} recovery: reload restores complete composition`);

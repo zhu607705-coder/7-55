@@ -1,3 +1,4 @@
+import {roomFurnitureNodes} from './photo_room_replacement.js';
 import {photoComposition,installPhotoCollision} from './photo_static_placement.js';
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
@@ -86,9 +87,9 @@ function preparedGeometry(mesh,matrix){
  g.applyMatrix4(matrix);return g;
 }
 function mergeSet(items,parent,kind){
- const buckets=new Map();for(const {mesh,matrix} of items){const mat=Array.isArray(mesh.material)?mesh.material[0]:mesh.material;const key=mat.uuid;if(!buckets.has(key))buckets.set(key,{mat,geometries:[]});buckets.get(key).geometries.push(preparedGeometry(mesh,matrix));}
- for(const {mat,geometries} of buckets.values()){
-  const geometry=mergeGeometries(geometries,false);if(!geometry)throw Error('Unable to merge scene geometry');const m=new THREE.Mesh(geometry,mat.clone());m.userData.kind=kind;m.userData.floor=parent.userData.floor;m.castShadow=kind!=='ceiling'&&mat.opacity>.5;m.receiveShadow=true;parent.add(m);for(const g of geometries)g.dispose();
+ const buckets=new Map();for(const {mesh,matrix} of items){const mat=Array.isArray(mesh.material)?mesh.material[0]:mesh.material;const key=mat.uuid;if(!buckets.has(key))buckets.set(key,{mat,geometries:[],retainedSourceNames:[]});if(/^Vending /.test(mesh.userData.name||mesh.name))buckets.get(key).retainedSourceNames.push(mesh.userData.name||mesh.name);buckets.get(key).geometries.push(preparedGeometry(mesh,matrix));}
+ for(const {mat,geometries,retainedSourceNames} of buckets.values()){
+  const geometry=mergeGeometries(geometries,false);if(!geometry)throw Error('Unable to merge scene geometry');const m=new THREE.Mesh(geometry,mat.clone());m.userData.kind=kind;m.userData.floor=parent.userData.floor;if(retainedSourceNames.length)m.userData.retainedSourceNames=retainedSourceNames;m.castShadow=kind!=='ceiling'&&mat.opacity>.5;m.receiveShadow=true;parent.add(m);for(const g of geometries)g.dispose();
  }
 }
 function inheritedKind(mesh,root){let owner=mesh;while(owner&&owner!==root){if(owner.userData.kind)return owner.userData.kind;owner=owner.parent;}return 'furniture';}
@@ -143,8 +144,11 @@ function toggleDesk(desk){stopInput();desk.userData.targetHeight=desk.userData.t
 
 function optimizeFloor(original,target){
  const inverse=original.matrixWorld.clone().invert(),groups=new Map(),handled=new Set(),chairPlacements=[];let chairReview=false;
+ const roomRemoved=new Set();
+ for(const binding of photoLibrary.bindings.values())if(binding.floor===target.userData.floor&&binding.replaceRoomFurniture){for(const node of roomFurnitureNodes(original,layout,binding)){roomRemoved.add(node);if(node.isMesh)handled.add(node);}}
  original.traverse(obj=>{
   const photoBinding=photoLibrary.bindings.get(target.userData.floor+'/'+(obj.userData.name||obj.name));
+  if(roomRemoved.has(obj)&&!photoBinding?.replaceRoomFurniture)return;
   if(photoBinding?.kind==='static'&&(photoBinding.parts.length>1||photoBinding.collision)){
    const matrix=photoBinding.floorSpace?new THREE.Matrix4().makeTranslation(...photoBinding.floorAnchor):inverse.clone().multiply(obj.matrixWorld);
    if(rigidPhotoAnchor(matrix)){
@@ -350,7 +354,7 @@ function updateStick(e){const r=joystick.getBoundingClientRect(),max=r.width*.30
 for(const event of ['pointerup','pointercancel','lostpointercapture'])joystick.addEventListener(event,e=>{if(joy.pointer!==e.pointerId)return;joy.pointer=null;joy.x=joy.y=0;$('stick').style.transform='';});
 canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();failure('画面连接已中断，请重新载入当前空间。');});
 // Read-only diagnostics for acceptance; tests exercise ordinary pointer/key/touch input.
-window.flcReview={placedAssets:()=>staticInstances.filter(i=>i.root.userData.photoBinding).map(i=>{
+window.flcReview={retainedRoomFurniture:()=>[...roots.entries()].flatMap(([floor,root])=>root.children.filter(m=>m.isMesh&&m.userData.retainedSourceNames?.length).map(m=>({floor,visible:root.visible&&m.visible,sourceNames:m.userData.retainedSourceNames,geometryUUID:m.geometry.uuid,triangles:(m.geometry.index?.count||m.geometry.attributes.position.count)/3,collider:layout.floors[floor].colliders.find(c=>c.id==='Vending machine')}))),placedAssets:()=>staticInstances.filter(i=>i.root.userData.photoBinding).map(i=>{
  const root=i.root,room=spatialCatalog?.objects?.[root.userData.spatialId]?.room;
  const parts=new Map();root.traverse(m=>{if(!m.isMesh)return;const id=m.userData.photoAsset||i.slot.asset;if(!parts.has(id))parts.set(id,{asset:id,geometryUUIDs:[],materialUUIDs:[]});parts.get(id).geometryUUIDs.push(m.geometry.uuid);parts.get(id).materialUUIDs.push(m.material.uuid);});
  return {id:root.userData.photoBinding,floor:root.userData.floor,room:room||layout.floors[root.userData.floor].rooms.find(r=>root.position.x>=r.bounds[0]&&root.position.x<=r.bounds[2]&&root.position.z>=r.bounds[1]&&root.position.z<=r.bounds[3])?.id,visible:root.visible&&root.parent.visible,spatialId:root.userData.spatialId,worldPosition:root.getWorldPosition(new THREE.Vector3()).toArray(),placementAssets:root.userData.photoParts||[i.slot.asset],parts:[...parts.values()]};

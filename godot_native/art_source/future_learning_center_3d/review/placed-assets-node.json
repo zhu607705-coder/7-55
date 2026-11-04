@@ -5,51 +5,6 @@
       "building": "building.glb",
       "parts": [
         {
-          "binding": "rest/single-43",
-          "index": 0,
-          "asset": "lounge_single_corrected",
-          "min": [
-            14.358060070311428,
-            0,
-            37.51389400311849
-          ],
-          "max": [
-            15.188760352645902,
-            0.8520607352256775,
-            38.48784552570641
-          ]
-        },
-        {
-          "binding": "rest/single-43",
-          "index": 1,
-          "asset": "lounge_loose_cushion",
-          "min": [
-            14.577410158390624,
-            0.45675,
-            37.81904977186257
-          ],
-          "max": [
-            14.719410230976994,
-            0.8203900103569031,
-            38.1826898054532
-          ]
-        },
-        {
-          "binding": "rest/single-44",
-          "index": 0,
-          "asset": "lounge_single_corrected",
-          "min": [
-            15.95806066938779,
-            0,
-            37.51389400311849
-          ],
-          "max": [
-            16.788760951722264,
-            0.8520607352256775,
-            38.48784552570641
-          ]
-        },
-        {
           "binding": "xlab/workshop-candidate",
           "index": 0,
           "asset": "photo_workshop_green_tool_cart",
@@ -170,92 +125,13 @@
           ]
         }
       ],
-      "furnitureComparisons": 19096,
-      "pantryRoute": [
-        [
-          14.7734104,
-          37.15
-        ],
-        [
-          16.3734104,
-          37.15
-        ],
-        [
-          13.5,
-          37.15
-        ],
-        [
-          13.5,
-          39
-        ],
-        [
-          14.15,
-          39
-        ],
-        [
-          14.15,
-          41
-        ],
-        [
-          16.61,
-          41
-        ],
-        [
-          14.15,
-          41
-        ]
-      ],
+      "furnitureComparisons": 9820,
       "route": "west entrance to north/south; east aisle x=24.1 across full room"
     },
     {
       "building": "building.web.glb",
       "parts": [
         {
-          "binding": "rest/single-43",
-          "index": 0,
-          "asset": "lounge_single_corrected",
-          "min": [
-            14.358060070311428,
-            0,
-            37.51389400311849
-          ],
-          "max": [
-            15.188760352645902,
-            0.8520607352256775,
-            38.48784552570641
-          ]
-        },
-        {
-          "binding": "rest/single-43",
-          "index": 1,
-          "asset": "lounge_loose_cushion",
-          "min": [
-            14.577410158390624,
-            0.45675,
-            37.81904977186257
-          ],
-          "max": [
-            14.719410230976994,
-            0.8203900103569031,
-            38.1826898054532
-          ]
-        },
-        {
-          "binding": "rest/single-44",
-          "index": 0,
-          "asset": "lounge_single_corrected",
-          "min": [
-            15.95806066938779,
-            0,
-            37.51389400311849
-          ],
-          "max": [
-            16.788760951722264,
-            0.8520607352256775,
-            38.48784552570641
-          ]
-        },
-        {
           "binding": "xlab/workshop-candidate",
           "index": 0,
           "asset": "photo_workshop_green_tool_cart",
@@ -376,41 +252,7 @@
           ]
         }
       ],
-      "furnitureComparisons": 7672,
-      "pantryRoute": [
-        [
-          14.7734104,
-          37.15
-        ],
-        [
-          16.3734104,
-          37.15
-        ],
-        [
-          13.5,
-          37.15
-        ],
-        [
-          13.5,
-          39
-        ],
-        [
-          14.15,
-          39
-        ],
-        [
-          14.15,
-          41
-        ],
-        [
-          16.61,
-          41
-        ],
-        [
-          14.15,
-          41
-        ]
-      ],
+      "furnitureComparisons": 3836,
       "route": "west entrance to north/south; east aisle x=24.1 across full room"
     }
   ],
