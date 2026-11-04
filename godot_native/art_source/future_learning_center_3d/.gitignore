@@ -1,5 +1,0 @@
-pipeline/node_modules
-scripts/__pycache__/
-*.blend1
-
-browser_tests/node_modules/
