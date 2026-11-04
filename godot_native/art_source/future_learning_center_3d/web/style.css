@@ -14,3 +14,6 @@
 #workstation-controls[hidden]{display:none} #workstation-controls label{display:block;margin-bottom:8px} #workstation-controls input[type=range]{display:block;width:100%;min-height:32px} #workstation-controls button,#workstation-controls select{min-height:44px} #workstation-controls p{line-height:1.4} @media(max-width:600px){#workstation-controls{top:auto;bottom:100px;max-height:29vh;width:calc(100vw - 32px)} #inspect{max-width:calc(100vw - 32px)}}
 
 body.reviewing-workstation #spatial-panel{display:none}body.reviewing-workstation #inspect{z-index:9} @media(max-width:600px){body.reviewing-workstation #inspect{bottom:12px;max-height:125px;overflow:auto}#workstation-controls{bottom:150px}}
+
+
+#project-display-dialog{max-width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;overflow-wrap:anywhere}#project-display-content img{display:block;max-width:100%;height:auto}#project-display-content a{display:inline-block;padding:12px 0;min-height:44px}#project-display-dialog .close{min-height:44px}

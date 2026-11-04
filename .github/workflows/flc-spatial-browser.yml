@@ -28,7 +28,21 @@ jobs:
         run: npm ci --prefix browser_tests --ignore-scripts --no-audit --no-fund
       - name: Install supported Chromium runtime
         run: node browser_tests/node_modules/playwright/cli.js install --with-deps chromium
+      - name: Project display contracts
+        run: node scripts/test_project_displays.mjs
+      - name: Project display desktop and mobile DOM acceptance
+        env:
+          TEST_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node browser_tests/project_displays_browser.mjs
+      - name: Preserve project display evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flc-project-displays-browser
+          path: godot_native/art_source/future_learning_center_3d/review/project_displays_browser/
+          if-no-files-found: warn
       - name: Actual WebGL pointer and touch acceptance
+        if: always()
         env:
           TEST_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: node browser_tests/spatial_browser.mjs
@@ -39,3 +53,4 @@ jobs:
           name: flc-spatial-browser
           path: godot_native/art_source/future_learning_center_3d/review/spatial_browser/
           if-no-files-found: error
+

@@ -1,3 +1,4 @@
+import {createProjectDisplay,displayTargetFromHit,posterDisplayId,validateDisplayAssignments} from './project_displays.js';
 import {roomFurnitureNodes} from './photo_room_replacement.js';
 import {photoComposition,installPhotoCollision} from './photo_static_placement.js';
 import * as THREE from 'three';
@@ -27,7 +28,7 @@ let layout,catalog,floorLibrary,renderer,scene,camera,orbit,loaded=false,roots=n
 let frameFocused=true;
 const renderGate=createRenderGate();
 let renderedFrames=0,lastFrameGapMs=0,lastRenderMs=0,lastDrawTime=0,lastDrawIntervalMs=0;
-let spatialCatalog,spatial,exhibitions,presentation,overlay,placeholder,inspectedRoot=null;
+let spatialCatalog,spatial,exhibitions,presentation,overlay,projectDisplay,placeholder,inspectedRoot=null;
 const spatialRoots=new Map();
 const keys=new Set(),joy={x:0,y:0,pointer:null};let savedWalk=null,toolRoots=[],deskRoots=[];
 let chairLibrary=null;const chairSystems=[];
@@ -63,10 +64,12 @@ async function start(){
   if(roots.size!==3)throw Error('Missing floor roots');
   for(const [floor,root] of roots)for(const mesh of root.children)if(mesh.isMesh&&mesh.userData.kind==='floor'){mesh.userData.originalFloorMaterial=mesh.material;mesh.material=state.finishes[floor]==='light_gray_tile'?floorLibrary.tile:mesh.userData.originalFloorMaterial;}
   registerSpatialObjects();
+  try{validateDisplayAssignments(exhibitions,spatialCatalog);}catch(error){console.warn(error);exhibitions={...exhibitions,displayAssignments:[]};}
   placeholder=createPendingFloor();scene.add(placeholder);
   addCorridorPosters();
   presentation=createSpatialPresentation(THREE,roots,layout);
   overlay=createSpatialOverlay({catalog:spatialCatalog,config:exhibitions,onAction:spatialAction,onObject:id=>openSpatialObject(id)});
+  projectDisplay=createProjectDisplay({config:exhibitions,onOpen:stopInput,onClose:()=>{stopInput();canvas.focus({preventScroll:true});}});
   const ground=new THREE.Mesh(new THREE.PlaneGeometry(180,180),new THREE.MeshStandardMaterial({color:0xd8dfd8,roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.set(13,-.3,21);ground.receiveShadow=true;scene.add(ground);
   loaded=true;$('workstation-review').disabled=false;$('walk').disabled=false;$('loading').hidden=true;$('floor').value=state.floor;populateRooms();setOverview();
   for(const [id,a] of Object.entries(catalog.assets)){const li=document.createElement('li'),link=document.createElement('a');link.href=a.source;link.target='_blank';link.rel='noopener';link.textContent=a.name+'：公开尺寸依据';li.append(link);$('source-list').append(li);}
@@ -102,7 +105,7 @@ function optimizeDesk(obj,target,inverse,handled){
  if(binding){desk.userData.photoBinding=binding.id;desk.userData.photoLevel=0;}
  obj.traverse(mesh=>{if(!mesh.isMesh)return;handled.add(mesh);if(binding&&PHOTO_DESKTOP_NAMES.test(mesh.userData.name||mesh.name))return;const sourceMaterial=Array.isArray(mesh.material)?mesh.material[0]:mesh.material,mat=binding&&PHOTO_DESK_TOP_NAME.test(mesh.userData.name||mesh.name)?photoDeskTopMaterial(sourceMaterial):sourceMaterial,key=mesh.geometry.uuid+'_'+mat.uuid;
   if(!buckets.has(key))buckets.set(key,{geometry:mesh.geometry,material:mat,entries:[]});
-  const entry={desk,factor:Number(mesh.userData.liftFactor||0),control:mesh.userData.deskRole==='control',role:mesh.userData.deskRole,base:inverse.clone().multiply(mesh.matrixWorld)};
+  const entry={desk,factor:Number(mesh.userData.liftFactor||0),control:mesh.userData.deskRole==='control',role:mesh.userData.deskRole,sourcePart:mesh.userData.name||mesh.name,base:inverse.clone().multiply(mesh.matrixWorld)};
   buckets.get(key).entries.push(entry);desk.userData.parts.push(entry);
  });
  if(binding)for(const part of photoDeskParts(photoLibrary,binding,deskMatrix)){
@@ -240,7 +243,7 @@ function addCorridorPosters(){
  // Explicit proposed slots outside existing west-office boundaries, not surveyed placement.
  for(const room of layout.floors['4'].rooms.filter(r=>/^seminar_/.test(r.id))){
   const poster=new THREE.Mesh(new THREE.PlaneGeometry(1.2,.45),new THREE.MeshBasicMaterial({map:textTexture(['海报图片待提供','走廊示意位置','非已核准展品']),side:THREE.DoubleSide}));
-  poster.rotation.y=Math.PI/2;poster.position.set(room.bounds[2]+.08,1.6,(room.bounds[1]+room.bounds[3])/2);poster.userData={floor:'4',kind:'poster',reviewPoster:true,sourceRoomId:room.id};roots.get('4').add(poster);
+  poster.rotation.y=Math.PI/2;poster.position.set(room.bounds[2]+.08,1.6,(room.bounds[1]+room.bounds[3])/2);poster.userData={floor:'4',kind:'poster',reviewPoster:true,displayId:posterDisplayId(room.id),sourceRoomId:room.id};roots.get('4').add(poster);
  }
 }
 
@@ -288,7 +291,7 @@ function frame(now){requestAnimationFrame(frame);const timing=frameTimeSteps(now
 }
 $('floor').onchange=()=>spatialAction({type:'SELECT_FLOOR',floor:$('floor').value});$('room').onchange=()=>spatialAction({type:'SELECT_ROOM',room:$('room').value});$('overview').onclick=()=>{if(state.inspect){exitInspect();return;}if(state.mode==='walk')setOverview();else spatialAction({type:'BACK'});};$('walk').onclick=enterWalk;$('explode').onclick=()=>spatialAction({type:state.exploded?'COLLAPSE':'EXPAND'});
 for(const name of ['help','sources']){$(name).onclick=()=>{stopInput();if(name==='sources')$('floor-finish').value=state.finishes[state.floor];$(name+'-dialog').showModal();};$(name+'-dialog').addEventListener('close',()=>{stopInput();canvas.focus({preventScroll:true});});}
-window.addEventListener('keydown',e=>{if(e.key==='Escape'){if(state.inspect)exitInspect();else if(state.mode==='walk')setOverview();else if(loaded)spatialAction({type:'BACK'});return;}if(document.querySelector('dialog[open]')||/^(INPUT|SELECT|BUTTON)$/.test(document.activeElement?.tagName))return;if(state.mode==='walk'&&['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)){e.preventDefault();keys.add(e.code);}});
+window.addEventListener('keydown',e=>{if(document.querySelector('dialog[open]'))return;if(e.key==='Escape'){if(state.inspect)exitInspect();else if(state.mode==='walk')setOverview();else if(loaded)spatialAction({type:'BACK'});return;}if(document.querySelector('dialog[open]')||/^(INPUT|SELECT|BUTTON)$/.test(document.activeElement?.tagName))return;if(state.mode==='walk'&&['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)){e.preventDefault();keys.add(e.code);}});
 window.addEventListener('keyup',e=>keys.delete(e.code));window.addEventListener('blur',()=>{stopInput();frameFocused=false;lastTime=null;});window.addEventListener('focus',()=>{frameFocused=true;lastTime=null;renderGate.invalidate();});document.addEventListener('visibilitychange',()=>{stopInput();lastTime=null;renderGate.invalidate();});window.addEventListener('resize',resize);
 canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('pointerdown',e=>{if(e.button!==0)return;canvas.focus({preventScroll:true});if(look)return;look={id:e.pointerId,x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY,moved:false};if(state.mode==='walk'&&!state.inspect)canvas.setPointerCapture(e.pointerId);});
 canvas.addEventListener('pointermove',e=>{if(!look||look.id!==e.pointerId)return;const dx=e.clientX-look.x,dy=e.clientY-look.y;look.x=e.clientX;look.y=e.clientY;if(Math.hypot(e.clientX-look.startX,e.clientY-look.startY)>5)look.moved=true;if(state.mode==='walk'&&!state.inspect){state.yaw-=dx*.004;state.pitch=THREE.MathUtils.clamp(state.pitch-dy*.004,-1.25,1.25);renderGate.invalidate();}});
@@ -311,7 +314,7 @@ function pick(e){
  const hits=raycaster.intersectObjects([...roots.values(),placeholder].filter(r=>r.visible),true).filter(hitIsVisible);if(!hits.length)return;
  const hit=hits[0];
  if(state.exploded){let root=hit.object;while(root&&!root.userData.floor)root=root.parent;if(root)spatialAction({type:'SELECT_FLOOR',floor:String(root.userData.floor)});return;}
- const reviewPoster=hit.object.userData.reviewPoster;if(reviewPoster){overlay.showExhibit('exhibit/office-corridor-poster');return;}
+ const display=displayTargetFromHit(hit);if(display){projectDisplay.open(display);return;}
  if(state.mode==='overview'&&hit.object.userData.deskEntries?.[hit.instanceId]){openSpatialObject(hit.object.userData.deskEntries[hit.instanceId].desk.userData.spatialId);return;}
  if(state.mode==='walk'){const entry=hit.object.userData.deskEntries?.[hit.instanceId];if(entry?.control){toggleDesk(entry.desk);return;}let owner=hit.object,control=false;while(owner){control ||=!!owner.userData.deskControl;if(owner.userData.adjustableDesk&&control){toggleDesk(owner);return;}owner=owner.parent;}
  const nearby=deskControls().filter(d=>d.inFront&&d.distance<3&&Math.hypot(e.clientX-d.x,e.clientY-d.y)<22&&hit.distance>d.distance-.12).sort((a,b)=>Math.hypot(e.clientX-a.x,e.clientY-a.y)-Math.hypot(e.clientX-b.x,e.clientY-b.y));if(nearby.length){toggleDesk(nearby[0].desk);return;}}
@@ -360,3 +363,4 @@ window.flcReview={retainedRoomFurniture:()=>[...roots.entries()].flatMap(([floor
  return {id:root.userData.photoBinding,floor:root.userData.floor,room:room||layout.floors[root.userData.floor].rooms.find(r=>root.position.x>=r.bounds[0]&&root.position.x<=r.bounds[2]&&root.position.z>=r.bounds[1]&&root.position.z<=r.bounds[3])?.id,visible:root.visible&&root.parent.visible,spatialId:root.userData.spatialId,worldPosition:root.getWorldPosition(new THREE.Vector3()).toArray(),placementAssets:root.userData.photoParts||[i.slot.asset],parts:[...parts.values()]};
 }),workstation:()=>workstationReview?.snapshot()||null,photoAssets:()=>({loaded:[...photoLibrary.assets.keys()],bindings:[...photoLibrary.bindings.values()].map(b=>b.id),errors:photoLibrary.errors,pending:photoLibrary.pending,static:staticInstances.filter(i=>i.root.userData.photoBinding).map(i=>({...i.snapshot(),binding:i.root.userData.photoBinding})),desks:deskRoots.filter(d=>d.userData.photoBinding).map(d=>({id:d.userData.spatialId,binding:d.userData.photoBinding,level:d.userData.photoLevel,scale:d.scale.toArray(),height:d.userData.currentHeight,parts:d.userData.parts.filter(p=>p.asset&&p.level===d.userData.photoLevel).map(p=>({asset:p.asset,factor:p.factor,role:p.role}))}))}),spatial:()=>({state:spatial,catalog:spatialCatalog,configRevision:exhibitions?.revision,placeholderVisible:placeholder?.visible,displayFloors:[...roots].map(([floor,root])=>({floor,visible:root.visible,y:root.position.y,sourceY:root.userData.sourcePosition[1]})),posterCount:roots.get('4')?.children.filter(n=>n.userData.reviewPoster).length}),generatedAssets:()=>staticInstances.map(item=>item.snapshot()),chairs:()=>({loaded:!!chairLibrary,variant:chairLibrary?.variant,systems:chairSystems.map(s=>s.snapshot())}),floorMaterials:()=>[...roots.entries()].map(([floor,root])=>({floor,profile:state.finishes[floor],specialFinishes:root.children.filter(m=>m.isMesh&&m.userData.kind==='finish').map(m=>m.material.name),surfaces:root.children.filter(m=>m.isMesh&&m.userData.kind==='floor').map(m=>({material:m.material.name,hasColor:!!m.material.map,hasNormal:!!m.material.normalMap,hasRoughness:!!m.material.roughnessMap,uvCount:m.geometry.getAttribute('uv')?.count,uvSpan:m.geometry.getAttribute('uv')?Array.from(m.geometry.getAttribute('uv').array).reduce((r,v)=>[Math.min(r[0],v),Math.max(r[1],v)],[Infinity,-Infinity]):null}))})),desks:()=>deskControls().map(({desk,...info})=>({...info,partOffsets:desk.userData.parts.map(p=>{const m=new THREE.Matrix4();p.batch.getMatrixAt(p.index,m);return {factor:p.factor,offset:m.elements[13]-p.base.elements[13]};})})),layers:()=>[...roots.entries()].map(([floor,root])=>({floor,visible:root.visible,parts:root.children.filter(m=>m.isMesh).map(m=>({kind:m.userData.kind,visible:m.visible,minY:new THREE.Box3().setFromObject(m).min.y,maxY:new THREE.Box3().setFromObject(m).max.y}))})),snapshot:()=>({ready:loaded,renderedFrames,lastRafGapMs:lastFrameGapMs,lastRenderSubmissionMs:lastRenderMs,lastDrawIntervalMs,renderPolicy:'on-demand; RAF gap and JS submission time are not presented FPS',spatialScope:spatial?.scope,expanded:state.exploded,floor:state.floor,room:state.room,mode:state.mode,position:[...state.pos],yaw:state.yaw,pitch:state.pitch,eyeHeight:layout?.eyeHeight,verticalFov:camera?.fov,horizontalFov:camera?THREE.MathUtils.radToDeg(2*Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*camera.aspect)):null,inspect:state.inspect,joystick:[joy.x,joy.y],drawCalls:renderer?.info.render.calls,triangles:renderer?.info.render.triangles,renderedMeshes:[...roots.values()].reduce((n,r)=>n+r.children.length,0)}),canStand:(x,z)=>state.floor!=='1'&&canStand(layout,state.floor,x,z),tools:()=>visibleTools().map(({tool,...info})=>info)};
 start();
+
