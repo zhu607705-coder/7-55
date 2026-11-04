@@ -38,6 +38,11 @@ jobs:
           node pipeline/test_lab_tools.mjs
           node pipeline/test_default_precision.mjs
           mkdir -p review/prop_refinement
+          node scripts/test_render_gate.mjs
+          node scripts/test_spatial_overlay.mjs
+          node scripts/test_spatial_state.mjs
+          node scripts/test_spatial_presentation.mjs
+          node scripts/test_spatial_viewer_integration.mjs
           node scripts/test_props_review.mjs > review/prop_refinement/web_static_validation.json
           cat review/prop_refinement/web_static_validation.json
       - name: Preserve current-source asset receipts

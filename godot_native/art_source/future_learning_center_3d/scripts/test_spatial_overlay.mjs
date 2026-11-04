@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {safeExhibitImage,projectExhibitionConfig} from '../web/spatial_overlay.js';
+let checks=0;const check=(v,label)=>{assert.ok(v,label);checks++;};
+for(const input of [null,'https://other.test/a.png','javascript:alert(1)','./assets/exhibits/../../a.png','./assets/exhibits/a.svg','data:image/png;base64,a','./assets/exhibits/a.png?execute=1'])check(safeExhibitImage(input)===null,'reject unsafe/unapproved image '+input);
+check(safeExhibitImage('./assets/exhibits/approved/a.webp')!==null,'allow local approved raster');
+const config=JSON.parse(fs.readFileSync(new URL('../web/assets/exhibition_config.json',import.meta.url))),before=JSON.stringify(config);
+check(projectExhibitionConfig(config,'flc/f3/r08').exhibits[0].id==='exhibit/lab-introduction','lab content separate');check(projectExhibitionConfig(config,'flc/f3/r08').teams.length===0,'no invented team');
+const replaced=structuredClone(config);replaced.teams=[{id:'team/config-test-only',name:'测试替换名称'}];replaced.roomAssignments.find(x=>x.spaceId==='flc/f3/r08').teamIds=['team/config-test-only'];replaced.exhibits.find(x=>x.id==='exhibit/lab-introduction').title='替换说明';
+const projected=projectExhibitionConfig(replaced,'flc/f3/r08');check(projected.teams[0].name==='测试替换名称','assignment replacement reflected independently');check(projected.exhibits[0].title==='替换说明','content replacement reflected');check(JSON.stringify(config)===before,'original config not mutated');check(projectExhibitionConfig(config,'unknown').exhibits.length===0,'unknown space empty');
+console.log(JSON.stringify({passed:checks,scope:'Configuration projection and approved local raster paths; not DOM/browser rendering'},null,2));

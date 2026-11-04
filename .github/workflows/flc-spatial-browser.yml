@@ -1,0 +1,38 @@
+name: FLC spatial review browser
+on:
+  pull_request:
+    paths:
+      - 'godot_native/art_source/future_learning_center_3d/**'
+      - '.github/workflows/flc-spatial-browser.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  spatial-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: godot_native/art_source/future_learning_center_3d
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: godot_native/art_source/future_learning_center_3d/browser_tests/package-lock.json
+      - name: Install pinned browser harness
+        run: npm ci --prefix browser_tests --ignore-scripts --no-audit --no-fund
+      - name: Install supported Chromium runtime
+        run: node browser_tests/node_modules/playwright/cli.js install --with-deps chromium
+      - name: Actual WebGL pointer and touch acceptance
+        env:
+          TEST_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node browser_tests/spatial_browser.mjs
+      - name: Preserve actual browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flc-spatial-browser
+          path: godot_native/art_source/future_learning_center_3d/review/spatial_browser/
+          if-no-files-found: error
