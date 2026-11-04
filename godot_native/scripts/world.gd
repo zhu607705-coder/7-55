@@ -15,6 +15,11 @@ var north_space:RefCounted=world_space.north
 const CharacterFacing = preload("res://scripts/character_facing.gd")
 const InventoryGesture = preload("res://scripts/ui/inventory_gesture.gd")
 const ObjectPicker = preload("res://scripts/world_object_picker.gd")
+const NpcFeedback = preload("res://scripts/presentation/npc_interaction_feedback.gd")
+const NpcFeedbackBindings = preload("res://scripts/presentation/npc_feedback_bindings.gd")
+var npc_feedback: RefCounted = NpcFeedback.new()
+var _npc_feedback_focused := true
+var _npc_completion_waiting: Dictionary = {}
 const KayakObject = preload("res://scripts/objects/kayak_world_adapter.gd")
 const CampusWayfinding = preload("res://scripts/ui/campus_wayfinding.gd")
 const LibraryEntranceDoor = preload("res://scripts/presentation/library_entrance_door.gd")
@@ -167,6 +172,8 @@ func _ready() -> void:
 	overflow_feedback.setup(feedback_label);overflow_feedback.hide()
 	State.world_teleport.connect(_receive_teleport)
 	State.feedback.connect(_receive_feedback)
+	State.action_completed.connect(_npc_action_completed)
+	visibility_changed.connect(_npc_visibility_changed)
 	State.story_reset.connect(func(): _kayak_boundary_hint_at=-KAYAK_BOUNDARY_HINT_COOLDOWN_MS)
 	if ResourceLoader.exists("res://scripts/ui/chapter4_world_layers.gd"):
 		chapter4_layers = load("res://scripts/ui/chapter4_world_layers.gd").new()
@@ -226,6 +233,7 @@ func refresh_world() -> void:
 	if guard_capture.active and not guard_capture.matches(_guard_capture_context()): _cancel_guard_capture()
 	if not stair_handoff.is_empty() and (State.d.native.scene!="duan_yongping_temporal_maze" or State.d.chapter4.phase!="final_chase" or State.d.chapter4.floor!="A2" or int(stair_handoff.attempt)!=int(State.d.chapter4.chaseAttempt)):stair_handoff.clear()
 	var incoming := str(State.d.native.scene)
+	if incoming != scene_id: _clear_npc_feedback()
 	_ensure_scene_visuals(incoming)
 	if incoming=="canteen_interior" and not is_instance_valid(native_canteen):
 		native_canteen=load(CANTEEN_SCENE_SCRIPT).new();add_child(native_canteen);native_canteen.setup(self)
@@ -246,6 +254,7 @@ func refresh_world() -> void:
 	var key := incoming + ":" + (floor_id+":"+time_id+":"+phase_id if incoming == "duan_yongping_temporal_maze" else zone+":"+vehicle_id if incoming == "qizhen_lake" else "")
 	targets = State.get_targets(incoming)
 	if key == world_key and pending_teleport == Vector2.INF:
+		_sync_npc_feedback()
 		queue_redraw()
 		return
 	cancel_exploration_gestures()
@@ -253,6 +262,7 @@ func refresh_world() -> void:
 	_cancel_floor_route()
 	kayak_mouse_gesture.clear()
 	world_key = key
+	_sync_npc_feedback()
 	pan_offset = Vector2.ZERO
 	scene_id = incoming
 	player_turn.clear(); walk_clock=0
@@ -550,6 +560,9 @@ func _try_interact(target: Dictionary = {}) -> void:
 		return
 	if action=="c3_target:theater_exit" and is_instance_valid(host_node) and host_node.has_method("_begin_theater_departure") and host_node._begin_theater_departure():return
 	var result: Dictionary=State.act(action,target.get("value"))
+	_sync_npc_feedback()
+	if NpcFeedbackBindings.dialogue_accepted(scene_id,target,result,State.d) and _npc_feedback_visible() and not _npc_feedback_cinematic():
+		npc_feedback.play(str(target.id),"dialogue")
 	if scene_id=="duan_yongping_temporal_maze" and chapter4_layers!=null:
 		chapter4_layers.phases.support_interacted(State.d,str(target.get("id","")),action,result)
 	# A successful counter interaction turns the original actor toward the clerk
@@ -587,6 +600,113 @@ func _receive_feedback(text: String) -> void:
 			subtitle_left=3.0
 			return
 
+func _npc_feedback_key() -> String:
+	var incoming := str(State.d.native.scene)
+	var key := incoming + ":" + str(State.d.native.mode)
+	if incoming == "canteen_interior": key += ":" + str(State.d.canteenHunt.phase)
+	elif incoming == "duan_yongping_temporal_maze":
+		key += ":" + str(State.d.chapter4.floor) + ":" + str(State.d.chapter4.timeState) + ":" + str(State.d.chapter4.phase)
+	return key
+
+func _npc_feedback_world_current() -> bool:
+	if scene_id != str(State.d.native.scene): return false
+	if scene_id == "duan_yongping_temporal_maze":
+		return world_key == scene_id + ":" + str(State.d.chapter4.floor) + ":" + str(State.d.chapter4.timeState) + ":" + str(State.d.chapter4.phase)
+	return true
+
+func _sync_npc_feedback() -> void:
+	var key := _npc_feedback_key()
+	npc_feedback.bind(key,State.d)
+	if not _npc_completion_waiting.is_empty():
+		if not is_same(_npc_completion_waiting.owner,State.d) or _npc_completion_waiting.key != key or str(State.d.native.page) != "c4_device" or str(State.d.native.get("c4_context","")) != "deduction":
+			_npc_completion_waiting.clear()
+
+func _clear_npc_feedback() -> void:
+	npc_feedback.reset()
+	_npc_completion_waiting.clear()
+
+func _npc_feedback_visible() -> bool:
+	if not is_visible_in_tree(): return false
+	var frame: Variant = host_node.get("world_frame") if is_instance_valid(host_node) else null
+	return not is_instance_valid(frame) or frame.is_visible_in_tree()
+
+func _npc_feedback_cinematic() -> bool:
+	if capture_mode or presentation_actor_hidden or guard_capture.active: return true
+	if not is_instance_valid(host_node): return false
+	if is_instance_valid(host_node.get("active_game")): return true
+	var effect: Variant = host_node.get("world_effect")
+	if is_instance_valid(effect) and effect.get_meta("blocks_input",false): return true
+	for key: String in ["c3_narrative_host","c3_scene_host"]:
+		var owner_node: Variant = host_node.get(key)
+		if is_instance_valid(owner_node) and owner_node.has_method("owns_world_contract") and owner_node.owns_world_contract(): return true
+	return false
+
+func _npc_visibility_changed() -> void:
+	if not _npc_feedback_visible(): npc_feedback.clear_visuals()
+
+func _npc_action_completed(action: String,previous: Dictionary,next: Dictionary,result: Dictionary) -> void:
+	if scene_id.is_empty() or scene_id != str(next.get("native",{}).get("scene","")): return
+	_sync_npc_feedback()
+	var id: String = NpcFeedbackBindings.completion_target(action,previous,next,result)
+	if id.is_empty() or _npc_feedback_cinematic(): return
+	if _npc_feedback_visible():
+		npc_feedback.play(id,"complete",action)
+	elif action == "c4_deduce" and str(State.d.native.page) == "c4_device" and str(State.d.native.get("c4_context","")) == "deduction":
+		# This NPC deliberately opens an existing phone page. Retain only its
+		# newly earned receipt until return to this same page/world/owner.
+		# Leaving that page, loading or changing floor cancels it; no save replay.
+		_npc_completion_waiting = {"id":id,"receipt":action,"owner":State.d,"key":_npc_feedback_key()}
+
+func _tick_npc_feedback(delta: float) -> void:
+	_sync_npc_feedback()
+	if not _npc_feedback_visible() or _npc_feedback_cinematic() or not _npc_feedback_world_current():
+		npc_feedback.clear_visuals()
+		return
+	if not _npc_feedback_focused or _shell_input_blocked(): return
+	if not _npc_completion_waiting.is_empty():
+		npc_feedback.play(str(_npc_completion_waiting.id),"complete",str(_npc_completion_waiting.receipt))
+		_npc_completion_waiting.clear()
+	var id: String = NpcFeedbackBindings.target_id(scene_id,nearby)
+	# nearby belongs to the previous movement tick. Recheck its live target and
+	# radius before the dwell clock, without changing input selection or range.
+	if not id.is_empty():
+		if not targets.any(func(target: Dictionary) -> bool: return target.get("id","") == id) or _distance(nearby) > float(nearby.get("radius",100)):
+			id = ""
+		elif not str(nearby.get("mode","")).is_empty() and str(nearby.mode) != str(State.d.native.mode): id = ""
+	npc_feedback.advance(delta,id,not _interaction_presentation_blocks())
+
+func _draw_npc_feedback(canvas: CanvasItem,context: Dictionary) -> void:
+	if not _npc_feedback_visible() or _npc_feedback_cinematic() or _shell_input_blocked(): return
+	if not _npc_feedback_world_current() or npc_feedback.context_key != _npc_feedback_key() or not is_same(npc_feedback.owner,State.d): return
+	var safe := exploration_safe_rect(true)
+	var excluded := _npc_feedback_exclusions()
+	var reduced := bool(State.d.native.settings.get("reduced_motion",false))
+	for effect: Dictionary in npc_feedback.effects:
+		var actor: Dictionary = NpcFeedbackBindings.geometry(self,str(effect.id))
+		if actor.is_empty(): continue
+		var layout: Dictionary = NpcFeedback.placement(actor.bounds,context.origin,float(context.zoom),safe,excluded)
+		NpcFeedback.draw_effect(canvas,str(effect.kind),float(effect.age),reduced,layout)
+
+func _npc_feedback_exclusions() -> Array[Rect2]:
+	var excluded: Array[Rect2] = []
+	if not is_instance_valid(host_node): return excluded
+	var surface: Variant = host_node.get("world_view")
+	if not is_instance_valid(surface): return excluded
+	for key: String in ["c3_narrative_host","library_story_host"]:
+		var owner_node: Variant = host_node.get(key)
+		var view: Variant = owner_node.get("view") if is_instance_valid(owner_node) else null
+		var panel: Variant = view.get("panel") if is_instance_valid(view) else null
+		if not is_instance_valid(panel) or not panel.is_visible_in_tree(): continue
+		if panel.get_viewport() == get_viewport():
+			excluded.append(get_global_transform_with_canvas().affine_inverse() * panel.get_global_rect())
+		else:
+			# Ordinary dialogue is reparented above the SubViewport. Convert its
+			# actual root rectangle, including the display scale, back exactly once.
+			var screen: Rect2 = panel.get_global_rect()
+			var display := maxf(0.01,hud_display_scale())
+			excluded.append(Rect2((screen.position-surface.get_global_rect().position)/display,screen.size/display))
+	return excluded
+
 func _process(delta: float) -> void:
 	# Keep the existing simulation cap below. The source capture uses a scene
 	# timer, so its presentation clock follows active elapsed time independently.
@@ -595,6 +715,7 @@ func _process(delta: float) -> void:
 		_cancel_guard_capture()
 		return
 	delta=minf(delta,.05)
+	_tick_npc_feedback(capture_delta_ms / 1000.0)
 	if _inventory_owns_pointer(): cancel_exploration_gestures()
 	if not kayak_mouse_gesture.is_empty() and not _kayak_mouse_valid(): kayak_mouse_gesture.clear()
 	if _floor_feedback_left>0:
@@ -1092,6 +1213,7 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 		SpatialRules.draw_actor_covers(canvas,guard_context,guard_position.y+extent.y,Rect2(guard_position-Vector2(guard_size.x/2,guard_size.y*.89)/zoom,guard_size/zoom))
 	var name_text := str(State.d.get("playerName",State.d.get("characterName","")))
 	if not presentation_actor_hidden and not name_text.is_empty(): canvas.draw_string(font,origin+player*zoom+Vector2(-25,22),name_text,HORIZONTAL_ALIGNMENT_CENTER,100,14,Color.WHITE)
+	_draw_npc_feedback(canvas,layer_context)
 	if _exploration_overlay_blocked():
 		if is_instance_valid(selected_overlay):selected_overlay.hide()
 		if is_instance_valid(overflow_feedback):overflow_feedback.hide()
@@ -1396,6 +1518,8 @@ func _tick_guard_capture(delta_ms:float):
 
 func _exit_tree():
 	guard_capture.cancel()
+	_clear_npc_feedback()
+	if State.action_completed.is_connected(_npc_action_completed): State.action_completed.disconnect(_npc_action_completed)
 
 func _guard_cue(id: String,payload: Dictionary = {}) -> void:
 	if is_instance_valid(host_node) and host_node.has_method("_game_presentation"): host_node._game_presentation(id,payload)
@@ -1535,6 +1659,8 @@ func _cancel_table_drag() -> void:
 	if is_inside_tree() and get_viewport().gui_is_dragging(): get_viewport().gui_cancel_drag()
 
 func _notification(what: int) -> void:
+	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_WM_WINDOW_FOCUS_OUT]: _npc_feedback_focused = false
+	elif what in [NOTIFICATION_APPLICATION_FOCUS_IN,NOTIFICATION_WM_WINDOW_FOCUS_IN]: _npc_feedback_focused = true
 	if what==NOTIFICATION_DRAG_END: _finish_table_drag()
 	elif what==NOTIFICATION_WM_WINDOW_FOCUS_OUT:cancel_exploration_gestures()
 	elif what==NOTIFICATION_VISIBILITY_CHANGED and is_inside_tree() and not is_visible_in_tree():cancel_exploration_gestures()
