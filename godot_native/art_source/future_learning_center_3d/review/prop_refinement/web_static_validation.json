@@ -1,5 +1,0 @@
-{
-  "passed": 95,
-  "scope": "Node loader lifetime/fallback/retry, actual Three clone sharing, all six source paths and local ES dependency graph. Not browser/GPU acceptance.",
-  "modules": 11
-}

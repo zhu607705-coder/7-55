@@ -1,6 +1,0 @@
-# Walkthrough extension
-Mode: Experience. Continue the established neutral architectural workbench, with the building occupying the viewport and compact native navigation. Light plaster, gray floor, oak furniture and charcoal chairs are the existing material family. A single blue navigation accent follows the physical blue-frame reference. System UI is used at control scale; the model is the display, not a marketing page.
-
-Preserve the whole-floor view. Add room overview, eye-level walking, reversible return and tool inspection. The same meter-scale scene serves each camera. Eye height 1.65 m, walking 1.5 m/s and collision radius 0.24 m are explicit viewer parameters, not measurements of a person/site. Walls and ceilings may be visually cut away in overview; physical geometry never changes scale. Left thumb joystick moves, right-side drag looks; desktop drag looks and WASD/arrows move. Lost focus/cancel/exit clears input. No pointer lock is required.
-
-Finish: inspect desktop and mobile, test real input and blocking geometry, document known room/asset limits and provenance. This extension restores the missing viewer from preserved data; it does not establish a surveyed digital twin.
