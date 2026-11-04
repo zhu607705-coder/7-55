@@ -30,7 +30,9 @@ jobs:
       - name: Install supported Chromium runtime
         run: node browser_tests/node_modules/playwright/cli.js install --with-deps chromium
       - name: Project display contracts
-        run: node scripts/test_project_displays.mjs
+        run: |
+          node scripts/test_project_displays.mjs
+          node scripts/test_project_display_diagnostics.mjs
       - name: Project display desktop and mobile DOM acceptance
         env:
           TEST_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}

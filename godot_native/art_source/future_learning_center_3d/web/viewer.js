@@ -312,38 +312,57 @@ function hitIsVisible(hit){
 /** Read-only acceptance diagnostics. Projects actual live geometry and reports the
  * same nearest visible ray hit used by picking. It never moves the camera,
  * alters visibility, opens content or synthesizes input. */
-function projectDisplayDiagnostics({geometry=true}={}){
- scene.updateMatrixWorld(true);camera.updateMatrixWorld();
- const ray=new THREE.Raycaster(),ndc=new THREE.Vector2(),matrix=new THREE.Matrix4();
- const visibleRoots=[...roots.values(),placeholder].filter(r=>r?.visible);
- const hitsAt=(x,y)=>{ndc.set(x/innerWidth*2-1,-y/innerHeight*2+1);ray.setFromCamera(ndc,camera);return ray.intersectObjects(visibleRoots,true).filter(hitIsVisible);};
- const firstAt=(x,y)=>hitsAt(x,y)[0];
- const describe=hit=>{if(!hit)return null;const entry=hit.object.userData.deskEntries?.[hit.instanceId];return {kind:hit.object.userData.kind||null,name:hit.object.name,instanceId:hit.instanceId??null,distance:hit.distance,display:displayTargetFromHit(hit),control:!!entry?.control,deskId:entry?.desk?.userData.spatialId||null};};
+function projectDisplayDiagnostics({geometry=true,kind=null,targetId=null,excludeIds=[],cursor=0,limit=3,occlusion=false,controls=false}={}){
  const view={active:projectDisplay?.active||null,camera:{position:camera.position.toArray(),quaternion:camera.quaternion.toArray()},mode:state.mode,inspect:state.inspect};
- if(!geometry)return view;
- const targets=[],occluded=[];
- for(const root of visibleRoots)root.traverse(mesh=>{
-  if(!mesh.isMesh)return;for(let owner=mesh;owner;owner=owner.parent)if(!owner.visible)return;
-  const entries=mesh.isInstancedMesh?mesh.userData.deskEntries:null;
-  const count=entries?.length||(mesh.userData.reviewPoster?1:0);
-  for(let index=0;index<count;index++){
-   const instanceId=entries?index:undefined,target=displayTargetFromHit({object:mesh,instanceId});if(!target)continue;
-   mesh.geometry.computeBoundingBox();const box=mesh.geometry.boundingBox,center=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3());
-   if(entries){mesh.getMatrixAt(index,matrix);matrix.premultiply(mesh.matrixWorld);}else matrix.copy(mesh.matrixWorld);
-   const samples=[[0,0,0],[.3,0,0],[-.3,0,0],[0,.3,0],[0,-.3,0],[0,0,.3],[0,0,-.3]];
-   for(const sample of samples){
-    const world=center.clone().add(new THREE.Vector3(...sample).multiply(size)).applyMatrix4(matrix),point=world.clone().project(camera);
-    if(point.z < -1||point.z>1||Math.abs(point.x)>=.98||Math.abs(point.y)>=.98)continue;
-    const x=(point.x+1)*innerWidth/2,y=(1-point.y)*innerHeight/2;
-    if(document.elementFromPoint(x,y)!==canvas)continue;
-    const hits=hitsAt(x,y),hit=hits[0],nearest=describe(hit),row={...target,x,y,world:world.toArray(),distance:world.distanceTo(camera.position),nearest};
-    if(nearest?.display?.id===target.id){targets.push(row);break;}
-    if(nearest?.kind==='wall'&&hit.distance<row.distance-.02&&hits.some(h=>displayTargetFromHit(h)?.id===target.id))occluded.push({...row,behindWall:true});
+ // Ownership/camera and desk animation status never perform scene traversal or rays.
+ if(!geometry)return {...view,...(controls?{controls:deskRoots.filter(d=>!targetId||d.userData.spatialId===targetId).map(d=>({id:d.userData.spatialId,height:d.userData.currentHeight,target:d.userData.targetHeight}))}:{})};
+ scene.updateMatrixWorld(true);camera.updateMatrixWorld();
+ const ray=new THREE.Raycaster(),ndc=new THREE.Vector2(),matrix=new THREE.Matrix4(),visibleRoots=[...roots.values(),placeholder].filter(r=>r?.visible);
+ let rayCount=0;
+ const hitsAt=(x,y)=>{rayCount++;ndc.set(x/innerWidth*2-1,-y/innerHeight*2+1);ray.setFromCamera(ndc,camera);return ray.intersectObjects(visibleRoots,true).filter(hitIsVisible);};
+ const describe=hit=>{if(!hit)return null;const entry=hit.object.userData.deskEntries?.[hit.instanceId];return {kind:hit.object.userData.kind||null,name:hit.object.name,instanceId:hit.instanceId??null,distance:hit.distance,display:displayTargetFromHit(hit),control:!!entry?.control,deskId:entry?.desk?.userData.spatialId||null};};
+ const targets=[],occluded=[],controlRows=[],candidates=[];
+ const excluded=new Set(excludeIds),pageSize=Math.max(1,Math.min(3,Math.floor(limit)||3));
+ if(kind==='control'){
+  for(const c of deskControls())if(c.inFront&&c.distance<3&&(!targetId||c.desk.userData.spatialId===targetId)&&document.elementFromPoint(c.x,c.y)===canvas)candidates.push(c);
+ }else{
+  for(const root of visibleRoots)root.traverse(mesh=>{
+   if(!mesh.isMesh)return;for(let owner=mesh;owner;owner=owner.parent)if(!owner.visible)return;
+   const entries=mesh.isInstancedMesh?mesh.userData.deskEntries:null,count=entries?.length||(mesh.userData.reviewPoster?1:0);
+   for(let index=0;index<count;index++){
+    const instanceId=entries?index:undefined,target=displayTargetFromHit({object:mesh,instanceId});
+    if(!target||(kind&&target.kind!==kind)||(targetId&&target.id!==targetId)||excluded.has(target.id))continue;
+    candidates.push({mesh,instanceId,target});
    }
+  });
+ }
+ let next=Math.max(0,Math.floor(cursor)||0),examined=0;
+ for(;next<candidates.length&&examined<pageSize;next++,examined++){
+  const candidate=candidates[next];
+  if(kind==='control'){
+   const c=candidate,nearest=describe(hitsAt(c.x,c.y)[0]);
+   if(nearest?.control&&nearest.deskId===c.desk.userData.spatialId){controlRows.push({id:c.desk.userData.spatialId,x:c.x,y:c.y,height:c.height,target:c.target,distance:c.distance,nearest});next++;break;}
+   continue;
   }
- });
- const controls=deskControls().filter(c=>c.inFront&&c.distance<3&&document.elementFromPoint(c.x,c.y)===canvas).map(c=>({id:c.desk.userData.spatialId,x:c.x,y:c.y,height:c.height,target:c.target,distance:c.distance,nearest:describe(firstAt(c.x,c.y))}));
- return {...view,targets,occluded,controls};
+  const {mesh,instanceId,target}=candidate;
+  // Static source geometry is shared by instances; compute its bounds only once.
+  if(!mesh.geometry.boundingBox)mesh.geometry.computeBoundingBox();
+  const box=mesh.geometry.boundingBox,center=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3());
+  if(instanceId!==undefined){mesh.getMatrixAt(instanceId,matrix);matrix.premultiply(mesh.matrixWorld);}else matrix.copy(mesh.matrixWorld);
+  const samples=[[0,0,0],[.3,0,0],[-.3,0,0],[0,.3,0],[0,-.3,0],[0,0,.3],[0,0,-.3]];
+  for(const sample of samples){
+   const world=center.clone().add(new THREE.Vector3(...sample).multiply(size)).applyMatrix4(matrix),point=world.clone().project(camera);
+   if(point.z < -1||point.z>1||Math.abs(point.x)>=.98||Math.abs(point.y)>=.98)continue;
+   const x=(point.x+1)*innerWidth/2,y=(1-point.y)*innerHeight/2;
+   if(document.elementFromPoint(x,y)!==canvas)continue;
+   const hits=hitsAt(x,y),hit=hits[0],nearest=describe(hit),row={...target,x,y,world:world.toArray(),distance:world.distanceTo(camera.position),nearest};
+   if(!occlusion&&nearest?.display?.id===target.id){targets.push(row);break;}
+   if(occlusion&&nearest?.kind==='wall'&&hit.distance<row.distance-.02&&hits.some(h=>displayTargetFromHit(h)?.id===target.id)){occluded.push({...row,behindWall:true});break;}
+  }
+  // Each request returns its first fully ray-verified match, or at most three candidates.
+  if(targets.length||occluded.length){next++;break;}
+ }
+ return {...view,targets,occluded,controls:controlRows,rayCount,candidateCount:candidates.length,nextCursor:next<candidates.length?next:null};
 }
 function pick(e){
  pointer.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);raycaster.setFromCamera(pointer,camera);

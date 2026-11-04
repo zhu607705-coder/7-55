@@ -11,19 +11,22 @@ fs.mkdirSync(out,{recursive:true});
 const mime={'.html':'text/html','.js':'text/javascript','.json':'application/json','.css':'text/css','.glb':'model/gltf-binary','.wasm':'application/wasm','.png':'image/png','.jpg':'image/jpeg'};
 const server=http.createServer((req,res)=>{try{let file=path.resolve(web,'.'+decodeURIComponent(new URL(req.url,'http://local').pathname));if(file===web)file=path.join(web,'index.html');if(!file.startsWith(web+path.sep)||!fs.statSync(file).isFile())throw Error('Invalid path');res.setHeader('Content-Type',mime[path.extname(file)]||'application/octet-stream');fs.createReadStream(file).pipe(res);}catch{res.writeHead(404);res.end('Not found');}});
 const report={head:process.env.TEST_HEAD_SHA||null,checkedOut:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),tree:execFileSync('git',['rev-parse','HEAD^{tree}'],{cwd:root,encoding:'utf8'}).trim(),scope:'Actual building GLBs in Chromium. Ordinary mouse/touch input; no forced clicks, camera injection, fixture geometry or direct display opening. Mobile is an emulated viewport, not physical hardware.',runs:[]};
-const diag=p=>p.evaluate(()=>flcReview.projectDisplays());
-const snap=p=>p.evaluate(()=>flcReview.snapshot());
+const save=()=>fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2));
+async function bounded(promise,label,ms=15000){let timer;try{return await Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error(label+' exceeded '+ms+' ms')),ms);})]);}finally{clearTimeout(timer);}}
+const diag=(p,options={geometry:false})=>bounded(p.evaluate(options=>flcReview.projectDisplays(options),options),'read-only display diagnostics');
+const snap=p=>bounded(p.evaluate(()=>flcReview.snapshot()),'scene snapshot');
 let browser;
 try{
  if(report.head)assert.equal(report.checkedOut,report.head,'Browser acceptance checks out the exact requested head');
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
  browser=await chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{})});
  for(const [name,viewport,touch] of [['desktop',{width:1280,height:800},false],['mobile',{width:390,height:844},true]]){
-  const context=await browser.newContext({viewport,isMobile:touch,hasTouch:touch}),p=await context.newPage(),run={name,passed:false,checks:[],captures:[],errors:[],searches:[]};report.runs.push(run);
+  const context=await browser.newContext({viewport,isMobile:touch,hasTouch:touch}),p=await context.newPage(),run={name,passed:false,checks:[],captures:[],errors:[],searches:[],phase:'created'};report.runs.push(run);save();
+  const phase=label=>{run.phase=label;run.phaseStarted=new Date().toISOString();save();};
   await context.tracing.start({screenshots:true,snapshots:true,sources:true});
-  p.on('pageerror',e=>run.errors.push(e.message));
-  const check=(value,label,details={})=>{run.checks.push({label,pass:!!value,...details});assert.ok(value,label);};
-  const shot=async label=>{const file=name+'-'+label+'.png';await p.screenshot({path:path.join(out,file)});run.captures.push(file);};
+  p.on('pageerror',e=>{run.errors.push(e.message);save();});
+  const check=(value,label,details={})=>{run.checks.push({label,pass:!!value,...details});save();assert.ok(value,label);};
+  const shot=async label=>{const file=name+'-'+label+'.png';await p.screenshot({path:path.join(out,file)});run.captures.push(file);save();};
   const click=async target=>{if(touch)await p.touchscreen.tap(target.x,target.y);else await p.mouse.click(target.x,target.y);};
   const button=async locator=>touch?locator.tap():locator.click();
   const settle=async()=>{
@@ -37,22 +40,36 @@ try{
    else{await p.mouse.move(x,y);await p.mouse.down();await p.mouse.move(x-width,y,{steps:8});await p.mouse.up();}
    await settle();
   };
-  const find=async(kind,exclude=new Set())=>{
+  const scan=async(options)=>{
+   let cursor=0;
+   do{
+    phase('geometry page '+JSON.stringify({...options,cursor}));
+    const d=await diag(p,{geometry:true,...options,cursor,limit:3});
+    run.searches.push({options,cursor,rayCount:d.rayCount,candidates:d.candidateCount,nextCursor:d.nextCursor,visible:d.targets.map(t=>t.id),occluded:d.occluded.length});save();
+    const match=options.kind==='control'?d.controls[0]:options.occlusion?d.occluded[0]:d.targets[0];
+    if(match)return match;
+    cursor=d.nextCursor;
+   }while(cursor!==null);
+   return null;
+  };
+  const find=async(kind,exclude=new Set(),options={})=>{
    for(let i=0;i<10;i++){
-    const d=await diag(p);run.searches.push({kind,attempt:i,mode:d.mode,visible:d.targets.map(t=>t.id),occluded:d.occluded.length});
-    const target=d.targets.find(t=>t.kind===kind&&!exclude.has(t.id));if(target)return target;
+    phase('survey '+kind+' view '+i);
+    const target=await scan({kind,excludeIds:[...exclude],...options});if(target)return target;
     await turn();
    }
    throw Error('No ordinarily visible '+kind+' target after bounded canvas survey');
   };
   const openClose=async(target,label,escape=false)=>{
    // Geometry diagnostics select a point, but only browser input opens the dialog.
+   phase(label+' opening');
    assert.ok(target,label+' has an actual visible geometry target');
    const before=await diag(p),s=await snap(p);await click(target);
    await p.locator('#project-display-dialog').waitFor({state:'visible'});
    check((await diag(p)).active===target.id,label+' opens the exact raycast owner',{id:target.id,point:[target.x,target.y],nearest:target.nearest});
    check(await p.locator('#project-display-content a').count()===0,label+' does not invent project URLs');
    await shot(label);
+   phase(label+' closing');
    if(escape)await p.keyboard.press('Escape');else await button(p.getByRole('button',{name:'关闭项目展示'}));
    await p.locator('#project-display-dialog').waitFor({state:'hidden'});
    await p.waitForFunction(()=>flcReview.projectDisplays({geometry:false}).active===null);
@@ -63,6 +80,7 @@ try{
    check(a.joystick.every(v=>v===0),label+' clears joystick');
   };
   try{
+   phase('load actual building');
    await p.goto('http://127.0.0.1:'+server.address().port+'/?floor=3&room=studio_1');
    await p.waitForFunction(()=>window.flcReview?.snapshot().ready,null,{timeout:90000});
    const photo=await p.evaluate(()=>flcReview.photoAssets());check(photo.desks.length===40&&photo.errors.length===0,'actual forty-workstation GLBs loaded');
@@ -73,22 +91,21 @@ try{
    await button(p.locator('#walk'));check((await snap(p)).mode==='walk','ordinary walk entry');
    const walkScreen=await find('monitor');await openClose(walkScreen,'walk-monitor');
    // Search an actual desk-edge control. Require the nearest ray hit to be that control.
-   let control;
-   for(let i=0;i<10&&!control;i++){control=(await diag(p)).controls.find(c=>c.nearest?.control&&c.nearest.deskId===c.id);if(!control)await turn();}
+   const control=await find('control');
    check(!!control,'visible reachable desk-edge control located');
    const old=control.target;await click(control);
-   await p.waitForFunction(({id,old})=>flcReview.projectDisplays().controls.some(c=>c.id===id&&c.target!==old),{id:control.id,old},{timeout:5000});
+   await p.waitForFunction(({id,old})=>flcReview.projectDisplays({geometry:false,controls:true,targetId:id}).controls.some(c=>c.target!==old),{id:control.id,old},{timeout:5000});
    check(!await p.locator('#project-display-dialog').isVisible(),'desk-edge control raises desk without opening display');
    // Use a fresh projection after the lift has moved the actual instanced screen.
    await p.waitForTimeout(400);
-   const lifted=(await diag(p)).targets.find(t=>t.id===control.id);
+   const lifted=await scan({kind:'monitor',targetId:control.id});
    check(!!lifted,'lifted desk screen remains visible and targetable');
    await openClose(lifted,'lifted-monitor');
-   await openClose((await diag(p)).targets.find(t=>t.id===control.id),'reopened-monitor',true);
+   await openClose(await scan({kind:'monitor',targetId:control.id}),'reopened-monitor',true);
    // Walk mode retains full-height walls. Require the same ray to intersect a wall
    // first and the actual display geometry behind it; no artificial blocker is inserted.
    let blocked;
-   for(let i=0;i<12&&!blocked;i++){blocked=(await diag(p)).occluded.find(t=>t.nearest?.kind==='wall');if(!blocked)await turn();}
+   for(let i=0;i<12&&!blocked;i++){blocked=await scan({kind:'monitor',occlusion:true});if(!blocked)await turn();}
    check(!!blocked,'real wall-occluded display sample located');
    await click(blocked);await p.waitForTimeout(150);
    check(!await p.locator('#project-display-dialog').isVisible(),'foreground wall prevents display opening',{blocked});
@@ -96,9 +113,17 @@ try{
    await button(p.locator('#overview'));await p.locator('#floor').selectOption('4');await settle();
    const poster=await find('poster');await openClose(poster,'corridor-poster');
 
-   check(run.errors.length===0,'no uncaught browser errors');run.passed=true;
-  }catch(error){run.error=String(error);try{run.last=await diag(p);await shot('failure');}catch{}}
-  finally{await context.tracing.stop({path:path.join(out,name+'-trace.zip')}).catch(()=>{});await context.close();fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2));}
+   check(run.errors.length===0,'no uncaught browser errors');run.passed=true;phase('passed');
+  }catch(error){
+   run.failedPhase=run.phase;run.error=String(error);phase('failure recovery');
+   // Never run geometry again while diagnosing a timeout. Persist the original failure first.
+   try{run.last=await bounded(p.evaluate(()=>flcReview.projectDisplays({geometry:false})),'lightweight failure snapshot',2000);save();}catch(readError){run.failureReadError=String(readError);save();}
+   try{await bounded(shot('failure'),'failure screenshot',5000);}catch(shotError){run.failureScreenshotError=String(shotError);save();}
+  }finally{
+   try{await bounded(context.tracing.stop({path:path.join(out,name+'-trace.zip')}),'trace finalization',10000);}catch(error){run.traceError=String(error);save();}
+   try{await bounded(context.close(),'viewport cleanup',10000);}catch(error){run.cleanupError=String(error);save();}
+   save();
+  }
  }
  assert.ok(report.runs.every(r=>r.passed),'Actual building display acceptance must pass independently for both viewports');
-}finally{fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2));await browser?.close();server.close();}
+}finally{save();try{if(browser)await bounded(browser.close(),'browser cleanup',10000);}finally{server.close();}}

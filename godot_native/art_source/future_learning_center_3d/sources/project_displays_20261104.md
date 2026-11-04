@@ -40,3 +40,11 @@ Run the registered CI tests on the exact final commit, then in the real building
 The gate requires two different overview monitor owners, walk-mode screen opening, close/Escape/reopen, an actual desk-edge control followed by a moving screen click, real full-height wall occlusion, and a corridor poster. It saves exact head/checkout/tree provenance, screenshots, per-check results and traces, including failure evidence. Existing DOM and spatial tests remain independent. The workflow checks out the exact PR head.
 
 The DOM fixture now waits for the native asynchronous close event before checking its onClose result. No UI behavior or action timeout was changed for that correction. New actual-building tests have passed syntax checks only in this sparse workspace; exact-head hosted execution is required.
+
+## Diagnostic work-budget correction
+
+The initial real-building harness queried all display geometry even for active-dialog and camera reads. The follow-on separates those lightweight reads, including current desk animation state, from ray queries. Geometry scans filter by type/owner, retain each shared geometry's computed bounds, examine at most three candidates per request, and return the first verified target. The caller paginates remaining candidates rather than silently skipping them. Wall tests still require a real wall hit before the real screen on the same ray.
+
+Each diagnostic evaluation has a 15-second host-side deadline. Search phases and completed checks are written immediately. Failure recovery uses only a bounded lightweight snapshot, then bounded screenshot/trace/cleanup attempts; it does not start another geometry scan. A timed-out browser evaluation is not claimed to have been cancelled by the deadline itself. Closing its context is the cleanup step.
+
+Eleven additional mock contracts verify budgets, shared bounding-box caching, pagination, owner/type filtering, early return and genuine two-hit occlusion requirements. These tests do not replace real Chromium/GLB acceptance.
