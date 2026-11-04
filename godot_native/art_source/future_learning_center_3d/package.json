@@ -12,6 +12,11 @@
     "test:asset-geometry": "node pipeline/validate_asset.mjs",
     "test:asset-pipeline": "node scripts/test_asset_pipeline.mjs",
     "profile:assets": "node scripts/profile_asset_scene.mjs hyper3d_lod",
-    "test:exhibition-pantry": "node scripts/test_exhibition_pantry.mjs"
+    "test:exhibition-pantry": "node scripts/test_exhibition_pantry.mjs",
+    "test:table-dimensions": "node pipeline/test_table_dimensions.mjs",
+    "test:small-props": "node pipeline/test_small_props.mjs",
+    "test:lab-tools": "node pipeline/test_lab_tools.mjs",
+    "test:asset-default-precision": "node pipeline/test_default_precision.mjs",
+    "test:props-review": "node scripts/test_props_review.mjs"
   }
 }

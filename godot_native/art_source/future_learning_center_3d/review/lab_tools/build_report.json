@@ -1,0 +1,223 @@
+{
+  "blender": "4.3.2",
+  "units": "m",
+  "scope": "Independent static equipment samples; existing design dimensions, illustrative internal structures; no operational simulation",
+  "records": [
+    {
+      "asset": "printer_enclosure_study",
+      "level": 0,
+      "triangles": 16216,
+      "boundsBlenderXYZ": [
+        [
+          -0.2460000067949295,
+          -0.25699999928474426,
+          0.0
+        ],
+        [
+          0.2460000067949295,
+          0.25699999928474426,
+          0.6259999871253967
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.492000013589859,
+        0.5139999985694885,
+        0.6259999871253967
+      ],
+      "meshParts": 62,
+      "sha256": "58888808767d2e252aaa124eb7a22f4a8a2599b4f0efebfec722c1493316ba33"
+    },
+    {
+      "asset": "printer_enclosure_study",
+      "level": 1,
+      "triangles": 5164,
+      "boundsBlenderXYZ": [
+        [
+          -0.2460000067949295,
+          -0.25699999928474426,
+          0.0
+        ],
+        [
+          0.2460000067949295,
+          0.25699999928474426,
+          0.6259999871253967
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.492000013589859,
+        0.5139999985694885,
+        0.6259999871253967
+      ],
+      "meshParts": 53,
+      "sha256": "77a5a745b240d6aa56b29ad11cd48e820899a4f2636b4215cf30d6ccddf595fa"
+    },
+    {
+      "asset": "printer_enclosure_study",
+      "level": 2,
+      "triangles": 1584,
+      "boundsBlenderXYZ": [
+        [
+          -0.2460000067949295,
+          -0.25699999928474426,
+          0.0
+        ],
+        [
+          0.2460000067949295,
+          0.25699999928474426,
+          0.6259999871253967
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.492000013589859,
+        0.5139999985694885,
+        0.6259999871253967
+      ],
+      "meshParts": 36,
+      "sha256": "da74333c4f1d434c1bb3463abcec4bbf03b807c6ea8d6a90d33a83367d78739d"
+    },
+    {
+      "asset": "laser_enclosure_study",
+      "level": 0,
+      "triangles": 15508,
+      "boundsBlenderXYZ": [
+        [
+          -0.5,
+          -0.31949999928474426,
+          0.0
+        ],
+        [
+          0.5,
+          0.31949999928474426,
+          0.2680000066757202
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.0,
+        0.6389999985694885,
+        0.2680000066757202
+      ],
+      "meshParts": 95,
+      "sha256": "405310869e50c0386e69482570d4ddfdf03faa41a8956d898284b0df234a178d"
+    },
+    {
+      "asset": "laser_enclosure_study",
+      "level": 1,
+      "triangles": 4696,
+      "boundsBlenderXYZ": [
+        [
+          -0.5,
+          -0.31949999928474426,
+          0.0
+        ],
+        [
+          0.5,
+          0.31949999928474426,
+          0.2680000066757202
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.0,
+        0.6389999985694885,
+        0.2680000066757202
+      ],
+      "meshParts": 66,
+      "sha256": "44253a2cd91d803a4ab438ebed2639cd2c12db936d78fa48c17284667c3dcba5"
+    },
+    {
+      "asset": "laser_enclosure_study",
+      "level": 2,
+      "triangles": 1308,
+      "boundsBlenderXYZ": [
+        [
+          -0.5,
+          -0.31949999928474426,
+          0.0
+        ],
+        [
+          0.5,
+          0.31949999928474426,
+          0.2680000066757202
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        1.0,
+        0.6389999985694885,
+        0.2680000066757202
+      ],
+      "meshParts": 37,
+      "sha256": "2ba1c62577d988569324b7c4e1bdcee98b00be42f047e0a195260b08d1b98044"
+    },
+    {
+      "asset": "bench_power_supply",
+      "level": 0,
+      "triangles": 24508,
+      "boundsBlenderXYZ": [
+        [
+          -0.1497499942779541,
+          -0.125,
+          0.0
+        ],
+        [
+          0.14994999766349792,
+          0.125,
+          0.2799000144004822
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.299699991941452,
+        0.25,
+        0.2799000144004822
+      ],
+      "meshParts": 104,
+      "sha256": "df22244a1c9fa723ae528a57ecb319b6358efcdbf077758552c5a1563b3c8813"
+    },
+    {
+      "asset": "bench_power_supply",
+      "level": 1,
+      "triangles": 4684,
+      "boundsBlenderXYZ": [
+        [
+          -0.1497499942779541,
+          -0.125,
+          0.0
+        ],
+        [
+          0.14994999766349792,
+          0.125,
+          0.2799000144004822
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.299699991941452,
+        0.25,
+        0.2799000144004822
+      ],
+      "meshParts": 44,
+      "sha256": "a3d743719c8cc1c5c508bb1635adc887543954b07fae9aaf802255fa01b18807"
+    },
+    {
+      "asset": "bench_power_supply",
+      "level": 2,
+      "triangles": 1172,
+      "boundsBlenderXYZ": [
+        [
+          -0.1497499942779541,
+          -0.125,
+          0.0
+        ],
+        [
+          0.14994999766349792,
+          0.125,
+          0.2799000144004822
+        ]
+      ],
+      "sizeBlenderXYZ": [
+        0.299699991941452,
+        0.25,
+        0.2799000144004822
+      ],
+      "meshParts": 26,
+      "sha256": "17ed6ed8c093449ed64f49d98a56a967fe9c60367250571af53e38a91b99862b"
+    }
+  ]
+}

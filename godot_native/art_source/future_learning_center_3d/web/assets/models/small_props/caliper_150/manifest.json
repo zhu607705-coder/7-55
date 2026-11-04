@@ -1,0 +1,543 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 732920,
+    "sha256": "acaa9016a8b4590733ee37e9dd97e81b59c96bd3a36dcd38d9c3a7a790a92069",
+    "triangles": 14916,
+    "primitives": 205,
+    "bounds": {
+      "min": [
+        0,
+        0,
+        -0.03999999910593033
+      ],
+      "max": [
+        0.2329999953508377,
+        0.019999999436549842,
+        0.028999999165534973
+      ]
+    },
+    "size": [
+      0.2329999953508377,
+      0.019999999436549842,
+      0.0689999982714653
+    ],
+    "materials": [
+      {
+        "name": "Satin stainless steel",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.4000000059604645,
+          0.4399999976158142,
+          0.47999998927116394,
+          1
+        ],
+        "metallicFactor": 1,
+        "roughnessFactor": 0.28999999165534973
+      },
+      {
+        "name": "Graphite molded polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.02800000086426735,
+          0.03700000047683716,
+          0.04399999976158142,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.3799999952316284
+      },
+      {
+        "name": "Dark recess / etched marks",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.008999999612569809,
+          0.012000000104308128,
+          0.014999999664723873,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.5
+      },
+      {
+        "name": "Blank LCD glass",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.18000000715255737,
+          0.25,
+          0.23000000417232513,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.23000000417232513
+      },
+      {
+        "name": "Red molded polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.47999998927116394,
+          0.02199999988079071,
+          0.012000000104308128,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.36000001430511475
+      },
+      {
+        "name": "Blue control polymer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.019999999552965164,
+          0.2199999988079071,
+          0.41999998688697815,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.4000000059604645
+      }
+    ],
+    "textures": []
+  },
+  "calibration": {
+    "targetHeight": 0.019999999552965164,
+    "yawDegrees": 0,
+    "uniformScale": 1.0000000058207663,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "acaa9016a8b4590733ee37e9dd97e81b59c96bd3a36dcd38d9c3a7a790a92069",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 0.0000012816686648930986,
+      "bytes": 37488,
+      "uncompressedBytes": 461044,
+      "sha256": "eead82c5870360d3a2e63b8262551033a006ed5d504f03cbfd822c82cdf87ca2",
+      "triangles": 14916,
+      "primitives": 6,
+      "bounds": {
+        "min": [
+          -0.11649999767541885,
+          1.1641533223527567e-11,
+          -0.03449999910371844
+        ],
+        "max": [
+          0.11649999767541885,
+          0.020000306016299874,
+          0.03449871766788419
+        ]
+      },
+      "size": [
+        0.2329999953508377,
+        0.02000030600465834,
+        0.06899871677160263
+      ],
+      "materials": [
+        {
+          "name": "Satin stainless steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.4000000059604645,
+            0.4399999976158142,
+            0.47999998927116394,
+            1
+          ],
+          "metallicFactor": 1,
+          "roughnessFactor": 0.28999999165534973
+        },
+        {
+          "name": "Graphite molded polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.02800000086426735,
+            0.03700000047683716,
+            0.04399999976158142,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3799999952316284
+        },
+        {
+          "name": "Dark recess / etched marks",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.008999999612569809,
+            0.012000000104308128,
+            0.014999999664723873,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5
+        },
+        {
+          "name": "Blank LCD glass",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.18000000715255737,
+            0.25,
+            0.23000000417232513,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.23000000417232513
+        },
+        {
+          "name": "Red molded polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.47999998927116394,
+            0.02199999988079071,
+            0.012000000104308128,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.36000001430511475
+        },
+        {
+          "name": "Blue control polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.019999999552965164,
+            0.2199999988079071,
+            0.41999998688697815,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4000000059604645
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "cf8563ca3965217c5a18902235d1cba316190710d8329bd63eb26022ac4f39c5",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 0.0000012816686648930986,
+      "bytes": 11848,
+      "uncompressedBytes": 50020,
+      "sha256": "589b4cf341edbd629f0441720df9b4e7676c1d4b2bf6828ec78170e4830c7053",
+      "triangles": 1492,
+      "primitives": 6,
+      "bounds": {
+        "min": [
+          -0.11649999767541885,
+          1.1641533223527567e-11,
+          -0.03449999910371844
+        ],
+        "max": [
+          0.11649999767541885,
+          0.020000306016299874,
+          0.03449871766788419
+        ]
+      },
+      "size": [
+        0.2329999953508377,
+        0.02000030600465834,
+        0.06899871677160263
+      ],
+      "materials": [
+        {
+          "name": "Satin stainless steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.4000000059604645,
+            0.4399999976158142,
+            0.47999998927116394,
+            1
+          ],
+          "metallicFactor": 1,
+          "roughnessFactor": 0.28999999165534973
+        },
+        {
+          "name": "Graphite molded polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.02800000086426735,
+            0.03700000047683716,
+            0.04399999976158142,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3799999952316284
+        },
+        {
+          "name": "Dark recess / etched marks",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.008999999612569809,
+            0.012000000104308128,
+            0.014999999664723873,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5
+        },
+        {
+          "name": "Blank LCD glass",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.18000000715255737,
+            0.25,
+            0.23000000417232513,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.23000000417232513
+        },
+        {
+          "name": "Red molded polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.47999998927116394,
+            0.02199999988079071,
+            0.012000000104308128,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.36000001430511475
+        },
+        {
+          "name": "Blue control polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.019999999552965164,
+            0.2199999988079071,
+            0.41999998688697815,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4000000059604645
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "efa7ad76f3bf635d89bebe278c52b09196e244a02e9b2915c539891eb7d7c31b",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 0.0000012816686648930986,
+      "bytes": 9192,
+      "uncompressedBytes": 27092,
+      "sha256": "c6ab71dc0be8d5676987ce4178c41e8265cff0b72dbf35309f02e1d6d590abc1",
+      "triangles": 672,
+      "primitives": 6,
+      "bounds": {
+        "min": [
+          -0.11649999767541885,
+          1.1641533223527567e-11,
+          -0.03449999910371844
+        ],
+        "max": [
+          0.11649999767541885,
+          0.020000306016299874,
+          0.03449871766788419
+        ]
+      },
+      "size": [
+        0.2329999953508377,
+        0.02000030600465834,
+        0.06899871677160263
+      ],
+      "materials": [
+        {
+          "name": "Satin stainless steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.4000000059604645,
+            0.4399999976158142,
+            0.47999998927116394,
+            1
+          ],
+          "metallicFactor": 1,
+          "roughnessFactor": 0.28999999165534973
+        },
+        {
+          "name": "Graphite molded polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.02800000086426735,
+            0.03700000047683716,
+            0.04399999976158142,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.3799999952316284
+        },
+        {
+          "name": "Dark recess / etched marks",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.008999999612569809,
+            0.012000000104308128,
+            0.014999999664723873,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.5
+        },
+        {
+          "name": "Blank LCD glass",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.18000000715255737,
+            0.25,
+            0.23000000417232513,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.23000000417232513
+        },
+        {
+          "name": "Red molded polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.47999998927116394,
+            0.02199999988079071,
+            0.012000000104308128,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.36000001430511475
+        },
+        {
+          "name": "Blue control polymer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.019999999552965164,
+            0.2199999988079071,
+            0.41999998688697815,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.4000000059604645
+        }
+      ],
+      "textures": []
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}

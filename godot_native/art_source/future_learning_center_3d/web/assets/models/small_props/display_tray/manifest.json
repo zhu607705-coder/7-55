@@ -1,0 +1,287 @@
+{
+  "schema": 1,
+  "source": {
+    "file": "lod0_source.glb",
+    "bytes": 36416,
+    "sha256": "6607c395367c8501a8292b345ff227d091caf4b02b90f8aca81474e012fc5889",
+    "triangles": 1352,
+    "primitives": 6,
+    "bounds": {
+      "min": [
+        -0.20999999344348907,
+        0,
+        -0.1599999964237213
+      ],
+      "max": [
+        0.20999999344348907,
+        0.03999999910593033,
+        0.1599999964237213
+      ]
+    },
+    "size": [
+      0.41999998688697815,
+      0.03999999910593033,
+      0.3199999928474426
+    ],
+    "materials": [
+      {
+        "name": "Satin stainless steel",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.4000000059604645,
+          0.4399999976158142,
+          0.47999998927116394,
+          1
+        ],
+        "metallicFactor": 1,
+        "roughnessFactor": 0.28999999165534973
+      },
+      {
+        "name": "Matte elastomer",
+        "baseColorTexture": false,
+        "normalTexture": false,
+        "metalRoughTexture": false,
+        "occlusionTexture": false,
+        "emissiveTexture": false,
+        "baseColorFactor": [
+          0.017999999225139618,
+          0.02199999988079071,
+          0.024000000208616257,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.8399999737739563
+      }
+    ],
+    "textures": []
+  },
+  "calibration": {
+    "targetHeight": 0.03999999910593033,
+    "yawDegrees": 0,
+    "uniformScale": 1,
+    "groundPivot": "center X/Z; minimum Y = 0",
+    "assumedInputAxes": "glTF Y-up; visually verify facing"
+  },
+  "textureBudget": {
+    "nearMaxPx": 1024,
+    "midMaxPx": 512,
+    "farMaxPx": 256
+  },
+  "simplification": {
+    "lockBorder": false,
+    "reason": "Static props with UV seams; verify silhouette and all material boundaries after reduction"
+  },
+  "tools": {
+    "gltfTransform": "4.5.1",
+    "meshoptimizer": "1.3.0",
+    "draco3dgltf": "1.5.9"
+  },
+  "levels": [
+    {
+      "level": 0,
+      "inputFile": "lod0_source.glb",
+      "inputSha256": "6607c395367c8501a8292b345ff227d091caf4b02b90f8aca81474e012fc5889",
+      "file": "lod0.draco.glb",
+      "uncompressedFile": "lod0.glb",
+      "requestedTarget": 20000,
+      "error": 0.0005,
+      "boundsEncodingErrorM": 0.0000027455389499664307,
+      "bytes": 6232,
+      "uncompressedBytes": 30920,
+      "sha256": "788d88312d6122220df39f24f4a2a36447e4a5a35b337acb08951896584763d5",
+      "triangles": 1352,
+      "primitives": 2,
+      "bounds": {
+        "min": [
+          -0.20999999344348907,
+          0,
+          -0.1599999964237213
+        ],
+        "max": [
+          0.20999999344348907,
+          0.03999725356698036,
+          0.15999725461006165
+        ]
+      },
+      "size": [
+        0.41999998688697815,
+        0.03999725356698036,
+        0.31999725103378296
+      ],
+      "materials": [
+        {
+          "name": "Satin stainless steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.4000000059604645,
+            0.4399999976158142,
+            0.47999998927116394,
+            1
+          ],
+          "metallicFactor": 1,
+          "roughnessFactor": 0.28999999165534973
+        },
+        {
+          "name": "Matte elastomer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.017999999225139618,
+            0.02199999988079071,
+            0.024000000208616257,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8399999737739563
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 1,
+      "inputFile": "lod1_source.glb",
+      "inputSha256": "6b6684b65051bc4764719d5c0e0f7df23f6981f35b69db5d1268711a715b6536",
+      "file": "lod1.draco.glb",
+      "uncompressedFile": "lod1.glb",
+      "requestedTarget": 8000,
+      "error": 0.003,
+      "boundsEncodingErrorM": 0.0000027455389499664307,
+      "bytes": 4728,
+      "uncompressedBytes": 18700,
+      "sha256": "8e3c831b7966ac71358fb4db495d53e29893e7e7aee15afc392bde977c16118c",
+      "triangles": 760,
+      "primitives": 2,
+      "bounds": {
+        "min": [
+          -0.20999999344348907,
+          0,
+          -0.1599999964237213
+        ],
+        "max": [
+          0.20999999344348907,
+          0.03999725356698036,
+          0.15999725461006165
+        ]
+      },
+      "size": [
+        0.41999998688697815,
+        0.03999725356698036,
+        0.31999725103378296
+      ],
+      "materials": [
+        {
+          "name": "Satin stainless steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.4000000059604645,
+            0.4399999976158142,
+            0.47999998927116394,
+            1
+          ],
+          "metallicFactor": 1,
+          "roughnessFactor": 0.28999999165534973
+        },
+        {
+          "name": "Matte elastomer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.017999999225139618,
+            0.02199999988079071,
+            0.024000000208616257,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8399999737739563
+        }
+      ],
+      "textures": []
+    },
+    {
+      "level": 2,
+      "inputFile": "lod2_source.glb",
+      "inputSha256": "fbbae34502ad97be4afbed81eb4754369b537aae0d4bbe76612895d0408a14c0",
+      "file": "lod2.draco.glb",
+      "uncompressedFile": "lod2.glb",
+      "requestedTarget": 2000,
+      "error": 0.015,
+      "boundsEncodingErrorM": 0.0000027455389499664307,
+      "bytes": 3560,
+      "uncompressedBytes": 11088,
+      "sha256": "19023163ed078afeca5feef2f5b3f7c2c47bdb3e02f689c13720b486f227a6bd",
+      "triangles": 344,
+      "primitives": 2,
+      "bounds": {
+        "min": [
+          -0.20999999344348907,
+          0,
+          -0.1599999964237213
+        ],
+        "max": [
+          0.20999999344348907,
+          0.03999725356698036,
+          0.15999725461006165
+        ]
+      },
+      "size": [
+        0.41999998688697815,
+        0.03999725356698036,
+        0.31999725103378296
+      ],
+      "materials": [
+        {
+          "name": "Satin stainless steel",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.4000000059604645,
+            0.4399999976158142,
+            0.47999998927116394,
+            1
+          ],
+          "metallicFactor": 1,
+          "roughnessFactor": 0.28999999165534973
+        },
+        {
+          "name": "Matte elastomer",
+          "baseColorTexture": false,
+          "normalTexture": false,
+          "metalRoughTexture": false,
+          "occlusionTexture": false,
+          "emissiveTexture": false,
+          "baseColorFactor": [
+            0.017999999225139618,
+            0.02199999988079071,
+            0.024000000208616257,
+            1
+          ],
+          "metallicFactor": 0,
+          "roughnessFactor": 0.8399999737739563
+        }
+      ],
+      "textures": []
+    }
+  ],
+  "policy": "Draco changes transfer encoding, not triangle count. LODs are static visual assets; acceptance requires silhouette/material/runtime checks."
+}
