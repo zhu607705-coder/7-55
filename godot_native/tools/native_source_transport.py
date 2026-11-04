@@ -244,8 +244,14 @@ def restore(root, bundle, context, manifest_sha, archive_sha):
             require(f.read() == b'\0' * 1024, 'Archive trailer changed')
         verified_seconds = time.monotonic() - started
         # Blobs are populated from verified staged bytes without filters/network.
-        for e in m['entries']:
-            require(git(root, 'hash-object', '-w', '--no-filters', str(staged / e['path'])).decode().strip() == e['oid'], 'Blob population mismatch')
+        # Git --stdin-paths accepts C-quoted UTF-8 paths. JSON quoting with raw
+        # Unicode provides the same escaping for quotes, backslashes and controls.
+        # One process retains every ordered blob check without per-file startup.
+        paths = ''.join(json.dumps(str(staged / e['path']), ensure_ascii=False) + '\n'
+                        for e in m['entries']).encode('utf-8')
+        expected_blobs = ''.join(e['oid'] + '\n' for e in m['entries']).encode('ascii')
+        require(git(root, 'hash-object', '-w', '--no-filters', '--stdin-paths', data=paths)
+                == expected_blobs, 'Blob population mismatch')
         blob_seconds = time.monotonic() - started - verified_seconds
         require(identity(root, context) == m['source'], 'Checkout identity changed')
         git(root, 'config', 'core.sparseCheckout', 'false')
@@ -324,3 +330,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
