@@ -323,28 +323,20 @@ function projectDisplayDiagnostics({geometry=true,kind=null,targetId=null,exclud
  const describe=hit=>{if(!hit)return null;const entry=hit.object.userData.deskEntries?.[hit.instanceId];return {kind:hit.object.userData.kind||null,name:hit.object.name,instanceId:hit.instanceId??null,distance:hit.distance,display:displayTargetFromHit(hit),control:!!entry?.control,deskId:entry?.desk?.userData.spatialId||null};};
  const targets=[],occluded=[],controlRows=[],candidates=[];
  const excluded=new Set(excludeIds),pageSize=Math.max(1,Math.min(3,Math.floor(limit)||3));
- if(kind==='control'){
-  for(const c of deskControls())if(c.inFront&&c.distance<3&&(!targetId||c.desk.userData.spatialId===targetId)&&document.elementFromPoint(c.x,c.y)===canvas)candidates.push(c);
- }else{
-  for(const root of visibleRoots)root.traverse(mesh=>{
-   if(!mesh.isMesh)return;for(let owner=mesh;owner;owner=owner.parent)if(!owner.visible)return;
-   const entries=mesh.isInstancedMesh?mesh.userData.deskEntries:null,count=entries?.length||(mesh.userData.reviewPoster?1:0);
-   for(let index=0;index<count;index++){
-    const instanceId=entries?index:undefined,target=displayTargetFromHit({object:mesh,instanceId});
-    if(!target||(kind&&target.kind!==kind)||(targetId&&target.id!==targetId)||excluded.has(target.id))continue;
-    candidates.push({mesh,instanceId,target});
-   }
-  });
- }
+ for(const root of visibleRoots)root.traverse(mesh=>{
+  if(!mesh.isMesh)return;for(let owner=mesh;owner;owner=owner.parent)if(!owner.visible)return;
+  const entries=mesh.isInstancedMesh?mesh.userData.deskEntries:null,count=entries?.length||(mesh.userData.reviewPoster?1:0);
+  for(let index=0;index<count;index++){
+   const instanceId=entries?index:undefined,entry=entries?.[index];
+   const target=kind==='control'?(entry?.control&&entry.desk?.userData.spatialId?{id:entry.desk.userData.spatialId,kind:'control'}:null):displayTargetFromHit({object:mesh,instanceId});
+   if(!target||(kind&&target.kind!==kind)||(targetId&&target.id!==targetId)||excluded.has(target.id))continue;
+   candidates.push({mesh,instanceId,target,entry});
+  }
+ });
  let next=Math.max(0,Math.floor(cursor)||0),examined=0;
  for(;next<candidates.length&&examined<pageSize;next++,examined++){
   const candidate=candidates[next];
-  if(kind==='control'){
-   const c=candidate,nearest=describe(hitsAt(c.x,c.y)[0]);
-   if(nearest?.control&&nearest.deskId===c.desk.userData.spatialId){controlRows.push({id:c.desk.userData.spatialId,x:c.x,y:c.y,height:c.height,target:c.target,distance:c.distance,nearest});next++;break;}
-   continue;
-  }
-  const {mesh,instanceId,target}=candidate;
+  const {mesh,instanceId,target,entry}=candidate;
   // Static source geometry is shared by instances; compute its bounds only once.
   if(!mesh.geometry.boundingBox)mesh.geometry.computeBoundingBox();
   const box=mesh.geometry.boundingBox,center=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3());
@@ -353,14 +345,16 @@ function projectDisplayDiagnostics({geometry=true,kind=null,targetId=null,exclud
   for(const sample of samples){
    const world=center.clone().add(new THREE.Vector3(...sample).multiply(size)).applyMatrix4(matrix),point=world.clone().project(camera);
    if(point.z < -1||point.z>1||Math.abs(point.x)>=.98||Math.abs(point.y)>=.98)continue;
+   if(kind==='control'&&world.distanceTo(camera.position)>=3)continue;
    const x=(point.x+1)*innerWidth/2,y=(1-point.y)*innerHeight/2;
    if(document.elementFromPoint(x,y)!==canvas)continue;
    const hits=hitsAt(x,y),hit=hits[0],nearest=describe(hit),row={...target,x,y,world:world.toArray(),distance:world.distanceTo(camera.position),nearest};
+   if(kind==='control'&&nearest?.control&&nearest.deskId===target.id){controlRows.push({...row,height:entry.desk.userData.currentHeight,target:entry.desk.userData.targetHeight});break;}
    if(!occlusion&&nearest?.display?.id===target.id){targets.push(row);break;}
    if(occlusion&&nearest?.kind==='wall'&&hit.distance<row.distance-.02&&hits.some(h=>displayTargetFromHit(h)?.id===target.id)){occluded.push({...row,behindWall:true});break;}
   }
   // Each request returns its first fully ray-verified match, or at most three candidates.
-  if(targets.length||occluded.length){next++;break;}
+  if(targets.length||occluded.length||controlRows.length){next++;break;}
  }
  return {...view,targets,occluded,controls:controlRows,rayCount,candidateCount:candidates.length,nextCursor:next<candidates.length?next:null};
 }

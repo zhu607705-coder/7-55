@@ -7,7 +7,7 @@ const source=fs.readFileSync(new URL('../web/viewer.js',import.meta.url),'utf8')
 const code=source.slice(source.indexOf('function projectDisplayDiagnostics('),source.indexOf('\nfunction pick(e)'));
 let checks=0,rays=0,bounds=0,updates=0,hitMode='wall';
 const check=(value,label)=>{assert.ok(value,label);checks++;};
-class Vector3{constructor(x=0,y=0,z=0){Object.assign(this,{x,y,z});}clone(){return new Vector3(this.x,this.y,this.z);}add(v){this.x+=v.x;this.y+=v.y;this.z+=v.z;return this;}multiply(v){this.x*=v.x;this.y*=v.y;this.z*=v.z;return this;}applyMatrix4(){return this;}project(){return this;}toArray(){return [this.x,this.y,this.z];}distanceTo(){return 3;}}
+class Vector3{constructor(x=0,y=0,z=0){Object.assign(this,{x,y,z});}clone(){return new Vector3(this.x,this.y,this.z);}add(v){this.x+=v.x;this.y+=v.y;this.z+=v.z;return this;}multiply(v){this.x*=v.x;this.y*=v.y;this.z*=v.z;return this;}applyMatrix4(){return this;}project(){return this;}toArray(){return [this.x,this.y,this.z];}distanceTo(){return 2.5;}}
 class Matrix4{copy(){return this;}premultiply(){return this;}}
 const canvas={},wall={userData:{kind:'wall'},name:'wall'},desks=Array.from({length:10},(_,i)=>({userData:{spatialId:'desk/'+i,photoLevel:0,currentHeight:.73,targetHeight:.73}}));
 const mesh={isMesh:true,isInstancedMesh:true,visible:true,name:'screens',matrixWorld:{},getMatrixAt(){},userData:{deskEntries:desks.map(desk=>({desk,asset:'photo_monitor_stand',sourcePart:'Neutral screen',level:0}))},geometry:{boundingBox:null,computeBoundingBox(){bounds++;this.boundingBox={getCenter:()=>new Vector3(),getSize:()=>new Vector3(.1,.1,.1)};}}};
@@ -29,4 +29,7 @@ hitMode='visible';result=query({kind:'monitor'});check(result.targets.length===1
 result=query({kind:'monitor',excludeIds:['desk/0']});check(result.candidateCount===9&&result.targets.length===0,'excluded owner cannot be returned from another instance');
 hitMode='blocked';result=query({kind:'monitor',occlusion:true});check(result.occluded.length===1&&result.rayCount===1&&result.occluded[0].behindWall,'occlusion requires wall then actual display hit');
 hitMode='wall';result=query({kind:'monitor',occlusion:true,targetId:'desk/0'});check(result.occluded.length===0,'wall alone cannot fabricate an occluded display');
+mesh.userData.deskEntries[0].control=true;hitMode='visible';context.deskControls=()=>{throw Error('Legacy assisted anchor must not be used for direct-control acceptance');};
+result=query({kind:'control'});check(result.controls.length===1&&result.controls[0].id==='desk/0'&&result.controls[0].nearest.control,'control query projects real control instance rather than assisted anchor');
+check(result.controls[0].target===.73&&result.rayCount===1,'actual control returns current owner state after one nearest-hit ray');
 console.log(JSON.stringify({passed:checks,scope:'Mock diagnostic budget, filtering and nearest-hit contracts only; not actual building acceptance'},null,2));

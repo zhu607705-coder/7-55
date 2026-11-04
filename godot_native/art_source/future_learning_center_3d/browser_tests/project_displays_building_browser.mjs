@@ -21,7 +21,7 @@ try{
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
  browser=await chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{})});
  for(const [name,viewport,touch] of [['desktop',{width:1280,height:800},false],['mobile',{width:390,height:844},true]]){
-  const context=await browser.newContext({viewport,isMobile:touch,hasTouch:touch}),p=await context.newPage(),run={name,passed:false,checks:[],captures:[],errors:[],searches:[],phase:'created'};report.runs.push(run);save();
+  const context=await browser.newContext({viewport,isMobile:touch,hasTouch:touch}),p=await context.newPage(),run={name,passed:false,checks:[],captures:[],errors:[],searches:[],segments:[],phase:'created'};report.runs.push(run);save();
   const phase=label=>{run.phase=label;run.phaseStarted=new Date().toISOString();save();};
   await context.tracing.start({screenshots:true,snapshots:true,sources:true});
   p.on('pageerror',e=>{run.errors.push(e.message);save();});
@@ -33,12 +33,19 @@ try{
    await p.evaluate(()=>{window.__displayCameraSettled={last:null,count:0};});
    await p.waitForFunction(()=>{const now=flcReview.projectDisplays({geometry:false}).camera,cache=window.__displayCameraSettled,values=[...now.position,...now.quaternion];cache.count=cache.last&&values.every((v,i)=>Math.abs(v-cache.last[i])<.00001)?cache.count+1:0;cache.last=values;return cache.count>=3;},{},{polling:100,timeout:10000});
   };
-  const turn=async()=>{
-   // A normal canvas drag, not direct camera mutation. Walk yaw changes by 45 degrees.
-   const s=await snap(p),width=s.mode==='walk'?196:Math.min(120,viewport.width*.3),x=viewport.width*.7,y=viewport.height*.48;
-   if(touch){const cdp=await context.newCDPSession(p);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{id:1,x,y}]});for(let i=1;i<=8;i++)await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{id:1,x:x-width*i/8,y}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();}
-   else{await p.mouse.move(x,y);await p.mouse.down();await p.mouse.move(x-width,y,{steps:8});await p.mouse.up();}
+  const drag=async(dx,dy=0)=>{
+   const x=viewport.width*.7,y=viewport.height*.48;
+   if(touch){const cdp=await context.newCDPSession(p);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{id:1,x,y}]});for(let i=1;i<=8;i++)await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{id:1,x:x+dx*i/8,y:y+dy*i/8}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();}
+   else{await p.mouse.move(x,y);await p.mouse.down();await p.mouse.move(x+dx,y+dy,{steps:8});await p.mouse.up();}
    await settle();
+  };
+  const turn=async()=>{const s=await snap(p);await drag(-(s.mode==='walk'?196:Math.min(120,viewport.width*.3)));};
+  const lookDown=async pitch=>{const s=await snap(p);await drag(0,(s.pitch-pitch)/.004);};
+  const stepAside=async()=>{
+   phase('ordinary short collision-constrained strafe');
+   if(touch){const rect=await p.locator('#joystick').boundingBox();assert.ok(rect,'walk joystick exists');const cdp=await context.newCDPSession(p),x=rect.x+rect.width/2,y=rect.y+rect.height/2;await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{id:1,x,y}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{id:1,x:x+25,y}]});await p.waitForTimeout(350);await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await cdp.detach();}
+   else{await p.locator('#scene').focus();await p.keyboard.down('KeyD');await p.waitForTimeout(350);await p.keyboard.up('KeyD');}
+   check(await p.evaluate(()=>flcReview.canStand(...flcReview.snapshot().position)),'control survey keeps collision-safe position');
   };
   const scan=async(options)=>{
    let cursor=0;
@@ -79,29 +86,57 @@ try{
    check(before.camera.position.every((v,i)=>Math.abs(v-after.camera.position[i])<.001)&&before.camera.quaternion.every((v,i)=>Math.abs(v-after.camera.quaternion[i])<.001),label+' retains camera');
    check(a.joystick.every(v=>v===0),label+' clears joystick');
   };
-  try{
-   phase('load actual building');
-   await p.goto('http://127.0.0.1:'+server.address().port+'/?floor=3&room=studio_1');
+  const load=async query=>{
+   phase('load actual building '+query);
+   await p.goto('http://127.0.0.1:'+server.address().port+'/?'+query);
    await p.waitForFunction(()=>window.flcReview?.snapshot().ready,null,{timeout:90000});
    const photo=await p.evaluate(()=>flcReview.photoAssets());check(photo.desks.length===40&&photo.errors.length===0,'actual forty-workstation GLBs loaded');
    await settle();
+  };
+  const segment=async(name,body)=>{
+   const result={name,passed:false};run.segments.push(result);phase(name+' start');
+   try{await body();result.passed=true;}
+   catch(error){result.error=String(error);result.failedPhase=run.phase;save();try{await bounded(shot(name+'-failure'),name+' failure screenshot',5000);}catch(captureError){result.captureError=String(captureError);}}
+   finally{save();}
+  };
+  try{
+   await segment('monitor-displays',async()=>{
+    await load('floor=3&room=studio_1');
    const first=await find('monitor');await openClose(first,'overview-monitor');
    const second=await find('monitor',new Set([first.id]));await openClose(second,'second-monitor',true);
    check(first.id!==second.id,'different monitor instances retain different owners');
    await button(p.locator('#walk'));check((await snap(p)).mode==='walk','ordinary walk entry');
    const walkScreen=await find('monitor');await openClose(walkScreen,'walk-monitor');
+   });
+   await segment('desk-control-and-lift',async()=>{
+    await load('floor=3&room=studio_1&mode=walk');
    // Search an actual desk-edge control. Require the nearest ray hit to be that control.
-   const control=await find('control');
+   let control;
+   // Survey actual control geometry, with normal downward look and a short legal strafe.
+   // Yaw-only rotation leaves a fixed anchor's world-space occlusion unchanged.
+   for(let position=0;position<2&&!control;position++){
+    for(const pitch of [-.14,-.42,-.70]){
+     await lookDown(pitch);
+     for(let heading=0;heading<8&&!control;heading++){control=await scan({kind:'control'});if(!control)await turn();}
+     if(control)break;
+    }
+    if(!control&&position===0){await lookDown(-.14);await stepAside();}
+   }
    check(!!control,'visible reachable desk-edge control located');
    const old=control.target;await click(control);
    await p.waitForFunction(({id,old})=>flcReview.projectDisplays({geometry:false,controls:true,targetId:id}).controls.some(c=>c.target!==old),{id:control.id,old},{timeout:5000});
    check(!await p.locator('#project-display-dialog').isVisible(),'desk-edge control raises desk without opening display');
+   // Return the gaze to screen height through ordinary input while the desk moves.
+   await lookDown(-.14);
    // Use a fresh projection after the lift has moved the actual instanced screen.
    await p.waitForTimeout(400);
    const lifted=await scan({kind:'monitor',targetId:control.id});
    check(!!lifted,'lifted desk screen remains visible and targetable');
    await openClose(lifted,'lifted-monitor');
    await openClose(await scan({kind:'monitor',targetId:control.id}),'reopened-monitor',true);
+   });
+   await segment('wall-occlusion',async()=>{
+    await load('floor=3&room=studio_1&mode=walk');
    // Walk mode retains full-height walls. Require the same ray to intersect a wall
    // first and the actual display geometry behind it; no artificial blocker is inserted.
    let blocked;
@@ -110,10 +145,13 @@ try{
    await click(blocked);await p.waitForTimeout(150);
    check(!await p.locator('#project-display-dialog').isVisible(),'foreground wall prevents display opening',{blocked});
    await shot('wall-occlusion');
-   await button(p.locator('#overview'));await p.locator('#floor').selectOption('4');await settle();
+   });
+   await segment('corridor-poster',async()=>{
+    await load('floor=4');
    const poster=await find('poster');await openClose(poster,'corridor-poster');
-
-   check(run.errors.length===0,'no uncaught browser errors');run.passed=true;phase('passed');
+   });
+   check(run.errors.length===0,'no uncaught browser errors');
+   run.passed=run.segments.every(segment=>segment.passed);phase(run.passed?'passed':'one or more segments failed');
   }catch(error){
    run.failedPhase=run.phase;run.error=String(error);phase('failure recovery');
    // Never run geometry again while diagnosing a timeout. Persist the original failure first.

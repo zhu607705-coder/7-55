@@ -48,3 +48,11 @@ The initial real-building harness queried all display geometry even for active-d
 Each diagnostic evaluation has a 15-second host-side deadline. Search phases and completed checks are written immediately. Failure recovery uses only a bounded lightweight snapshot, then bounded screenshot/trace/cleanup attempts; it does not start another geometry scan. A timed-out browser evaluation is not claimed to have been cancelled by the deadline itself. Closing its context is the cleanup step.
 
 Eleven additional mock contracts verify budgets, shared bounding-box caching, pagination, owner/type filtering, early return and genuine two-hit occlusion requirements. These tests do not replace real Chromium/GLB acceptance.
+
+## Direct-control survey and independent evidence segments
+
+The bd78 browser traces showed a test-selection defect: deskControls() supplies an assisted interaction anchor, not the control mesh center. At the retained spawn, desk008's anchor ray reached the floor at 4.89 m; desk011's anchor ray hit foreground furniture at 1.75 m. Rotating yaw did not change either world-space line of sight. This does not establish that the actual controller is broken.
+
+The revised diagnostic projects actual instanced parts whose entry.control is true and still requires that the nearest visible hit is a control belonging to that exact desk. It samples normal downward gazes and a short collision-constrained strafe through ordinary mouse/touch/keyboard controls. No hit-assistance relaxation or geometry replacement is used. Two added mock contracts protect this distinction.
+
+Monitor, controller/lift, wall-occlusion and corridor-poster segments now record results independently from legitimate viewer entry URLs. A controller failure no longer suppresses wall/poster evidence. Any failed segment still fails the aggregate acceptance. This follow-on is locally syntax/contract-tested only until its exact-head real browser execution completes.
