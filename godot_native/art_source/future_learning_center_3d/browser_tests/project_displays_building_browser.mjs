@@ -25,6 +25,16 @@ try{
   const phase=label=>{run.phase=label;run.phaseStarted=new Date().toISOString();save();};
   await context.tracing.start({screenshots:true,snapshots:true,sources:true});
   p.on('pageerror',e=>{run.errors.push(e.message);save();});
+  // Observe real events; never dispatch events or alter app state from this probe.
+  await p.addInitScript(()=>{
+   window.__controlProbe=null;
+   for(const type of ['pointerdown','pointerup','pointercancel','lostpointercapture'])for(const capture of [true,false])document.addEventListener(type,event=>{
+    const probe=window.__controlProbe;if(!probe||event.target?.id!=='scene')return;
+    const state=window.flcReview?.projectDisplays({geometry:false,controls:true,targetId:probe.id}),frame=window.flcReview?.snapshot();
+    probe.events.push({type,phase:capture?'capture':'bubble',timeMs:performance.now(),eventTimeMs:event.timeStamp,wallTimeMs:Date.now(),trusted:event.isTrusted,x:event.clientX,y:event.clientY,pointerId:event.pointerId,desk:state?.controls[0]||null,active:state?.active,mode:state?.mode,renderedFrames:frame?.renderedFrames,lastRafGapMs:frame?.lastRafGapMs,lastRenderSubmissionMs:frame?.lastRenderSubmissionMs,lastDrawIntervalMs:frame?.lastDrawIntervalMs});
+    if(probe.events.length>24)probe.events.shift();
+   },capture);
+  });
   const check=(value,label,details={})=>{run.checks.push({label,pass:!!value,...details});save();assert.ok(value,label);};
   const shot=async label=>{const file=name+'-'+label+'.png';await p.screenshot({path:path.join(out,file)});run.captures.push(file);save();};
   const click=async target=>{if(touch)await p.touchscreen.tap(target.x,target.y);else await p.mouse.click(target.x,target.y);};
@@ -123,8 +133,22 @@ try{
     if(!control&&position===0){await lookDown(-.14);await stepAside();}
    }
    check(!!control,'visible reachable desk-edge control located');
-   const old=control.target;await click(control);
-   await p.waitForFunction(({id,old})=>flcReview.projectDisplays({geometry:false,controls:true,targetId:id}).controls.some(c=>c.target!==old),{id:control.id,old},{timeout:5000});
+   const old=control.target;
+   await bounded(p.evaluate(({id,old,point})=>{window.__controlProbe={id,old,point,armedAtMs:performance.now(),events:[]};},{id:control.id,old,point:[control.x,control.y]}),'arm read-only control event probe');
+   run.controlAttempt={id:control.id,old,point:[control.x,control.y],nearest:control.nearest,clickStartedAtMs:Date.now()};save();
+   try{
+    await click(control);run.controlAttempt.clickReturnedAtMs=Date.now();save();
+    run.controlAttempt.waitStartedAtMs=Date.now();
+    // Target ownership is not a rendered-frame condition. Retain the same 5 s
+    // assertion, but do not make its sampling depend on a WebGL RAF callback.
+    await p.waitForFunction(({id,old})=>flcReview.projectDisplays({geometry:false,controls:true,targetId:id}).controls.some(c=>c.target!==old),{id:control.id,old},{polling:100,timeout:5000});
+    run.controlAttempt.waitPassed=true;
+   }catch(error){run.controlAttempt.waitPassed=false;run.controlAttempt.error=String(error);throw error;}
+   finally{
+    run.controlAttempt.waitFinishedAtMs=Date.now();save();
+    // This late observation is evidence only; it cannot change a failed assertion.
+    try{run.controlAttempt.after=await bounded(p.evaluate(id=>{const result={timeMs:performance.now(),wallTimeMs:Date.now(),probe:window.__controlProbe,state:flcReview.projectDisplays({geometry:false,controls:true,targetId:id}),frame:flcReview.snapshot()};window.__controlProbe=null;return result;},control.id),'post-control lightweight evidence',2000);}catch(error){run.controlAttempt.evidenceError=String(error);}save();
+   }
    check(!await p.locator('#project-display-dialog').isVisible(),'desk-edge control raises desk without opening display');
    // Return the gaze to screen height through ordinary input while the desk moves.
    await lookDown(-.14);

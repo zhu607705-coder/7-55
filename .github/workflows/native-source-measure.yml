@@ -1,0 +1,39 @@
+name: Native source compression measurement
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/native-source-measure.yml'
+      - 'godot_native/tools/measure_source_compression.py'
+permissions:
+  contents: read
+jobs:
+  measure:
+    name: Measure exact source transport only
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Capture unchanged complete source with existing provenance checks
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+          EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          python3 -B godot_native/tools/native_source_transport.py capture \
+            --root "$GITHUB_WORKSPACE" --bundle-dir "$RUNNER_TEMP/source-measure" \
+            --head "$EXPECTED_HEAD" --base "$EXPECTED_BASE"
+      - name: Measure bounded compression and exact roundtrips
+        run: |
+          python3 -B godot_native/tools/measure_source_compression.py \
+            --bundle "$RUNNER_TEMP/source-measure" \
+            --output "$RUNNER_TEMP/source-measure-report/measurement.json"
+      - name: Preserve measurement only, never acceptance or source payload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-source-measure-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/source-measure-report
+          if-no-files-found: error
+          retention-days: 3
