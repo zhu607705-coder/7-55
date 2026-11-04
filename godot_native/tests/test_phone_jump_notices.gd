@@ -1,13 +1,14 @@
 extends SceneTree
-## Two routed banners only. Protect main dialogue/check-in source byte identity.
+## Two routed banners only. Protect the independently reviewed dialogue and check-in sources.
 const Surface=preload("res://scripts/ui/phone_jump_notice.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
-# Explicitly approved scope excludes these main72fe surfaces.
-const UNCHANGED_MAIN_SOURCE:={
-	"res://scripts/presentation/library_story_view.gd":"f79a92f325a0d0345c4dc717bb4c8afb7a07dc9d2120176b56a3b33e1945d0dd",
+# Notice styling must leave these independent surfaces intact. The library and check-in
+# implementations come from PR #204 (a9477466), the other three from main (72fe2ed3).
+const REVIEWED_SURFACE_HASHES:={
+	"res://scripts/presentation/library_story_view.gd":"37e9f9eb02baae751c2edc4c0fa6408c2c94a79808ab18296508b28bc68b2eec",
 	"res://scripts/ui/selected_dialogue_layout.gd":"dfb4328faec3e1a1272ffea7332116fb7cb0d16512457359adf356232a667fed",
-	"res://scripts/ui/native_checkin_page.gd":"7e7ee48bd14d3334aa3d69779c89e2a4a281f4deb0ad561e8ad9ddf4911717b6",
+	"res://scripts/ui/native_checkin_page.gd":"6de7724f0ee0fcdbbf02cc98174c2287c3bf11ccf00814a86a7dcf5385a4a1df",
 	"res://scripts/ui/checkin_success_view.gd":"2754e4d0a794666a5534534ac64a59e86d759358787c9adb2f6dba8adf5a71e9",
 	"res://scripts/ui/native_typography.gd":"d763b08aa1718e34bdf88b745af3635a8dbe157832105533859d6ddc229c89f2",
 }
@@ -35,8 +36,8 @@ func home(recovery:bool=false)->void:
 	shell.mobile_world=false;shell._refresh();await frames(8)
 func run()->void:
 	if not load("res://tests/native_test_isolation.gd").is_isolated_save():quit(2);return
-	for source:String in UNCHANGED_MAIN_SOURCE:
-		check(FileAccess.get_file_as_string(source).sha256_text()==UNCHANGED_MAIN_SOURCE[source],"out-of-scope source stays byte-identical to main: "+source)
+	for source:String in REVIEWED_SURFACE_HASHES:
+		check(FileAccess.get_file_as_string(source).sha256_text()==REVIEWED_SURFACE_HASHES[source],"out-of-scope source retains its reviewed bytes: "+source)
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial()
 	shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames()
 	for extent:Vector2i in [Vector2i(390,844),Vector2i(844,390),Vector2i(1280,720)]:
