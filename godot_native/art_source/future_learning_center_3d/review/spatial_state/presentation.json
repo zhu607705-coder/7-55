@@ -1,4 +1,0 @@
-{
-  "passed": 126,
-  "scope": "Actual Three.js transforms, clipping planes, material ownership, repeated transitions; not browser/GPU rendering."
-}
