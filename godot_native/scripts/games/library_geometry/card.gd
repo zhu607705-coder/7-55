@@ -4,9 +4,9 @@ const TITLES=["线框球","斜视角薄板","圆锥螺旋"]
 const CAPTIONS=["静止时重合，转动时分开。","错开，再滑回对齐。","从底部收掉，再从底部重新长上来。"]
 var kind:=0
 var allow_hover:=true
-const INK=Color("393c38")
-const SECONDARY_INK=Color("62665e")
-const FOCUS_INK=Color("49614e")
+const INK=Color("1d1a1e")
+const SECONDARY_INK=Color("4a4038")
+const FOCUS_INK=Color("a43b32")
 var sketch:Control
 var touch_owner:=-1
 var touch_start:=Vector2.ZERO
@@ -15,8 +15,8 @@ var touch_moved:=false
 func _ready()->void:
 	custom_minimum_size=Vector2(0,360);mouse_filter=Control.MOUSE_FILTER_PASS
 	focus_mode=Control.FOCUS_ALL;accessibility_name=TITLES[kind]
-	var paper=StyleBoxFlat.new();paper.bg_color=Color("fdfdfb")
-	paper.border_color=Color(.216,.231,.192,.065);paper.set_border_width_all(1)
+	var paper=StyleBoxFlat.new();paper.bg_color=Color("faf4e8")
+	paper.border_color=Color("b5a996");paper.set_border_width_all(1)
 	paper.set_corner_radius_all(20);paper.set_content_margin_all(28)
 	add_theme_stylebox_override("panel",paper)
 	var column=VBoxContainer.new();column.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(column)

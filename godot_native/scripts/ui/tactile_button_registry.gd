@@ -54,6 +54,15 @@ func _adopt(instance_id: int) -> void:
   # Native dialogs retain a dark panel. Gray ghost ink on that panel fails
   # contrast; use the light key while retaining internal engine geometry.
   kind="secondary";compact=true
+ # Only production story/entry roots opt in. Isolated research apparatus and
+ # unrelated standalone scenes keep their incumbent skin; explicit exemptions
+ # have already returned above and always win.
+ if not node.has_meta("tactile_paper_ink"):
+  var ancestor: Node=node.get_parent()
+  while ancestor!=null:
+   if ancestor.get_meta("paper_ink_scope",false):
+    node.set_meta("tactile_paper_ink",true);break
+   ancestor=ancestor.get_parent()
  var size_name: String=str(node.get_meta("tactile_size","lg" if node.get_theme_font_size("font_size")>=16 else "md"))
  var controller:=ButtonState.new();controller.name="TactileMaterialState"
  node.add_child(controller);controller.setup(node,kind,size_name,compact)

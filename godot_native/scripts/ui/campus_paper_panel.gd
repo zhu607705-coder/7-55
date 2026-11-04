@@ -9,6 +9,9 @@ func _ready() -> void:
 
 func _draw() -> void:
 	if size.x<24 or size.y<12: return
+	if bool(get_meta("tactile_paper_ink",false)):
+		preload("res://scripts/ui/paper_ink_material.gd").draw_panel(get_canvas_item(),Rect2(Vector2.ZERO,size))
+		return
 	if header_rule:
 		# Existing app heading owns this space; no decorative title is added.
 		draw_rect(Rect2(0,size.y-2,size.x,1),UiMaterial.PAPER_EDGE)

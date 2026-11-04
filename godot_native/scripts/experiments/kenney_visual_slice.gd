@@ -93,6 +93,7 @@ func _ready() -> void:
 	note=selected_overlay.object_body
 	title=make_label("调试比较 · 独立样段（不写入正式进度）", "interaction", "tip")
 	tutorial=make_label("方向键移动 · 空格查看 / 收起 · 鼠标点地面或物件", "hud", "tip")
+	_paper_behind(tutorial)
 
 	comparison=make_button("反馈：开",toggle_feedback)
 	pixel_button=make_button("渲染：540",toggle_pixels)
@@ -107,6 +108,16 @@ func make_label(text: String,surface: String,role: String) -> Label:
 func make_button(text: String,callback: Callable) -> Button:
 	var button=Button.new();button.text=text;button.custom_minimum_size=Vector2(96,36);button.focus_mode=Control.FOCUS_NONE
 	SelectedTheme.apply_button(button,"interaction");button.pressed.connect(callback);add_child(button);return button
+
+func _paper_behind(control:Control)->void:
+	# Shared paper ink also reaches this standalone experiment. Mirror only its
+	# existing rectangle; a sibling cannot change the label/VBox minimum or input.
+	var paper:=Panel.new();paper.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	SelectedTheme.apply_paper_panel(paper)
+	add_child(paper);move_child(paper,control.get_index())
+	var sync:=func():paper.position=control.position;paper.size=control.size;paper.visible=control.visible
+	control.item_rect_changed.connect(sync);control.visibility_changed.connect(sync)
+	control.tree_exiting.connect(paper.queue_free);sync.call()
 func layout() -> void:
 	if not is_instance_valid(screen):return
 	var space:=Vector2(maxf(180,size.x-32),maxf(120,size.y-146))
@@ -153,7 +164,7 @@ func toggle_journal() -> void:
 	if observed:entries.append({"text":"练习记录：查看过纸条。"})
 	journal.configure("观察寝室物件", "已查看纸条。" if observed else "尚未查看纸条。",entries,false,true)
 	journal.resume_requested.connect(close_journal)
-	add_child(journal);journal_open=true;layout_journal();position_labels()
+	add_child(journal);_paper_behind(journal);journal_open=true;layout_journal();position_labels()
 func layout_journal() -> void:
 	journal.size=Vector2(minf(420,size.x-48),0)
 	journal.position=Vector2((size.x-journal.size.x)/2,maxf(90,screen.position.y+40))

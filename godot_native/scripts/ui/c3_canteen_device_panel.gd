@@ -74,9 +74,10 @@ func _build() -> void:
 	feedback_label=_label("feedback",14);feedback_label.hide()
 	if kind=="drink":
 		_button("take","",func(): _take())
+		controls.take.set_meta("tactile_exempt",true) # Physical flavor selector, not a paper UI key.
 		controls.take.tooltip_text="选择"+str(DRINKS[item_id].name)+"，容器推杆向前接取"
 		controls.take.z_index=3
-		for style_name in ["normal","hover","pressed","disabled"]: controls.take.add_theme_stylebox_override(style_name,StyleBoxEmpty.new())
+		for style_name in ["normal","hover","pressed","hover_pressed","disabled"]: controls.take.add_theme_stylebox_override(style_name,StyleBoxEmpty.new())
 		var selector_focus:StyleBoxFlat=controls.take.get_theme_stylebox("focus")
 		selector_focus.draw_center=false
 		fountain=FountainRig.new();fountain.name="ThreeOutletPickupFountain";add_child(fountain)

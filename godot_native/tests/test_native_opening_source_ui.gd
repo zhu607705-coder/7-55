@@ -1,6 +1,8 @@
 extends SceneTree
 const Opening=preload("res://scripts/ui/native_opening_presentation.gd")
 const Notice=preload("res://scripts/ui/native_phone_notice.gd")
+const PaperInk=preload("res://scripts/ui/paper_ink_material.gd")
+const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 var shell: Control
 var state: Node
 var checks:=0
@@ -63,12 +65,15 @@ func check_button(name: String,_fill: Color,_ink: Color) -> Button:
 	var expected: String="secondary" if name=="c1_wake" else "primary"
 	check(button.get_meta("tactile_variant")==expected,"semantic neutral variant "+name)
 	check(button.get_theme_stylebox("pressed")==button.get_theme_stylebox("normal"),"same animated state layer stack "+name)
+	check(button.get_theme_stylebox("normal").paper_ink,"opening uses the reviewed paper material "+name)
 	for mode: String in ["normal","hover","pressed","hover_pressed","disabled","focus"]:
 		check(button.has_theme_stylebox_override(mode),"complete local state "+name+" "+mode)
 		if mode=="focus":
-			check(button.get_theme_stylebox(mode).corner_radius_top_left==4,"existing focus convention retained")
+			var focus:StyleBoxFlat=button.get_theme_stylebox(mode)
+			check(focus.corner_radius_top_left==2 and focus.border_color==PaperInk.FOCUS and focus.get_border_width_min()==2 and focus.bg_color.a==0 and Ui._contrast(focus.border_color,PaperInk.PAPER)>=3,"paper focus is a readable two-pixel outline")
 		else:
-			check(button.get_theme_stylebox(mode).corner_radius_top_left==11 and button.get_theme_stylebox(mode).anti_aliasing,"lg material radius proportional to label "+mode)
+			var material:StyleBox=button.get_theme_stylebox(mode)
+			check(material.corner_radius_top_left==roundi(2.5*float(button.get_meta("tactile_unit"))) and material.anti_aliasing,"paper pen corner stays proportional to the unchanged type scale "+mode)
 	check(rect(button).size.x>=44 and rect(button).size.y>=44,"big button keeps readable pointer target "+name)
 	check(16*scale>=14,"big button readable at tested physical scale "+name)
 	return button

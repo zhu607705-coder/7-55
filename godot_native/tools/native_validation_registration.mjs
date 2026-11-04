@@ -33,6 +33,10 @@ export function registerStage(spec) {
 // Each FLC reader uses one existing scheduler slot; no nested CI worker pool.
 const flc='godot_native/campuses/future_learning_center';
 export const NATIVE_STAGE_REGISTRATIONS = Object.freeze([
+ {id:'paper_ink_web_source',execution:'node',entry:'godot_native/tools/test_paper_ink_web_source.mjs',
+  inputs:['godot_native/tools/test_paper_ink_web_source.mjs','godot_native/tools/web_button_material.mjs',
+   'godot_native/web/button.css','godot_native/web/index.html','godot_native/scripts/ui/paper_ink_material.gd'],
+  outputs:[],dependencies:[],durationHintMs:1000},
  ...['koala','machinery','solid_projection','platform','robotics','signal_sync','formula','flex','collab','focus','storage','assembly','rail','rules','projection','projection_placement','2f_placement','fold','logic','balance','schedule','recording','access','sync','perspective','coupled','puzzles_integration','floor'].map(name=>({
   id:`flc_${name}`,execution:'godot',entry:`${flc}/tests/test_${name}.gd`,args:['--with-view'],
   inputs:[`${flc}/tests/test_${name}.gd`,...(['floor','puzzles_integration','projection_placement','2f_placement'].includes(name)

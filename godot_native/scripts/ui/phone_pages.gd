@@ -11,6 +11,7 @@ signal brightness_preview_requested(value: float)
 const OpeningPresentation = preload("res://scripts/ui/native_opening_presentation.gd")
 const PhoneNotice = preload("res://scripts/ui/native_phone_notice.gd")
 const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
+const PaperInk = preload("res://scripts/ui/paper_ink_material.gd")
 const PhonePalette = preload("res://scripts/ui/phone_palette.gd")
 const WechatBubble=preload("res://scripts/ui/wechat_message_bubble.gd")
 const WechatSocial=preload("res://scripts/ui/wechat_social_pages.gd")
@@ -103,8 +104,10 @@ var s: Dictionary = {}
 var previous_page = ""
 var home_desk: RefCounted
 var displayed_balance_shifted = false
+var paper_ink_page := false
 
 func build(page: String, view: Dictionary, state: Dictionary) -> Control:
+	paper_ink_page = page in ["phone_home","checkin","zjuding","control_center"] or page.begins_with("library_")
 	s = state
 	bonsai_growth.route(page)
 	entry_session.route(s)
@@ -178,7 +181,7 @@ func _base(color: Color, height: float = 570) -> Control:
 	root.size = root.custom_minimum_size
 	root.clip_contents = true
 	var background = ColorRect.new()
-	background.color = color
+	background.color = PaperInk.PAPER if paper_ink_page and color.a>.95 and color.get_luminance()>.65 else color
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.add_child(background)
@@ -199,6 +202,17 @@ func _panel(root: Control, rect: Rect2, color: Color, border: Color = Color.TRAN
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_theme_stylebox_override("panel",_style(color,border,radius,width))
 	root.add_child(panel)
+	return panel
+
+func _paper_style(color: Color = PaperInk.PAPER, border: Color = PaperInk.EDGE, radius: int = 0, width: int = 1) -> StyleBoxFlat:
+	# Keep the original inset contract even when the visual pen is finer.
+	var style := PaperInk.panel_style(Vector2(width,width),color,border)
+	return style
+
+func _paper_panel(root: Control, rect: Rect2, color: Color = PaperInk.PAPER, border: Color = PaperInk.EDGE, radius: int = 0, width: int = 1) -> Panel:
+	var panel := _panel(root,rect,color,border,radius,width)
+	panel.add_theme_stylebox_override("panel",_paper_style(color,border,radius,width))
+	panel.set_meta("paper_ink_surface",true)
 	return panel
 
 func _label(root: Control, text: String, rect: Rect2, fs: int = 18, color: Color = INK, align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT) -> Label:
@@ -304,7 +318,11 @@ func _return_zjuding(page: String = "hub") -> void:
 	page_requested.emit("zjuding")
 
 func _header(root: Control, title: String, color: Color = Color.WHITE, ink: Color = INK, back: Callable = Callable(), kind: String = "back", label: String = "返回手机主页") -> void:
-	_panel(root,Rect2(0,0,378,54),color)
+	if paper_ink_page:
+		ink=PaperInk.INK
+		_paper_panel(root,Rect2(0,0,378,54),PaperInk.PAPER,Color.TRANSPARENT,0,0)
+	else:
+		_panel(root,Rect2(0,0,378,54),color)
 	_nav(root,kind,label,back if back.is_valid() else func(): page_requested.emit("phone_home"),Rect2(7,5,40,44),color,ink)
 	var heading=_label(root,title,Rect2(50,5,278,44),16,ink,HORIZONTAL_ALIGNMENT_CENTER)
 	heading.autowrap_mode=TextServer.AUTOWRAP_OFF; heading.clip_text=true; heading.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -897,7 +915,7 @@ func _controls() -> Control:
 	backdrop.name="ControlCenterBackdrop"
 	for mode in ["normal","hover","pressed","focus"]: backdrop.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 	var panel_height=580.0+(53 if control_reset_confirm else 0)+(21 if int(s.phoneBattery.percent)==1 else 0)
-	var panel=_panel(root,Rect2(0,0,378,panel_height),Color("e9e5da"),INK,0,2)
+	var panel=_paper_panel(root,Rect2(0,0,378,panel_height),PaperInk.PAPER,PaperInk.EDGE,0,2)
 	panel.mouse_filter=Control.MOUSE_FILTER_STOP; panel.name="ControlCenterPanel"
 	_label(panel,"7月9日 周四",Rect2(14,13,260,27),16)
 	var close_button=_nav(panel,"close","收起控制中心",close,Rect2(337,12,27,27),PAPER)
@@ -907,6 +925,8 @@ func _controls() -> Control:
 		var active=(network=="campus_wifi" if i==0 else network=="cellular")
 		var button=_act(panel,"",Rect2(14+i*180,51,170,56),"c1_network","校园网" if i==0 else "移动数据",Color("4d7ed9") if active else Color("cfd3d9"),Color.WHITE if active else INK,0,INK)
 		button.name="ControlNetwork_"+("wifi" if i==0 else "cellular")
+		# Nested labels keep their selected white ink on an explicit dark face.
+		button.set_meta("tactile_variant","primary" if active else "secondary")
 		_panel(button,Rect2(9,10,34,34),Color.WHITE,INK,0,2)
 		if i==0:
 			Symbols.add_wifi(button,Rect2(9,10,34,34))
@@ -914,7 +934,7 @@ func _controls() -> Control:
 			for bar in range(4): _panel(button,Rect2(15+bar*5,34-bar*4,3,5+bar*4),INK)
 		_label(button,"ZJUWLAN" if i==0 else "移动数据",Rect2(50,12,115,19),12,Color.WHITE if active else INK)
 		_label(button,("已连接" if active else "未连接") if i==0 else ("使用中" if active else "已关闭"),Rect2(50,33,115,14),10,Color.WHITE if active else MUTED)
-	var music=_panel(panel,Rect2(14,117,284,104),Color("cfd3d9"),INK,0,2)
+	var music=_paper_panel(panel,Rect2(14,117,284,104),PaperInk.PAPER,PaperInk.EDGE,0,2)
 	_source_icon(music,"music",Rect2(11,9,27,27))
 	_label(music,"正在播放：早八进行曲" if s.ui.musicPlaying else "未在播放",Rect2(47,12,225,25),12)
 	_act(music,"❚❚" if s.ui.musicPlaying else "▶",Rect2(12,51,49,40),"c1_music",null,INK,PAPER,0,INK).name="ControlMusicPlay"
@@ -969,7 +989,7 @@ func _controls() -> Control:
 		_label(button,data[1],Rect2(0,48,80,18),12,INK,HORIZONTAL_ALIGNMENT_CENTER)
 	handled.append("c1_auto_rotate")
 	var critical=int(s.phoneBattery.percent)<=5
-	var power=_panel(panel,Rect2(14,313,350,141+(21 if int(s.phoneBattery.percent)==1 else 0)),Color("edd2cf") if critical else Color("d8eadb") if s.phoneBattery.lowPowerMode else Color("d9dde2"),INK,0,2)
+	var power=_paper_panel(panel,Rect2(14,313,350,141+(21 if int(s.phoneBattery.percent)==1 else 0)),Color("edd2cf") if critical else Color("d8eadb") if s.phoneBattery.lowPowerMode else PaperInk.PAPER,PaperInk.EDGE,0,2)
 	_label(power,"电池 %d%%" % int(s.phoneBattery.percent),Rect2(9,8,267,20),13)
 	_label(power,"打开应用不额外扣电",Rect2(9,30,267,17),10,MUTED)
 	_panel(power,Rect2(305,10,35,28),Color("c85454") if critical else Color("2d7a52"),INK,0,2)
@@ -982,7 +1002,7 @@ func _controls() -> Control:
 	_label(power,"剧场入口左侧设有充电服务站，需走到设备旁接线。" if s.get("rpgScene","")=="theater_interior" else "可从主页或盆栽放下手机，点桌面充电座接线。" if s.actOne.phase=="prologue" else "充电需要在现场与充电服务站交互。",Rect2(9,118,332,18),10)
 	if int(s.phoneBattery.percent)==1: _label(power,"电量仅剩 1%，请寻找现场充电服务站。",Rect2(9,139,332,18),10,Color("7a241f"))
 	var save_y=467+(21 if int(s.phoneBattery.percent)==1 else 0)
-	var saves=_panel(panel,Rect2(14,save_y,350,95+(53 if control_reset_confirm else 0)),Color("cfd3d9"),INK,0,2)
+	var saves=_paper_panel(panel,Rect2(14,save_y,350,95+(53 if control_reset_confirm else 0)),PaperInk.PAPER,PaperInk.EDGE,0,2)
 	_label(saves,"游戏进度",Rect2(9,8,267,20),13)
 	_label(saves,"自动保存已开启",Rect2(9,30,267,17),10,MUTED)
 	_panel(saves,Rect2(299,10,41,28),Color("1e5da8"),INK,0,2)

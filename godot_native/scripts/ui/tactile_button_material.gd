@@ -2,6 +2,7 @@ extends StyleBox
 ## Native rendering of the same five material layers as web/button.css.
 ## One StyleBox owns face/edge/insets/contact/lift. No overlay masks corners.
 const VARIANTS := ["primary", "secondary", "tertiary", "ghost", "text"]
+const PaperInk=preload("res://scripts/ui/paper_ink_material.gd")
 const PALETTES := {
  "primary": [Color("454441"),Color("302f2c"),Color("191917"),Color.WHITE,.18,.22,.18,.28,.40],
  "secondary": [Color("fffefa"),Color("f3f1eb"),Color(30.0/255,30.0/255,27.0/255,.14),Color("393a37"),.95,.06,.06,.09,.14],
@@ -17,6 +18,7 @@ const HOVER_PALETTES := {
  "text": [Color.TRANSPARENT,Color.TRANSPARENT],
 }
 var variant := "secondary"
+var paper_ink := false
 var unit := 1.0
 var hover_amount := 0.0
 var press_amount := 0.0
@@ -34,16 +36,17 @@ var label_inset := 0.0
 # owned here; late legacy palette writes must not restore app-specific hues.
 var bg_color: Color:
  get:
+  if paper_ink:return PaperInk.face_color(variant,hover_amount,disabled_amount)
   if variant in ["ghost","text"]:return Color.TRANSPARENT
   return PALETTES[variant][1]
  set(_value):pass
 var border_color: Color:
- get:return PALETTES[variant][2]
+ get:return (Color.TRANSPARENT if variant in ["ghost","text"] else PaperInk.EDGE) if paper_ink else PALETTES[variant][2]
  set(_value):pass
 var border_width_left: int:
  get:return roundi(unit)
 var corner_radius_top_left: int:
- get:return roundi(10*unit)
+ get:return roundi((2.5 if paper_ink else 10)*unit)
 var anti_aliasing := true
 var expand_margin_left := 0.0
 var expand_margin_top := 0.0
@@ -53,6 +56,11 @@ var shadow_size := 0
 var shadow_offset := Vector2.ZERO
 func set_border_width_all(_value: int) -> void:pass
 func set_corner_radius_all(_value: int) -> void:pass
+
+func label_color(disabled: bool=false) -> Color:
+ if paper_ink:return PaperInk.label_color(variant,disabled)
+ if disabled:return Color("c3c2be") if variant=="primary" else Color("62645f")
+ return PALETTES[variant][3]
 
 func configure(kind: String, u: float) -> void:
  variant=kind if kind in VARIANTS else "secondary"
@@ -114,6 +122,9 @@ func _shadow(canvas: RID,rect: Rect2,radius: float,offset: float,blur: float,spr
   _fill(canvas,area,maxf(0,radius+growth),Color(0,0,0,a),Color(0,0,0,a))
 
 func _draw(canvas: RID,rect: Rect2) -> void:
+ if paper_ink:
+  PaperInk.draw_button(canvas,rect,variant,unit,hover_amount,press_amount,disabled_amount)
+  return
  var p: Array=PALETTES[variant]
  var opacity: float=1.0 # Disabled values remain readable; native input owns gating.
  var face:=rect;face.position.y+=press_amount*unit

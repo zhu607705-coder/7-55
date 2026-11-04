@@ -22,8 +22,7 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter=Control.MOUSE_FILTER_IGNORE
 	panel=Panel.new(); panel.clip_contents=true; panel.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(panel)
-	var box:=StyleBoxEmpty.new()
-	panel.add_theme_stylebox_override("panel",box)
+	Selected.apply_paper_panel(panel)
 	for field: String in ["speaker","body"]:
 		var label:=Label.new(); label.mouse_filter=Control.MOUSE_FILTER_IGNORE;label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		Typography.apply_body(label)

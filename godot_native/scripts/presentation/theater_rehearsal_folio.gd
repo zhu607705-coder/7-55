@@ -1,5 +1,6 @@
 extends PanelContainer
 ## A stitched paper folio. Decoration never receives input or owns puzzle facts.
+const PaperInk=preload("res://scripts/ui/paper_ink_material.gd")
 var divided := true
 var turn_amount:=0.0
 var turn_direction:=1
@@ -15,12 +16,13 @@ func _process(delta:float)->void:
 	turn_amount=maxf(0,turn_amount-delta/.24);queue_redraw()
 
 func _draw()->void:
-	draw_rect(Rect2(Vector2(0,3),size),Color("202B3540"))
-	draw_rect(Rect2(Vector2.ZERO,size),Color("344247"))
+	draw_rect(Rect2(Vector2(0,3),size),Color(PaperInk.INK,.2))
+	draw_rect(Rect2(Vector2.ZERO,size),Color("e4d9c6"))
 	for edge:int in range(3):
 		draw_rect(Rect2(Vector2(13+edge,5+edge),size-Vector2(19+edge*2,12+edge*2)),Color("C5B792"))
-	draw_rect(Rect2(Vector2(18,8),size-Vector2(27,19)),Color("F4EAD5"))
-	draw_rect(Rect2(Vector2(30,20),size-Vector2(53,43)),Color("C9BA98"),false,1)
+	var page:=Rect2(Vector2(18,8),size-Vector2(27,19))
+	draw_rect(page,PaperInk.PAPER)
+	PaperInk.draw_panel(get_canvas_item(),page)
 	for y:int in range(42,int(size.y)-26,45):
 		draw_line(Vector2(7,y),Vector2(23,y+4),Color("E5D7B4"),2)
 		draw_line(Vector2(7,y+9),Vector2(23,y+4),Color("9D875E"),1)

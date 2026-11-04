@@ -47,7 +47,13 @@ func check_readability(panel: Control) -> void:
 	for button in enabled_buttons(panel):
 		if button.text.is_empty() and panel.kind=="drink":
 			check(button.tooltip_text.begins_with("选择") and button.tooltip_text.contains("容器推杆") and panel.fountain.selectors[panel.outlet_index].texture!=null and panel.fountain.paddles[panel.outlet_index].texture!=null,"drink selector and under-nozzle paddle have matching raster art and an accessible action label")
-			check(not button.get_theme_stylebox("focus").draw_center,"keyboard focus preserves the visible flavor color under its border")
+			var focus:StyleBoxFlat=button.get_theme_stylebox("focus")
+			check(not focus.draw_center and focus.border_color==Color("75e4ff") and focus.get_border_width_min()==2,"keyboard focus preserves the visible flavor color under its original cyan border")
+			check(button.get_meta("tactile_exempt",false) and button.get_node_or_null("TactileMaterialState")==null,"physical flavor selector is not repainted as a paper UI key")
+			check(["normal","hover","pressed","hover_pressed","disabled"].all(func(mode):return button.get_theme_stylebox(mode) is StyleBoxEmpty),"all selector interaction states leave the flavor raster visible")
+			var selector:Sprite2D=panel.fountain.selectors[panel.outlet_index]
+			var flavor:Color=panel.DRINKS[panel.item_id].color
+			check(selector.texture==panel.FountainRig.BODY and selector.region_rect==panel.FountainRig.SELECTOR_REGIONS[panel.outlet_index] and selector.modulate.is_equal_approx(Color(flavor.r*2.6,flavor.g*2.6,flavor.b*2.6,1)),"selected outlet keeps its original raster region and exact flavor identity")
 			continue
 		var fg: float=button.get_theme_color("font_hover_color").get_luminance()
 		var bg: float=button.get_theme_stylebox("hover").bg_color.get_luminance()

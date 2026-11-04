@@ -125,6 +125,7 @@ const BLUE := Color("267b9e")
 var flc_entry_mode:=false
 
 func _ready() -> void:
+	set_meta("paper_ink_scope",true)
 	flc_entry_mode=bool(get_tree().root.get_meta("flc_entry_requested",false))
 	if flc_entry_mode:
 		get_tree().root.remove_meta("flc_entry_requested")
@@ -1387,17 +1388,15 @@ func _modal_base(title: String,surface: String="paper",preserve_departure: bool=
 	var panel: PanelContainer
 	if surface.begins_with("selected_"):
 		panel = PanelContainer.new()
-		var clear:=StyleBoxEmpty.new()
-		clear.content_margin_left=8;clear.content_margin_right=8
-		clear.content_margin_top=8;clear.content_margin_bottom=8
-		panel.add_theme_stylebox_override("panel",clear)
+		SelectedUi.apply_paper_panel(panel,Vector2(8,8))
 		panel.set_meta("selected_surface",surface.trim_prefix("selected_"))
 	elif surface in ["notebook","loose_sheet"]:
 		panel = preload("res://scripts/ui/campus_notebook_panel.gd").new()
 		panel.mode = surface
 	else:
 		panel = preload("res://scripts/ui/campus_paper_panel.gd").new()
-		panel.add_theme_stylebox_override("panel",CampusMaterial.panel_style("paper"))
+		panel.set_meta("tactile_paper_ink",true)
+		panel.add_theme_stylebox_override("panel",preload("res://scripts/ui/paper_ink_material.gd").panel_style(Vector2(16,16)))
 	modal_panel = panel
 	panel.name = "NativeModalPanel"
 	modal.add_child(panel)
