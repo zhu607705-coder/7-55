@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import path from 'node:path';
+import { phoneGroups } from '../tools/web_phone_shards.mjs';
 // Execute the actual runner functions with simulated readonly IDB/CDP events.
 // This does not launch a browser or prove real persistence timing.
 // Current deadline contract comes from externally merged main
@@ -209,9 +211,16 @@ for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'p
   const selected = vm.runInNewContext(selectedExpression, { only: 'all', scenarios });
   const expectedProfiles = scenarios === 'streaming' ? ['desktop-1280'] : ['mobile-world', 'phone-recovery'].includes(scenarios) ? focusedProfiles : baselineProfiles;
   check(`${scenarios}: original acceptance profile coverage remains exact`, () => assert.deepEqual(Array.from(selected, row => row[0]), expectedProfiles));
-  for (const [id, , , touch] of selected) {
+  for (const [id, , , touch, dpr] of selected) {
     const calls = [], initialized = [], recoveryInputs = [];
-    const context = { scenarios, id, touch, bootTimeout, fixtureDir: '/explicit-test-fixture', active: { screenshots: [] } };
+    const diagnosticFactories = [], diagnosticProgress = () => {};
+    const cdpProgress = { lastInitiated: null, lastCompleted: null, pending: 0 };
+    // Scenario bodies stay inert. Model the production constructor dependencies
+    // without opening files or sending CDP commands from this dispatch fixture.
+    const context = { scenarios, id, touch, dpr, bootTimeout, path, phoneGroups,
+      fixtureDir: '/explicit-test-fixture', output: '/explicit-test-output',
+      active: { screenshots: [], phoneGroup: 'all', cdp: { progress: () => cdpProgress } },
+      createPhoneProgress(options) { diagnosticFactories.push(options); return diagnosticProgress; } };
     for (const name of ['snapshot', 'clickControl', 'clickPoint', 'renderPoint', 'poll', 'check', 'interval', 'screenshot', 'importSave', 'assertLayout', 'settings', 'saveProgressAndWait', 'startStory', 'press']) context[name] = () => {};
     for (const name of ['flcActivityCase', 'mobileWorldCase', 'phoneRecoveryCase', 'phoneNavigationCase', 'portableSaveCase', 'cornerNavigationCase', 'checkinPresentationCase', 'libraryCase', 'resourceLoadingCase', 'c1Case', 'legacyCase', 'fixtureCases', 'bikeCase', 'mediaCase', 'durabilityCase', 'durabilitySwitchCase', 'streamingCase']) context[name] = async options => { calls.push(name); if (name === 'phoneRecoveryCase') recoveryInputs.push(options); return {}; };
     context.freshCase = async focused => { initialized.push(focused); return {}; };
@@ -238,6 +247,16 @@ for (const scenarios of ['all', 'bike', 'media', 'streaming', 'mobile-world', 'p
       assert.deepEqual(calls, expected);
     });
     if (scenarios === 'phone-recovery') check(`${scenarios}/${id}: configured boot deadline reaches recovery`, () => { assert.equal(recoveryInputs.length, 1); assert.equal(recoveryInputs[0].bootTimeout, bootTimeout); });
+    check(`${scenarios}/${id}: C2 diagnostic setup retains profile and read-only cursor`, () => {
+      assert.equal(diagnosticFactories.length, scenarios === 'phone-recovery' ? 1 : 0);
+      if (scenarios !== 'phone-recovery') return;
+      const options = diagnosticFactories[0];
+      assert.equal(options.filename, path.join(context.output, `${id}-phone-progress.jsonl`));
+      assert.equal(options.id, id); assert.equal(options.group, 'all');
+      assert.equal(options.touch, touch); assert.equal(options.dpr, dpr);
+      assert.equal(options.cdpProgress(), cdpProgress);
+      assert.equal(recoveryInputs[0].progress, diagnosticProgress);
+    });
   }
 }
 const project = readFileSync(new URL('../project.godot', import.meta.url), 'utf8');
