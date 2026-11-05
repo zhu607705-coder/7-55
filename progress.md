@@ -1,3 +1,8 @@
+## 2026-11-06 架构盘点与开发规范
+
+- 以 `14e86ac5` 为基线核对正式 Godot 运行时、保留的 React/Phaser 实现、共创平台及发布路径。记录 QFramework 的已接入职责与仍可直接写入状态的兼容入口，按交互顺序、结果和保存、宿主拆分提出渐进迁移方案。首个建议试点为图书馆规则阅读与离页。
+- 新增[架构与开发规范](docs/ARCHITECTURE.md)，从仓库规则和协作入口链接，并澄清 README 中正式 Web 发布与保留 Web 回归的边界。核对文档链接、源码依据与差异。本次交付范围为文档。
+
 ## 2026-10-31 — approved FLC 53-file integration
 
 - User explicitly selected all 53 listed files for submission and merge. Local browser screenshots, movies, exports and temporary QA remain outside the delivered patch.

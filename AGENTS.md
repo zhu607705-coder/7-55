@@ -1,5 +1,7 @@
 # 7:55 Project Rules
 
+- For new or changed architecture boundaries, follow [7:55 架构与开发规范](docs/ARCHITECTURE.md) for state ownership, dependency direction, migration scope and review evidence. The product, gameplay and submission rules below still apply.
+
 ## Product boundaries (2026-10-23)
 
 - `platform/` is the user-approved 7:55 co-creation platform, a sibling of the game. Its frontend, API, contracts, database, dependencies, docs and tests stay there. See `platform/AGENTS.md`.

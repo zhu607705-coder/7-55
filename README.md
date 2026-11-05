@@ -132,8 +132,9 @@ GitHub Actions 会对包含 Markdown 与 `docs/` 以外变更的 PR 和 `main` �
 
 2026-08-25 清理的旧 `godot/` 与 `src/integrations/godot/` 混合运行时仍不得恢复。
 该历史清理不禁止当前独立 `godot_native/` 迁移、原生导出、同步工具或原生 CI。
-Web CI 与 Pages 继续验证和交付浏览器版本；原生 CI 验证 Godot 导入、启动、原生测试及
-部分 TypeScript 模型差分。通过其中一套不能代替另一套验证或完整实际通关验收。
+Web CI 验证保留的 React/Phaser 实现。正式 Pages 游戏由 `godot_native/` 导出并单独进行
+浏览器验收；原生 CI 验证 Godot 导入、启动、原生测试及部分 TypeScript 模型差分。
+各项验证的范围与代码归属见 [架构与开发规范](docs/ARCHITECTURE.md)。
 
 新增剧情前请先阅读 [CLAUDE.md](CLAUDE.md) 与
 [框架说明](docs/framework-spec.md)。
