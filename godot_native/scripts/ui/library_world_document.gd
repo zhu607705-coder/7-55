@@ -24,7 +24,10 @@ func configure(main:Control,b,page_id:String,view:Dictionary)->void:
 	var scroll:=ScrollContainer.new();scroll.name="LibraryWorldDocumentScroll"
 	scroll.position=Vector2(376,32);scroll.size=Vector2(536,476)
 	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;spread.add_child(scroll)
-	var paper:=Control.new();paper.custom_minimum_size=Vector2(516,790 if rule else 472);scroll.add_child(paper)
+	var paper:=Control.new();paper.custom_minimum_size=Vector2(516,790 if rule else 472)
+	# Let drag/wheel events on the paper reach its ScrollContainer while child
+	# controls keep their own ordinary pointer handling.
+	paper.mouse_filter=Control.MOUSE_FILTER_PASS;scroll.add_child(paper)
 	b._panel(paper,Rect2(0,0,516,790 if rule else 472),Color("efe3c5"),Color("b5a17a"),0,1)
 	b._panel(paper,Rect2(0,0,17,790 if rule else 472),Color("d4c29a"))
 	b._label(paper,str(view.get("title","")),Rect2(42,26,432,42),25,Color("293d39"))

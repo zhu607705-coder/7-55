@@ -947,8 +947,9 @@ async function reopenLibraryRuleThroughApp() {
     } else if (!controls(value).some(c => c.name === 'HomeApp_zjuding')) return null;
     return value;
   }, 'imported Library surface has actually mounted', 60000);
-  if (controls(initial).some(c => c.name === 'LibraryWorldDocumentClose')) return;
+  if (controls(initial).some(c => c.name === 'LibraryWorldDocumentClose')) { await acceptPortraitFallback(); return; }
   if (initial.world?.visible) {
+    await acceptPortraitFallback();
     active.library ||= { navigation: [] };
     active.library.navigation ||= [];
     const button = controls(initial).find(c => c.name === 'WorldPhoneButton');
@@ -961,6 +962,7 @@ async function reopenLibraryRuleThroughApp() {
   await clickControl('HomeApp_zjuding', 'name');
   await clickControl('ZjudingApp_library', 'name');
   await clickControl('LibraryApp_rule', 'name');
+  await acceptPortraitFallback();
 }
 async function scrollLibraryRuleToClose() {
   // Use the real scroll surface and actual browser input on both profiles.

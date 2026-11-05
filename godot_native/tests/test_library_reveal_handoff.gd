@@ -199,6 +199,7 @@ func finish_rule_document() -> void:
 	await press(KEY_ESCAPE)
 	check(shell.modal==document and not state.d.ui.libraryFinalsPuzzle.archivedRuleRead,"Escape cannot bypass the reading gate")
 	if scroll==null or close==null:return
+	# The Web acceptance separately drives this scroll with real touch/wheel.
 	scroll.scroll_vertical=int(scroll.get_v_scroll_bar().max_value); await frames()
 	check(not close.disabled and document.can_close(),"scrolling to the end enables closing the book")
 	await click(close)
