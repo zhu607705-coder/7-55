@@ -64,7 +64,7 @@ func run()->void:
 	await key(KEY_RIGHT);await key(KEY_ENTER)
 	check(view.model.snapshot()==pose and view.config.session.nonce==nonce,"Presentation input cannot move props, try a solution or replace the issued nonce")
 	film.resume();film.tick(.1,true);await click(film.return_button);await frames()
-	check(not is_instance_valid(view.performance) and view.model.snapshot()==pose and not view.paused,"Return restores the exact playable prop pose and round")
+	check(not is_instance_valid(view.performance) and view.model.snapshot()==pose,"Return restores the exact playable prop pose and round")
 	check(view.stage_hud.visible and not view.controls.has("RehearsalWatch") and not view.help_panel.visible,"Return restores the exact ordinary rehearsal HUD visibility")
 	check(results.is_empty() and cancellations==0 and state.d==before and durable()==saved,"Watching and skipping submit no rehearsal proof or persistent fact")
 	await key(KEY_V);await create_timer(.34).timeout;check(is_instance_valid(view.performance),"KeyboardV opens the same optional viewer without a mouse")
@@ -82,8 +82,7 @@ func run()->void:
 	await stage_pointer(view,"curtain",true);view.configure_activity_layout(Vector2(1440,900),false);root.size=Vector2i(1440,900);await stage_pointer(view,"curtain",false);await create_timer(.34).timeout
 	check(not is_instance_valid(view.performance) and view.stage_pressed.is_empty(),"Resize cancels an armed curtain toggle")
 	await stage_pointer(view,"curtain",true);await stage_pointer(view,"curtain",false);view._focus_out();await create_timer(.34).timeout
-	check(not is_instance_valid(view.performance) and view.menu_open and view.paused,"Focus loss cancels the pending curtain animation and requires explicit resume")
-	await click(view.menu_controls.RehearsalMenuClose)
+	check(not is_instance_valid(view.performance) and not view.menu_open,"Focus loss cancels the pending curtain animation without inventing a turn-based pause")
 	# Tab/Space visits the actual book and curtain; it does not need hidden buttons.
 	view.selected="left_fan";await key(KEY_TAB);await key(KEY_TAB);await key(KEY_SPACE);await create_timer(.34).timeout
 	check(view.selected=="programme" and view.help_open,"Keyboard selection reaches the same physical programme")
@@ -101,7 +100,7 @@ func run()->void:
 	await stage_pointer(view,"curtain",true,true);await stage_pointer(view,"curtain",false,true,Vector2(0,24));await create_timer(.34).timeout
 	check(is_instance_valid(view.performance) and view.performance.return_button.size.y>=44,"A short downward finger pull operates the physical curtain toggle")
 	film=view.performance;film.set_process(false);await touch_button(film.return_button);await frames()
-	check(not view.paused and not view.menu_open and view.model.snapshot()==pose,"Curtain return restores the exact pose and live stage")
+	check(not view.menu_open and view.model.snapshot()==pose,"Curtain return restores the exact pose and live stage")
 	check(results.is_empty() and state.d==before and durable()==saved,"Physical observation and performance submit no durable facts")
 	view._open_menu();await frames();await stage_click(view,"curtain",true)
 	check(not is_instance_valid(view.performance) and view.menu_open,"The temporary pause sheet occludes stage objects beneath it")

@@ -98,6 +98,10 @@ func _primary() -> void:
 	refresh()
 func _pause() -> void:
 	if screen!="running": return
+	# The shared pause surface consumes all accept key-up events while open.
+	# Retire gameplay ownership now; an old release must not become a new dash
+	# or remain latched after Continue. The surface requires a fresh key-down.
+	gameplay_space_owned=false
 	screen="paused"; paused=true; accumulator=0; _release_pointer(); queued_dash=false; refresh()
 func resolve(accepted: bool,last_act: bool=false) -> void:
 	approved=accepted; final_act=last_act; screen="result"; running=false; queued_dash=false; _release_pointer(); refresh()

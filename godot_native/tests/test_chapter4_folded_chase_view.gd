@@ -418,7 +418,7 @@ func _test_touch_and_pause(game) -> void:
 	var before := {"tick": game.model.tick, "player": game.model.player, "guard": game.model.guard,
 		"inputs": game.model.input_log.duplicate()}
 	root.focus_exited.emit()
-	check(game.focus_paused and not game.active and game.menu.visible,
+	check(game.focus_paused and not game.active and game.shared_pause_overlay.is_open(),
 		"actual window focus-exited signal pauses the local attempt")
 	check(game.primary_touch == -99 and game.touch_axis == 0 and not game.queued_jump
 		and game.held_screen_axis == 0 and game.held_route_direction == 0,
@@ -428,7 +428,10 @@ func _test_touch_and_pause(game) -> void:
 		tick(game)
 	check(before == {"tick": game.model.tick, "player": game.model.player, "guard": game.model.guard,
 		"inputs": game.model.input_log}, "paused physics cannot advance the attempt or input proof")
-	game.start_button.pressed.emit()
+	var continue_point:Vector2=game.shared_pause_overlay.resume_button.get_global_rect().get_center()
+	for down:bool in [true,false]:
+		var event:=InputEventMouseButton.new();event.position=continue_point;event.global_position=continue_point;event.button_index=MOUSE_BUTTON_LEFT;event.pressed=down
+		dispatch(event)
 	check(game.active and not game.focus_paused and not game.menu.visible
 		and game.model.get_instance_id() == model_id and game.model.tick == int(before.tick),
 		"Continue button resumes the same model and tick without reset")

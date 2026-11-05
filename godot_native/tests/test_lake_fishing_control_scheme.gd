@@ -11,7 +11,7 @@ func emulated_mouse(point: Vector2,pressed: bool) -> void:
 func assert_direct_water_layout(dimensions: Vector2i) -> void:
 	for button: Button in host.control_buttons.values():check(not button.visible,"neither input scheme exposes simulated action pads")
 	check(not is_instance_valid(host.fishing_controls_button) or not host.fishing_controls_button.visible,"removed touch toggle remains absent")
-	check(host.pause_button.visible and host.retry_button.visible and host.exit_button.visible,"essential actions remain visible")
+	check(host.pause_button.visible==(host.running and host.model.phase=="running" and not host.sent) and host.retry_button.visible and host.exit_button.visible,"essential actions remain visible")
 	for button: Button in [host.start_button,host.pause_button,host.retry_button,host.exit_button]:
 		check(Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(button.get_rect()) and button.size.x>=44 and button.size.y>=44,"essential targets fit the viewport")
 	check(host.fishing_view.size==Vector2(dimensions)-Vector2(0,50),"both schemes reserve only the essential 50px footer")
@@ -76,6 +76,7 @@ func run() -> void:
 		await key(KEY_R);await key(KEY_R,false)
 		check(not host.running and not host.paused and host.model.cast_attempts==0,"keyboard Retry remains available")
 		host.fishing_control_scheme="keyboard";host._apply_fishing_control_layout();host.begin();await frames()
+		await key(KEY_A);await key(KEY_A,false);host._process(0);await frames()
 		var pause_point: Vector2=host.pause_button.get_global_rect().get_center()
 		await touch(pause_point,true)
 		check(host.pause_button.get_meta("fishing_held"),"touch toolbar press has visible held feedback before activation")
@@ -89,8 +90,12 @@ func run() -> void:
 		await emulated_mouse(pause_point,true);await emulated_mouse(pause_point,false)
 		check(host.paused,"paired emulated mouse cannot activate Pause a second time")
 		var exits: Array=[];host.cancelled.connect(func():exits.append(true))
-		await key(KEY_X);await key(KEY_X,false)
-		check(exits.size()==1,"keyboard Exit emits once")
+		var exit: Button
+		for button: Button in host.shared_pause_overlay.action_buttons:
+			if button.text==host.exit_button.text: exit=button
+		check(exit!=null and exit.is_visible_in_tree(),"shared Exit is visible while paused")
+		exit.grab_focus();await key(KEY_ENTER);await key(KEY_ENTER,false)
+		check(exits.size()==1,"focused shared Exit emits once through keyboard")
 		host.queue_free();await frames()
 	print("LAKE_FISHING_CONTROL_SCHEME: ",checks," checks; ",failures," failures")
 	quit(1 if failures else 0)

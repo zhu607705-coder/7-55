@@ -174,7 +174,7 @@ func _input(event: InputEvent) -> void:
 		if event.pressed and not event.echo and _can_resume and not _environment_blocked:
 			_resume_keys[code]=true
 			var focused:Control=get_viewport().gui_get_focus_owner()
-			var index:=action_buttons.find(focused)
+			var index:=action_buttons.find(focused as Button) if focused is Button else -1
 			if code!=KEY_ESCAPE and index>=0:_request_secondary(index)
 			else:_request_resume()
 		get_viewport().set_input_as_handled()
@@ -183,6 +183,7 @@ func _input(event: InputEvent) -> void:
 		for button:Button in [resume_button]+action_buttons:
 			if not button.disabled:controls.append(button)
 		if event.pressed and not controls.is_empty():
-			var current:=controls.find(get_viewport().gui_get_focus_owner())
+			var focused:Control=get_viewport().gui_get_focus_owner()
+			var current:=controls.find(focused as Button) if focused is Button else -1
 			controls[posmod(current+(-1 if event.shift_pressed else 1),controls.size())].grab_focus()
 		get_viewport().set_input_as_handled()

@@ -64,7 +64,7 @@ func run()->void:
 	check(Proof.solve_round(view.model),"optional reading leaves the original first-round solution available");view._refresh();view._continue_stage();view._help();await frames()
 	check(view.notebook_page==0 and view.help_body.text.contains("门前残页") and view.notebook.trial.is_empty(),"new round has its own pages and no borrowed trial trace")
 	var before:Dictionary=view.model.snapshot();view._focus_out();await click(view.help_close)
-	check(view.menu_open and view.paused and view.model.snapshot()==before,"closing a book after focus loss exposes resume without mutating the stage")
+	check(not view.menu_open and view.model.snapshot()==before,"closing a book after focus loss returns directly to the unchanged turn-based stage")
 	view._close_menu();check(Proof.solve_round(view.model),"second-round solution remains available");view._refresh();view._continue_stage();view._try_stage();view._help()
 	view._next_hint();view._next_hint();await frames()
 	check(view.notebook.round_index==2 and view.notebook.trial.failure=="light_axis" and view.study.snapshot(2).sealed==false,"last volume ties the real shared-light failure to the fixed-pin diagram")

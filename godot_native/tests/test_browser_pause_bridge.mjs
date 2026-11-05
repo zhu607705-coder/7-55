@@ -43,9 +43,12 @@ focused=false;window.fire('blur');focused=true;canvas.fire('touchstart');check([
 focused=false;window.fire('blur');focused=true;canvas.fire('keydown');check([false,true],'keyboard recovery uses original input route');
 document.hidden=true;canvas.fire('pointerdown');check([false,true],'hidden canvas gesture does not publish a false foreground');
 document.fire('visibilitychange');check([true,true],'hidden remains explicit');
-const length=observations.length;host.dispose();window.fire('blur');canvas.fire('blur');document.fire('visibilitychange');canvas.fire('pointerdown');canvas.fire('touchstart');canvas.fire('keydown');
+const length=observations.length;host.dispose();host.dispose();window.fire('blur');canvas.fire('blur');document.fire('visibilitychange');canvas.fire('pointerdown');canvas.fire('touchstart');canvas.fire('keydown');
 checks++;assert.equal(observations.length,length,'dispose removes every lifecycle listener');
 checks++;assert.equal(window.__GODOT_755__,undefined,'disposed snapshot access removed');
+for(const target of [window,document,canvas]){
+ checks++;assert.equal([...target.listeners.values()].reduce((total,listeners)=>total+listeners.size,0),0,'repeated dispose leaves no lifecycle listeners');
+}
 const output={checks,failures:0,kind:'Actual production JS bridge run in isolated DOM event fixture, not a WebGL gameplay test',observations};
 if (process.env.PAUSE_BRIDGE_REPORT) fs.writeFileSync(process.env.PAUSE_BRIDGE_REPORT,JSON.stringify(output,null,2));
 console.log(`BROWSER_FOCUS_BRIDGE: ${checks} checks; 0 failures`);

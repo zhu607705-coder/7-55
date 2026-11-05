@@ -442,7 +442,7 @@ func _refresh() -> void:
 		hint.text="A / D 或方向键转向 · 空格蓄力/松开跳\nJ 响铃 · E 使用道具"
 	if sent: hint.text="骑行完成，纸条飞向剧院" if mode=="chase" else ("收竿成功" if mode=="rhythm" else "")
 	if paused: hint.text=""
-	hint.visible=mode!="kayak" or not hint.text.is_empty()
+	hint.visible=mode!="rhythm" and (mode!="kayak" or not hint.text.is_empty())
 	if mode=="chase" and not chase_presentation_error.is_empty():
 		hint.text="骑行画面加载失败。可退出后重试，进度保持不变。"
 		start_button.disabled=true

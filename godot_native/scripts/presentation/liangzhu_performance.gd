@@ -239,6 +239,7 @@ func _layout()->void:
 	for button:Button in help_actions:
 		button.position=Vector2(14,action_y)/fit;button.size=Vector2(menu_width-28,44)/fit;action_y+=52
 	queue_redraw();_redraw_stage()
+	_sync_shared_pause()
 
 func _frame_rect(control:Control,screen:Rect2,fit:float)->void:
 	control.position=(screen.position-field.position)/fit;control.size=screen.size/fit

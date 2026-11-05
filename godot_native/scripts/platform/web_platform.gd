@@ -638,7 +638,7 @@ func read_snapshot() -> Dictionary:
 func _exit_tree() -> void:
 	if _owns_tree_pause and is_inside_tree():TreePauseLease.release(get_tree(),self)
 	_owns_tree_pause=false
-	PauseOverlay.set_environment_blocked(get_tree(),false)
+	if is_inside_tree():PauseOverlay.set_environment_blocked(get_tree(),false)
 	if _browser != null: _browser.dispose()
 	_browser = null
 	_file_callback = null

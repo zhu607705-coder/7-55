@@ -61,7 +61,7 @@ func run() -> void:
 		var music_stream: AudioStream=music_owner.stream
 		await tap(game.pause_button);tick=game.model.tick;game._process(.3)
 		check(game.paused and game.model.tick==tick,"real pause freezes source clock")
-		await tap(game.retry_button)
+		await tap(pause_action(game,game.retry_button))
 		check(not game.running and not game.paused and game.model.tick==0 and game.model.lives==3,"paused Retry returns to ready with clean model")
 		check(not shell.audio_director._paused_prefixes.has("canteen_chase_"),"paused Retry releases existing source audio pause owner")
 		await tap(game.start_button)
@@ -71,7 +71,8 @@ func run() -> void:
 		check(not game.model.held.has("jump") and game.model.air_velocity>0,"captured mouse release outside control completes intended jump")
 		press_control(game,"left",0,true);game._notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_OUT)
 		check(game.paused and game.model.held.is_empty() and game.touch_sources.is_empty(),"native focus loss freezes and clears held controls")
-		await tap(game.start_button)
+		game._notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_IN)
+		await tap(pause_action(game,game.start_button))
 		check(JSON.stringify(state.d)==story_before,"presentation/input does not alter story wallet or inventory")
 		await tap(game.exit_button)
 		check(not is_instance_valid(shell.active_game) and shell.world_frame.visible and not shell.phone.visible,"Exit restores world owner")
@@ -88,7 +89,7 @@ func run() -> void:
 	check(is_instance_valid(collision_owner) and collision_owner.stream_paused,"actual collision effect remains owned and paused before Retry")
 	var music_owner: AudioStreamPlayer=shell.audio_director.music
 	var music_stream: AudioStream=music_owner.stream
-	await tap(audio_game.retry_button)
+	await tap(pause_action(audio_game,audio_game.retry_button))
 	check(not shell.audio_director.effects.any(func(effect):return str(effect.id).begins_with("canteen_chase_collision") or str(effect.id).begins_with("native_chase_")),"Retry retires both old collision-effect owners")
 	check(not is_instance_valid(collision_owner) or not collision_owner.playing,"retired collision cannot revive on Resume")
 	await tap(audio_game.start_button)
