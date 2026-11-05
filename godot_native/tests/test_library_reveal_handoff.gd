@@ -65,8 +65,8 @@ func record_action(id: String,previous: Dictionary,current: Dictionary,result: D
 	actions.append({"id":id,"acquired":not previous.ui.libraryFinalsPuzzle.archivedRuleCollected and current.ui.libraryFinalsPuzzle.archivedRuleCollected,"snapshot_is_owner":is_same(current,state.d),"result":result.duplicate(true)})
 	if manual_mode and id=="lib_shelf":
 		print("LIBRARY_REVEAL_MANUAL_ACQUISITION ",JSON.stringify({"page":state.d.native.page,"world_visible":shell.world_frame.is_visible_in_tree(),"phone_visible":shell.phone.is_visible_in_tree(),"collected":state.d.ui.libraryFinalsPuzzle.archivedRuleCollected,"read":state.d.ui.libraryFinalsPuzzle.archivedRuleRead,"pending":not shell.pending_library_reveal.is_empty(),"serial":shell.world.library_layers.reveal_serial}))
-func record_phone() -> void:
-	if shell.phone.is_visible_in_tree() and str(state.d.native.page)=="library_rule":
+func record_reader(child: Node) -> void:
+	if child.name=="LibraryWorldDocument" and str(state.d.native.page)=="library_rule":
 		reader_openings+=1
 		if manual_mode: manual_reader_log.call_deferred()
 func manual_reader_log() -> void:
@@ -189,6 +189,20 @@ func payload(serial: int) -> Dictionary: return {"itemId":"archivedLeaveRule","r
 func inject(cue: String,data: Dictionary,layer: RefCounted) -> void:
 	# Deliberately adversarial bridge input, separate from ordinary acquisition.
 	shell._library_world_presentation(cue,data,layer)
+func finish_rule_document() -> void:
+	var document: Control=shell.modal
+	check(is_instance_valid(document) and document.name=="LibraryWorldDocument","the earned rule is displayed in the Library world")
+	if not is_instance_valid(document): return
+	var close: Button=document.find_child("LibraryWorldDocumentClose",true,false)
+	var scroll: ScrollContainer=document.find_child("LibraryWorldDocumentScroll",true,false)
+	check(close!=null and close.disabled and not document.can_close(),"rule cannot close before reaching the end")
+	await press(KEY_ESCAPE)
+	check(shell.modal==document and not state.d.ui.libraryFinalsPuzzle.archivedRuleRead,"Escape cannot bypass the reading gate")
+	if scroll==null or close==null:return
+	scroll.scroll_vertical=int(scroll.get_v_scroll_bar().max_value); await frames()
+	check(not close.disabled and document.can_close(),"scrolling to the end enables closing the book")
+	await click(close)
+	check(not is_instance_valid(shell.modal) and state.d.ui.libraryFinalsPuzzle.archivedRuleRead and action_count("lib_read_rule")==1,"closing the read book dispatches the original read action once")
 func timeline_case(dimensions: Vector2i,reduced: bool) -> void:
 	case_name="%dx%d/%s-timeline"%[dimensions.x,dimensions.y,"reduced" if reduced else "normal"]
 	await fixture(dimensions,reduced)
@@ -226,18 +240,18 @@ func timeline_case(dimensions: Vector2i,reduced: bool) -> void:
 	key(KEY_D,false)
 	advance(1); await frames()
 	check(settled(layer),"natural completion settles the original shelf and removes the paper overlay")
-	check(shell.phone.is_visible_in_tree() and not shell.world_frame.is_visible_in_tree() and state.d.native.page=="library_rule","completion automatically reveals the existing library_rule phone page")
+	check(not shell.phone.is_visible_in_tree() and shell.world_frame.is_visible_in_tree() and state.d.native.page=="library_rule" and is_instance_valid(shell.modal),"completion automatically reveals the rule in the Library world")
 	check(reader_openings==1 and shell.pending_library_reveal.is_empty(),"natural completion opens the reader once and retires the pending owner")
 	check(screen_rect(shell.phone)==phone_bounds,"handoff preserves the canonical phone geometry")
-	check(shell.world_page_origin_scene=="library_interior" and not shell.phone_world_return.disabled,"reader keeps its enabled return to the same Library world")
+	check(state.d.native.scene=="library_interior","reader retains the same Library world")
 	assert_proof(items,puzzle)
 	inject(CUE,payload(serial),layer); inject(CUE,payload(serial),layer); await frames()
 	check(reader_openings==1,"duplicate completion never opens a second reader")
-	await click(shell.phone_world_return)
-	check(shell.world_frame.is_visible_in_tree() and settled(layer),"actual reader Return restores the acquired16px shelf without replay")
+	await finish_rule_document()
+	check(shell.world_frame.is_visible_in_tree() and settled(layer),"closing the read rule retains the acquired16px shelf without replay")
 	inject(CUE,payload(serial),layer); advance(3100); await frames()
 	check(shell.world_frame.is_visible_in_tree() and not shell.phone.is_visible_in_tree() and reader_openings==1,"late duplicate completion cannot reopen a reader after explicit Return")
-	assert_proof(items,puzzle)
+	check(state.d.items==items and state.d.ui.libraryFinalsPuzzle.archivedRuleRead and action_count("lib_read_rule")==1,"late cues preserve items and the single completed read")
 func adversarial_case(dimensions: Vector2i) -> void:
 	case_name="%dx%d/owner-and-skip"%[dimensions.x,dimensions.y]
 	await fixture(dimensions)
@@ -266,9 +280,9 @@ func adversarial_case(dimensions: Vector2i) -> void:
 	var queued: Array=layer.cue_queue.filter(func(row: Dictionary): return row.id==CUE)
 	check(queued.size()==1 and queued[0].payload==payload(serial),"skip queues exactly the existing completion cue with item and serial ownership")
 	shell.world._process(0); await frames()
-	check(reader_openings==1 and shell.phone.is_visible_in_tree() and shell.pending_library_reveal.is_empty(),"ordinary world cue delivery performs the skip handoff exactly once")
+	check(reader_openings==1 and shell.world_frame.is_visible_in_tree() and is_instance_valid(shell.modal) and shell.pending_library_reveal.is_empty(),"ordinary world cue delivery performs the skip handoff exactly once")
 	assert_proof(items,puzzle)
-	await click(shell.phone_world_return)
+	await finish_rule_document()
 	inject(CUE,payload(serial),stranger); inject(CUE,payload(serial),layer); await frames()
 	check(reader_openings==1 and shell.world_frame.is_visible_in_tree(),"retired and foreign owners cannot steal the surface back")
 	# Reuse the same layer for a genuinely new earned fixture; its old serial
@@ -364,7 +378,7 @@ func run() -> void:
 	before_shelf=earned_shelf()
 	shell=load("res://scenes/main.tscn").instantiate(); root.add_child(shell); await frames()
 	shell.set_process(false); shell.world.set_process(false)
-	state.action_completed.connect(record_action); shell.phone.visibility_changed.connect(record_phone)
+	state.action_completed.connect(record_action); shell.child_entered_tree.connect(record_reader)
 	if OS.get_cmdline_user_args().has("--manual"):
 		case_name="manual-source-eligible-spatial-fixture"
 		await fixture(Vector2i(1180,812))

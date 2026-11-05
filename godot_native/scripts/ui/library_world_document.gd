@@ -56,6 +56,11 @@ func dispose_session()->void:
 	disposed=true
 	var state:Node=host.get_node("/root/State")
 	if not is_same(state.d,bound_state):return
-	if page=="library_rule" and end_seen and not bound_state.ui.libraryFinalsPuzzle.archivedRuleRead:state.act("lib_read_rule")
-	elif page=="library_record" and confirmed and not bound_state.ui.libraryFinalsPuzzle.entranceRecordRead:state.act("lib_record")
+	if page=="library_rule" and end_seen and not bound_state.ui.libraryFinalsPuzzle.archivedRuleRead:
+		# Reading starts a story session that locks navigation. Leave the book
+		# page first, then submit the original controller-owned reading action.
+		state.open_page("library_app")
+		state.act("lib_read_rule")
+		return
+	if page=="library_record" and confirmed and not bound_state.ui.libraryFinalsPuzzle.entranceRecordRead:state.act("lib_record")
 	state.open_page("library_app")
