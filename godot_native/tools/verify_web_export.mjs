@@ -1025,14 +1025,15 @@ async function libraryCase() {
   // source dialogue. Advance the actual queue through normal input, observing
   // each publication rather than assuming a fixed count of key presses.
   for (let index = 0; index < 106; index++) {
-    const before = await snapshot();
+    const before = await poll(async () => { const s = await snapshot(); return s?.libraryStory?.sequenceId || state(s)?.ui.libraryFinalsPuzzle.archivedRuleBriefingSeen ? s : null; }, 'actual Library dialogue is ready');
     if (state(before).ui.libraryFinalsPuzzle.archivedRuleBriefingSeen) break;
-    active.library.dialogueSamples.push({ at: Date.now(), frame: before.sampleFrame, text: controls(before).filter(c => c.type === 'Label').map(c => c.text) });
+    const line = `${before.libraryStory.sequenceId}:${before.libraryStory.lineIndex}`;
+    active.library.dialogueSamples.push({ at: Date.now(), frame: before.sampleFrame, line, text: controls(before).filter(c => c.type === 'Label').map(c => c.text) });
     if (active.touch) {
       const prompt = controls(before).find(c => /^点击 \/ 空格 \/ 回车(?:继续|确认)$/.test(c.text));
       if (prompt) await clickPoint(await renderPoint({ x: prompt.rect.x + prompt.rect.width / 2, y: prompt.rect.y + prompt.rect.height / 2 }, before));
     } else await press(' ', 'Space');
-    await poll(async () => (await snapshot())?.sampleFrame > before.sampleFrame, 'Library dialogue advances its real frame publication');
+    await poll(async () => { const next = await snapshot(); const story = next?.libraryStory; return state(next)?.ui.libraryFinalsPuzzle.archivedRuleBriefingSeen || story?.sequenceId && `${story.sequenceId}:${story.lineIndex}` !== line ? next : null; }, 'Library dialogue advances to a new authored line or completes');
   }
   value = await poll(async () => { const s = await snapshot(); return state(s)?.ui.libraryFinalsPuzzle.archivedRuleRead && state(s).ui.libraryFinalsPuzzle.archivedRuleBriefingSeen ? s : null; }, 'explicit reading and original briefing complete');
   check(JSON.stringify(state(value).items) === originalItems, `${active.id}: reading preserves the acquired original and other inventory`);
