@@ -13,6 +13,9 @@ import threeMinuteLeaveArtUrl from "../../../assets/phone/library-search/runtime
 import threeMinutePauseApplicationUrl from "../../../assets/phone/library-search/runtime/three_minute_pause_application.webp";
 import threeMinuteRiseBoundariesUrl from "../../../assets/phone/library-search/runtime/three_minute_rise_boundaries.webp";
 import threeMinuteEmptySeatUrl from "../../../assets/phone/library-search/runtime/three_minute_empty_seat.webp";
+import threeBodyUrl from "../../../assets/phone/library-search/runtime/three_body.webp";
+import ballLightningUrl from "../../../assets/phone/library-search/runtime/ball_lightning.webp";
+import wanderingEarthUrl from "../../../assets/phone/library-search/runtime/wandering_earth.webp";
 import zjudingHomeUrl from "../../../assets/ui/zjuding_home.png";
 import zjudingLoadingUrl from "../../../assets/ui/zjuding_loading.png";
 import { PhoneActionSheet, PhoneAppBottomNav, PhoneAppHeader } from "../../../components/PhoneAppUi";
@@ -157,7 +160,10 @@ const CATALOG_COVER_URLS: Record<string, string> = {
   "distractor-1": threeMinuteLeaveArtUrl,
   "distractor-2": threeMinutePauseApplicationUrl,
   "distractor-3": threeMinuteRiseBoundariesUrl,
-  "distractor-4": threeMinuteEmptySeatUrl
+  "distractor-4": threeMinuteEmptySeatUrl,
+  "reference-three-body": threeBodyUrl,
+  "reference-ball-lightning": ballLightningUrl,
+  "reference-wandering-earth": wanderingEarthUrl
 };
 
 const CATALOG_RESULTS: CatalogResult[] = libraryFinalsContent.library.catalogResults.map((result) => {

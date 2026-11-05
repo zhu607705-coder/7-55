@@ -2,6 +2,7 @@ extends RefCounted
 const PaperInk=preload("res://scripts/ui/paper_ink_material.gd")
 const Typography = preload("res://scripts/ui/native_typography.gd")
 const CampusWayfinding = preload("res://scripts/ui/campus_wayfinding.gd")
+const ShelfBook=preload("res://scripts/objects/library_shelf_book.gd")
 ## Source-native mobile library. UI-local navigation and draft selection only.
 ## All booking, catalog evidence and recovery transitions are existing chapter intents.
 const BLUE=Color("174d9d")
@@ -15,7 +16,16 @@ const RECOVERY=[
 	["seat_022_receipt","022 座位小票","seat022Receipt","一层书库 · 022 桌面夹缝"],
 	["library_presence_proof","本人来过证明","libraryPresenceProof","浙大体艺 · 到馆记录补录"]
 ]
-const COVERS={"correct":"three_minute_leave_method","distractor-1":"three_minute_leave_art","distractor-2":"three_minute_pause_application","distractor-3":"three_minute_rise_boundaries","distractor-4":"three_minute_empty_seat"}
+const COVERS={
+	"correct":"three_minute_leave_method",
+	"distractor-1":"three_minute_leave_art",
+	"distractor-2":"three_minute_pause_application",
+	"distractor-3":"three_minute_rise_boundaries",
+	"distractor-4":"three_minute_empty_seat",
+	"reference-three-body":"three_body",
+	"reference-ball-lightning":"ball_lightning",
+	"reference-wandering-earth":"wandering_earth"
+}
 var local_page="home"
 var selected_library="基础馆"
 var selected_room="一层书库"
@@ -382,12 +392,14 @@ func catalog(b) -> Control:
 			if int(b.s.native.get("chapter",1))==2: b.action_requested.emit("lib_catalog_select",result.id)
 			else: refresh(b),Color("e7f4e5") if correct else Color("fff0ee") if wrong else Color.WHITE,INK,0,Color("4d8745") if correct else Color("bc6a60") if wrong else Color("c7c2b8")); tile.name="LibraryCatalogResult_"+str(result.id)
 		b._panel(tile,Rect2(10,18,82,105),Color("f2eee4"),Color("6f6b63"),0,2)
+		var real_book:bool=str(result.id).begins_with("reference-")
 		b._image(tile,"phone/library-search/runtime/"+COVERS.get(result.cover,"three_minute_empty_seat")+".webp",Rect2(12,20,78,101))
 		b._label(tile,str(result.title),Rect2(108,12,236,32),17,BLUE)
 		b._label(tile,"著者："+str(result.author),Rect2(108,49,236,23),12,MUTED)
 		b._label(tile,"索书号："+str(result.callNumber),Rect2(108,75,236,24),13)
-		b._label(tile,str(result.year)+"　"+str(result.publisher),Rect2(108,102,236,22),11,MUTED)
-		b._label(tile,str(result.location),Rect2(108,128,236,25),12,BLUE)
+		b._label(tile,"文学类馆藏 · 馆内编目" if real_book else str(result.year)+"　"+str(result.publisher),Rect2(108,102,236,22),11,MUTED)
+		var location:String=ShelfBook.LOCATION if result.id=="three-minute-leave-method" else str(result.location)
+		b._label(tile,location,Rect2(108,128,236,25),12,BLUE)
 		y+=187
 		if correct:
 			b._label(inner,str(result.note),Rect2(22,y-7,335,52),13,Color("40683b")); y+=60

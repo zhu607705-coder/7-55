@@ -153,6 +153,7 @@ static func part(whole: Dictionary, source: Rect2, offset: Vector2 = Vector2.ZER
 	return {"texture": whole.texture, "source": source, "rect": Rect2(whole.rect.position + (source.position-whole.source.position+offset)*factor, source.size*factor)}
 
 func parts(whole: Dictionary) -> Array:
+	if whole.get("calibratedParts",false):return calibrated_parts(whole)
 	var result: Array = []
 	for region: Rect2 in without(whole.source, DRAWER): result.append(part(whole, region))
 	var current: Dictionary = pose()
@@ -170,6 +171,25 @@ func parts(whole: Dictionary) -> Array:
 		gap.erase("texture"); gap["color"] = Color("202b35")
 		result.append(gap)
 	result.append(part(whole, LATCH, offset+Vector2(0, -float(current.latch))))
+	return result
+
+func calibrated_parts(whole:Dictionary)->Array:
+	# New native master: retain the same controller-issued drawer clock, with measured cuts.
+	var extent:Vector2=whole.source.size
+	var drawer:=Rect2(extent*Vector2(.08,.67),extent*Vector2(.76,.13))
+	var latch:=Rect2(extent*Vector2(.32,.705),extent*Vector2(.32,.025))
+	var result:Array=[]
+	for region:Rect2 in without(whole.source,drawer):result.append(part(whole,region))
+	var current:=pose()
+	var offset:Vector2=current.offset*(extent.x/77)
+	if offset.y>0:
+		var recess:=part(whole,drawer);recess.erase("texture");recess.color=Color("202b35");result.append(recess)
+		var stack:=Rect2(extent*Vector2(.19,.54),Vector2(extent.x*.38,minf(extent.y*.05,offset.y)))
+		if stack.has_area():result.append(part(whole,stack,drawer.position-stack.position+Vector2(extent.x*.13,extent.y*.01)))
+	for region:Rect2 in without(drawer,latch):result.append(part(whole,region,offset))
+	if float(current.latch)>0:
+		var gap:=part(whole,latch,offset);gap.erase("texture");gap.color=Color("202b35");result.append(gap)
+	result.append(part(whole,latch,offset+Vector2(0,-float(current.latch)*extent.y/104)))
 	return result
 
 func draw(canvas: CanvasItem, whole: Dictionary, targets: Array) -> void:

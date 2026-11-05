@@ -99,18 +99,23 @@ func build(b,view: Dictionary) -> Control:
 		undo.name="Cc98BdUndo"; undo.disabled=selected.is_empty()
 		b._act(root,"核验热度口令",Rect2(LEFT+161,y,154,44),"lib_bd_submit",null,Color("cee2e8")).name="Cc98BdSubmit"
 		y+=54
-		b._button(root,"阅读数字回复 ↓",Rect2(LEFT,y,WIDTH,44),func():
-			var target=root.get_node_or_null("Cc98ReplyPanel_24")
+		b._button(root,"阅读口令整理与数字回复 ↓",Rect2(LEFT,y,WIDTH,44),func():
+			var target=root.get_node_or_null("Cc98ReplyPanel_18")
 			if target: scroll_to(target),Color("e7eef1"),BLUE).name="Cc98BdRepliesJump"
 		y+=60
 	var bd=BD_POSTS
 	var replies_anchor=Control.new();replies_anchor.name="Cc98ThreadReplies";replies_anchor.position=Vector2(LEFT,y);replies_anchor.size=Vector2(WIDTH,1);replies_anchor.mouse_filter=Control.MOUSE_FILTER_IGNORE;root.add_child(replies_anchor)
-	for row: Dictionary in view.get("rows",[]):
+	var replies:Array=view.get("rows",[]).duplicate()
+	if show_bd:
+		for index:int in replies.size():
+			if int(str(replies[index].get("title","")).get_slice(" ",0))==18:
+				var pinned:Dictionary=replies.pop_at(index);replies.push_front(pinned);break
+	for row: Dictionary in replies:
 		var floor_number=int(str(row.get("title","")).get_slice(" ",0))
 		if bd.has(floor_number) and not show_bd: continue
 		var hidden_bd=not show_bd and str(row.get("body","")).to_lower().contains("bd")
 		var has_catalog_title=not b.earned_catalog_title.title_for_reply(b.s,row).is_empty()
-		var heading=floor_title(row)
+		var heading=("置顶回复 · " if show_bd and floor_number==18 else "")+floor_title(row)
 		if hidden_bd: heading="%d楼 · xxx" % floor_number
 		var body="xxx" if hidden_bd else str(row.get("body","")).strip_edges()
 		var heading_height=height(heading,WIDTH,16)

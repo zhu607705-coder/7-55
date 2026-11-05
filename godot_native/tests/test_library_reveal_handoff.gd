@@ -113,7 +113,9 @@ func fixture(dimensions: Vector2i,reduced: bool=false) -> void:
 	shell.mobile_world=true; shell.compact_inventory_open=false; shell.world_page_origin_scene=""
 	await refresh()
 	# Spatial setup only: progress and item ownership above are controller-earned.
-	shell.world.player=Vector2(563,275); shell.world.move_target=Vector2.INF
+	# Stand in the aisle beside the row shelf, within its original64px reach
+	# and clear of both the cabinet and its entire16px slide footprint.
+	shell.world.player=Vector2(609,230); shell.world.move_target=Vector2.INF
 	shell.world.touch_axis=Vector2.ZERO; shell.world.pan_offset=Vector2.ZERO
 	shell.world._sync_player(); shell.world._update_camera(); shell.world.queue_redraw(); await frames()
 	check(shell.world.can_stand(shell.world.player),"near-shelf spatial fixture is collision-safe")
@@ -129,8 +131,9 @@ func world_screen(point: Vector2) -> Vector2:
 func shelf_screen() -> Vector2:
 	# Pick the actual rendered source cabinet polygon, not the legacy target
 	# radius or a target chosen because it accepts this particular item.
-	for y in range(145,215,5):
-		for x in range(525,605,5):
+	var shelf:Rect2=shell.world.library_layers.objects.areas.north_display_shelf
+	for y in range(ceili(shelf.position.y)+5,floori(shelf.end.y)-5,5):
+		for x in range(ceili(shelf.position.x)+5,floori(shelf.end.x)-5,5):
 			var source_point:=Vector2(x,y)
 			var point: Vector2=world_screen(source_point)
 			if screen_rect(shell.world_view).has_point(point) and shell.world.object_picker.pick(source_point,shell.world.targets,true).get("id","")=="library_shelf_755": return point

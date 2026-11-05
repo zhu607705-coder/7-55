@@ -73,7 +73,10 @@ func run()->void:
 		if not is_instance_valid(shell.active_game):continue
 		var scanner:Control=shell.active_game;scanner.set_process(false)
 		for i in 8:scanner._process(.1)
-		scanner._stamp();shell.world.library_layers.sync(state.d)
+		scanner._stamp()
+		check(not state.d.items.bagNonPersonProof,"scanner keeps proof pending while the seal plays")
+		for i in 10:scanner._process(.1)
+		shell.world.library_layers.sync(state.d)
 		check(state.d.items.bagNonPersonProof and not state.d.items.itemRecognitionReport,"original scanner/controller awards once")
 		check(shell.world.library_layers.stamp_ms==0,"combined world begins actual stamp choreography")
 		committed=state.d.duplicate(true)
