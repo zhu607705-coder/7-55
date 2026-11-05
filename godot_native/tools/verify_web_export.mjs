@@ -1007,6 +1007,13 @@ async function libraryCase() {
   let value = await snapshot();
   const originalItems = JSON.stringify(state(value).items);
   check(state(value).ui.libraryFinalsPuzzle.archivedRuleCollected && !state(value).ui.libraryFinalsPuzzle.archivedRuleRead, `${active.id}: acquired rule is still unread`);
+  // The browser file picker can retain focus after import. Use the ordinary
+  // world-to-phone control before the keyboard shortcut and explicit save.
+  await poll(async () => { const s = await snapshot(); return s?.world?.visible && controls(s).some(c => c.name === 'WorldPhoneButton' && !c.disabled) ? s : null; }, 'imported unread rule restores its Library world', 60000);
+  await clickControl('WorldPhoneButton', 'name');
+  await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'phone_home' && !s.world?.visible ? s : null; }, 'ordinary phone return before saving unread rule');
+  value = await snapshot();
+  check(!state(value).ui.libraryFinalsPuzzle.archivedRuleRead && JSON.stringify(state(value).items) === originalItems, `${active.id}: returning to the phone keeps the acquired rule unread`);
   await settings(); await saveProgressAndWait(`${active.id} unread library rule`);
   await startStory(true);
   await reopenLibraryRuleThroughApp();
