@@ -65,7 +65,7 @@ func run()->void:
 	before_shelf=earned_shelf()
 	shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames()
 	shell.set_process(false);shell.world.set_process(false)
-	state.action_completed.connect(record_action);shell.phone.visibility_changed.connect(record_phone)
+	state.action_completed.connect(record_action);shell.child_entered_tree.connect(record_reader)
 	var original_emulation:=Input.emulate_mouse_from_touch
 	Input.emulate_mouse_from_touch=false
 	for dimensions:Vector2i in [Vector2i(1280,720),Vector2i(844,390)]:

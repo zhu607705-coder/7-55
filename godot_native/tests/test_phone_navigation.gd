@@ -62,9 +62,16 @@ func _run() -> void:
 		await show(page)
 		expect(body.custom_minimum_size.y>=813.99,"Source app fills 814px under status: "+page)
 		expect(body.clip_contents,"Native app wrapper clips source interior: "+page)
-	for target in [["wechat","exit","phone_home"],["checkin","back","zjuding"],["campus_card","back","zjuding"],["bonsai","exit","phone_home"],["weather","exit","phone_home"],["directory","back","zjuding"],["library_app","back","zjuding"],["library_record","back","library_app"],["library_rule","back","library_app"],["library_recovery","back","library_app"],["library_catalog","back","library_app"],["library_archive","back","library_app"],["library_022_dialogue","back","library_app"],["photos","exit","phone_home"]]:
+	for target in [["wechat","exit","phone_home"],["checkin","back","zjuding"],["campus_card","back","zjuding"],["bonsai","exit","phone_home"],["weather","exit","phone_home"],["directory","back","zjuding"],["library_app","back","zjuding"],["library_record","back","library_app"],["library_recovery","back","library_app"],["library_catalog","back","library_app"],["library_archive","back","library_app"],["library_022_dialogue","back","library_app"],["photos","exit","phone_home"]]:
 		page_events.clear(); await show(target[0]); await click(nav(target[1]))
 		expect(page_events==[target[2]],"Pointer navigation "+target[0]+" → "+target[2])
+	page_events.clear(); await show("library_rule"); await process_frame
+	var rule_close: Button=node("LibraryRuleClose")
+	expect(rule_close!=null and rule_close.disabled,"unread rule cannot close before scrolling")
+	var rule_scroll: ScrollContainer=node("LibraryRuleScroll")
+	rule_scroll.scroll_vertical=int(rule_scroll.get_v_scroll_bar().max_value); await process_frame
+	await click(rule_close)
+	expect(page_events==["library_app"],"reading to the end enables the original Library return")
 	# Check-in returns into the authored learning page and its native entrance.
 	s.actOne.phase="prologue"; await show("checkin"); await click(nav("back")); await show("zjuding")
 	expect(p.zjuding_page=="learn" and node("ZjudingCheckin")!=null,"Check-in back returns to source learn page")

@@ -1,12 +1,12 @@
 {
   "provenance": "Reconstructed source oracle; methods executed from active TypeScript source",
   "hashes": {
-    "src/modules/LibraryFinalsController.ts": "3f30ebb64484b64d7a8ebca81386be3b416fc3d0e1ec9806f40a2564c947c9f1",
+    "src/modules/LibraryFinalsController.ts": "b1cfc1faba11164b5b5824ddba46b40a4943886f596f272b3e05268683107369",
     "src/modules/library-finals/puzzleRules.ts": "12bf5806baa9335b64d7999ea08ec20419c90de4587ae3d2d0c38200d195c411",
     "src/modules/TiyiAccessModel.ts": "3b0694dadff27f2ad49c3fd2dde09c2b0015498107ec85d91b94f4d09c0fa537",
     "src/modules/ActOneBootstrapController.ts": "600f5799bb401b63fdf8683b69715d70567c7c7406bd45854d9e5ca3e5aef8ec",
     "src/core/GameState.ts": "cd53afe8b6335d90ff29f02db6e41fee69b03e72d5767719cc5d420e9c323198",
-    "src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx": "f156ed45ea0041772ca6485b40f01c7593b7e1f0c736d78f9b354ee255cd72a9",
+    "src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx": "b19b506b81dd4cad2ac21bee7e5158c48064a2ce2f1884678c0f4c005b181e22",
     "src/data/library-finals.audio.json": "2768972edd5b280072fc0b401da9a0438bbd2dabf091e7e774fe97e3a02dd6c0"
   },
   "drafts": [

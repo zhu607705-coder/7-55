@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -41,7 +41,7 @@ test('--check executes source, resolves its adjacent fixture, and writes nothing
   assert.equal(result.status, 0, result.stderr);
   const output = JSON.parse(result.stdout);
   assert.equal(output.mode, 'check');
-  assert.equal(output.output, fixture);
+  assert.equal(realpathSync(output.output), realpathSync(fixture));
   assert.equal(output.drafts, 468);
   assert.equal(output.submissions, 36);
   assert.deepEqual(readFileSync(fixture), original);

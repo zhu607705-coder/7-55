@@ -479,6 +479,8 @@ func _show_phone_surface() -> void:
 	phone_world_return.grab_focus()
 
 func _library_reading_locked()->bool:
+	# A hidden retained phone page must not own input while a world reveal runs.
+	if not phone.is_visible_in_tree():return false
 	if str(State.d.native.page)!="library_rule" or not State.d.ui.libraryFinalsPuzzle.archivedRuleCollected or State.d.ui.libraryFinalsPuzzle.archivedRuleRead:return false
 	var reader:Node=page_body.find_child("LibraryRuleReader",true,false) if is_instance_valid(page_body) else null
 	return reader!=null and not bool(reader.get_meta("end_seen",false))
@@ -1074,7 +1076,9 @@ func _refresh() -> void:
 		n.page="phone_home"
 		State.d.ui.controlCenterOpen=true
 	var page: String = n.page
-	if page in ["library_rule","library_record"] and n.scene=="library_interior" and not is_instance_valid(modal):
+	# A shelf reveal owns the rule handoff. Restoring/cancelling its saved page
+	# must not silently reopen that reader on every ordinary refresh.
+	if page=="library_record" and n.scene=="library_interior" and not is_instance_valid(modal):
 		_open_library_world_document.call_deferred(page)
 	# Preserve the source Photos mount baseline behind Control Center overlays.
 	var photos_mounted := not mobile_world

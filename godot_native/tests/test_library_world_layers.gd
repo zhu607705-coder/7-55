@@ -195,9 +195,18 @@ func test_native_world_integration() -> void:
 	check(world.player==prior and world.library_layers.shelf_offset==14,"world ticks animation while actual movement remains blocked")
 	for i in range(100): world._process(0.01)
 	check(world.library_layers.shelf_offset==16 and not world.library_layers.blocks_movement(),"live layer completes source motion")
-	check(shell.phone.visible and not shell.world_frame.visible,"source reveal completion opens the existing reader")
+	check(is_instance_valid(shell.modal) and shell.modal.name=="LibraryWorldDocument" and shell.world_frame.visible and not shell.phone.visible,"source reveal completion opens the reader in the Library world")
 	check(not world.can_stand(right_of_initial),"live collision uses expanded source rail/cabinet union")
-	shell.phone_world_return.pressed.emit(); await process_frame; await process_frame
+	if is_instance_valid(shell.modal):
+		var document: Control=shell.modal
+		var scroll: ScrollContainer=document.find_child("LibraryWorldDocumentScroll",true,false)
+		var close: Button=document.find_child("LibraryWorldDocumentClose",true,false)
+		check(close.disabled and not document.can_close(),"unread rule cannot close before scrolling")
+		await process_frame; await process_frame
+		scroll.scroll_vertical=int(scroll.get_v_scroll_bar().max_value); await process_frame
+		check(not close.disabled,"reaching the end enables the original read action")
+		close.pressed.emit(); await process_frame; await process_frame
+		check(state.d.ui.libraryFinalsPuzzle.archivedRuleRead,"closing the fully read rule dispatches its controller action")
 	check(shell.world_frame.visible and not world.library_layers.blocks_movement(),"reader return retains final cabinet without replay")
 	world.touch_axis=Vector2.ZERO; world.collisions=original
 	state.d.ui.libraryFinalsPhase="pass_ready"; state.d.ui.libraryFinalsPuzzle.evictionPassGenerated=true; state.d.ui.libraryFinalsPuzzle.passBriefingSeen=true; state.d.items.seatReleasePass=true
