@@ -940,7 +940,7 @@ async function reopenLibraryRuleThroughApp() {
   // mounted. Wait for the actual target surface before the first user input.
   const initial = await poll(async () => {
     const value = await snapshot();
-    if (value?.content?.blocking) return null;
+    if (value?.content?.blocking !== false || !(value.content.monolithic === true || value.content.enabled === true && value.content.readyFamilies?.includes('chapter2'))) return null;
     if (controls(value).some(c => c.name === 'LibraryWorldDocumentClose')) return value;
     if (value?.world?.visible) {
       if (value.world.scene_id !== state(value)?.native.scene || !controls(value).some(c => c.name === 'WorldPhoneButton' && !c.disabled)) return null;
@@ -1007,9 +1007,10 @@ async function libraryCase() {
   let value = await snapshot();
   const originalItems = JSON.stringify(state(value).items);
   check(state(value).ui.libraryFinalsPuzzle.archivedRuleCollected && !state(value).ui.libraryFinalsPuzzle.archivedRuleRead, `${active.id}: acquired rule is still unread`);
-  // The browser file picker can retain focus after import. Use the ordinary
-  // world-to-phone control before the keyboard shortcut and explicit save.
-  await poll(async () => { const s = await snapshot(); return s?.world?.visible && controls(s).some(c => c.name === 'WorldPhoneButton' && !c.disabled) ? s : null; }, 'imported unread rule restores its Library world', 60000);
+  // The imported route is committed before its deferred C2 content finishes.
+  // Wait for the real world and complete content family before sending input;
+  // then use its ordinary phone control before the explicit save.
+  await poll(async () => { const s = await snapshot(); return s?.content?.blocking === false && (s.content.monolithic === true || s.content.enabled === true && s.content.readyFamilies?.includes('chapter2')) && s.world?.visible && controls(s).some(c => c.name === 'WorldPhoneButton' && !c.disabled) ? s : null; }, 'imported unread rule restores its ready Library world', bootTimeout);
   await clickControl('WorldPhoneButton', 'name');
   await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'phone_home' && !s.world?.visible ? s : null; }, 'ordinary phone return before saving unread rule');
   value = await snapshot();
