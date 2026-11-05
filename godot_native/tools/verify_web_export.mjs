@@ -941,12 +941,13 @@ async function reopenLibraryRuleThroughApp() {
   const initial = await poll(async () => {
     const value = await snapshot();
     if (value?.content?.blocking) return null;
+    if (controls(value).some(c => c.name === 'LibraryWorldDocumentClose')) return value;
     if (value?.world?.visible) {
       if (value.world.scene_id !== state(value)?.native.scene || !controls(value).some(c => c.name === 'WorldPhoneButton' && !c.disabled)) return null;
-    } else if (!controls(value).some(c => c.name === 'LibraryRuleAction')) return null;
+    } else if (!controls(value).some(c => c.name === 'HomeApp_zjuding')) return null;
     return value;
   }, 'imported Library surface has actually mounted', 60000);
-  if (controls(initial).some(c => c.name === 'LibraryRuleAction')) return;
+  if (controls(initial).some(c => c.name === 'LibraryWorldDocumentClose')) return;
   if (initial.world?.visible) {
     active.library ||= { navigation: [] };
     active.library.navigation ||= [];
@@ -960,6 +961,32 @@ async function reopenLibraryRuleThroughApp() {
   await clickControl('HomeApp_zjuding', 'name');
   await clickControl('ZjudingApp_library', 'name');
   await clickControl('LibraryApp_rule', 'name');
+}
+async function scrollLibraryRuleToClose() {
+  // Use the real scroll surface and actual browser input on both profiles.
+  // Control geometry is read-only debug information, never a progress write.
+  for (let attempt = 0; attempt < 12; attempt++) {
+    const value = await snapshot();
+    const scroll = controls(value).find(c => c.name === 'LibraryWorldDocumentScroll');
+    const close = controls(value).find(c => c.name === 'LibraryWorldDocumentClose');
+    if (!scroll || !close) throw new Error('The world rule document has no live scroll surface or close control');
+    const s = scroll.rect, c = close.rect;
+    if (!close.disabled && c.y >= s.y && c.y + c.height <= s.y + s.height) return value;
+    const from = await renderPoint({x: s.x + s.width * .8, y: s.y + s.height * .8}, value);
+    const to = await renderPoint({x: s.x + s.width * .8, y: s.y + s.height * .25}, value);
+    if (active.touch) {
+      await active.cdp.send('Input.dispatchTouchEvent', {type: 'touchStart', touchPoints: [{...from, id: 1}]});
+      for (let step = 1; step <= 12; step++) {
+        await active.cdp.send('Input.dispatchTouchEvent', {type: 'touchMove', touchPoints: [{x: from.x + (to.x - from.x) * step / 12, y: from.y + (to.y - from.y) * step / 12, id: 1}]});
+        await interval(20);
+      }
+      await active.cdp.send('Input.dispatchTouchEvent', {type: 'touchEnd', touchPoints: []});
+    } else {
+      await active.cdp.send('Input.dispatchMouseEvent', {type: 'mouseWheel', x: from.x, y: from.y, deltaX: 0, deltaY: 260});
+    }
+    await interval(350);
+  }
+  throw new Error('The rule close control did not become reachable after real scrolling');
 }
 function libraryContentReady(value) {
   return value?.content?.blocking === false && (value.content.monolithic === true
@@ -975,23 +1002,21 @@ function libraryHandoffReady(value) {
 async function libraryCase() {
   if (!fixtureDir) throw new Error('Library continuity requires controller-earned portable boundaries');
   await importSave(path.join(fixtureDir, 'before_library_rule_read.json'));
-  await reopenLibraryRuleThroughApp();
-  let value = await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'library_rule' && controls(s).some(c => c.name === 'LibraryRuleAction') ? s : null; }, 'earned unread rule opens its original reader');
+  let value = await snapshot();
   const originalItems = JSON.stringify(state(value).items);
   check(state(value).ui.libraryFinalsPuzzle.archivedRuleCollected && !state(value).ui.libraryFinalsPuzzle.archivedRuleRead, `${active.id}: acquired rule is still unread`);
-  await clickControl('PhoneNav_back', 'name');
-  value = await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'library_app' ? s : null; }, 'ordinary rule header returns to Library home');
-  check(controls(value).some(c => c.name === 'LibraryApp_rule'), `${active.id}: acquired rule has a visible ordinary app entry`);
-  active.screenshots.push(await screenshot(`${active.id}-library-rule-entry`));
-  await clickControl('LibraryApp_rule', 'name');
-  value = await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'library_rule' && controls(s).some(c => c.name === 'LibraryRuleAction') ? s : null; }, 'app entry reopens original rule reader');
-  check(!state(value).ui.libraryFinalsPuzzle.archivedRuleRead && JSON.stringify(state(value).items) === originalItems, `${active.id}: reopening alone neither reads nor changes inventory`);
   await settings(); await saveProgressAndWait(`${active.id} unread library rule`);
   await startStory(true);
   await reopenLibraryRuleThroughApp();
-  value = await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'library_rule' && controls(s).some(c => c.name === 'LibraryRuleAction') ? s : null; }, 'ordinary reload restores unread rule reader');
-  check(!state(value).ui.libraryFinalsPuzzle.archivedRuleRead, `${active.id}: reload never supplies the missing reading fact`);
-  await clickControl('LibraryRuleAction', 'name');
+  value = await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'library_rule' && controls(s).some(c => c.name === 'LibraryWorldDocumentClose') ? s : null; }, 'ordinary reload and app entry open the unread rule in the Library world');
+  check(value.world?.visible && !state(value).ui.libraryFinalsPuzzle.archivedRuleRead && JSON.stringify(state(value).items) === originalItems, `${active.id}: reopening alone neither reads nor changes inventory`);
+  check(controls(value).find(c => c.name === 'LibraryWorldDocumentClose')?.disabled, `${active.id}: the unread rule cannot close before scrolling`);
+  active.screenshots.push(await screenshot(`${active.id}-library-rule-entry`));
+  await press('Escape');
+  value = await snapshot();
+  check(controls(value).some(c => c.name === 'LibraryWorldDocumentClose' && c.disabled) && !state(value).ui.libraryFinalsPuzzle.archivedRuleRead, `${active.id}: Escape cannot bypass the reading gate`);
+  await scrollLibraryRuleToClose();
+  await clickControl('LibraryWorldDocumentClose', 'name');
   active.library ||= {};
   active.library.dialogueSamples = [];
   // The earned portable boundary may also restore earlier unacknowledged
@@ -1009,10 +1034,11 @@ async function libraryCase() {
   }
   value = await poll(async () => { const s = await snapshot(); return state(s)?.ui.libraryFinalsPuzzle.archivedRuleRead && state(s).ui.libraryFinalsPuzzle.archivedRuleBriefingSeen ? s : null; }, 'explicit reading and original briefing complete');
   check(JSON.stringify(state(value).items) === originalItems, `${active.id}: reading preserves the acquired original and other inventory`);
-  await clickControl('PhoneNav_back', 'name'); await clickControl('LibraryApp_rule', 'name');
-  value = await snapshot();
-  check(state(value).native.page === 'library_rule' && !controls(value).some(c => c.name === 'LibraryRuleAction'), `${active.id}: read rule remains reviewable without a second acknowledgement`);
+  await reopenLibraryRuleThroughApp();
+  value = await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'library_rule' && controls(s).some(c => c.name === 'LibraryWorldDocumentClose' && !c.disabled) ? s : null; }, 'read rule remains reviewable');
+  check(state(value).ui.libraryFinalsPuzzle.archivedRuleRead, `${active.id}: review retains the single completed acknowledgement`);
   active.screenshots.push(await screenshot(`${active.id}-library-rule-reviewed`));
+  await scrollLibraryRuleToClose(); await clickControl('LibraryWorldDocumentClose', 'name');
   await importSave(path.join(fixtureDir, 'before_library_022_opening.json'));
   await poll(async () => controls(await snapshot()).some(c => c.text === '跳过演出'), 'earned022 seat starts its original transition');
   await clickControl('跳过演出', 'text');
