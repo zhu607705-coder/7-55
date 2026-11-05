@@ -1946,7 +1946,8 @@ func _show_settings() -> void:
 			if action_button.text=="重新开始":
 				action_button.add_theme_color_override("font_color",CampusMaterial.CORAL)
 	var note_text:="原生 Godot 迁移进行中\n支持原生存档与原版浏览器 v2–35 存档。" if State.developer_tools_available() else "支持保存当前进度，也可导入原浏览器版存档。"
-	if is_instance_valid(web_platform): note_text += "\n" + web_platform.storage_note()
+	if OS.has_feature("web") and not CloudSaves.member_id.is_empty(): note_text="账号进度同步到云端，可导出个人备份。"
+	elif is_instance_valid(web_platform): note_text += "\n" + web_platform.storage_note()
 	var note := _label(note_text,15,Color("6b756c"))
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(note)
@@ -1958,7 +1959,10 @@ func _capture_after_menu() -> void:
 	_capture.call_deferred()
 
 func _save_progress() -> void:
-	if OS.has_feature("web") and not CloudSaves.member_id.is_empty(): CloudSaves.save_now()
+	if OS.has_feature("web") and not CloudSaves.member_id.is_empty():
+		_on_web_save_feedback("正在保存…")
+		await CloudSaves.save_now()
+		_on_web_save_feedback("已保存" if CloudSaves.status_text.begins_with("云端已保存") else CloudSaves.status_text)
 	elif is_instance_valid(web_platform): web_platform.request_save()
 	else: _feedback("已保存" if State.save_game() else "测试会话不覆盖正式存档")
 

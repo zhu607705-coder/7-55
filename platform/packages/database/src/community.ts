@@ -75,6 +75,7 @@ function asIdea(
 }
 
 export function createCommunityStore(pool: pg.Pool) {
+  let nextLimitCleanup = 0;
   return {
     async identity(
       issuer: string,
@@ -134,14 +135,29 @@ export function createCommunityStore(pool: pg.Pool) {
       tokenHash: string,
       expiresAt: Date,
     ) {
-      await pool.query(
-        "DELETE FROM sessions WHERE expires_at <= now() OR token_hash IN (SELECT token_hash FROM sessions WHERE member_id=$1 ORDER BY created_at DESC OFFSET 9)",
-        [memberId],
-      );
-      await pool.query(
-        "INSERT INTO sessions(token_hash,member_id,identity_id,expires_at) SELECT $1,$2,id,$4 FROM external_identities WHERE id=$3 AND member_id=$2",
-        [tokenHash, memberId, identityId, expiresAt],
-      );
+      const client = await pool.connect();
+      try {
+        await client.query("BEGIN");
+        // Serialize logins for one member so concurrent callbacks keep the session cap.
+        await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [
+          "session:" + memberId,
+        ]);
+        await client.query(
+          "DELETE FROM sessions WHERE member_id=$1 AND (expires_at <= now() OR token_hash IN (SELECT token_hash FROM sessions WHERE member_id=$1 ORDER BY created_at DESC, token_hash DESC OFFSET 9))",
+          [memberId],
+        );
+        const inserted = await client.query(
+          "INSERT INTO sessions(token_hash,member_id,identity_id,expires_at) SELECT $1,$2,id,$4 FROM external_identities WHERE id=$3 AND member_id=$2",
+          [tokenHash, memberId, identityId, expiresAt],
+        );
+        if (inserted.rowCount !== 1) throw new Error("Session identity mismatch");
+        await client.query("COMMIT");
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
+      }
     },
     async session(
       tokenHash: string,
@@ -219,8 +235,11 @@ export function createCommunityStore(pool: pg.Pool) {
       max: number,
       seconds: number,
     ): Promise<boolean> {
-      // Bound stale state by deleting expired windows on every write request.
-      await pool.query("DELETE FROM request_limits WHERE expires_at <= now()");
+      // Avoid a global expiry DELETE for every write in a traffic burst.
+      if (Date.now() >= nextLimitCleanup) {
+        nextLimitCleanup = Date.now() + 60_000;
+        await pool.query("DELETE FROM request_limits WHERE key IN (SELECT key FROM request_limits WHERE expires_at <= now() LIMIT 1000)");
+      }
       const result = await pool.query(
         `INSERT INTO request_limits (key, hits, expires_at) VALUES ($1,1,now() + $3 * interval '1 second')
         ON CONFLICT (key) DO UPDATE SET hits = CASE WHEN request_limits.expires_at <= now() THEN 1 ELSE LEAST(request_limits.hits + 1, $2 + 1) END,

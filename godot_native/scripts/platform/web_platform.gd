@@ -509,6 +509,7 @@ func read_snapshot() -> Dictionary:
 	var audio: Array = []
 	var video: Array = []
 	_visible_controls(shell, controls, audio, video)
+	_visible_controls(shell.get_node("/root/CloudSaves"), controls, audio, video)
 	var game: Dictionary = {}
 	if is_instance_valid(shell.active_game):
 		var active: Control = shell.active_game
