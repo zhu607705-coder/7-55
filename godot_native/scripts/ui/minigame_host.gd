@@ -1,4 +1,6 @@
 extends Control
+const SharedPauseOverlay = preload("res://scripts/ui/native_pause_overlay.gd")
+var shared_pause_overlay
 ## Shared native real-time host; terminal proof is replayed by chapter controllers.
 signal finished(result: Dictionary)
 signal cancelled
@@ -13,6 +15,9 @@ var mode: String=""
 var model: RefCounted
 var running: bool=false
 var paused: bool=false
+var _lifecycle_suspended:=false
+var _playback_suspended:=false
+var _skip_lifecycle_frame:=false
 var sent: bool=false
 var pending_result: Dictionary={}
 var finish_wait: float=0.0
@@ -62,6 +67,7 @@ const AQUA = Color("64d2cd")
 const GOLD = Color("f5cd74")
 
 func _ready() -> void:
+	shared_pause_overlay = SharedPauseOverlay.mount(self, begin)
 	mouse_filter=Control.MOUSE_FILTER_STOP
 	font=preload("res://scripts/ui/native_typography.gd").body_font()
 	headline=_label(Vector2(26,14),Vector2(645,33),24)
@@ -201,17 +207,27 @@ func begin() -> void:
 	start_button.hide()
 	_refresh()
 
+func supports_player_pause() -> bool:
+	if model==null or not running or sent:return false
+	return model.phase=="running" if mode=="rhythm" else model.status=="running"
+
+func _sync_playback_suspension() -> void:
+	var blocked:=paused or _lifecycle_suspended
+	if blocked==_playback_suspended:return
+	_playback_suspended=blocked
+	presentation_requested.emit("native_activity_paused" if blocked else "native_activity_resumed",{"prefixes":_audio_prefixes()})
+
 func toggle_pause() -> void:
-	if not running or sent: return
+	if not supports_player_pause() and not paused: return
 	paused=not paused
-	presentation_requested.emit("native_activity_paused" if paused else "native_activity_resumed",{"prefixes":_audio_prefixes()})
+	_sync_playback_suspension()
 	if mode=="rhythm": _clear_fishing_controls()
 	elif mode=="chase": model.neutral()
 	action_sources.clear()
 	touch_sources.clear()
 	toolbar_touches.clear()
 	start_button.text="继续"
-	start_button.visible=paused
+	start_button.visible=false
 	pause_button.text="继续" if paused else "暂停"
 	_refresh()
 
@@ -226,10 +242,16 @@ func cancel_game() -> void:
 	cancelled.emit()
 
 func _notification(what: int) -> void:
-	if what==NOTIFICATION_APPLICATION_FOCUS_OUT or (what==NOTIFICATION_WM_WINDOW_FOCUS_OUT and mode in ["chase","rhythm"]):
-		if running and not paused: toggle_pause()
-		elif mode=="chase": _clear_chase_controls()
-		elif mode=="rhythm": _clear_fishing_controls()
+	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_WM_WINDOW_FOCUS_OUT]:
+		_lifecycle_suspended=true
+		if mode=="chase":_clear_chase_controls()
+		elif mode=="rhythm":_clear_fishing_controls()
+		action_sources.clear();touch_sources.clear();toolbar_touches.clear()
+		if supports_player_pause() and not paused:toggle_pause()
+		_sync_playback_suspension()
+	elif what in [NOTIFICATION_APPLICATION_FOCUS_IN,NOTIFICATION_WM_WINDOW_FOCUS_IN]:
+		if _lifecycle_suspended:_skip_lifecycle_frame=true
+		_lifecycle_suspended=false;_sync_playback_suspension()
 
 func press_action(action: String, source: String) -> void:
 	if not running or paused or sent or model==null: return
@@ -260,6 +282,7 @@ func release_action(action: String, source: String) -> void:
 	if mode=="rhythm": _sync_fishing_button_states()
 
 func _input(event: InputEvent) -> void:
+	if is_instance_valid(shared_pause_overlay) and shared_pause_overlay.is_open(): return
 	if not visible or model==null: return
 	# A real touch already owns the field/toolbar. Its emulated mouse must
 	# not reach a Button and perform the same action again.
@@ -340,6 +363,9 @@ func _input(event: InputEvent) -> void:
 			if action_sources[action].has("mouse:"+action): release_action(action,"mouse:"+action)
 
 func _process(delta: float) -> void:
+	_sync_shared_pause()
+	if _lifecycle_suspended:return
+	if _skip_lifecycle_frame:_skip_lifecycle_frame=false;return
 	if model==null: return
 	if mode=="rhythm" and fishing_input_layout_pending: _apply_fishing_control_layout()
 	if sent and not pending_result.is_empty():
@@ -387,6 +413,8 @@ func _check_terminal() -> void:
 		start_button.show()
 
 func _refresh() -> void:
+	_sync_playback_suspension()
+	_sync_shared_pause()
 	if not is_instance_valid(headline): return
 	_layout_overlay()
 	pause_button.text="继续" if paused else "暂停"
@@ -412,8 +440,9 @@ func _refresh() -> void:
 		hint.text=str(config.get("instructions",hint.text)) if (mode=="rhythm" and model.phase=="idle") or (mode!="rhythm" and model.status=="running") else hint.text
 	if mode=="chase" and not running and not sent and model.status=="running":
 		hint.text="A / D 或方向键转向 · 空格蓄力/松开跳\nJ 响铃 · E 使用道具"
-	if sent: hint.text="骑行完成，纸条飞向剧院" if mode=="chase" else ("收竿成功" if mode=="rhythm" else "安全抵达")
-	if paused: hint.text="已暂停。继续后从同一时刻恢复"
+	if sent: hint.text="骑行完成，纸条飞向剧院" if mode=="chase" else ("收竿成功" if mode=="rhythm" else "")
+	if paused: hint.text=""
+	hint.visible=mode!="kayak" or not hint.text.is_empty()
 	if mode=="chase" and not chase_presentation_error.is_empty():
 		hint.text="骑行画面加载失败。可退出后重试，进度保持不变。"
 		start_button.disabled=true
@@ -429,6 +458,7 @@ func _refresh() -> void:
 		fishing_controls_button.text="收起按键" if fishing_controls_enabled else "触控按键"
 		_sync_fishing_button_states()
 	if is_instance_valid(chase_view) and chase_view.visible: chase_view.queue_redraw()
+	_sync_shared_pause()
 
 func _fishing_hint() -> String:
 	if model.phase=="completed" and not model.final_result.get("passed",false):
@@ -504,26 +534,23 @@ func _draw() -> void:
 			"rhythm": _draw_fishing()
 			"kayak": _draw_kayak()
 	draw_rect(overlay_layout.header_panel if overlay_layout.compact else Rect2(0,0,960,103),Color(0.03,0.08,0.12,0.88))
-	draw_rect(overlay_layout.hint_panel if overlay_layout.compact else Rect2(145,388,670,58),Color(0.03,0.08,0.12,0.84))
-	if not running or paused:
+	if hint.visible: draw_rect(overlay_layout.hint_panel if overlay_layout.compact else Rect2(145,388,670,58),Color(0.03,0.08,0.12,0.84))
+	if not running and not paused:
 		draw_rect(overlay_layout.modal_panel if overlay_layout.compact else Rect2(280,161,400,194),Color(0.03,0.08,0.12,0.93))
 		if font:
 			var title: String=_modal_title()
 			if overlay_layout.compact:
 				var title_rect: Rect2=overlay_layout.modal_title
-				var detail_rect: Rect2=overlay_layout.modal_detail
 				draw_string(font,title_rect.position+Vector2(0,font.get_ascent(overlay_layout.modal_font)),title,HORIZONTAL_ALIGNMENT_CENTER,title_rect.size.x,overlay_layout.modal_font,FG)
-				draw_string(font,detail_rect.position+Vector2(0,font.get_ascent(overlay_layout.detail_font)),"本次操作已完成" if sent else "鼠标 / 触屏 / 键盘均可操作",HORIZONTAL_ALIGNMENT_CENTER,detail_rect.size.x,overlay_layout.detail_font,AQUA)
 			else:
 				draw_string(font,Vector2(345,206),title,HORIZONTAL_ALIGNMENT_CENTER,270,28,FG)
-				draw_string(font,Vector2(306,250),"本次操作已完成" if sent else "鼠标 / 触屏 / 键盘均可操作",HORIZONTAL_ALIGNMENT_CENTER,345,18,AQUA)
 
 func _modal_title() -> String:
 	# A completed chart can be a win or a miss. Accepted proof owns the success title.
 	if sent: return "追上了！" if mode=="chase" else ("收竿成功" if mode=="rhythm" else "安全抵达")
 	if model and mode!="rhythm" and model.status=="lost": return "从安全点重试"
 	if model and mode=="rhythm" and model.phase in ["failed","completed"]: return "再试一次"
-	return "已暂停" if paused else "准备好了吗？"
+	return "准备好了吗？"
 
 func road_point(ahead: float, lane: float) -> Vector3:
 	var depth: float=clampf(1-ahead/96,0,1)
@@ -634,7 +661,12 @@ func _draw_kayak() -> void:
 		draw_arc(rear,30,0.2,PI-0.2,15,FG,2)
 	draw_rect(Rect2(315,463,330,10),Color("1a2630"))
 	draw_rect(Rect2(480+minf(0,model.roll)*165,463,absf(model.roll)*165,10),Color("ed836b"))
-	if font: draw_string(font,Vector2(302,501),"S / ↓ + 划桨：后退",HORIZONTAL_ALIGNMENT_CENTER,350,17,FG)
+	if font and _show_kayak_reverse_hint(): draw_string(font,Vector2(302,501),"S / ↓ + 划桨：后退",HORIZONTAL_ALIGNMENT_CENTER,350,17,FG)
+
+func _show_kayak_reverse_hint() -> bool:
+	# Intro/collision copy already explains reverse. Keep one live reminder,
+	# never a control instruction over a pause or a terminal result.
+	return mode=="kayak" and running and not paused and not sent and model!=null and model.status=="running" and not hint.text.contains("后退")
 
 func _draw_chase_background(canvas: CanvasItem=self,field: Control=null) -> void:
 	const KEYS = [0,47,95,143,190,238,285,331,377,424,470,518,566,600,635,668,700,755]
@@ -841,14 +873,14 @@ func _field_point(field: Control,ahead: float,lane: float) -> Vector3:
 
 func draw_chase_field(field: Control) -> void:
 	if model==null:return
-	if not running or paused:
+	if not running and not paused:
 		var panel:=Rect2(6,field.size.y/2-72,field.size.x-12,162)
 		field.draw_rect(panel,Color(.03,.08,.12,.95))
-		var title: String="已暂停" if paused else "准备好了吗？"
+		var title: String="准备好了吗？"
 		if sent:title="追上了！"
 		elif model.status=="lost":title="从安全点重试"
 		field.draw_string(font,panel.position+Vector2(6,36),title,HORIZONTAL_ALIGNMENT_CENTER,panel.size.x-12,22,FG)
-		field.draw_string(font,panel.position+Vector2(6,72),"本次操作已完成" if sent else "755 米 · 骑行追纸",HORIZONTAL_ALIGNMENT_CENTER,panel.size.x-12,16,AQUA)
+		if not sent: field.draw_string(font,panel.position+Vector2(6,72),"755 米 · 骑行追纸",HORIZONTAL_ALIGNMENT_CENTER,panel.size.x-12,16,AQUA)
 
 ## Rendering has no input, audio, proof or progression authority.
 func _ensure_native_chase_view() -> void:
@@ -1003,3 +1035,20 @@ func _fishing_pointer_input(event: InputEvent) -> bool:
 	press_action("hook",source)
 	_fishing_follow(point)
 	return true
+
+func _sync_shared_pause() -> void:
+	if not is_instance_valid(shared_pause_overlay): return
+	var pause_actions: Array[Dictionary] = []
+	for button in [retry_button,exit_button]:
+		if is_instance_valid(button) and button.visible:
+			pause_actions.append({"text":button.text,"callback":_activate_pause_action.bind(button),"disabled":button.disabled})
+	shared_pause_overlay.set_actions(pause_actions)
+	shared_pause_overlay.present(is_visible_in_tree() and paused and supports_player_pause())
+	pause_button.visible = supports_player_pause() and not paused
+	if paused: start_button.hide()
+
+func _activate_pause_action(button: Button) -> void:
+	# Reuse the authored signal, including its existing confirmation flow.
+	if not is_instance_valid(button) or button.disabled or not button.visible: return
+	button.pressed.emit()
+	if is_inside_tree(): _sync_shared_pause()

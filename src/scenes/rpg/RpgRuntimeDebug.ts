@@ -73,13 +73,7 @@ export interface RpgRuntimeDebugState {
     state: "closed" | "opening" | "open" | "closing";
     accessGranted: boolean;
   };
-  chargingStation?: {
-    id: string;
-    active: boolean;
-    elapsedMs: number;
-    rejection: "no_power_source" | "too_far" | "wrong_mode" | null;
-    percent: number;
-  };
+
   interiorDoor?: {
     id: string;
     state: "closed" | "opening" | "open" | "closing";

@@ -3,7 +3,6 @@ extends RefCounted
 const Utilities = preload("res://scripts/chapters/phone_utilities.gd")
 const TiyiAccess = preload("res://scripts/chapters/tiyi_access.gd")
 var utilities = Utilities.new()
-var home_desk = preload("res://scripts/chapters/home_desk.gd").new()
 const Library022 = preload("res://scripts/chapters/library022.gd")
 const MOVEMENT_PHASES = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"]
 var library = Library022.new()
@@ -207,8 +206,6 @@ func _owned(s: Dictionary) -> Array:
 	return values
 
 func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionary:
-	var desk_result: Dictionary = home_desk.dispatch(s, action, value)
-	if not desk_result.is_empty(): return desk_result
 	phone_entry_session(s)
 	var utility_result = utilities.dispatch(s,action,value)
 	if not utility_result.is_empty(): return utility_result
@@ -226,14 +223,14 @@ func _control(s: Dictionary, action: String, value: Variant) -> Dictionary:
 			if not modes.has(str(value)): return _ok("请选择有效网络。")
 			if s.networkMode != modes[str(value)]:
 				s.networkMode = modes[str(value)]
-				s.phoneBattery.percent = mini(int(s.phoneBattery.percent), maxi(1, int(s.phoneBattery.percent) - 1))
+				s.phoneBattery.percent = maxi(0, int(s.phoneBattery.percent) - 1)
 			return _ok("网络已切换。")
 		"c1_brightness":
 			if not str(value).is_valid_float(): return _ok("请输入 0 至 100 的亮度。")
-			s.ui.brightness = clampf(float(value), 0, 45 if s.phoneBattery.lowPowerMode else 100)
+			s.ui.brightness = clampf(float(value), 0, 100)
+			preload("res://scripts/ui/phone_brightness_policy.gd").mark_manual(s)
 			return _ok("屏幕亮度已调整。")
 		"c1_music":
-			if s.phoneBattery.lowPowerMode and not s.ui.musicPlaying: return _ok("低电量模式下音乐已暂停。")
 			s.ui.musicPlaying = not s.ui.musicPlaying
 			return _ok("音乐播放状态已切换。")
 		"c1_auto_rotate":

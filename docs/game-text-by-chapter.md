@@ -2,8 +2,8 @@
 
 > 本文件由 `npm run text:export` 从当前 `src/` 自动生成。请修改源文件后重新导出，不要只修改本文件。
 
-- 文本条目：7536
-- 来源文件：168
+- 文本条目：7478
+- 来源文件：165
 - 收录范围：剧情对白、字幕、任务说明、交互提示、按钮、页面标题、帖子、物品说明、失败反馈与玩家可见状态文案。
 - 排除范围：开发者面板、测试断言、内部 ID、CSS 类名、资源路径、存档字段和运行时调试信息。
 - 去重规则：同一章节内完全相同的文本合并为一条，全部源码位置仍保留。
@@ -13,13 +13,13 @@
 
 | 章节 | 文本条目 |
 | --- | ---: |
-| [第一章](#第一章) | 475 |
+| [第一章](#第一章) | 463 |
 | [第二章](#第二章) | 410 |
-| [第三章](#第三章) | 1259 |
+| [第三章](#第三章) | 1247 |
 | [3.5章过渡](#35章过渡) | 301 |
 | [第四章](#第四章) | 1825 |
 | [结局](#结局) | 161 |
-| [跨章节与共用系统](#跨章节与共用系统) | 3105 |
+| [跨章节与共用系统](#跨章节与共用系统) | 3071 |
 
 ## 第一章
 
@@ -29,949 +29,925 @@
    来源：[src/components/QuestClueStrip.tsx:122](../src/components/QuestClueStrip.tsx#L122)
 3. 前往相关界面
    来源：[src/components/QuestClueStrip.tsx:122](../src/components/QuestClueStrip.tsx#L122)
-4. 桌面充电座
-   来源：[src/core/PhoneChargingStation.ts:19](../src/core/PhoneChargingStation.ts#L19)
-5. 查看信息
+4. 查看信息
    来源：[src/core/QuestModel.ts:60](../src/core/QuestModel.ts#L60)
-6. 找签到码（{{digitCount}}/4）
+5. 找签到码（{{digitCount}}/4）
    来源：[src/core/QuestModel.ts:67](../src/core/QuestModel.ts#L67)
-7. 先检查浙大体艺、设置齿轮和盆栽相关界面。
+6. 先检查浙大体艺、设置齿轮和盆栽相关界面。
    来源：[src/core/QuestModel.ts:69](../src/core/QuestModel.ts#L69)
-8. 道具可以拖拽合并。
+7. 道具可以拖拽合并。
    来源：[src/core/QuestModel.ts:70](../src/core/QuestModel.ts#L70)
-9. 浙大体艺打不开时，试试换一种网络。
+8. 浙大体艺打不开时，试试换一种网络。
    来源：[src/core/QuestModel.ts:71](../src/core/QuestModel.ts#L71)
-10. 微信界面也用“自动旋转”
+9. 微信界面也用“自动旋转”
    来源：[src/core/QuestModel.ts:72](../src/core/QuestModel.ts#L72)
-11. 光照在控制中心拖动调节
+10. 光照在控制中心拖动调节
    来源：[src/core/QuestModel.ts:73](../src/core/QuestModel.ts#L73)
-12. 还有一个在签到页面
+11. 还有一个在签到页面
    来源：[src/core/QuestModel.ts:74](../src/core/QuestModel.ts#L74)
-13. 去签到
+12. 去签到
    来源：[src/core/QuestModel.ts:81](../src/core/QuestModel.ts#L81)
-14. 五分钟
+13. 五分钟
    来源：[src/core/QuestModel.ts:88](../src/core/QuestModel.ts#L88)
-15. 签到校园卡
+14. 签到校园卡
    来源：[src/core/QuestModel.ts:91](../src/core/QuestModel.ts#L91)
-16. 签到页
+15. 签到页
    来源：[src/core/QuestModel.ts:91](../src/core/QuestModel.ts#L91)
-17. 数字 {{state.digits.d1}}
+16. 数字 {{state.digits.d1}}
    来源：[src/core/QuestModel.ts:91](../src/core/QuestModel.ts#L91)
-18. 数字 {{state.digits.d2}}
+17. 数字 {{state.digits.d2}}
    来源：[src/core/QuestModel.ts:92](../src/core/QuestModel.ts#L92)
-19. 应用异常
+18. 应用异常
    来源：[src/core/QuestModel.ts:92](../src/core/QuestModel.ts#L92)
-20. 浙大体艺
+19. 浙大体艺
    来源：[src/core/QuestModel.ts:92](../src/core/QuestModel.ts#L92)；[src/scenes/phone/P06_Tiyi/index.tsx:116](../src/scenes/phone/P06_Tiyi/index.tsx#L116)
-21. 设置齿轮
+20. 设置齿轮
    来源：[src/core/QuestModel.ts:93](../src/core/QuestModel.ts#L93)
-22. 设置页
+21. 设置页
    来源：[src/core/QuestModel.ts:93](../src/core/QuestModel.ts#L93)
-23. 数字 {{state.digits.d3}}
+22. 数字 {{state.digits.d3}}
    来源：[src/core/QuestModel.ts:93](../src/core/QuestModel.ts#L93)
-24. 盆栽机关
+23. 盆栽机关
    来源：[src/core/QuestModel.ts:94](../src/core/QuestModel.ts#L94)
-25. 数字 {{state.digits.d4}}
+24. 数字 {{state.digits.d4}}
    来源：[src/core/QuestModel.ts:94](../src/core/QuestModel.ts#L94)
-26. 主页盆栽
+25. 主页盆栽
    来源：[src/core/QuestModel.ts:94](../src/core/QuestModel.ts#L94)
-27. 林星宇
+26. 林星宇
    来源：[src/data/act-one-bootstrap.content.json:3](../src/data/act-one-bootstrap.content.json#L3)；[src/scenes/phone/P06_Tiyi/index.tsx:150](../src/scenes/phone/P06_Tiyi/index.tsx#L150)
-28. 游戏卡带
+27. 游戏卡带
    来源：[src/data/act-one-bootstrap.content.json:21](../src/data/act-one-bootstrap.content.json#L21)
-29. 第一章的实体入口。标签上只印着 7:55。
+28. 第一章的实体入口。标签上只印着 7:55。
    来源：[src/data/act-one-bootstrap.content.json:22](../src/data/act-one-bootstrap.content.json#L22)
-30. 南大门
+29. 南大门
    来源：[src/data/act-one-bootstrap.content.json:27](../src/data/act-one-bootstrap.content.json#L27)
-31. 启真湖桥
+30. 启真湖桥
    来源：[src/data/act-one-bootstrap.content.json:31](../src/data/act-one-bootstrap.content.json#L31)
-32. 基础馆
+31. 基础馆
    来源：[src/data/act-one-bootstrap.content.json:35](../src/data/act-one-bootstrap.content.json#L35)
-33. 校园地图终端
+32. 校园地图终端
    来源：[src/data/act-one-bootstrap.content.json:39](../src/data/act-one-bootstrap.content.json#L39)
-34. 校园服务台
+33. 校园服务台
    来源：[src/data/act-one-bootstrap.content.json:45](../src/data/act-one-bootstrap.content.json#L45)
-35. 游戏联络台
+34. 游戏联络台
    来源：[src/data/act-one-bootstrap.content.json:50](../src/data/act-one-bootstrap.content.json#L50)
-36. 体艺值班台
+35. 体艺值班台
    来源：[src/data/act-one-bootstrap.content.json:55](../src/data/act-one-bootstrap.content.json#L55)
-37. 完成签到
+36. 完成签到
    来源：[src/data/act-one-bootstrap.content.json:60](../src/data/act-one-bootstrap.content.json#L60)
-38. 查看朋友的新消息
+37. 查看朋友的新消息
    来源：[src/data/act-one-bootstrap.content.json:61](../src/data/act-one-bootstrap.content.json#L61)
-39. 找到系统
+38. 找到系统
    来源：[src/data/act-one-bootstrap.content.json:62](../src/data/act-one-bootstrap.content.json#L62)
-40. 找到道具栏
+39. 找到道具栏
    来源：[src/data/act-one-bootstrap.content.json:63](../src/data/act-one-bootstrap.content.json#L63)
-41. 带着道具栏回去找系统
+40. 带着道具栏回去找系统
    来源：[src/data/act-one-bootstrap.content.json:64](../src/data/act-one-bootstrap.content.json#L64)
-42. 找到移动的办法
+41. 找到移动的办法
    来源：[src/data/act-one-bootstrap.content.json:65](../src/data/act-one-bootstrap.content.json#L65)；[src/data/act-one-bootstrap.content.json:66](../src/data/act-one-bootstrap.content.json#L66)；[src/data/act-one-bootstrap.content.json:67](../src/data/act-one-bootstrap.content.json#L67)；[src/data/act-one-bootstrap.content.json:68](../src/data/act-one-bootstrap.content.json#L68)；[src/data/act-one-bootstrap.content.json:70](../src/data/act-one-bootstrap.content.json#L70)；[src/data/act-one-bootstrap.content.json:71](../src/data/act-one-bootstrap.content.json#L71)
-43. 可以出门了
+42. 可以出门了
    来源：[src/data/act-one-bootstrap.content.json:69](../src/data/act-one-bootstrap.content.json#L69)；[src/data/act-one-bootstrap.content.json:72](../src/data/act-one-bootstrap.content.json#L72)
-44. 前往图书馆寻找系统的朋友
+43. 前往图书馆寻找系统的朋友
    来源：[src/data/act-one-bootstrap.content.json:73](../src/data/act-one-bootstrap.content.json#L73)
-45. 他听不到你说话。
+44. 他听不到你说话。
    来源：[src/data/act-one-bootstrap.content.json:76](../src/data/act-one-bootstrap.content.json#L76)
-46. 这位同学目前连自己的名字都不知道。
+45. 这位同学目前连自己的名字都不知道。
    来源：[src/data/act-one-bootstrap.content.json:77](../src/data/act-one-bootstrap.content.json#L77)
-47. 他走起来了，但他不知道该往哪里走。
+46. 他走起来了，但他不知道该往哪里走。
    来源：[src/data/act-one-bootstrap.content.json:78](../src/data/act-one-bootstrap.content.json#L78)
-48. 手柄已经到货，方向输入等待校验。
+47. 手柄已经到货，方向输入等待校验。
    来源：[src/data/act-one-bootstrap.content.json:79](../src/data/act-one-bootstrap.content.json#L79)
-49. 这张卡带上只写了 7:55，它显然不是课程表。
+48. 这张卡带上只写了 7:55，它显然不是课程表。
    来源：[src/data/act-one-bootstrap.content.json:80](../src/data/act-one-bootstrap.content.json#L80)
-50. 可以出门了。
+49. 可以出门了。
    来源：[src/data/act-one-bootstrap.content.json:81](../src/data/act-one-bootstrap.content.json#L81)
-51. Excellent. You opened the game. Now kindly apply for permission to operate yourself.
+50. Excellent. You opened the game. Now kindly apply for permission to operate yourself.
    来源：[src/data/act-one-bootstrap.content.json:85](../src/data/act-one-bootstrap.content.json#L85)
-52. 很好，你打开了游戏。现在请先去申请操作自己。
+51. 很好，你打开了游戏。现在请先去申请操作自己。
    来源：[src/data/act-one-bootstrap.content.json:86](../src/data/act-one-bootstrap.content.json#L86)
-53. Identity verified. The character finally has a name. The network remains unconvinced.
+52. Identity verified. The character finally has a name. The network remains unconvinced.
    来源：[src/data/act-one-bootstrap.content.json:91](../src/data/act-one-bootstrap.content.json#L91)
-54. 登录成功。这个角色终于有名字了，仍然没联网。
+53. 登录成功。这个角色终于有名字了，仍然没联网。
    来源：[src/data/act-one-bootstrap.content.json:92](../src/data/act-one-bootstrap.content.json#L92)
-55. Call connected. Using a student ID as a phone number is distressingly on brand.
+54. Call connected. Using a student ID as a phone number is distressingly on brand.
    来源：[src/data/act-one-bootstrap.content.json:97](../src/data/act-one-bootstrap.content.json#L97)
-56. 电话接通。用学号当电话号码，很有校园特色。
+55. 电话接通。用学号当电话号码，很有校园特色。
    来源：[src/data/act-one-bootstrap.content.json:98](../src/data/act-one-bootstrap.content.json#L98)
-57. The controls have arrived. Sports has not yet approved the act of walking.
+56. The controls have arrived. Sports has not yet approved the act of walking.
    来源：[src/data/act-one-bootstrap.content.json:103](../src/data/act-one-bootstrap.content.json#L103)
-58. 方向键到货。体艺还没批准你走路。
+57. 方向键到货。体艺还没批准你走路。
    来源：[src/data/act-one-bootstrap.content.json:104](../src/data/act-one-bootstrap.content.json#L104)
-59. Exercise started. Congratulations. You are now officially permitted to walk.
+58. Exercise started. Congratulations. You are now officially permitted to walk.
    来源：[src/data/act-one-bootstrap.content.json:109](../src/data/act-one-bootstrap.content.json#L109)
-60. 锻炼开始。恭喜，你现在被允许步行。
+59. 锻炼开始。恭喜，你现在被允许步行。
    来源：[src/data/act-one-bootstrap.content.json:110](../src/data/act-one-bootstrap.content.json#L110)
-61. Cartridge acquired. Keep walking. Apparently all four areas require your personal attendance.
+60. Cartridge acquired. Keep walking. Apparently all four areas require your personal attendance.
    来源：[src/data/act-one-bootstrap.content.json:115](../src/data/act-one-bootstrap.content.json#L115)
-62. 卡带拿到了。继续把地图走完，四个区域一个都不能漏。
+61. 卡带拿到了。继续把地图走完，四个区域一个都不能漏。
    来源：[src/data/act-one-bootstrap.content.json:116](../src/data/act-one-bootstrap.content.json#L116)
-63. Map complete. The menu is open, and the system has formally recorded your ability to walk. A historic day.
+62. Map complete. The menu is open, and the system has formally recorded your ability to walk. A historic day.
    来源：[src/data/act-one-bootstrap.content.json:121](../src/data/act-one-bootstrap.content.json#L121)
-64. 全图已刷。游戏菜单已开放，系统已记录你会走路。
+63. 全图已刷。游戏菜单已开放，系统已记录你会走路。
    来源：[src/data/act-one-bootstrap.content.json:122](../src/data/act-one-bootstrap.content.json#L122)
-65. Pfft, oh, sorry. I did not mean anything by it. It is just... this does not look like a success, does it? I suppose you will have to get up, drag yourself to class, and deal with it. Good luck, kid! I am leaving!
+64. Pfft, oh, sorry. I did not mean anything by it. It is just... this does not look like a success, does it? I suppose you will have to get up, drag yourself to class, and deal with it. Good luck, kid! I am leaving!
    来源：[src/data/act-one-bootstrap.content.json:127](../src/data/act-one-bootstrap.content.json#L127)
-66. 噗，哦抱歉，我没别的意思，只是……这看起来不像成功了对吧。我想你只好乖乖起来滚去上课了。祝你好运，孩子！我要走了！
+65. 噗，哦抱歉，我没别的意思，只是……这看起来不像成功了对吧。我想你只好乖乖起来滚去上课了。祝你好运，孩子！我要走了！
    来源：[src/data/act-one-bootstrap.content.json:128](../src/data/act-one-bootstrap.content.json#L128)
-67. 噗，哦抱歉，我没别的意思，只是……这看起来不像成功了对吧。
+66. 噗，哦抱歉，我没别的意思，只是……这看起来不像成功了对吧。
    来源：[src/data/act-one-bootstrap.content.json:130](../src/data/act-one-bootstrap.content.json#L130)
-68. 我想你只好乖乖起来滚去上课了。
+67. 我想你只好乖乖起来滚去上课了。
    来源：[src/data/act-one-bootstrap.content.json:131](../src/data/act-one-bootstrap.content.json#L131)
-69. 祝你好运，孩子！我要走了！
+68. 祝你好运，孩子！我要走了！
    来源：[src/data/act-one-bootstrap.content.json:132](../src/data/act-one-bootstrap.content.json#L132)
-70. Pfft, oh, sorry. I did not mean anything by it. It is just... this does not look like a success, does it?
+69. Pfft, oh, sorry. I did not mean anything by it. It is just... this does not look like a success, does it?
    来源：[src/data/act-one-bootstrap.content.json:138](../src/data/act-one-bootstrap.content.json#L138)
-71. I suppose you will have to get up, drag yourself to class, and deal with it.
+70. I suppose you will have to get up, drag yourself to class, and deal with it.
    来源：[src/data/act-one-bootstrap.content.json:145](../src/data/act-one-bootstrap.content.json#L145)
-72. Good luck, kid! I am leaving!
+71. Good luck, kid! I am leaving!
    来源：[src/data/act-one-bootstrap.content.json:152](../src/data/act-one-bootstrap.content.json#L152)
-73. Hey! What exactly do you think you are doing? Let go of me!
+72. Hey! What exactly do you think you are doing? Let go of me!
    来源：[src/data/act-one-bootstrap.content.json:161](../src/data/act-one-bootstrap.content.json#L161)
-74. 嘿！你到底在干什么？放开我！
+73. 嘿！你到底在干什么？放开我！
    来源：[src/data/act-one-bootstrap.content.json:162](../src/data/act-one-bootstrap.content.json#L162)
-75. Oh, fine, fine! But first, take your hand off me!
+74. Oh, fine, fine! But first, take your hand off me!
    来源：[src/data/act-one-bootstrap.content.json:167](../src/data/act-one-bootstrap.content.json#L167)
-76. 哦，好吧，好吧！但你先把手放开！
+75. 哦，好吧，好吧！但你先把手放开！
    来源：[src/data/act-one-bootstrap.content.json:168](../src/data/act-one-bootstrap.content.json#L168)
-77. Oh, damn it. You win, kid.
+76. Oh, damn it. You win, kid.
    来源：[src/data/act-one-bootstrap.content.json:173](../src/data/act-one-bootstrap.content.json#L173)
-78. 哦，该死。你赢了，孩子。
+77. 哦，该死。你赢了，孩子。
    来源：[src/data/act-one-bootstrap.content.json:174](../src/data/act-one-bootstrap.content.json#L174)
-79. Fine. Bring out your inventory.
+78. Fine. Bring out your inventory.
    来源：[src/data/act-one-bootstrap.content.json:179](../src/data/act-one-bootstrap.content.json#L179)
-80. 行。把你的道具栏拿出来。
+79. 行。把你的道具栏拿出来。
    来源：[src/data/act-one-bootstrap.content.json:180](../src/data/act-one-bootstrap.content.json#L180)
-81. Wait. Where is your inventory? You cannot expect me to work empty-handed!
+80. Wait. Where is your inventory? You cannot expect me to work empty-handed!
    来源：[src/data/act-one-bootstrap.content.json:185](../src/data/act-one-bootstrap.content.json#L185)
-82. 等等，你的道具栏呢？你总不能指望我空手干活！
+81. 等等，你的道具栏呢？你总不能指望我空手干活！
    来源：[src/data/act-one-bootstrap.content.json:186](../src/data/act-one-bootstrap.content.json#L186)
-83. Just. Find it.
+82. Just. Find it.
    来源：[src/data/act-one-bootstrap.content.json:191](../src/data/act-one-bootstrap.content.json#L191)
-84. 去。找。到。它。
+83. 去。找。到。它。
    来源：[src/data/act-one-bootstrap.content.json:192](../src/data/act-one-bootstrap.content.json#L192)
-85. You found it. Great. Then let us get moving.
+84. You found it. Great. Then let us get moving.
    来源：[src/data/act-one-bootstrap.content.json:197](../src/data/act-one-bootstrap.content.json#L197)
-86. 你找到了，那就太好了，我们出发吧！
+85. 你找到了，那就太好了，我们出发吧！
    来源：[src/data/act-one-bootstrap.content.json:198](../src/data/act-one-bootstrap.content.json#L198)
-87. I should be honest. I do not have permission to edit attendance records.
+86. I should be honest. I do not have permission to edit attendance records.
    来源：[src/data/act-one-bootstrap.content.json:203](../src/data/act-one-bootstrap.content.json#L203)
-88. 我得说实话了，我没有修改记录权限
+87. 我得说实话了，我没有修改记录权限
    来源：[src/data/act-one-bootstrap.content.json:204](../src/data/act-one-bootstrap.content.json#L204)
-89. But I have a friend who might.
+88. But I have a friend who might.
    来源：[src/data/act-one-bootstrap.content.json:209](../src/data/act-one-bootstrap.content.json#L209)
-90. 但我有一个朋友她或许能做到
+89. 但我有一个朋友她或许能做到
    来源：[src/data/act-one-bootstrap.content.json:210](../src/data/act-one-bootstrap.content.json#L210)
-91. If we still want your participation grade, we need to find her in the library.
+90. If we still want your participation grade, we need to find her in the library.
    来源：[src/data/act-one-bootstrap.content.json:215](../src/data/act-one-bootstrap.content.json#L215)
-92. 如果我们还想要平时分，就得去图书馆找她
+91. 如果我们还想要平时分，就得去图书馆找她
    来源：[src/data/act-one-bootstrap.content.json:216](../src/data/act-one-bootstrap.content.json#L216)
-93. Understood? Then move.
+92. Understood? Then move.
    来源：[src/data/act-one-bootstrap.content.json:221](../src/data/act-one-bootstrap.content.json#L221)
-94. 明白了？那就快行动吧！
+93. 明白了？那就快行动吧！
    来源：[src/data/act-one-bootstrap.content.json:222](../src/data/act-one-bootstrap.content.json#L222)
-95. He cannot hear you. At the moment, he does not even have a name to answer to.
+94. He cannot hear you. At the moment, he does not even have a name to answer to.
    来源：[src/data/act-one-bootstrap.content.json:227](../src/data/act-one-bootstrap.content.json#L227)
-96. 他听不到你说话。现在的他连一个能回应的名字都没有。
+95. 他听不到你说话。现在的他连一个能回应的名字都没有。
    来源：[src/data/act-one-bootstrap.content.json:228](../src/data/act-one-bootstrap.content.json#L228)
-97. Name and student ID match. Good. He now knows who he is.
+96. Name and student ID match. Good. He now knows who he is.
    来源：[src/data/act-one-bootstrap.content.json:233](../src/data/act-one-bootstrap.content.json#L233)
-98. 姓名和学号一致。很好，他现在知道自己是谁了。
+97. 姓名和学号一致。很好，他现在知道自己是谁了。
    来源：[src/data/act-one-bootstrap.content.json:234](../src/data/act-one-bootstrap.content.json#L234)
-99. Exercise record synced. Check the new Direction Calibration notice on the phone home screen.
+98. Exercise record synced. Check the new Direction Calibration notice on the phone home screen.
    来源：[src/data/act-one-bootstrap.content.json:239](../src/data/act-one-bootstrap.content.json#L239)
-100. 锻炼记录已同步。
+99. 锻炼记录已同步。
    来源：[src/data/act-one-bootstrap.content.json:240](../src/data/act-one-bootstrap.content.json#L240)
-101. Triangle collected. Open Weather next and catch one drop of rain.
+100. Triangle collected. Open Weather next and catch one drop of rain.
    来源：[src/data/act-one-bootstrap.content.json:245](../src/data/act-one-bootstrap.content.json#L245)
-102. 获得道具：三角形。
+101. 获得道具：三角形。
    来源：[src/data/act-one-bootstrap.content.json:246](../src/data/act-one-bootstrap.content.json#L246)
-103. Weather drop collected. Use it on the stuck vertical line beside the mentor avatar.
+102. Weather drop collected. Use it on the stuck vertical line beside the mentor avatar.
    来源：[src/data/act-one-bootstrap.content.json:251](../src/data/act-one-bootstrap.content.json#L251)
-104. 获得道具：天气水滴。
+103. 获得道具：天气水滴。
    来源：[src/data/act-one-bootstrap.content.json:252](../src/data/act-one-bootstrap.content.json#L252)
-105. That vertical line is stuck. Apparently, even your advisor's avatar has formatting requirements.
+104. That vertical line is stuck. Apparently, even your advisor's avatar has formatting requirements.
    来源：[src/data/act-one-bootstrap.content.json:257](../src/data/act-one-bootstrap.content.json#L257)
-106. 那条竖线粘住了。看来导师头像也有自己的排版要求。
+105. 那条竖线粘住了。看来导师头像也有自己的排版要求。
    来源：[src/data/act-one-bootstrap.content.json:258](../src/data/act-one-bootstrap.content.json#L258)
-107. A triangle plus a vertical line. You now have an arrow that can move things to the right.
+106. A triangle plus a vertical line. You now have an arrow that can move things to the right.
    来源：[src/data/act-one-bootstrap.content.json:263](../src/data/act-one-bootstrap.content.json#L263)
-108. 一个三角形加一条竖线。现在你有了一支能把东西向右移的箭头。
+107. 一个三角形加一条竖线。现在你有了一支能把东西向右移的箭头。
    来源：[src/data/act-one-bootstrap.content.json:264](../src/data/act-one-bootstrap.content.json#L264)
-109. The decimal point moved two places right. Six cents has temporarily acquired the dignity of six yuan.
+108. The decimal point moved two places right. Six cents has temporarily acquired the dignity of six yuan.
    来源：[src/data/act-one-bootstrap.content.json:269](../src/data/act-one-bootstrap.content.json#L269)
-110. 小数点向右移动了两位。六分钱暂时获得了六元钱的尊严。
+109. 小数点向右移动了两位。六分钱暂时获得了六元钱的尊严。
    来源：[src/data/act-one-bootstrap.content.json:270](../src/data/act-one-bootstrap.content.json#L270)
-111. You only have zero point zero six yuan. The seller rejected your hundred-installment plan.
+110. You only have zero point zero six yuan. The seller rejected your hundred-installment plan.
    来源：[src/data/act-one-bootstrap.content.json:275](../src/data/act-one-bootstrap.content.json#L275)
-112. 你只有零点零六元。卖家拒绝了你分一百期付款的方案。
+111. 你只有零点零六元。卖家拒绝了你分一百期付款的方案。
    来源：[src/data/act-one-bootstrap.content.json:276](../src/data/act-one-bootstrap.content.json#L276)
-113. You can leave now.
+112. You can leave now.
    来源：[src/data/act-one-bootstrap.content.json:281](../src/data/act-one-bootstrap.content.json#L281)
-114. 现在可以出门了。
+113. 现在可以出门了。
    来源：[src/data/act-one-bootstrap.content.json:282](../src/data/act-one-bootstrap.content.json#L282)
-115. 蓝田六舍 · W12
+114. 蓝田六舍 · W12
    来源：[src/data/act-one-bootstrap.content.json:288](../src/data/act-one-bootstrap.content.json#L288)
-116. 室友留言：你的校园卡压在右边书桌那摞纸旁边。
+115. 室友留言：你的校园卡压在右边书桌那摞纸旁边。
    来源：[src/data/act-one-bootstrap.content.json:289](../src/data/act-one-bootstrap.content.json#L289)
-117. 校园卡
+116. 校园卡
    来源：[src/data/act-one-bootstrap.content.json:290](../src/data/act-one-bootstrap.content.json#L290)
-118. 返回校园地图
+117. 返回校园地图
    来源：[src/data/act-one-bootstrap.content.json:291](../src/data/act-one-bootstrap.content.json#L291)
-119. 手柄毕业生
+118. 手柄毕业生
    来源：[src/data/act-one-bootstrap.content.json:295](../src/data/act-one-bootstrap.content.json#L295)
-120. 二手市场
+119. 二手市场
    来源：[src/data/act-one-bootstrap.content.json:298](../src/data/act-one-bootstrap.content.json#L298)
-121. 毕业出老旧手柄6元仅限寝室自提
+120. 毕业出老旧手柄6元仅限寝室自提
    来源：[src/data/act-one-bootstrap.content.json:299](../src/data/act-one-bootstrap.content.json#L299)
-122. 26-07-11 07:55
+121. 26-07-11 07:55
    来源：[src/data/act-one-bootstrap.content.json:302](../src/data/act-one-bootstrap.content.json#L302)
-123. 方向键和摇杆都能用，但A键有点卡得用力按。一口价6元，别拿0.06来私信分期了，不包邮只能寝室自提。
+122. 方向键和摇杆都能用，但A键有点卡得用力按。一口价6元，别拿0.06来私信分期了，不包邮只能寝室自提。
    来源：[src/data/act-one-bootstrap.content.json:303](../src/data/act-one-bootstrap.content.json#L303)
-124. 支付 6 元购买手柄
+123. 支付 6 元购买手柄
    来源：[src/data/act-one-bootstrap.content.json:304](../src/data/act-one-bootstrap.content.json#L304)
-125. checkin\_incomplete
+124. checkin\_incomplete
    来源：[src/modules/ActOneBootstrapController.ts:77](../src/modules/ActOneBootstrapController.ts#L77)
-126. capture\_incomplete
+125. capture\_incomplete
    来源：[src/modules/ActOneBootstrapController.ts:88](../src/modules/ActOneBootstrapController.ts#L88)
-127. 他好像没什么动力走
+126. 他好像没什么动力走
    来源：[src/modules/ActOneBootstrapController.ts:209](../src/modules/ActOneBootstrapController.ts#L209)
-128. 他可能不太知道往哪边走
+127. 他可能不太知道往哪边走
    来源：[src/modules/ActOneBootstrapController.ts:213](../src/modules/ActOneBootstrapController.ts#L213)
-129. 在寝室刷3公里的想法不错
+128. 在寝室刷3公里的想法不错
    来源：[src/modules/ActOneBootstrapController.ts:214](../src/modules/ActOneBootstrapController.ts#L214)
-130. campus\_card\_required
+129. campus\_card\_required
    来源：[src/modules/ActOneBootstrapController.ts:380](../src/modules/ActOneBootstrapController.ts#L380)
-131. not\_owned
+130. not\_owned
    来源：[src/modules/ActOneBootstrapController.ts:494](../src/modules/ActOneBootstrapController.ts#L494)
-132. inactive
+131. inactive
    来源：[src/modules/ActOneBootstrapController.ts:498](../src/modules/ActOneBootstrapController.ts#L498)
-133. identity\_required
+132. identity\_required
    来源：[src/modules/ActOneBootstrapController.ts:502](../src/modules/ActOneBootstrapController.ts#L502)
-134. exercise\_required
+133. exercise\_required
    来源：[src/modules/ActOneBootstrapController.ts:506](../src/modules/ActOneBootstrapController.ts#L506)
-135. wrong\_library
+134. wrong\_library
    来源：[src/modules/ActOneBootstrapController.ts:570](../src/modules/ActOneBootstrapController.ts#L570)
-136. wrong\_room
+135. wrong\_room
    来源：[src/modules/ActOneBootstrapController.ts:574](../src/modules/ActOneBootstrapController.ts#L574)
-137. wrong\_seat
+136. wrong\_seat
    来源：[src/modules/ActOneBootstrapController.ts:578](../src/modules/ActOneBootstrapController.ts#L578)
-138. 早八闹钟
+137. 早八闹钟
    来源：[src/scenes/phone/P00_Alarm/index.tsx:84](../src/scenes/phone/P00_Alarm/index.tsx#L84)
-139. 学在浙大签到还剩 5 分钟
+138. 学在浙大签到还剩 5 分钟
    来源：[src/scenes/phone/P00_Alarm/index.tsx:86](../src/scenes/phone/P00_Alarm/index.tsx#L86)
-140. 开始游戏
+139. 开始游戏
    来源：[src/scenes/phone/P00_Alarm/index.tsx:91](../src/scenes/phone/P00_Alarm/index.tsx#L91)
-141. 关闭
+140. 关闭
    来源：[src/scenes/phone/P00_Alarm/index.tsx:95](../src/scenes/phone/P00_Alarm/index.tsx#L95)
-142. 放下手机，回到桌面
-   来源：[src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx:14](../src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx#L14)
-143. 充电完成
-   来源：[src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx:54](../src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx#L54)
-144. 电量充足
-   来源：[src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx:59](../src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx#L59)
-145. 桌面物件
-   来源：[src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx:69](../src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx#L69)
-146. 连接桌面充电座
-   来源：[src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx:72](../src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx#L72)
-147. % · 电量
-   来源：[src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx:74](../src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx#L74)
-148. 充电进度
-   来源：[src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx:74](../src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx#L74)
-149. 连接
-   来源：[src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx:74](../src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx#L74)
-150. 拿起手机
-   来源：[src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx:77](../src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx#L77)
-151. 拔下充电线
-   来源：[src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx:81](../src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx#L81)
-152. 已断开
-   来源：[src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx:81](../src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx#L81)
-153. ZJUWLAN ·
-   来源：[src/scenes/phone/P01_Desktop/index.tsx:39](../src/scenes/phone/P01_Desktop/index.tsx#L39)
-154. （我）
-   来源：[src/scenes/phone/P01_Desktop/index.tsx:44](../src/scenes/phone/P01_Desktop/index.tsx#L44)
-155. ……再睡5分钟……
-   来源：[src/scenes/phone/P01_Desktop/index.tsx:46](../src/scenes/phone/P01_Desktop/index.tsx#L46)
-156. 起床蠢货
+141. ZJUWLAN ·
+   来源：[src/scenes/phone/P01_Desktop/index.tsx:35](../src/scenes/phone/P01_Desktop/index.tsx#L35)
+142. （我）
+   来源：[src/scenes/phone/P01_Desktop/index.tsx:40](../src/scenes/phone/P01_Desktop/index.tsx#L40)
+143. ……再睡5分钟……
+   来源：[src/scenes/phone/P01_Desktop/index.tsx:42](../src/scenes/phone/P01_Desktop/index.tsx#L42)
+144. 起床蠢货
+   来源：[src/scenes/phone/P01_Desktop/index.tsx:48](../src/scenes/phone/P01_Desktop/index.tsx#L48)
+145. 进入手机主界面
    来源：[src/scenes/phone/P01_Desktop/index.tsx:52](../src/scenes/phone/P01_Desktop/index.tsx#L52)
-157. 进入手机主界面
-   来源：[src/scenes/phone/P01_Desktop/index.tsx:56](../src/scenes/phone/P01_Desktop/index.tsx#L56)
-158. 你没有5分钟了，但你很有勇气
-   来源：[src/scenes/phone/P01_Desktop/index.tsx:64](../src/scenes/phone/P01_Desktop/index.tsx#L64)
-159. 旁白
-   来源：[src/scenes/phone/P01_Desktop/index.tsx:64](../src/scenes/phone/P01_Desktop/index.tsx#L64)
-160. 水帖
+146. 你没有5分钟了，但你很有勇气
+   来源：[src/scenes/phone/P01_Desktop/index.tsx:59](../src/scenes/phone/P01_Desktop/index.tsx#L59)
+147. 旁白
+   来源：[src/scenes/phone/P01_Desktop/index.tsx:59](../src/scenes/phone/P01_Desktop/index.tsx#L59)
+148. 水帖
    来源：[src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx:27](../src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx#L27)
-161. caption
+149. caption
    来源：[src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx:38](../src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx#L38)
-162. 路过
+150. 路过
    来源：[src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx:56](../src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx#L56)
-163. 022占座调查帖回复
+151. 022占座调查帖回复
    来源：[src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx:67](../src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx#L67)
-164. 23 楼调查记录
+152. 23 楼调查记录
    来源：[src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx:70](../src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx#L70)
-165. 关键线索分布在不同用户的回复和引用中。
+153. 关键线索分布在不同用户的回复和引用中。
    来源：[src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx:71](../src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx#L71)
-166. ac01 已读
+154. ac01 已读
    来源：[src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx:73](../src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx#L73)
-167. 楼
+155. 楼
    来源：[src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx:93](../src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx#L93)
-168. CC98 bd 表情包
+156. CC98 bd 表情包
    来源：[src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx:99](../src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx#L99)
-169. 读一下（可选）
+157. 读一下（可选）
    来源：[src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx:110](../src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx#L110)
-170. 已记下这条水帖
+158. 已记下这条水帖
    来源：[src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx:110](../src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx#L110)
-171. 条 ac01 全部为可选内容；证据进度不会因此变化。
+159. 条 ac01 全部为可选内容；证据进度不会因此变化。
    来源：[src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx:119](../src/scenes/phone/P02_CC98/Ac01FilterPuzzle.tsx#L119)
-172. 卖家暂时不认识这段剧情。
+160. 卖家暂时不认识这段剧情。
    来源：[src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx:27](../src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx#L27)
-173. system
+161. system
    来源：[src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx:27](../src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx#L27)；[src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx:31](../src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx#L31)；[src/scenes/phone/P06_Tiyi/index.tsx:84](../src/scenes/phone/P06_Tiyi/index.tsx#L84)；[src/scenes/phone/P06_Tiyi/index.tsx:88](../src/scenes/phone/P06_Tiyi/index.tsx#L88)；[src/scenes/phone/P11_Checkin/index.tsx:94](../src/scenes/phone/P11_Checkin/index.tsx#L94)
-174. 手柄已经在道具栏里。
+162. 手柄已经在道具栏里。
    来源：[src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx:31](../src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx#L31)
-175. 支付成功：游戏手柄已放入道具栏。
+163. 支付成功：游戏手柄已放入道具栏。
    来源：[src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx:34](../src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx#L34)
-176. task
-   来源：[src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx:34](../src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx#L34)；[src/scenes/phone/P06_Tiyi/index.tsx:79](../src/scenes/phone/P06_Tiyi/index.tsx#L79)；[src/scenes/phone/P10_Bonsai/index.tsx:93](../src/scenes/phone/P10_Bonsai/index.tsx#L93)；[src/scenes/phone/P11_Checkin/index.tsx:116](../src/scenes/phone/P11_Checkin/index.tsx#L116)
-177. CC98游戏手柄交易
+164. task
+   来源：[src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx:34](../src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx#L34)；[src/scenes/phone/P06_Tiyi/index.tsx:79](../src/scenes/phone/P06_Tiyi/index.tsx#L79)；[src/scenes/phone/P10_Bonsai/index.tsx:92](../src/scenes/phone/P10_Bonsai/index.tsx#L92)；[src/scenes/phone/P11_Checkin/index.tsx:116](../src/scenes/phone/P11_Checkin/index.tsx#L116)
+165. CC98游戏手柄交易
    来源：[src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx:44](../src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx#L44)
-178. 二手游戏手柄 × 1
+166. 二手游戏手柄 × 1
    来源：[src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx:51](../src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx#L51)
-179. 商品
+167. 商品
    来源：[src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx:51](../src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx#L51)
-180. ¥6.00，不议价
+168. ¥6.00，不议价
    来源：[src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx:52](../src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx#L52)
-181. 售价
+169. 售价
    来源：[src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx:52](../src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx#L52)
-182. 你的余额
+170. 你的余额
    来源：[src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx:53](../src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx#L53)
-183. 收货人
+171. 收货人
    来源：[src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx:55](../src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx#L55)
-184. 身份信息尚未读取
+172. 身份信息尚未读取
    来源：[src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx:56](../src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx#L56)
-185. 回寝室试用手柄
+173. 回寝室试用手柄
    来源：[src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx:60](../src/scenes/phone/P02_CC98/ControlExchangePuzzle.tsx#L60)
-186. 这个槽位需要对应名称的纸质材料。
+174. 这个槽位需要对应名称的纸质材料。
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:143](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L143)
-187. 这份材料还没有形成可核对的道具。
+175. 这份材料还没有形成可核对的道具。
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:153](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L153)
-188. 当前阶段不能选入这条回复。
+176. 当前阶段不能选入这条回复。
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:160](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L160)
-189. CC98证据与十大排名
+177. CC98证据与十大排名
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:190](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L190)
-190. 楼主证据上传区
+178. 楼主证据上传区
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:192](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L192)
-191. 楼主编辑：上传证据
+179. 楼主编辑：上传证据
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:195](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L195)
-192. 证据完整度：
+180. 证据完整度：
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:196](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L196)
-193. 待补齐
+181. 待补齐
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:198](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L198)
-194. 等待说明
+182. 等待说明
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:198](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L198)
-195. 可生成口令
+183. 可生成口令
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:198](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L198)
-196. 上传
+184. 上传
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:219](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L219)
-197. 未获得
+185. 未获得
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:219](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L219)
-198. 已上传
+186. 已上传
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:219](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L219)
-199. 当前排名
+187. 当前排名
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:228](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L228)
-200. 请先上传四项证据
+188. 请先上传四项证据
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:230](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L230)
-201. 十大第一
+189. 十大第一
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:230](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L230)
-202. 完成 BD 四位口令
+190. 完成 BD 四位口令
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:230](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L230)
-203. BD四位热度口令
+191. BD四位热度口令
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:234](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L234)
-204. 口令顺序提示
+192. 口令顺序提示
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:240](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L240)
-205. 当前口令 {{selectedPostIds.map((id) =&gt; BD\_DIGIT\_BY\_POST.get(id)).join("") \|\| "空"}}
+193. 当前口令 {{selectedPostIds.map((id) =&gt; BD\_DIGIT\_BY\_POST.get(id)).join("") \|\| "空"}}
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:245](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L245)
-206. 撤回一位
+194. 撤回一位
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:249](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L249)
-207. 清空
+195. 清空
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:250](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L250)
-208. 提交口令
+196. 提交口令
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:251](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L251)
-209. 已通过
+197. 已通过
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:251](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L251)
-210. 数字候选回复
+198. 数字候选回复
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:255](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L255)
-211. 口令第 {{selectedIndex + 1}} 位
+199. 口令第 {{selectedIndex + 1}} 位
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:261](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L261)
-212. 楼 ·
+200. 楼 ·
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:261](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L261)
-213. 数字回复
+201. 数字回复
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:261](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L261)
-214. 数字 {{post.digit}}
+202. 数字 {{post.digit}}
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:263](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L263)
-215. 对 {{post.floor}} 楼回复 bd，选入数字 {{post.digit}}
+203. 对 {{post.floor}} 楼回复 bd，选入数字 {{post.digit}}
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:267](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L267)
-216. 第 {{selectedIndex + 1}} 位
+204. 第 {{selectedIndex + 1}} 位
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:270](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L270)
-217. bd 选入
+205. bd 选入
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:270](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L270)
-218. 公示排名已更新为 01。
+206. 公示排名已更新为 01。
    来源：[src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx:278](../src/scenes/phone/P02_CC98/TopTenRisePuzzle.tsx#L278)
-219. 先从随身校园卡确认账号，再拆开密码提示。
+207. 先从随身校园卡确认账号，再拆开密码提示。
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:27](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L27)
-220. 随身物品里没有校园卡，当前无法确认 10 位学号。
+208. 随身物品里没有校园卡，当前无法确认 10 位学号。
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:48](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L48)
-221. 校园卡已读取：{{actOneContent.studentName}}，学号已填入。
+209. 校园卡已读取：{{actOneContent.studentName}}，学号已填入。
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:52](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L52)
-222. 提示 {{count}}/3 已展开：{{hint.clue}}
+210. 提示 {{count}}/3 已展开：{{hint.clue}}
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:59](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L59)
-223. 三段密码提示已经全部展开，按顺序拼接即可。
+211. 三段密码提示已经全部展开，按顺序拼接即可。
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:61](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L61)
-224. 认证通过，正在进入 CC98。
+212. 认证通过，正在进入 CC98。
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:69](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L69)
-225. 先读取校园卡上的学号，再提交认证。
+213. 先读取校园卡上的学号，再提交认证。
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:73](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L73)
-226. 尝试暂时锁定，还需等待 {{formatWaitSeconds(result.remainingMs)}}。
+214. 尝试暂时锁定，还需等待 {{formatWaitSeconds(result.remainingMs)}}。
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:78](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L78)
-227. 学号与校园卡不一致。
+215. 学号与校园卡不一致。
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:84](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L84)
-228. 密码片段、顺序或大小写不正确。
+216. 密码片段、顺序或大小写不正确。
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:86](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L86)
-229. 学号和密码均未通过核验。
+217. 学号和密码均未通过核验。
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:87](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L87)
-230. {{mismatch}} 已累计 {{result.failureCount}} 次失败，等待 {{formatWaitSeconds(result.lockDurationMs)}} 后可重试。
+218. {{mismatch}} 已累计 {{result.failureCount}} 次失败，等待 {{formatWaitSeconds(result.lockDurationMs)}} 后可重试。
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:89](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L89)
-231. {{mismatch}} 还可立即尝试 {{CC98\_LOGIN\_FREE\_ATTEMPTS - result.failureCount}} 次。
+219. {{mismatch}} 还可立即尝试 {{CC98\_LOGIN\_FREE\_ATTEMPTS - result.failureCount}} 次。
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:90](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L90)
-232. 浙江大学统一身份认证解谜
+220. 浙江大学统一身份认证解谜
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:95](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L95)
-233. 浙江大学统一身份认证
+221. 浙江大学统一身份认证
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:100](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L100)；[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:207](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L207)
-234. UNIFIED IDENTITY AUTHENTICATION
+222. UNIFIED IDENTITY AUTHENTICATION
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:101](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L101)
-235. 浙大通行证登录
+223. 浙大通行证登录
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:106](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L106)
-236. 首次进入 CC98
+224. 首次进入 CC98
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:109](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L109)
-237. 浙大通行证
+225. 浙大通行证
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:110](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L110)
-238. 10 位学号
+226. 10 位学号
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:123](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L123)
-239. 统一身份认证学号
+227. 统一身份认证学号
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:124](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L124)
-240. 按提示组合密码
+228. 按提示组合密码
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:134](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L134)
-241. 统一身份认证密码
+229. 统一身份认证密码
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:135](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L135)
-242. 显示
+230. 显示
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:143](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L143)
-243. 隐藏
+231. 隐藏
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:143](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L143)
-244. 失败记录
+232. 失败记录
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:148](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L148)
-245. 锁定
+233. 锁定
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:150](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L150)
-246. 立即机会 {{immediateAttemptsLeft}}/3
+234. 立即机会 {{immediateAttemptsLeft}}/3
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:151](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L151)
-247. 下次失败等待 {{nextPenaltySeconds}}s
+235. 下次失败等待 {{nextPenaltySeconds}}s
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:151](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L151)
-248. 登 录
+236. 登 录
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:159](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L159)
-249. 等待 {{formatWaitSeconds(remainingMs)}}
+237. 等待 {{formatWaitSeconds(remainingMs)}}
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:159](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L159)
-250. 认证线索
+238. 认证线索
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:166](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L166)；[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:168](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L168)
-251. 本地找回
+239. 本地找回
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:168](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L168)
-252. 查看随身校园卡
+240. 查看随身校园卡
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:175](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L175)
-253. 校园卡身份已读取
+241. 校园卡身份已读取
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:175](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L175)
-254. 卡面记录了持卡人的 10 位学号
+242. 卡面记录了持卡人的 10 位学号
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:176](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L176)
-255. 读取
+243. 读取
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:178](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L178)
-256. 填入
+244. 填入
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:178](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L178)
-257. 待解锁片段
+245. 待解锁片段
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:188](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L188)
-258. 展开上一条提示后显示
+246. 展开上一条提示后显示
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:189](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L189)
-259. 提示已全部展开
+247. 提示已全部展开
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:203](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L203)
-260. 展开提示 {{login.revealedHintCount + 1}}
+248. 展开提示 {{login.revealedHintCount + 1}}
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:203](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L203)
-261. 退出认证
+249. 退出认证
    来源：[src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx:210](../src/scenes/phone/P02_CC98/UnifiedIdentityLogin.tsx#L210)
-262. 南直道
+250. 南直道
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:8](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L8)
-263. 西南弯
+251. 西南弯
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:9](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L9)
-264. 西弯道
+252. 西弯道
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:10](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L10)
-265. 西北弯
+253. 西北弯
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:11](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L11)
-266. 北直道西
+254. 北直道西
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:12](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L12)
-267. 北直道东
+255. 北直道东
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:13](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L13)
-268. 东北弯
+256. 东北弯
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:14](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L14)
-269. 东弯道
+257. 东弯道
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:15](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L15)
-270. 东南弯
+258. 东南弯
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:16](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L16)
-271. 终点线
+259. 终点线
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:17](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L17)
-272. 点击发光定位点，生成第 1 分钟的运动轨迹。
+260. 点击发光定位点，生成第 1 分钟的运动轨迹。
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:32](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L32)
-273. complete
+261. complete
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:64](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L64)
-274. ready
+262. ready
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:64](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L64)
-275. running
+263. running
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:64](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L64)
-276. 第 {{index + 1}} 分钟已经记录。当前需要第 {{recordedFixes + 1}} 个定位点。
+264. 第 {{index + 1}} 分钟已经记录。当前需要第 {{recordedFixes + 1}} 个定位点。
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:88](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L88)
-277. 定位漂移：请先补齐第 {{recordedFixes + 1}} 分钟。
+265. 定位漂移：请先补齐第 {{recordedFixes + 1}} 分钟。
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:92](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L92)
-278. 第 {{nextFixCount}} 分钟定位成功。继续戳中第 {{nextFixCount + 1}} 个定位点。
+266. 第 {{nextFixCount}} 分钟定位成功。继续戳中第 {{nextFixCount + 1}} 个定位点。
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:99](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L99)
-279. 参加者身份失效。请退出后重新确认。
+267. 参加者身份失效。请退出后重新确认。
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:105](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L105)
-280. 10 分钟定位回放完成，3.00 公里锻炼记录已同步。
+268. 10 分钟定位回放完成，3.00 公里锻炼记录已同步。
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:109](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L109)
-281. 课外锻炼虚拟定位
+269. 课外锻炼虚拟定位
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:117](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L117)
-282. VIRTUAL GPS · 紫云田径场
+270. VIRTUAL GPS · 紫云田径场
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:123](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L123)
-283. 10 分钟跑完 3 km
+271. 10 分钟跑完 3 km
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:124](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L124)
-284. 课外锻炼已同步
+272. 课外锻炼已同步
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:124](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L124)
-285. 返回体艺首页
+273. 返回体艺首页
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:126](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L126)；[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:212](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L212)
-286. 退出本次定位
+274. 退出本次定位
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:126](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L126)
-287. 本次锻炼数据
+275. 本次锻炼数据
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:129](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L129)
-288. 用时
+276. 用时
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:131](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L131)
-289. 距离
+277. 距离
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:135](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L135)
-290. 平均配速
+278. 平均配速
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:139](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L139)
-291. ZJU SPORTS
+279. ZJU SPORTS
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:160](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L160)
-292. 虚拟轨迹回放
+280. 虚拟轨迹回放
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:161](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L161)
-293. / 7.50 圈
+281. / 7.50 圈
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:162](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L162)
-294. 第 {{index + 1}} 分钟定位点：{{fix.label}}{{visited ? "，已记录" : target ? "，当前目标" : "，尚未解锁"}}
+282. 第 {{index + 1}} 分钟定位点：{{fix.label}}{{visited ? "，已记录" : target ? "，当前目标" : "，尚未解锁"}}
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:185](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L185)
-295. 定位状态
+283. 定位状态
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:195](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L195)
-296. 等待首个点
+284. 等待首个点
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:197](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L197)
-297. 轨迹锁定
+285. 轨迹锁定
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:197](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L197)
-298. 精度 ±{{Math.max(4, 13 - recordedFixes)}} m
+286. 精度 ±{{Math.max(4, 13 - recordedFixes)}} m
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:197](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L197)
-299. {{participantName}} · 记录编号 PE-0755-3000
+287. {{participantName}} · 记录编号 PE-0755-3000
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:203](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L203)
-300. 触屏点按发光目标；键盘使用 Tab 与 Enter / Space。
+288. 触屏点按发光目标；键盘使用 Tab 与 Enter / Space。
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:203](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L203)
-301. 课外锻炼完成
+289. 课外锻炼完成
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:207](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L207)
-302. TRACK ACCEPTED
+290. TRACK ACCEPTED
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:208](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L208)
-303. 3.00 KM · 03'20\\" / KM
+291. 3.00 KM · 03'20\\" / KM
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:210](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L210)
-304. 十个定位点已完成，课外锻炼记录正式生效。
+292. 十个定位点已完成，课外锻炼记录正式生效。
    来源：[src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx:211](../src/scenes/phone/P06_Tiyi/ActOneVirtualRun.tsx#L211)
-305. 旧客户端未能启动。请到微信「浙大体育与艺术」公众号的「联系我们」获取更新并安装。
+293. 旧客户端未能启动。请到微信「浙大体育与艺术」公众号的「联系我们」获取更新并安装。
    来源：[src/scenes/phone/P06_Tiyi/index.tsx:47](../src/scenes/phone/P06_Tiyi/index.tsx#L47)
-306. 「浙大体艺」已停止运行。
+294. 「浙大体艺」已停止运行。
    来源：[src/scenes/phone/P06_Tiyi/index.tsx:54](../src/scenes/phone/P06_Tiyi/index.tsx#L54)
-307. 「浙大体艺」又双叒停止运行了。
+295. 「浙大体艺」又双叒停止运行了。
    来源：[src/scenes/phone/P06_Tiyi/index.tsx:54](../src/scenes/phone/P06_Tiyi/index.tsx#L54)
-308. 47 次。它已经把 7 交出来了。
+296. 47 次。它已经把 7 交出来了。
    来源：[src/scenes/phone/P06_Tiyi/index.tsx:72](../src/scenes/phone/P06_Tiyi/index.tsx#L72)
-309. 获得第 2 位：7
+297. 获得第 2 位：7
    来源：[src/scenes/phone/P06_Tiyi/index.tsx:79](../src/scenes/phone/P06_Tiyi/index.tsx#L79)
-310. 课外锻炼已经在记录。
+298. 课外锻炼已经在记录。
    来源：[src/scenes/phone/P06_Tiyi/index.tsx:84](../src/scenes/phone/P06_Tiyi/index.tsx#L84)
-311. 锻炼对象没有姓名。先去给他打电话。
+299. 锻炼对象没有姓名。先去给他打电话。
    来源：[src/scenes/phone/P06_Tiyi/index.tsx:88](../src/scenes/phone/P06_Tiyi/index.tsx#L88)
-312. 浙大体艺加载中
+300. 浙大体艺加载中
    来源：[src/scenes/phone/P06_Tiyi/index.tsx:100](../src/scenes/phone/P06_Tiyi/index.tsx#L100)
-313. 退出
+301. 退出
    来源：[src/scenes/phone/P06_Tiyi/index.tsx:109](../src/scenes/phone/P06_Tiyi/index.tsx#L109)
-314. 运动打卡次数 47
+302. 运动打卡次数 47
    来源：[src/scenes/phone/P06_Tiyi/index.tsx:123](../src/scenes/phone/P06_Tiyi/index.tsx#L123)
-315. 开始虚拟定位
+303. 开始虚拟定位
    来源：[src/scenes/phone/P06_Tiyi/index.tsx:140](../src/scenes/phone/P06_Tiyi/index.tsx#L140)
-316. 课外锻炼进行中
+304. 课外锻炼进行中
    来源：[src/scenes/phone/P06_Tiyi/index.tsx:140](../src/scenes/phone/P06_Tiyi/index.tsx#L140)
-317. 10 分钟跑完 3 km · 点击生成轨迹
+305. 10 分钟跑完 3 km · 点击生成轨迹
    来源：[src/scenes/phone/P06_Tiyi/index.tsx:143](../src/scenes/phone/P06_Tiyi/index.tsx#L143)
-318. 请先在部门黄页确认参加者
+306. 请先在部门黄页确认参加者
    来源：[src/scenes/phone/P06_Tiyi/index.tsx:144](../src/scenes/phone/P06_Tiyi/index.tsx#L144)
-319. 退出浙大体艺，返回手机主页
+307. 退出浙大体艺，返回手机主页
    来源：[src/scenes/phone/P06_Tiyi/index.tsx:155](../src/scenes/phone/P06_Tiyi/index.tsx#L155)
-320. 到座耗时
+308. 到座耗时
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:40](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L40)；[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:256](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L256)
-321. 分钟
+309. 分钟
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:41](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L41)；[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:256](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L256)
-322. 入口小屏 · 计算时间差
+310. 入口小屏 · 计算时间差
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:46](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L46)
-323. 公示编号
+311. 公示编号
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:50](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L50)；[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:203](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L203)；[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:257](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L257)
-324. 号
+312. 号
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:51](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L51)
-325. CC98 楼主编辑 · 读取编号
+313. CC98 楼主编辑 · 读取编号
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:56](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L56)
-326. 证明数量
+314. 证明数量
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:60](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L60)；[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:258](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L258)
-327. 项
+315. 项
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:61](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L61)；[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:258](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L258)
-328. 旧版规则 · 统计类别
+316. 旧版规则 · 统计类别
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:66](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L66)
-329. 图书馆入口
+317. 图书馆入口
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:74](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L74)
-330. 前台
+318. 前台
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:76](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L76)
-331. 失物招领
+319. 失物招领
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:77](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L77)
-332. 馆藏检索
+320. 馆藏检索
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:78](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L78)
-333. 打印机
+321. 打印机
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:79](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L79)
-334. 书架背面
+322. 书架背面
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:80](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L80)
-335. 仍有字段与来源不一致。
+323. 仍有字段与来源不一致。
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:92](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L92)
-336. 三项字段分别对应三份已保存的证据。
+324. 三项字段分别对应三份已保存的证据。
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:112](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L112)
-337. 本人来过证明补录单
+325. 本人来过证明补录单
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:153](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L153)；[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:158](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L158)
-338. 补录成功
+326. 补录成功
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:158](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L158)
-339. 待补录 · 先核对下方三项调查材料
+327. 待补录 · 先核对下方三项调查材料
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:159](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L159)
-340. 系统已承认你确实来过图书馆
+328. 系统已承认你确实来过图书馆
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:159](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L159)
-341. 表单 022
+329. 表单 022
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:161](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L161)
-342. 已认证
+330. 已认证
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:161](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L161)；[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:252](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L252)
-343. 已记录的图书馆路线
+331. 已记录的图书馆路线
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:164](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L164)
-344. 检测到室内异常锻炼路线
+332. 检测到室内异常锻炼路线
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:165](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L165)
-345. 寝室
+333. 寝室
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:167](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L167)
-346. 补录方法
+334. 补录方法
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:174](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L174)
-347. 三项材料从哪里取得
+335. 三项材料从哪里取得
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:175](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L175)
-348. 01 图书馆入口小屏
+336. 01 图书馆入口小屏
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:177](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L177)
-349. 填写到座耗时
+337. 填写到座耗时
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:177](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L177)
-350. 02 CC98 调查帖楼主编辑
+338. 02 CC98 调查帖楼主编辑
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:178](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L178)
-351. 填写公示编号
+339. 填写公示编号
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:178](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L178)
-352. 03 一层书库 755 书架旧版规则
+340. 03 一层书库 755 书架旧版规则
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:179](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L179)
-353. 填写证明数量
+341. 填写证明数量
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:179](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L179)
-354. 三项材料可按任意顺序收集；取得后，下方会显示可核对的原文。
+342. 三项材料可按任意顺序收集；取得后，下方会显示可核对的原文。
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:181](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L181)
-355. 审核依据
+343. 审核依据
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:184](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L184)
-356. 填：到座耗时
+344. 填：到座耗时
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:188](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L188)
-357. 图书馆入口小屏
+345. 图书馆入口小屏
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:188](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L188)
-358. 基础馆入口
+346. 基础馆入口
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:191](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L191)
-359. 一层书库 022
+347. 一层书库 022
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:191](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L191)
-360. 填写两次记录的分钟差
+348. 填写两次记录的分钟差
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:192](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L192)
-361. 未取得 · 回到基础图书馆入口，查看门禁记录小屏
+349. 未取得 · 回到基础图书馆入口，查看门禁记录小屏
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:194](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L194)
-362. 填：公示编号
+350. 填：公示编号
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:200](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L200)
-363. CC98 调查帖 · 23 楼楼主编辑
+351. CC98 调查帖 · 23 楼楼主编辑
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:200](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L200)
-364. 楼主编辑原文：旧申请统一挂在
+352. 楼主编辑原文：旧申请统一挂在
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:203](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L203)
-365. 23 是回复楼层；填写原文中的公示编号
+353. 23 是回复楼层；填写原文中的公示编号
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:204](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L204)
-366. 未取得 · 在 022 座位拿到占座纸条，用它打开 CC98 调查帖
+354. 未取得 · 在 022 座位拿到占座纸条，用它打开 CC98 调查帖
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:206](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L206)
-367. 《旧版临时离座恢复规定》
+355. 《旧版临时离座恢复规定》
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:212](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L212)
-368. 填：证明数量
+356. 填：证明数量
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:212](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L212)
-369. 填写规则列出的证明类别数量
+357. 填写规则列出的证明类别数量
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:218](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L218)
-370. 未取得 · 在一层书库 755 书架使用“索书号 755”，取得并阅读规则
+358. 未取得 · 在一层书库 755 书架使用“索书号 755”，取得并阅读规则
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:220](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L220)
-371. 来源
+359. 来源
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:237](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L237)
-372. {{control.label}}减一
+360. {{control.label}}减一
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:239](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L239)
-373. {{control.label}}加一
+361. {{control.label}}加一
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:241](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L241)
-374. 提交补录
+362. 提交补录
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:247](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L247)
-375. 本人来过证明
+363. 本人来过证明
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:253](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L253)
-376. 一张证明你来过的证明。它没有证明你为什么要来。
+364. 一张证明你来过的证明。它没有证明你为什么要来。
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:254](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L254)
-377. 已验证补录值
+365. 已验证补录值
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:255](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L255)
-378. 返回手机主页
+366. 返回手机主页
    来源：[src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx:260](../src/scenes/phone/P06_Tiyi/RouteAuditPanel.tsx#L260)
-379. 已照光
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:32](../src/scenes/phone/P10_Bonsai/index.tsx#L32)
-380. 已浇水
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:48](../src/scenes/phone/P10_Bonsai/index.tsx#L48)
-381. 已施肥
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:59](../src/scenes/phone/P10_Bonsai/index.tsx#L59)
-382. 没什么反应。
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:67](../src/scenes/phone/P10_Bonsai/index.tsx#L67)
-383. 花心空空的。
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:79](../src/scenes/phone/P10_Bonsai/index.tsx#L79)
-384. 它绝对不会开花。
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:82](../src/scenes/phone/P10_Bonsai/index.tsx#L82)
-385. 获得第 4 位：8
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:93](../src/scenes/phone/P10_Bonsai/index.tsx#L93)
-386. 好像有点想开花
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:96](../src/scenes/phone/P10_Bonsai/index.tsx#L96)
-387. 开花了？！
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:96](../src/scenes/phone/P10_Bonsai/index.tsx#L96)
-388. 它绝对不会开花
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:96](../src/scenes/phone/P10_Bonsai/index.tsx#L96)
-389. 盆栽
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:99](../src/scenes/phone/P10_Bonsai/index.tsx#L99)；[src/scenes/phone/P10_Bonsai/index.tsx:106](../src/scenes/phone/P10_Bonsai/index.tsx#L106)
-390. 盛开的盆栽
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:106](../src/scenes/phone/P10_Bonsai/index.tsx#L106)
-391. 数字 8
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:116](../src/scenes/phone/P10_Bonsai/index.tsx#L116)
-392. waterDrop
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:123](../src/scenes/phone/P10_Bonsai/index.tsx#L123)
-393. sun
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:126](../src/scenes/phone/P10_Bonsai/index.tsx#L126)
-394. fertilizer
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:129](../src/scenes/phone/P10_Bonsai/index.tsx#L129)
-395. 退出盆栽，返回手机主页
-   来源：[src/scenes/phone/P10_Bonsai/index.tsx:133](../src/scenes/phone/P10_Bonsai/index.tsx#L133)
-396. 请连接校园网。
+367. 已照光
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:31](../src/scenes/phone/P10_Bonsai/index.tsx#L31)
+368. 已浇水
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:47](../src/scenes/phone/P10_Bonsai/index.tsx#L47)
+369. 已施肥
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:58](../src/scenes/phone/P10_Bonsai/index.tsx#L58)
+370. 没什么反应。
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:66](../src/scenes/phone/P10_Bonsai/index.tsx#L66)
+371. 花心空空的。
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:78](../src/scenes/phone/P10_Bonsai/index.tsx#L78)
+372. 它绝对不会开花。
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:81](../src/scenes/phone/P10_Bonsai/index.tsx#L81)
+373. 获得第 4 位：8
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:92](../src/scenes/phone/P10_Bonsai/index.tsx#L92)
+374. 好像有点想开花
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:95](../src/scenes/phone/P10_Bonsai/index.tsx#L95)
+375. 开花了？！
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:95](../src/scenes/phone/P10_Bonsai/index.tsx#L95)
+376. 它绝对不会开花
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:95](../src/scenes/phone/P10_Bonsai/index.tsx#L95)
+377. 盆栽
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:98](../src/scenes/phone/P10_Bonsai/index.tsx#L98)；[src/scenes/phone/P10_Bonsai/index.tsx:104](../src/scenes/phone/P10_Bonsai/index.tsx#L104)
+378. 盛开的盆栽
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:104](../src/scenes/phone/P10_Bonsai/index.tsx#L104)
+379. 数字 8
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:114](../src/scenes/phone/P10_Bonsai/index.tsx#L114)
+380. waterDrop
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:121](../src/scenes/phone/P10_Bonsai/index.tsx#L121)
+381. sun
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:124](../src/scenes/phone/P10_Bonsai/index.tsx#L124)
+382. fertilizer
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:127](../src/scenes/phone/P10_Bonsai/index.tsx#L127)
+383. 退出盆栽，返回手机主页
+   来源：[src/scenes/phone/P10_Bonsai/index.tsx:131](../src/scenes/phone/P10_Bonsai/index.tsx#L131)
+384. 请连接校园网。
    来源：[src/scenes/phone/P11_Checkin/index.tsx:94](../src/scenes/phone/P11_Checkin/index.tsx#L94)
-397. 签到码错误。
+385. 签到码错误。
    来源：[src/scenes/phone/P11_Checkin/index.tsx:103](../src/scenes/phone/P11_Checkin/index.tsx#L103)
-398. 获得第 1 位：0
+386. 获得第 1 位：0
    来源：[src/scenes/phone/P11_Checkin/index.tsx:116](../src/scenes/phone/P11_Checkin/index.tsx#L116)
-399. 校务签到
+387. 校务签到
    来源：[src/scenes/phone/P11_Checkin/index.tsx:127](../src/scenes/phone/P11_Checkin/index.tsx#L127)
-400. 返回学在浙大
+388. 返回学在浙大
    来源：[src/scenes/phone/P11_Checkin/index.tsx:129](../src/scenes/phone/P11_Checkin/index.tsx#L129)
-401. 学在浙大 · 课堂签到
+389. 学在浙大 · 课堂签到
    来源：[src/scenes/phone/P11_Checkin/index.tsx:130](../src/scenes/phone/P11_Checkin/index.tsx#L130)
-402. 高等数学（早八特供版）
+390. 高等数学（早八特供版）
    来源：[src/scenes/phone/P11_Checkin/index.tsx:135](../src/scenes/phone/P11_Checkin/index.tsx#L135)
-403. 快快老师 · 紫金港西1-201 · 08:00
+391. 快快老师 · 紫金港西1-201 · 08:00
    来源：[src/scenes/phone/P11_Checkin/index.tsx:138](../src/scenes/phone/P11_Checkin/index.tsx#L138)
-404. 正在点名中……
+392. 正在点名中……
    来源：[src/scenes/phone/P11_Checkin/index.tsx:139](../src/scenes/phone/P11_Checkin/index.tsx#L139)
-405. 本周缺勤
+393. 本周缺勤
    来源：[src/scenes/phone/P11_Checkin/index.tsx:141](../src/scenes/phone/P11_Checkin/index.tsx#L141)
-406. 收集本周缺勤次数零
+394. 收集本周缺勤次数零
    来源：[src/scenes/phone/P11_Checkin/index.tsx:143](../src/scenes/phone/P11_Checkin/index.tsx#L143)
-407. 次
+395. 次
    来源：[src/scenes/phone/P11_Checkin/index.tsx:147](../src/scenes/phone/P11_Checkin/index.tsx#L147)
-408. 签到码输入
+396. 签到码输入
    来源：[src/scenes/phone/P11_Checkin/index.tsx:151](../src/scenes/phone/P11_Checkin/index.tsx#L151)
-409. 签到码错误，请重新输入
+397. 签到码错误，请重新输入
    来源：[src/scenes/phone/P11_Checkin/index.tsx:169](../src/scenes/phone/P11_Checkin/index.tsx#L169)
-410. 数字键盘
+398. 数字键盘
    来源：[src/scenes/phone/P11_Checkin/index.tsx:171](../src/scenes/phone/P11_Checkin/index.tsx#L171)
-411. 删除
+399. 删除
    来源：[src/scenes/phone/P11_Checkin/index.tsx:177](../src/scenes/phone/P11_Checkin/index.tsx#L177)
-412. 签到
+400. 签到
    来源：[src/scenes/phone/P11_Checkin/index.tsx:184](../src/scenes/phone/P11_Checkin/index.tsx#L184)
-413. 签
+401. 签
    来源：[src/scenes/phone/P11_Checkin/index.tsx:195](../src/scenes/phone/P11_Checkin/index.tsx#L195)
-414. 到
+402. 到
    来源：[src/scenes/phone/P11_Checkin/index.tsx:196](../src/scenes/phone/P11_Checkin/index.tsx#L196)
-415. 系统通知 · LOCATION ERROR
+403. 系统通知 · LOCATION ERROR
    来源：[src/scenes/phone/P11_Checkin/index.tsx:201](../src/scenes/phone/P11_Checkin/index.tsx#L201)
-416. 经度与纬度不存在
+404. 经度与纬度不存在
    来源：[src/scenes/phone/P11_Checkin/index.tsx:202](../src/scenes/phone/P11_Checkin/index.tsx#L202)
-417. longitude: null · latitude: null
+405. longitude: null · latitude: null
    来源：[src/scenes/phone/P11_Checkin/index.tsx:203](../src/scenes/phone/P11_Checkin/index.tsx#L203)
-418. 黑屏
+406. 黑屏
    来源：[src/scenes/phone/P11_Checkin/index.tsx:209](../src/scenes/phone/P11_Checkin/index.tsx#L209)
-419. 齿轮已经掉在下面了。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:232](../src/scenes/phone/P13_PhoneHome/index.tsx#L232)
-420. 它看起来很想转转。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:236](../src/scenes/phone/P13_PhoneHome/index.tsx#L236)
-421. 它转起来了！
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:236](../src/scenes/phone/P13_PhoneHome/index.tsx#L236)
-422. {{definition.ariaLabel ?? definition.label}}{{access.chapter === "chapter\_one" ? "" : "，按 F2 编辑桌面"}}
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:563](../src/scenes/phone/P13_PhoneHome/index.tsx#L563)
-423. 检查上铺床组
+407. 齿轮已经掉在下面了。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:231](../src/scenes/phone/P13_PhoneHome/index.tsx#L231)
+408. 它看起来很想转转。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:235](../src/scenes/phone/P13_PhoneHome/index.tsx#L235)
+409. 它转起来了！
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:235](../src/scenes/phone/P13_PhoneHome/index.tsx#L235)
+410. {{definition.ariaLabel ?? definition.label}}{{access.chapter === "chapter\_one" ? "" : "，按 F2 编辑桌面"}}
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:562](../src/scenes/phone/P13_PhoneHome/index.tsx#L562)
+411. 检查上铺床组
    来源：[src/scenes/rpg/DormHubModel.ts:142](../src/scenes/rpg/DormHubModel.ts#L142)
-424. 检查下铺床组
+412. 检查下铺床组
    来源：[src/scenes/rpg/DormHubModel.ts:143](../src/scenes/rpg/DormHubModel.ts#L143)
-425. 拉动窗帘
+413. 拉动窗帘
    来源：[src/scenes/rpg/DormHubModel.ts:144](../src/scenes/rpg/DormHubModel.ts#L144)
-426. 打开窗下柜
+414. 打开窗下柜
    来源：[src/scenes/rpg/DormHubModel.ts:145](../src/scenes/rpg/DormHubModel.ts#L145)
-427. 查看鞋架
+415. 查看鞋架
    来源：[src/scenes/rpg/DormHubModel.ts:146](../src/scenes/rpg/DormHubModel.ts#L146)
-428. 查看洗衣篮
+416. 查看洗衣篮
    来源：[src/scenes/rpg/DormHubModel.ts:147](../src/scenes/rpg/DormHubModel.ts#L147)
-429. 拨动蓝色台灯
+417. 拨动蓝色台灯
    来源：[src/scenes/rpg/DormHubModel.ts:148](../src/scenes/rpg/DormHubModel.ts#L148)
-430. 翻看摊开的书
+418. 翻看摊开的书
    来源：[src/scenes/rpg/DormHubModel.ts:149](../src/scenes/rpg/DormHubModel.ts#L149)
-431. 检查个人书桌
+419. 检查个人书桌
    来源：[src/scenes/rpg/DormHubModel.ts:150](../src/scenes/rpg/DormHubModel.ts#L150)
-432. 拉开书桌抽屉
+420. 拉开书桌抽屉
    来源：[src/scenes/rpg/DormHubModel.ts:151](../src/scenes/rpg/DormHubModel.ts#L151)
-433. 拧开水龙头
+421. 拧开水龙头
    来源：[src/scenes/rpg/DormHubModel.ts:152](../src/scenes/rpg/DormHubModel.ts#L152)
-434. 查看床边书架
+422. 查看床边书架
    来源：[src/scenes/rpg/DormHubModel.ts:153](../src/scenes/rpg/DormHubModel.ts#L153)
-435. 检查地上的背包
+423. 检查地上的背包
    来源：[src/scenes/rpg/DormHubModel.ts:154](../src/scenes/rpg/DormHubModel.ts#L154)
-436. 打开寝室门
+424. 打开寝室门
    来源：[src/scenes/rpg/DormHubModel.ts:155](../src/scenes/rpg/DormHubModel.ts#L155)
-437. 拿起书桌上的吹风机
+425. 拿起书桌上的吹风机
    来源：[src/scenes/rpg/DormHubModel.ts:192](../src/scenes/rpg/DormHubModel.ts#L192)
-438. 床帘后只有一床叠得过分认真的被子。
+426. 床帘后只有一床叠得过分认真的被子。
    来源：[src/scenes/rpg/DormHubScene.ts:67](../src/scenes/rpg/DormHubScene.ts#L67)
-439. 枕头下面没有捷径，只有一张过期的外卖券。
+427. 枕头下面没有捷径，只有一张过期的外卖券。
    来源：[src/scenes/rpg/DormHubScene.ts:68](../src/scenes/rpg/DormHubScene.ts#L68)
-440. 窗外很亮。七点五十五分不会因此晚一点。
+428. 窗外很亮。七点五十五分不会因此晚一点。
    来源：[src/scenes/rpg/DormHubScene.ts:69](../src/scenes/rpg/DormHubScene.ts#L69)
-441. 柜门打开了。里面整齐地保存着一片空白。
+429. 柜门打开了。里面整齐地保存着一片空白。
    来源：[src/scenes/rpg/DormHubScene.ts:70](../src/scenes/rpg/DormHubScene.ts#L70)
-442. 鞋都在，人也该在。这个推理暂时没有帮助。
+430. 鞋都在，人也该在。这个推理暂时没有帮助。
    来源：[src/scenes/rpg/DormHubScene.ts:71](../src/scenes/rpg/DormHubScene.ts#L71)
-443. 洗衣篮拒绝提供任何关于签到记录的证词。
+431. 洗衣篮拒绝提供任何关于签到记录的证词。
    来源：[src/scenes/rpg/DormHubScene.ts:72](../src/scenes/rpg/DormHubScene.ts#L72)
-444. 蓝色台灯亮了。桌面终于像有人认真学习过。
+432. 蓝色台灯亮了。桌面终于像有人认真学习过。
    来源：[src/scenes/rpg/DormHubScene.ts:73](../src/scenes/rpg/DormHubScene.ts#L73)
-445. 书翻到夹着便签的一页：先找到名字，再谈方向。
+433. 书翻到夹着便签的一页：先找到名字，再谈方向。
    来源：[src/scenes/rpg/DormHubScene.ts:74](../src/scenes/rpg/DormHubScene.ts#L74)
-446. 这是你的书桌。校园卡压在桌面的纸张旁边。
+434. 这是你的书桌。校园卡压在桌面的纸张旁边。
    来源：[src/scenes/rpg/DormHubScene.ts:75](../src/scenes/rpg/DormHubScene.ts#L75)
-447. 抽屉里有三支没墨的笔，以及非常稳定的失望。
+435. 抽屉里有三支没墨的笔，以及非常稳定的失望。
    来源：[src/scenes/rpg/DormHubScene.ts:76](../src/scenes/rpg/DormHubScene.ts#L76)
-448. 吹风机还能正常工作。
+436. 吹风机还能正常工作。
    来源：[src/scenes/rpg/DormHubScene.ts:77](../src/scenes/rpg/DormHubScene.ts#L77)
-449. 水龙头还能出水。至少寝室里有一个系统响应正常。
+437. 水龙头还能出水。至少寝室里有一个系统响应正常。
    来源：[src/scenes/rpg/DormHubScene.ts:78](../src/scenes/rpg/DormHubScene.ts#L78)
-450. 书脊按课程排好，最薄的那本写着《平时分自救》。
+438. 书脊按课程排好，最薄的那本写着《平时分自救》。
    来源：[src/scenes/rpg/DormHubScene.ts:79](../src/scenes/rpg/DormHubScene.ts#L79)
-451. 不是你的包。拉链上挂着一句很明确的‘别翻’。
+439. 不是你的包。拉链上挂着一句很明确的‘别翻’。
    来源：[src/scenes/rpg/DormHubScene.ts:80](../src/scenes/rpg/DormHubScene.ts#L80)
-452. 门没有意见，流程有。
+440. 门没有意见，流程有。
    来源：[src/scenes/rpg/DormHubScene.ts:81](../src/scenes/rpg/DormHubScene.ts#L81)
-453. 这件道具暂时不需要交给他。
+441. 这件道具暂时不需要交给他。
    来源：[src/scenes/rpg/DormHubScene.ts:313](../src/scenes/rpg/DormHubScene.ts#L313)
-454. gamepad
+442. gamepad
    来源：[src/scenes/rpg/DormHubScene.ts:316](../src/scenes/rpg/DormHubScene.ts#L316)；[src/scenes/rpg/DormHubScene.ts:318](../src/scenes/rpg/DormHubScene.ts#L318)
-455. missed\_target
+443. missed\_target
    来源：[src/scenes/rpg/DormHubScene.ts:316](../src/scenes/rpg/DormHubScene.ts#L316)；[src/scenes/rpg/DormHubScene.ts:327](../src/scenes/rpg/DormHubScene.ts#L327)
-456. wrong\_item
+444. wrong\_item
    来源：[src/scenes/rpg/DormHubScene.ts:316](../src/scenes/rpg/DormHubScene.ts#L316)
-457. 角色
+445. 角色
    来源：[src/scenes/rpg/DormHubScene.ts:317](../src/scenes/rpg/DormHubScene.ts#L317)；[src/scenes/rpg/DormHubScene.ts:328](../src/scenes/rpg/DormHubScene.ts#L328)
-458. 道具没有进入有效的游戏画布。
+446. 道具没有进入有效的游戏画布。
    来源：[src/scenes/rpg/DormHubScene.ts:318](../src/scenes/rpg/DormHubScene.ts#L318)
-459. 角色当前只接收游戏手柄。
+447. 角色当前只接收游戏手柄。
    来源：[src/scenes/rpg/DormHubScene.ts:318](../src/scenes/rpg/DormHubScene.ts#L318)
-460. 把手柄拖到小人身上。
+448. 把手柄拖到小人身上。
    来源：[src/scenes/rpg/DormHubScene.ts:324](../src/scenes/rpg/DormHubScene.ts#L324)
-461. 松手点没有进入角色身体范围。
+449. 松手点没有进入角色身体范围。
    来源：[src/scenes/rpg/DormHubScene.ts:329](../src/scenes/rpg/DormHubScene.ts#L329)
-462. 你被送回寝室，衣服还在滴水。
+450. 你被送回寝室，衣服还在滴水。
    来源：[src/scenes/rpg/DormHubScene.ts:430](../src/scenes/rpg/DormHubScene.ts#L430)
-463. 吹风机已经放进物品栏。
+451. 吹风机已经放进物品栏。
    来源：[src/scenes/rpg/DormHubScene.ts:456](../src/scenes/rpg/DormHubScene.ts#L456)
-464. 现在还不需要使用吹风机。
+452. 现在还不需要使用吹风机。
    来源：[src/scenes/rpg/DormHubScene.ts:457](../src/scenes/rpg/DormHubScene.ts#L457)
-465. 获得寝室吹风机。双击道具可放大查看。
+453. 获得寝室吹风机。双击道具可放大查看。
    来源：[src/scenes/rpg/DormHubScene.ts:476](../src/scenes/rpg/DormHubScene.ts#L476)
-466. 拿起个人书桌上的校园卡
+454. 拿起个人书桌上的校园卡
    来源：[src/scenes/rpg/DormHubScene.ts:685](../src/scenes/rpg/DormHubScene.ts#L685)
-467. 先用手机天气页面处理启真湖的云层。
+455. 先用手机天气页面处理启真湖的云层。
    来源：[src/scenes/rpg/DormHubScene.ts:704](../src/scenes/rpg/DormHubScene.ts#L704)
-468. 先从自己的书桌拿到吹风机。
+456. 先从自己的书桌拿到吹风机。
    来源：[src/scenes/rpg/DormHubScene.ts:705](../src/scenes/rpg/DormHubScene.ts#L705)
-469. 寝室门已打开。
+457. 寝室门已打开。
    来源：[src/scenes/rpg/DormHubScene.ts:710](../src/scenes/rpg/DormHubScene.ts#L710)
-470. 先完成基础馆一层书库 022 的座位预约。
+458. 先完成基础馆一层书库 022 的座位预约。
    来源：[src/scenes/rpg/DormHubScene.ts:728](../src/scenes/rpg/DormHubScene.ts#L728)
-471. 校园卡已经在物品栏里。
+459. 校园卡已经在物品栏里。
    来源：[src/scenes/rpg/DormHubScene.ts:735](../src/scenes/rpg/DormHubScene.ts#L735)
-472. 当前任务还没有开放校园卡拾取。
+460. 当前任务还没有开放校园卡拾取。
    来源：[src/scenes/rpg/DormHubScene.ts:739](../src/scenes/rpg/DormHubScene.ts#L739)
-473. 获得校园卡。身份信息已可读。
+461. 获得校园卡。身份信息已可读。
    来源：[src/scenes/rpg/DormHubScene.ts:746](../src/scenes/rpg/DormHubScene.ts#L746)
-474. 他现在会按你的方向移动。
+462. 他现在会按你的方向移动。
    来源：[src/scenes/rpg/DormHubScene.ts:753](../src/scenes/rpg/DormHubScene.ts#L753)
-475. 方向控制已安装，试着让他走一步。
+463. 方向控制已安装，试着让他走一步。
    来源：[src/scenes/rpg/DormHubScene.ts:754](../src/scenes/rpg/DormHubScene.ts#L754)
 
 ## 第二章
@@ -2890,7 +2866,7 @@
 545. 空围栏这张亦已存档。水痕未散，后续动向保持观察。
    来源：[src/data/chapter3-qizhen-lake.content.json:624](../src/data/chapter3-qizhen-lake.content.json#L624)
 546. system
-   来源：[src/data/chapter3-story-lines.json:18](../src/data/chapter3-story-lines.json#L18)；[src/data/chapter3-story-lines.json:27](../src/data/chapter3-story-lines.json#L27)；[src/data/chapter3-story-lines.json:36](../src/data/chapter3-story-lines.json#L36)；[src/data/chapter3-story-lines.json:45](../src/data/chapter3-story-lines.json#L45)；[src/data/chapter3-story-lines.json:54](../src/data/chapter3-story-lines.json#L54)；[src/data/chapter3-story-lines.json:63](../src/data/chapter3-story-lines.json#L63)；[src/data/chapter3-story-lines.json:72](../src/data/chapter3-story-lines.json#L72)；[src/data/chapter3-story-lines.json:81](../src/data/chapter3-story-lines.json#L81)；[src/data/chapter3-story-lines.json:108](../src/data/chapter3-story-lines.json#L108)；[src/data/chapter3-story-lines.json:126](../src/data/chapter3-story-lines.json#L126)；[src/data/chapter3-story-lines.json:135](../src/data/chapter3-story-lines.json#L135)；[src/data/chapter3-story-lines.json:144](../src/data/chapter3-story-lines.json#L144)；[src/data/chapter3-story-lines.json:162](../src/data/chapter3-story-lines.json#L162)；[src/data/chapter3-story-lines.json:171](../src/data/chapter3-story-lines.json#L171)；[src/data/chapter3-story-lines.json:180](../src/data/chapter3-story-lines.json#L180)；[src/data/chapter3-story-lines.json:189](../src/data/chapter3-story-lines.json#L189)；[src/data/chapter3-story-lines.json:198](../src/data/chapter3-story-lines.json#L198)；[src/data/chapter3-story-lines.json:207](../src/data/chapter3-story-lines.json#L207)；[src/data/chapter3-story-lines.json:216](../src/data/chapter3-story-lines.json#L216)；[src/data/chapter3-story-lines.json:225](../src/data/chapter3-story-lines.json#L225)；[src/data/chapter3-story-lines.json:234](../src/data/chapter3-story-lines.json#L234)；[src/data/chapter3-story-lines.json:243](../src/data/chapter3-story-lines.json#L243)；[src/data/chapter3-story-lines.json:252](../src/data/chapter3-story-lines.json#L252)；[src/data/chapter3-story-lines.json:261](../src/data/chapter3-story-lines.json#L261)；[src/data/chapter3-story-lines.json:270](../src/data/chapter3-story-lines.json#L270)；[src/data/chapter3-story-lines.json:279](../src/data/chapter3-story-lines.json#L279)；[src/data/chapter3-story-lines.json:288](../src/data/chapter3-story-lines.json#L288)；[src/data/chapter3-story-lines.json:297](../src/data/chapter3-story-lines.json#L297)；[src/data/chapter3-story-lines.json:306](../src/data/chapter3-story-lines.json#L306)；[src/data/chapter3-story-lines.json:315](../src/data/chapter3-story-lines.json#L315)；[src/data/chapter3-story-lines.json:333](../src/data/chapter3-story-lines.json#L333)；[src/data/chapter3-story-lines.json:342](../src/data/chapter3-story-lines.json#L342)；[src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx:68](../src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx#L68)；[src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx:80](../src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx#L80)；[src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx:86](../src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx#L86)；[src/scenes/rpg/CanteenInteriorScene.ts:2013](../src/scenes/rpg/CanteenInteriorScene.ts#L2013)；[src/scenes/rpg/CanteenInteriorScene.ts:2017](../src/scenes/rpg/CanteenInteriorScene.ts#L2017)；[src/scenes/rpg/CanteenInteriorScene.ts:2049](../src/scenes/rpg/CanteenInteriorScene.ts#L2049)；[src/scenes/rpg/CanteenInteriorScene.ts:2053](../src/scenes/rpg/CanteenInteriorScene.ts#L2053)；[src/scenes/rpg/CanteenInteriorScene.ts:2062](../src/scenes/rpg/CanteenInteriorScene.ts#L2062)；[src/scenes/rpg/CanteenInteriorScene.ts:2071](../src/scenes/rpg/CanteenInteriorScene.ts#L2071)；[src/scenes/rpg/CanteenInteriorScene.ts:2087](../src/scenes/rpg/CanteenInteriorScene.ts#L2087)；[src/scenes/rpg/CanteenInteriorScene.ts:2091](../src/scenes/rpg/CanteenInteriorScene.ts#L2091)；[src/scenes/rpg/CanteenInteriorScene.ts:2105](../src/scenes/rpg/CanteenInteriorScene.ts#L2105)；[src/scenes/rpg/CanteenInteriorScene.ts:2113](../src/scenes/rpg/CanteenInteriorScene.ts#L2113)；[src/scenes/rpg/CanteenInteriorScene.ts:2117](../src/scenes/rpg/CanteenInteriorScene.ts#L2117)；[src/scenes/rpg/CanteenInteriorScene.ts:2121](../src/scenes/rpg/CanteenInteriorScene.ts#L2121)；[src/scenes/rpg/CanteenInteriorScene.ts:2150](../src/scenes/rpg/CanteenInteriorScene.ts#L2150)；[src/scenes/rpg/CanteenInteriorScene.ts:2154](../src/scenes/rpg/CanteenInteriorScene.ts#L2154)；[src/scenes/rpg/CanteenInteriorScene.ts:2331](../src/scenes/rpg/CanteenInteriorScene.ts#L2331)；[src/scenes/rpg/CanteenInteriorScene.ts:3295](../src/scenes/rpg/CanteenInteriorScene.ts#L3295)；[src/scenes/rpg/CanteenInteriorScene.ts:3371](../src/scenes/rpg/CanteenInteriorScene.ts#L3371)；[src/scenes/rpg/CanteenInteriorScene.ts:3723](../src/scenes/rpg/CanteenInteriorScene.ts#L3723)；[src/scenes/rpg/CanteenInteriorScene.ts:3773](../src/scenes/rpg/CanteenInteriorScene.ts#L3773)；[src/scenes/rpg/CanteenInteriorScene.ts:3863](../src/scenes/rpg/CanteenInteriorScene.ts#L3863)；[src/scenes/rpg/QizhenLakeScene.ts:593](../src/scenes/rpg/QizhenLakeScene.ts#L593)；[src/scenes/rpg/QizhenLakeScene.ts:843](../src/scenes/rpg/QizhenLakeScene.ts#L843)；[src/scenes/rpg/QizhenLakeScene.ts:1014](../src/scenes/rpg/QizhenLakeScene.ts#L1014)；[src/scenes/rpg/QizhenLakeScene.ts:1047](../src/scenes/rpg/QizhenLakeScene.ts#L1047)；[src/scenes/rpg/QizhenLakeScene.ts:1837](../src/scenes/rpg/QizhenLakeScene.ts#L1837)；[src/scenes/rpg/QizhenLakeScene.ts:2106](../src/scenes/rpg/QizhenLakeScene.ts#L2106)；[src/scenes/rpg/QizhenLakeScene.ts:2162](../src/scenes/rpg/QizhenLakeScene.ts#L2162)；[src/scenes/rpg/QizhenLakeScene.ts:2271](../src/scenes/rpg/QizhenLakeScene.ts#L2271)；[src/scenes/rpg/QizhenLakeScene.ts:2479](../src/scenes/rpg/QizhenLakeScene.ts#L2479)；[src/scenes/rpg/QizhenLakeScene.ts:2483](../src/scenes/rpg/QizhenLakeScene.ts#L2483)；[src/scenes/rpg/QizhenLakeScene.ts:2501](../src/scenes/rpg/QizhenLakeScene.ts#L2501)；[src/scenes/rpg/QizhenLakeScene.ts:2505](../src/scenes/rpg/QizhenLakeScene.ts#L2505)；[src/scenes/rpg/QizhenLakeScene.ts:2511](../src/scenes/rpg/QizhenLakeScene.ts#L2511)；[src/scenes/rpg/QizhenLakeScene.ts:2525](../src/scenes/rpg/QizhenLakeScene.ts#L2525)；[src/scenes/rpg/QizhenLakeScene.ts:2540](../src/scenes/rpg/QizhenLakeScene.ts#L2540)；[src/scenes/rpg/QizhenLakeScene.ts:2599](../src/scenes/rpg/QizhenLakeScene.ts#L2599)；[src/scenes/rpg/QizhenLakeScene.ts:2907](../src/scenes/rpg/QizhenLakeScene.ts#L2907)；[src/scenes/rpg/QizhenLakeScene.ts:2913](../src/scenes/rpg/QizhenLakeScene.ts#L2913)；[src/scenes/rpg/QizhenLakeScene.ts:2917](../src/scenes/rpg/QizhenLakeScene.ts#L2917)；[src/scenes/rpg/QizhenLakeScene.ts:2921](../src/scenes/rpg/QizhenLakeScene.ts#L2921)；[src/scenes/rpg/QizhenLakeScene.ts:2925](../src/scenes/rpg/QizhenLakeScene.ts#L2925)；[src/scenes/rpg/QizhenLakeScene.ts:2935](../src/scenes/rpg/QizhenLakeScene.ts#L2935)；[src/scenes/rpg/QizhenLakeScene.ts:3466](../src/scenes/rpg/QizhenLakeScene.ts#L3466)；[src/scenes/rpg/TheaterInteriorScene.ts:665](../src/scenes/rpg/TheaterInteriorScene.ts#L665)；[src/scenes/rpg/TheaterInteriorScene.ts:669](../src/scenes/rpg/TheaterInteriorScene.ts#L669)；[src/scenes/rpg/TheaterInteriorScene.ts:682](../src/scenes/rpg/TheaterInteriorScene.ts#L682)；[src/scenes/rpg/TheaterInteriorScene.ts:1057](../src/scenes/rpg/TheaterInteriorScene.ts#L1057)；[src/scenes/rpg/TheaterInteriorScene.ts:1065](../src/scenes/rpg/TheaterInteriorScene.ts#L1065)；[src/scenes/rpg/TheaterInteriorScene.ts:1069](../src/scenes/rpg/TheaterInteriorScene.ts#L1069)；[src/scenes/rpg/TheaterInteriorScene.ts:1076](../src/scenes/rpg/TheaterInteriorScene.ts#L1076)；[src/scenes/rpg/TheaterInteriorScene.ts:1110](../src/scenes/rpg/TheaterInteriorScene.ts#L1110)；[src/scenes/rpg/TheaterInteriorScene.ts:1131](../src/scenes/rpg/TheaterInteriorScene.ts#L1131)；[src/scenes/rpg/TheaterInteriorScene.ts:1242](../src/scenes/rpg/TheaterInteriorScene.ts#L1242)；[src/scenes/rpg/TheaterInteriorScene.ts:1283](../src/scenes/rpg/TheaterInteriorScene.ts#L1283)；[src/scenes/rpg/TheaterInteriorScene.ts:1292](../src/scenes/rpg/TheaterInteriorScene.ts#L1292)；[src/scenes/rpg/TheaterInteriorScene.ts:1338](../src/scenes/rpg/TheaterInteriorScene.ts#L1338)；[src/scenes/rpg/TheaterInteriorScene.ts:1344](../src/scenes/rpg/TheaterInteriorScene.ts#L1344)；[src/scenes/rpg/TheaterInteriorScene.ts:1744](../src/scenes/rpg/TheaterInteriorScene.ts#L1744)
+   来源：[src/data/chapter3-story-lines.json:18](../src/data/chapter3-story-lines.json#L18)；[src/data/chapter3-story-lines.json:27](../src/data/chapter3-story-lines.json#L27)；[src/data/chapter3-story-lines.json:36](../src/data/chapter3-story-lines.json#L36)；[src/data/chapter3-story-lines.json:45](../src/data/chapter3-story-lines.json#L45)；[src/data/chapter3-story-lines.json:54](../src/data/chapter3-story-lines.json#L54)；[src/data/chapter3-story-lines.json:63](../src/data/chapter3-story-lines.json#L63)；[src/data/chapter3-story-lines.json:72](../src/data/chapter3-story-lines.json#L72)；[src/data/chapter3-story-lines.json:81](../src/data/chapter3-story-lines.json#L81)；[src/data/chapter3-story-lines.json:108](../src/data/chapter3-story-lines.json#L108)；[src/data/chapter3-story-lines.json:126](../src/data/chapter3-story-lines.json#L126)；[src/data/chapter3-story-lines.json:135](../src/data/chapter3-story-lines.json#L135)；[src/data/chapter3-story-lines.json:144](../src/data/chapter3-story-lines.json#L144)；[src/data/chapter3-story-lines.json:162](../src/data/chapter3-story-lines.json#L162)；[src/data/chapter3-story-lines.json:171](../src/data/chapter3-story-lines.json#L171)；[src/data/chapter3-story-lines.json:180](../src/data/chapter3-story-lines.json#L180)；[src/data/chapter3-story-lines.json:189](../src/data/chapter3-story-lines.json#L189)；[src/data/chapter3-story-lines.json:198](../src/data/chapter3-story-lines.json#L198)；[src/data/chapter3-story-lines.json:207](../src/data/chapter3-story-lines.json#L207)；[src/data/chapter3-story-lines.json:216](../src/data/chapter3-story-lines.json#L216)；[src/data/chapter3-story-lines.json:225](../src/data/chapter3-story-lines.json#L225)；[src/data/chapter3-story-lines.json:234](../src/data/chapter3-story-lines.json#L234)；[src/data/chapter3-story-lines.json:243](../src/data/chapter3-story-lines.json#L243)；[src/data/chapter3-story-lines.json:252](../src/data/chapter3-story-lines.json#L252)；[src/data/chapter3-story-lines.json:261](../src/data/chapter3-story-lines.json#L261)；[src/data/chapter3-story-lines.json:270](../src/data/chapter3-story-lines.json#L270)；[src/data/chapter3-story-lines.json:279](../src/data/chapter3-story-lines.json#L279)；[src/data/chapter3-story-lines.json:288](../src/data/chapter3-story-lines.json#L288)；[src/data/chapter3-story-lines.json:297](../src/data/chapter3-story-lines.json#L297)；[src/data/chapter3-story-lines.json:306](../src/data/chapter3-story-lines.json#L306)；[src/data/chapter3-story-lines.json:315](../src/data/chapter3-story-lines.json#L315)；[src/data/chapter3-story-lines.json:333](../src/data/chapter3-story-lines.json#L333)；[src/data/chapter3-story-lines.json:342](../src/data/chapter3-story-lines.json#L342)；[src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx:68](../src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx#L68)；[src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx:80](../src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx#L80)；[src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx:86](../src/scenes/phone/P02_CC98/TheaterTicketCommission.tsx#L86)；[src/scenes/rpg/CanteenInteriorScene.ts:2013](../src/scenes/rpg/CanteenInteriorScene.ts#L2013)；[src/scenes/rpg/CanteenInteriorScene.ts:2017](../src/scenes/rpg/CanteenInteriorScene.ts#L2017)；[src/scenes/rpg/CanteenInteriorScene.ts:2049](../src/scenes/rpg/CanteenInteriorScene.ts#L2049)；[src/scenes/rpg/CanteenInteriorScene.ts:2053](../src/scenes/rpg/CanteenInteriorScene.ts#L2053)；[src/scenes/rpg/CanteenInteriorScene.ts:2062](../src/scenes/rpg/CanteenInteriorScene.ts#L2062)；[src/scenes/rpg/CanteenInteriorScene.ts:2071](../src/scenes/rpg/CanteenInteriorScene.ts#L2071)；[src/scenes/rpg/CanteenInteriorScene.ts:2087](../src/scenes/rpg/CanteenInteriorScene.ts#L2087)；[src/scenes/rpg/CanteenInteriorScene.ts:2091](../src/scenes/rpg/CanteenInteriorScene.ts#L2091)；[src/scenes/rpg/CanteenInteriorScene.ts:2105](../src/scenes/rpg/CanteenInteriorScene.ts#L2105)；[src/scenes/rpg/CanteenInteriorScene.ts:2113](../src/scenes/rpg/CanteenInteriorScene.ts#L2113)；[src/scenes/rpg/CanteenInteriorScene.ts:2117](../src/scenes/rpg/CanteenInteriorScene.ts#L2117)；[src/scenes/rpg/CanteenInteriorScene.ts:2121](../src/scenes/rpg/CanteenInteriorScene.ts#L2121)；[src/scenes/rpg/CanteenInteriorScene.ts:2150](../src/scenes/rpg/CanteenInteriorScene.ts#L2150)；[src/scenes/rpg/CanteenInteriorScene.ts:2154](../src/scenes/rpg/CanteenInteriorScene.ts#L2154)；[src/scenes/rpg/CanteenInteriorScene.ts:2331](../src/scenes/rpg/CanteenInteriorScene.ts#L2331)；[src/scenes/rpg/CanteenInteriorScene.ts:3295](../src/scenes/rpg/CanteenInteriorScene.ts#L3295)；[src/scenes/rpg/CanteenInteriorScene.ts:3371](../src/scenes/rpg/CanteenInteriorScene.ts#L3371)；[src/scenes/rpg/CanteenInteriorScene.ts:3723](../src/scenes/rpg/CanteenInteriorScene.ts#L3723)；[src/scenes/rpg/CanteenInteriorScene.ts:3773](../src/scenes/rpg/CanteenInteriorScene.ts#L3773)；[src/scenes/rpg/CanteenInteriorScene.ts:3863](../src/scenes/rpg/CanteenInteriorScene.ts#L3863)；[src/scenes/rpg/QizhenLakeScene.ts:593](../src/scenes/rpg/QizhenLakeScene.ts#L593)；[src/scenes/rpg/QizhenLakeScene.ts:843](../src/scenes/rpg/QizhenLakeScene.ts#L843)；[src/scenes/rpg/QizhenLakeScene.ts:1014](../src/scenes/rpg/QizhenLakeScene.ts#L1014)；[src/scenes/rpg/QizhenLakeScene.ts:1047](../src/scenes/rpg/QizhenLakeScene.ts#L1047)；[src/scenes/rpg/QizhenLakeScene.ts:1837](../src/scenes/rpg/QizhenLakeScene.ts#L1837)；[src/scenes/rpg/QizhenLakeScene.ts:2106](../src/scenes/rpg/QizhenLakeScene.ts#L2106)；[src/scenes/rpg/QizhenLakeScene.ts:2162](../src/scenes/rpg/QizhenLakeScene.ts#L2162)；[src/scenes/rpg/QizhenLakeScene.ts:2271](../src/scenes/rpg/QizhenLakeScene.ts#L2271)；[src/scenes/rpg/QizhenLakeScene.ts:2479](../src/scenes/rpg/QizhenLakeScene.ts#L2479)；[src/scenes/rpg/QizhenLakeScene.ts:2483](../src/scenes/rpg/QizhenLakeScene.ts#L2483)；[src/scenes/rpg/QizhenLakeScene.ts:2501](../src/scenes/rpg/QizhenLakeScene.ts#L2501)；[src/scenes/rpg/QizhenLakeScene.ts:2505](../src/scenes/rpg/QizhenLakeScene.ts#L2505)；[src/scenes/rpg/QizhenLakeScene.ts:2511](../src/scenes/rpg/QizhenLakeScene.ts#L2511)；[src/scenes/rpg/QizhenLakeScene.ts:2525](../src/scenes/rpg/QizhenLakeScene.ts#L2525)；[src/scenes/rpg/QizhenLakeScene.ts:2540](../src/scenes/rpg/QizhenLakeScene.ts#L2540)；[src/scenes/rpg/QizhenLakeScene.ts:2599](../src/scenes/rpg/QizhenLakeScene.ts#L2599)；[src/scenes/rpg/QizhenLakeScene.ts:2907](../src/scenes/rpg/QizhenLakeScene.ts#L2907)；[src/scenes/rpg/QizhenLakeScene.ts:2913](../src/scenes/rpg/QizhenLakeScene.ts#L2913)；[src/scenes/rpg/QizhenLakeScene.ts:2917](../src/scenes/rpg/QizhenLakeScene.ts#L2917)；[src/scenes/rpg/QizhenLakeScene.ts:2921](../src/scenes/rpg/QizhenLakeScene.ts#L2921)；[src/scenes/rpg/QizhenLakeScene.ts:2925](../src/scenes/rpg/QizhenLakeScene.ts#L2925)；[src/scenes/rpg/QizhenLakeScene.ts:2935](../src/scenes/rpg/QizhenLakeScene.ts#L2935)；[src/scenes/rpg/QizhenLakeScene.ts:3466](../src/scenes/rpg/QizhenLakeScene.ts#L3466)；[src/scenes/rpg/TheaterInteriorScene.ts:942](../src/scenes/rpg/TheaterInteriorScene.ts#L942)；[src/scenes/rpg/TheaterInteriorScene.ts:950](../src/scenes/rpg/TheaterInteriorScene.ts#L950)；[src/scenes/rpg/TheaterInteriorScene.ts:954](../src/scenes/rpg/TheaterInteriorScene.ts#L954)；[src/scenes/rpg/TheaterInteriorScene.ts:961](../src/scenes/rpg/TheaterInteriorScene.ts#L961)；[src/scenes/rpg/TheaterInteriorScene.ts:995](../src/scenes/rpg/TheaterInteriorScene.ts#L995)；[src/scenes/rpg/TheaterInteriorScene.ts:1016](../src/scenes/rpg/TheaterInteriorScene.ts#L1016)；[src/scenes/rpg/TheaterInteriorScene.ts:1122](../src/scenes/rpg/TheaterInteriorScene.ts#L1122)；[src/scenes/rpg/TheaterInteriorScene.ts:1163](../src/scenes/rpg/TheaterInteriorScene.ts#L1163)；[src/scenes/rpg/TheaterInteriorScene.ts:1172](../src/scenes/rpg/TheaterInteriorScene.ts#L1172)；[src/scenes/rpg/TheaterInteriorScene.ts:1218](../src/scenes/rpg/TheaterInteriorScene.ts#L1218)；[src/scenes/rpg/TheaterInteriorScene.ts:1224](../src/scenes/rpg/TheaterInteriorScene.ts#L1224)；[src/scenes/rpg/TheaterInteriorScene.ts:1620](../src/scenes/rpg/TheaterInteriorScene.ts#L1620)
 547. 系统：它可能只是来体验一下排队，很多东西在食堂都会排队。
    来源：[src/data/chapter3-story-lines.json:20](../src/data/chapter3-story-lines.json#L20)
 548. Maybe it only came to experience the queue. Many things end up queuing in a cafeteria.
@@ -2924,7 +2900,7 @@
 562. Please do not expand the worldbuilding.
    来源：[src/data/chapter3-story-lines.json:84](../src/data/chapter3-story-lines.json#L84)
 563. narrator
-   来源：[src/data/chapter3-story-lines.json:90](../src/data/chapter3-story-lines.json#L90)；[src/data/chapter3-story-lines.json:99](../src/data/chapter3-story-lines.json#L99)；[src/data/chapter3-story-lines.json:117](../src/data/chapter3-story-lines.json#L117)；[src/data/chapter3-story-lines.json:153](../src/data/chapter3-story-lines.json#L153)；[src/data/chapter3-story-lines.json:324](../src/data/chapter3-story-lines.json#L324)；[src/scenes/rpg/CanteenInteriorScene.ts:2021](../src/scenes/rpg/CanteenInteriorScene.ts#L2021)；[src/scenes/rpg/QizhenLakeScene.ts:957](../src/scenes/rpg/QizhenLakeScene.ts#L957)；[src/scenes/rpg/QizhenLakeScene.ts:961](../src/scenes/rpg/QizhenLakeScene.ts#L961)；[src/scenes/rpg/QizhenLakeScene.ts:1078](../src/scenes/rpg/QizhenLakeScene.ts#L1078)；[src/scenes/rpg/QizhenLakeScene.ts:2520](../src/scenes/rpg/QizhenLakeScene.ts#L2520)；[src/scenes/rpg/QizhenLakeScene.ts:3370](../src/scenes/rpg/QizhenLakeScene.ts#L3370)；[src/scenes/rpg/QizhenLakeScene.ts:3399](../src/scenes/rpg/QizhenLakeScene.ts#L3399)；[src/scenes/rpg/TheaterInteriorScene.ts:1252](../src/scenes/rpg/TheaterInteriorScene.ts#L1252)
+   来源：[src/data/chapter3-story-lines.json:90](../src/data/chapter3-story-lines.json#L90)；[src/data/chapter3-story-lines.json:99](../src/data/chapter3-story-lines.json#L99)；[src/data/chapter3-story-lines.json:117](../src/data/chapter3-story-lines.json#L117)；[src/data/chapter3-story-lines.json:153](../src/data/chapter3-story-lines.json#L153)；[src/data/chapter3-story-lines.json:324](../src/data/chapter3-story-lines.json#L324)；[src/scenes/rpg/CanteenInteriorScene.ts:2021](../src/scenes/rpg/CanteenInteriorScene.ts#L2021)；[src/scenes/rpg/QizhenLakeScene.ts:957](../src/scenes/rpg/QizhenLakeScene.ts#L957)；[src/scenes/rpg/QizhenLakeScene.ts:961](../src/scenes/rpg/QizhenLakeScene.ts#L961)；[src/scenes/rpg/QizhenLakeScene.ts:1078](../src/scenes/rpg/QizhenLakeScene.ts#L1078)；[src/scenes/rpg/QizhenLakeScene.ts:2520](../src/scenes/rpg/QizhenLakeScene.ts#L2520)；[src/scenes/rpg/QizhenLakeScene.ts:3370](../src/scenes/rpg/QizhenLakeScene.ts#L3370)；[src/scenes/rpg/QizhenLakeScene.ts:3399](../src/scenes/rpg/QizhenLakeScene.ts#L3399)；[src/scenes/rpg/TheaterInteriorScene.ts:1132](../src/scenes/rpg/TheaterInteriorScene.ts#L1132)
 564. 纸条撞回食堂，掉下一点蓝光。
    来源：[src/data/chapter3-story-lines.json:92](../src/data/chapter3-story-lines.json#L92)
 565. The paper crashes back into the cafeteria and sheds a flicker of blue light.
@@ -3370,7 +3346,7 @@
 785. timeout
    来源：[src/modules/ChapterThreeTheaterController.ts:451](../src/modules/ChapterThreeTheaterController.ts#L451)
 786. locked
-   来源：[src/modules/QizhenJournalModel.ts:130](../src/modules/QizhenJournalModel.ts#L130)；[src/scenes/phone/P18_Photos/index.tsx:198](../src/scenes/phone/P18_Photos/index.tsx#L198)；[src/scenes/rpg/CanteenInteriorScene.ts:2467](../src/scenes/rpg/CanteenInteriorScene.ts#L2467)；[src/scenes/rpg/TheaterInteriorScene.ts:1471](../src/scenes/rpg/TheaterInteriorScene.ts#L1471)；[src/scenes/rpg/TheaterInteriorScene.ts:1479](../src/scenes/rpg/TheaterInteriorScene.ts#L1479)
+   来源：[src/modules/QizhenJournalModel.ts:130](../src/modules/QizhenJournalModel.ts#L130)；[src/scenes/phone/P18_Photos/index.tsx:198](../src/scenes/phone/P18_Photos/index.tsx#L198)；[src/scenes/rpg/CanteenInteriorScene.ts:2467](../src/scenes/rpg/CanteenInteriorScene.ts#L2467)；[src/scenes/rpg/TheaterInteriorScene.ts:1347](../src/scenes/rpg/TheaterInteriorScene.ts#L1347)；[src/scenes/rpg/TheaterInteriorScene.ts:1355](../src/scenes/rpg/TheaterInteriorScene.ts#L1355)
 787. unknown\_spot
    来源：[src/modules/QizhenJournalModel.ts:202](../src/modules/QizhenJournalModel.ts#L202)
 788. titles
@@ -3496,17 +3472,17 @@
 848. 同步稳定
    来源：[src/scenes/phone/P07_Weather/QizhenWeatherCalibration.tsx:259](../src/scenes/phone/P07_Weather/QizhenWeatherCalibration.tsx#L259)
 849. 发现一条未归档的夜间接入记录。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:738](../src/scenes/phone/P13_PhoneHome/index.tsx#L738)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:736](../src/scenes/phone/P13_PhoneHome/index.tsx#L736)
 850. 校园网络
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:738](../src/scenes/phone/P13_PhoneHome/index.tsx#L738)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:736](../src/scenes/phone/P13_PhoneHome/index.tsx#L736)
 851. 打开 CC98 学生剧现场帮抢帖
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:749](../src/scenes/phone/P13_PhoneHome/index.tsx#L749)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:747](../src/scenes/phone/P13_PhoneHome/index.tsx#L747)
 852. CC98 · 学生剧《7:55》
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:753](../src/scenes/phone/P13_PhoneHome/index.tsx#L753)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:751](../src/scenes/phone/P13_PhoneHome/index.tsx#L751)
 853. 现场帮抢委托待接
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:756](../src/scenes/phone/P13_PhoneHome/index.tsx#L756)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:754](../src/scenes/phone/P13_PhoneHome/index.tsx#L754)
 854. 已接单，第一波待开始
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:758](../src/scenes/phone/P13_PhoneHome/index.tsx#L758)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:756](../src/scenes/phone/P13_PhoneHome/index.tsx#L756)
 855. 07:55:23
    来源：[src/scenes/phone/P18_Photos/index.tsx:34](../src/scenes/phone/P18_Photos/index.tsx#L34)；[src/scenes/phone/P18_Photos/index.tsx:35](../src/scenes/phone/P18_Photos/index.tsx#L35)；[src/scenes/phone/P18_Photos/index.tsx:36](../src/scenes/phone/P18_Photos/index.tsx#L36)；[src/scenes/phone/P18_Photos/index.tsx:37](../src/scenes/phone/P18_Photos/index.tsx#L37)；[src/scenes/phone/P18_Photos/index.tsx:38](../src/scenes/phone/P18_Photos/index.tsx#L38)；[src/scenes/phone/P18_Photos/index.tsx:39](../src/scenes/phone/P18_Photos/index.tsx#L39)；[src/scenes/phone/P18_Photos/index.tsx:40](../src/scenes/phone/P18_Photos/index.tsx#L40)
 856. FRM 3A
@@ -3568,7 +3544,7 @@
 884. 照
    来源：[src/scenes/phone/P18_Photos/index.tsx:175](../src/scenes/phone/P18_Photos/index.tsx#L175)
 885. 关闭
-   来源：[src/scenes/phone/P18_Photos/index.tsx:177](../src/scenes/phone/P18_Photos/index.tsx#L177)；[src/scenes/rpg/TheaterInteriorScene.ts:1535](../src/scenes/rpg/TheaterInteriorScene.ts#L1535)；[src/scenes/rpg/TheaterInteriorScene.ts:1581](../src/scenes/rpg/TheaterInteriorScene.ts#L1581)
+   来源：[src/scenes/phone/P18_Photos/index.tsx:177](../src/scenes/phone/P18_Photos/index.tsx#L177)；[src/scenes/rpg/TheaterInteriorScene.ts:1411](../src/scenes/rpg/TheaterInteriorScene.ts#L1411)；[src/scenes/rpg/TheaterInteriorScene.ts:1457](../src/scenes/rpg/TheaterInteriorScene.ts#L1457)
 886. accepted
    来源：[src/scenes/phone/P18_Photos/index.tsx:196](../src/scenes/phone/P18_Photos/index.tsx#L196)；[src/scenes/rpg/CanteenInteriorScene.ts:2423](../src/scenes/rpg/CanteenInteriorScene.ts#L2423)；[src/scenes/rpg/CanteenInteriorScene.ts:2489](../src/scenes/rpg/CanteenInteriorScene.ts#L2489)
 887. 三帧已经恢复为一次连续的水平移动。
@@ -3850,13 +3826,13 @@
 1025. {{canteenContent.drinks.shelfPrompt}} / {{canteenContent.drinks.shelfOrder}}
    来源：[src/scenes/rpg/CanteenInteriorScene.ts:2053](../src/scenes/rpg/CanteenInteriorScene.ts#L2053)
 1026. success
-   来源：[src/scenes/rpg/CanteenInteriorScene.ts:2067](../src/scenes/rpg/CanteenInteriorScene.ts#L2067)；[src/scenes/rpg/CanteenInteriorScene.ts:2130](../src/scenes/rpg/CanteenInteriorScene.ts#L2130)；[src/scenes/rpg/CanteenInteriorScene.ts:3764](../src/scenes/rpg/CanteenInteriorScene.ts#L3764)；[src/scenes/rpg/CanteenInteriorScene.ts:3890](../src/scenes/rpg/CanteenInteriorScene.ts#L3890)；[src/scenes/rpg/QizhenLakeScene.ts:2497](../src/scenes/rpg/QizhenLakeScene.ts#L2497)；[src/scenes/rpg/QizhenLakeScene.ts:2516](../src/scenes/rpg/QizhenLakeScene.ts#L2516)；[src/scenes/rpg/QizhenLakeScene.ts:2527](../src/scenes/rpg/QizhenLakeScene.ts#L2527)；[src/scenes/rpg/QizhenLakeScene.ts:2536](../src/scenes/rpg/QizhenLakeScene.ts#L2536)；[src/scenes/rpg/QizhenLakeScene.ts:2547](../src/scenes/rpg/QizhenLakeScene.ts#L2547)；[src/scenes/rpg/QizhenLakeScene.ts:2552](../src/scenes/rpg/QizhenLakeScene.ts#L2552)；[src/scenes/rpg/QizhenLakeScene.ts:2556](../src/scenes/rpg/QizhenLakeScene.ts#L2556)；[src/scenes/rpg/QizhenLakeScene.ts:2560](../src/scenes/rpg/QizhenLakeScene.ts#L2560)；[src/scenes/rpg/QizhenLakeScene.ts:2564](../src/scenes/rpg/QizhenLakeScene.ts#L2564)；[src/scenes/rpg/QizhenLakeScene.ts:2568](../src/scenes/rpg/QizhenLakeScene.ts#L2568)；[src/scenes/rpg/QizhenLakeScene.ts:2583](../src/scenes/rpg/QizhenLakeScene.ts#L2583)；[src/scenes/rpg/QizhenLakeScene.ts:2587](../src/scenes/rpg/QizhenLakeScene.ts#L2587)；[src/scenes/rpg/QizhenLakeScene.ts:2591](../src/scenes/rpg/QizhenLakeScene.ts#L2591)；[src/scenes/rpg/QizhenLakeScene.ts:2595](../src/scenes/rpg/QizhenLakeScene.ts#L2595)；[src/scenes/rpg/TheaterInteriorScene.ts:1686](../src/scenes/rpg/TheaterInteriorScene.ts#L1686)；[src/scenes/rpg/TheaterInteriorScene.ts:1761](../src/scenes/rpg/TheaterInteriorScene.ts#L1761)；[src/scenes/rpg/TheaterInteriorScene.ts:1796](../src/scenes/rpg/TheaterInteriorScene.ts#L1796)
+   来源：[src/scenes/rpg/CanteenInteriorScene.ts:2067](../src/scenes/rpg/CanteenInteriorScene.ts#L2067)；[src/scenes/rpg/CanteenInteriorScene.ts:2130](../src/scenes/rpg/CanteenInteriorScene.ts#L2130)；[src/scenes/rpg/CanteenInteriorScene.ts:3764](../src/scenes/rpg/CanteenInteriorScene.ts#L3764)；[src/scenes/rpg/CanteenInteriorScene.ts:3890](../src/scenes/rpg/CanteenInteriorScene.ts#L3890)；[src/scenes/rpg/QizhenLakeScene.ts:2497](../src/scenes/rpg/QizhenLakeScene.ts#L2497)；[src/scenes/rpg/QizhenLakeScene.ts:2516](../src/scenes/rpg/QizhenLakeScene.ts#L2516)；[src/scenes/rpg/QizhenLakeScene.ts:2527](../src/scenes/rpg/QizhenLakeScene.ts#L2527)；[src/scenes/rpg/QizhenLakeScene.ts:2536](../src/scenes/rpg/QizhenLakeScene.ts#L2536)；[src/scenes/rpg/QizhenLakeScene.ts:2547](../src/scenes/rpg/QizhenLakeScene.ts#L2547)；[src/scenes/rpg/QizhenLakeScene.ts:2552](../src/scenes/rpg/QizhenLakeScene.ts#L2552)；[src/scenes/rpg/QizhenLakeScene.ts:2556](../src/scenes/rpg/QizhenLakeScene.ts#L2556)；[src/scenes/rpg/QizhenLakeScene.ts:2560](../src/scenes/rpg/QizhenLakeScene.ts#L2560)；[src/scenes/rpg/QizhenLakeScene.ts:2564](../src/scenes/rpg/QizhenLakeScene.ts#L2564)；[src/scenes/rpg/QizhenLakeScene.ts:2568](../src/scenes/rpg/QizhenLakeScene.ts#L2568)；[src/scenes/rpg/QizhenLakeScene.ts:2583](../src/scenes/rpg/QizhenLakeScene.ts#L2583)；[src/scenes/rpg/QizhenLakeScene.ts:2587](../src/scenes/rpg/QizhenLakeScene.ts#L2587)；[src/scenes/rpg/QizhenLakeScene.ts:2591](../src/scenes/rpg/QizhenLakeScene.ts#L2591)；[src/scenes/rpg/QizhenLakeScene.ts:2595](../src/scenes/rpg/QizhenLakeScene.ts#L2595)；[src/scenes/rpg/TheaterInteriorScene.ts:1562](../src/scenes/rpg/TheaterInteriorScene.ts#L1562)；[src/scenes/rpg/TheaterInteriorScene.ts:1637](../src/scenes/rpg/TheaterInteriorScene.ts#L1637)；[src/scenes/rpg/TheaterInteriorScene.ts:1672](../src/scenes/rpg/TheaterInteriorScene.ts#L1672)
 1027. 窗口正常出餐。
    来源：[src/scenes/rpg/CanteenInteriorScene.ts:2130](../src/scenes/rpg/CanteenInteriorScene.ts#L2130)
 1028. rpg\_canteen\_tray\_task\_start\_requested
    来源：[src/scenes/rpg/CanteenInteriorScene.ts:2304](../src/scenes/rpg/CanteenInteriorScene.ts#L2304)
 1029. missed\_target
-   来源：[src/scenes/rpg/CanteenInteriorScene.ts:2413](../src/scenes/rpg/CanteenInteriorScene.ts#L2413)；[src/scenes/rpg/CanteenInteriorScene.ts:2429](../src/scenes/rpg/CanteenInteriorScene.ts#L2429)；[src/scenes/rpg/CanteenInteriorScene.ts:2449](../src/scenes/rpg/CanteenInteriorScene.ts#L2449)；[src/scenes/rpg/TheaterInteriorScene.ts:1437](../src/scenes/rpg/TheaterInteriorScene.ts#L1437)；[src/scenes/rpg/TheaterInteriorScene.ts:1462](../src/scenes/rpg/TheaterInteriorScene.ts#L1462)
+   来源：[src/scenes/rpg/CanteenInteriorScene.ts:2413](../src/scenes/rpg/CanteenInteriorScene.ts#L2413)；[src/scenes/rpg/CanteenInteriorScene.ts:2429](../src/scenes/rpg/CanteenInteriorScene.ts#L2429)；[src/scenes/rpg/CanteenInteriorScene.ts:2449](../src/scenes/rpg/CanteenInteriorScene.ts#L2449)；[src/scenes/rpg/TheaterInteriorScene.ts:1313](../src/scenes/rpg/TheaterInteriorScene.ts#L1313)；[src/scenes/rpg/TheaterInteriorScene.ts:1338](../src/scenes/rpg/TheaterInteriorScene.ts#L1338)
 1030. 玩家自己
    来源：[src/scenes/rpg/CanteenInteriorScene.ts:2424](../src/scenes/rpg/CanteenInteriorScene.ts#L2424)
 1031. 把难喝饮料拖到人物自己身上才能喝掉。
@@ -3868,11 +3844,11 @@
 1034. 小票不需要拖拽：靠近取餐窗口后按空格使用。
    来源：[src/scenes/rpg/CanteenInteriorScene.ts:2452](../src/scenes/rpg/CanteenInteriorScene.ts#L2452)
 1035. wrong\_item
-   来源：[src/scenes/rpg/CanteenInteriorScene.ts:2459](../src/scenes/rpg/CanteenInteriorScene.ts#L2459)；[src/scenes/rpg/TheaterInteriorScene.ts:1471](../src/scenes/rpg/TheaterInteriorScene.ts#L1471)
+   来源：[src/scenes/rpg/CanteenInteriorScene.ts:2459](../src/scenes/rpg/CanteenInteriorScene.ts#L2459)；[src/scenes/rpg/TheaterInteriorScene.ts:1347](../src/scenes/rpg/TheaterInteriorScene.ts#L1347)
 1036. light
-   来源：[src/scenes/rpg/CanteenInteriorScene.ts:2469](../src/scenes/rpg/CanteenInteriorScene.ts#L2469)；[src/scenes/rpg/TheaterInteriorScene.ts:1481](../src/scenes/rpg/TheaterInteriorScene.ts#L1481)
+   来源：[src/scenes/rpg/CanteenInteriorScene.ts:2469](../src/scenes/rpg/CanteenInteriorScene.ts#L2469)；[src/scenes/rpg/TheaterInteriorScene.ts:1357](../src/scenes/rpg/TheaterInteriorScene.ts#L1357)
 1037. too\_far
-   来源：[src/scenes/rpg/CanteenInteriorScene.ts:2476](../src/scenes/rpg/CanteenInteriorScene.ts#L2476)；[src/scenes/rpg/TheaterInteriorScene.ts:1488](../src/scenes/rpg/TheaterInteriorScene.ts#L1488)
+   来源：[src/scenes/rpg/CanteenInteriorScene.ts:2476](../src/scenes/rpg/CanteenInteriorScene.ts#L2476)；[src/scenes/rpg/TheaterInteriorScene.ts:1364](../src/scenes/rpg/TheaterInteriorScene.ts#L1364)
 1038. promo
    来源：[src/scenes/rpg/CanteenInteriorScene.ts:2478](../src/scenes/rpg/CanteenInteriorScene.ts#L2478)
 1039. 落点正确；人物还没有靠近宣传板。
@@ -3954,11 +3930,11 @@
 1077. rpg\_canteen\_leave\_requested
    来源：[src/scenes/rpg/CanteenInteriorScene.ts:3908](../src/scenes/rpg/CanteenInteriorScene.ts#L3908)
 1078. 玩家：
-   来源：[src/scenes/rpg/CanteenInteriorScene.ts:3932](../src/scenes/rpg/CanteenInteriorScene.ts#L3932)；[src/scenes/rpg/QizhenLakeScene.ts:3114](../src/scenes/rpg/QizhenLakeScene.ts#L3114)；[src/scenes/rpg/QizhenLoopScene.ts:348](../src/scenes/rpg/QizhenLoopScene.ts#L348)；[src/scenes/rpg/TheaterInteriorScene.ts:1942](../src/scenes/rpg/TheaterInteriorScene.ts#L1942)
+   来源：[src/scenes/rpg/CanteenInteriorScene.ts:3932](../src/scenes/rpg/CanteenInteriorScene.ts#L3932)；[src/scenes/rpg/QizhenLakeScene.ts:3114](../src/scenes/rpg/QizhenLakeScene.ts#L3114)；[src/scenes/rpg/QizhenLoopScene.ts:348](../src/scenes/rpg/QizhenLoopScene.ts#L348)；[src/scenes/rpg/TheaterInteriorScene.ts:1818](../src/scenes/rpg/TheaterInteriorScene.ts#L1818)
 1079. 系统：
-   来源：[src/scenes/rpg/CanteenInteriorScene.ts:3933](../src/scenes/rpg/CanteenInteriorScene.ts#L3933)；[src/scenes/rpg/QizhenLakeScene.ts:3115](../src/scenes/rpg/QizhenLakeScene.ts#L3115)；[src/scenes/rpg/QizhenLoopScene.ts:349](../src/scenes/rpg/QizhenLoopScene.ts#L349)；[src/scenes/rpg/TheaterInteriorScene.ts:1943](../src/scenes/rpg/TheaterInteriorScene.ts#L1943)
+   来源：[src/scenes/rpg/CanteenInteriorScene.ts:3933](../src/scenes/rpg/CanteenInteriorScene.ts#L3933)；[src/scenes/rpg/QizhenLakeScene.ts:3115](../src/scenes/rpg/QizhenLakeScene.ts#L3115)；[src/scenes/rpg/QizhenLoopScene.ts:349](../src/scenes/rpg/QizhenLoopScene.ts#L349)；[src/scenes/rpg/TheaterInteriorScene.ts:1819](../src/scenes/rpg/TheaterInteriorScene.ts#L1819)
 1080. 任务：
-   来源：[src/scenes/rpg/CanteenInteriorScene.ts:3934](../src/scenes/rpg/CanteenInteriorScene.ts#L3934)；[src/scenes/rpg/QizhenLakeScene.ts:3116](../src/scenes/rpg/QizhenLakeScene.ts#L3116)；[src/scenes/rpg/QizhenLoopScene.ts:350](../src/scenes/rpg/QizhenLoopScene.ts#L350)；[src/scenes/rpg/TheaterInteriorScene.ts:1944](../src/scenes/rpg/TheaterInteriorScene.ts#L1944)
+   来源：[src/scenes/rpg/CanteenInteriorScene.ts:3934](../src/scenes/rpg/CanteenInteriorScene.ts#L3934)；[src/scenes/rpg/QizhenLakeScene.ts:3116](../src/scenes/rpg/QizhenLakeScene.ts#L3116)；[src/scenes/rpg/QizhenLoopScene.ts:350](../src/scenes/rpg/QizhenLoopScene.ts#L350)；[src/scenes/rpg/TheaterInteriorScene.ts:1820](../src/scenes/rpg/TheaterInteriorScene.ts#L1820)
 1081. 左收线
    来源：[src/scenes/rpg/QizhenFishingRhythmLayout.ts:11](../src/scenes/rpg/QizhenFishingRhythmLayout.ts#L11)；[src/scenes/rpg/QizhenFishingTutorialOverlay.ts:40](../src/scenes/rpg/QizhenFishingTutorialOverlay.ts#L40)
 1082. 提竿
@@ -4174,148 +4150,124 @@
 1187. 重演这一幕
    来源：[src/scenes/rpg/TheaterImpossibleShow.ts:280](../src/scenes/rpg/TheaterImpossibleShow.ts#L280)
 1188. 入口海报玻璃
-   来源：[src/scenes/rpg/TheaterInteriorModel.ts:95](../src/scenes/rpg/TheaterInteriorModel.ts#L95)
+   来源：[src/scenes/rpg/TheaterInteriorModel.ts:93](../src/scenes/rpg/TheaterInteriorModel.ts#L93)
 1189. 临时票打印机
-   来源：[src/scenes/rpg/TheaterInteriorModel.ts:113](../src/scenes/rpg/TheaterInteriorModel.ts#L113)
+   来源：[src/scenes/rpg/TheaterInteriorModel.ts:111](../src/scenes/rpg/TheaterInteriorModel.ts#L111)
 1190. 检票闸机右侧读票器
-   来源：[src/scenes/rpg/TheaterInteriorModel.ts:124](../src/scenes/rpg/TheaterInteriorModel.ts#L124)；[src/scenes/rpg/TheaterInteriorScene.ts:178](../src/scenes/rpg/TheaterInteriorScene.ts#L178)
+   来源：[src/scenes/rpg/TheaterInteriorModel.ts:122](../src/scenes/rpg/TheaterInteriorModel.ts#L122)；[src/scenes/rpg/TheaterInteriorScene.ts:172](../src/scenes/rpg/TheaterInteriorScene.ts#L172)
 1191. 开场节目单残页
-   来源：[src/scenes/rpg/TheaterInteriorModel.ts:137](../src/scenes/rpg/TheaterInteriorModel.ts#L137)
+   来源：[src/scenes/rpg/TheaterInteriorModel.ts:135](../src/scenes/rpg/TheaterInteriorModel.ts#L135)
 1192. 追光节目单残页
-   来源：[src/scenes/rpg/TheaterInteriorModel.ts:138](../src/scenes/rpg/TheaterInteriorModel.ts#L138)
+   来源：[src/scenes/rpg/TheaterInteriorModel.ts:136](../src/scenes/rpg/TheaterInteriorModel.ts#L136)
 1193. 终场节目单残页
-   来源：[src/scenes/rpg/TheaterInteriorModel.ts:139](../src/scenes/rpg/TheaterInteriorModel.ts#L139)
+   来源：[src/scenes/rpg/TheaterInteriorModel.ts:137](../src/scenes/rpg/TheaterInteriorModel.ts#L137)
 1194. 剧院灯光控制台
-   来源：[src/scenes/rpg/TheaterInteriorModel.ts:142](../src/scenes/rpg/TheaterInteriorModel.ts#L142)
+   来源：[src/scenes/rpg/TheaterInteriorModel.ts:140](../src/scenes/rpg/TheaterInteriorModel.ts#L140)
 1195. 后台道具箱
-   来源：[src/scenes/rpg/TheaterInteriorModel.ts:157](../src/scenes/rpg/TheaterInteriorModel.ts#L157)
+   来源：[src/scenes/rpg/TheaterInteriorModel.ts:155](../src/scenes/rpg/TheaterInteriorModel.ts#L155)
 1196. 道具箱旁票据扫描器
-   来源：[src/scenes/rpg/TheaterInteriorModel.ts:167](../src/scenes/rpg/TheaterInteriorModel.ts#L167)；[src/scenes/rpg/TheaterInteriorScene.ts:179](../src/scenes/rpg/TheaterInteriorScene.ts#L179)
+   来源：[src/scenes/rpg/TheaterInteriorModel.ts:165](../src/scenes/rpg/TheaterInteriorModel.ts#L165)；[src/scenes/rpg/TheaterInteriorScene.ts:173](../src/scenes/rpg/TheaterInteriorScene.ts#L173)
 1197. 后台通风口
-   来源：[src/scenes/rpg/TheaterInteriorModel.ts:182](../src/scenes/rpg/TheaterInteriorModel.ts#L182)；[src/scenes/rpg/TheaterInteriorScene.ts:180](../src/scenes/rpg/TheaterInteriorScene.ts#L180)
+   来源：[src/scenes/rpg/TheaterInteriorModel.ts:180](../src/scenes/rpg/TheaterInteriorModel.ts#L180)；[src/scenes/rpg/TheaterInteriorScene.ts:174](../src/scenes/rpg/TheaterInteriorScene.ts#L174)
 1198. 剧院出口
-   来源：[src/scenes/rpg/TheaterInteriorModel.ts:195](../src/scenes/rpg/TheaterInteriorModel.ts#L195)；[src/scenes/rpg/TheaterInteriorScene.ts:185](../src/scenes/rpg/TheaterInteriorScene.ts#L185)
+   来源：[src/scenes/rpg/TheaterInteriorModel.ts:193](../src/scenes/rpg/TheaterInteriorModel.ts#L193)；[src/scenes/rpg/TheaterInteriorScene.ts:179](../src/scenes/rpg/TheaterInteriorScene.ts#L179)
 1199. 灯控台
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:121](../src/scenes/rpg/TheaterInteriorScene.ts#L121)
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:116](../src/scenes/rpg/TheaterInteriorScene.ts#L116)
 1200. 检票员
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:121](../src/scenes/rpg/TheaterInteriorScene.ts#L121)
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:116](../src/scenes/rpg/TheaterInteriorScene.ts#L116)
 1201. 取票机
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:121](../src/scenes/rpg/TheaterInteriorScene.ts#L121)；[src/scenes/rpg/TheaterInteriorScene.ts:182](../src/scenes/rpg/TheaterInteriorScene.ts#L182)
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:116](../src/scenes/rpg/TheaterInteriorScene.ts#L116)；[src/scenes/rpg/TheaterInteriorScene.ts:176](../src/scenes/rpg/TheaterInteriorScene.ts#L176)
 1202. 手机系统
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:121](../src/scenes/rpg/TheaterInteriorScene.ts#L121)
-1203. 手机充电服务站
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:176](../src/scenes/rpg/TheaterInteriorScene.ts#L176)
-1204. 入口海报
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:116](../src/scenes/rpg/TheaterInteriorScene.ts#L116)
+1203. 入口海报
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:171](../src/scenes/rpg/TheaterInteriorScene.ts#L171)
+1204. 灯光控制台
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:175](../src/scenes/rpg/TheaterInteriorScene.ts#L175)
+1205. 节目单
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:177](../src/scenes/rpg/TheaterInteriorScene.ts#L177)
-1205. 灯光控制台
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:181](../src/scenes/rpg/TheaterInteriorScene.ts#L181)
-1206. 节目单
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:183](../src/scenes/rpg/TheaterInteriorScene.ts#L183)
-1207. 道具箱
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:184](../src/scenes/rpg/TheaterInteriorScene.ts#L184)
-1208. 充电
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:634](../src/scenes/rpg/TheaterInteriorScene.ts#L634)
-1209. wrong\_mode
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:663](../src/scenes/rpg/TheaterInteriorScene.ts#L663)
-1210. 充电站配有两条接线。切到浅色操作后可以接入手机。
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:664](../src/scenes/rpg/TheaterInteriorScene.ts#L664)
-1211. 请走到充电服务站旁接线。
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:665](../src/scenes/rpg/TheaterInteriorScene.ts#L665)
-1212. 当前电量 {{state.phoneBattery.percent}}%，暂不需要补电。
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:669](../src/scenes/rpg/TheaterInteriorScene.ts#L669)
-1213. 接线已断开，本次补电未完成。
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:682](../src/scenes/rpg/TheaterInteriorScene.ts#L682)
-1214. 补电 {{Math.floor(progress \* 100)}}%
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:705](../src/scenes/rpg/TheaterInteriorScene.ts#L705)
-1215. 电量 {{battery}}%
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:705](../src/scenes/rpg/TheaterInteriorScene.ts#L705)
-1216. 验票
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:768](../src/scenes/rpg/TheaterInteriorScene.ts#L768)
-1217. posted
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1074](../src/scenes/rpg/TheaterInteriorScene.ts#L1074)；[src/scenes/rpg/TheaterInteriorScene.ts:1250](../src/scenes/rpg/TheaterInteriorScene.ts#L1250)
-1218. theater\_decoy\_inspect\_requested
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1160](../src/scenes/rpg/TheaterInteriorScene.ts#L1160)
-1219. dark
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1291](../src/scenes/rpg/TheaterInteriorScene.ts#L1291)；[src/scenes/rpg/TheaterInteriorScene.ts:1293](../src/scenes/rpg/TheaterInteriorScene.ts#L1293)
-1220. 查看充电服务站
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1363](../src/scenes/rpg/TheaterInteriorScene.ts#L1363)
-1221. 接入手机充电线
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1364](../src/scenes/rpg/TheaterInteriorScene.ts#L1364)
-1222. 正在补电，请在设备旁稍候
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1364](../src/scenes/rpg/TheaterInteriorScene.ts#L1364)
-1223. 查看海报栏
+1206. 道具箱
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:178](../src/scenes/rpg/TheaterInteriorScene.ts#L178)
+1207. 验票
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:654](../src/scenes/rpg/TheaterInteriorScene.ts#L654)
+1208. posted
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:959](../src/scenes/rpg/TheaterInteriorScene.ts#L959)；[src/scenes/rpg/TheaterInteriorScene.ts:1130](../src/scenes/rpg/TheaterInteriorScene.ts#L1130)
+1209. theater\_decoy\_inspect\_requested
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1045](../src/scenes/rpg/TheaterInteriorScene.ts#L1045)
+1210. dark
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1171](../src/scenes/rpg/TheaterInteriorScene.ts#L1171)；[src/scenes/rpg/TheaterInteriorScene.ts:1173](../src/scenes/rpg/TheaterInteriorScene.ts#L1173)
+1211. 查看海报栏
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1243](../src/scenes/rpg/TheaterInteriorScene.ts#L1243)
+1212. 油渍纸巾 → 入口海报
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1243](../src/scenes/rpg/TheaterInteriorScene.ts#L1243)
+1213. 查看取票机
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1246](../src/scenes/rpg/TheaterInteriorScene.ts#L1246)；[src/scenes/rpg/TheaterInteriorScene.ts:1249](../src/scenes/rpg/TheaterInteriorScene.ts#L1249)
+1214. 输入取票码
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1248](../src/scenes/rpg/TheaterInteriorScene.ts#L1248)
+1215. 临时观演票 → 右侧验票槽
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1251](../src/scenes/rpg/TheaterInteriorScene.ts#L1251)
+1216. 与检票员对话
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1251](../src/scenes/rpg/TheaterInteriorScene.ts#L1251)
+1217. 查看残影
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1253](../src/scenes/rpg/TheaterInteriorScene.ts#L1253)
+1218. 取得节目单残页
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1253](../src/scenes/rpg/TheaterInteriorScene.ts#L1253)
+1219. 操作灯控台
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1255](../src/scenes/rpg/TheaterInteriorScene.ts#L1255)
+1220. 追光灯遥控器 → 灯控台
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1255](../src/scenes/rpg/TheaterInteriorScene.ts#L1255)
+1221. 查看道具箱
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1257](../src/scenes/rpg/TheaterInteriorScene.ts#L1257)
+1222. 检查票据扫描器
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1259](../src/scenes/rpg/TheaterInteriorScene.ts#L1259)
+1223. 临时观演票 → 票据扫描口
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1259](../src/scenes/rpg/TheaterInteriorScene.ts#L1259)
+1224. 离开剧院
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1261](../src/scenes/rpg/TheaterInteriorScene.ts#L1261)
+1225. 检查后台通风口
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1262](../src/scenes/rpg/TheaterInteriorScene.ts#L1262)
+1226. 荧光粉刷 → 后台通风口
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1262](../src/scenes/rpg/TheaterInteriorScene.ts#L1262)
+1227. 票已退回：请拖到检票闸机右侧发蓝光的「验票」读票器框内。
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1331](../src/scenes/rpg/TheaterInteriorScene.ts#L1331)
+1228. 票已退回：请拖到道具箱旁发蓝光的票据扫描口框内。
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1333](../src/scenes/rpg/TheaterInteriorScene.ts#L1333)
+1229. 票已退回：当前阶段没有临时观演票的使用点。
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1334](../src/scenes/rpg/TheaterInteriorScene.ts#L1334)
+1230. 道具没有放到当前阶段对应的真实物体。
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1335](../src/scenes/rpg/TheaterInteriorScene.ts#L1335)
+1231. temporaryTheaterTicket
    来源：[src/scenes/rpg/TheaterInteriorScene.ts:1366](../src/scenes/rpg/TheaterInteriorScene.ts#L1366)
-1224. 油渍纸巾 → 入口海报
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1366](../src/scenes/rpg/TheaterInteriorScene.ts#L1366)
-1225. 查看取票机
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1369](../src/scenes/rpg/TheaterInteriorScene.ts#L1369)；[src/scenes/rpg/TheaterInteriorScene.ts:1372](../src/scenes/rpg/TheaterInteriorScene.ts#L1372)
-1226. 输入取票码
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1371](../src/scenes/rpg/TheaterInteriorScene.ts#L1371)
-1227. 临时观演票 → 右侧验票槽
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1374](../src/scenes/rpg/TheaterInteriorScene.ts#L1374)
-1228. 与检票员对话
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1374](../src/scenes/rpg/TheaterInteriorScene.ts#L1374)
-1229. 查看残影
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1376](../src/scenes/rpg/TheaterInteriorScene.ts#L1376)
-1230. 取得节目单残页
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1376](../src/scenes/rpg/TheaterInteriorScene.ts#L1376)
-1231. 操作灯控台
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1378](../src/scenes/rpg/TheaterInteriorScene.ts#L1378)
-1232. 追光灯遥控器 → 灯控台
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1378](../src/scenes/rpg/TheaterInteriorScene.ts#L1378)
-1233. 查看道具箱
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1380](../src/scenes/rpg/TheaterInteriorScene.ts#L1380)
-1234. 检查票据扫描器
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1382](../src/scenes/rpg/TheaterInteriorScene.ts#L1382)
-1235. 临时观演票 → 票据扫描口
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1382](../src/scenes/rpg/TheaterInteriorScene.ts#L1382)
-1236. 离开剧院
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1384](../src/scenes/rpg/TheaterInteriorScene.ts#L1384)
-1237. 检查后台通风口
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1385](../src/scenes/rpg/TheaterInteriorScene.ts#L1385)
-1238. 荧光粉刷 → 后台通风口
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1385](../src/scenes/rpg/TheaterInteriorScene.ts#L1385)
-1239. 票已退回：请拖到检票闸机右侧发蓝光的「验票」读票器框内。
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1455](../src/scenes/rpg/TheaterInteriorScene.ts#L1455)
-1240. 票已退回：请拖到道具箱旁发蓝光的票据扫描口框内。
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1457](../src/scenes/rpg/TheaterInteriorScene.ts#L1457)
-1241. 票已退回：当前阶段没有临时观演票的使用点。
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1458](../src/scenes/rpg/TheaterInteriorScene.ts#L1458)
-1242. 道具没有放到当前阶段对应的真实物体。
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1459](../src/scenes/rpg/TheaterInteriorScene.ts#L1459)
-1243. temporaryTheaterTicket
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1490](../src/scenes/rpg/TheaterInteriorScene.ts#L1490)
-1244. gate
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1491](../src/scenes/rpg/TheaterInteriorScene.ts#L1491)
-1245. 票已退回；请靠近读票器。
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1492](../src/scenes/rpg/TheaterInteriorScene.ts#L1492)
-1246. 票已退回；请靠近扫描器。
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1493](../src/scenes/rpg/TheaterInteriorScene.ts#L1493)
-1247. 退格
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1528](../src/scenes/rpg/TheaterInteriorScene.ts#L1528)
-1248. 提交
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1532](../src/scenes/rpg/TheaterInteriorScene.ts#L1532)；[src/scenes/rpg/TheaterInteriorScene.ts:1578](../src/scenes/rpg/TheaterInteriorScene.ts#L1578)
-1249. 撤回
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1571](../src/scenes/rpg/TheaterInteriorScene.ts#L1571)
-1250. 清空
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1575](../src/scenes/rpg/TheaterInteriorScene.ts#L1575)
-1251. 手机系统：
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1943](../src/scenes/rpg/TheaterInteriorScene.ts#L1943)
-1252. {{name}}：
-   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1949](../src/scenes/rpg/TheaterInteriorScene.ts#L1949)
-1253. 椅子申请当月亮
+1232. gate
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1367](../src/scenes/rpg/TheaterInteriorScene.ts#L1367)
+1233. 票已退回；请靠近读票器。
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1368](../src/scenes/rpg/TheaterInteriorScene.ts#L1368)
+1234. 票已退回；请靠近扫描器。
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1369](../src/scenes/rpg/TheaterInteriorScene.ts#L1369)
+1235. 退格
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1404](../src/scenes/rpg/TheaterInteriorScene.ts#L1404)
+1236. 提交
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1408](../src/scenes/rpg/TheaterInteriorScene.ts#L1408)；[src/scenes/rpg/TheaterInteriorScene.ts:1454](../src/scenes/rpg/TheaterInteriorScene.ts#L1454)
+1237. 撤回
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1447](../src/scenes/rpg/TheaterInteriorScene.ts#L1447)
+1238. 清空
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1451](../src/scenes/rpg/TheaterInteriorScene.ts#L1451)
+1239. 手机系统：
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1819](../src/scenes/rpg/TheaterInteriorScene.ts#L1819)
+1240. {{name}}：
+   来源：[src/scenes/rpg/TheaterInteriorScene.ts:1825](../src/scenes/rpg/TheaterInteriorScene.ts#L1825)
+1241. 椅子申请当月亮
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:6](../src/scenes/rpg/TheaterSpotlightModel.ts#L6)
-1254. 追上游走的逗号。预判轨迹，绕开走动的椅子。
+1242. 追上游走的逗号。预判轨迹，绕开走动的椅子。
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:6](../src/scenes/rpg/TheaterSpotlightModel.ts#L6)
-1255. 两枚问号成一组。先点亮任一枚，及时把光接到另一枚。
+1243. 两枚问号成一组。先点亮任一枚，及时把光接到另一枚。
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:7](../src/scenes/rpg/TheaterSpotlightModel.ts#L7)
-1256. 你的影子迟到了
+1244. 你的影子迟到了
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:7](../src/scenes/rpg/TheaterSpotlightModel.ts#L7)
-1257. 观众席正在退潮
+1245. 观众席正在退潮
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:8](../src/scenes/rpg/TheaterSpotlightModel.ts#L8)
-1258. 同色标点成对亮起。
+1246. 同色标点成对亮起。
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:8](../src/scenes/rpg/TheaterSpotlightModel.ts#L8)
-1259. running
+1247. running
    来源：[src/scenes/rpg/TheaterSpotlightModel.ts:47](../src/scenes/rpg/TheaterSpotlightModel.ts#L47)
 
 ## 3.5章过渡
@@ -4587,9 +4539,9 @@
 133. {{qizhenContent.locationSearch.cc98.system}} / {{qizhenContent.locationSearch.cc98.player}}
    来源：[src/scenes/phone/P02_CC98/index.tsx:721](../src/scenes/phone/P02_CC98/index.tsx#L721)
 134. 小雨。局部黏着物可能松动。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:61](../src/scenes/phone/P13_PhoneHome/index.tsx#L61)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:60](../src/scenes/phone/P13_PhoneHome/index.tsx#L60)
 135. 多云。启真湖小码头降水已经停止。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:62](../src/scenes/phone/P13_PhoneHome/index.tsx#L62)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:61](../src/scenes/phone/P13_PhoneHome/index.tsx#L61)
 136. accepted
    来源：[src/scenes/phone/P14_Wechat/index.tsx:50](../src/scenes/phone/P14_Wechat/index.tsx#L50)；[src/scenes/phone/P14_Wechat/index.tsx:58](../src/scenes/phone/P14_Wechat/index.tsx#L58)；[src/scenes/phone/P15_Zjuding/index.tsx:382](../src/scenes/phone/P15_Zjuding/index.tsx#L382)；[src/scenes/phone/P20_TimelineRecovery/index.tsx:57](../src/scenes/phone/P20_TimelineRecovery/index.tsx#L57)；[src/scenes/phone/P20_TimelineRecovery/index.tsx:94](../src/scenes/phone/P20_TimelineRecovery/index.tsx#L94)；[src/scenes/phone/P21_VoiceMemos/index.tsx:428](../src/scenes/phone/P21_VoiceMemos/index.tsx#L428)
 137. already\_complete
@@ -4993,7 +4945,7 @@
    来源：[src/components/QuestClueStrip.tsx:287](../src/components/QuestClueStrip.tsx#L287)；[src/data/chapter4-temporal-maze.content.json:116](../src/data/chapter4-temporal-maze.content.json#L116)
 34. 签到数字
    来源：[src/components/QuestClueStrip.tsx:296](../src/components/QuestClueStrip.tsx#L296)
-35. 打开控制中心，当前电量 {{batteryPercent}}%{{state.phoneBattery.lowPowerMode ? "，低电量模式已开启" : ""}}
+35. 打开控制中心，当前电量 {{batteryPercent}}%
    来源：[src/components/StatusBar.tsx:48](../src/components/StatusBar.tsx#L48)
 36. 第二问 · 02 / 02
    来源：[src/components/temporal-maze/ChapterFourExteriorQuestions.tsx:74](../src/components/temporal-maze/ChapterFourExteriorQuestions.tsx#L74)
@@ -5176,15 +5128,15 @@
 125. 抬起
    来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:328](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L328)
 126. 向上
-   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:328](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L328)；[src/scenes/rpg/RpgGameHost.tsx:2906](../src/scenes/rpg/RpgGameHost.tsx#L2906)
+   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:328](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L328)；[src/scenes/rpg/RpgGameHost.tsx:2899](../src/scenes/rpg/RpgGameHost.tsx#L2899)
 127. 向左
-   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:328](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L328)；[src/scenes/rpg/RpgGameHost.tsx:2907](../src/scenes/rpg/RpgGameHost.tsx#L2907)
+   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:328](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L328)；[src/scenes/rpg/RpgGameHost.tsx:2900](../src/scenes/rpg/RpgGameHost.tsx#L2900)
 128. 顺时针
    来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:329](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L329)
 129. 向下
-   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:329](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L329)；[src/scenes/rpg/RpgGameHost.tsx:2908](../src/scenes/rpg/RpgGameHost.tsx#L2908)
+   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:329](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L329)；[src/scenes/rpg/RpgGameHost.tsx:2901](../src/scenes/rpg/RpgGameHost.tsx#L2901)
 130. 向右
-   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:329](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L329)；[src/scenes/rpg/RpgGameHost.tsx:2909](../src/scenes/rpg/RpgGameHost.tsx#L2909)
+   来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:329](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L329)；[src/scenes/rpg/RpgGameHost.tsx:2902](../src/scenes/rpg/RpgGameHost.tsx#L2902)
 131. 压下
    来源：[src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx:329](../src/components/temporal-maze/ChapterFourInsertedPuzzleGame.tsx#L329)
 132. 1档
@@ -5272,7 +5224,7 @@
 173. 正在同步配电状态……
    来源：[src/components/temporal-maze/ChapterFourPowerPanelGame.tsx:243](../src/components/temporal-maze/ChapterFourPowerPanelGame.tsx#L243)
 174. 配电结果已锁定。
-   来源：[src/components/temporal-maze/ChapterFourPowerPanelGame.tsx:245](../src/components/temporal-maze/ChapterFourPowerPanelGame.tsx#L245)；[src/scenes/rpg/RpgGameHost.tsx:1465](../src/scenes/rpg/RpgGameHost.tsx#L1465)
+   来源：[src/components/temporal-maze/ChapterFourPowerPanelGame.tsx:245](../src/components/temporal-maze/ChapterFourPowerPanelGame.tsx#L245)；[src/scenes/rpg/RpgGameHost.tsx:1463](../src/scenes/rpg/RpgGameHost.tsx#L1463)
 175. 按下一区，会切换它自身和连线直接相接的区域。
    来源：[src/components/temporal-maze/ChapterFourPowerPanelGame.tsx:246](../src/components/temporal-maze/ChapterFourPowerPanelGame.tsx#L246)
 176. 方向键移动焦点 · Enter / Space 切换 · Esc 关闭
@@ -5424,7 +5376,7 @@
 249. 切回浅色操作后再调整导视板。
    来源：[src/components/temporal-maze/WayfindingBoardGame.tsx:33](../src/components/temporal-maze/WayfindingBoardGame.tsx#L33)
 250. 第四章教学楼流程尚未开始。
-   来源：[src/components/temporal-maze/WayfindingBoardGame.tsx:34](../src/components/temporal-maze/WayfindingBoardGame.tsx#L34)；[src/scenes/rpg/RpgGameHost.tsx:465](../src/scenes/rpg/RpgGameHost.tsx#L465)
+   来源：[src/components/temporal-maze/WayfindingBoardGame.tsx:34](../src/components/temporal-maze/WayfindingBoardGame.tsx#L34)；[src/scenes/rpg/RpgGameHost.tsx:464](../src/scenes/rpg/RpgGameHost.tsx#L464)
 251. 仍缺当前排列所需的历史证据。
    来源：[src/components/temporal-maze/WayfindingBoardGame.tsx:35](../src/components/temporal-maze/WayfindingBoardGame.tsx#L35)
 252. 比较三份现场材料后，选择一块碎片，再选择目标槽位。
@@ -7810,33 +7762,33 @@
 1442. 语音与操作音效保持开启
    来源：[src/scenes/phone/P08_Settings/index.tsx:135](../src/scenes/phone/P08_Settings/index.tsx#L135)
 1443. 微信
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:448](../src/scenes/phone/P13_PhoneHome/index.tsx#L448)；[src/scenes/phone/P13_PhoneHome/index.tsx:451](../src/scenes/phone/P13_PhoneHome/index.tsx#L451)；[src/scenes/phone/P13_PhoneHome/index.tsx:809](../src/scenes/phone/P13_PhoneHome/index.tsx#L809)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:447](../src/scenes/phone/P13_PhoneHome/index.tsx#L447)；[src/scenes/phone/P13_PhoneHome/index.tsx:450](../src/scenes/phone/P13_PhoneHome/index.tsx#L450)；[src/scenes/phone/P13_PhoneHome/index.tsx:807](../src/scenes/phone/P13_PhoneHome/index.tsx#L807)
 1444. 微信，待处理：{{chapterFourWechatObjective.label}}
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:451](../src/scenes/phone/P13_PhoneHome/index.tsx#L451)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:450](../src/scenes/phone/P13_PhoneHome/index.tsx#L450)
 1445. 浙大体艺
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:456](../src/scenes/phone/P13_PhoneHome/index.tsx#L456)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:455](../src/scenes/phone/P13_PhoneHome/index.tsx#L455)
 1446. 浙大钉
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:462](../src/scenes/phone/P13_PhoneHome/index.tsx#L462)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:461](../src/scenes/phone/P13_PhoneHome/index.tsx#L461)
 1447. CC98
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:506](../src/scenes/phone/P13_PhoneHome/index.tsx#L506)；[src/scenes/phone/P13_PhoneHome/index.tsx:509](../src/scenes/phone/P13_PhoneHome/index.tsx#L509)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:505](../src/scenes/phone/P13_PhoneHome/index.tsx#L505)；[src/scenes/phone/P13_PhoneHome/index.tsx:508](../src/scenes/phone/P13_PhoneHome/index.tsx#L508)
 1448. CC98，待处理：{{chapterFourWechatObjective?.label ?? "学习天地资料索引"}}
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:509](../src/scenes/phone/P13_PhoneHome/index.tsx#L509)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:508](../src/scenes/phone/P13_PhoneHome/index.tsx#L508)
 1449. 控制中心
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:514](../src/scenes/phone/P13_PhoneHome/index.tsx#L514)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:513](../src/scenes/phone/P13_PhoneHome/index.tsx#L513)
 1450. 时钟
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:523](../src/scenes/phone/P13_PhoneHome/index.tsx#L523)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:522](../src/scenes/phone/P13_PhoneHome/index.tsx#L522)
 1451. 新增照片「看不清的书脊」
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:789](../src/scenes/phone/P13_PhoneHome/index.tsx#L789)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:787](../src/scenes/phone/P13_PhoneHome/index.tsx#L787)
 1452. 照片
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:789](../src/scenes/phone/P13_PhoneHome/index.tsx#L789)；[src/scenes/phone/P13_PhoneHome/index.tsx:815](../src/scenes/phone/P13_PhoneHome/index.tsx#L815)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:787](../src/scenes/phone/P13_PhoneHome/index.tsx#L787)；[src/scenes/phone/P13_PhoneHome/index.tsx:813](../src/scenes/phone/P13_PhoneHome/index.tsx#L813)
 1453. 打开 CC98 学习天地资料索引帖
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:800](../src/scenes/phone/P13_PhoneHome/index.tsx#L800)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:798](../src/scenes/phone/P13_PhoneHome/index.tsx#L798)
 1454. 课程年份入口与旧自习讨论待导入
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:803](../src/scenes/phone/P13_PhoneHome/index.tsx#L803)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:801](../src/scenes/phone/P13_PhoneHome/index.tsx#L801)
 1455. CC98 · 学习天地
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:803](../src/scenes/phone/P13_PhoneHome/index.tsx#L803)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:801](../src/scenes/phone/P13_PhoneHome/index.tsx#L801)
 1456. IMG\_0755 的识别结果仍需现场核验
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:815](../src/scenes/phone/P13_PhoneHome/index.tsx#L815)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:813](../src/scenes/phone/P13_PhoneHome/index.tsx#L813)
 1457. 这份资料已经保存。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:451](../src/scenes/phone/P14_Wechat/index.tsx#L451)
 1458. 夜间运行通知已保存。
@@ -7928,7 +7880,7 @@
 1501. {{channel.label}}漂移已归零。
    来源：[src/scenes/phone/P19_Clock/index.tsx:156](../src/scenes/phone/P19_Clock/index.tsx#L156)
 1502. 返回手机主页
-   来源：[src/scenes/phone/P19_Clock/index.tsx:167](../src/scenes/phone/P19_Clock/index.tsx#L167)；[src/scenes/phone/P19_Clock/index.tsx:228](../src/scenes/phone/P19_Clock/index.tsx#L228)；[src/scenes/rpg/RpgGameHost.tsx:2615](../src/scenes/rpg/RpgGameHost.tsx#L2615)；[src/scenes/rpg/RpgGameHost.tsx:2719](../src/scenes/rpg/RpgGameHost.tsx#L2719)
+   来源：[src/scenes/phone/P19_Clock/index.tsx:167](../src/scenes/phone/P19_Clock/index.tsx#L167)；[src/scenes/phone/P19_Clock/index.tsx:228](../src/scenes/phone/P19_Clock/index.tsx#L228)；[src/scenes/rpg/RpgGameHost.tsx:2608](../src/scenes/rpg/RpgGameHost.tsx#L2608)；[src/scenes/rpg/RpgGameHost.tsx:2712](../src/scenes/rpg/RpgGameHost.tsx#L2712)
 1503. B2-04 / TIME REPAIR
    来源：[src/scenes/phone/P19_Clock/index.tsx:168](../src/scenes/phone/P19_Clock/index.tsx#L168)
 1504. 校时状态
@@ -8290,7 +8242,7 @@
 1682. 当前无法前往该楼层。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7853](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7853)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7858](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7858)
 1683. 当前剧情条件尚未满足。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7877](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7877)；[src/scenes/rpg/RpgGameHost.tsx:466](../src/scenes/rpg/RpgGameHost.tsx#L466)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7877](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7877)；[src/scenes/rpg/RpgGameHost.tsx:465](../src/scenes/rpg/RpgGameHost.tsx#L465)
 1684. 两条区间边缘仍未对齐，调整重放起点后再试。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7894](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7894)
 1685. {{detail}}已恢复到当前进度，将自动重试。
@@ -8382,7 +8334,7 @@
 1728. wrong\_item
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8896](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8896)
 1729. 交互失败，请重新靠近目标后重试。
-   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:9015](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L9015)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:9020](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L9020)；[src/scenes/rpg/RpgGameHost.tsx:1230](../src/scenes/rpg/RpgGameHost.tsx#L1230)
+   来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:9015](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L9015)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:9020](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L9020)；[src/scenes/rpg/RpgGameHost.tsx:1228](../src/scenes/rpg/RpgGameHost.tsx#L1228)
 1730. locked
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:9015](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L9015)
 1731. {{CHAPTER\_FOUR\_WARMUP\_PHASE\_LABELS\[failedPhase\]}}资源准备失败（{{failedCount}} 项）· R 重试
@@ -8446,109 +8398,109 @@
 1760. 传递过程
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10841](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10841)
 1761. 当前目标需要另一件道具。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:462](../src/scenes/rpg/RpgGameHost.tsx#L462)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:461](../src/scenes/rpg/RpgGameHost.tsx#L461)
 1762. 距离目标太远，请靠近可见交互区域。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:463](../src/scenes/rpg/RpgGameHost.tsx#L463)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:462](../src/scenes/rpg/RpgGameHost.tsx#L462)
 1763. 当前组合与已记录的线索不一致。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:464](../src/scenes/rpg/RpgGameHost.tsx#L464)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:463](../src/scenes/rpg/RpgGameHost.tsx#L463)
 1764. ready
-   来源：[src/scenes/rpg/RpgGameHost.tsx:653](../src/scenes/rpg/RpgGameHost.tsx#L653)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:651](../src/scenes/rpg/RpgGameHost.tsx#L651)
 1765. 三楼参照记录尚未完成，请先在深色观察中保存桌影边缘与墙面中心。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:807](../src/scenes/rpg/RpgGameHost.tsx#L807)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:805](../src/scenes/rpg/RpgGameHost.tsx#L805)
 1766. 正在写入二楼到达记录…
-   来源：[src/scenes/rpg/RpgGameHost.tsx:859](../src/scenes/rpg/RpgGameHost.tsx#L859)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:857](../src/scenes/rpg/RpgGameHost.tsx#L857)
 1767. 楼梯校准结果未能写入，请重试。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:877](../src/scenes/rpg/RpgGameHost.tsx#L877)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:875](../src/scenes/rpg/RpgGameHost.tsx#L875)
 1768. 四层错位楼梯已连通，当前位置已经更新。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:883](../src/scenes/rpg/RpgGameHost.tsx#L883)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:881](../src/scenes/rpg/RpgGameHost.tsx#L881)
 1769. 灯光播放记录未能确认，正在重新播放本段。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:916](../src/scenes/rpg/RpgGameHost.tsx#L916)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:914](../src/scenes/rpg/RpgGameHost.tsx#L914)
 1770. 正在确认最终收束…
-   来源：[src/scenes/rpg/RpgGameHost.tsx:921](../src/scenes/rpg/RpgGameHost.tsx#L921)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:919](../src/scenes/rpg/RpgGameHost.tsx#L919)
 1771. 回答未能保存，请重试。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:944](../src/scenes/rpg/RpgGameHost.tsx#L944)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:942](../src/scenes/rpg/RpgGameHost.tsx#L942)
 1772. 最终收束未能确认，灯光将重新播放。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:965](../src/scenes/rpg/RpgGameHost.tsx#L965)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:963](../src/scenes/rpg/RpgGameHost.tsx#L963)
 1773. 教学楼交互请求缺少有效编号或包含多余字段。请重试。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1255](../src/scenes/rpg/RpgGameHost.tsx#L1255)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1253](../src/scenes/rpg/RpgGameHost.tsx#L1253)
 1774. 当前教学楼交互请求无效。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1256](../src/scenes/rpg/RpgGameHost.tsx#L1256)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1254](../src/scenes/rpg/RpgGameHost.tsx#L1254)
 1775. 这次教学楼交互已经处理，未重复写入。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1262](../src/scenes/rpg/RpgGameHost.tsx#L1262)；[src/scenes/rpg/RpgGameHost.tsx:1348](../src/scenes/rpg/RpgGameHost.tsx#L1348)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1260](../src/scenes/rpg/RpgGameHost.tsx#L1260)；[src/scenes/rpg/RpgGameHost.tsx:1346](../src/scenes/rpg/RpgGameHost.tsx#L1346)
 1776. 第四章序幕交接仅由 App gate 提交。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1269](../src/scenes/rpg/RpgGameHost.tsx#L1269)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1267](../src/scenes/rpg/RpgGameHost.tsx#L1267)
 1777. 当前交互位置无法由活动场景重新确认，请靠近可见目标后重试。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1296](../src/scenes/rpg/RpgGameHost.tsx#L1296)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1294](../src/scenes/rpg/RpgGameHost.tsx#L1294)
 1778. 无目标交互不得携带运行时几何。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1339](../src/scenes/rpg/RpgGameHost.tsx#L1339)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1337](../src/scenes/rpg/RpgGameHost.tsx#L1337)
 1779. 教学楼交互处理失败，请重试。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1352](../src/scenes/rpg/RpgGameHost.tsx#L1352)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1350](../src/scenes/rpg/RpgGameHost.tsx#L1350)
 1780. superseded
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1373](../src/scenes/rpg/RpgGameHost.tsx#L1373)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1371](../src/scenes/rpg/RpgGameHost.tsx#L1371)
 1781. 配电请求未被接受，请重试。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1460](../src/scenes/rpg/RpgGameHost.tsx#L1460)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1458](../src/scenes/rpg/RpgGameHost.tsx#L1458)
 1782. 区域供电状态已同步。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1469](../src/scenes/rpg/RpgGameHost.tsx#L1469)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1467](../src/scenes/rpg/RpgGameHost.tsx#L1467)
 1783. 当前组合与现场痕迹不一致，可以继续调整。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2355](../src/scenes/rpg/RpgGameHost.tsx#L2355)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2348](../src/scenes/rpg/RpgGameHost.tsx#L2348)
 1784. 三项判断中仍有矛盾，请重新核对现场现象。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2423](../src/scenes/rpg/RpgGameHost.tsx#L2423)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2416](../src/scenes/rpg/RpgGameHost.tsx#L2416)
 1785. loading
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2465](../src/scenes/rpg/RpgGameHost.tsx#L2465)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2458](../src/scenes/rpg/RpgGameHost.tsx#L2458)
 1786. 7:55 RPG runtime
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2532](../src/scenes/rpg/RpgGameHost.tsx#L2532)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2525](../src/scenes/rpg/RpgGameHost.tsx#L2525)
 1787. 7:55 横屏游戏
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2552](../src/scenes/rpg/RpgGameHost.tsx#L2552)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2545](../src/scenes/rpg/RpgGameHost.tsx#L2545)
 1788. 场景资源
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2589](../src/scenes/rpg/RpgGameHost.tsx#L2589)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2582](../src/scenes/rpg/RpgGameHost.tsx#L2582)
 1789. 地图资源没有完整载入
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2591](../src/scenes/rpg/RpgGameHost.tsx#L2591)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2584](../src/scenes/rpg/RpgGameHost.tsx#L2584)
 1790. 正在准备地图
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2591](../src/scenes/rpg/RpgGameHost.tsx#L2591)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2584](../src/scenes/rpg/RpgGameHost.tsx#L2584)
 1791. 本次缺少
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2595](../src/scenes/rpg/RpgGameHost.tsx#L2595)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2588](../src/scenes/rpg/RpgGameHost.tsx#L2588)
 1792. 项资源。网络恢复后重试，当前存档不会变化。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2595](../src/scenes/rpg/RpgGameHost.tsx#L2595)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2588](../src/scenes/rpg/RpgGameHost.tsx#L2588)
 1793. 聚焦手机
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2615](../src/scenes/rpg/RpgGameHost.tsx#L2615)；[src/scenes/rpg/RpgGameHost.tsx:2719](../src/scenes/rpg/RpgGameHost.tsx#L2719)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2608](../src/scenes/rpg/RpgGameHost.tsx#L2608)；[src/scenes/rpg/RpgGameHost.tsx:2712](../src/scenes/rpg/RpgGameHost.tsx#L2712)
 1794. 全屏
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2720](../src/scenes/rpg/RpgGameHost.tsx#L2720)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2713](../src/scenes/rpg/RpgGameHost.tsx#L2713)
 1795. 地图视角
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2725](../src/scenes/rpg/RpgGameHost.tsx#L2725)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2718](../src/scenes/rpg/RpgGameHost.tsx#L2718)
 1796. 定位人物
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2726](../src/scenes/rpg/RpgGameHost.tsx#L2726)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2719](../src/scenes/rpg/RpgGameHost.tsx#L2719)
 1797. 放大地图
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2727](../src/scenes/rpg/RpgGameHost.tsx#L2727)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2720](../src/scenes/rpg/RpgGameHost.tsx#L2720)
 1798. 地图物品栏
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2781](../src/scenes/rpg/RpgGameHost.tsx#L2781)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2774](../src/scenes/rpg/RpgGameHost.tsx#L2774)
 1799. 物品栏
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2782](../src/scenes/rpg/RpgGameHost.tsx#L2782)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2775](../src/scenes/rpg/RpgGameHost.tsx#L2775)
 1800. 查看电子校园卡
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2787](../src/scenes/rpg/RpgGameHost.tsx#L2787)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2780](../src/scenes/rpg/RpgGameHost.tsx#L2780)
 1801. 单击查看校园卡信息，双击查看完整详情
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2788](../src/scenes/rpg/RpgGameHost.tsx#L2788)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2781](../src/scenes/rpg/RpgGameHost.tsx#L2781)
 1802. 已连接
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2813](../src/scenes/rpg/RpgGameHost.tsx#L2813)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2806](../src/scenes/rpg/RpgGameHost.tsx#L2806)
 1803. 待登记姓名
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2815](../src/scenes/rpg/RpgGameHost.tsx#L2815)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2808](../src/scenes/rpg/RpgGameHost.tsx#L2808)
 1804. 待开始锻炼
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2816](../src/scenes/rpg/RpgGameHost.tsx#L2816)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2809](../src/scenes/rpg/RpgGameHost.tsx#L2809)
 1805. 启真湖垂钓：左右控线与收竿
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2853](../src/scenes/rpg/RpgGameHost.tsx#L2853)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2846](../src/scenes/rpg/RpgGameHost.tsx#L2846)
 1806. 按住收线，松手放线或起鱼
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2856](../src/scenes/rpg/RpgGameHost.tsx#L2856)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2849](../src/scenes/rpg/RpgGameHost.tsx#L2849)
 1807. 向右控线
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2856](../src/scenes/rpg/RpgGameHost.tsx#L2856)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2849](../src/scenes/rpg/RpgGameHost.tsx#L2849)
 1808. 向左控线
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2856](../src/scenes/rpg/RpgGameHost.tsx#L2856)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2849](../src/scenes/rpg/RpgGameHost.tsx#L2849)
 1809. hook
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2856](../src/scenes/rpg/RpgGameHost.tsx#L2856)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2849](../src/scenes/rpg/RpgGameHost.tsx#L2849)
 1810. left
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2856](../src/scenes/rpg/RpgGameHost.tsx#L2856)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2849](../src/scenes/rpg/RpgGameHost.tsx#L2849)
 1811. 交互
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2897](../src/scenes/rpg/RpgGameHost.tsx#L2897)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2890](../src/scenes/rpg/RpgGameHost.tsx#L2890)
 1812. RPG操作键，键盘使用 WASD 移动和空格键交互
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2904](../src/scenes/rpg/RpgGameHost.tsx#L2904)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2897](../src/scenes/rpg/RpgGameHost.tsx#L2897)
 1813. 204 教室空槽位
    来源：[src/scenes/rpg/RpgInteractionContract.ts:449](../src/scenes/rpg/RpgInteractionContract.ts#L449)
 1814. 烤箱旁的检修灯
@@ -8579,7 +8531,7 @@
 ## 结局
 
 1. locked
-   来源：[src/core/GameState.ts:251](../src/core/GameState.ts#L251)
+   来源：[src/core/GameState.ts:249](../src/core/GameState.ts#L249)
 2. completed
    来源：[src/core/QuestModel.ts:103](../src/core/QuestModel.ts#L103)；[src/core/QuestModel.ts:601](../src/core/QuestModel.ts#L601)；[src/core/QuestModel.ts:964](../src/core/QuestModel.ts#L964)；[src/core/QuestModel.ts:1000](../src/core/QuestModel.ts#L1000)；[src/core/QuestModel.ts:1073](../src/core/QuestModel.ts#L1073)
 3. pending
@@ -8731,21 +8683,21 @@
 76. {{first}} {{relation}} {{INTERCEPTION\_STAGES\[s.stage\].ordered ? "下一段" : "仍缺"}}：“{{INTERCEPTION\_STAGES\[s.stage\].ordered ? missing\[0\] : missing.join("、")}}”。可开启落点助视，再继续这一段。
    来源：[src/scenes/phone/P12_Ending/InterceptionModel.ts:211](../src/scenes/phone/P12_Ending/InterceptionModel.ts#L211)
 77. 哐当——齿轮转了半圈，掉下来了。背面朝外。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:107](../src/scenes/phone/P13_PhoneHome/index.tsx#L107)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:106](../src/scenes/phone/P13_PhoneHome/index.tsx#L106)
 78. 记录恢复
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:879](../src/scenes/phone/P13_PhoneHome/index.tsx#L879)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:877](../src/scenes/phone/P13_PhoneHome/index.tsx#L877)
 79. 检测到 7 分 55 秒未同步记录
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:879](../src/scenes/phone/P13_PhoneHome/index.tsx#L879)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:877](../src/scenes/phone/P13_PhoneHome/index.tsx#L877)
 80. 现在
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:880](../src/scenes/phone/P13_PhoneHome/index.tsx#L880)；[src/scenes/phone/P13_PhoneHome/index.tsx:895](../src/scenes/phone/P13_PhoneHome/index.tsx#L895)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:878](../src/scenes/phone/P13_PhoneHome/index.tsx#L878)；[src/scenes/phone/P13_PhoneHome/index.tsx:893](../src/scenes/phone/P13_PhoneHome/index.tsx#L893)
 81. 朋友：成功了吗
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:883](../src/scenes/phone/P13_PhoneHome/index.tsx#L883)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:881](../src/scenes/phone/P13_PhoneHome/index.tsx#L881)
 82. 成功了吗
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:894](../src/scenes/phone/P13_PhoneHome/index.tsx#L894)；[src/scenes/phone/P14_Wechat/index.tsx:890](../src/scenes/phone/P14_Wechat/index.tsx#L890)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:892](../src/scenes/phone/P13_PhoneHome/index.tsx#L892)；[src/scenes/phone/P14_Wechat/index.tsx:890](../src/scenes/phone/P14_Wechat/index.tsx#L890)
 83. 朋友
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:894](../src/scenes/phone/P13_PhoneHome/index.tsx#L894)；[src/scenes/phone/P14_Wechat/index.tsx:885](../src/scenes/phone/P14_Wechat/index.tsx#L885)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:892](../src/scenes/phone/P13_PhoneHome/index.tsx#L892)；[src/scenes/phone/P14_Wechat/index.tsx:885](../src/scenes/phone/P14_Wechat/index.tsx#L885)
 84. 朋友发来的微信消息
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:898](../src/scenes/phone/P13_PhoneHome/index.tsx#L898)
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:896](../src/scenes/phone/P13_PhoneHome/index.tsx#L896)
 85. 任务更新：找到系统
    来源：[src/scenes/phone/P14_Wechat/index.tsx:301](../src/scenes/phone/P14_Wechat/index.tsx#L301)
 86. task
@@ -8867,29 +8819,29 @@
 144. 太重
    来源：[src/scenes/rpg/LakeFishingRitualVisual.ts:265](../src/scenes/rpg/LakeFishingRitualVisual.ts#L265)
 145. 倒影对应点一
-   来源：[src/scenes/rpg/RpgGameHost.tsx:242](../src/scenes/rpg/RpgGameHost.tsx#L242)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:241](../src/scenes/rpg/RpgGameHost.tsx#L241)
 146. 旧木桩倒影
-   来源：[src/scenes/rpg/RpgGameHost.tsx:243](../src/scenes/rpg/RpgGameHost.tsx#L243)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:242](../src/scenes/rpg/RpgGameHost.tsx#L242)
 147. 鱼群水纹
-   来源：[src/scenes/rpg/RpgGameHost.tsx:244](../src/scenes/rpg/RpgGameHost.tsx#L244)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:243](../src/scenes/rpg/RpgGameHost.tsx#L243)
 148. 纸条本体水纹
-   来源：[src/scenes/rpg/RpgGameHost.tsx:245](../src/scenes/rpg/RpgGameHost.tsx#L245)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:244](../src/scenes/rpg/RpgGameHost.tsx#L244)
 149. 启真湖的行程还没开始,现在拍不了。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:248](../src/scenes/rpg/RpgGameHost.tsx#L248)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:247](../src/scenes/rpg/RpgGameHost.tsx#L247)
 150. 黑天鹅正追着船尾,顾不上拍照。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:249](../src/scenes/rpg/RpgGameHost.tsx#L249)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:248](../src/scenes/rpg/RpgGameHost.tsx#L248)
 151. 先完成上船教学,稳住船之后再打开相机。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:250](../src/scenes/rpg/RpgGameHost.tsx#L250)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:249](../src/scenes/rpg/RpgGameHost.tsx#L249)
 152. 手柄已安装，自动走动已停止。请输入一次方向。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1523](../src/scenes/rpg/RpgGameHost.tsx#L1523)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1521](../src/scenes/rpg/RpgGameHost.tsx#L1521)
 153. 他还不知道自己是谁。先用部门黄页完成命名。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1524](../src/scenes/rpg/RpgGameHost.tsx#L1524)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1522](../src/scenes/rpg/RpgGameHost.tsx#L1522)
 154. 他还没有开始课外锻炼。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1525](../src/scenes/rpg/RpgGameHost.tsx#L1525)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1523](../src/scenes/rpg/RpgGameHost.tsx#L1523)
 155. 道具栏里没有手柄。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1526](../src/scenes/rpg/RpgGameHost.tsx#L1526)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1524](../src/scenes/rpg/RpgGameHost.tsx#L1524)
 156. invalid\_result
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1857](../src/scenes/rpg/RpgGameHost.tsx#L1857)
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1850](../src/scenes/rpg/RpgGameHost.tsx#L1850)
 157. 204 讲台抽屉里的定位盘
    来源：[src/scenes/rpg/RpgInteractionContract.ts:790](../src/scenes/rpg/RpgInteractionContract.ts#L790)
 158. 旧钟定位盘插槽
@@ -9313,5804 +9265,5736 @@
    来源：[src/components/ControlCenter.tsx:48](../src/components/ControlCenter.tsx#L48)
 205. 已切换到移动数据，网络切换消耗 1% 电量。
    来源：[src/components/ControlCenter.tsx:49](../src/components/ControlCenter.tsx#L49)
-206. 低电量模式下音乐已暂停。关闭低电量模式后可以播放。
-   来源：[src/components/ControlCenter.tsx:56](../src/components/ControlCenter.tsx#L56)
-207. task
-   来源：[src/components/ControlCenter.tsx:56](../src/components/ControlCenter.tsx#L56)；[src/components/ControlCenter.tsx:78](../src/components/ControlCenter.tsx#L78)；[src/components/ControlCenter.tsx:140](../src/components/ControlCenter.tsx#L140)；[src/components/InventoryBar.tsx:432](../src/components/InventoryBar.tsx#L432)；[src/scenes/phone/P02_CC98/index.tsx:349](../src/scenes/phone/P02_CC98/index.tsx#L349)；[src/scenes/phone/P02_CC98/index.tsx:752](../src/scenes/phone/P02_CC98/index.tsx#L752)；[src/scenes/phone/P07_Weather/index.tsx:85](../src/scenes/phone/P07_Weather/index.tsx#L85)；[src/scenes/phone/P13_PhoneHome/index.tsx:146](../src/scenes/phone/P13_PhoneHome/index.tsx#L146)；[src/scenes/phone/P13_PhoneHome/index.tsx:191](../src/scenes/phone/P13_PhoneHome/index.tsx#L191)；[src/scenes/phone/P13_PhoneHome/index.tsx:373](../src/scenes/phone/P13_PhoneHome/index.tsx#L373)；[src/scenes/phone/P13_PhoneHome/index.tsx:395](../src/scenes/phone/P13_PhoneHome/index.tsx#L395)；[src/scenes/phone/P14_Wechat/index.tsx:240](../src/scenes/phone/P14_Wechat/index.tsx#L240)；[src/scenes/phone/P14_Wechat/index.tsx:367](../src/scenes/phone/P14_Wechat/index.tsx#L367)；[src/scenes/phone/P14_Wechat/index.tsx:447](../src/scenes/phone/P14_Wechat/index.tsx#L447)；[src/scenes/phone/P14_Wechat/index.tsx:513](../src/scenes/phone/P14_Wechat/index.tsx#L513)；[src/scenes/phone/P15_Zjuding/index.tsx:676](../src/scenes/phone/P15_Zjuding/index.tsx#L676)；[src/scenes/phone/P15_Zjuding/index.tsx:972](../src/scenes/phone/P15_Zjuding/index.tsx#L972)；[src/scenes/phone/P15_Zjuding/index.tsx:976](../src/scenes/phone/P15_Zjuding/index.tsx#L976)；[src/scenes/phone/P15_Zjuding/index.tsx:979](../src/scenes/phone/P15_Zjuding/index.tsx#L979)；[src/scenes/phone/P15_Zjuding/index.tsx:1083](../src/scenes/phone/P15_Zjuding/index.tsx#L1083)
-208. 耳机安静地挂着，不理你。
-   来源：[src/components/ControlCenter.tsx:67](../src/components/ControlCenter.tsx#L67)
-209. 耳机掉了下来，背面朝下。
-   来源：[src/components/ControlCenter.tsx:78](../src/components/ControlCenter.tsx#L78)
-210. 自动旋转已关闭。
-   来源：[src/components/ControlCenter.tsx:135](../src/components/ControlCenter.tsx#L135)
-211. 自动旋转已开启。
-   来源：[src/components/ControlCenter.tsx:135](../src/components/ControlCenter.tsx#L135)
-212. 存档写入失败，请检查浏览器存储权限。
-   来源：[src/components/ControlCenter.tsx:140](../src/components/ControlCenter.tsx#L140)
-213. 进度已保存。
-   来源：[src/components/ControlCenter.tsx:140](../src/components/ControlCenter.tsx#L140)
-214. 控制中心
-   来源：[src/components/ControlCenter.tsx:157](../src/components/ControlCenter.tsx#L157)；[src/scenes/phone/P08_Settings/index.tsx:37](../src/scenes/phone/P08_Settings/index.tsx#L37)
-215. 关闭控制中心
-   来源：[src/components/ControlCenter.tsx:158](../src/components/ControlCenter.tsx#L158)
-216. 7月9日 周四
-   来源：[src/components/ControlCenter.tsx:161](../src/components/ControlCenter.tsx#L161)
-217. 收起
-   来源：[src/components/ControlCenter.tsx:162](../src/components/ControlCenter.tsx#L162)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:353](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L353)
-218. 未连接
-   来源：[src/components/ControlCenter.tsx:181](../src/components/ControlCenter.tsx#L181)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:371](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L371)
-219. 已连接
-   来源：[src/components/ControlCenter.tsx:181](../src/components/ControlCenter.tsx#L181)
-220. 移动数据
-   来源：[src/components/ControlCenter.tsx:197](../src/components/ControlCenter.tsx#L197)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:372](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L372)
-221. 使用中
-   来源：[src/components/ControlCenter.tsx:198](../src/components/ControlCenter.tsx#L198)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:372](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L372)
-222. 已关闭
-   来源：[src/components/ControlCenter.tsx:198](../src/components/ControlCenter.tsx#L198)
-223. music
-   来源：[src/components/ControlCenter.tsx:206](../src/components/ControlCenter.tsx#L206)
-224. 未在播放
-   来源：[src/components/ControlCenter.tsx:207](../src/components/ControlCenter.tsx#L207)
-225. 正在播放：早八进行曲
-   来源：[src/components/ControlCenter.tsx:207](../src/components/ControlCenter.tsx#L207)
-226. 播放音乐
-   来源：[src/components/ControlCenter.tsx:210](../src/components/ControlCenter.tsx#L210)
-227. 暂停
-   来源：[src/components/ControlCenter.tsx:210](../src/components/ControlCenter.tsx#L210)
-228. 耳机
-   来源：[src/components/ControlCenter.tsx:218](../src/components/ControlCenter.tsx#L218)；[src/data/items.config.json:11](../src/data/items.config.json#L11)
-229. headphone
-   来源：[src/components/ControlCenter.tsx:220](../src/components/ControlCenter.tsx#L220)
-230. 耳机不见了
-   来源：[src/components/ControlCenter.tsx:223](../src/components/ControlCenter.tsx#L223)
-231. 亮度
-   来源：[src/components/ControlCenter.tsx:232](../src/components/ControlCenter.tsx#L232)
-232. sun
-   来源：[src/components/ControlCenter.tsx:256](../src/components/ControlCenter.tsx#L256)
-233. 自动旋转
+206. 耳机安静地挂着，不理你。
+   来源：[src/components/ControlCenter.tsx:62](../src/components/ControlCenter.tsx#L62)
+207. 耳机掉了下来，背面朝下。
+   来源：[src/components/ControlCenter.tsx:73](../src/components/ControlCenter.tsx#L73)
+208. task
+   来源：[src/components/ControlCenter.tsx:73](../src/components/ControlCenter.tsx#L73)；[src/components/ControlCenter.tsx:134](../src/components/ControlCenter.tsx#L134)；[src/components/InventoryBar.tsx:432](../src/components/InventoryBar.tsx#L432)；[src/scenes/phone/P02_CC98/index.tsx:349](../src/scenes/phone/P02_CC98/index.tsx#L349)；[src/scenes/phone/P02_CC98/index.tsx:752](../src/scenes/phone/P02_CC98/index.tsx#L752)；[src/scenes/phone/P07_Weather/index.tsx:85](../src/scenes/phone/P07_Weather/index.tsx#L85)；[src/scenes/phone/P13_PhoneHome/index.tsx:145](../src/scenes/phone/P13_PhoneHome/index.tsx#L145)；[src/scenes/phone/P13_PhoneHome/index.tsx:190](../src/scenes/phone/P13_PhoneHome/index.tsx#L190)；[src/scenes/phone/P13_PhoneHome/index.tsx:372](../src/scenes/phone/P13_PhoneHome/index.tsx#L372)；[src/scenes/phone/P13_PhoneHome/index.tsx:394](../src/scenes/phone/P13_PhoneHome/index.tsx#L394)；[src/scenes/phone/P14_Wechat/index.tsx:240](../src/scenes/phone/P14_Wechat/index.tsx#L240)；[src/scenes/phone/P14_Wechat/index.tsx:367](../src/scenes/phone/P14_Wechat/index.tsx#L367)；[src/scenes/phone/P14_Wechat/index.tsx:447](../src/scenes/phone/P14_Wechat/index.tsx#L447)；[src/scenes/phone/P14_Wechat/index.tsx:513](../src/scenes/phone/P14_Wechat/index.tsx#L513)；[src/scenes/phone/P15_Zjuding/index.tsx:676](../src/scenes/phone/P15_Zjuding/index.tsx#L676)；[src/scenes/phone/P15_Zjuding/index.tsx:972](../src/scenes/phone/P15_Zjuding/index.tsx#L972)；[src/scenes/phone/P15_Zjuding/index.tsx:976](../src/scenes/phone/P15_Zjuding/index.tsx#L976)；[src/scenes/phone/P15_Zjuding/index.tsx:979](../src/scenes/phone/P15_Zjuding/index.tsx#L979)；[src/scenes/phone/P15_Zjuding/index.tsx:1083](../src/scenes/phone/P15_Zjuding/index.tsx#L1083)
+209. 自动旋转已关闭。
+   来源：[src/components/ControlCenter.tsx:129](../src/components/ControlCenter.tsx#L129)
+210. 自动旋转已开启。
+   来源：[src/components/ControlCenter.tsx:129](../src/components/ControlCenter.tsx#L129)
+211. 存档写入失败，请检查浏览器存储权限。
+   来源：[src/components/ControlCenter.tsx:134](../src/components/ControlCenter.tsx#L134)
+212. 进度已保存。
+   来源：[src/components/ControlCenter.tsx:134](../src/components/ControlCenter.tsx#L134)
+213. 控制中心
+   来源：[src/components/ControlCenter.tsx:146](../src/components/ControlCenter.tsx#L146)；[src/scenes/phone/P08_Settings/index.tsx:37](../src/scenes/phone/P08_Settings/index.tsx#L37)
+214. 关闭控制中心
+   来源：[src/components/ControlCenter.tsx:147](../src/components/ControlCenter.tsx#L147)
+215. 7月9日 周四
+   来源：[src/components/ControlCenter.tsx:150](../src/components/ControlCenter.tsx#L150)
+216. 收起
+   来源：[src/components/ControlCenter.tsx:151](../src/components/ControlCenter.tsx#L151)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:353](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L353)
+217. 未连接
+   来源：[src/components/ControlCenter.tsx:170](../src/components/ControlCenter.tsx#L170)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:371](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L371)
+218. 已连接
+   来源：[src/components/ControlCenter.tsx:170](../src/components/ControlCenter.tsx#L170)
+219. 移动数据
+   来源：[src/components/ControlCenter.tsx:186](../src/components/ControlCenter.tsx#L186)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:372](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L372)
+220. 使用中
+   来源：[src/components/ControlCenter.tsx:187](../src/components/ControlCenter.tsx#L187)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:372](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L372)
+221. 已关闭
+   来源：[src/components/ControlCenter.tsx:187](../src/components/ControlCenter.tsx#L187)
+222. music
+   来源：[src/components/ControlCenter.tsx:195](../src/components/ControlCenter.tsx#L195)
+223. 未在播放
+   来源：[src/components/ControlCenter.tsx:196](../src/components/ControlCenter.tsx#L196)
+224. 正在播放：早八进行曲
+   来源：[src/components/ControlCenter.tsx:196](../src/components/ControlCenter.tsx#L196)
+225. 播放音乐
+   来源：[src/components/ControlCenter.tsx:199](../src/components/ControlCenter.tsx#L199)
+226. 暂停
+   来源：[src/components/ControlCenter.tsx:199](../src/components/ControlCenter.tsx#L199)
+227. 耳机
+   来源：[src/components/ControlCenter.tsx:207](../src/components/ControlCenter.tsx#L207)；[src/data/items.config.json:11](../src/data/items.config.json#L11)
+228. headphone
+   来源：[src/components/ControlCenter.tsx:209](../src/components/ControlCenter.tsx#L209)
+229. 耳机不见了
+   来源：[src/components/ControlCenter.tsx:212](../src/components/ControlCenter.tsx#L212)
+230. 亮度
+   来源：[src/components/ControlCenter.tsx:221](../src/components/ControlCenter.tsx#L221)
+231. sun
+   来源：[src/components/ControlCenter.tsx:244](../src/components/ControlCenter.tsx#L244)
+232. 自动旋转
+   来源：[src/components/ControlCenter.tsx:259](../src/components/ControlCenter.tsx#L259)
+233. 振动一直开着。它见证了闹钟的一切。
+   来源：[src/components/ControlCenter.tsx:261](../src/components/ControlCenter.tsx#L261)
+234. 振动
+   来源：[src/components/ControlCenter.tsx:265](../src/components/ControlCenter.tsx#L265)
+235. 飞行模式？你连教室都飞不到。
+   来源：[src/components/ControlCenter.tsx:267](../src/components/ControlCenter.tsx#L267)
+236. 飞行模式
    来源：[src/components/ControlCenter.tsx:271](../src/components/ControlCenter.tsx#L271)
-234. 振动一直开着。它见证了闹钟的一切。
+237. 勿扰模式无法阻挡早八。
    来源：[src/components/ControlCenter.tsx:273](../src/components/ControlCenter.tsx#L273)
-235. 振动
+238. 勿扰
    来源：[src/components/ControlCenter.tsx:277](../src/components/ControlCenter.tsx#L277)
-236. 飞行模式？你连教室都飞不到。
-   来源：[src/components/ControlCenter.tsx:279](../src/components/ControlCenter.tsx#L279)
-237. 飞行模式
+239. 电量管理
    来源：[src/components/ControlCenter.tsx:283](../src/components/ControlCenter.tsx#L283)
-238. 勿扰模式无法阻挡早八。
-   来源：[src/components/ControlCenter.tsx:285](../src/components/ControlCenter.tsx#L285)
-239. 勿扰
-   来源：[src/components/ControlCenter.tsx:289](../src/components/ControlCenter.tsx#L289)
-240. 电量管理
-   来源：[src/components/ControlCenter.tsx:295](../src/components/ControlCenter.tsx#L295)
-241. 电池
-   来源：[src/components/ControlCenter.tsx:299](../src/components/ControlCenter.tsx#L299)
-242. 打开应用不额外扣电
-   来源：[src/components/ControlCenter.tsx:300](../src/components/ControlCenter.tsx#L300)
-243. 手机电量
+240. 电池
+   来源：[src/components/ControlCenter.tsx:287](../src/components/ControlCenter.tsx#L287)
+241. 手机电量
+   来源：[src/components/ControlCenter.tsx:294](../src/components/ControlCenter.tsx#L294)
+242. 存档管理
+   来源：[src/components/ControlCenter.tsx:303](../src/components/ControlCenter.tsx#L303)
+243. 游戏进度
+   来源：[src/components/ControlCenter.tsx:306](../src/components/ControlCenter.tsx#L306)
+244. 自动保存已开启
    来源：[src/components/ControlCenter.tsx:307](../src/components/ControlCenter.tsx#L307)
-244. 关闭低电量模式
+245. 立即保存
+   来源：[src/components/ControlCenter.tsx:313](../src/components/ControlCenter.tsx#L313)
+246. 重置剧情进度
+   来源：[src/components/ControlCenter.tsx:314](../src/components/ControlCenter.tsx#L314)
+247. 将清除章节、道具和谜题进度。编辑过的 CC98 帖子会保留。
+   来源：[src/components/ControlCenter.tsx:318](../src/components/ControlCenter.tsx#L318)
+248. 取消
+   来源：[src/components/ControlCenter.tsx:319](../src/components/ControlCenter.tsx#L319)
+249. 确认重置
    来源：[src/components/ControlCenter.tsx:320](../src/components/ControlCenter.tsx#L320)
-245. 开启低电量模式
-   来源：[src/components/ControlCenter.tsx:320](../src/components/ControlCenter.tsx#L320)
-246. 解除亮度上限，可手动调高
-   来源：[src/components/ControlCenter.tsx:321](../src/components/ControlCenter.tsx#L321)
-247. 亮度限至 45%，暂停音乐
-   来源：[src/components/ControlCenter.tsx:321](../src/components/ControlCenter.tsx#L321)
-248. 剧场入口左侧设有充电服务站，需走到设备旁接线。
-   来源：[src/components/ControlCenter.tsx:325](../src/components/ControlCenter.tsx#L325)
-249. 可从主页或盆栽放下手机，点桌面充电座接线。
-   来源：[src/components/ControlCenter.tsx:327](../src/components/ControlCenter.tsx#L327)
-250. 充电需要在现场与充电服务站交互。
-   来源：[src/components/ControlCenter.tsx:328](../src/components/ControlCenter.tsx#L328)
-251. 电量仅剩 1%，请寻找现场充电服务站。
-   来源：[src/components/ControlCenter.tsx:331](../src/components/ControlCenter.tsx#L331)；[src/modules/PhoneBatteryController.ts:239](../src/modules/PhoneBatteryController.ts#L239)
-252. 存档管理
-   来源：[src/components/ControlCenter.tsx:335](../src/components/ControlCenter.tsx#L335)
-253. 游戏进度
-   来源：[src/components/ControlCenter.tsx:338](../src/components/ControlCenter.tsx#L338)
-254. 自动保存已开启
-   来源：[src/components/ControlCenter.tsx:339](../src/components/ControlCenter.tsx#L339)
-255. 立即保存
-   来源：[src/components/ControlCenter.tsx:345](../src/components/ControlCenter.tsx#L345)
-256. 重置剧情进度
-   来源：[src/components/ControlCenter.tsx:346](../src/components/ControlCenter.tsx#L346)
-257. 将清除章节、道具和谜题进度。编辑过的 CC98 帖子会保留。
-   来源：[src/components/ControlCenter.tsx:350](../src/components/ControlCenter.tsx#L350)
-258. 取消
-   来源：[src/components/ControlCenter.tsx:351](../src/components/ControlCenter.tsx#L351)
-259. 确认重置
-   来源：[src/components/ControlCenter.tsx:352](../src/components/ControlCenter.tsx#L352)
-260. 系统
+250. 系统
    来源：[src/components/GameSubtitleFrame.tsx:17](../src/components/GameSubtitleFrame.tsx#L17)；[src/components/ToastLayer.tsx:34](../src/components/ToastLayer.tsx#L34)；[src/components/ToastLayer.tsx:88](../src/components/ToastLayer.tsx#L88)；[src/scenes/phone/P15_Zjuding/index.tsx:446](../src/scenes/phone/P15_Zjuding/index.tsx#L446)；[src/scenes/phone/P15_Zjuding/index.tsx:2164](../src/scenes/phone/P15_Zjuding/index.tsx#L2164)
-261. 旁白
-   来源：[src/components/GameSubtitleFrame.tsx:18](../src/components/GameSubtitleFrame.tsx#L18)；[src/components/ToastLayer.tsx:34](../src/components/ToastLayer.tsx#L34)；[src/data/prologue-interception.content.json:46](../src/data/prologue-interception.content.json#L46)；[src/data/storyLines.ts:58](../src/data/storyLines.ts#L58)
-262. 任务
+251. 旁白
+   来源：[src/components/GameSubtitleFrame.tsx:18](../src/components/GameSubtitleFrame.tsx#L18)；[src/components/ToastLayer.tsx:34](../src/components/ToastLayer.tsx#L34)；[src/data/prologue-interception.content.json:23](../src/data/prologue-interception.content.json#L23)；[src/data/storyLines.ts:58](../src/data/storyLines.ts#L58)
+252. 任务
    来源：[src/components/GameSubtitleFrame.tsx:19](../src/components/GameSubtitleFrame.tsx#L19)；[src/components/QuestClueStrip.tsx:186](../src/components/QuestClueStrip.tsx#L186)；[src/scenes/phone/P15_Zjuding/index.tsx:2058](../src/scenes/phone/P15_Zjuding/index.tsx#L2058)
-263. 我
+253. 我
    来源：[src/components/GameSubtitleFrame.tsx:20](../src/components/GameSubtitleFrame.tsx#L20)；[src/components/ToastLayer.tsx:34](../src/components/ToastLayer.tsx#L34)；[src/scenes/phone/P02_CC98/index.tsx:203](../src/scenes/phone/P02_CC98/index.tsx#L203)；[src/scenes/phone/P15_Zjuding/index.tsx:2164](../src/scenes/phone/P15_Zjuding/index.tsx#L2164)
-264. 记录
+254. 记录
    来源：[src/components/GameSubtitleFrame.tsx:21](../src/components/GameSubtitleFrame.tsx#L21)；[src/data/cc98.posts.json:625](../src/data/cc98.posts.json#L625)；[src/data/cc98.posts.json:1473](../src/data/cc98.posts.json#L1473)；[src/data/cc98.posts.json:1707](../src/data/cc98.posts.json#L1707)；[src/data/cc98.posts.json:2016](../src/data/cc98.posts.json#L2016)
-265. 提示
+255. 提示
    来源：[src/components/GameSubtitleFrame.tsx:22](../src/components/GameSubtitleFrame.tsx#L22)；[src/data/cc98.posts.json:247](../src/data/cc98.posts.json#L247)；[src/data/cc98.posts.json:2586](../src/data/cc98.posts.json#L2586)
-266. 广播
+256. 广播
    来源：[src/components/GameSubtitleFrame.tsx:23](../src/components/GameSubtitleFrame.tsx#L23)
-267. 身份信息
+257. 身份信息
    来源：[src/components/GameSubtitleFrame.tsx:38](../src/components/GameSubtitleFrame.tsx#L38)
-268. 身份编号
+258. 身份编号
    来源：[src/components/GameSubtitleFrame.tsx:39](../src/components/GameSubtitleFrame.tsx#L39)
-269. game-subtitle-frame subtitle-tone-{{tone}} {{timed ? "is-timed" : "is-line-entering"}} {{className}}
+259. game-subtitle-frame subtitle-tone-{{tone}} {{timed ? "is-timed" : "is-line-entering"}} {{className}}
    来源：[src/components/GameSubtitleFrame.tsx:70](../src/components/GameSubtitleFrame.tsx#L70)
-270. {{ITEM\_META\[next\].name}}：{{ITEM\_META\[next\].desc}}
+260. {{ITEM\_META\[next\].name}}：{{ITEM\_META\[next\].desc}}
    来源：[src/components/InventoryBar.tsx:420](../src/components/InventoryBar.tsx#L420)
-271. 合成成功：{{ITEM\_META\[result\].name}}！
+261. 合成成功：{{ITEM\_META\[result\].name}}！
    来源：[src/components/InventoryBar.tsx:432](../src/components/InventoryBar.tsx#L432)
-272. 它们拒绝合作。
+262. 它们拒绝合作。
    来源：[src/components/InventoryBar.tsx:435](../src/components/InventoryBar.tsx#L435)
-273. 已放到目标上，正在处理。
+263. 已放到目标上，正在处理。
    来源：[src/components/InventoryBar.tsx:444](../src/components/InventoryBar.tsx#L444)
-274. 道具未放到目标上。
+264. 道具未放到目标上。
    来源：[src/components/InventoryBar.tsx:449](../src/components/InventoryBar.tsx#L449)；[src/scenes/rpg/RpgInventoryDock.tsx:108](../src/scenes/rpg/RpgInventoryDock.tsx#L108)
-275. 物品栏
+265. 物品栏
    来源：[src/components/InventoryBar.tsx:500](../src/components/InventoryBar.tsx#L500)
-276. 收起物品栏
+266. 收起物品栏
    来源：[src/components/InventoryBar.tsx:519](../src/components/InventoryBar.tsx#L519)
-277. 展开物品栏
+267. 展开物品栏
    来源：[src/components/InventoryBar.tsx:519](../src/components/InventoryBar.tsx#L519)
-278. backpack
+268. backpack
    来源：[src/components/InventoryBar.tsx:521](../src/components/InventoryBar.tsx#L521)
-279. 空空如也
+269. 空空如也
    来源：[src/components/InventoryBar.tsx:536](../src/components/InventoryBar.tsx#L536)
-280. 道具：{{ITEM\_META\[item\].name}}，{{isPaperItem(item) ? "点击展开内容" : "空格选中，Enter 查看详情"}}
+270. 道具：{{ITEM\_META\[item\].name}}，{{isPaperItem(item) ? "点击展开内容" : "空格选中，Enter 查看详情"}}
    来源：[src/components/InventoryBar.tsx:545](../src/components/InventoryBar.tsx#L545)
-281. 并行调查
+271. 并行调查
    来源：[src/components/InvestigationRing.tsx:55](../src/components/InvestigationRing.tsx#L55)
-282. 各节点可以任意顺序处理
+272. 各节点可以任意顺序处理
    来源：[src/components/InvestigationRing.tsx:56](../src/components/InvestigationRing.tsx#L56)
-283. 已完成 {{completed}} 项，共 {{total}} 项
+273. 已完成 {{completed}} 项，共 {{total}} 项
    来源：[src/components/InvestigationRing.tsx:121](../src/components/InvestigationRing.tsx#L121)
-284. 尚有未查
+274. 尚有未查
    来源：[src/components/InvestigationRing.tsx:141](../src/components/InvestigationRing.tsx#L141)
-285. 已查齐
+275. 已查齐
    来源：[src/components/InvestigationRing.tsx:141](../src/components/InvestigationRing.tsx#L141)
-286. {{node.label}}，{{node.statusLabel}}{{node.detail ? \`，${node.detail}\` : ""}}
+276. {{node.label}}，{{node.statusLabel}}{{node.detail ? \`，${node.detail}\` : ""}}
    来源：[src/components/InvestigationRing.tsx:161](../src/components/InvestigationRing.tsx#L161)
-287. 环境材料
+277. 环境材料
    来源：[src/components/ItemInspectDialog.tsx:35](../src/components/ItemInspectDialog.tsx#L35)
-288. 主屏早八雨滴
+278. 主屏早八雨滴
    来源：[src/components/ItemInspectDialog.tsx:36](../src/components/ItemInspectDialog.tsx#L36)
-289. 容器素材
+279. 容器素材
    来源：[src/components/ItemInspectDialog.tsx:39](../src/components/ItemInspectDialog.tsx#L39)
-290. 控制中心音乐模块
+280. 控制中心音乐模块
    来源：[src/components/ItemInspectDialog.tsx:40](../src/components/ItemInspectDialog.tsx#L40)
-291. 合成道具
+281. 合成道具
    来源：[src/components/ItemInspectDialog.tsx:43](../src/components/ItemInspectDialog.tsx#L43)
-292. 耳机 + 水滴
+282. 耳机 + 水滴
    来源：[src/components/ItemInspectDialog.tsx:44](../src/components/ItemInspectDialog.tsx#L44)
-293. 机械素材
+283. 机械素材
    来源：[src/components/ItemInspectDialog.tsx:47](../src/components/ItemInspectDialog.tsx#L47)
-294. 主屏设置齿轮背面
+284. 主屏设置齿轮背面
    来源：[src/components/ItemInspectDialog.tsx:48](../src/components/ItemInspectDialog.tsx#L48)
-295. 图形素材
+285. 图形素材
    来源：[src/components/ItemInspectDialog.tsx:51](../src/components/ItemInspectDialog.tsx#L51)；[src/components/ItemInspectDialog.tsx:67](../src/components/ItemInspectDialog.tsx#L67)；[src/components/ItemInspectDialog.tsx:75](../src/components/ItemInspectDialog.tsx#L75)
-296. 朋友头像掉落的一撇
+286. 朋友头像掉落的一撇
    来源：[src/components/ItemInspectDialog.tsx:52](../src/components/ItemInspectDialog.tsx#L52)
-297. 解锁工具
+287. 解锁工具
    来源：[src/components/ItemInspectDialog.tsx:55](../src/components/ItemInspectDialog.tsx#L55)；[src/components/ItemInspectDialog.tsx:224](../src/components/ItemInspectDialog.tsx#L224)
-298. 斜线 + 反转齿轮
+288. 斜线 + 反转齿轮
    来源：[src/components/ItemInspectDialog.tsx:56](../src/components/ItemInspectDialog.tsx#L56)
-299. 植物材料
+289. 植物材料
    来源：[src/components/ItemInspectDialog.tsx:59](../src/components/ItemInspectDialog.tsx#L59)
-300. 塔楼机关奖励
+290. 塔楼机关奖励
    来源：[src/components/ItemInspectDialog.tsx:60](../src/components/ItemInspectDialog.tsx#L60)
-301. 身份凭证
+291. 身份凭证
    来源：[src/components/ItemInspectDialog.tsx:63](../src/components/ItemInspectDialog.tsx#L63)
-302. 寝室右侧书桌 / 电子校园卡
+292. 寝室右侧书桌 / 电子校园卡
    来源：[src/components/ItemInspectDialog.tsx:64](../src/components/ItemInspectDialog.tsx#L64)
-303. 主页推送头像
+293. 主页推送头像
    来源：[src/components/ItemInspectDialog.tsx:68](../src/components/ItemInspectDialog.tsx#L68)
-304. 功能材料
+294. 功能材料
    来源：[src/components/ItemInspectDialog.tsx:71](../src/components/ItemInspectDialog.tsx#L71)
-305. 天气页面
+295. 天气页面
    来源：[src/components/ItemInspectDialog.tsx:72](../src/components/ItemInspectDialog.tsx#L72)
-306. 导师头像掉落的一竖
+296. 导师头像掉落的一竖
    来源：[src/components/ItemInspectDialog.tsx:76](../src/components/ItemInspectDialog.tsx#L76)
-307. 位移工具
+297. 位移工具
    来源：[src/components/ItemInspectDialog.tsx:79](../src/components/ItemInspectDialog.tsx#L79)
-308. 三角形 + 竖线
+298. 三角形 + 竖线
    来源：[src/components/ItemInspectDialog.tsx:80](../src/components/ItemInspectDialog.tsx#L80)
-309. 控制设备
+299. 控制设备
    来源：[src/components/ItemInspectDialog.tsx:83](../src/components/ItemInspectDialog.tsx#L83)
-310. CC98 二手市场
+300. CC98 二手市场
    来源：[src/components/ItemInspectDialog.tsx:84](../src/components/ItemInspectDialog.tsx#L84)
-311. 调查证据
+301. 调查证据
    来源：[src/components/ItemInspectDialog.tsx:87](../src/components/ItemInspectDialog.tsx#L87)
-312. 图书馆 022 座位旁
+302. 图书馆 022 座位旁
    来源：[src/components/ItemInspectDialog.tsx:88](../src/components/ItemInspectDialog.tsx#L88)
-313. 检索线索
+303. 检索线索
    来源：[src/components/ItemInspectDialog.tsx:91](../src/components/ItemInspectDialog.tsx#L91)
-314. 浙大钉馆藏检索结果
+304. 浙大钉馆藏检索结果
    来源：[src/components/ItemInspectDialog.tsx:92](../src/components/ItemInspectDialog.tsx#L92)
-315. 公开证据
+305. 公开证据
    来源：[src/components/ItemInspectDialog.tsx:95](../src/components/ItemInspectDialog.tsx#L95)
-316. 图书馆 755 书架夹层
+306. 图书馆 755 书架夹层
    来源：[src/components/ItemInspectDialog.tsx:96](../src/components/ItemInspectDialog.tsx#L96)
-317. 机器报告
+307. 机器报告
    来源：[src/components/ItemInspectDialog.tsx:99](../src/components/ItemInspectDialog.tsx#L99)
-318. 照片识别结果
+308. 照片识别结果
    来源：[src/components/ItemInspectDialog.tsx:100](../src/components/ItemInspectDialog.tsx#L100)
-319. 认证证明
+309. 认证证明
    来源：[src/components/ItemInspectDialog.tsx:103](../src/components/ItemInspectDialog.tsx#L103)
-320. 物品身份盖章机
+310. 物品身份盖章机
    来源：[src/components/ItemInspectDialog.tsx:104](../src/components/ItemInspectDialog.tsx#L104)
-321. 座位凭据
+311. 座位凭据
    来源：[src/components/ItemInspectDialog.tsx:107](../src/components/ItemInspectDialog.tsx#L107)
-322. 022 桌面夹缝
+312. 022 桌面夹缝
    来源：[src/components/ItemInspectDialog.tsx:108](../src/components/ItemInspectDialog.tsx#L108)；[src/scenes/rpg/RpgItemUseGuidance.ts:156](../src/scenes/rpg/RpgItemUseGuidance.ts#L156)
-323. 到场证明
+313. 到场证明
    来源：[src/components/ItemInspectDialog.tsx:111](../src/components/ItemInspectDialog.tsx#L111)
-324. 浙大体艺访问记录
+314. 浙大体艺访问记录
    来源：[src/components/ItemInspectDialog.tsx:112](../src/components/ItemInspectDialog.tsx#L112)
-325. 执行凭证
+315. 执行凭证
    来源：[src/components/ItemInspectDialog.tsx:115](../src/components/ItemInspectDialog.tsx#L115)
-326. 022 恢复申请签发
+316. 022 恢复申请签发
    来源：[src/components/ItemInspectDialog.tsx:116](../src/components/ItemInspectDialog.tsx#L116)
-327. 餐盘回收费 2.00 元
+317. 餐盘回收费 2.00 元
    来源：[src/components/ItemInspectDialog.tsx:119](../src/components/ItemInspectDialog.tsx#L119)；[src/data/items.config.json:151](../src/data/items.config.json#L151)
-328. 餐盘回收
+318. 餐盘回收
    来源：[src/components/ItemInspectDialog.tsx:120](../src/components/ItemInspectDialog.tsx#L120)
-329. 油渍纸巾
+319. 油渍纸巾
    来源：[src/components/ItemInspectDialog.tsx:123](../src/components/ItemInspectDialog.tsx#L123)；[src/data/items.config.json:158](../src/data/items.config.json#L158)
-330. 食堂收餐口阿姨
+320. 食堂收餐口阿姨
    来源：[src/components/ItemInspectDialog.tsx:124](../src/components/ItemInspectDialog.tsx#L124)
-331. 调配原料 · 蓝色
+321. 调配原料 · 蓝色
    来源：[src/components/ItemInspectDialog.tsx:127](../src/components/ItemInspectDialog.tsx#L127)
-332. 食堂饮料区
+322. 食堂饮料区
    来源：[src/components/ItemInspectDialog.tsx:128](../src/components/ItemInspectDialog.tsx#L128)；[src/components/ItemInspectDialog.tsx:132](../src/components/ItemInspectDialog.tsx#L132)；[src/components/ItemInspectDialog.tsx:136](../src/components/ItemInspectDialog.tsx#L136)
-333. 调配原料 · 白色
+323. 调配原料 · 白色
    来源：[src/components/ItemInspectDialog.tsx:131](../src/components/ItemInspectDialog.tsx#L131)
-334. 调配原料 · 黑色
+324. 调配原料 · 黑色
    来源：[src/components/ItemInspectDialog.tsx:135](../src/components/ItemInspectDialog.tsx#L135)
-335. 失败饮品
+325. 失败饮品
    来源：[src/components/ItemInspectDialog.tsx:139](../src/components/ItemInspectDialog.tsx#L139)
-336. 食堂混合台
+326. 食堂混合台
    来源：[src/components/ItemInspectDialog.tsx:140](../src/components/ItemInspectDialog.tsx#L140)；[src/components/ItemInspectDialog.tsx:145](../src/components/ItemInspectDialog.tsx#L145)
-337. 可以自己喝掉。试饮杯位不收这一杯。
+327. 可以自己喝掉。试饮杯位不收这一杯。
    来源：[src/components/ItemInspectDialog.tsx:141](../src/components/ItemInspectDialog.tsx#L141)
-338. 今日新品
+328. 今日新品
    来源：[src/components/ItemInspectDialog.tsx:144](../src/components/ItemInspectDialog.tsx#L144)
-339. 宣传板下空着一个杯位。洒出的泡沫有些黏。
+329. 宣传板下空着一个杯位。洒出的泡沫有些黏。
    来源：[src/components/ItemInspectDialog.tsx:146](../src/components/ItemInspectDialog.tsx#L146)
-340. 0755 取餐号
+330. 0755 取餐号
    来源：[src/components/ItemInspectDialog.tsx:149](../src/components/ItemInspectDialog.tsx#L149)；[src/data/itemCatalog.ts:138](../src/data/itemCatalog.ts#L138)；[src/data/items.config.json:200](../src/data/items.config.json#L200)
-341. 点餐机
+331. 点餐机
    来源：[src/components/ItemInspectDialog.tsx:150](../src/components/ItemInspectDialog.tsx#L150)
-342. 餐品
+332. 餐品
    来源：[src/components/ItemInspectDialog.tsx:152](../src/components/ItemInspectDialog.tsx#L152)；[src/components/ItemInspectDialog.tsx:153](../src/components/ItemInspectDialog.tsx#L153)；[src/components/ItemInspectDialog.tsx:154](../src/components/ItemInspectDialog.tsx#L154)；[src/components/ItemInspectDialog.tsx:155](../src/components/ItemInspectDialog.tsx#L155)
-343. 食堂取餐窗口
+333. 食堂取餐窗口
    来源：[src/components/ItemInspectDialog.tsx:152](../src/components/ItemInspectDialog.tsx#L152)；[src/components/ItemInspectDialog.tsx:153](../src/components/ItemInspectDialog.tsx#L153)；[src/components/ItemInspectDialog.tsx:154](../src/components/ItemInspectDialog.tsx#L154)；[src/components/ItemInspectDialog.tsx:155](../src/components/ItemInspectDialog.tsx#L155)
-344. 半张剧院票根 A
+334. 半张剧院票根 A
    来源：[src/components/ItemInspectDialog.tsx:157](../src/components/ItemInspectDialog.tsx#L157)；[src/data/items.config.json:235](../src/data/items.config.json#L235)
-345. 剧院海报栏
+335. 剧院海报栏
    来源：[src/components/ItemInspectDialog.tsx:158](../src/components/ItemInspectDialog.tsx#L158)
-346. 半张剧院票根 B
+336. 半张剧院票根 B
    来源：[src/components/ItemInspectDialog.tsx:161](../src/components/ItemInspectDialog.tsx#L161)；[src/data/items.config.json:242](../src/data/items.config.json#L242)
-347. 剧院取票机
+337. 剧院取票机
    来源：[src/components/ItemInspectDialog.tsx:162](../src/components/ItemInspectDialog.tsx#L162)
-348. 临时观演票
+338. 临时观演票
    来源：[src/components/ItemInspectDialog.tsx:165](../src/components/ItemInspectDialog.tsx#L165)；[src/data/items.config.json:249](../src/data/items.config.json#L249)；[src/modules/InventoryController.ts:16](../src/modules/InventoryController.ts#L16)
-349. 两张半票根
+339. 两张半票根
    来源：[src/components/ItemInspectDialog.tsx:166](../src/components/ItemInspectDialog.tsx#L166)
-350. 节目单残页
+340. 节目单残页
    来源：[src/components/ItemInspectDialog.tsx:169](../src/components/ItemInspectDialog.tsx#L169)；[src/components/ItemInspectDialog.tsx:173](../src/components/ItemInspectDialog.tsx#L173)；[src/components/ItemInspectDialog.tsx:177](../src/components/ItemInspectDialog.tsx#L177)
-351. 剧院座席
+341. 剧院座席
    来源：[src/components/ItemInspectDialog.tsx:170](../src/components/ItemInspectDialog.tsx#L170)；[src/components/ItemInspectDialog.tsx:174](../src/components/ItemInspectDialog.tsx#L174)；[src/components/ItemInspectDialog.tsx:178](../src/components/ItemInspectDialog.tsx#L178)
-352. 追光灯遥控器
+342. 追光灯遥控器
    来源：[src/components/ItemInspectDialog.tsx:181](../src/components/ItemInspectDialog.tsx#L181)；[src/data/items.config.json:277](../src/data/items.config.json#L277)
-353. 剧院灯控台
+343. 剧院灯控台
    来源：[src/components/ItemInspectDialog.tsx:182](../src/components/ItemInspectDialog.tsx#L182)
-354. 荧光粉刷
+344. 荧光粉刷
    来源：[src/components/ItemInspectDialog.tsx:185](../src/components/ItemInspectDialog.tsx#L185)；[src/data/items.config.json:284](../src/data/items.config.json#L284)
-355. 后台道具箱
+345. 后台道具箱
    来源：[src/components/ItemInspectDialog.tsx:186](../src/components/ItemInspectDialog.tsx#L186)
-356. 假纸条
+346. 假纸条
    来源：[src/components/ItemInspectDialog.tsx:189](../src/components/ItemInspectDialog.tsx#L189)；[src/data/items.config.json:291](../src/data/items.config.json#L291)
-357. 剧院追光灯下
+347. 剧院追光灯下
    来源：[src/components/ItemInspectDialog.tsx:190](../src/components/ItemInspectDialog.tsx#L190)
-358. 纸角能穿过鱼钩，泡过水后仍能保持形状。
+348. 纸角能穿过鱼钩，泡过水后仍能保持形状。
    来源：[src/components/ItemInspectDialog.tsx:191](../src/components/ItemInspectDialog.tsx#L191)
-359. 湿掉的节目单
+349. 湿掉的节目单
    来源：[src/components/ItemInspectDialog.tsx:194](../src/components/ItemInspectDialog.tsx#L194)；[src/data/itemCatalog.ts:163](../src/data/itemCatalog.ts#L163)；[src/data/items.config.json:298](../src/data/items.config.json#L298)
-360. 剧院舞台
+350. 剧院舞台
    来源：[src/components/ItemInspectDialog.tsx:195](../src/components/ItemInspectDialog.tsx#L195)；[src/data/itemCatalog.ts:166](../src/data/itemCatalog.ts#L166)
-361. 地点关键词
+351. 地点关键词
    来源：[src/components/ItemInspectDialog.tsx:198](../src/components/ItemInspectDialog.tsx#L198)；[src/components/ItemInspectDialog.tsx:202](../src/components/ItemInspectDialog.tsx#L202)；[src/components/ItemInspectDialog.tsx:206](../src/components/ItemInspectDialog.tsx#L206)
-362. CC98 目击回复
+352. CC98 目击回复
    来源：[src/components/ItemInspectDialog.tsx:199](../src/components/ItemInspectDialog.tsx#L199)
-363. 图书馆馆藏状态
+353. 图书馆馆藏状态
    来源：[src/components/ItemInspectDialog.tsx:203](../src/components/ItemInspectDialog.tsx#L203)
-364. 微信朋友消息
+354. 微信朋友消息
    来源：[src/components/ItemInspectDialog.tsx:207](../src/components/ItemInspectDialog.tsx#L207)
-365. 场景坐标
+355. 场景坐标
    来源：[src/components/ItemInspectDialog.tsx:210](../src/components/ItemInspectDialog.tsx#L210)
-366. 启真湖指示牌
+356. 启真湖指示牌
    来源：[src/components/ItemInspectDialog.tsx:211](../src/components/ItemInspectDialog.tsx#L211)
-367. 寝室电器
+357. 寝室电器
    来源：[src/components/ItemInspectDialog.tsx:214](../src/components/ItemInspectDialog.tsx#L214)
-368. 个人书桌
+358. 个人书桌
    来源：[src/components/ItemInspectDialog.tsx:215](../src/components/ItemInspectDialog.tsx#L215)
-369. 天气页面的云带会随风偏移。风向可以试着控制。
+359. 天气页面的云带会随风偏移。风向可以试着控制。
    来源：[src/components/ItemInspectDialog.tsx:216](../src/components/ItemInspectDialog.tsx#L216)
-370. 湖面工具
+360. 湖面工具
    来源：[src/components/ItemInspectDialog.tsx:219](../src/components/ItemInspectDialog.tsx#L219)
-371. 启真湖浮排边
+361. 启真湖浮排边
    来源：[src/components/ItemInspectDialog.tsx:220](../src/components/ItemInspectDialog.tsx#L220)
-372. 竿梢和鱼钩都在，钓线末端还能系东西。
+362. 竿梢和鱼钩都在，钓线末端还能系东西。
    来源：[src/components/ItemInspectDialog.tsx:221](../src/components/ItemInspectDialog.tsx#L221)
-373. 启真湖开放水域钓点
+363. 启真湖开放水域钓点
    来源：[src/components/ItemInspectDialog.tsx:225](../src/components/ItemInspectDialog.tsx#L225)；[src/components/ItemInspectDialog.tsx:235](../src/components/ItemInspectDialog.tsx#L235)
-374. 钥匙齿口较粗，适合码头那种旧锁。
+364. 钥匙齿口较粗，适合码头那种旧锁。
    来源：[src/components/ItemInspectDialog.tsx:226](../src/components/ItemInspectDialog.tsx#L226)
-375. 修复材料
+365. 修复材料
    来源：[src/components/ItemInspectDialog.tsx:229](../src/components/ItemInspectDialog.tsx#L229)；[src/components/ItemInspectDialog.tsx:234](../src/components/ItemInspectDialog.tsx#L234)
-376. 启真湖码头储物柜
+366. 启真湖码头储物柜
    来源：[src/components/ItemInspectDialog.tsx:230](../src/components/ItemInspectDialog.tsx#L230)
-377. 耐水，能穿过金属框边缘的小孔。
+367. 耐水，能穿过金属框边缘的小孔。
    来源：[src/components/ItemInspectDialog.tsx:231](../src/components/ItemInspectDialog.tsx#L231)
-378. 框架没散，边缘还留着穿线孔。
+368. 框架没散，边缘还留着穿线孔。
    来源：[src/components/ItemInspectDialog.tsx:236](../src/components/ItemInspectDialog.tsx#L236)
-379. 打捞工具
+369. 打捞工具
    来源：[src/components/ItemInspectDialog.tsx:239](../src/components/ItemInspectDialog.tsx#L239)
-380. 尼龙绳 + 断裂网框
+370. 尼龙绳 + 断裂网框
    来源：[src/components/ItemInspectDialog.tsx:240](../src/components/ItemInspectDialog.tsx#L240)
-381. 网口比罐子宽，网兜能承重。
+371. 网口比罐子宽，网兜能承重。
    来源：[src/components/ItemInspectDialog.tsx:241](../src/components/ItemInspectDialog.tsx#L241)
-382. 密封容器
+372. 密封容器
    来源：[src/components/ItemInspectDialog.tsx:244](../src/components/ItemInspectDialog.tsx#L244)
-383. 启真湖水下打捞点
+373. 启真湖水下打捞点
    来源：[src/components/ItemInspectDialog.tsx:245](../src/components/ItemInspectDialog.tsx#L245)
-384. 罐盖边缘有缝，徒手打不开。
+374. 罐盖边缘有缝，徒手打不开。
    来源：[src/components/ItemInspectDialog.tsx:246](../src/components/ItemInspectDialog.tsx#L246)
-385. 投喂材料
+375. 投喂材料
    来源：[src/components/ItemInspectDialog.tsx:249](../src/components/ItemInspectDialog.tsx#L249)
-386. 密封饲料罐
+376. 密封饲料罐
    来源：[src/components/ItemInspectDialog.tsx:250](../src/components/ItemInspectDialog.tsx#L250)；[src/data/items.config.json:375](../src/data/items.config.json#L375)
-387. 少量颗粒落水后，附近的鱼会游过来。
+377. 少量颗粒落水后，附近的鱼会游过来。
    来源：[src/components/ItemInspectDialog.tsx:251](../src/components/ItemInspectDialog.tsx#L251)
-388. 渔获
+378. 渔获
    来源：[src/components/ItemInspectDialog.tsx:254](../src/components/ItemInspectDialog.tsx#L254)
-389. 启真湖鱼群钓点
+379. 启真湖鱼群钓点
    来源：[src/components/ItemInspectDialog.tsx:255](../src/components/ItemInspectDialog.tsx#L255)
-390. 黑天鹅一直盯着这条鱼。
+380. 黑天鹅一直盯着这条鱼。
    来源：[src/components/ItemInspectDialog.tsx:256](../src/components/ItemInspectDialog.tsx#L256)
-391. 磁吸附件
+381. 磁吸附件
    来源：[src/components/ItemInspectDialog.tsx:259](../src/components/ItemInspectDialog.tsx#L259)
-392. 启真湖黑天鹅
+382. 启真湖黑天鹅
    来源：[src/components/ItemInspectDialog.tsx:260](../src/components/ItemInspectDialog.tsx#L260)
-393. 磁扣后面留有穿线孔。
+383. 磁扣后面留有穿线孔。
    来源：[src/components/ItemInspectDialog.tsx:261](../src/components/ItemInspectDialog.tsx#L261)
-394. 组合工具
+384. 组合工具
    来源：[src/components/ItemInspectDialog.tsx:264](../src/components/ItemInspectDialog.tsx#L264)
-395. 钓竿 + 天鹅磁铁
+385. 钓竿 + 天鹅磁铁
    来源：[src/components/ItemInspectDialog.tsx:265](../src/components/ItemInspectDialog.tsx#L265)
-396. 线末端能吸住小金属件，纸本身不导磁。
+386. 线末端能吸住小金属件，纸本身不导磁。
    来源：[src/components/ItemInspectDialog.tsx:266](../src/components/ItemInspectDialog.tsx#L266)
-397. 签到材料
+387. 签到材料
    来源：[src/components/ItemInspectDialog.tsx:269](../src/components/ItemInspectDialog.tsx#L269)
-398. 教学楼公告栏前
+388. 教学楼公告栏前
    来源：[src/components/ItemInspectDialog.tsx:270](../src/components/ItemInspectDialog.tsx#L270)
-399. 纸幅与签到槽相同，空栏还留着。
+389. 纸幅与签到槽相同，空栏还留着。
    来源：[src/components/ItemInspectDialog.tsx:271](../src/components/ItemInspectDialog.tsx#L271)
-400. 钟表部件
+390. 钟表部件
    来源：[src/components/ItemInspectDialog.tsx:274](../src/components/ItemInspectDialog.tsx#L274)；[src/components/ItemInspectDialog.tsx:279](../src/components/ItemInspectDialog.tsx#L279)；[src/components/ItemInspectDialog.tsx:294](../src/components/ItemInspectDialog.tsx#L294)
-401. 面包店传送带边缘
+391. 面包店传送带边缘
    来源：[src/components/ItemInspectDialog.tsx:275](../src/components/ItemInspectDialog.tsx#L275)
-402. 尾部方孔与大厅旧钟的轴头一致。
+392. 尾部方孔与大厅旧钟的轴头一致。
    来源：[src/components/ItemInspectDialog.tsx:276](../src/components/ItemInspectDialog.tsx#L276)
-403. 204 讲台抽屉
+393. 204 讲台抽屉
    来源：[src/components/ItemInspectDialog.tsx:280](../src/components/ItemInspectDialog.tsx#L280)
-404. 盘边的缺口与旧钟轴座对应。
+394. 盘边的缺口与旧钟轴座对应。
    来源：[src/components/ItemInspectDialog.tsx:281](../src/components/ItemInspectDialog.tsx#L281)
-405. 维修工具
+395. 维修工具
    来源：[src/components/ItemInspectDialog.tsx:284](../src/components/ItemInspectDialog.tsx#L284)
-406. 面包店后场
+396. 面包店后场
    来源：[src/components/ItemInspectDialog.tsx:285](../src/components/ItemInspectDialog.tsx#L285)
-407. 扁头能插入薄金属盖板的缝。
+397. 扁头能插入薄金属盖板的缝。
    来源：[src/components/ItemInspectDialog.tsx:286](../src/components/ItemInspectDialog.tsx#L286)
-408. 维修材料
+398. 维修材料
    来源：[src/components/ItemInspectDialog.tsx:289](../src/components/ItemInspectDialog.tsx#L289)
-409. 清洁车内侧
+399. 清洁车内侧
    来源：[src/components/ItemInspectDialog.tsx:290](../src/components/ItemInspectDialog.tsx#L290)
-410. 适用于卡涩的轮轴和齿轮。
+400. 适用于卡涩的轮轴和齿轮。
    来源：[src/components/ItemInspectDialog.tsx:291](../src/components/ItemInspectDialog.tsx#L291)
-411. 202 阶梯教室座椅间
+401. 202 阶梯教室座椅间
    来源：[src/components/ItemInspectDialog.tsx:295](../src/components/ItemInspectDialog.tsx#L295)
-412. 分针底部的接口仍完整。大厅旧钟缺的就是这一件。
+402. 分针底部的接口仍完整。大厅旧钟缺的就是这一件。
    来源：[src/components/ItemInspectDialog.tsx:296](../src/components/ItemInspectDialog.tsx#L296)
-413. 关闭{{item.name}}详情
+403. 关闭{{item.name}}详情
    来源：[src/components/ItemInspectDialog.tsx:399](../src/components/ItemInspectDialog.tsx#L399)
-414. 分类
+404. 分类
    来源：[src/components/ItemInspectDialog.tsx:417](../src/components/ItemInspectDialog.tsx#L417)；[src/data/cc98.posts.json:1203](../src/data/cc98.posts.json#L1203)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:474](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L474)
-415. 来源
+405. 来源
    来源：[src/components/ItemInspectDialog.tsx:421](../src/components/ItemInspectDialog.tsx#L421)；[src/data/itemCatalog.ts:166](../src/data/itemCatalog.ts#L166)
-416. 持卡人
+406. 持卡人
    来源：[src/components/ItemInspectDialog.tsx:426](../src/components/ItemInspectDialog.tsx#L426)
-417. 简介
+407. 简介
    来源：[src/components/ItemInspectDialog.tsx:431](../src/components/ItemInspectDialog.tsx#L431)
-418. 顺序：
+408. 顺序：
    来源：[src/components/ItemInspectDialog.tsx:435](../src/components/ItemInspectDialog.tsx#L435)
-419. 用途提示
+409. 用途提示
    来源：[src/components/ItemInspectDialog.tsx:441](../src/components/ItemInspectDialog.tsx#L441)
-420. {{item.name}}正文
+410. {{item.name}}正文
    来源：[src/components/ItemInspectDialog.tsx:448](../src/components/ItemInspectDialog.tsx#L448)
-421. 应用导航
+411. 应用导航
    来源：[src/components/PhoneAppUi.tsx:110](../src/components/PhoneAppUi.tsx#L110)
-422. QUICK PANEL
+412. QUICK PANEL
    来源：[src/components/PhoneAppUi.tsx:233](../src/components/PhoneAppUi.tsx#L233)
-423. 关闭{{title}}
+413. 关闭{{title}}
    来源：[src/components/PhoneAppUi.tsx:236](../src/components/PhoneAppUi.tsx#L236)
-424. phone-app-feedback is-{{tone}} {{className}}
+414. phone-app-feedback is-{{tone}} {{className}}
    来源：[src/components/PhoneAppUi.tsx:253](../src/components/PhoneAppUi.tsx#L253)
-425. 手机系统
+415. 手机系统
    来源：[src/components/PhoneBatteryPrankNotice.tsx:50](../src/components/PhoneBatteryPrankNotice.tsx#L50)
-426. {{notice.text}} / 剩余 {{notice.seconds}} 秒
+416. {{notice.text}} / 剩余 {{notice.seconds}} 秒
    来源：[src/components/PhoneBatteryPrankNotice.tsx:51](../src/components/PhoneBatteryPrankNotice.tsx#L51)
-427. warning
+417. warning
    来源：[src/components/PhoneBatteryPrankNotice.tsx:51](../src/components/PhoneBatteryPrankNotice.tsx#L51)
-428. 7:55 scaled phone viewport
-   来源：[src/components/PhoneShell.tsx:164](../src/components/PhoneShell.tsx#L164)
-429. 7:55 phone runtime
-   来源：[src/components/PhoneShell.tsx:166](../src/components/PhoneShell.tsx#L166)
-430. 记录 A
+418. 7:55 scaled phone viewport
+   来源：[src/components/PhoneShell.tsx:168](../src/components/PhoneShell.tsx#L168)
+419. 7:55 phone runtime
+   来源：[src/components/PhoneShell.tsx:170](../src/components/PhoneShell.tsx#L170)
+420. 记录 A
    来源：[src/components/PresentationLayer.tsx:113](../src/components/PresentationLayer.tsx#L113)
-431. 记录 B
+421. 记录 B
    来源：[src/components/PresentationLayer.tsx:113](../src/components/PresentationLayer.tsx#L113)
-432. 记录 C
+422. 记录 C
    来源：[src/components/PresentationLayer.tsx:113](../src/components/PresentationLayer.tsx#L113)
-433. 当前任务
+423. 当前任务
    来源：[src/components/QuestClueStrip.tsx:166](../src/components/QuestClueStrip.tsx#L166)；[src/components/QuestClueStrip.tsx:209](../src/components/QuestClueStrip.tsx#L209)
-434. {{CHAPTER\_LABEL\[quest.chapter\]}}当前任务：{{parallelObjective}}{{chapterFourAria}}{{showDigitHint ? \`。${digitHintAria}\` : ""}}。点击查看任务提示
+424. {{CHAPTER\_LABEL\[quest.chapter\]}}当前任务：{{parallelObjective}}{{chapterFourAria}}{{showDigitHint ? \`。${digitHintAria}\` : ""}}。点击查看任务提示
    来源：[src/components/QuestClueStrip.tsx:173](../src/components/QuestClueStrip.tsx#L173)
-435. 点击查看当前任务和提示
+425. 点击查看当前任务和提示
    来源：[src/components/QuestClueStrip.tsx:176](../src/components/QuestClueStrip.tsx#L176)
-436. 收起任务
+426. 收起任务
    来源：[src/components/QuestClueStrip.tsx:186](../src/components/QuestClueStrip.tsx#L186)
-437. 签到码
+427. 签到码
    来源：[src/components/QuestClueStrip.tsx:187](../src/components/QuestClueStrip.tsx#L187)
-438. 任务详情
+428. 任务详情
    来源：[src/components/QuestClueStrip.tsx:198](../src/components/QuestClueStrip.tsx#L198)
-439. 任务栏
+429. 任务栏
    来源：[src/components/QuestClueStrip.tsx:203](../src/components/QuestClueStrip.tsx#L203)
-440. 关闭任务详情
+430. 关闭任务详情
    来源：[src/components/QuestClueStrip.tsx:205](../src/components/QuestClueStrip.tsx#L205)
-441. 并行调查 {{parallelProgress.completed}}/{{parallelProgress.total}}
+431. 并行调查 {{parallelProgress.completed}}/{{parallelProgress.total}}
    来源：[src/components/QuestClueStrip.tsx:216](../src/components/QuestClueStrip.tsx#L216)
-442. 调查记录
+432. 调查记录
    来源：[src/components/QuestClueStrip.tsx:218](../src/components/QuestClueStrip.tsx#L218)
-443. 已查记录
+433. 已查记录
    来源：[src/components/QuestClueStrip.tsx:221](../src/components/QuestClueStrip.tsx#L221)
-444. 先查哪处都行；选中记录后返回现场查看
+434. 先查哪处都行；选中记录后返回现场查看
    来源：[src/components/QuestClueStrip.tsx:223](../src/components/QuestClueStrip.tsx#L223)
-445. 先查哪项都行；方向键选择，回车或空格打开
+435. 先查哪项都行；方向键选择，回车或空格打开
    来源：[src/components/QuestClueStrip.tsx:224](../src/components/QuestClueStrip.tsx#L224)
-446. completed
+436. completed
    来源：[src/components/QuestClueStrip.tsx:229](../src/components/QuestClueStrip.tsx#L229)；[src/core/QuestModel.ts:39](../src/core/QuestModel.ts#L39)
-447. 可重新查看
+437. 可重新查看
    来源：[src/components/QuestClueStrip.tsx:230](../src/components/QuestClueStrip.tsx#L230)
-448. 可直接开始
+438. 可直接开始
    来源：[src/components/QuestClueStrip.tsx:232](../src/components/QuestClueStrip.tsx#L232)
-449. 就近调查
+439. 就近调查
    来源：[src/components/QuestClueStrip.tsx:233](../src/components/QuestClueStrip.tsx#L233)
-450. 待处理
+440. 待处理
    来源：[src/components/QuestClueStrip.tsx:235](../src/components/QuestClueStrip.tsx#L235)
-451. 已完成
-   来源：[src/components/QuestClueStrip.tsx:235](../src/components/QuestClueStrip.tsx#L235)；[src/scenes/rpg/RpgGameHost.tsx:2609](../src/scenes/rpg/RpgGameHost.tsx#L2609)
-452. 第
+441. 已完成
+   来源：[src/components/QuestClueStrip.tsx:235](../src/components/QuestClueStrip.tsx#L235)；[src/scenes/rpg/RpgGameHost.tsx:2602](../src/scenes/rpg/RpgGameHost.tsx#L2602)
+442. 第
    来源：[src/components/QuestClueStrip.tsx:302](../src/components/QuestClueStrip.tsx#L302)
-453. 位
+443. 位
    来源：[src/components/QuestClueStrip.tsx:302](../src/components/QuestClueStrip.tsx#L302)；[src/scenes/phone/P15_Zjuding/index.tsx:1452](../src/scenes/phone/P15_Zjuding/index.tsx#L1452)；[src/scenes/phone/P15_Zjuding/index.tsx:1816](../src/scenes/phone/P15_Zjuding/index.tsx#L1816)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:76](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L76)
-454. 任务提示
+444. 任务提示
    来源：[src/components/QuestClueStrip.tsx:310](../src/components/QuestClueStrip.tsx#L310)；[src/components/QuestClueStrip.tsx:312](../src/components/QuestClueStrip.tsx#L312)
-455. 当前任务没有提示。
+445. 当前任务没有提示。
    来源：[src/components/QuestClueStrip.tsx:315](../src/components/QuestClueStrip.tsx#L315)
-456. 需要时点击下方按钮，逐条查看提示。
+446. 需要时点击下方按钮，逐条查看提示。
    来源：[src/components/QuestClueStrip.tsx:316](../src/components/QuestClueStrip.tsx#L316)
-457. 提示已全部展开
+447. 提示已全部展开
    来源：[src/components/QuestClueStrip.tsx:326](../src/components/QuestClueStrip.tsx#L326)
-458. 显示下一条提示
+448. 显示下一条提示
    来源：[src/components/QuestClueStrip.tsx:326](../src/components/QuestClueStrip.tsx#L326)
-459. 校时表冠：按住并绕圈拖动以校时
+449. 校时表冠：按住并绕圈拖动以校时
    来源：[src/components/RpgClockCrownOverlay.tsx:88](../src/components/RpgClockCrownOverlay.tsx#L88)
-460. Back to desktop
+450. Back to desktop
    来源：[src/components/ScenePlaceholder.tsx:25](../src/components/ScenePlaceholder.tsx#L25)
-461. 流量
+451. 流量
    来源：[src/components/StatusBar.tsx:62](../src/components/StatusBar.tsx#L62)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:89](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L89)
-462. 无服务
+452. 无服务
    来源：[src/components/StatusBar.tsx:72](../src/components/StatusBar.tsx#L72)
-463. 保安
+453. 保安
    来源：[src/components/ToastLayer.tsx:34](../src/components/ToastLayer.tsx#L34)
-464. 保洁员
+454. 保洁员
    来源：[src/components/ToastLayer.tsx:34](../src/components/ToastLayer.tsx#L34)
-465. 小影
+455. 小影
    来源：[src/components/ToastLayer.tsx:112](../src/components/ToastLayer.tsx#L112)
-466. 手机充电服务站
-   来源：[src/core/PhoneChargingStation.ts:8](../src/core/PhoneChargingStation.ts#L8)
-467. active
-   来源：[src/core/QuestModel.ts:39](../src/core/QuestModel.ts#L39)；[src/scenes/rpg/RpgGameHost.tsx:1532](../src/scenes/rpg/RpgGameHost.tsx#L1532)
-468. locked
-   来源：[src/core/QuestModel.ts:39](../src/core/QuestModel.ts#L39)；[src/modules/Cc98UnifiedLoginModel.ts:80](../src/modules/Cc98UnifiedLoginModel.ts#L80)；[src/scenes/phone/P02_CC98/index.tsx:343](../src/scenes/phone/P02_CC98/index.tsx#L343)；[src/scenes/rpg/BootScene.ts:572](../src/scenes/rpg/BootScene.ts#L572)；[src/scenes/rpg/RpgGameHost.tsx:1532](../src/scenes/rpg/RpgGameHost.tsx#L1532)；[src/scenes/rpg/RpgGameHost.tsx:1625](../src/scenes/rpg/RpgGameHost.tsx#L1625)；[src/scenes/rpg/RpgGameHost.tsx:1644](../src/scenes/rpg/RpgGameHost.tsx#L1644)；[src/scenes/rpg/RpgGameHost.tsx:1652](../src/scenes/rpg/RpgGameHost.tsx#L1652)；[src/scenes/rpg/RpgGameHost.tsx:1664](../src/scenes/rpg/RpgGameHost.tsx#L1664)；[src/scenes/rpg/RpgGameHost.tsx:1682](../src/scenes/rpg/RpgGameHost.tsx#L1682)；[src/scenes/rpg/RpgGameHost.tsx:1707](../src/scenes/rpg/RpgGameHost.tsx#L1707)；[src/scenes/rpg/RpgGameHost.tsx:1717](../src/scenes/rpg/RpgGameHost.tsx#L1717)；[src/scenes/rpg/RpgGameHost.tsx:1724](../src/scenes/rpg/RpgGameHost.tsx#L1724)；[src/scenes/rpg/RpgItemUseGuidance.ts:49](../src/scenes/rpg/RpgItemUseGuidance.ts#L49)
-469. 在寝室找一件能用的设备
+456. active
+   来源：[src/core/QuestModel.ts:39](../src/core/QuestModel.ts#L39)；[src/scenes/rpg/RpgGameHost.tsx:1530](../src/scenes/rpg/RpgGameHost.tsx#L1530)
+457. locked
+   来源：[src/core/QuestModel.ts:39](../src/core/QuestModel.ts#L39)；[src/modules/Cc98UnifiedLoginModel.ts:80](../src/modules/Cc98UnifiedLoginModel.ts#L80)；[src/scenes/phone/P02_CC98/index.tsx:343](../src/scenes/phone/P02_CC98/index.tsx#L343)；[src/scenes/rpg/BootScene.ts:572](../src/scenes/rpg/BootScene.ts#L572)；[src/scenes/rpg/RpgGameHost.tsx:1530](../src/scenes/rpg/RpgGameHost.tsx#L1530)；[src/scenes/rpg/RpgGameHost.tsx:1623](../src/scenes/rpg/RpgGameHost.tsx#L1623)；[src/scenes/rpg/RpgGameHost.tsx:1642](../src/scenes/rpg/RpgGameHost.tsx#L1642)；[src/scenes/rpg/RpgGameHost.tsx:1650](../src/scenes/rpg/RpgGameHost.tsx#L1650)；[src/scenes/rpg/RpgGameHost.tsx:1662](../src/scenes/rpg/RpgGameHost.tsx#L1662)；[src/scenes/rpg/RpgGameHost.tsx:1675](../src/scenes/rpg/RpgGameHost.tsx#L1675)；[src/scenes/rpg/RpgGameHost.tsx:1700](../src/scenes/rpg/RpgGameHost.tsx#L1700)；[src/scenes/rpg/RpgGameHost.tsx:1710](../src/scenes/rpg/RpgGameHost.tsx#L1710)；[src/scenes/rpg/RpgGameHost.tsx:1717](../src/scenes/rpg/RpgGameHost.tsx#L1717)；[src/scenes/rpg/RpgItemUseGuidance.ts:49](../src/scenes/rpg/RpgItemUseGuidance.ts#L49)
+458. 在寝室找一件能用的设备
    来源：[src/core/QuestModel.ts:404](../src/core/QuestModel.ts#L404)
-470. 检查自己的书桌。
+459. 检查自己的书桌。
    来源：[src/core/QuestModel.ts:405](../src/core/QuestModel.ts#L405)
-471. 处理启真湖的天气记录
+460. 处理启真湖的天气记录
    来源：[src/core/QuestModel.ts:409](../src/core/QuestModel.ts#L409)
-472. 打开手机天气页面。
+461. 打开手机天气页面。
    来源：[src/core/QuestModel.ts:410](../src/core/QuestModel.ts#L410)
-473. 查看湖边三处线索 {{branchCount}}/3
+462. 查看湖边三处线索 {{branchCount}}/3
    来源：[src/core/QuestModel.ts:435](../src/core/QuestModel.ts#L435)
-474. 码头的柜门还锁着，附近水下有个小金属物。
+463. 码头的柜门还锁着，附近水下有个小金属物。
    来源：[src/core/QuestModel.ts:436](../src/core/QuestModel.ts#L436)
-475. 码头柜门已打开，尼龙绳收好了。
+464. 码头柜门已打开，尼龙绳收好了。
    来源：[src/core/QuestModel.ts:436](../src/core/QuestModel.ts#L436)
-476. 木桩下的网框已经捞起。
+465. 木桩下的网框已经捞起。
    来源：[src/core/QuestModel.ts:437](../src/core/QuestModel.ts#L437)
-477. 直河道旧木桩下，能看见框状物的轮廓。
+466. 直河道旧木桩下，能看见框状物的轮廓。
    来源：[src/core/QuestModel.ts:437](../src/core/QuestModel.ts#L437)
-478. 黑天鹅推来的磁性扣已经收好。
+467. 黑天鹅推来的磁性扣已经收好。
    来源：[src/core/QuestModel.ts:438](../src/core/QuestModel.ts#L438)
-479. 天鹅围栏边留着旧饲料盒。
+468. 天鹅围栏边留着旧饲料盒。
    来源：[src/core/QuestModel.ts:438](../src/core/QuestModel.ts#L438)
-480. 这三处可以分头查看，先去哪处都行。
+469. 这三处可以分头查看，先去哪处都行。
    来源：[src/core/QuestModel.ts:439](../src/core/QuestModel.ts#L439)
-481. 在物品栏组合四件材料
+470. 在物品栏组合四件材料
    来源：[src/core/QuestModel.ts:442](../src/core/QuestModel.ts#L442)
-482. 绳和网框已经用于旧抄网；在物品栏装上磁铁与钓竿，完成原来的四件组装。
+471. 绳和网框已经用于旧抄网；在物品栏装上磁铁与钓竿，完成原来的四件组装。
    来源：[src/core/QuestModel.ts:444](../src/core/QuestModel.ts#L444)
-483. 尼龙绳、断裂网框、天鹅磁铁与钓竿集齐后，点击物品栏的“组合四件材料”。
+472. 尼龙绳、断裂网框、天鹅磁铁与钓竿集齐后，点击物品栏的“组合四件材料”。
    来源：[src/core/QuestModel.ts:445](../src/core/QuestModel.ts#L445)
-484. 已经使用的绳和网框不用重新取得。
+473. 已经使用的绳和网框不用重新取得。
    来源：[src/core/QuestModel.ts:447](../src/core/QuestModel.ts#L447)
-485. 这些材料可以按任意顺序获取，组合前会一直保留。
+474. 这些材料可以按任意顺序获取，组合前会一直保留。
    来源：[src/core/QuestModel.ts:448](../src/core/QuestModel.ts#L448)
-486. 按货架顺序调配今日新品（{{hunt.drinkMixSequence.length}}/3）
+475. 按货架顺序调配今日新品（{{hunt.drinkMixSequence.length}}/3）
    来源：[src/core/QuestModel.ts:502](../src/core/QuestModel.ts#L502)
-487. 调配顺序能从饮料货架上找到。
+476. 调配顺序能从饮料货架上找到。
    来源：[src/core/QuestModel.ts:503](../src/core/QuestModel.ts#L503)
-488. 饮料机提供原料，调配台按倒入顺序记数。
+477. 饮料机提供原料，调配台按倒入顺序记数。
    来源：[src/core/QuestModel.ts:503](../src/core/QuestModel.ts#L503)
-489. 把今日新品气泡水放入宣传板空杯位
+478. 把今日新品气泡水放入宣传板空杯位
    来源：[src/core/QuestModel.ts:507](../src/core/QuestModel.ts#L507)
-490. 目标位在第三窗口宣传板下方。
+479. 目标位在第三窗口宣传板下方。
    来源：[src/core/QuestModel.ts:507](../src/core/QuestModel.ts#L507)
-491. 等待第三列队伍让出位置
+480. 等待第三列队伍让出位置
    来源：[src/core/QuestModel.ts:509](../src/core/QuestModel.ts#L509)
-492. 看看菜单里有什么异常
+481. 看看菜单里有什么异常
    来源：[src/core/QuestModel.ts:514](../src/core/QuestModel.ts#L514)
-493. 两种模式下，菜单有几个字不一样。
+482. 两种模式下，菜单有几个字不一样。
    来源：[src/core/QuestModel.ts:515](../src/core/QuestModel.ts#L515)
-494. 深色观察看字，浅色操作下单。
+483. 深色观察看字，浅色操作下单。
    来源：[src/core/QuestModel.ts:515](../src/core/QuestModel.ts#L515)
-495. 找到这张小票对应的窗口
+484. 找到这张小票对应的窗口
    来源：[src/core/QuestModel.ts:521](../src/core/QuestModel.ts#L521)
-496. 深色观察能听见残留的叫号；交票要用浅色操作。
+485. 深色观察能听见残留的叫号；交票要用浅色操作。
    来源：[src/core/QuestModel.ts:522](../src/core/QuestModel.ts#L522)
-497. 同一个号码，各窗口叫出的餐品未必相同。
+486. 同一个号码，各窗口叫出的餐品未必相同。
    来源：[src/core/QuestModel.ts:522](../src/core/QuestModel.ts#L522)
-498. 守住纸条可能逃离的出口（{{hunt.blockHits}}/3）
+487. 守住纸条可能逃离的出口（{{hunt.blockHits}}/3）
    来源：[src/core/QuestModel.ts:528](../src/core/QuestModel.ts#L528)
-499. 空格键可以冲刺；纸条回头时路线会再次出现。
+488. 空格键可以冲刺；纸条回头时路线会再次出现。
    来源：[src/core/QuestModel.ts:529](../src/core/QuestModel.ts#L529)
-500. 浅色操作可推动当前路线上的餐盘车；深色观察可补充确认蓝色轨迹。
+489. 浅色操作可推动当前路线上的餐盘车；深色观察可补充确认蓝色轨迹。
    来源：[src/core/QuestModel.ts:529](../src/core/QuestModel.ts#L529)
-501. 回到交通核心，在仍有历史残影的楼层核对旧导视。
+490. 回到交通核心，在仍有历史残影的楼层核对旧导视。
    来源：[src/core/QuestModel.ts:1189](../src/core/QuestModel.ts#L1189)
-502. 郁闷小屋
+491. 郁闷小屋
    来源：[src/data/cc98.board-snapshots.json:5](../src/data/cc98.board-snapshots.json#L5)；[src/data/cc98.posts.json:7](../src/data/cc98.posts.json#L7)；[src/data/cc98.posts.json:49](../src/data/cc98.posts.json#L49)；[src/data/cc98.posts.json:91](../src/data/cc98.posts.json#L91)；[src/data/cc98.posts.json:133](../src/data/cc98.posts.json#L133)；[src/data/cc98.posts.json:175](../src/data/cc98.posts.json#L175)；[src/data/cc98.posts.json:217](../src/data/cc98.posts.json#L217)；[src/data/cc98.posts.json:259](../src/data/cc98.posts.json#L259)；[src/data/cc98.posts.json:301](../src/data/cc98.posts.json#L301)；[src/data/cc98.posts.json:343](../src/data/cc98.posts.json#L343)；[src/data/cc98.posts.json:385](../src/data/cc98.posts.json#L385)；[src/data/cc98.posts.json:427](../src/data/cc98.posts.json#L427)；[src/data/cc98.posts.json:469](../src/data/cc98.posts.json#L469)；[src/scenes/phone/P02_CC98/index.tsx:210](../src/scenes/phone/P02_CC98/index.tsx#L210)
-503. CC98 114 板公开页面
+492. CC98 114 板公开页面
    来源：[src/data/cc98.board-snapshots.json:7](../src/data/cc98.board-snapshots.json#L7)
-504. 开怀一笑
+493. 开怀一笑
    来源：[src/data/cc98.board-snapshots.json:14](../src/data/cc98.board-snapshots.json#L14)；[src/data/cc98.posts.json:511](../src/data/cc98.posts.json#L511)；[src/data/cc98.posts.json:553](../src/data/cc98.posts.json#L553)；[src/data/cc98.posts.json:595](../src/data/cc98.posts.json#L595)；[src/data/cc98.posts.json:637](../src/data/cc98.posts.json#L637)；[src/data/cc98.posts.json:679](../src/data/cc98.posts.json#L679)；[src/data/cc98.posts.json:721](../src/data/cc98.posts.json#L721)；[src/data/cc98.posts.json:763](../src/data/cc98.posts.json#L763)；[src/data/cc98.posts.json:805](../src/data/cc98.posts.json#L805)；[src/data/cc98.posts.json:847](../src/data/cc98.posts.json#L847)；[src/data/cc98.posts.json:889](../src/data/cc98.posts.json#L889)；[src/data/cc98.posts.json:931](../src/data/cc98.posts.json#L931)；[src/data/cc98.posts.json:973](../src/data/cc98.posts.json#L973)；[src/data/cc98.posts.json:2292](../src/data/cc98.posts.json#L2292)；[src/data/cc98.posts.json:2343](../src/data/cc98.posts.json#L2343)；[src/data/cc98.posts.json:2598](../src/data/cc98.posts.json#L2598)；[src/scenes/phone/P02_CC98/index.tsx:207](../src/scenes/phone/P02_CC98/index.tsx#L207)；[src/scenes/phone/P02_CC98/index.tsx:221](../src/scenes/phone/P02_CC98/index.tsx#L221)
-505. CC98 135 板公开页面
+494. CC98 135 板公开页面
    来源：[src/data/cc98.board-snapshots.json:16](../src/data/cc98.board-snapshots.json#L16)
-506. 求一份能把今天过完的待办清单
+495. 求一份能把今天过完的待办清单
    来源：[src/data/cc98.post-default-history.json:6](../src/data/cc98.post-default-history.json#L6)
-507. 桌面上摊着好几件事，越想一起做越动不了。现在打算只写三项：回一条必要消息、整理十分钟资料、按时去吃饭。还有人用过更小的清单吗？
+496. 桌面上摊着好几件事，越想一起做越动不了。现在打算只写三项：回一条必要消息、整理十分钟资料、按时去吃饭。还有人用过更小的清单吗？
    来源：[src/data/cc98.post-default-history.json:9](../src/data/cc98.post-default-history.json#L9)
-508. 三个DDL加一份实验报告同时糊脸上，盯着电脑发呆半小时一个字没敲出来……算了，今天能把早饭吃了、回导师一条消息就算成功，摆烂了家人们。
+497. 三个DDL加一份实验报告同时糊脸上，盯着电脑发呆半小时一个字没敲出来……算了，今天能把早饭吃了、回导师一条消息就算成功，摆烂了家人们。
    来源：[src/data/cc98.post-default-history.json:10](../src/data/cc98.post-default-history.json#L10)
-509. 投递后不断刷新邮箱，怎样才能停下来
+498. 投递后不断刷新邮箱，怎样才能停下来
    来源：[src/data/cc98.post-default-history.json:15](../src/data/cc98.post-default-history.json#L15)
-510. 下午投完一份材料，之后每隔几分钟就去看一次邮箱。明知道这么快不会有结果，还是控制不住。想把提醒关掉，又怕错过消息。
+499. 下午投完一份材料，之后每隔几分钟就去看一次邮箱。明知道这么快不会有结果，还是控制不住。想把提醒关掉，又怕错过消息。
    来源：[src/data/cc98.post-default-history.json:18](../src/data/cc98.post-default-history.json#L18)
-511. 下午刚给老师发完套磁/申请邮件，现在每隔三分钟就忍不住点开浙大邮箱刷一次，手机快被我刷没电了，救命，怎么戒掉这个毛病……
+500. 下午刚给老师发完套磁/申请邮件，现在每隔三分钟就忍不住点开浙大邮箱刷一次，手机快被我刷没电了，救命，怎么戒掉这个毛病……
    来源：[src/data/cc98.post-default-history.json:19](../src/data/cc98.post-default-history.json#L19)
-512. 和室友约个安静时段，怎么开口比较不尴尬
+501. 和室友约个安静时段，怎么开口比较不尴尬
    来源：[src/data/cc98.post-default-history.json:24](../src/data/cc98.post-default-history.json#L24)
-513. 这周总在赶报告，晚上十点后还会有开麦和外放声音。大家关系正常，我不想把话说成指责。有没有比较具体的沟通方式？
+502. 这周总在赶报告，晚上十点后还会有开麦和外放声音。大家关系正常，我不想把话说成指责。有没有比较具体的沟通方式？
    来源：[src/data/cc98.post-default-history.json:27](../src/data/cc98.post-default-history.json#L27)
-514. 想散步又怕一个人，晚上校园里还有人走吗
+503. 想散步又怕一个人，晚上校园里还有人走吗
    来源：[src/data/cc98.post-default-history.json:32](../src/data/cc98.post-default-history.json#L32)
-515. 一直坐在宿舍反而更闷，想出去走十分钟，又担心自己一个人会越走越乱。有没有人愿意推荐一段灯比较亮、路上人也多的路线？
+504. 一直坐在宿舍反而更闷，想出去走十分钟，又担心自己一个人会越走越乱。有没有人愿意推荐一段灯比较亮、路上人也多的路线？
    来源：[src/data/cc98.post-default-history.json:35](../src/data/cc98.post-default-history.json#L35)
-516. 计划赶不上进度时，先做哪件最有用
+505. 计划赶不上进度时，先做哪件最有用
    来源：[src/data/cc98.post-default-history.json:40](../src/data/cc98.post-default-history.json#L40)
-517. 原来排好的三件事全被临时消息打断了，现在看着没完成的列表只想继续往后拖。想问大家会先补最紧急的，还是先收掉最小的一项？
+506. 原来排好的三件事全被临时消息打断了，现在看着没完成的列表只想继续往后拖。想问大家会先补最紧急的，还是先收掉最小的一项？
    来源：[src/data/cc98.post-default-history.json:43](../src/data/cc98.post-default-history.json#L43)
-518. 今天没有抢到名额，补位通知会在哪里出现
+507. 今天没有抢到名额，补位通知会在哪里出现
    来源：[src/data/cc98.post-default-history.json:48](../src/data/cc98.post-default-history.json#L48)
-519. 页面显示本轮已经结束，我没有抢到。先不想急着换网络或重复点了，想确认之后如果有人退掉，通知通常会从哪个入口出现。
+508. 页面显示本轮已经结束，我没有抢到。先不想急着换网络或重复点了，想确认之后如果有人退掉，通知通常会从哪个入口出现。
    来源：[src/data/cc98.post-default-history.json:51](../src/data/cc98.post-default-history.json#L51)
-520. 给家里报平安后反而更难平静
+509. 给家里报平安后反而更难平静
    来源：[src/data/cc98.post-default-history.json:56](../src/data/cc98.post-default-history.json#L56)
-521. 刚和家里通完电话，明明已经把近况说清楚了，挂断后还是一直在想有没有哪里没说好。现在不想继续反复回放这段对话。
+510. 刚和家里通完电话，明明已经把近况说清楚了，挂断后还是一直在想有没有哪里没说好。现在不想继续反复回放这段对话。
    来源：[src/data/cc98.post-default-history.json:59](../src/data/cc98.post-default-history.json#L59)
-522. 复习到一半脑子卡住了，换个地方会有用吗
+511. 复习到一半脑子卡住了，换个地方会有用吗
    来源：[src/data/cc98.post-default-history.json:64](../src/data/cc98.post-default-history.json#L64)
-523. 同一页题目看了快半小时，连自己写过什么都记不住。想去图书馆坐一会，又担心换地方只是拖延。大家卡住时会怎么重新开始？
+512. 同一页题目看了快半小时，连自己写过什么都记不住。想去图书馆坐一会，又担心换地方只是拖延。大家卡住时会怎么重新开始？
    来源：[src/data/cc98.post-default-history.json:67](../src/data/cc98.post-default-history.json#L67)
-524. 想把情绪写下来，但担心被认识的人看到
+513. 想把情绪写下来，但担心被认识的人看到
    来源：[src/data/cc98.post-default-history.json:72](../src/data/cc98.post-default-history.json#L72)
-525. 有很多话想整理出来，又不想让熟人把它和现实里的我对应上。匿名发帖之外，还有没有更私人的记录办法？
+514. 有很多话想整理出来，又不想让熟人把它和现实里的我对应上。匿名发帖之外，还有没有更私人的记录办法？
    来源：[src/data/cc98.post-default-history.json:75](../src/data/cc98.post-default-history.json#L75)
-526. 小组作业一直没有回应，我该什么时候追问
+515. 小组作业一直没有回应，我该什么时候追问
    来源：[src/data/cc98.post-default-history.json:80](../src/data/cc98.post-default-history.json#L80)
-527. 昨天把分工表发到群里，到现在没有人确认。截止日期还远，但我已经开始担心最后只剩一个人做。想催，又怕让人觉得太急。
+516. 昨天把分工表发到群里，到现在没有人确认。截止日期还远，但我已经开始担心最后只剩一个人做。想催，又怕让人觉得太急。
    来源：[src/data/cc98.post-default-history.json:83](../src/data/cc98.post-default-history.json#L83)
-528. 能不能开一个不分析对错的夜间闲聊楼
+517. 能不能开一个不分析对错的夜间闲聊楼
    来源：[src/data/cc98.post-default-history.json:88](../src/data/cc98.post-default-history.json#L88)
-529. 今天不想把每件事都解释成原因和结论，只想找个地方说一句“我现在有点累”。如果你也在，就留一句今天想吃什么或者刚刚看到什么。
+518. 今天不想把每件事都解释成原因和结论，只想找个地方说一句“我现在有点累”。如果你也在，就留一句今天想吃什么或者刚刚看到什么。
    来源：[src/data/cc98.post-default-history.json:91](../src/data/cc98.post-default-history.json#L91)
-530. 午睡醒来不知道今天星期几
+519. 午睡醒来不知道今天星期几
    来源：[src/data/cc98.post-default-history.json:96](../src/data/cc98.post-default-history.json#L96)
-531. 睡醒以后天色和时间都对不上，拿起手机才发现下午已经快结束了。没有发生什么大事，就是突然觉得这一天被跳过去了一段。
+520. 睡醒以后天色和时间都对不上，拿起手机才发现下午已经快结束了。没有发生什么大事，就是突然觉得这一天被跳过去了一段。
    来源：[src/data/cc98.post-default-history.json:99](../src/data/cc98.post-default-history.json#L99)
-532. 提前十分钟到教室，结果发现坐的是明天的课
+521. 提前十分钟到教室，结果发现坐的是明天的课
    来源：[src/data/cc98.post-default-history.json:104](../src/data/cc98.post-default-history.json#L104)
-533. 坐下后发现周围的人全在复习我完全没学过的内容。我还坚持记了两行笔记，直到有人问我是哪门课的才看见日期。
+522. 坐下后发现周围的人全在复习我完全没学过的内容。我还坚持记了两行笔记，直到有人问我是哪门课的才看见日期。
    来源：[src/data/cc98.post-default-history.json:107](../src/data/cc98.post-default-history.json#L107)
-534. 人在大西区，刚坐下发现周围同学全在狂背我完全没见过的公式，我还硬着头皮抄了两行板书，结果旁边的老哥幽幽问我一句：“同学，你也来考微积分重修？”——低头一看课表，我的课是明天的……
+523. 人在大西区，刚坐下发现周围同学全在狂背我完全没见过的公式，我还硬着头皮抄了两行板书，结果旁边的老哥幽幽问我一句：“同学，你也来考微积分重修？”——低头一看课表，我的课是明天的……
    来源：[src/data/cc98.post-default-history.json:108](../src/data/cc98.post-default-history.json#L108)
-535. 在食堂连看三桌都是同一种菜，怀疑今天只有一个选项
+524. 在食堂连看三桌都是同一种菜，怀疑今天只有一个选项
    来源：[src/data/cc98.post-default-history.json:113](../src/data/cc98.post-default-history.json#L113)
-536. 排队时看见前面三个人都端着同一盘菜，我以为窗口只剩这一种。轮到我才发现他们只是一起点了套餐。
+525. 排队时看见前面三个人都端着同一盘菜，我以为窗口只剩这一种。轮到我才发现他们只是一起点了套餐。
    来源：[src/data/cc98.post-default-history.json:116](../src/data/cc98.post-default-history.json#L116)
-537. 导航说“已到达”，我在原地转了两圈才看见门
+526. 导航说“已到达”，我在原地转了两圈才看见门
    来源：[src/data/cc98.post-default-history.json:121](../src/data/cc98.post-default-history.json#L121)
-538. 定位点落在楼的正中央，导航特别肯定地结束了。我绕着绿化带走了两圈，最后发现入口在背后的另一条小路。
+527. 定位点落在楼的正中央，导航特别肯定地结束了。我绕着绿化带走了两圈，最后发现入口在背后的另一条小路。
    来源：[src/data/cc98.post-default-history.json:124](../src/data/cc98.post-default-history.json#L124)
-539. 把充电线落在桌上，回来时它已经被卷成一件艺术品
+528. 把充电线落在桌上，回来时它已经被卷成一件艺术品
    来源：[src/data/cc98.post-default-history.json:129](../src/data/cc98.post-default-history.json#L129)
-540. 我离开半小时，室友怕我踩到线，顺手把它卷好。回来后面对那个完美的结，决定还是改用充电宝。
+529. 我离开半小时，室友怕我踩到线，顺手把它卷好。回来后面对那个完美的结，决定还是改用充电宝。
    来源：[src/data/cc98.post-default-history.json:132](../src/data/cc98.post-default-history.json#L132)
-541. 社团群里问谁有空，三分钟后大家都在发猫
+530. 社团群里问谁有空，三分钟后大家都在发猫
    来源：[src/data/cc98.post-default-history.json:137](../src/data/cc98.post-default-history.json#L137)
-542. 原本想统计周末布置场地的人手，第一张猫图出现后就没有人再回答问题。现在我只知道群里至少有五个人家里有猫。
+531. 原本想统计周末布置场地的人手，第一张猫图出现后就没有人再回答问题。现在我只知道群里至少有五个人家里有猫。
    来源：[src/data/cc98.post-default-history.json:140](../src/data/cc98.post-default-history.json#L140)
-543. 给外卖备注“别敲门”，骑手在门外小声唱了句到啦
+532. 给外卖备注“别敲门”，骑手在门外小声唱了句到啦
    来源：[src/data/cc98.post-default-history.json:145](../src/data/cc98.post-default-history.json#L145)
-544. 备注写了不要敲门，担心影响室友。门外没有敲门声，只有一句很轻的“到啦”，比系统通知还容易听见。
+533. 备注写了不要敲门，担心影响室友。门外没有敲门声，只有一句很轻的“到啦”，比系统通知还容易听见。
    来源：[src/data/cc98.post-default-history.json:148](../src/data/cc98.post-default-history.json#L148)
-545. 走错楼层还自信按了门禁
+534. 走错楼层还自信按了门禁
    来源：[src/data/cc98.post-default-history.json:153](../src/data/cc98.post-default-history.json#L153)
-546. 门禁没有反应，我还认真检查了三次校园卡。后来电梯打开，才意识到自己早一层就出来了。
+535. 门禁没有反应，我还认真检查了三次校园卡。后来电梯打开，才意识到自己早一层就出来了。
    来源：[src/data/cc98.post-default-history.json:156](../src/data/cc98.post-default-history.json#L156)
-547. 第一次用新洗衣机，衣服比我先学会了流程
+536. 第一次用新洗衣机，衣服比我先学会了流程
    来源：[src/data/cc98.post-default-history.json:161](../src/data/cc98.post-default-history.json#L161)
-548. 我站在机器前研究按钮，旁边同学已经把衣服放进去开始转了。等我看懂选项时，他的洗衣程序快结束了。
+537. 我站在机器前研究按钮，旁边同学已经把衣服放进去开始转了。等我看懂选项时，他的洗衣程序快结束了。
    来源：[src/data/cc98.post-default-history.json:164](../src/data/cc98.post-default-history.json#L164)
-549. 临走前关灯，发现隔壁所有人都还在上课
+538. 临走前关灯，发现隔壁所有人都还在上课
    来源：[src/data/cc98.post-default-history.json:169](../src/data/cc98.post-default-history.json#L169)
-550. 我以为最后一排只剩自己，收完电脑顺手关了灯。教室静了两秒，才发现前面还有一整节晚课的人。
+539. 我以为最后一排只剩自己，收完电脑顺手关了灯。教室静了两秒，才发现前面还有一整节晚课的人。
    来源：[src/data/cc98.post-default-history.json:172](../src/data/cc98.post-default-history.json#L172)
-551. 把雨伞放在门口，出来时认错了三把
+540. 把雨伞放在门口，出来时认错了三把
    来源：[src/data/cc98.post-default-history.json:177](../src/data/cc98.post-default-history.json#L177)
-552. 黑伞、木柄、同款挂绳，门口像复制粘贴。每拿起一把都觉得很熟悉，直到看到自己的伞上贴着刚买的便利贴。
+541. 黑伞、木柄、同款挂绳，门口像复制粘贴。每拿起一把都觉得很熟悉，直到看到自己的伞上贴着刚买的便利贴。
    来源：[src/data/cc98.post-default-history.json:180](../src/data/cc98.post-default-history.json#L180)
-553. 刷校园卡失败两次，第三次才发现自己拿的是门卡
+542. 刷校园卡失败两次，第三次才发现自己拿的是门卡
    来源：[src/data/cc98.post-default-history.json:185](../src/data/cc98.post-default-history.json#L185)
-554. 排在闸机前认真换角度，机器始终没有反应。第三次低头一看，手里那张根本没有照片。
+543. 排在闸机前认真换角度，机器始终没有反应。第三次低头一看，手里那张根本没有照片。
    来源：[src/data/cc98.post-default-history.json:188](../src/data/cc98.post-default-history.json#L188)
-555. 课堂投影突然成了自己的桌面，你们最怕露出什么
+544. 课堂投影突然成了自己的桌面，你们最怕露出什么
    来源：[src/data/cc98.post-default-history.json:193](../src/data/cc98.post-default-history.json#L193)
-556. 老师切换线缆后，屏幕短暂显示了我乱七八糟的桌面。幸好最显眼的是一堆叫“最终版”的文档，没有聊天窗口。
+545. 老师切换线缆后，屏幕短暂显示了我乱七八糟的桌面。幸好最显眼的是一堆叫“最终版”的文档，没有聊天窗口。
    来源：[src/data/cc98.post-default-history.json:196](../src/data/cc98.post-default-history.json#L196)
-557. 考试结束十分钟，求是潮哪边还能走
+546. 考试结束十分钟，求是潮哪边还能走
    来源：[src/data/cc98.post-default-history.json:201](../src/data/cc98.post-default-history.json#L201)
-558. 刚从东侧绕出来。教学区北侧的人行道还能连续走，东侧车流已经堵成两段。
+547. 刚从东侧绕出来。教学区北侧的人行道还能连续走，东侧车流已经堵成两段。
    来源：[src/data/cc98.post-default-history.json:204](../src/data/cc98.post-default-history.json#L204)
-559. 避雷！刚从东边杀出来，东侧车道已经堵成贪吃蛇了，赶时间的直接走教学区北侧人行道，那边一路通畅！
+548. 避雷！刚从东边杀出来，东侧车道已经堵成贪吃蛇了，赶时间的直接走教学区北侧人行道，那边一路通畅！
    来源：[src/data/cc98.post-default-history.json:205](../src/data/cc98.post-default-history.json#L205)
-560. 一层书库临时离座规则更新了吗
+549. 一层书库临时离座规则更新了吗
    来源：[src/data/cc98.post-default-history.json:210](../src/data/cc98.post-default-history.json#L210)
-561. 离座超过三分钟后，原座位会重新开放。完成校园卡核验后，可在选座页申请恢复一次。
+550. 离座超过三分钟后，原座位会重新开放。完成校园卡核验后，可在选座页申请恢复一次。
    来源：[src/data/cc98.post-default-history.json:213](../src/data/cc98.post-default-history.json#L213)
-562. 逆天，现在基础馆选座离座超过三分钟直接释放座位？刚才去接个水回来号没了，还得刷校园卡重新申请恢复一次。
+551. 逆天，现在基础馆选座离座超过三分钟直接释放座位？刚才去接个水回来号没了，还得刷校园卡重新申请恢复一次。
    来源：[src/data/cc98.post-default-history.json:214](../src/data/cc98.post-default-history.json#L214)
-563. 期末资料按课程和年份整理好了
+552. 期末资料按课程和年份整理好了
    来源：[src/data/cc98.post-default-history.json:219](../src/data/cc98.post-default-history.json#L219)
-564. 资料按课程、教师和年份建立索引。搜索时只记得两个字也能定位到对应目录。
+553. 资料按课程、教师和年份建立索引。搜索时只记得两个字也能定位到对应目录。
    来源：[src/data/cc98.post-default-history.json:222](../src/data/cc98.post-default-history.json#L222)
-565. 整理了一波历年课程资料索引，搜两个字就能出目录，求加精bd！
+554. 整理了一波历年课程资料索引，搜两个字就能出目录，求加精bd！
    来源：[src/data/cc98.post-default-history.json:223](../src/data/cc98.post-default-history.json#L223)
-566. 余额 0.06 元能通过临时离座校验吗
+555. 余额 0.06 元能通过临时离座校验吗
    来源：[src/data/cc98.post-default-history.json:228](../src/data/cc98.post-default-history.json#L228)
-567. 实测可以。余额不会影响身份校验，系统仍然要求完整走完验证流程。
+556. 实测可以。余额不会影响身份校验，系统仍然要求完整走完验证流程。
    来源：[src/data/cc98.post-default-history.json:231](../src/data/cc98.post-default-history.json#L231)
-568. 实测汇报！校园卡只剩 0.06元 也能刷图书馆闸机做身份核验！只要不花钱打印，六分钱也是有合法身份的！
+557. 实测汇报！校园卡只剩 0.06元 也能刷图书馆闸机做身份核验！只要不花钱打印，六分钱也是有合法身份的！
    来源：[src/data/cc98.post-default-history.json:232](../src/data/cc98.post-default-history.json#L232)
-569. 今天的运动记录全是绕自行车
+558. 今天的运动记录全是绕自行车
    来源：[src/data/cc98.post-default-history.json:237](../src/data/cc98.post-default-history.json#L237)
-570. 体艺记录显示四十七次通行，实际过程是在求是潮两侧反复寻找能走的缝隙。
+559. 体艺记录显示四十七次通行，实际过程是在求是潮两侧反复寻找能走的缝隙。
    来源：[src/data/cc98.post-default-history.json:240](../src/data/cc98.post-default-history.json#L240)
-571. 体艺App显示我今天通行了 47次，其实我只是在求是潮门口堵车，围着同一辆单车疯狂找缝钻……
+560. 体艺App显示我今天通行了 47次，其实我只是在求是潮门口堵车，围着同一辆单车疯狂找缝钻……
    来源：[src/data/cc98.post-default-history.json:241](../src/data/cc98.post-default-history.json#L241)
-572. 西区打印店早上哪台机快一点
+561. 西区打印店早上哪台机快一点
    来源：[src/data/cc98.post-default-history.json:246](../src/data/cc98.post-default-history.json#L246)
-573. 今天 08:10 到西区打印店，前面有六个人。双面黑白先空出来，彩打那台一直在换纸。赶早课的可以先打黑白。
+562. 今天 08:10 到西区打印店，前面有六个人。双面黑白先空出来，彩打那台一直在换纸。赶早课的可以先打黑白。
    来源：[src/data/cc98.post-default-history.json:249](../src/data/cc98.post-default-history.json#L249)
-574. 基础图书馆闭馆后还有安静的位置吗
+563. 基础图书馆闭馆后还有安静的位置吗
    来源：[src/data/cc98.post-default-history.json:254](../src/data/cc98.post-default-history.json#L254)
-575. 昨晚 19:35 从基础图书馆二楼出来，雨衣没带，就去麦斯威靠窗那排坐到 20:10。插座在桌脚边，带长线会好用一点。
+564. 昨晚 19:35 从基础图书馆二楼出来，雨衣没带，就去麦斯威靠窗那排坐到 20:10。插座在桌脚边，带长线会好用一点。
    来源：[src/data/cc98.post-default-history.json:257](../src/data/cc98.post-default-history.json#L257)
-576. 东二食堂三楼炒饭晚上几点收窗口
+565. 东二食堂三楼炒饭晚上几点收窗口
    来源：[src/data/cc98.post-default-history.json:262](../src/data/cc98.post-default-history.json#L262)
-577. 昨晚 18:50 去东二食堂三楼，炒饭窗口还接单，19:05 只剩蛋炒饭。想加青菜的要早点去，打包盒在窗口右边自己拿。
+566. 昨晚 18:50 去东二食堂三楼，炒饭窗口还接单，19:05 只剩蛋炒饭。想加青菜的要早点去，打包盒在窗口右边自己拿。
    来源：[src/data/cc98.post-default-history.json:265](../src/data/cc98.post-default-history.json#L265)
-578. 教学楼门口的伞套机今天放哪边了
+567. 教学楼门口的伞套机今天放哪边了
    来源：[src/data/cc98.post-default-history.json:270](../src/data/cc98.post-default-history.json#L270)
-579. 今天 16:20 到东教学楼，伞套机从门左边移到了门卫桌旁。机器没纸时可以先去旁边的小篮子拿，别把湿伞直接带进走廊。
+568. 今天 16:20 到东教学楼，伞套机从门左边移到了门卫桌旁。机器没纸时可以先去旁边的小篮子拿，别把湿伞直接带进走廊。
    来源：[src/data/cc98.post-default-history.json:273](../src/data/cc98.post-default-history.json#L273)
-580. 线代课后题有人用同一版空白答题纸吗
+569. 线代课后题有人用同一版空白答题纸吗
    来源：[src/data/cc98.post-default-history.json:278](../src/data/cc98.post-default-history.json#L278)
-581. 周三 21:10 在西区教学楼打印室找空白答题纸，最后在靠窗的文件架第二层看到一叠。纸张右上角有课程简称，拿之前先数清页数。
+570. 周三 21:10 在西区教学楼打印室找空白答题纸，最后在靠窗的文件架第二层看到一叠。纸张右上角有课程简称，拿之前先数清页数。
    来源：[src/data/cc98.post-default-history.json:281](../src/data/cc98.post-default-history.json#L281)
-582. 雨还没停，东教学楼哪扇门口不积水
+571. 雨还没停，东教学楼哪扇门口不积水
    来源：[src/data/cc98.post-default-history.json:286](../src/data/cc98.post-default-history.json#L286)
-583. 刚从东教学楼出来，西侧玻璃门前的地垫已经湿透。南边侧门的地面还干一点，手里有纸和电脑的可以从那边进。
+572. 刚从东教学楼出来，西侧玻璃门前的地垫已经湿透。南边侧门的地面还干一点，手里有纸和电脑的可以从那边进。
    来源：[src/data/cc98.post-default-history.json:289](../src/data/cc98.post-default-history.json#L289)
-584. 东二晚高峰的空座是在二楼还是三楼
+573. 东二晚高峰的空座是在二楼还是三楼
    来源：[src/data/cc98.post-default-history.json:294](../src/data/cc98.post-default-history.json#L294)
-585. 傍晚六点二十到东二时二楼靠门的桌子已经满了，三楼最里面还有两张四人桌。想先放包再去排队的，记得别把通道边的空椅子当座位。
+574. 傍晚六点二十到东二时二楼靠门的桌子已经满了，三楼最里面还有两张四人桌。想先放包再去排队的，记得别把通道边的空椅子当座位。
    来源：[src/data/cc98.post-default-history.json:297](../src/data/cc98.post-default-history.json#L297)
-586. 东区食堂门口捡到一副黑框眼镜
+575. 东区食堂门口捡到一副黑框眼镜
    来源：[src/data/cc98.post-default-history.json:302](../src/data/cc98.post-default-history.json#L302)
-587. 傍晚在东区食堂南门台阶边捡到一副黑框眼镜，镜腿内侧有一小段白色贴纸。我交到一楼服务台了，失主去问时带一下能核对的信息。
+576. 傍晚在东区食堂南门台阶边捡到一副黑框眼镜，镜腿内侧有一小段白色贴纸。我交到一楼服务台了，失主去问时带一下能核对的信息。
    来源：[src/data/cc98.post-default-history.json:305](../src/data/cc98.post-default-history.json#L305)
-588. 从剧场走去湖边，雨后哪段路灯更亮
+577. 从剧场走去湖边，雨后哪段路灯更亮
    来源：[src/data/cc98.post-default-history.json:310](../src/data/cc98.post-default-history.json#L310)
-589. 演出散场后往湖边走，靠外侧的树下那段光比较暗，石板也有水。绕到主路再下去会多走几分钟，路面和灯都好一点。
+578. 演出散场后往湖边走，靠外侧的树下那段光比较暗，石板也有水。绕到主路再下去会多走几分钟，路面和灯都好一点。
    来源：[src/data/cc98.post-default-history.json:313](../src/data/cc98.post-default-history.json#L313)
-590. 化工原理旧卷的页码有人补齐了吗
+579. 化工原理旧卷的页码有人补齐了吗
    来源：[src/data/cc98.post-default-history.json:318](../src/data/cc98.post-default-history.json#L318)
-591. 资料夹里有两份同年份旧卷，一份从第六页直接跳到第八页。我把缺页题号记下来了，想问有没有人留着完整扫描版，能顺手核对一下。
+580. 资料夹里有两份同年份旧卷，一份从第六页直接跳到第八页。我把缺页题号记下来了，想问有没有人留着完整扫描版，能顺手核对一下。
    来源：[src/data/cc98.post-default-history.json:321](../src/data/cc98.post-default-history.json#L321)
-592. 打印室的装订机还需要自己带胶圈吗
+581. 打印室的装订机还需要自己带胶圈吗
    来源：[src/data/cc98.post-default-history.json:326](../src/data/cc98.post-default-history.json#L326)
-593. 西区教学楼打印室的装订机能用，桌上只剩小号胶圈。报告超过四十页的，最好自己带一包，临时等补货容易赶不上上课。
+582. 西区教学楼打印室的装订机能用，桌上只剩小号胶圈。报告超过四十页的，最好自己带一包，临时等补货容易赶不上上课。
    来源：[src/data/cc98.post-default-history.json:329](../src/data/cc98.post-default-history.json#L329)
-594. 基础图书馆二楼靠窗的插座这两天还稳吗
+583. 基础图书馆二楼靠窗的插座这两天还稳吗
    来源：[src/data/cc98.post-default-history.json:334](../src/data/cc98.post-default-history.json#L334)
-595. 昨天靠窗第三张桌的插座断过两次，换到靠柱子那排后正常。今天要带电脑写作业的，先别把座位选在窗边最里面。
+584. 昨天靠窗第三张桌的插座断过两次，换到靠柱子那排后正常。今天要带电脑写作业的，先别把座位选在窗边最里面。
    来源：[src/data/cc98.post-default-history.json:337](../src/data/cc98.post-default-history.json#L337)
-596. 校园卡补办当天能进图书馆吗
+585. 校园卡补办当天能进图书馆吗
    来源：[src/data/cc98.post-default-history.json:342](../src/data/cc98.post-default-history.json#L342)
-597. 今天上午卡丢了，补办后先在机器上做了一次身份核验，下午进基础图书馆没有被拦。旧卡已经停用，带着旧卡去刷只会多排一次队。
+586. 今天上午卡丢了，补办后先在机器上做了一次身份核验，下午进基础图书馆没有被拦。旧卡已经停用，带着旧卡去刷只会多排一次队。
    来源：[src/data/cc98.post-default-history.json:345](../src/data/cc98.post-default-history.json#L345)
-598. 【移动/联通/电信】2026年校园电话卡信息汇总帖 详情请戳
+587. 【移动/联通/电信】2026年校园电话卡信息汇总帖 详情请戳
    来源：[src/data/cc98.post-default-history.json:350](../src/data/cc98.post-default-history.json#L350)
-599. 准备开学换号的可以先把套餐、校园区域覆盖和注销条件写在同一层回复里。只放海报截图很难比较，最好补充自己实测的宿舍、教学楼和地铁口信号。
+588. 准备开学换号的可以先把套餐、校园区域覆盖和注销条件写在同一层回复里。只放海报截图很难比较，最好补充自己实测的宿舍、教学楼和地铁口信号。
    来源：[src/data/cc98.post-default-history.json:353](../src/data/cc98.post-default-history.json#L353)
-600. 雨伞在一楼，人在三楼，雨还在外面
+589. 雨伞在一楼，人在三楼，雨还在外面
    来源：[src/data/cc98.post-default-history.json:358](../src/data/cc98.post-default-history.json#L358)
-601. 本来只是下楼拿外卖，发现伞架里那把蓝伞很像我的。等我把伞带到三楼，才想起自己的伞还在寝室。
+590. 本来只是下楼拿外卖，发现伞架里那把蓝伞很像我的。等我把伞带到三楼，才想起自己的伞还在寝室。
    来源：[src/data/cc98.post-default-history.json:361](../src/data/cc98.post-default-history.json#L361)
-602. 耳机连上了隔壁桌，我听完了半节陌生人的网课
+591. 耳机连上了隔壁桌，我听完了半节陌生人的网课
    来源：[src/data/cc98.post-default-history.json:366](../src/data/cc98.post-default-history.json#L366)
-603. 戴上耳机后发现讲课内容完全听不懂，还以为自己选错了章节。直到隔壁同学抬头问谁连到了他的设备，我才发现耳机名字还叫“默认设备”。
+592. 戴上耳机后发现讲课内容完全听不懂，还以为自己选错了章节。直到隔壁同学抬头问谁连到了他的设备，我才发现耳机名字还叫“默认设备”。
    来源：[src/data/cc98.post-default-history.json:369](../src/data/cc98.post-default-history.json#L369)
-604. 出一盏可调光台灯，限校内当面自取
+593. 出一盏可调光台灯，限校内当面自取
    来源：[src/data/cc98.post-default-history.json:374](../src/data/cc98.post-default-history.json#L374)
-605. 台灯用了两学期，触控和调光都正常，电源线在。只约公共区域当面试亮，想要的带上能确认时间的人再联系。
+594. 台灯用了两学期，触控和调光都正常，电源线在。只约公共区域当面试亮，想要的带上能确认时间的人再联系。
    来源：[src/data/cc98.post-default-history.json:377](../src/data/cc98.post-default-history.json#L377)
-606. 实验课前十分钟才想起实验服还晾在阳台
+595. 实验课前十分钟才想起实验服还晾在阳台
    来源：[src/data/cc98.post-default-history.json:382](../src/data/cc98.post-default-history.json#L382)
-607. 一路跑到楼下才发现雨把衣服晾得很有弹性，赶到实验楼时正好听见老师点名。今天的经验是：把实验服放进包里，不要相信早上临出门的自己。
+596. 一路跑到楼下才发现雨把衣服晾得很有弹性，赶到实验楼时正好听见老师点名。今天的经验是：把实验服放进包里，不要相信早上临出门的自己。
    来源：[src/data/cc98.post-default-history.json:385](../src/data/cc98.post-default-history.json#L385)
-608. 校园卡绑定旧手机后，门禁旁边怎么重新核验
+597. 校园卡绑定旧手机后，门禁旁边怎么重新核验
    来源：[src/data/cc98.post-default-history.json:390](../src/data/cc98.post-default-history.json#L390)
-609. 换手机后旧设备还留着绑定信息，今天在门禁旁的机器上重新核验才恢复正常。先确认新手机能打开校园卡页面，再去现场操作会少跑一趟。
+598. 换手机后旧设备还留着绑定信息，今天在门禁旁的机器上重新核验才恢复正常。先确认新手机能打开校园卡页面，再去现场操作会少跑一趟。
    来源：[src/data/cc98.post-default-history.json:393](../src/data/cc98.post-default-history.json#L393)
-610. 晚课结束后有人愿意一起占四人桌写作业吗
+599. 晚课结束后有人愿意一起占四人桌写作业吗
    来源：[src/data/cc98.post-default-history.json:398](../src/data/cc98.post-default-history.json#L398)
-611. 想找两三个人在麦斯威把作业写完，各做各的，不开外放。九点前如果位置满了就散，带电脑的优先坐有插座那侧。
+600. 想找两三个人在麦斯威把作业写完，各做各的，不开外放。九点前如果位置满了就散，带电脑的优先坐有插座那侧。
    来源：[src/data/cc98.post-default-history.json:401](../src/data/cc98.post-default-history.json#L401)
-612. 我给外卖备注“蓝色外套”，结果门口站了七个蓝色外套
+601. 我给外卖备注“蓝色外套”，结果门口站了七个蓝色外套
    来源：[src/data/cc98.post-default-history.json:406](../src/data/cc98.post-default-history.json#L406)
-613. 骑手问谁是蓝色外套，我举手后旁边也举起六只手。最后靠备注里的饮料口味找到了自己的那一袋。
+602. 骑手问谁是蓝色外套，我举手后旁边也举起六只手。最后靠备注里的饮料口味找到了自己的那一袋。
    来源：[src/data/cc98.post-default-history.json:409](../src/data/cc98.post-default-history.json#L409)
-614. 教学楼一楼窗台上有一张校园卡，卡套是深绿色的
+603. 教学楼一楼窗台上有一张校园卡，卡套是深绿色的
    来源：[src/data/cc98.post-default-history.json:414](../src/data/cc98.post-default-history.json#L414)
-615. 卡放在一楼饮水机旁的窗台上，深绿色卡套边缘有磨损。我没有移动，失主到场后先核对姓名和卡面照片再拿。
+604. 卡放在一楼饮水机旁的窗台上，深绿色卡套边缘有磨损。我没有移动，失主到场后先核对姓名和卡面照片再拿。
    来源：[src/data/cc98.post-default-history.json:417](../src/data/cc98.post-default-history.json#L417)
-616. 东二三号窗口今天的队伍为什么总会停一下
+605. 东二三号窗口今天的队伍为什么总会停一下
    来源：[src/data/cc98.post-default-history.json:422](../src/data/cc98.post-default-history.json#L422)
-617. 排队时看见前面的人都会在付款页找半天，原来是当天的套餐入口换了位置。点餐前先看屏幕底部一行，队伍会走得快一点。
+606. 排队时看见前面的人都会在付款页找半天，原来是当天的套餐入口换了位置。点餐前先看屏幕底部一行，队伍会走得快一点。
    来源：[src/data/cc98.post-default-history.json:425](../src/data/cc98.post-default-history.json#L425)
-618. 想把今天过完
+607. 想把今天过完
    来源：[src/data/cc98.posts.json:4](../src/data/cc98.posts.json#L4)
-619. 事情堆在一起越想越难动手，求个能落地的顺序
+608. 事情堆在一起越想越难动手，求个能落地的顺序
    来源：[src/data/cc98.posts.json:8](../src/data/cc98.posts.json#L8)
-620. 26-07-10 17:58
+609. 26-07-10 17:58
    来源：[src/data/cc98.posts.json:11](../src/data/cc98.posts.json#L11)
-621. 手头积了一堆事反而犯怵。现在的待办清单上其实就列了三件：回一条必要消息、整理十分钟资料然后去吃饭。越看越动不了，还是得先挑一件来做。
+610. 手头积了一堆事反而犯怵。现在的待办清单上其实就列了三件：回一条必要消息、整理十分钟资料然后去吃饭。越看越动不了，还是得先挑一件来做。
    来源：[src/data/cc98.posts.json:12](../src/data/cc98.posts.json#L12)
-622. 郁闷小屋值班台
+611. 郁闷小屋值班台
    来源：[src/data/cc98.posts.json:14](../src/data/cc98.posts.json#L14)；[src/data/cc98.posts.json:56](../src/data/cc98.posts.json#L56)；[src/data/cc98.posts.json:98](../src/data/cc98.posts.json#L98)；[src/data/cc98.posts.json:140](../src/data/cc98.posts.json#L140)；[src/data/cc98.posts.json:182](../src/data/cc98.posts.json#L182)；[src/data/cc98.posts.json:224](../src/data/cc98.posts.json#L224)；[src/data/cc98.posts.json:266](../src/data/cc98.posts.json#L266)；[src/data/cc98.posts.json:308](../src/data/cc98.posts.json#L308)；[src/data/cc98.posts.json:350](../src/data/cc98.posts.json#L350)；[src/data/cc98.posts.json:392](../src/data/cc98.posts.json#L392)；[src/data/cc98.posts.json:434](../src/data/cc98.posts.json#L434)；[src/data/cc98.posts.json:476](../src/data/cc98.posts.json#L476)
-623. 保留互助讨论
+612. 保留互助讨论
    来源：[src/data/cc98.posts.json:15](../src/data/cc98.posts.json#L15)
-624. 楼主说明了当下能执行的范围
+613. 楼主说明了当下能执行的范围
    来源：[src/data/cc98.posts.json:16](../src/data/cc98.posts.json#L16)
-625. 今天 18:01
+614. 今天 18:01
    来源：[src/data/cc98.posts.json:26](../src/data/cc98.posts.json#L26)
-626. 2楼
+615. 2楼
    来源：[src/data/cc98.posts.json:27](../src/data/cc98.posts.json#L27)；[src/data/cc98.posts.json:69](../src/data/cc98.posts.json#L69)；[src/data/cc98.posts.json:111](../src/data/cc98.posts.json#L111)；[src/data/cc98.posts.json:153](../src/data/cc98.posts.json#L153)；[src/data/cc98.posts.json:195](../src/data/cc98.posts.json#L195)；[src/data/cc98.posts.json:237](../src/data/cc98.posts.json#L237)；[src/data/cc98.posts.json:279](../src/data/cc98.posts.json#L279)；[src/data/cc98.posts.json:321](../src/data/cc98.posts.json#L321)；[src/data/cc98.posts.json:363](../src/data/cc98.posts.json#L363)；[src/data/cc98.posts.json:405](../src/data/cc98.posts.json#L405)；[src/data/cc98.posts.json:447](../src/data/cc98.posts.json#L447)；[src/data/cc98.posts.json:489](../src/data/cc98.posts.json#L489)；[src/data/cc98.posts.json:531](../src/data/cc98.posts.json#L531)；[src/data/cc98.posts.json:573](../src/data/cc98.posts.json#L573)；[src/data/cc98.posts.json:615](../src/data/cc98.posts.json#L615)；[src/data/cc98.posts.json:657](../src/data/cc98.posts.json#L657)；[src/data/cc98.posts.json:699](../src/data/cc98.posts.json#L699)；[src/data/cc98.posts.json:741](../src/data/cc98.posts.json#L741)；[src/data/cc98.posts.json:783](../src/data/cc98.posts.json#L783)；[src/data/cc98.posts.json:825](../src/data/cc98.posts.json#L825)；[src/data/cc98.posts.json:867](../src/data/cc98.posts.json#L867)；[src/data/cc98.posts.json:909](../src/data/cc98.posts.json#L909)；[src/data/cc98.posts.json:951](../src/data/cc98.posts.json#L951)；[src/data/cc98.posts.json:993](../src/data/cc98.posts.json#L993)；[src/data/cc98.posts.json:1035](../src/data/cc98.posts.json#L1035)；[src/data/cc98.posts.json:1113](../src/data/cc98.posts.json#L1113)；[src/data/cc98.posts.json:1193](../src/data/cc98.posts.json#L1193)；[src/data/cc98.posts.json:1271](../src/data/cc98.posts.json#L1271)；[src/data/cc98.posts.json:1349](../src/data/cc98.posts.json#L1349)；[src/data/cc98.posts.json:1427](../src/data/cc98.posts.json#L1427)；[src/data/cc98.posts.json:1505](../src/data/cc98.posts.json#L1505)；[src/data/cc98.posts.json:1583](../src/data/cc98.posts.json#L1583)；[src/data/cc98.posts.json:1661](../src/data/cc98.posts.json#L1661)；[src/data/cc98.posts.json:1739](../src/data/cc98.posts.json#L1739)；[src/data/cc98.posts.json:1817](../src/data/cc98.posts.json#L1817)；[src/data/cc98.posts.json:1877](../src/data/cc98.posts.json#L1877)；[src/data/cc98.posts.json:1937](../src/data/cc98.posts.json#L1937)；[src/data/cc98.posts.json:1988](../src/data/cc98.posts.json#L1988)；[src/data/cc98.posts.json:2048](../src/data/cc98.posts.json#L2048)；[src/data/cc98.posts.json:2099](../src/data/cc98.posts.json#L2099)；[src/data/cc98.posts.json:2150](../src/data/cc98.posts.json#L2150)；[src/data/cc98.posts.json:2201](../src/data/cc98.posts.json#L2201)；[src/data/cc98.posts.json:2252](../src/data/cc98.posts.json#L2252)；[src/data/cc98.posts.json:2312](../src/data/cc98.posts.json#L2312)；[src/data/cc98.posts.json:2363](../src/data/cc98.posts.json#L2363)；[src/data/cc98.posts.json:2414](../src/data/cc98.posts.json#L2414)；[src/data/cc98.posts.json:2465](../src/data/cc98.posts.json#L2465)；[src/data/cc98.posts.json:2516](../src/data/cc98.posts.json#L2516)；[src/data/cc98.posts.json:2567](../src/data/cc98.posts.json#L2567)；[src/data/cc98.posts.json:2618](../src/data/cc98.posts.json#L2618)；[src/data/cc98.posts.json:2669](../src/data/cc98.posts.json#L2669)；[src/data/cc98.posts.json:2720](../src/data/cc98.posts.json#L2720)；[src/scenes/phone/P02_CC98/index.tsx:129](../src/scenes/phone/P02_CC98/index.tsx#L129)；[src/scenes/phone/P02_CC98/index.tsx:466](../src/scenes/phone/P02_CC98/index.tsx#L466)；[src/scenes/phone/P02_CC98/ThreadPage.tsx:43](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L43)；[src/scenes/phone/P02_CC98/ThreadPage.tsx:44](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L44)
-627. 建议
+616. 建议
    来源：[src/data/cc98.posts.json:28](../src/data/cc98.posts.json#L28)；[src/data/cc98.posts.json:121](../src/data/cc98.posts.json#L121)；[src/data/cc98.posts.json:322](../src/data/cc98.posts.json#L322)；[src/data/cc98.posts.json:499](../src/data/cc98.posts.json#L499)；[src/data/cc98.posts.json:541](../src/data/cc98.posts.json#L541)；[src/data/cc98.posts.json:826](../src/data/cc98.posts.json#L826)；[src/data/cc98.posts.json:910](../src/data/cc98.posts.json#L910)；[src/data/cc98.posts.json:1003](../src/data/cc98.posts.json#L1003)；[src/data/cc98.posts.json:1045](../src/data/cc98.posts.json#L1045)；[src/data/cc98.posts.json:1290](../src/data/cc98.posts.json#L1290)；[src/data/cc98.posts.json:1947](../src/data/cc98.posts.json#L1947)；[src/data/cc98.posts.json:2364](../src/data/cc98.posts.json#L2364)；[src/data/cc98.posts.json:2619](../src/data/cc98.posts.json#L2619)；[src/scenes/phone/P07_Weather/index.tsx:133](../src/scenes/phone/P07_Weather/index.tsx#L133)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:149](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L149)
-628. 我常这样，后来索性先回一条必要消息，桌前离座五分钟洗把脸。
+617. 我常这样，后来索性先回一条必要消息，桌前离座五分钟洗把脸。
    来源：[src/data/cc98.posts.json:29](../src/data/cc98.posts.json#L29)
-629. 今天 18:03
+618. 今天 18:03
    来源：[src/data/cc98.posts.json:35](../src/data/cc98.posts.json#L35)
-630. 3楼
+619. 3楼
    来源：[src/data/cc98.posts.json:36](../src/data/cc98.posts.json#L36)；[src/data/cc98.posts.json:78](../src/data/cc98.posts.json#L78)；[src/data/cc98.posts.json:120](../src/data/cc98.posts.json#L120)；[src/data/cc98.posts.json:162](../src/data/cc98.posts.json#L162)；[src/data/cc98.posts.json:204](../src/data/cc98.posts.json#L204)；[src/data/cc98.posts.json:246](../src/data/cc98.posts.json#L246)；[src/data/cc98.posts.json:288](../src/data/cc98.posts.json#L288)；[src/data/cc98.posts.json:330](../src/data/cc98.posts.json#L330)；[src/data/cc98.posts.json:372](../src/data/cc98.posts.json#L372)；[src/data/cc98.posts.json:414](../src/data/cc98.posts.json#L414)；[src/data/cc98.posts.json:456](../src/data/cc98.posts.json#L456)；[src/data/cc98.posts.json:498](../src/data/cc98.posts.json#L498)；[src/data/cc98.posts.json:540](../src/data/cc98.posts.json#L540)；[src/data/cc98.posts.json:582](../src/data/cc98.posts.json#L582)；[src/data/cc98.posts.json:624](../src/data/cc98.posts.json#L624)；[src/data/cc98.posts.json:666](../src/data/cc98.posts.json#L666)；[src/data/cc98.posts.json:708](../src/data/cc98.posts.json#L708)；[src/data/cc98.posts.json:750](../src/data/cc98.posts.json#L750)；[src/data/cc98.posts.json:792](../src/data/cc98.posts.json#L792)；[src/data/cc98.posts.json:834](../src/data/cc98.posts.json#L834)；[src/data/cc98.posts.json:876](../src/data/cc98.posts.json#L876)；[src/data/cc98.posts.json:918](../src/data/cc98.posts.json#L918)；[src/data/cc98.posts.json:960](../src/data/cc98.posts.json#L960)；[src/data/cc98.posts.json:1002](../src/data/cc98.posts.json#L1002)；[src/data/cc98.posts.json:1044](../src/data/cc98.posts.json#L1044)；[src/data/cc98.posts.json:1122](../src/data/cc98.posts.json#L1122)；[src/data/cc98.posts.json:1202](../src/data/cc98.posts.json#L1202)；[src/data/cc98.posts.json:1280](../src/data/cc98.posts.json#L1280)；[src/data/cc98.posts.json:1358](../src/data/cc98.posts.json#L1358)；[src/data/cc98.posts.json:1436](../src/data/cc98.posts.json#L1436)；[src/data/cc98.posts.json:1514](../src/data/cc98.posts.json#L1514)；[src/data/cc98.posts.json:1592](../src/data/cc98.posts.json#L1592)；[src/data/cc98.posts.json:1670](../src/data/cc98.posts.json#L1670)；[src/data/cc98.posts.json:1748](../src/data/cc98.posts.json#L1748)；[src/data/cc98.posts.json:1826](../src/data/cc98.posts.json#L1826)；[src/data/cc98.posts.json:1886](../src/data/cc98.posts.json#L1886)；[src/data/cc98.posts.json:1946](../src/data/cc98.posts.json#L1946)；[src/data/cc98.posts.json:1997](../src/data/cc98.posts.json#L1997)；[src/data/cc98.posts.json:2057](../src/data/cc98.posts.json#L2057)；[src/data/cc98.posts.json:2108](../src/data/cc98.posts.json#L2108)；[src/data/cc98.posts.json:2159](../src/data/cc98.posts.json#L2159)；[src/data/cc98.posts.json:2210](../src/data/cc98.posts.json#L2210)；[src/data/cc98.posts.json:2261](../src/data/cc98.posts.json#L2261)；[src/data/cc98.posts.json:2321](../src/data/cc98.posts.json#L2321)；[src/data/cc98.posts.json:2372](../src/data/cc98.posts.json#L2372)；[src/data/cc98.posts.json:2423](../src/data/cc98.posts.json#L2423)；[src/data/cc98.posts.json:2474](../src/data/cc98.posts.json#L2474)；[src/data/cc98.posts.json:2525](../src/data/cc98.posts.json#L2525)；[src/data/cc98.posts.json:2576](../src/data/cc98.posts.json#L2576)；[src/data/cc98.posts.json:2627](../src/data/cc98.posts.json#L2627)；[src/data/cc98.posts.json:2678](../src/data/cc98.posts.json#L2678)；[src/data/cc98.posts.json:2729](../src/data/cc98.posts.json#L2729)；[src/scenes/phone/P02_CC98/index.tsx:139](../src/scenes/phone/P02_CC98/index.tsx#L139)；[src/scenes/phone/P02_CC98/index.tsx:467](../src/scenes/phone/P02_CC98/index.tsx#L467)；[src/scenes/phone/P02_CC98/ThreadPage.tsx:53](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L53)；[src/scenes/phone/P02_CC98/ThreadPage.tsx:54](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L54)
-631. 补充
+620. 补充
    来源：[src/data/cc98.posts.json:37](../src/data/cc98.posts.json#L37)；[src/data/cc98.posts.json:205](../src/data/cc98.posts.json#L205)；[src/data/cc98.posts.json:289](../src/data/cc98.posts.json#L289)；[src/data/cc98.posts.json:415](../src/data/cc98.posts.json#L415)；[src/data/cc98.posts.json:574](../src/data/cc98.posts.json#L574)；[src/data/cc98.posts.json:709](../src/data/cc98.posts.json#L709)；[src/data/cc98.posts.json:751](../src/data/cc98.posts.json#L751)；[src/data/cc98.posts.json:835](../src/data/cc98.posts.json#L835)；[src/data/cc98.posts.json:868](../src/data/cc98.posts.json#L868)；[src/data/cc98.posts.json:1506](../src/data/cc98.posts.json#L1506)；[src/data/cc98.posts.json:1956](../src/data/cc98.posts.json#L1956)；[src/data/cc98.posts.json:2271](../src/data/cc98.posts.json#L2271)；[src/data/cc98.posts.json:2466](../src/data/cc98.posts.json#L2466)；[src/data/cc98.posts.json:2517](../src/data/cc98.posts.json#L2517)；[src/data/cc98.posts.json:2679](../src/data/cc98.posts.json#L2679)
-632. 坐僵了很正常，哪怕资料没理完，先把吃饭这件办了也不会怎样。
+621. 坐僵了很正常，哪怕资料没理完，先把吃饭这件办了也不会怎样。
    来源：[src/data/cc98.posts.json:38](../src/data/cc98.posts.json#L38)
-633. 刷新到没电
+622. 刷新到没电
    来源：[src/data/cc98.posts.json:46](../src/data/cc98.posts.json#L46)
-634. 申请材料交掉后总忍不住看邮箱，大家怎么熬等待期
+623. 申请材料交掉后总忍不住看邮箱，大家怎么熬等待期
    来源：[src/data/cc98.posts.json:50](../src/data/cc98.posts.json#L50)
-635. 26-07-10 17:54
+624. 26-07-10 17:54
    来源：[src/data/cc98.posts.json:53](../src/data/cc98.posts.json#L53)
-636. 材料下午点完提交了，现在就干坐着等结果。明知道不可能这么快有回音，但还是隔几分钟刷一次收件箱，完全没心思干别的事，心情飘着。
+625. 材料下午点完提交了，现在就干坐着等结果。明知道不可能这么快有回音，但还是隔几分钟刷一次收件箱，完全没心思干别的事，心情飘着。
    来源：[src/data/cc98.posts.json:54](../src/data/cc98.posts.json#L54)
-637. 标记等待期讨论
+626. 标记等待期讨论
    来源：[src/data/cc98.posts.json:57](../src/data/cc98.posts.json#L57)
-638. 讨论集中在投递后的信息焦虑
+627. 讨论集中在投递后的信息焦虑
    来源：[src/data/cc98.posts.json:58](../src/data/cc98.posts.json#L58)
-639. 今天 17:57
+628. 今天 17:57
    来源：[src/data/cc98.posts.json:68](../src/data/cc98.posts.json#L68)
-640. 方法
+629. 方法
    来源：[src/data/cc98.posts.json:70](../src/data/cc98.posts.json#L70)；[src/data/cc98.posts.json:364](../src/data/cc98.posts.json#L364)
-641. 我自己设过每天两个时段看邮件，不过经常忍不住破戒多看两眼。
+630. 我自己设过每天两个时段看邮件，不过经常忍不住破戒多看两眼。
    来源：[src/data/cc98.posts.json:71](../src/data/cc98.posts.json#L71)
-642. 今天 18:00
+631. 今天 18:00
    来源：[src/data/cc98.posts.json:77](../src/data/cc98.posts.json#L77)
-643. 提醒
+632. 提醒
    来源：[src/data/cc98.posts.json:79](../src/data/cc98.posts.json#L79)；[src/data/cc98.posts.json:163](../src/data/cc98.posts.json#L163)；[src/data/cc98.posts.json:373](../src/data/cc98.posts.json#L373)；[src/data/cc98.posts.json:919](../src/data/cc98.posts.json#L919)；[src/data/cc98.posts.json:1437](../src/data/cc98.posts.json#L1437)；[src/data/cc98.posts.json:1551](../src/data/cc98.posts.json#L1551)；[src/data/cc98.posts.json:1698](../src/data/cc98.posts.json#L1698)；[src/data/cc98.posts.json:1836](../src/data/cc98.posts.json#L1836)；[src/data/cc98.posts.json:2109](../src/data/cc98.posts.json#L2109)；[src/data/cc98.posts.json:2169](../src/data/cc98.posts.json#L2169)；[src/data/cc98.posts.json:2220](../src/data/cc98.posts.json#L2220)；[src/data/cc98.posts.json:2262](../src/data/cc98.posts.json#L2262)；[src/data/cc98.posts.json:2424](../src/data/cc98.posts.json#L2424)；[src/data/cc98.posts.json:2535](../src/data/cc98.posts.json#L2535)；[src/data/cc98.posts.json:2670](../src/data/cc98.posts.json#L2670)；[src/data/cc98.posts.json:2730](../src/data/cc98.posts.json#L2730)
-644. 系统投递回执拿到了就行，结果急不来，先离开屏幕透透气吧。
+633. 系统投递回执拿到了就行，结果急不来，先离开屏幕透透气吧。
    来源：[src/data/cc98.posts.json:80](../src/data/cc98.posts.json#L80)
-645. 耳机也挡不住
+634. 耳机也挡不住
    来源：[src/data/cc98.posts.json:88](../src/data/cc98.posts.json#L88)
-646. 赶报告被夜间声音干扰，怎么和室友说清自己的需要
+635. 赶报告被夜间声音干扰，怎么和室友说清自己的需要
    来源：[src/data/cc98.posts.json:92](../src/data/cc98.posts.json#L92)
-647. 26-07-10 17:50
+636. 26-07-10 17:50
    来源：[src/data/cc98.posts.json:95](../src/data/cc98.posts.json#L95)
-648. 最近在赶一份报告，晚上十点以后寝室里聊天和外放声音有点明显。我和室友平时关系还可以，但夜里确实需要安静，想商量又怕开口太生硬。
+637. 最近在赶一份报告，晚上十点以后寝室里聊天和外放声音有点明显。我和室友平时关系还可以，但夜里确实需要安静，想商量又怕开口太生硬。
    来源：[src/data/cc98.posts.json:96](../src/data/cc98.posts.json#L96)
-649. 保留宿舍沟通帖
+638. 保留宿舍沟通帖
    来源：[src/data/cc98.posts.json:99](../src/data/cc98.posts.json#L99)
-650. 问题说明了时间和可协商边界
+639. 问题说明了时间和可协商边界
    来源：[src/data/cc98.posts.json:100](../src/data/cc98.posts.json#L100)
-651. 今天 17:53
+640. 今天 17:53
    来源：[src/data/cc98.posts.json:110](../src/data/cc98.posts.json#L110)；[src/data/cc98.posts.json:1159](../src/data/cc98.posts.json#L1159)
-652. 经历
+641. 经历
    来源：[src/data/cc98.posts.json:112](../src/data/cc98.posts.json#L112)；[src/data/cc98.posts.json:331](../src/data/cc98.posts.json#L331)；[src/data/cc98.posts.json:490](../src/data/cc98.posts.json#L490)；[src/data/cc98.posts.json:532](../src/data/cc98.posts.json#L532)；[src/data/cc98.posts.json:658](../src/data/cc98.posts.json#L658)；[src/data/cc98.posts.json:793](../src/data/cc98.posts.json#L793)；[src/data/cc98.posts.json:952](../src/data/cc98.posts.json#L952)；[src/data/cc98.posts.json:1143](../src/data/cc98.posts.json#L1143)；[src/data/cc98.posts.json:2373](../src/data/cc98.posts.json#L2373)；[src/data/cc98.posts.json:2526](../src/data/cc98.posts.json#L2526)；[src/data/cc98.posts.json:2628](../src/data/cc98.posts.json#L2628)
-653. 我们寝室私下约过十一点后带耳机、轻敲键盘，聊清楚就好很多。
+642. 我们寝室私下约过十一点后带耳机、轻敲键盘，聊清楚就好很多。
    来源：[src/data/cc98.posts.json:113](../src/data/cc98.posts.json#L113)
-654. 今天 17:55
+643. 今天 17:55
    来源：[src/data/cc98.posts.json:119](../src/data/cc98.posts.json#L119)
-655. 我也纠结过怎么开口，就挑白天闲聊时顺嘴提一句在赶工期试试。
+644. 我也纠结过怎么开口，就挑白天闲聊时顺嘴提一句在赶工期试试。
    来源：[src/data/cc98.posts.json:122](../src/data/cc98.posts.json#L122)
-656. 绕一圈再回来
+645. 绕一圈再回来
    来源：[src/data/cc98.posts.json:130](../src/data/cc98.posts.json#L130)
-657. 在寝室待闷了想走走，只想在有灯人多的地方晃一圈
+646. 在寝室待闷了想走走，只想在有灯人多的地方晃一圈
    来源：[src/data/cc98.posts.json:134](../src/data/cc98.posts.json#L134)
-658. 26-07-10 17:46
+647. 26-07-10 17:46
    来源：[src/data/cc98.posts.json:137](../src/data/cc98.posts.json#L137)
-659. 一直坐在椅子上脑子发沉，现在很想出门吹会儿夜风。不想走太远，就打算散步十分钟，想挑个夜里有照明、路上人多一点的开阔主干道。
+648. 一直坐在椅子上脑子发沉，现在很想出门吹会儿夜风。不想走太远，就打算散步十分钟，想挑个夜里有照明、路上人多一点的开阔主干道。
    来源：[src/data/cc98.posts.json:138](../src/data/cc98.posts.json#L138)
-660. 保留夜间出行互助
+649. 保留夜间出行互助
    来源：[src/data/cc98.posts.json:141](../src/data/cc98.posts.json#L141)
-661. 帖子明确询问公共区域的同行建议
+650. 帖子明确询问公共区域的同行建议
    来源：[src/data/cc98.posts.json:142](../src/data/cc98.posts.json#L142)
-662. 今天 17:49
+651. 今天 17:49
    来源：[src/data/cc98.posts.json:152](../src/data/cc98.posts.json#L152)；[src/data/cc98.posts.json:1061](../src/data/cc98.posts.json#L1061)；[src/data/cc98.posts.json:1237](../src/data/cc98.posts.json#L1237)
-663. 路线
+652. 路线
    来源：[src/data/cc98.posts.json:154](../src/data/cc98.posts.json#L154)；[src/data/cc98.posts.json:1455](../src/data/cc98.posts.json#L1455)；[src/data/cc98.posts.json:1767](../src/data/cc98.posts.json#L1767)
-664. 我闷的时候就在大路路灯下来回转十分钟，路上都是下课的同学。
+653. 我闷的时候就在大路路灯下来回转十分钟，路上都是下课的同学。
    来源：[src/data/cc98.posts.json:155](../src/data/cc98.posts.json#L155)
-665. 今天 17:51
+654. 今天 17:51
    来源：[src/data/cc98.posts.json:161](../src/data/cc98.posts.json#L161)；[src/data/cc98.posts.json:1070](../src/data/cc98.posts.json#L1070)
-666. 楼下公共入口这会儿人挺多的，正好我也下楼买水，可以一起走。
+655. 楼下公共入口这会儿人挺多的，正好我也下楼买水，可以一起走。
    来源：[src/data/cc98.posts.json:164](../src/data/cc98.posts.json#L164)
-667. 进度条停住了
+656. 进度条停住了
    来源：[src/data/cc98.posts.json:172](../src/data/cc98.posts.json#L172)
-668. 原计划被零碎消息打乱，未完成列表大家会先收哪个
+657. 原计划被零碎消息打乱，未完成列表大家会先收哪个
    来源：[src/data/cc98.posts.json:176](../src/data/cc98.posts.json#L176)
-669. 26-07-10 17:41
+658. 26-07-10 17:41
    来源：[src/data/cc98.posts.json:179](../src/data/cc98.posts.json#L179)
-670. 今天本来只想搞定三件事，中间被各种通知一打岔，整整齐齐的计划全泡汤了。看着未完成列表很烦躁，换作你们，手头会先去收尾哪一截？
+659. 今天本来只想搞定三件事，中间被各种通知一打岔，整整齐齐的计划全泡汤了。看着未完成列表很烦躁，换作你们，手头会先去收尾哪一截？
    来源：[src/data/cc98.posts.json:180](../src/data/cc98.posts.json#L180)
-671. 整理执行建议
+660. 整理执行建议
    来源：[src/data/cc98.posts.json:183](../src/data/cc98.posts.json#L183)
-672. 提问聚焦于临时变更后的行动顺序
+661. 提问聚焦于临时变更后的行动顺序
    来源：[src/data/cc98.posts.json:184](../src/data/cc98.posts.json#L184)
-673. 今天 17:44
+662. 今天 17:44
    来源：[src/data/cc98.posts.json:194](../src/data/cc98.posts.json#L194)；[src/data/cc98.posts.json:1034](../src/data/cc98.posts.json#L1034)；[src/data/cc98.posts.json:1219](../src/data/cc98.posts.json#L1219)
-674. 做法
+663. 做法
    来源：[src/data/cc98.posts.json:196](../src/data/cc98.posts.json#L196)；[src/data/cc98.posts.json:406](../src/data/cc98.posts.json#L406)
-675. 我拖拉时就在纸上画两列，挑一个十分钟能收尾的小任务先划掉。
+664. 我拖拉时就在纸上画两列，挑一个十分钟能收尾的小任务先划掉。
    来源：[src/data/cc98.posts.json:197](../src/data/cc98.posts.json#L197)
-676. 今天 17:46
+665. 今天 17:46
    来源：[src/data/cc98.posts.json:203](../src/data/cc98.posts.json#L203)；[src/data/cc98.posts.json:1228](../src/data/cc98.posts.json#L1228)
-677. 有些事情拖到这会儿其实已经过期了，直接放下一件心里更轻松。
+666. 有些事情拖到这会儿其实已经过期了，直接放下一件心里更轻松。
    来源：[src/data/cc98.posts.json:206](../src/data/cc98.posts.json#L206)
-678. 晚到一分钟
+667. 晚到一分钟
    来源：[src/data/cc98.posts.json:214](../src/data/cc98.posts.json#L214)
-679. 活动报名已经结束了，有人退出的话去哪里看通知？
+668. 活动报名已经结束了，有人退出的话去哪里看通知？
    来源：[src/data/cc98.posts.json:218](../src/data/cc98.posts.json#L218)
-680. 26-07-10 17:37
+669. 26-07-10 17:37
    来源：[src/data/cc98.posts.json:221](../src/data/cc98.posts.json#L221)
-681. 这次活动报名本轮已经结束了，自己手慢没抢到名额。后面如果有人退出，不知道后续会不会补位、几点出通知，现在只能先盯着原来的活动说明看。
+670. 这次活动报名本轮已经结束了，自己手慢没抢到名额。后面如果有人退出，不知道后续会不会补位、几点出通知，现在只能先盯着原来的活动说明看。
    来源：[src/data/cc98.posts.json:222](../src/data/cc98.posts.json#L222)
-682. 保留补位信息询问
+671. 保留补位信息询问
    来源：[src/data/cc98.posts.json:225](../src/data/cc98.posts.json#L225)
-683. 楼主说明了当前结果和需要确认的后续入口
+672. 楼主说明了当前结果和需要确认的后续入口
    来源：[src/data/cc98.posts.json:226](../src/data/cc98.posts.json#L226)
-684. 今天 17:39
+673. 今天 17:39
    来源：[src/data/cc98.posts.json:236](../src/data/cc98.posts.json#L236)；[src/data/cc98.posts.json:1201](../src/data/cc98.posts.json#L1201)；[src/data/cc98.posts.json:1384](../src/data/cc98.posts.json#L1384)
-685. 经验
+674. 经验
    来源：[src/data/cc98.posts.json:238](../src/data/cc98.posts.json#L238)；[src/data/cc98.posts.json:994](../src/data/cc98.posts.json#L994)；[src/data/cc98.posts.json:2118](../src/data/cc98.posts.json#L2118)
-686. 我平时也就回去翻翻报名记录或活动说明，补位这事通常说不准。
+675. 我平时也就回去翻翻报名记录或活动说明，补位这事通常说不准。
    来源：[src/data/cc98.posts.json:239](../src/data/cc98.posts.json#L239)
-687. 今天 17:42
+676. 今天 17:42
    来源：[src/data/cc98.posts.json:245](../src/data/cc98.posts.json#L245)；[src/data/cc98.posts.json:1306](../src/data/cc98.posts.json#L1306)；[src/data/cc98.posts.json:1393](../src/data/cc98.posts.json#L1393)
-688. 群里转发的小道消息多半不保真，还是看原页面的文字说明靠谱。
+677. 群里转发的小道消息多半不保真，还是看原页面的文字说明靠谱。
    来源：[src/data/cc98.posts.json:248](../src/data/cc98.posts.json#L248)
-689. 电话挂断以后
+678. 电话挂断以后
    来源：[src/data/cc98.posts.json:256](../src/data/cc98.posts.json#L256)
-690. 刚挂完家里的电话，总觉得近况没讲好还在反复回想
+679. 刚挂完家里的电话，总觉得近况没讲好还在反复回想
    来源：[src/data/cc98.posts.json:260](../src/data/cc98.posts.json#L260)
-691. 26-07-10 17:33
+680. 26-07-10 17:33
    来源：[src/data/cc98.posts.json:263](../src/data/cc98.posts.json#L263)
-692. 刚才跟家里通完电话，事情虽然都交代了，但挂掉后总琢磨刚才语气是不是太生硬，或者漏讲了什么。明明没出任何事，脑子还在反复倒带。
+681. 刚才跟家里通完电话，事情虽然都交代了，但挂掉后总琢磨刚才语气是不是太生硬，或者漏讲了什么。明明没出任何事，脑子还在反复倒带。
    来源：[src/data/cc98.posts.json:264](../src/data/cc98.posts.json#L264)
-693. 保留陪伴讨论
+682. 保留陪伴讨论
    来源：[src/data/cc98.posts.json:267](../src/data/cc98.posts.json#L267)
-694. 帖子请求的是当下可执行的安顿方法
+683. 帖子请求的是当下可执行的安顿方法
    来源：[src/data/cc98.posts.json:268](../src/data/cc98.posts.json#L268)
-695. 今天 17:35
+684. 今天 17:35
    来源：[src/data/cc98.posts.json:278](../src/data/cc98.posts.json#L278)；[src/data/cc98.posts.json:1279](../src/data/cc98.posts.json#L1279)
-696. 陪伴
+685. 陪伴
    来源：[src/data/cc98.posts.json:280](../src/data/cc98.posts.json#L280)
-697. 我挂完电话也爱瞎琢磨，正边吹风边晾衣服，找点手头事做会好受。
+686. 我挂完电话也爱瞎琢磨，正边吹风边晾衣服，找点手头事做会好受。
    来源：[src/data/cc98.posts.json:281](../src/data/cc98.posts.json#L281)
-698. 今天 17:38
+687. 今天 17:38
    来源：[src/data/cc98.posts.json:287](../src/data/cc98.posts.json#L287)
-699. 真漏了什么明天再补条消息呗，今晚就别一直去复盘刚才的通话了。
+688. 真漏了什么明天再补条消息呗，今晚就别一直去复盘刚才的通话了。
    来源：[src/data/cc98.posts.json:290](../src/data/cc98.posts.json#L290)
-700. 借个安静角落
+689. 借个安静角落
    来源：[src/data/cc98.posts.json:298](../src/data/cc98.posts.json#L298)
-701. 在一页复习题上卡了很久，现在走开算不算在逃避啊
+690. 在一页复习题上卡了很久，现在走开算不算在逃避啊
    来源：[src/data/cc98.posts.json:302](../src/data/cc98.posts.json#L302)
-702. 26-07-10 17:29
+691. 26-07-10 17:29
    来源：[src/data/cc98.posts.json:305](../src/data/cc98.posts.json#L305)
-703. 面对这页复习题卡了接近半小时，思路完全凝固了，草稿纸涂黑了一大块。很想站起来去走廊换换脑子，又觉得刚坐下不久离开像在找借口。
+692. 面对这页复习题卡了接近半小时，思路完全凝固了，草稿纸涂黑了一大块。很想站起来去走廊换换脑子，又觉得刚坐下不久离开像在找借口。
    来源：[src/data/cc98.posts.json:306](../src/data/cc98.posts.json#L306)
-704. 保留学习互助
+693. 保留学习互助
    来源：[src/data/cc98.posts.json:309](../src/data/cc98.posts.json#L309)
-705. 楼主描述了明确的卡点和可尝试的下一步
+694. 楼主描述了明确的卡点和可尝试的下一步
    来源：[src/data/cc98.posts.json:310](../src/data/cc98.posts.json#L310)
-706. 今天 17:31
+695. 今天 17:31
    来源：[src/data/cc98.posts.json:320](../src/data/cc98.posts.json#L320)；[src/data/cc98.posts.json:1540](../src/data/cc98.posts.json#L1540)
-707. 走开五分钟接杯水不算逃避，回来我一般换一道短题或者熟悉的题做。
+696. 走开五分钟接杯水不算逃避，回来我一般换一道短题或者熟悉的题做。
    来源：[src/data/cc98.posts.json:323](../src/data/cc98.posts.json#L323)
-708. 今天 17:34
+697. 今天 17:34
    来源：[src/data/cc98.posts.json:329](../src/data/cc98.posts.json#L329)；[src/data/cc98.posts.json:1366](../src/data/cc98.posts.json#L1366)；[src/data/cc98.posts.json:1462](../src/data/cc98.posts.json#L1462)
-709. 硬耗着更累，我上次卡住直接翻过去看下一道，犯不着跟它死磕。
+698. 硬耗着更累，我上次卡住直接翻过去看下一道，犯不着跟它死磕。
    来源：[src/data/cc98.posts.json:332](../src/data/cc98.posts.json#L332)
-710. 草稿箱里放着
+699. 草稿箱里放着
    来源：[src/data/cc98.posts.json:340](../src/data/cc98.posts.json#L340)
-711. 想记录心情又怕被熟人认出，大家平时碎念存在哪里
+700. 想记录心情又怕被熟人认出，大家平时碎念存在哪里
    来源：[src/data/cc98.posts.json:344](../src/data/cc98.posts.json#L344)
-712. 26-07-10 17:24
+701. 26-07-10 17:24
    来源：[src/data/cc98.posts.json:347](../src/data/cc98.posts.json#L347)；[src/data/cc98.posts.json:1411](../src/data/cc98.posts.json#L1411)
-713. 有些琐碎的情绪想写下来当个记录，但发公共平台总怕用词或者细节被身边同学看出来对号入座。大家平时有些个人的碎碎念都放在哪里呢？
+702. 有些琐碎的情绪想写下来当个记录，但发公共平台总怕用词或者细节被身边同学看出来对号入座。大家平时有些个人的碎碎念都放在哪里呢？
    来源：[src/data/cc98.posts.json:348](../src/data/cc98.posts.json#L348)
-714. 保留表达方式讨论
+703. 保留表达方式讨论
    来源：[src/data/cc98.posts.json:351](../src/data/cc98.posts.json#L351)
-715. 讨论范围限定在隐私和自我整理
+704. 讨论范围限定在隐私和自我整理
    来源：[src/data/cc98.posts.json:352](../src/data/cc98.posts.json#L352)
-716. 今天 17:26
+705. 今天 17:26
    来源：[src/data/cc98.posts.json:362](../src/data/cc98.posts.json#L362)；[src/data/cc98.posts.json:1426](../src/data/cc98.posts.json#L1426)；[src/data/cc98.posts.json:1609](../src/data/cc98.posts.json#L1609)
-717. 我都留在本地草稿箱或者单人文档里，越攒越多但从不点发送。
+706. 我都留在本地草稿箱或者单人文档里，越攒越多但从不点发送。
    来源：[src/data/cc98.posts.json:365](../src/data/cc98.posts.json#L365)
-718. 今天 17:28
+707. 今天 17:28
    来源：[src/data/cc98.posts.json:371](../src/data/cc98.posts.json#L371)；[src/data/cc98.posts.json:1435](../src/data/cc98.posts.json#L1435)；[src/data/cc98.posts.json:1618](../src/data/cc98.posts.json#L1618)
-719. 光去掉楼栋和课程也不见得稳妥，熟人看语气也能认出来。
+708. 光去掉楼栋和课程也不见得稳妥，熟人看语气也能认出来。
    来源：[src/data/cc98.posts.json:374](../src/data/cc98.posts.json#L374)
-720. 还在等回应
+709. 还在等回应
    来源：[src/data/cc98.posts.json:382](../src/data/cc98.posts.json#L382)
-721. 小组分工发出去后没人接话，现在追问会显得太催吗
+710. 小组分工发出去后没人接话，现在追问会显得太催吗
    来源：[src/data/cc98.posts.json:386](../src/data/cc98.posts.json#L386)
-722. 26-07-10 17:20
+711. 26-07-10 17:20
    来源：[src/data/cc98.posts.json:389](../src/data/cc98.posts.json#L389)
-723. 分工表是昨天发到群里的，到现在一条回复都没有。离最终截止其实还早得很，但大家都不确认我心里悬着，不知道现在去群里敲人合不合适。
+712. 分工表是昨天发到群里的，到现在一条回复都没有。离最终截止其实还早得很，但大家都不确认我心里悬着，不知道现在去群里敲人合不合适。
    来源：[src/data/cc98.posts.json:390](../src/data/cc98.posts.json#L390)
-724. 整理协作建议
+713. 整理协作建议
    来源：[src/data/cc98.posts.json:393](../src/data/cc98.posts.json#L393)
-725. 帖子给出了现状与时间边界
+714. 帖子给出了现状与时间边界
    来源：[src/data/cc98.posts.json:394](../src/data/cc98.posts.json#L394)
-726. 今天 17:23
+715. 今天 17:23
    来源：[src/data/cc98.posts.json:404](../src/data/cc98.posts.json#L404)；[src/data/cc98.posts.json:1504](../src/data/cc98.posts.json#L1504)；[src/data/cc98.posts.json:1687](../src/data/cc98.posts.json#L1687)
-727. 我一般在群里商量让大家明天中午前对对分工，有个时点好接话。
+716. 我一般在群里商量让大家明天中午前对对分工，有个时点好接话。
    来源：[src/data/cc98.posts.json:407](../src/data/cc98.posts.json#L407)
-728. 今天 17:25
+717. 今天 17:25
    来源：[src/data/cc98.posts.json:413](../src/data/cc98.posts.json#L413)；[src/data/cc98.posts.json:1513](../src/data/cc98.posts.json#L1513)；[src/data/cc98.posts.json:1696](../src/data/cc98.posts.json#L1696)
-729. 没人理确实尴尬，我通常先写自己负责的那块，晚一点再去问。
+718. 没人理确实尴尬，我通常先写自己负责的那块，晚一点再去问。
    来源：[src/data/cc98.posts.json:416](../src/data/cc98.posts.json#L416)
-730. 今晚先不分析
+719. 今晚先不分析
    来源：[src/data/cc98.posts.json:424](../src/data/cc98.posts.json#L424)
-731. 深夜开个聊天楼，只聊眼前小事暂时不分谁对谁错
+720. 深夜开个聊天楼，只聊眼前小事暂时不分谁对谁错
    来源：[src/data/cc98.posts.json:428](../src/data/cc98.posts.json#L428)
-732. 26-07-10 17:16
+721. 26-07-10 17:16
    来源：[src/data/cc98.posts.json:431](../src/data/cc98.posts.json#L431)
-733. 夜里不想再复盘白天的人情世故或者谁对谁错，只想开个楼随口聊聊。大家眼前都在干嘛，吃了什么或者看到什么，随手留个言说两句小事吧。
+722. 夜里不想再复盘白天的人情世故或者谁对谁错，只想开个楼随口聊聊。大家眼前都在干嘛，吃了什么或者看到什么，随手留个言说两句小事吧。
    来源：[src/data/cc98.posts.json:432](../src/data/cc98.posts.json#L432)
-734. 保留夜间陪伴帖
+723. 保留夜间陪伴帖
    来源：[src/data/cc98.posts.json:435](../src/data/cc98.posts.json#L435)
-735. 帖子设定了低门槛、非评判的交流范围
+724. 帖子设定了低门槛、非评判的交流范围
    来源：[src/data/cc98.posts.json:436](../src/data/cc98.posts.json#L436)
-736. 今天 17:18
+725. 今天 17:18
    来源：[src/data/cc98.posts.json:446](../src/data/cc98.posts.json#L446)；[src/data/cc98.posts.json:1756](../src/data/cc98.posts.json#L1756)
-737. 路过
+726. 路过
    来源：[src/data/cc98.posts.json:448](../src/data/cc98.posts.json#L448)；[src/data/cc98.posts.json:1827](../src/data/cc98.posts.json#L1827)
-738. 刚从外面回来，外面风吹得树叶哗哗响，特别想喝一杯热豆浆。
+727. 刚从外面回来，外面风吹得树叶哗哗响，特别想喝一杯热豆浆。
    来源：[src/data/cc98.posts.json:449](../src/data/cc98.posts.json#L449)
-739. 今天 17:21
+728. 今天 17:21
    来源：[src/data/cc98.posts.json:455](../src/data/cc98.posts.json#L455)；[src/data/cc98.posts.json:1678](../src/data/cc98.posts.json#L1678)
-740. 留言
+729. 留言
    来源：[src/data/cc98.posts.json:457](../src/data/cc98.posts.json#L457)
-741. 正在把桌上的水杯和充电线理成一条直线，终于看着顺眼了点。
+730. 正在把桌上的水杯和充电线理成一条直线，终于看着顺眼了点。
    来源：[src/data/cc98.posts.json:458](../src/data/cc98.posts.json#L458)
-742. 午睡醒得太晚
+731. 午睡醒得太晚
    来源：[src/data/cc98.posts.json:466](../src/data/cc98.posts.json#L466)
-743. 午睡醒来天快黑了，突然对时间失去实感该怎么缓
+732. 午睡醒来天快黑了，突然对时间失去实感该怎么缓
    来源：[src/data/cc98.posts.json:470](../src/data/cc98.posts.json#L470)
-744. 26-07-10 17:12
+733. 26-07-10 17:12
    来源：[src/data/cc98.posts.json:473](../src/data/cc98.posts.json#L473)；[src/data/cc98.posts.json:1723](../src/data/cc98.posts.json#L1723)
-745. 下午一不小心睡得太沉，睁眼发现天色已经暗下来，整个下午就这么糊里糊涂过去了。整个人懵懵的，突然对今天的时间有点失去实感和力气。
+734. 下午一不小心睡得太沉，睁眼发现天色已经暗下来，整个下午就这么糊里糊涂过去了。整个人懵懵的，突然对今天的时间有点失去实感和力气。
    来源：[src/data/cc98.posts.json:474](../src/data/cc98.posts.json#L474)
-746. 保留日常状态帖
+735. 保留日常状态帖
    来源：[src/data/cc98.posts.json:477](../src/data/cc98.posts.json#L477)
-747. 帖子以轻量描述邀请同类经历回应
+736. 帖子以轻量描述邀请同类经历回应
    来源：[src/data/cc98.posts.json:478](../src/data/cc98.posts.json#L478)
-748. 今天 17:14
+737. 今天 17:14
    来源：[src/data/cc98.posts.json:488](../src/data/cc98.posts.json#L488)；[src/data/cc98.posts.json:1738](../src/data/cc98.posts.json#L1738)；[src/data/cc98.posts.json:1834](../src/data/cc98.posts.json#L1834)
-749. 睡懵了都这样，今晚哪怕只把晚饭吃了衣服洗掉，就算没白过。
+738. 睡懵了都这样，今晚哪怕只把晚饭吃了衣服洗掉，就算没白过。
    来源：[src/data/cc98.posts.json:491](../src/data/cc98.posts.json#L491)
-750. 今天 17:17
+739. 今天 17:17
    来源：[src/data/cc98.posts.json:497](../src/data/cc98.posts.json#L497)；[src/data/cc98.posts.json:1660](../src/data/cc98.posts.json#L1660)
-751. 感觉像是把白天的电量全预支了，待会儿去洗漱清醒一下慢慢来。
+740. 感觉像是把白天的电量全预支了，待会儿去洗漱清醒一下慢慢来。
    来源：[src/data/cc98.posts.json:500](../src/data/cc98.posts.json#L500)
-752. 明天才上课
+741. 明天才上课
    来源：[src/data/cc98.posts.json:508](../src/data/cc98.posts.json#L508)
-753. 提前进教室还认真记了笔记，结果被旁边的同学问醒
+742. 提前进教室还认真记了笔记，结果被旁边的同学问醒
    来源：[src/data/cc98.posts.json:512](../src/data/cc98.posts.json#L512)
-754. 26-07-10 17:08
+743. 26-07-10 17:08
    来源：[src/data/cc98.posts.json:515](../src/data/cc98.posts.json#L515)；[src/data/cc98.posts.json:1801](../src/data/cc98.posts.json#L1801)
-755. 提前十分钟进教室，把明天的课记成了今天。周围同学全在复习我没学过的内容，我还跟着记了两行笔记，直到被同桌随口问了句才赶紧核对日期。
+744. 提前十分钟进教室，把明天的课记成了今天。周围同学全在复习我没学过的内容，我还跟着记了两行笔记，直到被同桌随口问了句才赶紧核对日期。
    来源：[src/data/cc98.posts.json:516](../src/data/cc98.posts.json#L516)
-756. 开怀一笑值班员
+745. 开怀一笑值班员
    来源：[src/data/cc98.posts.json:518](../src/data/cc98.posts.json#L518)；[src/data/cc98.posts.json:560](../src/data/cc98.posts.json#L560)；[src/data/cc98.posts.json:602](../src/data/cc98.posts.json#L602)；[src/data/cc98.posts.json:644](../src/data/cc98.posts.json#L644)；[src/data/cc98.posts.json:686](../src/data/cc98.posts.json#L686)；[src/data/cc98.posts.json:728](../src/data/cc98.posts.json#L728)；[src/data/cc98.posts.json:770](../src/data/cc98.posts.json#L770)；[src/data/cc98.posts.json:812](../src/data/cc98.posts.json#L812)；[src/data/cc98.posts.json:854](../src/data/cc98.posts.json#L854)；[src/data/cc98.posts.json:896](../src/data/cc98.posts.json#L896)；[src/data/cc98.posts.json:938](../src/data/cc98.posts.json#L938)；[src/data/cc98.posts.json:980](../src/data/cc98.posts.json#L980)；[src/data/cc98.posts.json:2299](../src/data/cc98.posts.json#L2299)；[src/data/cc98.posts.json:2350](../src/data/cc98.posts.json#L2350)；[src/data/cc98.posts.json:2605](../src/data/cc98.posts.json#L2605)
-757. 加入校园小乌龙
+746. 加入校园小乌龙
    来源：[src/data/cc98.posts.json:519](../src/data/cc98.posts.json#L519)
-758. 帖子包含完整的误入过程和收尾
+747. 帖子包含完整的误入过程和收尾
    来源：[src/data/cc98.posts.json:520](../src/data/cc98.posts.json#L520)
-759. 今天 17:10
+748. 今天 17:10
    来源：[src/data/cc98.posts.json:530](../src/data/cc98.posts.json#L530)；[src/data/cc98.posts.json:1816](../src/data/cc98.posts.json#L1816)
-760. 知足吧，我之前大清早去蹭课，听了半节才发现自己根本没选。
+749. 知足吧，我之前大清早去蹭课，听了半节才发现自己根本没选。
    来源：[src/data/cc98.posts.json:533](../src/data/cc98.posts.json#L533)
-761. 今天 17:12
+750. 今天 17:12
    来源：[src/data/cc98.posts.json:539](../src/data/cc98.posts.json#L539)；[src/data/cc98.posts.json:1825](../src/data/cc98.posts.json#L1825)
-762. 哈哈哈哈那两行板书到底记了啥，明天上课刚好能提前预习。
+751. 哈哈哈哈那两行板书到底记了啥，明天上课刚好能提前预习。
    来源：[src/data/cc98.posts.json:542](../src/data/cc98.posts.json#L542)
-763. 三桌同款菜
+752. 三桌同款菜
    来源：[src/data/cc98.posts.json:550](../src/data/cc98.posts.json#L550)
-764. 在食堂排队被前面同款套餐误导以为没菜了
+753. 在食堂排队被前面同款套餐误导以为没菜了
    来源：[src/data/cc98.posts.json:554](../src/data/cc98.posts.json#L554)
-765. 26-07-10 17:05
+754. 26-07-10 17:05
    来源：[src/data/cc98.posts.json:557](../src/data/cc98.posts.json#L557)；[src/data/cc98.posts.json:1861](../src/data/cc98.posts.json#L1861)
-766. 刚才去食堂打饭，看到前面三个人端走的盘子里全是同一种套餐，我还以为窗口里别的菜全卖光了。结果排到跟前探头一瞧，旁边明明还有好几样别的选择，纯粹是前面几位默契撞餐了。
+755. 刚才去食堂打饭，看到前面三个人端走的盘子里全是同一种套餐，我还以为窗口里别的菜全卖光了。结果排到跟前探头一瞧，旁边明明还有好几样别的选择，纯粹是前面几位默契撞餐了。
    来源：[src/data/cc98.posts.json:558](../src/data/cc98.posts.json#L558)
-767. 保留饭点观察
+756. 保留饭点观察
    来源：[src/data/cc98.posts.json:561](../src/data/cc98.posts.json#L561)
-768. 主题来自公共食堂的即时误判
+757. 主题来自公共食堂的即时误判
    来源：[src/data/cc98.posts.json:562](../src/data/cc98.posts.json#L562)
-769. 今天 17:07
+758. 今天 17:07
    来源：[src/data/cc98.posts.json:572](../src/data/cc98.posts.json#L572)；[src/data/cc98.posts.json:1876](../src/data/cc98.posts.json#L1876)
-770. 那三个人可能也是跟风点的，排队时脑子真容易放空。
+759. 那三个人可能也是跟风点的，排队时脑子真容易放空。
    来源：[src/data/cc98.posts.json:575](../src/data/cc98.posts.json#L575)
-771. 今天 17:09
+760. 今天 17:09
    来源：[src/data/cc98.posts.json:581](../src/data/cc98.posts.json#L581)；[src/data/cc98.posts.json:1885](../src/data/cc98.posts.json#L1885)
-772. 结论
+761. 结论
    来源：[src/data/cc98.posts.json:583](../src/data/cc98.posts.json#L583)；[src/data/cc98.posts.json:961](../src/data/cc98.posts.json#L961)；[src/data/cc98.posts.json:1905](../src/data/cc98.posts.json#L1905)；[src/data/cc98.posts.json:2382](../src/data/cc98.posts.json#L2382)；[src/data/cc98.posts.json:2637](../src/data/cc98.posts.json#L2637)；[src/data/cc98.posts.json:2739](../src/data/cc98.posts.json#L2739)
-773. 哈哈所以你最后随大流了还是点了别的？我好奇。
+762. 哈哈所以你最后随大流了还是点了别的？我好奇。
    来源：[src/data/cc98.posts.json:584](../src/data/cc98.posts.json#L584)
-774. 导航原地打转
+763. 导航原地打转
    来源：[src/data/cc98.posts.json:592](../src/data/cc98.posts.json#L592)
-775. 被导航带到建筑正中央绕了两圈才找到背后小路
+764. 被导航带到建筑正中央绕了两圈才找到背后小路
    来源：[src/data/cc98.posts.json:596](../src/data/cc98.posts.json#L596)
-776. 26-07-10 17:02
+765. 26-07-10 17:02
    来源：[src/data/cc98.posts.json:599](../src/data/cc98.posts.json#L599)；[src/data/cc98.posts.json:1921](../src/data/cc98.posts.json#L1921)
-777. 跟着导航找地方真的会笑死，定位直接定在建筑中央附近，带到大楼旁边就提示到达。我在灌木丛绿化带旁边原地绕了整整两圈，最后才发现真正能进人的入口在背后另一条不起眼的小路上。
+766. 跟着导航找地方真的会笑死，定位直接定在建筑中央附近，带到大楼旁边就提示到达。我在灌木丛绿化带旁边原地绕了整整两圈，最后才发现真正能进人的入口在背后另一条不起眼的小路上。
    来源：[src/data/cc98.posts.json:600](../src/data/cc98.posts.json#L600)
-778. 加入定位趣事
+767. 加入定位趣事
    来源：[src/data/cc98.posts.json:603](../src/data/cc98.posts.json#L603)
-779. 帖子说明了定位点与真实入口的差异
+768. 帖子说明了定位点与真实入口的差异
    来源：[src/data/cc98.posts.json:604](../src/data/cc98.posts.json#L604)
-780. 今天 17:04
+769. 今天 17:04
    来源：[src/data/cc98.posts.json:614](../src/data/cc98.posts.json#L614)；[src/data/cc98.posts.json:1936](../src/data/cc98.posts.json#L1936)；[src/data/cc98.posts.json:2005](../src/data/cc98.posts.json#L2005)
-781. 实测
+770. 实测
    来源：[src/data/cc98.posts.json:616](../src/data/cc98.posts.json#L616)；[src/data/cc98.posts.json:1272](../src/data/cc98.posts.json#L1272)；[src/data/cc98.posts.json:1662](../src/data/cc98.posts.json#L1662)；[src/data/cc98.posts.json:2253](../src/data/cc98.posts.json#L2253)
-782. 我也被这楼坑过，导航只管坐标，根本不管门开在哪。
+771. 我也被这楼坑过，导航只管坐标，根本不管门开在哪。
    来源：[src/data/cc98.posts.json:617](../src/data/cc98.posts.json#L617)
-783. 今天 17:06
+772. 今天 17:06
    来源：[src/data/cc98.posts.json:623](../src/data/cc98.posts.json#L623)；[src/data/cc98.posts.json:1945](../src/data/cc98.posts.json#L1945)；[src/data/cc98.posts.json:2014](../src/data/cc98.posts.json#L2014)
-784. 感觉真应该在背后小路立个提示，免得大家总绕圈。
+773. 感觉真应该在背后小路立个提示，免得大家总绕圈。
    来源：[src/data/cc98.posts.json:626](../src/data/cc98.posts.json#L626)
-785. 线材整理失败
+774. 线材整理失败
    来源：[src/data/cc98.posts.json:634](../src/data/cc98.posts.json#L634)
-786. 回寝室发现室友把线收得太整齐解不开最后用了充电宝
+775. 回寝室发现室友把线收得太整齐解不开最后用了充电宝
    来源：[src/data/cc98.posts.json:638](../src/data/cc98.posts.json#L638)
-787. 26-07-10 16:59
+776. 26-07-10 16:59
    来源：[src/data/cc98.posts.json:641](../src/data/cc98.posts.json#L641)
-788. 刚才离开桌子半小时去洗漱，回来看到散在桌上的充电线被室友收得整整齐齐。室友说是怕垂在下面绊到脚，结果绳结缠得特别扎实，我抠了半天解不开，索性放弃直接掏出充电宝先充着了。
+777. 刚才离开桌子半小时去洗漱，回来看到散在桌上的充电线被室友收得整整齐齐。室友说是怕垂在下面绊到脚，结果绳结缠得特别扎实，我抠了半天解不开，索性放弃直接掏出充电宝先充着了。
    来源：[src/data/cc98.posts.json:642](../src/data/cc98.posts.json#L642)
-789. 保留宿舍日常
+778. 保留宿舍日常
    来源：[src/data/cc98.posts.json:645](../src/data/cc98.posts.json#L645)
-790. 主题为无损失的生活小插曲
+779. 主题为无损失的生活小插曲
    来源：[src/data/cc98.posts.json:646](../src/data/cc98.posts.json#L646)
-791. 今天 17:01
+780. 今天 17:01
    来源：[src/data/cc98.posts.json:656](../src/data/cc98.posts.json#L656)
-792. 好心办难事哈哈，我上回拆室友打的死结拆到手抽筋。
+781. 好心办难事哈哈，我上回拆室友打的死结拆到手抽筋。
    来源：[src/data/cc98.posts.json:659](../src/data/cc98.posts.json#L659)
-793. 今天 17:03
+782. 今天 17:03
    来源：[src/data/cc98.posts.json:665](../src/data/cc98.posts.json#L665)
-794. 办法
+783. 办法
    来源：[src/data/cc98.posts.json:667](../src/data/cc98.posts.json#L667)
-795. 这收纳手艺过分硬核了，充电宝此时显得格外亲切。
+784. 这收纳手艺过分硬核了，充电宝此时显得格外亲切。
    来源：[src/data/cc98.posts.json:668](../src/data/cc98.posts.json#L668)
-796. 群聊歪楼现场
+785. 群聊歪楼现场
    来源：[src/data/cc98.posts.json:676](../src/data/cc98.posts.json#L676)
-797. 社团群找周末活动人手三分钟后画风突变全在晒猫
+786. 社团群找周末活动人手三分钟后画风突变全在晒猫
    来源：[src/data/cc98.posts.json:680](../src/data/cc98.posts.json#L680)
-798. 26-07-10 16:56
+787. 26-07-10 16:56
    来源：[src/data/cc98.posts.json:683](../src/data/cc98.posts.json#L683)
-799. 原本在群里正经问这周末有没有人手一起布置活动，结果不知道谁先发了一张自家的橘猫，不到三分钟整个群全变成猫图聊天了。群里至少五个人家里有猫，图存了一堆，但发猫图可不等于报名啊！
+788. 原本在群里正经问这周末有没有人手一起布置活动，结果不知道谁先发了一张自家的橘猫，不到三分钟整个群全变成猫图聊天了。群里至少五个人家里有猫，图存了一堆，但发猫图可不等于报名啊！
    来源：[src/data/cc98.posts.json:684](../src/data/cc98.posts.json#L684)
-800. 加入群聊现场
+789. 加入群聊现场
    来源：[src/data/cc98.posts.json:687](../src/data/cc98.posts.json#L687)
-801. 帖子完整呈现话题偏离的过程
+790. 帖子完整呈现话题偏离的过程
    来源：[src/data/cc98.posts.json:688](../src/data/cc98.posts.json#L688)
-802. 今天 16:58
+791. 今天 16:58
    来源：[src/data/cc98.posts.json:698](../src/data/cc98.posts.json#L698)；[src/data/cc98.posts.json:2056](../src/data/cc98.posts.json#L2056)
-803. 提案
+792. 提案
    来源：[src/data/cc98.posts.json:700](../src/data/cc98.posts.json#L700)；[src/data/cc98.posts.json:1134](../src/data/cc98.posts.json#L1134)
-804. 虽然但是猫猫真的好可爱……所以周末到底抓到几个人？
+793. 虽然但是猫猫真的好可爱……所以周末到底抓到几个人？
    来源：[src/data/cc98.posts.json:701](../src/data/cc98.posts.json#L701)
-805. 今天 17:00
+794. 今天 17:00
    来源：[src/data/cc98.posts.json:707](../src/data/cc98.posts.json#L707)；[src/data/cc98.posts.json:1987](../src/data/cc98.posts.json#L1987)；[src/data/cc98.posts.json:2065](../src/data/cc98.posts.json#L2065)
-806. 吸猫群友都是云报名的，真要干活还得私戳一个个问。
+795. 吸猫群友都是云报名的，真要干活还得私戳一个个问。
    来源：[src/data/cc98.posts.json:710](../src/data/cc98.posts.json#L710)
-807. 门外轻声到啦
+796. 门外轻声到啦
    来源：[src/data/cc98.posts.json:718](../src/data/cc98.posts.json#L718)
-808. 点外卖备注不要敲门骑手小哥超级轻声喊我拿餐
+797. 点外卖备注不要敲门骑手小哥超级轻声喊我拿餐
    来源：[src/data/cc98.posts.json:722](../src/data/cc98.posts.json#L722)
-809. 26-07-10 16:53
+798. 26-07-10 16:53
    来源：[src/data/cc98.posts.json:725](../src/data/cc98.posts.json#L725)
-810. 下午室友都在补觉，我点外卖特意备注了不要敲门。到了之后骑手小哥果然一点门都没敲，站在走廊用极其气声的声音轻轻喊我名字，开门对上视线那一秒两个人都在憋笑，真的好贴心又好玩。
+799. 下午室友都在补觉，我点外卖特意备注了不要敲门。到了之后骑手小哥果然一点门都没敲，站在走廊用极其气声的声音轻轻喊我名字，开门对上视线那一秒两个人都在憋笑，真的好贴心又好玩。
    来源：[src/data/cc98.posts.json:726](../src/data/cc98.posts.json#L726)
-811. 保留取餐趣事
+800. 保留取餐趣事
    来源：[src/data/cc98.posts.json:729](../src/data/cc98.posts.json#L729)
-812. 主题来自公共配送场景的善意细节
+801. 主题来自公共配送场景的善意细节
    来源：[src/data/cc98.posts.json:730](../src/data/cc98.posts.json#L730)
-813. 今天 16:55
+802. 今天 16:55
    来源：[src/data/cc98.posts.json:740](../src/data/cc98.posts.json#L740)
-814. 现场
+803. 现场
    来源：[src/data/cc98.posts.json:742](../src/data/cc98.posts.json#L742)；[src/data/cc98.posts.json:1281](../src/data/cc98.posts.json#L1281)；[src/data/cc98.posts.json:1428](../src/data/cc98.posts.json#L1428)；[src/data/cc98.posts.json:1749](../src/data/cc98.posts.json#L1749)；[src/data/cc98.posts.json:2484](../src/data/cc98.posts.json#L2484)；[src/data/cc98.posts.json:2721](../src/data/cc98.posts.json#L2721)
-815. 画面感太强了，骑手小哥为了不吵人也是尽力在配合。
+804. 画面感太强了，骑手小哥为了不吵人也是尽力在配合。
    来源：[src/data/cc98.posts.json:743](../src/data/cc98.posts.json#L743)
-816. 今天 16:57
+805. 今天 16:57
    来源：[src/data/cc98.posts.json:749](../src/data/cc98.posts.json#L749)
-817. 我之前那单也是备注了，小哥在门外轻敲了三下，超有礼貌。
+806. 我之前那单也是备注了，小哥在门外轻敲了三下，超有礼貌。
    来源：[src/data/cc98.posts.json:752](../src/data/cc98.posts.json#L752)
-818. 门禁按错层
+807. 门禁按错层
    来源：[src/data/cc98.posts.json:760](../src/data/cc98.posts.json#L760)
-819. 在门禁前检查了三次卡才发现自己早出了一层电梯
+808. 在门禁前检查了三次卡才发现自己早出了一层电梯
    来源：[src/data/cc98.posts.json:764](../src/data/cc98.posts.json#L764)
-820. 26-07-10 16:50
+809. 26-07-10 16:50
    来源：[src/data/cc98.posts.json:767](../src/data/cc98.posts.json#L767)；[src/data/cc98.posts.json:2083](../src/data/cc98.posts.json#L2083)
-821. 提着重东西回寝室，走到门前刷卡一直没反应。我站在那里翻来覆去把校园卡检查了三次，怀疑是不是消磁了，抬头看门牌才反应过来自己提早一层出了电梯，门禁好好的，纯属人走错了。
+810. 提着重东西回寝室，走到门前刷卡一直没反应。我站在那里翻来覆去把校园卡检查了三次，怀疑是不是消磁了，抬头看门牌才反应过来自己提早一层出了电梯，门禁好好的，纯属人走错了。
    来源：[src/data/cc98.posts.json:768](../src/data/cc98.posts.json#L768)
-822. 加入楼层误会
+811. 加入楼层误会
    来源：[src/data/cc98.posts.json:771](../src/data/cc98.posts.json#L771)
-823. 帖子以无伤害的误判收束
+812. 帖子以无伤害的误判收束
    来源：[src/data/cc98.posts.json:772](../src/data/cc98.posts.json#L772)
-824. 今天 16:52
+813. 今天 16:52
    来源：[src/data/cc98.posts.json:782](../src/data/cc98.posts.json#L782)；[src/data/cc98.posts.json:2098](../src/data/cc98.posts.json#L2098)；[src/data/cc98.posts.json:2167](../src/data/cc98.posts.json#L2167)
-825. 核对
+814. 核对
    来源：[src/data/cc98.posts.json:784](../src/data/cc98.posts.json#L784)；[src/data/cc98.posts.json:1629](../src/data/cc98.posts.json#L1629)；[src/data/cc98.posts.json:1758](../src/data/cc98.posts.json#L1758)；[src/data/cc98.posts.json:2058](../src/data/cc98.posts.json#L2058)；[src/data/cc98.posts.json:2202](../src/data/cc98.posts.json#L2202)；[src/data/cc98.posts.json:2688](../src/data/cc98.posts.json#L2688)
-826. 校园卡：勿 cue，明明是你自己下错楼层了哈哈。
+815. 校园卡：勿 cue，明明是你自己下错楼层了哈哈。
    来源：[src/data/cc98.posts.json:785](../src/data/cc98.posts.json#L785)
-827. 今天 16:54
+816. 今天 16:54
    来源：[src/data/cc98.posts.json:791](../src/data/cc98.posts.json#L791)；[src/data/cc98.posts.json:2107](../src/data/cc98.posts.json#L2107)
-828. 我也有过，对着陌生门牌愣了半天还在想锁怎么换了。
+817. 我也有过，对着陌生门牌愣了半天还在想锁怎么换了。
    来源：[src/data/cc98.posts.json:794](../src/data/cc98.posts.json#L794)
-829. 洗衣机先毕业
+818. 洗衣机先毕业
    来源：[src/data/cc98.posts.json:802](../src/data/cc98.posts.json#L802)
-830. 洗衣房研究新机器功能太久隔壁衣服都快洗好了
+819. 洗衣房研究新机器功能太久隔壁衣服都快洗好了
    来源：[src/data/cc98.posts.json:806](../src/data/cc98.posts.json#L806)
-831. 26-07-10 16:47
+820. 26-07-10 16:47
    来源：[src/data/cc98.posts.json:809](../src/data/cc98.posts.json#L809)
-832. 第一次用公共洗衣房换上的新机器，面板上一大堆模式。我站在前面把旋钮和显示屏研究了个遍，越看越不知道选哪个，等终于按下去的时候，旁边同学那桶衣服都已经快洗完了，太磨蹭了。
+821. 第一次用公共洗衣房换上的新机器，面板上一大堆模式。我站在前面把旋钮和显示屏研究了个遍，越看越不知道选哪个，等终于按下去的时候，旁边同学那桶衣服都已经快洗完了，太磨蹭了。
    来源：[src/data/cc98.posts.json:810](../src/data/cc98.posts.json#L810)
-833. 保留生活设备趣事
+822. 保留生活设备趣事
    来源：[src/data/cc98.posts.json:813](../src/data/cc98.posts.json#L813)
-834. 主题来自公共设施的学习曲线
+823. 主题来自公共设施的学习曲线
    来源：[src/data/cc98.posts.json:814](../src/data/cc98.posts.json#L814)
-835. 今天 16:49
+824. 今天 16:49
    来源：[src/data/cc98.posts.json:824](../src/data/cc98.posts.json#L824)
-836. 我每次也是把所有按键看一遍才安心，生怕按错洗坏。
+825. 我每次也是把所有按键看一遍才安心，生怕按错洗坏。
    来源：[src/data/cc98.posts.json:827](../src/data/cc98.posts.json#L827)
-837. 今天 16:51
+826. 今天 16:51
    来源：[src/data/cc98.posts.json:833](../src/data/cc98.posts.json#L833)
-838. 多花十分钟看说明不亏，往后每次用都能省下十分钟呢。
+827. 多花十分钟看说明不亏，往后每次用都能省下十分钟呢。
    来源：[src/data/cc98.posts.json:836](../src/data/cc98.posts.json#L836)
-839. 关灯后发现
+828. 关灯后发现
    来源：[src/data/cc98.posts.json:844](../src/data/cc98.posts.json#L844)
-840. 以为大教室空了随手关灯结果前面整整齐齐在上晚课
+829. 以为大教室空了随手关灯结果前面整整齐齐在上晚课
    来源：[src/data/cc98.posts.json:848](../src/data/cc98.posts.json#L848)
-841. 26-07-10 16:44
+830. 26-07-10 16:44
    来源：[src/data/cc98.posts.json:851](../src/data/cc98.posts.json#L851)
-842. 晚上从阶梯教室后门走，后排黑漆漆的以为没人了，我顺手啪的一下把教室大灯给关了。整个教室瞬间安静了两秒，前排几十个上晚课的同学齐刷刷回头，隔着半个教室和我大眼瞪小眼，直接社死。
+831. 晚上从阶梯教室后门走，后排黑漆漆的以为没人了，我顺手啪的一下把教室大灯给关了。整个教室瞬间安静了两秒，前排几十个上晚课的同学齐刷刷回头，隔着半个教室和我大眼瞪小眼，直接社死。
    来源：[src/data/cc98.posts.json:852](../src/data/cc98.posts.json#L852)
-843. 加入教室小场面
+832. 加入教室小场面
    来源：[src/data/cc98.posts.json:855](../src/data/cc98.posts.json#L855)
-844. 帖子以短暂尴尬和即时修正结束
+833. 帖子以短暂尴尬和即时修正结束
    来源：[src/data/cc98.posts.json:856](../src/data/cc98.posts.json#L856)
-845. 今天 16:46
+834. 今天 16:46
    来源：[src/data/cc98.posts.json:866](../src/data/cc98.posts.json#L866)；[src/data/cc98.posts.json:2209](../src/data/cc98.posts.json#L2209)；[src/data/cc98.posts.json:2278](../src/data/cc98.posts.json#L2278)
-846. 那两秒的死寂光是脑补一下，我的脚趾就已经动工了。
+835. 那两秒的死寂光是脑补一下，我的脚趾就已经动工了。
    来源：[src/data/cc98.posts.json:869](../src/data/cc98.posts.json#L869)
-847. 今天 16:48
+836. 今天 16:48
    来源：[src/data/cc98.posts.json:875](../src/data/cc98.posts.json#L875)；[src/data/cc98.posts.json:2149](../src/data/cc98.posts.json#L2149)；[src/data/cc98.posts.json:2218](../src/data/cc98.posts.json#L2218)
-848. 回应
+837. 回应
    来源：[src/data/cc98.posts.json:877](../src/data/cc98.posts.json#L877)
-849. 天呐太尴尬了，你后面有赶紧把灯按回去吗？
+838. 天呐太尴尬了，你后面有赶紧把灯按回去吗？
    来源：[src/data/cc98.posts.json:878](../src/data/cc98.posts.json#L878)
-850. 雨伞认错三次
+839. 雨伞认错三次
    来源：[src/data/cc98.posts.json:886](../src/data/cc98.posts.json#L886)
-851. 门口伞架黑伞撞款连续认错三把最后凭便利贴找到
+840. 门口伞架黑伞撞款连续认错三把最后凭便利贴找到
    来源：[src/data/cc98.posts.json:890](../src/data/cc98.posts.json#L890)
-852. 26-07-10 16:41
+841. 26-07-10 16:41
    来源：[src/data/cc98.posts.json:893](../src/data/cc98.posts.json#L893)
-853. 下雨天教学楼门口的伞架简直是连连看现场。全是黑伞、木柄配相同的黑色挂绳，我挨个拿起来连续认错了三把，最后还是看到手柄内侧自己出门前随手贴的黄色便利贴，才总算把自己那把认出来。
+842. 下雨天教学楼门口的伞架简直是连连看现场。全是黑伞、木柄配相同的黑色挂绳，我挨个拿起来连续认错了三把，最后还是看到手柄内侧自己出门前随手贴的黄色便利贴，才总算把自己那把认出来。
    来源：[src/data/cc98.posts.json:894](../src/data/cc98.posts.json#L894)
-854. 保留雨天趣事
+843. 保留雨天趣事
    来源：[src/data/cc98.posts.json:897](../src/data/cc98.posts.json#L897)
-855. 主题来自公共区域的常见辨认失误
+844. 主题来自公共区域的常见辨认失误
    来源：[src/data/cc98.posts.json:898](../src/data/cc98.posts.json#L898)
-856. 今天 16:43
+845. 今天 16:43
    来源：[src/data/cc98.posts.json:908](../src/data/cc98.posts.json#L908)
-857. 黑色木柄伞真是重灾区，我直接在伞柄上缠了彩色胶带。
+846. 黑色木柄伞真是重灾区，我直接在伞柄上缠了彩色胶带。
    来源：[src/data/cc98.posts.json:911](../src/data/cc98.posts.json#L911)
-858. 今天 16:45
+847. 今天 16:45
    来源：[src/data/cc98.posts.json:917](../src/data/cc98.posts.json#L917)
-859. 我也拿错过别人的伞，撑开了才发现骨架颜色不太对。
+848. 我也拿错过别人的伞，撑开了才发现骨架颜色不太对。
    来源：[src/data/cc98.posts.json:920](../src/data/cc98.posts.json#L920)
-860. 卡片认错人
+849. 卡片认错人
    来源：[src/data/cc98.posts.json:928](../src/data/cc98.posts.json#L928)
-861. 在图书馆闸机连刷两次失败低头才发现拿成门卡了
+850. 在图书馆闸机连刷两次失败低头才发现拿成门卡了
    来源：[src/data/cc98.posts.json:932](../src/data/cc98.posts.json#L932)
-862. 26-07-10 16:38
+851. 26-07-10 16:38
    来源：[src/data/cc98.posts.json:935](../src/data/cc98.posts.json#L935)；[src/data/cc98.posts.json:2236](../src/data/cc98.posts.json#L2236)
-863. 上午去图书馆进门刷卡，连着刷了两次闸机都亮红灯不放行。我一边纳闷校园卡怎么突然失灵，一边低头准备看卡面，第三次拿起来才看清手里抓着的是那张没有照片的寝室门卡，虚惊一场。
+852. 上午去图书馆进门刷卡，连着刷了两次闸机都亮红灯不放行。我一边纳闷校园卡怎么突然失灵，一边低头准备看卡面，第三次拿起来才看清手里抓着的是那张没有照片的寝室门卡，虚惊一场。
    来源：[src/data/cc98.posts.json:936](../src/data/cc98.posts.json#L936)
-864. 加入卡片误会
+853. 加入卡片误会
    来源：[src/data/cc98.posts.json:939](../src/data/cc98.posts.json#L939)
-865. 主题来自日常通行时的自我纠正
+854. 主题来自日常通行时的自我纠正
    来源：[src/data/cc98.posts.json:940](../src/data/cc98.posts.json#L940)
-866. 今天 16:40
+855. 今天 16:40
    来源：[src/data/cc98.posts.json:950](../src/data/cc98.posts.json#L950)；[src/data/cc98.posts.json:2251](../src/data/cc98.posts.json#L2251)；[src/data/cc98.posts.json:2329](../src/data/cc98.posts.json#L2329)
-867. 两张卡揣一个兜里太容易盲抽摸错了，我也常刷错。
+856. 两张卡揣一个兜里太容易盲抽摸错了，我也常刷错。
    来源：[src/data/cc98.posts.json:953](../src/data/cc98.posts.json#L953)
-868. 今天 16:42
+857. 今天 16:42
    来源：[src/data/cc98.posts.json:959](../src/data/cc98.posts.json#L959)；[src/data/cc98.posts.json:2260](../src/data/cc98.posts.json#L2260)
-869. 直到第三次才低头看，你前面两次刷得是有多笃定。
+858. 直到第三次才低头看，你前面两次刷得是有多笃定。
    来源：[src/data/cc98.posts.json:962](../src/data/cc98.posts.json#L962)
-870. 投影桌面警报
+859. 投影桌面警报
    来源：[src/data/cc98.posts.json:970](../src/data/cc98.posts.json#L970)
-871. 课堂切投影拔插头瞬间杂乱桌面露脸全是最终版文件
+860. 课堂切投影拔插头瞬间杂乱桌面露脸全是最终版文件
    来源：[src/data/cc98.posts.json:974](../src/data/cc98.posts.json#L974)
-872. 26-07-10 16:35
+861. 26-07-10 16:35
    来源：[src/data/cc98.posts.json:977](../src/data/cc98.posts.json#L977)
-873. 轮到我们组汇报切投影线，拔掉转接头的瞬间电脑主屏幕突然弹了出来。还好没有私人聊天窗口曝光，但整个桌面铺满了最终版、打死不改版和真最终版的汇报文档，台下同学直接笑成一片。
+862. 轮到我们组汇报切投影线，拔掉转接头的瞬间电脑主屏幕突然弹了出来。还好没有私人聊天窗口曝光，但整个桌面铺满了最终版、打死不改版和真最终版的汇报文档，台下同学直接笑成一片。
    来源：[src/data/cc98.posts.json:978](../src/data/cc98.posts.json#L978)
-874. 保留课堂设备趣事
+863. 保留课堂设备趣事
    来源：[src/data/cc98.posts.json:981](../src/data/cc98.posts.json#L981)
-875. 帖子讨论的是无隐私细节的公共演示失误
+864. 帖子讨论的是无隐私细节的公共演示失误
    来源：[src/data/cc98.posts.json:982](../src/data/cc98.posts.json#L982)
-876. 今天 16:37
+865. 今天 16:37
    来源：[src/data/cc98.posts.json:992](../src/data/cc98.posts.json#L992)
-877. 我的桌面也全是版本5和最终版，看着混乱但其实好找。
+866. 我的桌面也全是版本5和最终版，看着混乱但其实好找。
    来源：[src/data/cc98.posts.json:995](../src/data/cc98.posts.json#L995)
-878. 今天 16:39
+867. 今天 16:39
    来源：[src/data/cc98.posts.json:1001](../src/data/cc98.posts.json#L1001)
-879. 插线前疯狂关无关窗口的手忙脚乱，经历过的人都懂。
+868. 插线前疯狂关无关窗口的手忙脚乱，经历过的人都懂。
    来源：[src/data/cc98.posts.json:1004](../src/data/cc98.posts.json#L1004)
-880. 求是路况员
+869. 求是路况员
    来源：[src/data/cc98.posts.json:1012](../src/data/cc98.posts.json#L1012)
-881. 交通出行
+870. 交通出行
    来源：[src/data/cc98.posts.json:1015](../src/data/cc98.posts.json#L1015)；[src/data/cc98.posts.json:1968](../src/data/cc98.posts.json#L1968)；[src/scenes/phone/P02_CC98/index.tsx:207](../src/scenes/phone/P02_CC98/index.tsx#L207)；[src/scenes/phone/P02_CC98/index.tsx:211](../src/scenes/phone/P02_CC98/index.tsx#L211)
-882. 考试散场求是潮周边拥堵北侧可走东侧分段堵住
+871. 考试散场求是潮周边拥堵北侧可走东侧分段堵住
    来源：[src/data/cc98.posts.json:1016](../src/data/cc98.posts.json#L1016)
-883. 26-07-10 17:42
+872. 26-07-10 17:42
    来源：[src/data/cc98.posts.json:1019](../src/data/cc98.posts.json#L1019)
-884. 刚考完十分钟大家全涌出来了。现在教学区北侧人行道能连续走，推车步行都没问题；东侧车流分了两段严重拥堵，堵在那儿动弹不得。我是刚才从东面绕出来的，大家尽量避开东边。
+873. 刚考完十分钟大家全涌出来了。现在教学区北侧人行道能连续走，推车步行都没问题；东侧车流分了两段严重拥堵，堵在那儿动弹不得。我是刚才从东面绕出来的，大家尽量避开东边。
    来源：[src/data/cc98.posts.json:1020](../src/data/cc98.posts.json#L1020)
-885. 路况互助机器人
+874. 路况互助机器人
    来源：[src/data/cc98.posts.json:1022](../src/data/cc98.posts.json#L1022)
-886. 标记为实时路况
+875. 标记为实时路况
    来源：[src/data/cc98.posts.json:1023](../src/data/cc98.posts.json#L1023)
-887. 回复区已经形成三条不同绕行路线
+876. 回复区已经形成三条不同绕行路线
    来源：[src/data/cc98.posts.json:1024](../src/data/cc98.posts.json#L1024)
-888. 前排
+877. 前排
    来源：[src/data/cc98.posts.json:1036](../src/data/cc98.posts.json#L1036)；[src/data/cc98.posts.json:1114](../src/data/cc98.posts.json#L1114)
-889. 我17:41离场，17:44还在北口，东边四排车没动，北绕多走两分钟。
+878. 我17:41离场，17:44还在北口，东边四排车没动，北绕多走两分钟。
    来源：[src/data/cc98.posts.json:1037](../src/data/cc98.posts.json#L1037)
-890. 今天 17:45
+879. 今天 17:45
    来源：[src/data/cc98.posts.json:1043](../src/data/cc98.posts.json#L1043)；[src/data/cc98.posts.json:1132](../src/data/cc98.posts.json#L1132)；[src/data/cc98.posts.json:1315](../src/data/cc98.posts.json#L1315)
-891. 北边树下还有路能过去，今天风挺大的，走起来有点冷。
+880. 北边树下还有路能过去，今天风挺大的，走起来有点冷。
    来源：[src/data/cc98.posts.json:1046](../src/data/cc98.posts.json#L1046)
-892. 今天 17:47
+881. 今天 17:47
    来源：[src/data/cc98.posts.json:1052](../src/data/cc98.posts.json#L1052)
-893. 4楼
+882. 4楼
    来源：[src/data/cc98.posts.json:1053](../src/data/cc98.posts.json#L1053)；[src/data/cc98.posts.json:1133](../src/data/cc98.posts.json#L1133)；[src/data/cc98.posts.json:1211](../src/data/cc98.posts.json#L1211)；[src/data/cc98.posts.json:1289](../src/data/cc98.posts.json#L1289)；[src/data/cc98.posts.json:1367](../src/data/cc98.posts.json#L1367)；[src/data/cc98.posts.json:1445](../src/data/cc98.posts.json#L1445)；[src/data/cc98.posts.json:1523](../src/data/cc98.posts.json#L1523)；[src/data/cc98.posts.json:1601](../src/data/cc98.posts.json#L1601)；[src/data/cc98.posts.json:1679](../src/data/cc98.posts.json#L1679)；[src/data/cc98.posts.json:1757](../src/data/cc98.posts.json#L1757)；[src/data/cc98.posts.json:1835](../src/data/cc98.posts.json#L1835)；[src/data/cc98.posts.json:1895](../src/data/cc98.posts.json#L1895)；[src/data/cc98.posts.json:1955](../src/data/cc98.posts.json#L1955)；[src/data/cc98.posts.json:2006](../src/data/cc98.posts.json#L2006)；[src/data/cc98.posts.json:2066](../src/data/cc98.posts.json#L2066)；[src/data/cc98.posts.json:2117](../src/data/cc98.posts.json#L2117)；[src/data/cc98.posts.json:2168](../src/data/cc98.posts.json#L2168)；[src/data/cc98.posts.json:2219](../src/data/cc98.posts.json#L2219)；[src/data/cc98.posts.json:2270](../src/data/cc98.posts.json#L2270)；[src/data/cc98.posts.json:2330](../src/data/cc98.posts.json#L2330)；[src/data/cc98.posts.json:2381](../src/data/cc98.posts.json#L2381)；[src/data/cc98.posts.json:2432](../src/data/cc98.posts.json#L2432)；[src/data/cc98.posts.json:2483](../src/data/cc98.posts.json#L2483)；[src/data/cc98.posts.json:2534](../src/data/cc98.posts.json#L2534)；[src/data/cc98.posts.json:2585](../src/data/cc98.posts.json#L2585)；[src/data/cc98.posts.json:2636](../src/data/cc98.posts.json#L2636)；[src/data/cc98.posts.json:2687](../src/data/cc98.posts.json#L2687)；[src/data/cc98.posts.json:2738](../src/data/cc98.posts.json#L2738)；[src/scenes/phone/P02_CC98/index.tsx:150](../src/scenes/phone/P02_CC98/index.tsx#L150)
-894. 路况
+883. 路况
    来源：[src/data/cc98.posts.json:1054](../src/data/cc98.posts.json#L1054)；[src/data/cc98.posts.json:1377](../src/data/cc98.posts.json#L1377)
-895. 二南门口共享单车横着停了一排，往北口左侧走更容易过。
+884. 二南门口共享单车横着停了一排，往北口左侧走更容易过。
    来源：[src/data/cc98.posts.json:1055](../src/data/cc98.posts.json#L1055)
-896. 5楼
+885. 5楼
    来源：[src/data/cc98.posts.json:1062](../src/data/cc98.posts.json#L1062)；[src/data/cc98.posts.json:1142](../src/data/cc98.posts.json#L1142)；[src/data/cc98.posts.json:1220](../src/data/cc98.posts.json#L1220)；[src/data/cc98.posts.json:1298](../src/data/cc98.posts.json#L1298)；[src/data/cc98.posts.json:1376](../src/data/cc98.posts.json#L1376)；[src/data/cc98.posts.json:1454](../src/data/cc98.posts.json#L1454)；[src/data/cc98.posts.json:1532](../src/data/cc98.posts.json#L1532)；[src/data/cc98.posts.json:1610](../src/data/cc98.posts.json#L1610)；[src/data/cc98.posts.json:1688](../src/data/cc98.posts.json#L1688)；[src/data/cc98.posts.json:1766](../src/data/cc98.posts.json#L1766)；[src/data/cc98.posts.json:1844](../src/data/cc98.posts.json#L1844)；[src/data/cc98.posts.json:1904](../src/data/cc98.posts.json#L1904)；[src/data/cc98.posts.json:2015](../src/data/cc98.posts.json#L2015)；[src/data/cc98.posts.json:2279](../src/data/cc98.posts.json#L2279)；[src/scenes/phone/P02_CC98/index.tsx:161](../src/scenes/phone/P02_CC98/index.tsx#L161)
-897. 实况
+886. 实况
    来源：[src/data/cc98.posts.json:1063](../src/data/cc98.posts.json#L1063)
-898. 刚骑车试了，北侧绿道连过两个路口，东边第一个路口就堵死。
+887. 刚骑车试了，北侧绿道连过两个路口，东边第一个路口就堵死。
    来源：[src/data/cc98.posts.json:1064](../src/data/cc98.posts.json#L1064)
-899. 6楼
+888. 6楼
    来源：[src/data/cc98.posts.json:1071](../src/data/cc98.posts.json#L1071)；[src/data/cc98.posts.json:1151](../src/data/cc98.posts.json#L1151)；[src/data/cc98.posts.json:1229](../src/data/cc98.posts.json#L1229)；[src/data/cc98.posts.json:1307](../src/data/cc98.posts.json#L1307)；[src/data/cc98.posts.json:1385](../src/data/cc98.posts.json#L1385)；[src/data/cc98.posts.json:1463](../src/data/cc98.posts.json#L1463)；[src/data/cc98.posts.json:1541](../src/data/cc98.posts.json#L1541)；[src/data/cc98.posts.json:1619](../src/data/cc98.posts.json#L1619)；[src/data/cc98.posts.json:1697](../src/data/cc98.posts.json#L1697)；[src/data/cc98.posts.json:1775](../src/data/cc98.posts.json#L1775)
-900. 预算
+889. 预算
    来源：[src/data/cc98.posts.json:1072](../src/data/cc98.posts.json#L1072)
-901. 账户里没钱扫别的新车了，推着自己小破车走北侧倒挺顺。
+890. 账户里没钱扫别的新车了，推着自己小破车走北侧倒挺顺。
    来源：[src/data/cc98.posts.json:1073](../src/data/cc98.posts.json#L1073)
-902. 今天 17:54
+891. 今天 17:54
    来源：[src/data/cc98.posts.json:1079](../src/data/cc98.posts.json#L1079)
-903. 7楼
+892. 7楼
    来源：[src/data/cc98.posts.json:1080](../src/data/cc98.posts.json#L1080)；[src/data/cc98.posts.json:1160](../src/data/cc98.posts.json#L1160)；[src/data/cc98.posts.json:1238](../src/data/cc98.posts.json#L1238)；[src/data/cc98.posts.json:1316](../src/data/cc98.posts.json#L1316)；[src/data/cc98.posts.json:1394](../src/data/cc98.posts.json#L1394)；[src/data/cc98.posts.json:1472](../src/data/cc98.posts.json#L1472)；[src/data/cc98.posts.json:1550](../src/data/cc98.posts.json#L1550)；[src/data/cc98.posts.json:1628](../src/data/cc98.posts.json#L1628)；[src/data/cc98.posts.json:1706](../src/data/cc98.posts.json#L1706)；[src/data/cc98.posts.json:1784](../src/data/cc98.posts.json#L1784)
-904. 报数
+893. 报数
    来源：[src/data/cc98.posts.json:1081](../src/data/cc98.posts.json#L1081)
-905. 确实北边顺畅东边堵死，大家散场路过挑好走的方向就行。
+894. 确实北边顺畅东边堵死，大家散场路过挑好走的方向就行。
    来源：[src/data/cc98.posts.json:1082](../src/data/cc98.posts.json#L1082)
-906. 二南守座人
+895. 二南守座人
    来源：[src/data/cc98.posts.json:1090](../src/data/cc98.posts.json#L1090)
-907. 图书馆
-   来源：[src/data/cc98.posts.json:1093](../src/data/cc98.posts.json#L1093)；[src/data/cc98.posts.json:2130](../src/data/cc98.posts.json#L2130)；[src/scenes/phone/P02_CC98/index.tsx:214](../src/scenes/phone/P02_CC98/index.tsx#L214)；[src/scenes/phone/P13_PhoneHome/index.tsx:779](../src/scenes/phone/P13_PhoneHome/index.tsx#L779)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:79](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L79)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:99](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L99)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:125](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L125)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:486](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L486)
-908. 一层书库临时接水超三分钟座位被释放换号了
+896. 图书馆
+   来源：[src/data/cc98.posts.json:1093](../src/data/cc98.posts.json#L1093)；[src/data/cc98.posts.json:2130](../src/data/cc98.posts.json#L2130)；[src/scenes/phone/P02_CC98/index.tsx:214](../src/scenes/phone/P02_CC98/index.tsx#L214)；[src/scenes/phone/P13_PhoneHome/index.tsx:777](../src/scenes/phone/P13_PhoneHome/index.tsx#L777)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:79](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L79)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:99](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L99)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:125](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L125)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:486](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L486)
+897. 一层书库临时接水超三分钟座位被释放换号了
    来源：[src/data/cc98.posts.json:1094](../src/data/cc98.posts.json#L1094)
-909. 26-07-10 17:39
+898. 26-07-10 17:39
    来源：[src/data/cc98.posts.json:1097](../src/data/cc98.posts.json#L1097)
-910. 一层书库离座超过三分钟座位就会重新开放。必须先去完成校园卡核验，之后才可以在选座页申请恢复一次，有事的同学千万算好离座时间。
+899. 一层书库离座超过三分钟座位就会重新开放。必须先去完成校园卡核验，之后才可以在选座页申请恢复一次，有事的同学千万算好离座时间。
    来源：[src/data/cc98.posts.json:1098](../src/data/cc98.posts.json#L1098)
-911. 馆内秩序值班台
+900. 馆内秩序值班台
    来源：[src/data/cc98.posts.json:1100](../src/data/cc98.posts.json#L1100)
-912. 补充规则入口
+901. 补充规则入口
    来源：[src/data/cc98.posts.json:1101](../src/data/cc98.posts.json#L1101)
-913. 原帖只有结果，没有说明恢复材料
+902. 原帖只有结果，没有说明恢复材料
    来源：[src/data/cc98.posts.json:1102](../src/data/cc98.posts.json#L1102)
-914. 今天 17:41
+903. 今天 17:41
    来源：[src/data/cc98.posts.json:1112](../src/data/cc98.posts.json#L1112)；[src/data/cc98.posts.json:1210](../src/data/cc98.posts.json#L1210)
-915. 我17:40去接水，17:43回原座发现已经换编号了，真快。
+904. 我17:40去接水，17:43回原座发现已经换编号了，真快。
    来源：[src/data/cc98.posts.json:1115](../src/data/cc98.posts.json#L1115)
-916. 今天 17:43
+905. 今天 17:43
    来源：[src/data/cc98.posts.json:1121](../src/data/cc98.posts.json#L1121)
-917. 带图
+906. 带图
    来源：[src/data/cc98.posts.json:1123](../src/data/cc98.posts.json#L1123)
-918. 先帮顶。人还没坐回去，这条帖先别被新消息刷掉。
+907. 先帮顶。人还没坐回去，这条帖先别被新消息刷掉。
    来源：[src/data/cc98.posts.json:1124](../src/data/cc98.posts.json#L1124)
-919. bd
+908. bd
    来源：[src/data/cc98.posts.json:1126](../src/data/cc98.posts.json#L1126)；[src/scenes/phone/P02_CC98/ThreadPage.tsx:57](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L57)
-920. 旁边022桌连书包三天都没动过了，怎么就没人管管。
+909. 旁边022桌连书包三天都没动过了，怎么就没人管管。
    来源：[src/data/cc98.posts.json:1135](../src/data/cc98.posts.json#L1135)
-921. 今天 17:48
+910. 今天 17:48
    来源：[src/data/cc98.posts.json:1141](../src/data/cc98.posts.json#L1141)
-922. 我接水用了2分59秒，回门口刚好三分钟，结果座位已经换号了。
+911. 我接水用了2分59秒，回门口刚好三分钟，结果座位已经换号了。
    来源：[src/data/cc98.posts.json:1144](../src/data/cc98.posts.json#L1144)
-923. 今天 17:50
+912. 今天 17:50
    来源：[src/data/cc98.posts.json:1150](../src/data/cc98.posts.json#L1150)
-924. 资产
+913. 资产
    来源：[src/data/cc98.posts.json:1152](../src/data/cc98.posts.json#L1152)
-925. 卡里余额就剩0.06元也能过核验，但恢复申请还得填材料。
+914. 卡里余额就剩0.06元也能过核验，但恢复申请还得填材料。
    来源：[src/data/cc98.posts.json:1153](../src/data/cc98.posts.json#L1153)
-926. 理论
+915. 理论
    来源：[src/data/cc98.posts.json:1161](../src/data/cc98.posts.json#L1161)
-927. 离座时长和刷卡核验记录都连着系统，提交恢复确实得看这俩。
+916. 离座时长和刷卡核验记录都连着系统，提交恢复确实得看这俩。
    来源：[src/data/cc98.posts.json:1162](../src/data/cc98.posts.json#L1162)
-928. 资料索引机
+917. 资料索引机
    来源：[src/data/cc98.posts.json:1170](../src/data/cc98.posts.json#L1170)
-929. 学习天地
+918. 学习天地
    来源：[src/data/cc98.posts.json:1173](../src/data/cc98.posts.json#L1173)；[src/data/cc98.posts.json:1719](../src/data/cc98.posts.json#L1719)；[src/data/cc98.posts.json:2028](../src/data/cc98.posts.json#L2028)；[src/scenes/phone/P02_CC98/index.tsx:207](../src/scenes/phone/P02_CC98/index.tsx#L207)；[src/scenes/phone/P02_CC98/index.tsx:212](../src/scenes/phone/P02_CC98/index.tsx#L212)
-930. 把大家常找的复习资料做了目录，欢迎顺手补充缺页
+919. 把大家常找的复习资料做了目录，欢迎顺手补充缺页
    来源：[src/data/cc98.posts.json:1174](../src/data/cc98.posts.json#L1174)
-931. 26-07-10 17:35
+920. 26-07-10 17:35
    来源：[src/data/cc98.posts.json:1177](../src/data/cc98.posts.json#L1177)
-932. 按课程名、任课老师和年份整理了手头的期末资料，索引只输入两个字也能搜到。有些版本缺了几页，大家手头有完整版的可以回帖说一声，我抽空补齐。
+921. 按课程名、任课老师和年份整理了手头的期末资料，索引只输入两个字也能搜到。有些版本缺了几页，大家手头有完整版的可以回帖说一声，我抽空补齐。
    来源：[src/data/cc98.posts.json:1178](../src/data/cc98.posts.json#L1178)
-933. 资料版值班员
+922. 资料版值班员
    来源：[src/data/cc98.posts.json:1180](../src/data/cc98.posts.json#L1180)；[src/data/cc98.posts.json:2035](../src/data/cc98.posts.json#L2035)
-934. 加入版面索引
+923. 加入版面索引
    来源：[src/data/cc98.posts.json:1181](../src/data/cc98.posts.json#L1181)
-935. 目录结构和版本信息均可核对
+924. 目录结构和版本信息均可核对
    来源：[src/data/cc98.posts.json:1182](../src/data/cc98.posts.json#L1182)
-936. 今天 17:37
+925. 今天 17:37
    来源：[src/data/cc98.posts.json:1192](../src/data/cc98.posts.json#L1192)；[src/data/cc98.posts.json:1288](../src/data/cc98.posts.json#L1288)
-937. 求助
+926. 求助
    来源：[src/data/cc98.posts.json:1194](../src/data/cc98.posts.json#L1194)
-938. 手里有一份叫最终版5的文件，到底几点前交啊，命名真让人头大。
+927. 手里有一份叫最终版5的文件，到底几点前交啊，命名真让人头大。
    来源：[src/data/cc98.posts.json:1195](../src/data/cc98.posts.json#L1195)
-939. 老师强调过不考的那些我全单独放了，虽然考前还是忍不住去翻。
+928. 老师强调过不考的那些我全单独放了，虽然考前还是忍不住去翻。
    来源：[src/data/cc98.posts.json:1204](../src/data/cc98.posts.json#L1204)
-940. 保留
+929. 保留
    来源：[src/data/cc98.posts.json:1212](../src/data/cc98.posts.json#L1212)
-941. 高数目录里还留着图书馆规则，查022座位的资料也还得再看看。
+930. 高数目录里还留着图书馆规则，查022座位的资料也还得再看看。
    来源：[src/data/cc98.posts.json:1213](../src/data/cc98.posts.json#L1213)
-942. 反向实测
+931. 反向实测
    来源：[src/data/cc98.posts.json:1221](../src/data/cc98.posts.json#L1221)
-943. 用全称居然搜出来三条选课通知，资料目录要是能更显眼就好了。
+932. 用全称居然搜出来三条选课通知，资料目录要是能更显眼就好了。
    来源：[src/data/cc98.posts.json:1222](../src/data/cc98.posts.json#L1222)
-944. 下载
+933. 下载
    来源：[src/data/cc98.posts.json:1230](../src/data/cc98.posts.json#L1230)；[src/data/cc98.posts.json:2067](../src/data/cc98.posts.json#L2067)
-945. 刚下到百分之九十九卡住断开，重下一遍又要白扣好多流量。
+934. 刚下到百分之九十九卡住断开，重下一遍又要白扣好多流量。
    来源：[src/data/cc98.posts.json:1231](../src/data/cc98.posts.json#L1231)
-946. 蹲蹲
+935. 蹲蹲
    来源：[src/data/cc98.posts.json:1239](../src/data/cc98.posts.json#L1239)
-947. 标一下整理日期、来源和页数吧，省得大家总是不小心下错旧版本。
+936. 标一下整理日期、来源和页数吧，省得大家总是不小心下错旧版本。
    来源：[src/data/cc98.posts.json:1240](../src/data/cc98.posts.json#L1240)
-948. 六分钱余额
+937. 六分钱余额
    来源：[src/data/cc98.posts.json:1248](../src/data/cc98.posts.json#L1248)
-949. 校园卡
-   来源：[src/data/cc98.posts.json:1251](../src/data/cc98.posts.json#L1251)；[src/data/cc98.posts.json:2181](../src/data/cc98.posts.json#L2181)；[src/data/cc98.posts.json:2496](../src/data/cc98.posts.json#L2496)；[src/scenes/phone/P02_CC98/index.tsx:218](../src/scenes/phone/P02_CC98/index.tsx#L218)；[src/scenes/rpg/RpgGameHost.tsx:2793](../src/scenes/rpg/RpgGameHost.tsx#L2793)
-950. 校园卡只剩几分钱去做了身份核验，顺便说下流程体验
+938. 校园卡
+   来源：[src/data/cc98.posts.json:1251](../src/data/cc98.posts.json#L1251)；[src/data/cc98.posts.json:2181](../src/data/cc98.posts.json#L2181)；[src/data/cc98.posts.json:2496](../src/data/cc98.posts.json#L2496)；[src/scenes/phone/P02_CC98/index.tsx:218](../src/scenes/phone/P02_CC98/index.tsx#L218)；[src/scenes/rpg/RpgGameHost.tsx:2786](../src/scenes/rpg/RpgGameHost.tsx#L2786)
+939. 校园卡只剩几分钱去做了身份核验，顺便说下流程体验
    来源：[src/data/cc98.posts.json:1252](../src/data/cc98.posts.json#L1252)
-951. 26-07-10 17:31
+940. 26-07-10 17:31
    来源：[src/data/cc98.posts.json:1255](../src/data/cc98.posts.json#L1255)
-952. 卡里确实只有零点零六元，本以为通不过，结果身份核验顺利录上了。不过页面提示恢复申请的原流程还是得老老实实走完，余额和身份认证看来是分开算的。
+941. 卡里确实只有零点零六元，本以为通不过，结果身份核验顺利录上了。不过页面提示恢复申请的原流程还是得老老实实走完，余额和身份认证看来是分开算的。
    来源：[src/data/cc98.posts.json:1256](../src/data/cc98.posts.json#L1256)
-953. 校园卡民间客服
+942. 校园卡民间客服
    来源：[src/data/cc98.posts.json:1258](../src/data/cc98.posts.json#L1258)；[src/data/cc98.posts.json:2188](../src/data/cc98.posts.json#L2188)；[src/data/cc98.posts.json:2503](../src/data/cc98.posts.json#L2503)
-954. 标记为已实测
+943. 标记为已实测
    来源：[src/data/cc98.posts.json:1259](../src/data/cc98.posts.json#L1259)
-955. 楼主提供了低余额条件下的完整结果
+944. 楼主提供了低余额条件下的完整结果
    来源：[src/data/cc98.posts.json:1260](../src/data/cc98.posts.json#L1260)
-956. 今天 17:33
+945. 今天 17:33
    来源：[src/data/cc98.posts.json:1270](../src/data/cc98.posts.json#L1270)；[src/data/cc98.posts.json:1549](../src/data/cc98.posts.json#L1549)
-957. 零点零六元够核验身份却打不起一面纸，还好当时的时间戳还在。
+946. 零点零六元够核验身份却打不起一面纸，还好当时的时间戳还在。
    来源：[src/data/cc98.posts.json:1273](../src/data/cc98.posts.json#L1273)
-958. 机器报出极小余额的声音有点大，现场听着还真有一点点尴尬。
+947. 机器报出极小余额的声音有点大，现场听着还真有一点点尴尬。
    来源：[src/data/cc98.posts.json:1282](../src/data/cc98.posts.json#L1282)
-959. 进门只读卡号身份，卡里剩多少钱是后来在屏幕单独显出来的。
+948. 进门只读卡号身份，卡里剩多少钱是后来在屏幕单独显出来的。
    来源：[src/data/cc98.posts.json:1291](../src/data/cc98.posts.json#L1291)
-960. 今天 17:40
+949. 今天 17:40
    来源：[src/data/cc98.posts.json:1297](../src/data/cc98.posts.json#L1297)
-961. 成本
+950. 成本
    来源：[src/data/cc98.posts.json:1299](../src/data/cc98.posts.json#L1299)
-962. 从求是潮特意骑去充值点太折腾了，花的时间比办核验还长得多。
+951. 从求是潮特意骑去充值点太折腾了，花的时间比办核验还长得多。
    来源：[src/data/cc98.posts.json:1300](../src/data/cc98.posts.json#L1300)
-963. 本人
+952. 本人
    来源：[src/data/cc98.posts.json:1308](../src/data/cc98.posts.json#L1308)
-964. 同款零点零六元余额，反正别的现在都付不了，先这么放着吧。
+953. 同款零点零六元余额，反正别的现在都付不了，先这么放着吧。
    来源：[src/data/cc98.posts.json:1309](../src/data/cc98.posts.json#L1309)
-965. 众筹
+954. 众筹
    来源：[src/data/cc98.posts.json:1317](../src/data/cc98.posts.json#L1317)
-966. 余额少确实能验上，但那个恢复申请还是得提交完才算彻底弄好。
+955. 余额少确实能验上，但那个恢复申请还是得提交完才算彻底弄好。
    来源：[src/data/cc98.posts.json:1318](../src/data/cc98.posts.json#L1318)
-967. 体艺第47次
+956. 体艺第47次
    来源：[src/data/cc98.posts.json:1326](../src/data/cc98.posts.json#L1326)
-968. 校园生活
+957. 校园生活
    来源：[src/data/cc98.posts.json:1329](../src/data/cc98.posts.json#L1329)；[src/data/cc98.posts.json:1641](../src/data/cc98.posts.json#L1641)；[src/data/cc98.posts.json:1797](../src/data/cc98.posts.json#L1797)；[src/data/cc98.posts.json:2445](../src/data/cc98.posts.json#L2445)；[src/scenes/phone/P02_CC98/index.tsx:75](../src/scenes/phone/P02_CC98/index.tsx#L75)；[src/scenes/phone/P02_CC98/index.tsx:207](../src/scenes/phone/P02_CC98/index.tsx#L207)；[src/scenes/phone/P02_CC98/index.tsx:209](../src/scenes/phone/P02_CC98/index.tsx#L209)
-969. 看了眼体艺里的通行记录，被车堵得绕圈也能算运动步数
+958. 看了眼体艺里的通行记录，被车堵得绕圈也能算运动步数
    来源：[src/data/cc98.posts.json:1330](../src/data/cc98.posts.json#L1330)
-970. 26-07-10 17:28
+959. 26-07-10 17:28
    来源：[src/data/cc98.posts.json:1333](../src/data/cc98.posts.json#L1333)
-971. 傍晚在求是潮两侧找缝隙钻，自行车挤得水泄不通。出来一查后台居然显示了整整四十七次通行记录，纯粹是在同一堆车座之间来回挪步硬凑出来的。
+960. 傍晚在求是潮两侧找缝隙钻，自行车挤得水泄不通。出来一查后台居然显示了整整四十七次通行记录，纯粹是在同一堆车座之间来回挪步硬凑出来的。
    来源：[src/data/cc98.posts.json:1334](../src/data/cc98.posts.json#L1334)
-972. 课外锻炼观察组
+961. 课外锻炼观察组
    来源：[src/data/cc98.posts.json:1336](../src/data/cc98.posts.json#L1336)
-973. 计入特殊路线样本
+962. 计入特殊路线样本
    来源：[src/data/cc98.posts.json:1337](../src/data/cc98.posts.json#L1337)
-974. 路线确有移动，运动目的暂无法判断
+963. 路线确有移动，运动目的暂无法判断
    来源：[src/data/cc98.posts.json:1338](../src/data/cc98.posts.json#L1338)
-975. 今天 17:30
+964. 今天 17:30
    来源：[src/data/cc98.posts.json:1348](../src/data/cc98.posts.json#L1348)；[src/data/cc98.posts.json:1444](../src/data/cc98.posts.json#L1444)；[src/data/cc98.posts.json:1627](../src/data/cc98.posts.json#L1627)
-976. 分账
+965. 分账
    来源：[src/data/cc98.posts.json:1350](../src/data/cc98.posts.json#L1350)
-977. 十七点二十八到四十二分，绕着同一辆车挪了四十七次也是服了。
+966. 十七点二十八到四十二分，绕着同一辆车挪了四十七次也是服了。
    来源：[src/data/cc98.posts.json:1351](../src/data/cc98.posts.json#L1351)
-978. 今天 17:32
+967. 今天 17:32
    来源：[src/data/cc98.posts.json:1357](../src/data/cc98.posts.json#L1357)；[src/data/cc98.posts.json:1453](../src/data/cc98.posts.json#L1453)
-979. 逆风
+968. 逆风
    来源：[src/data/cc98.posts.json:1359](../src/data/cc98.posts.json#L1359)
-980. 北口风吹得人三步一停走极慢，体艺居然还把这趟记成了通行。
+969. 北口风吹得人三步一停走极慢，体艺居然还把这趟记成了通行。
    来源：[src/data/cc98.posts.json:1360](../src/data/cc98.posts.json#L1360)
-981. 命名
+970. 命名
    来源：[src/data/cc98.posts.json:1368](../src/data/cc98.posts.json#L1368)
-982. 二南门口那辆车横在最外边，旁边还别着一辆，根本就推不过去。
+971. 二南门口那辆车横在最外边，旁边还别着一辆，根本就推不过去。
    来源：[src/data/cc98.posts.json:1369](../src/data/cc98.posts.json#L1369)
-983. 今天 17:36
+972. 今天 17:36
    来源：[src/data/cc98.posts.json:1375](../src/data/cc98.posts.json#L1375)；[src/data/cc98.posts.json:1471](../src/data/cc98.posts.json#L1471)
-984. 路口那儿回堵成一团，两分钟愣是连一个绿灯都没赶上，全在掉头。
+973. 路口那儿回堵成一团，两分钟愣是连一个绿灯都没赶上，全在掉头。
    来源：[src/data/cc98.posts.json:1378](../src/data/cc98.posts.json#L1378)
-985. 收益
+974. 收益
    来源：[src/data/cc98.posts.json:1386](../src/data/cc98.posts.json#L1386)
-986. 虽然体艺步数是一直在进账，但我人可还没走到终点呢。
+975. 虽然体艺步数是一直在进账，但我人可还没走到终点呢。
    来源：[src/data/cc98.posts.json:1387](../src/data/cc98.posts.json#L1387)
-987. 凑整
+976. 凑整
    来源：[src/data/cc98.posts.json:1395](../src/data/cc98.posts.json#L1395)
-988. 折返走也是有效位移嘛，虽然目的地没到，好歹数据挺好看的。
+977. 折返走也是有效位移嘛，虽然目的地没到，好歹数据挺好看的。
    来源：[src/data/cc98.posts.json:1396](../src/data/cc98.posts.json#L1396)
-989. 西区打印排队中
+978. 西区打印排队中
    来源：[src/data/cc98.posts.json:1404](../src/data/cc98.posts.json#L1404)
-990. 打印服务
+979. 打印服务
    来源：[src/data/cc98.posts.json:1407](../src/data/cc98.posts.json#L1407)；[src/data/cc98.posts.json:2079](../src/data/cc98.posts.json#L2079)；[src/scenes/phone/P02_CC98/index.tsx:217](../src/scenes/phone/P02_CC98/index.tsx#L217)
-991. 早课前西区打印店情况，前面有几个人以及机器状态
+980. 早课前西区打印店情况，前面有几个人以及机器状态
    来源：[src/data/cc98.posts.json:1408](../src/data/cc98.posts.json#L1408)
-992. 八点十分赶到西区打印店，前头排了六个人。左边双面黑白机先空出来了，彩打那台当时正好在换纸。赶时间交平时作业的同学可以留意一下机位轮换。
+981. 八点十分赶到西区打印店，前头排了六个人。左边双面黑白机先空出来了，彩打那台当时正好在换纸。赶时间交平时作业的同学可以留意一下机位轮换。
    来源：[src/data/cc98.posts.json:1412](../src/data/cc98.posts.json#L1412)
-993. 打印店排队记录员
+982. 打印店排队记录员
    来源：[src/data/cc98.posts.json:1414](../src/data/cc98.posts.json#L1414)；[src/data/cc98.posts.json:2086](../src/data/cc98.posts.json#L2086)
-994. 补充机器状态
+983. 补充机器状态
    来源：[src/data/cc98.posts.json:1415](../src/data/cc98.posts.json#L1415)
-995. 楼主记录了到店时间和两台机器的使用情况
+984. 楼主记录了到店时间和两台机器的使用情况
    来源：[src/data/cc98.posts.json:1416](../src/data/cc98.posts.json#L1416)
-996. 八点十三在左侧机器打完十八页，双面走纸很顺，没卡壳直接出了。
+985. 八点十三在左侧机器打完十八页，双面走纸很顺，没卡壳直接出了。
    来源：[src/data/cc98.posts.json:1429](../src/data/cc98.posts.json#L1429)
-997. 今天取件架摆在进门右手边，拿完纸顺手往旁边让让，别堵在口上。
+986. 今天取件架摆在进门右手边，拿完纸顺手往旁边让让，别堵在口上。
    来源：[src/data/cc98.posts.json:1438](../src/data/cc98.posts.json#L1438)
-998. 细节
+987. 细节
    来源：[src/data/cc98.posts.json:1446](../src/data/cc98.posts.json#L1446)
-999. 装订机旁那台要先在屏上挑纸型，直接塞纸进去会被吐出来。
+988. 装订机旁那台要先在屏上挑纸型，直接塞纸进去会被吐出来。
    来源：[src/data/cc98.posts.json:1447](../src/data/cc98.posts.json#L1447)
-1000. 从西区食堂后门抄近道跑过去，八点二十队伍还没漫到台阶下面。
+989. 从西区食堂后门抄近道跑过去，八点二十队伍还没漫到台阶下面。
    来源：[src/data/cc98.posts.json:1456](../src/data/cc98.posts.json#L1456)
-1001. 付款
+990. 付款
    来源：[src/data/cc98.posts.json:1464](../src/data/cc98.posts.json#L1464)
-1002. 上次卡里钱不够切成手机付，机器倒是把排队的份数给稳稳留住了。
+991. 上次卡里钱不够切成手机付，机器倒是把排队的份数给稳稳留住了。
    来源：[src/data/cc98.posts.json:1465](../src/data/cc98.posts.json#L1465)
-1003. 找自己文件翻半天，对照时间和纸张类型找起来确实容易很多。
+992. 找自己文件翻半天，对照时间和纸张类型找起来确实容易很多。
    来源：[src/data/cc98.posts.json:1474](../src/data/cc98.posts.json#L1474)
-1004. 闭馆后找座位
+993. 闭馆后找座位
    来源：[src/data/cc98.posts.json:1482](../src/data/cc98.posts.json#L1482)
-1005. 自习室
+994. 自习室
    来源：[src/data/cc98.posts.json:1485](../src/data/cc98.posts.json#L1485)；[src/data/cc98.posts.json:2547](../src/data/cc98.posts.json#L2547)；[src/scenes/phone/P02_CC98/index.tsx:215](../src/scenes/phone/P02_CC98/index.tsx#L215)
-1006. 昨晚从基图出来避雨去麦斯威坐了会儿，顺便看了看座位
+995. 昨晚从基图出来避雨去麦斯威坐了会儿，顺便看了看座位
    来源：[src/data/cc98.posts.json:1486](../src/data/cc98.posts.json#L1486)
-1007. 26-07-10 17:21
+996. 26-07-10 17:21
    来源：[src/data/cc98.posts.json:1489](../src/data/cc98.posts.json#L1489)
-1008. 昨晚十九点三十五从基础图书馆二楼出来，赶上大雨就钻进麦斯威窗边待到二十点十分。店里插座大多在桌脚附近，要是带笔记本电脑自习，线稍微长一点会方便不少。
+997. 昨晚十九点三十五从基础图书馆二楼出来，赶上大雨就钻进麦斯威窗边待到二十点十分。店里插座大多在桌脚附近，要是带笔记本电脑自习，线稍微长一点会方便不少。
    来源：[src/data/cc98.posts.json:1490](../src/data/cc98.posts.json#L1490)
-1009. 夜间自习信息台
+998. 夜间自习信息台
    来源：[src/data/cc98.posts.json:1492](../src/data/cc98.posts.json#L1492)；[src/data/cc98.posts.json:2554](../src/data/cc98.posts.json#L2554)
-1010. 加入自习地点索引
+999. 加入自习地点索引
    来源：[src/data/cc98.posts.json:1493](../src/data/cc98.posts.json#L1493)
-1011. 帖子提供了闭馆后的实际座位和插座位置
+1000. 帖子提供了闭馆后的实际座位和插座位置
    来源：[src/data/cc98.posts.json:1494](../src/data/cc98.posts.json#L1494)
-1012. 麦斯威二楼十九点五十那会儿还有空桌，靠窗位置灯光确实更亮。
+1001. 麦斯威二楼十九点五十那会儿还有空桌，靠窗位置灯光确实更亮。
    来源：[src/data/cc98.posts.json:1507](../src/data/cc98.posts.json#L1507)
-1013. 雨天
+1002. 雨天
    来源：[src/data/cc98.posts.json:1515](../src/data/cc98.posts.json#L1515)
-1014. 昨晚那阵雨太突然了，门口垫子吸饱了水，踩上去伞上的水直淌。
+1003. 昨晚那阵雨太突然了，门口垫子吸饱了水，踩上去伞上的水直淌。
    来源：[src/data/cc98.posts.json:1516](../src/data/cc98.posts.json#L1516)
-1015. 今天 17:27
+1004. 今天 17:27
    来源：[src/data/cc98.posts.json:1522](../src/data/cc98.posts.json#L1522)；[src/data/cc98.posts.json:1705](../src/data/cc98.posts.json#L1705)
-1016. 插座
+1005. 插座
    来源：[src/data/cc98.posts.json:1524](../src/data/cc98.posts.json#L1524)
-1017. 靠墙第三张桌那个插座有点松，我后来挪到了柱子旁边那一排。
+1006. 靠墙第三张桌那个插座有点松，我后来挪到了柱子旁边那一排。
    来源：[src/data/cc98.posts.json:1525](../src/data/cc98.posts.json#L1525)
-1018. 今天 17:29
+1007. 今天 17:29
    来源：[src/data/cc98.posts.json:1531](../src/data/cc98.posts.json#L1531)
-1019. 到店
+1008. 到店
    来源：[src/data/cc98.posts.json:1533](../src/data/cc98.posts.json#L1533)
-1020. 二十点零五从东门拐进去，旁边有人在开语音会，不算特别安静。
+1009. 二十点零五从东门拐进去，旁边有人在开语音会，不算特别安静。
    来源：[src/data/cc98.posts.json:1534](../src/data/cc98.posts.json#L1534)
-1021. 消费
+1010. 消费
    来源：[src/data/cc98.posts.json:1542](../src/data/cc98.posts.json#L1542)
-1022. 想接热水可以去麦斯威一楼吧台旁，记得自己带个杯子。
+1011. 想接热水可以去麦斯威一楼吧台旁，记得自己带个杯子。
    来源：[src/data/cc98.posts.json:1543](../src/data/cc98.posts.json#L1543)
-1023. 收东西容易落充电头，临走多低头往桌脚看两眼还是挺有必要的。
+1012. 收东西容易落充电头，临走多低头往桌脚看两眼还是挺有必要的。
    来源：[src/data/cc98.posts.json:1552](../src/data/cc98.posts.json#L1552)
-1024. 三楼最后一勺
+1013. 三楼最后一勺
    来源：[src/data/cc98.posts.json:1560](../src/data/cc98.posts.json#L1560)
-1025. 食堂
+1014. 食堂
    来源：[src/data/cc98.posts.json:1563](../src/data/cc98.posts.json#L1563)；[src/data/cc98.posts.json:1857](../src/data/cc98.posts.json#L1857)；[src/data/cc98.posts.json:2700](../src/data/cc98.posts.json#L2700)；[src/scenes/phone/P02_CC98/index.tsx:216](../src/scenes/phone/P02_CC98/index.tsx#L216)
-1026. 昨晚去东二三楼吃炒饭去晚了，大家平时大概几点去买
+1015. 昨晚去东二三楼吃炒饭去晚了，大家平时大概几点去买
    来源：[src/data/cc98.posts.json:1564](../src/data/cc98.posts.json#L1564)
-1027. 26-07-10 17:18
+1016. 26-07-10 17:18
    来源：[src/data/cc98.posts.json:1567](../src/data/cc98.posts.json#L1567)
-1028. 昨天十八点五十去窗口还能点，但到了十九点零五那次看配菜基本收拢了，当时只剩纯蛋炒饭。盛饭师傅手脚挺麻利，打包盒就在窗口右边自己拿就行。
+1017. 昨天十八点五十去窗口还能点，但到了十九点零五那次看配菜基本收拢了，当时只剩纯蛋炒饭。盛饭师傅手脚挺麻利，打包盒就在窗口右边自己拿就行。
    来源：[src/data/cc98.posts.json:1568](../src/data/cc98.posts.json#L1568)
-1029. 东二饭点记录
+1018. 东二饭点记录
    来源：[src/data/cc98.posts.json:1570](../src/data/cc98.posts.json#L1570)；[src/data/cc98.posts.json:1864](../src/data/cc98.posts.json#L1864)；[src/data/cc98.posts.json:2707](../src/data/cc98.posts.json#L2707)
-1030. 补充窗口时间
+1019. 补充窗口时间
    来源：[src/data/cc98.posts.json:1571](../src/data/cc98.posts.json#L1571)
-1031. 楼主给出了到店时间和当天剩余餐品
+1020. 楼主给出了到店时间和当天剩余餐品
    来源：[src/data/cc98.posts.json:1572](../src/data/cc98.posts.json#L1572)
-1032. 今天 17:20
+1021. 今天 17:20
    来源：[src/data/cc98.posts.json:1582](../src/data/cc98.posts.json#L1582)；[src/data/cc98.posts.json:1765](../src/data/cc98.posts.json#L1765)
-1033. 饭点
+1022. 饭点
    来源：[src/data/cc98.posts.json:1584](../src/data/cc98.posts.json#L1584)
-1034. 十八点四十买到了青菜炒饭，勺子是在取餐区右边柜子上拿的。
+1023. 十八点四十买到了青菜炒饭，勺子是在取餐区右边柜子上拿的。
    来源：[src/data/cc98.posts.json:1585](../src/data/cc98.posts.json#L1585)
-1035. 今天 17:22
+1024. 今天 17:22
    来源：[src/data/cc98.posts.json:1591](../src/data/cc98.posts.json#L1591)；[src/data/cc98.posts.json:1774](../src/data/cc98.posts.json#L1774)
-1036. 排队
+1025. 排队
    来源：[src/data/cc98.posts.json:1593](../src/data/cc98.posts.json#L1593)；[src/data/cc98.posts.json:1896](../src/data/cc98.posts.json#L1896)；[src/data/cc98.posts.json:2100](../src/data/cc98.posts.json#L2100)
-1037. 下雨天走东二南门的人挺多，那天也是18:45之后队伍才拐到柱子后。
+1026. 下雨天走东二南门的人挺多，那天也是18:45之后队伍才拐到柱子后。
    来源：[src/data/cc98.posts.json:1594](../src/data/cc98.posts.json#L1594)
-1038. 今天 17:24
+1027. 今天 17:24
    来源：[src/data/cc98.posts.json:1600](../src/data/cc98.posts.json#L1600)；[src/data/cc98.posts.json:1783](../src/data/cc98.posts.json#L1783)
-1039. 座位
+1028. 座位
    来源：[src/data/cc98.posts.json:1602](../src/data/cc98.posts.json#L1602)；[src/data/itemCatalog.ts:32](../src/data/itemCatalog.ts#L32)；[src/scenes/phone/P15_Zjuding/index.tsx:1840](../src/scenes/phone/P15_Zjuding/index.tsx#L1840)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:129](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L129)
-1040. 三楼靠窗那两排总是最先坐满，端着盘子在过道找座挺不容易的。
+1029. 三楼靠窗那两排总是最先坐满，端着盘子在过道找座挺不容易的。
    来源：[src/data/cc98.posts.json:1603](../src/data/cc98.posts.json#L1603)
-1041. 到达
+1030. 到达
    来源：[src/data/cc98.posts.json:1611](../src/data/cc98.posts.json#L1611)
-1042. 从东门骑车过去，十八点五十五刚锁好车就瞅见窗口在收菜盆了。
+1031. 从东门骑车过去，十八点五十五刚锁好车就瞅见窗口在收菜盆了。
    来源：[src/data/cc98.posts.json:1612](../src/data/cc98.posts.json#L1612)
-1043. 支付
+1032. 支付
    来源：[src/data/cc98.posts.json:1620](../src/data/cc98.posts.json#L1620)
-1044. 打包盒那天没收我钱，筷子在台子下层，我愣是弯腰找了三分钟。
+1033. 打包盒那天没收我钱，筷子在台子下层，我愣是弯腰找了三分钟。
    来源：[src/data/cc98.posts.json:1621](../src/data/cc98.posts.json#L1621)
-1045. 窗口开多久主要看当天备菜量，我个人一般是18:40到店。
+1034. 窗口开多久主要看当天备菜量，我个人一般是18:40到店。
    来源：[src/data/cc98.posts.json:1630](../src/data/cc98.posts.json#L1630)
-1046. 雨天伞套管理员
+1035. 雨天伞套管理员
    来源：[src/data/cc98.posts.json:1638](../src/data/cc98.posts.json#L1638)
-1047. 今天雨挺大进东教学楼找伞套，发现位置挪到门卫桌旁边了
+1036. 今天雨挺大进东教学楼找伞套，发现位置挪到门卫桌旁边了
    来源：[src/data/cc98.posts.json:1642](../src/data/cc98.posts.json#L1642)
-1048. 26-07-10 17:15
+1037. 26-07-10 17:15
    来源：[src/data/cc98.posts.json:1645](../src/data/cc98.posts.json#L1645)
-1049. 今天十六点二十进门找了一圈，原来放在门左手边的伞套机给挪到了门卫值班桌边上。机器旁边放了个小塑料篮，里头还有备用伞套，下雨天进楼的同学顺路直接抽就行。
+1038. 今天十六点二十进门找了一圈，原来放在门左手边的伞套机给挪到了门卫值班桌边上。机器旁边放了个小塑料篮，里头还有备用伞套，下雨天进楼的同学顺路直接抽就行。
    来源：[src/data/cc98.posts.json:1646](../src/data/cc98.posts.json#L1646)
-1050. 雨天通行提醒
+1039. 雨天通行提醒
    来源：[src/data/cc98.posts.json:1648](../src/data/cc98.posts.json#L1648)
-1051. 补充入口位置
+1040. 补充入口位置
    来源：[src/data/cc98.posts.json:1649](../src/data/cc98.posts.json#L1649)
-1052. 伞套机和备用伞套的位置都已说明
+1041. 伞套机和备用伞套的位置都已说明
    来源：[src/data/cc98.posts.json:1650](../src/data/cc98.posts.json#L1650)
-1053. 十六点二十五路过看小篮里还剩半筐，把伞尖朝下塞进去挺顺手。
+1042. 十六点二十五路过看小篮里还剩半筐，把伞尖朝下塞进去挺顺手。
    来源：[src/data/cc98.posts.json:1663](../src/data/cc98.posts.json#L1663)
-1054. 今天 17:19
+1043. 今天 17:19
    来源：[src/data/cc98.posts.json:1669](../src/data/cc98.posts.json#L1669)
-1055. 天气
-   来源：[src/data/cc98.posts.json:1671](../src/data/cc98.posts.json#L1671)；[src/scenes/phone/P07_Weather/index.tsx:98](../src/scenes/phone/P07_Weather/index.tsx#L98)；[src/scenes/phone/P08_Settings/index.tsx:53](../src/scenes/phone/P08_Settings/index.tsx#L53)；[src/scenes/phone/P13_PhoneHome/index.tsx:856](../src/scenes/phone/P13_PhoneHome/index.tsx#L856)；[src/scenes/phone/P13_PhoneHome/index.tsx:862](../src/scenes/phone/P13_PhoneHome/index.tsx#L862)
-1056. 门槛上带进来不少泥水，地垫踩起来湿漉漉的，走路真得慢一点。
+1044. 天气
+   来源：[src/data/cc98.posts.json:1671](../src/data/cc98.posts.json#L1671)；[src/scenes/phone/P07_Weather/index.tsx:98](../src/scenes/phone/P07_Weather/index.tsx#L98)；[src/scenes/phone/P08_Settings/index.tsx:53](../src/scenes/phone/P08_Settings/index.tsx#L53)；[src/scenes/phone/P13_PhoneHome/index.tsx:854](../src/scenes/phone/P13_PhoneHome/index.tsx#L854)；[src/scenes/phone/P13_PhoneHome/index.tsx:860](../src/scenes/phone/P13_PhoneHome/index.tsx#L860)
+1045. 门槛上带进来不少泥水，地垫踩起来湿漉漉的，走路真得慢一点。
    来源：[src/data/cc98.posts.json:1672](../src/data/cc98.posts.json#L1672)
-1057. 摆放
+1046. 摆放
    来源：[src/data/cc98.posts.json:1680](../src/data/cc98.posts.json#L1680)
-1058. 伞架最右边那格当时还空着，长柄伞竖着放好别斜搭在别人伞上。
+1047. 伞架最右边那格当时还空着，长柄伞竖着放好别斜搭在别人伞上。
    来源：[src/data/cc98.posts.json:1681](../src/data/cc98.posts.json#L1681)
-1059. 通行
+1048. 通行
    来源：[src/data/cc98.posts.json:1689](../src/data/cc98.posts.json#L1689)
-1060. 刚骑车冲到檐下，迎面正好过来一辆送货车，大门口稍微有点窄。
+1049. 刚骑车冲到檐下，迎面正好过来一辆送货车，大门口稍微有点窄。
    来源：[src/data/cc98.posts.json:1690](../src/data/cc98.posts.json#L1690)
-1061. 备用伞套直接拿不用刷卡，不过旁边那台饮水机出水还是要贴卡的。
+1050. 备用伞套直接拿不用刷卡，不过旁边那台饮水机出水还是要贴卡的。
    来源：[src/data/cc98.posts.json:1699](../src/data/cc98.posts.json#L1699)
-1062. 我也按习惯往左边找，空跑过去才发现挪到了桌子旁，差点晃着。
+1051. 我也按习惯往左边找，空跑过去才发现挪到了桌子旁，差点晃着。
    来源：[src/data/cc98.posts.json:1708](../src/data/cc98.posts.json#L1708)
-1063. 晚课后抄题人
+1052. 晚课后抄题人
    来源：[src/data/cc98.posts.json:1716](../src/data/cc98.posts.json#L1716)
-1064. 在西区教学楼打印室拿到空白答题纸，想对一下是不是线代
+1053. 在西区教学楼打印室拿到空白答题纸，想对一下是不是线代
    来源：[src/data/cc98.posts.json:1720](../src/data/cc98.posts.json#L1720)
-1065. 周三二十一点十分在靠窗文件架第二层找到一沓纸，右上角印着课程简称，拿来写线代课后作业挺合适的。不知道是不是这门课新印的，发出来和大家核对一下版本。
+1054. 周三二十一点十分在靠窗文件架第二层找到一沓纸，右上角印着课程简称，拿来写线代课后作业挺合适的。不知道是不是这门课新印的，发出来和大家核对一下版本。
    来源：[src/data/cc98.posts.json:1724](../src/data/cc98.posts.json#L1724)
-1066. 学习资料互助台
+1055. 学习资料互助台
    来源：[src/data/cc98.posts.json:1726](../src/data/cc98.posts.json#L1726)
-1067. 补充取用位置
+1056. 补充取用位置
    来源：[src/data/cc98.posts.json:1727](../src/data/cc98.posts.json#L1727)
-1068. 楼主说明了寻找时间、房间和文件架层数
+1057. 楼主说明了寻找时间、房间和文件架层数
    来源：[src/data/cc98.posts.json:1728](../src/data/cc98.posts.json#L1728)
-1069. 资料
+1058. 资料
    来源：[src/data/cc98.posts.json:1740](../src/data/cc98.posts.json#L1740)；[src/data/cc98.posts.json:1818](../src/data/cc98.posts.json#L1818)
-1070. 我拿到的这本一共是六页，翻到最后一整页全是空白的演算区域。
+1059. 我拿到的这本一共是六页，翻到最后一整页全是空白的演算区域。
    来源：[src/data/cc98.posts.json:1741](../src/data/cc98.posts.json#L1741)
-1071. 今天 17:16
+1060. 今天 17:16
    来源：[src/data/cc98.posts.json:1747](../src/data/cc98.posts.json#L1747)；[src/data/cc98.posts.json:1843](../src/data/cc98.posts.json#L1843)
-1072. 窗户当时没关严实吹了风进来，纸张最上面几个角都被吹卷边了。
+1061. 窗户当时没关严实吹了风进来，纸张最上面几个角都被吹卷边了。
    来源：[src/data/cc98.posts.json:1750](../src/data/cc98.posts.json#L1750)
-1073. 同一层架子上还有概率论的，简称就差一个字，千万别顺手拿混了。
+1062. 同一层架子上还有概率论的，简称就差一个字，千万别顺手拿混了。
    来源：[src/data/cc98.posts.json:1759](../src/data/cc98.posts.json#L1759)
-1074. 从南门走廊到底右转，饮水机隔壁就是打印室，之前去交表走过。
+1063. 从南门走廊到底右转，饮水机隔壁就是打印室，之前去交表走过。
    来源：[src/data/cc98.posts.json:1768](../src/data/cc98.posts.json#L1768)
-1075. 复印
+1064. 复印
    来源：[src/data/cc98.posts.json:1776](../src/data/cc98.posts.json#L1776)
-1076. 架子上摆着现成的空白纸直接抽，不用开复印机，先看清楚标签。
+1065. 架子上摆着现成的空白纸直接抽，不用开复印机，先看清楚标签。
    来源：[src/data/cc98.posts.json:1777](../src/data/cc98.posts.json#L1777)
-1077. 整理
+1066. 整理
    来源：[src/data/cc98.posts.json:1785](../src/data/cc98.posts.json#L1785)；[src/data/cc98.posts.json:2280](../src/data/cc98.posts.json#L2280)
-1078. 拿到的同学顺手报下总页数和年份呗，省得拿回去才发现少印几页。
+1067. 拿到的同学顺手报下总页数和年份呗，省得拿回去才发现少印几页。
    来源：[src/data/cc98.posts.json:1786](../src/data/cc98.posts.json#L1786)
-1079. 雨天走南门
+1068. 雨天走南门
    来源：[src/data/cc98.posts.json:1794](../src/data/cc98.posts.json#L1794)
-1080. 下雨天抱着电脑和资料从东教出来，两边门口积水不太一样
+1069. 下雨天抱着电脑和资料从东教出来，两边门口积水不太一样
    来源：[src/data/cc98.posts.json:1798](../src/data/cc98.posts.json#L1798)
-1081. 刚从东教学楼下课，西侧玻璃门外面的地垫已经彻底吸饱水踩上去直冒泡，南侧门那边相对要干爽很多。抱了一堆打印资料和电脑的同学，走南边相对能安全些。
+1070. 刚从东教学楼下课，西侧玻璃门外面的地垫已经彻底吸饱水踩上去直冒泡，南侧门那边相对要干爽很多。抱了一堆打印资料和电脑的同学，走南边相对能安全些。
    来源：[src/data/cc98.posts.json:1802](../src/data/cc98.posts.json#L1802)
-1082. 校园生活值班员
+1071. 校园生活值班员
    来源：[src/data/cc98.posts.json:1804](../src/data/cc98.posts.json#L1804)；[src/data/cc98.posts.json:2452](../src/data/cc98.posts.json#L2452)
-1083. 保留雨天通行记录
+1072. 保留雨天通行记录
    来源：[src/data/cc98.posts.json:1805](../src/data/cc98.posts.json#L1805)
-1084. 楼主说明了两处门口的地面情况
+1073. 楼主说明了两处门口的地面情况
    来源：[src/data/cc98.posts.json:1806](../src/data/cc98.posts.json#L1806)
-1085. 明天早八得带一大叠纸质作业，宁可多绕两步去南门也不踩泥水。
+1074. 明天早八得带一大叠纸质作业，宁可多绕两步去南门也不踩泥水。
    来源：[src/data/cc98.posts.json:1819](../src/data/cc98.posts.json#L1819)
-1086. 刚才顶着雨从南门进来，门边伞套很足，台阶往里走都还是干的。
+1075. 刚才顶着雨从南门进来，门边伞套很足，台阶往里走都还是干的。
    来源：[src/data/cc98.posts.json:1828](../src/data/cc98.posts.json#L1828)
-1087. 不锈钢扶手全结了水珠滑溜溜的，刚刚差点手滑没扶稳吓我一跳。
+1076. 不锈钢扶手全结了水珠滑溜溜的，刚刚差点手滑没扶稳吓我一跳。
    来源：[src/data/cc98.posts.json:1837](../src/data/cc98.posts.json#L1837)
-1088. 更新
+1077. 更新
    来源：[src/data/cc98.posts.json:1845](../src/data/cc98.posts.json#L1845)
-1089. 二十分钟前从南边出去时地面还没积水，这雨势下得确实有点急。
+1078. 二十分钟前从南边出去时地面还没积水，这雨势下得确实有点急。
    来源：[src/data/cc98.posts.json:1846](../src/data/cc98.posts.json#L1846)
-1090. 端盘找座位
+1079. 端盘找座位
    来源：[src/data/cc98.posts.json:1854](../src/data/cc98.posts.json#L1854)
-1091. 晚饭点东二食堂找座情况，二楼和三楼的位置变化挺快的
+1080. 晚饭点东二食堂找座情况，二楼和三楼的位置变化挺快的
    来源：[src/data/cc98.posts.json:1858](../src/data/cc98.posts.json#L1858)
-1092. 十八点二十进东二，二楼靠门那块基本全坐满了，三楼深处当时还能找到两张空着的四人桌。另外通道边摆的几张空椅子是临时挪出来的，最好别当成固定座去占。
+1081. 十八点二十进东二，二楼靠门那块基本全坐满了，三楼深处当时还能找到两张空着的四人桌。另外通道边摆的几张空椅子是临时挪出来的，最好别当成固定座去占。
    来源：[src/data/cc98.posts.json:1862](../src/data/cc98.posts.json#L1862)
-1093. 补充座位信息
+1082. 补充座位信息
    来源：[src/data/cc98.posts.json:1865](../src/data/cc98.posts.json#L1865)
-1094. 楼主记录了到店时间和可用桌位
+1083. 楼主记录了到店时间和可用桌位
    来源：[src/data/cc98.posts.json:1866](../src/data/cc98.posts.json#L1866)
-1095. 晚到
+1084. 晚到
    来源：[src/data/cc98.posts.json:1878](../src/data/cc98.posts.json#L1878)
-1096. 十八点三十五端着菜上三楼，刚才那两张四人桌就已经全坐上人了。
+1085. 十八点三十五端着菜上三楼，刚才那两张四人桌就已经全坐上人了。
    来源：[src/data/cc98.posts.json:1879](../src/data/cc98.posts.json#L1879)
-1097. 观察
+1086. 观察
    来源：[src/data/cc98.posts.json:1887](../src/data/cc98.posts.json#L1887)
-1098. 二楼饮水机旁两张椅当时有人在等外带，并不是留出来占座的。
+1087. 二楼饮水机旁两张椅当时有人在等外带，并不是留出来占座的。
    来源：[src/data/cc98.posts.json:1888](../src/data/cc98.posts.json#L1888)
-1099. 今天 17:11
+1088. 今天 17:11
    来源：[src/data/cc98.posts.json:1894](../src/data/cc98.posts.json#L1894)
-1100. 三楼打菜排队确实慢吞吞的，但感觉找座比二楼稍微宽松了一点点。
+1089. 三楼打菜排队确实慢吞吞的，但感觉找座比二楼稍微宽松了一点点。
    来源：[src/data/cc98.posts.json:1897](../src/data/cc98.posts.json#L1897)
-1101. 今天 17:13
+1090. 今天 17:13
    来源：[src/data/cc98.posts.json:1903](../src/data/cc98.posts.json#L1903)
-1102. 每次都在先打饭还是先抢座之间犹豫，高峰期哪个楼层都碰运气。
+1091. 每次都在先打饭还是先抢座之间犹豫，高峰期哪个楼层都碰运气。
    来源：[src/data/cc98.posts.json:1906](../src/data/cc98.posts.json#L1906)
-1103. 门口捡眼镜
+1092. 门口捡眼镜
    来源：[src/data/cc98.posts.json:1914](../src/data/cc98.posts.json#L1914)
-1104. 失物招领
+1093. 失物招领
    来源：[src/data/cc98.posts.json:1917](../src/data/cc98.posts.json#L1917)；[src/data/cc98.posts.json:2649](../src/data/cc98.posts.json#L2649)；[src/scenes/phone/P02_CC98/index.tsx:219](../src/scenes/phone/P02_CC98/index.tsx#L219)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:105](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L105)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:74](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L74)
-1105. 傍晚在东区食堂南门台阶捡到一副眼镜，已经送去服务台了
+1094. 傍晚在东区食堂南门台阶捡到一副眼镜，已经送去服务台了
    来源：[src/data/cc98.posts.json:1918](../src/data/cc98.posts.json#L1918)
-1106. 傍晚在东区食堂南门台阶边缘捡到一副黑框眼镜，镜腿内侧贴有一张白色小贴纸。下课人流太密集怕被踩碎，我已经直接送交到一楼服务台了，失主凭上面的特征去认领吧。
+1095. 傍晚在东区食堂南门台阶边缘捡到一副黑框眼镜，镜腿内侧贴有一张白色小贴纸。下课人流太密集怕被踩碎，我已经直接送交到一楼服务台了，失主凭上面的特征去认领吧。
    来源：[src/data/cc98.posts.json:1922](../src/data/cc98.posts.json#L1922)
-1107. 失物招领版面
+1096. 失物招领版面
    来源：[src/data/cc98.posts.json:1924](../src/data/cc98.posts.json#L1924)；[src/data/cc98.posts.json:2656](../src/data/cc98.posts.json#L2656)
-1108. 标记服务台已接收
+1097. 标记服务台已接收
    来源：[src/data/cc98.posts.json:1925](../src/data/cc98.posts.json#L1925)
-1109. 物品去向和辨认特征已经写明
+1098. 物品去向和辨认特征已经写明
    来源：[src/data/cc98.posts.json:1926](../src/data/cc98.posts.json#L1926)
-1110. 问询
+1099. 问询
    来源：[src/data/cc98.posts.json:1938](../src/data/cc98.posts.json#L1938)
-1111. 下午室友也说把黑框眼镜弄丢了，贴纸上的记号能辨认出来吗？
+1100. 下午室友也说把黑框眼镜弄丢了，贴纸上的记号能辨认出来吗？
    来源：[src/data/cc98.posts.json:1939](../src/data/cc98.posts.json#L1939)
-1112. 度数确实别在帖子里公开报出来，失主直接去台前当面核对最稳妥。
+1101. 度数确实别在帖子里公开报出来，失主直接去台前当面核对最稳妥。
    来源：[src/data/cc98.posts.json:1948](../src/data/cc98.posts.json#L1948)
-1113. 今天 17:08
+1102. 今天 17:08
    来源：[src/data/cc98.posts.json:1954](../src/data/cc98.posts.json#L1954)
-1114. 南门台阶那个坎人流太挤，我每次掏兜拿饭卡也总担心把钥匙带掉。
+1103. 南门台阶那个坎人流太挤，我每次掏兜拿饭卡也总担心把钥匙带掉。
    来源：[src/data/cc98.posts.json:1957](../src/data/cc98.posts.json#L1957)
-1115. 剧场外等雨小组
+1104. 剧场外等雨小组
    来源：[src/data/cc98.posts.json:1965](../src/data/cc98.posts.json#L1965)
-1116. 剧场散场后打算去湖边走走，雨后外侧那条路稍微有点暗
+1105. 剧场散场后打算去湖边走走，雨后外侧那条路稍微有点暗
    来源：[src/data/cc98.posts.json:1969](../src/data/cc98.posts.json#L1969)
-1117. 26-07-10 16:58
+1106. 26-07-10 16:58
    来源：[src/data/cc98.posts.json:1972](../src/data/cc98.posts.json#L1972)
-1118. 演出结束后想去湖边吹吹风，从剧场出来外侧树下那段光线很暗，而且石板路被雨水泡得很滑。走大路虽然要多绕个几分钟，但有路灯照着，路面情况也要踏实不少。
+1107. 演出结束后想去湖边吹吹风，从剧场出来外侧树下那段光线很暗，而且石板路被雨水泡得很滑。走大路虽然要多绕个几分钟，但有路灯照着，路面情况也要踏实不少。
    来源：[src/data/cc98.posts.json:1973](../src/data/cc98.posts.json#L1973)
-1119. 夜间步行信息台
+1108. 夜间步行信息台
    来源：[src/data/cc98.posts.json:1975](../src/data/cc98.posts.json#L1975)
-1120. 加入雨后步行提醒
+1109. 加入雨后步行提醒
    来源：[src/data/cc98.posts.json:1976](../src/data/cc98.posts.json#L1976)
-1121. 楼主写清了两条路线的差别
+1110. 楼主写清了两条路线的差别
    来源：[src/data/cc98.posts.json:1977](../src/data/cc98.posts.json#L1977)
-1122. 骑行
+1111. 骑行
    来源：[src/data/cc98.posts.json:1989](../src/data/cc98.posts.json#L1989)
-1123. 大路上全是一滩滩积水反光，车胎压过去噼里啪啦溅一身泥点子。
+1112. 大路上全是一滩滩积水反光，车胎压过去噼里啪啦溅一身泥点子。
    来源：[src/data/cc98.posts.json:1990](../src/data/cc98.posts.json#L1990)
-1124. 今天 17:02
+1113. 今天 17:02
    来源：[src/data/cc98.posts.json:1996](../src/data/cc98.posts.json#L1996)
-1125. 风向
+1114. 风向
    来源：[src/data/cc98.posts.json:1998](../src/data/cc98.posts.json#L1998)；[src/scenes/phone/P07_Weather/index.tsx:131](../src/scenes/phone/P07_Weather/index.tsx#L131)
-1126. 湖边那个风比剧场外面大多了，伞骨被吹得反折过去好几回呢。
+1115. 湖边那个风比剧场外面大多了，伞骨被吹得反折过去好几回呢。
    来源：[src/data/cc98.posts.json:1999](../src/data/cc98.posts.json#L1999)
-1127. 时间
-   来源：[src/data/cc98.posts.json:2007](../src/data/cc98.posts.json#L2007)；[src/data/cc98.posts.json:2211](../src/data/cc98.posts.json#L2211)；[src/data/itemCatalog.ts:94](../src/data/itemCatalog.ts#L94)；[src/data/prologue-interception.content.json:32](../src/data/prologue-interception.content.json#L32)；[src/scenes/phone/P15_Zjuding/index.tsx:403](../src/scenes/phone/P15_Zjuding/index.tsx#L403)
-1128. 多走三分钟换白鞋不踩水坑，对我这种懒得刷鞋的人来说太划算了。
+1116. 时间
+   来源：[src/data/cc98.posts.json:2007](../src/data/cc98.posts.json#L2007)；[src/data/cc98.posts.json:2211](../src/data/cc98.posts.json#L2211)；[src/data/itemCatalog.ts:94](../src/data/itemCatalog.ts#L94)；[src/data/prologue-interception.content.json:26](../src/data/prologue-interception.content.json#L26)；[src/scenes/phone/P15_Zjuding/index.tsx:403](../src/scenes/phone/P15_Zjuding/index.tsx#L403)
+1117. 多走三分钟换白鞋不踩水坑，对我这种懒得刷鞋的人来说太划算了。
    来源：[src/data/cc98.posts.json:2008](../src/data/cc98.posts.json#L2008)
-1129. 晚上看不清脚底容易踩深坑，我也更倾向顺着亮堂的主干道慢慢晃。
+1118. 晚上看不清脚底容易踩深坑，我也更倾向顺着亮堂的主干道慢慢晃。
    来源：[src/data/cc98.posts.json:2017](../src/data/cc98.posts.json#L2017)
-1130. 页码强迫症
+1119. 页码强迫症
    来源：[src/data/cc98.posts.json:2025](../src/data/cc98.posts.json#L2025)
-1131. 对化工原理往年卷发现缺页了，手头有文件的同学能看下吗
+1120. 对化工原理往年卷发现缺页了，手头有文件的同学能看下吗
    来源：[src/data/cc98.posts.json:2029](../src/data/cc98.posts.json#L2029)
-1132. 26-07-10 16:54
+1121. 26-07-10 16:54
    来源：[src/data/cc98.posts.json:2032](../src/data/cc98.posts.json#L2032)
-1133. 手里有同一年的两份扫描卷，翻对照的时候发现有一份从第六页直接跳到了第八页，正好缺了第七页。不知有谁保存了完整原始件，想对一下第七页的具体内容。
+1122. 手里有同一年的两份扫描卷，翻对照的时候发现有一份从第六页直接跳到了第八页，正好缺了第七页。不知有谁保存了完整原始件，想对一下第七页的具体内容。
    来源：[src/data/cc98.posts.json:2033](../src/data/cc98.posts.json#L2033)
-1134. 保留缺页标记
+1123. 保留缺页标记
    来源：[src/data/cc98.posts.json:2036](../src/data/cc98.posts.json#L2036)
-1135. 楼主指出了具体版本和缺失位置
+1124. 楼主指出了具体版本和缺失位置
    来源：[src/data/cc98.posts.json:2037](../src/data/cc98.posts.json#L2037)
-1136. 今天 16:56
+1125. 今天 16:56
    来源：[src/data/cc98.posts.json:2047](../src/data/cc98.posts.json#L2047)；[src/data/cc98.posts.json:2116](../src/data/cc98.posts.json#L2116)
-1137. 文件
+1126. 文件
    来源：[src/data/cc98.posts.json:2049](../src/data/cc98.posts.json#L2049)
-1138. 我柜子里好像有打印好的八页版，周末回寝室翻出来再仔细看下。
+1127. 我柜子里好像有打印好的八页版，周末回寝室翻出来再仔细看下。
    来源：[src/data/cc98.posts.json:2050](../src/data/cc98.posts.json#L2050)
-1139. 缺的第七页是道传热流程图的大题，卷子上只印了题干没有给答案。
+1128. 缺的第七页是道传热流程图的大题，卷子上只印了题干没有给答案。
    来源：[src/data/cc98.posts.json:2059](../src/data/cc98.posts.json#L2059)
-1140. 缺页这版千万别随手删，留着比对排版和出处，免得新下的也缺漏。
+1129. 缺页这版千万别随手删，留着比对排版和出处，免得新下的也缺漏。
    来源：[src/data/cc98.posts.json:2068](../src/data/cc98.posts.json#L2068)
-1141. 胶圈带少了
+1130. 胶圈带少了
    来源：[src/data/cc98.posts.json:2076](../src/data/cc98.posts.json#L2076)
-1142. 西区教学楼打印室小号胶圈装订厚报告够用吗
+1131. 西区教学楼打印室小号胶圈装订厚报告够用吗
    来源：[src/data/cc98.posts.json:2080](../src/data/cc98.posts.json#L2080)
-1143. 打算去西区教学楼打印室装订一份很厚的实验报告，刚听同学说那边的机器当时虽然能用，但桌上好像只剩小号胶圈了。我这份报告超过了四十页，是不是得先考虑自己备点耗材再过去？
+1132. 打算去西区教学楼打印室装订一份很厚的实验报告，刚听同学说那边的机器当时虽然能用，但桌上好像只剩小号胶圈了。我这份报告超过了四十页，是不是得先考虑自己备点耗材再过去？
    来源：[src/data/cc98.posts.json:2084](../src/data/cc98.posts.json#L2084)
-1144. 补充耗材状态
+1133. 补充耗材状态
    来源：[src/data/cc98.posts.json:2087](../src/data/cc98.posts.json#L2087)
-1145. 楼主说明了机器和胶圈的现状
+1134. 楼主说明了机器和胶圈的现状
    来源：[src/data/cc98.posts.json:2088](../src/data/cc98.posts.json#L2088)
-1146. 我刚刚在那边，看到前面同学五十页的报告被建议直接拆成两本装了。
+1135. 我刚刚在那边，看到前面同学五十页的报告被建议直接拆成两本装了。
    来源：[src/data/cc98.posts.json:2101](../src/data/cc98.posts.json#L2101)
-1147. 最底层抽屉里还有透明封面纸，小号圈确实夹不住太厚的。
+1136. 最底层抽屉里还有透明封面纸，小号圈确实夹不住太厚的。
    来源：[src/data/cc98.posts.json:2110](../src/data/cc98.posts.json#L2110)
-1148. 其实超过四十页分两册翻起来挺顺手的，单本太厚胶圈容易崩开。
+1137. 其实超过四十页分两册翻起来挺顺手的，单本太厚胶圈容易崩开。
    来源：[src/data/cc98.posts.json:2119](../src/data/cc98.posts.json#L2119)
-1149. 二楼靠窗充电中
+1138. 二楼靠窗充电中
    来源：[src/data/cc98.posts.json:2127](../src/data/cc98.posts.json#L2127)
-1150. 基础图书馆二楼靠窗桌子的插座最近接触还好吗
+1139. 基础图书馆二楼靠窗桌子的插座最近接触还好吗
    来源：[src/data/cc98.posts.json:2131](../src/data/cc98.posts.json#L2131)
-1151. 26-07-10 16:46
+1140. 26-07-10 16:46
    来源：[src/data/cc98.posts.json:2134](../src/data/cc98.posts.json#L2134)
-1152. 打算带电脑去基础图书馆二楼自习，想问下靠窗那一带插座接触怎么样？昨天坐在窗边第三桌断了两次电，后来换到柱子旁那一排才恢复正常，不知道今天大家用着还松不松。
+1141. 打算带电脑去基础图书馆二楼自习，想问下靠窗那一带插座接触怎么样？昨天坐在窗边第三桌断了两次电，后来换到柱子旁那一排才恢复正常，不知道今天大家用着还松不松。
    来源：[src/data/cc98.posts.json:2135](../src/data/cc98.posts.json#L2135)
-1153. 图书馆设备记录
+1142. 图书馆设备记录
    来源：[src/data/cc98.posts.json:2137](../src/data/cc98.posts.json#L2137)
-1154. 补充插座状态
+1143. 补充插座状态
    来源：[src/data/cc98.posts.json:2138](../src/data/cc98.posts.json#L2138)
-1155. 楼主给出了异常位置和替代位置
+1144. 楼主给出了异常位置和替代位置
    来源：[src/data/cc98.posts.json:2139](../src/data/cc98.posts.json#L2139)
-1156. 复测
+1145. 复测
    来源：[src/data/cc98.posts.json:2151](../src/data/cc98.posts.json#L2151)
-1157. 下午我又去第三桌试了两次，插头还是有点挂不住，稍微碰下就断。
+1146. 下午我又去第三桌试了两次，插头还是有点挂不住，稍微碰下就断。
    来源：[src/data/cc98.posts.json:2152](../src/data/cc98.posts.json#L2152)
-1158. 今天 16:50
+1147. 今天 16:50
    来源：[src/data/cc98.posts.json:2158](../src/data/cc98.posts.json#L2158)
-1159. 替代
+1148. 替代
    来源：[src/data/cc98.posts.json:2160](../src/data/cc98.posts.json#L2160)
-1160. 柱子旁边当时正好空着两个插孔，插头接得挺紧的，没掉过电。
+1149. 柱子旁边当时正好空着两个插孔，插头接得挺紧的，没掉过电。
    来源：[src/data/cc98.posts.json:2161](../src/data/cc98.posts.json#L2161)
-1161. 中间过道经常有借书车推过去，接线别拉太长，小心绊到路过的人。
+1150. 中间过道经常有借书车推过去，接线别拉太长，小心绊到路过的人。
    来源：[src/data/cc98.posts.json:2170](../src/data/cc98.posts.json#L2170)
-1162. 补办卡排队中
+1151. 补办卡排队中
    来源：[src/data/cc98.posts.json:2178](../src/data/cc98.posts.json#L2178)
-1163. 上午补办校园卡并在下午刷进基础图书馆的经历
+1152. 上午补办校园卡并在下午刷进基础图书馆的经历
    来源：[src/data/cc98.posts.json:2182](../src/data/cc98.posts.json#L2182)
-1164. 26-07-10 16:42
+1153. 26-07-10 16:42
    来源：[src/data/cc98.posts.json:2185](../src/data/cc98.posts.json#L2185)
-1165. 上午把校园卡弄丢了，去补办之后做了一次身份核验。旧卡当时就已经停用了，下午拿着新卡去基础图书馆试了一下，顺利刷进去了。发个帖说说今天核验进馆的经历，大家丢卡别太慌。
+1154. 上午把校园卡弄丢了，去补办之后做了一次身份核验。旧卡当时就已经停用了，下午拿着新卡去基础图书馆试了一下，顺利刷进去了。发个帖说说今天核验进馆的经历，大家丢卡别太慌。
    来源：[src/data/cc98.posts.json:2186](../src/data/cc98.posts.json#L2186)
-1166. 标记为当日记录
+1155. 标记为当日记录
    来源：[src/data/cc98.posts.json:2189](../src/data/cc98.posts.json#L2189)
-1167. 楼主说明了补办后的验证和入馆结果
+1156. 楼主说明了补办后的验证和入馆结果
    来源：[src/data/cc98.posts.json:2190](../src/data/cc98.posts.json#L2190)
-1168. 今天 16:44
+1157. 今天 16:44
    来源：[src/data/cc98.posts.json:2200](../src/data/cc98.posts.json#L2200)；[src/data/cc98.posts.json:2269](../src/data/cc98.posts.json#L2269)
-1169. 拿到新卡后得核对卡面编号和机器读出来的新号一不一致。
+1158. 拿到新卡后得核对卡面编号和机器读出来的新号一不一致。
    来源：[src/data/cc98.posts.json:2203](../src/data/cc98.posts.json#L2203)
-1170. 中午那阵子人很少，柜台办理和机器核验基本没怎么排队就弄完了。
+1159. 中午那阵子人很少，柜台办理和机器核验基本没怎么排队就弄完了。
    来源：[src/data/cc98.posts.json:2212](../src/data/cc98.posts.json#L2212)
-1171. 旧卡停得挺快的，新卡核验完能直接进馆自习就很省心，没耽误下午。
+1160. 旧卡停得挺快的，新卡核验完能直接进馆自习就很省心，没耽误下午。
    来源：[src/data/cc98.posts.json:2221](../src/data/cc98.posts.json#L2221)
-1172. 信号格满了
+1161. 信号格满了
    来源：[src/data/cc98.posts.json:2229](../src/data/cc98.posts.json#L2229)
-1173. 手机服务
+1162. 手机服务
    来源：[src/data/cc98.posts.json:2232](../src/data/cc98.posts.json#L2232)；[src/scenes/phone/P02_CC98/index.tsx:213](../src/scenes/phone/P02_CC98/index.tsx#L213)
-1174. 开学准备换手机卡蹲一个校内三家运营商信号实测
+1163. 开学准备换手机卡蹲一个校内三家运营商信号实测
    来源：[src/data/cc98.posts.json:2233](../src/data/cc98.posts.json#L2233)
-1175. 2026新学年打算换张电话卡，移动、联通、电信都在考虑。想开个楼请大家聊聊各自在宿舍、教学楼还有地铁口的日常实测体验，把套餐情况和信号放在一起讨论，给准备换卡的一点参考。
+1164. 2026新学年打算换张电话卡，移动、联通、电信都在考虑。想开个楼请大家聊聊各自在宿舍、教学楼还有地铁口的日常实测体验，把套餐情况和信号放在一起讨论，给准备换卡的一点参考。
    来源：[src/data/cc98.posts.json:2237](../src/data/cc98.posts.json#L2237)
-1176. 校园通信互助台
+1165. 校园通信互助台
    来源：[src/data/cc98.posts.json:2239](../src/data/cc98.posts.json#L2239)
-1177. 整理为信息汇总
+1166. 整理为信息汇总
    来源：[src/data/cc98.posts.json:2240](../src/data/cc98.posts.json#L2240)
-1178. 讨论包含不同运营商的使用场景和办理提醒
+1167. 讨论包含不同运营商的使用场景和办理提醒
    来源：[src/data/cc98.posts.json:2241](../src/data/cc98.posts.json#L2241)
-1179. 同一栋教学楼不同朝向信号差挺多的，千万别只看办卡摊位那几格。
+1168. 同一栋教学楼不同朝向信号差挺多的，千万别只看办卡摊位那几格。
    来源：[src/data/cc98.posts.json:2254](../src/data/cc98.posts.json#L2254)
-1180. 看套餐要分清月租、校园期和首月减免，别把短期优惠当成了长期的。
+1169. 看套餐要分清月租、校园期和首月减免，别把短期优惠当成了长期的。
    来源：[src/data/cc98.posts.json:2263](../src/data/cc98.posts.json#L2263)
-1181. 我也想留着原本的旧号，就是怕开学周办业务排长队太折腾人了。
+1170. 我也想留着原本的旧号，就是怕开学周办业务排长队太折腾人了。
    来源：[src/data/cc98.posts.json:2272](../src/data/cc98.posts.json#L2272)
-1182. 大家要是能顺便写清套餐名称、适用时间和具体测点，看着更直观。
+1171. 大家要是能顺便写清套餐名称、适用时间和具体测点，看着更直观。
    来源：[src/data/cc98.posts.json:2281](../src/data/cc98.posts.json#L2281)
-1183. 图书馆门口的雨
+1172. 图书馆门口的雨
    来源：[src/data/cc98.posts.json:2289](../src/data/cc98.posts.json#L2289)
-1184. 下楼拿外卖顺手拿错同款蓝伞一路扛回寝室
+1173. 下楼拿外卖顺手拿错同款蓝伞一路扛回寝室
    来源：[src/data/cc98.posts.json:2293](../src/data/cc98.posts.json#L2293)
-1185. 26-07-10 16:34
+1174. 26-07-10 16:34
    来源：[src/data/cc98.posts.json:2296](../src/data/cc98.posts.json#L2296)
-1186. 刚才跑去一楼外卖架拿午饭，顺手把伞架上的一把深蓝雨伞拿回了三楼寝室。进门一抬头，发现我自己的伞正端端正正挂在阳台上呢，伞架上那把蓝伞居然是同款，我真是白爬楼梯了。
+1175. 刚才跑去一楼外卖架拿午饭，顺手把伞架上的一把深蓝雨伞拿回了三楼寝室。进门一抬头，发现我自己的伞正端端正正挂在阳台上呢，伞架上那把蓝伞居然是同款，我真是白爬楼梯了。
    来源：[src/data/cc98.posts.json:2297](../src/data/cc98.posts.json#L2297)
-1187. 保留轻松讨论
+1176. 保留轻松讨论
    来源：[src/data/cc98.posts.json:2300](../src/data/cc98.posts.json#L2300)
-1188. 回复围绕雨天小失误展开，没有涉及失物认领
+1177. 回复围绕雨天小失误展开，没有涉及失物认领
    来源：[src/data/cc98.posts.json:2301](../src/data/cc98.posts.json#L2301)
-1189. 今天 16:36
+1178. 今天 16:36
    来源：[src/data/cc98.posts.json:2311](../src/data/cc98.posts.json#L2311)；[src/data/cc98.posts.json:2380](../src/data/cc98.posts.json#L2380)
-1190. 同款
+1179. 同款
    来源：[src/data/cc98.posts.json:2313](../src/data/cc98.posts.json#L2313)
-1191. 我之前更绝，拿着个空伞套一路走回寝室，真伞还立在大门口伞架上。
+1180. 我之前更绝，拿着个空伞套一路走回寝室，真伞还立在大门口伞架上。
    来源：[src/data/cc98.posts.json:2314](../src/data/cc98.posts.json#L2314)
-1192. 今天 16:38
+1181. 今天 16:38
    来源：[src/data/cc98.posts.json:2320](../src/data/cc98.posts.json#L2320)
-1193. 确认
+1182. 确认
    来源：[src/data/cc98.posts.json:2322](../src/data/cc98.posts.json#L2322)；[src/data/cc98.posts.json:2577](../src/data/cc98.posts.json#L2577)
-1194. 辛辛苦苦扛着别人的伞爬到三楼，这波纯属无偿负重爬楼锻炼了。
+1183. 辛辛苦苦扛着别人的伞爬到三楼，这波纯属无偿负重爬楼锻炼了。
    来源：[src/data/cc98.posts.json:2323](../src/data/cc98.posts.json#L2323)
-1195. 补图
+1184. 补图
    来源：[src/data/cc98.posts.json:2331](../src/data/cc98.posts.json#L2331)
-1196. 下雨天这种深蓝色折叠伞真的长得一模一样，放在一起太容易拿岔。
+1185. 下雨天这种深蓝色折叠伞真的长得一模一样，放在一起太容易拿岔。
    来源：[src/data/cc98.posts.json:2332](../src/data/cc98.posts.json#L2332)
-1197. 晚八还在找耳机
+1186. 晚八还在找耳机
    来源：[src/data/cc98.posts.json:2340](../src/data/cc98.posts.json#L2340)
-1198. 戴耳机自习误连到隔壁蓝牙听了半节陌生网课
+1187. 戴耳机自习误连到隔壁蓝牙听了半节陌生网课
    来源：[src/data/cc98.posts.json:2344](../src/data/cc98.posts.json#L2344)
-1199. 26-07-10 16:30
+1188. 26-07-10 16:30
    来源：[src/data/cc98.posts.json:2347](../src/data/cc98.posts.json#L2347)
-1200. 在自习室戴着耳机听课，听了半节极其硬核的高深内容，我还纳闷老师今天怎么讲得云里雾里的。后来退出来一看，耳机名字还是默认的设备名，原来不知道什么时候连上了隔壁同学的平板。
+1189. 在自习室戴着耳机听课，听了半节极其硬核的高深内容，我还纳闷老师今天怎么讲得云里雾里的。后来退出来一看，耳机名字还是默认的设备名，原来不知道什么时候连上了隔壁同学的平板。
    来源：[src/data/cc98.posts.json:2348](../src/data/cc98.posts.json#L2348)
-1201. 加入设备小事
+1190. 加入设备小事
    来源：[src/data/cc98.posts.json:2351](../src/data/cc98.posts.json#L2351)
-1202. 帖子包含清楚的误连原因和轻松回复
+1191. 帖子包含清楚的误连原因和轻松回复
    来源：[src/data/cc98.posts.json:2352](../src/data/cc98.posts.json#L2352)
-1203. 今天 16:32
+1192. 今天 16:32
    来源：[src/data/cc98.posts.json:2362](../src/data/cc98.posts.json#L2362)；[src/data/cc98.posts.json:2431](../src/data/cc98.posts.json#L2431)
-1204. 馆里默认设备名实在太多了，我回去就把名字改成了自己能认出的。
+1193. 馆里默认设备名实在太多了，我回去就把名字改成了自己能认出的。
    来源：[src/data/cc98.posts.json:2365](../src/data/cc98.posts.json#L2365)
-1205. 今天 16:34
+1194. 今天 16:34
    来源：[src/data/cc98.posts.json:2371](../src/data/cc98.posts.json#L2371)
-1206. 我之前听白噪音也是，听了五分钟才发现声音是从邻桌平板里飘来的。
+1195. 我之前听白噪音也是，听了五分钟才发现声音是从邻桌平板里飘来的。
    来源：[src/data/cc98.posts.json:2374](../src/data/cc98.posts.json#L2374)
-1207. 哈哈我还以为你真硬撑着听了半节课，心里肯定一直在自我怀疑吧。
+1196. 哈哈我还以为你真硬撑着听了半节课，心里肯定一直在自我怀疑吧。
    来源：[src/data/cc98.posts.json:2383](../src/data/cc98.posts.json#L2383)
-1208. 搬寝室清库存
+1197. 搬寝室清库存
    来源：[src/data/cc98.posts.json:2391](../src/data/cc98.posts.json#L2391)
-1209. 二手市场
+1198. 二手市场
    来源：[src/data/cc98.posts.json:2394](../src/data/cc98.posts.json#L2394)；[src/scenes/phone/P02_CC98/index.tsx:220](../src/scenes/phone/P02_CC98/index.tsx#L220)
-1210. 出两学期自用调光台灯带电源线当面验机自取
+1199. 出两学期自用调光台灯带电源线当面验机自取
    来源：[src/data/cc98.posts.json:2395](../src/data/cc98.posts.json#L2395)
-1211. 26-07-10 16:26
+1200. 26-07-10 16:26
    来源：[src/data/cc98.posts.json:2398](../src/data/cc98.posts.json#L2398)
-1212. 用了两学期的调光台灯准备转给需要的同学。触控和调光当时测试都是正常的，原装电源线也在。平时比较爱惜没怎么磕碰。仅限在校内公共区域当面试亮并自取，有兴趣的同学可以留言看灯。
+1201. 用了两学期的调光台灯准备转给需要的同学。触控和调光当时测试都是正常的，原装电源线也在。平时比较爱惜没怎么磕碰。仅限在校内公共区域当面试亮并自取，有兴趣的同学可以留言看灯。
    来源：[src/data/cc98.posts.json:2399](../src/data/cc98.posts.json#L2399)
-1213. 二手市场提醒员
+1202. 二手市场提醒员
    来源：[src/data/cc98.posts.json:2401](../src/data/cc98.posts.json#L2401)
-1214. 补充交易边界
+1203. 补充交易边界
    来源：[src/data/cc98.posts.json:2402](../src/data/cc98.posts.json#L2402)
-1215. 楼主提供了物品状态、交接方式和试用条件
+1204. 楼主提供了物品状态、交接方式和试用条件
    来源：[src/data/cc98.posts.json:2403](../src/data/cc98.posts.json#L2403)
-1216. 今天 16:28
+1205. 今天 16:28
    来源：[src/data/cc98.posts.json:2413](../src/data/cc98.posts.json#L2413)；[src/data/cc98.posts.json:2482](../src/data/cc98.posts.json#L2482)
-1217. 询问
+1206. 询问
    来源：[src/data/cc98.posts.json:2415](../src/data/cc98.posts.json#L2415)
-1218. 同学你好，想问下这盏灯调到最低档在暗处看会不会很刺眼？
+1207. 同学你好，想问下这盏灯调到最低档在暗处看会不会很刺眼？
    来源：[src/data/cc98.posts.json:2416](../src/data/cc98.posts.json#L2416)
-1219. 今天 16:30
+1208. 今天 16:30
    来源：[src/data/cc98.posts.json:2422](../src/data/cc98.posts.json#L2422)
-1220. 二手台灯一定要当面试下线材和插口接触，看实物通电最稳妥。
+1209. 二手台灯一定要当面试下线材和插口接触，看实物通电最稳妥。
    来源：[src/data/cc98.posts.json:2425](../src/data/cc98.posts.json#L2425)
-1221. 规范
+1210. 规范
    来源：[src/data/cc98.posts.json:2433](../src/data/cc98.posts.json#L2433)
-1222. 楼主把成色和约见地点在楼里说清楚挺好的，当面看灯省心不少。
+1211. 楼主把成色和约见地点在楼里说清楚挺好的，当面看灯省心不少。
    来源：[src/data/cc98.posts.json:2434](../src/data/cc98.posts.json#L2434)
-1223. 实验服忘带了
+1212. 实验服忘带了
    来源：[src/data/cc98.posts.json:2442](../src/data/cc98.posts.json#L2442)
-1224. 赶去实验课路上遇雨踩着老师点名声冲进大楼
+1213. 赶去实验课路上遇雨踩着老师点名声冲进大楼
    来源：[src/data/cc98.posts.json:2446](../src/data/cc98.posts.json#L2446)
-1225. 26-07-10 16:22
+1214. 26-07-10 16:22
    来源：[src/data/cc98.posts.json:2449](../src/data/cc98.posts.json#L2449)
-1226. 离上课只剩十分钟才想起来实验服还没收，跑去阳台一看已经被雨淋湿了，只能硬着头皮抓上就跑。冒雨一路狂蹬车赶到实验楼，推开门正好听到老师在点名，整个人都快喘不上气了。
+1215. 离上课只剩十分钟才想起来实验服还没收，跑去阳台一看已经被雨淋湿了，只能硬着头皮抓上就跑。冒雨一路狂蹬车赶到实验楼，推开门正好听到老师在点名，整个人都快喘不上气了。
    来源：[src/data/cc98.posts.json:2450](../src/data/cc98.posts.json#L2450)
-1227. 收录课前小事
+1216. 收录课前小事
    来源：[src/data/cc98.posts.json:2453](../src/data/cc98.posts.json#L2453)
-1228. 内容为个人经历和防漏清单，没有课程资料需求
+1217. 内容为个人经历和防漏清单，没有课程资料需求
    来源：[src/data/cc98.posts.json:2454](../src/data/cc98.posts.json#L2454)
-1229. 今天 16:24
+1218. 今天 16:24
    来源：[src/data/cc98.posts.json:2464](../src/data/cc98.posts.json#L2464)；[src/data/cc98.posts.json:2533](../src/data/cc98.posts.json#L2533)
-1230. 上次赶实验课太急，把实验鞋错拿成了室内拖鞋，当场傻眼。
+1219. 上次赶实验课太急，把实验鞋错拿成了室内拖鞋，当场傻眼。
    来源：[src/data/cc98.posts.json:2467](../src/data/cc98.posts.json#L2467)
-1231. 今天 16:26
+1220. 今天 16:26
    来源：[src/data/cc98.posts.json:2473](../src/data/cc98.posts.json#L2473)
-1232. 清单
+1221. 清单
    来源：[src/data/cc98.posts.json:2475](../src/data/cc98.posts.json#L2475)
-1233. 我现在出门前都得摸摸包，实验服、护目镜和签字笔三件套缺一不可。
+1222. 我现在出门前都得摸摸包，实验服、护目镜和签字笔三件套缺一不可。
    来源：[src/data/cc98.posts.json:2476](../src/data/cc98.posts.json#L2476)
-1234. 我有回以为落在阳台急得不行，结果掏书包发现其实早就塞在底下了。
+1223. 我有回以为落在阳台急得不行，结果掏书包发现其实早就塞在底下了。
    来源：[src/data/cc98.posts.json:2485](../src/data/cc98.posts.json#L2485)
-1235. 取件码忘带
+1224. 取件码忘带
    来源：[src/data/cc98.posts.json:2493](../src/data/cc98.posts.json#L2493)
-1236. 新旧手机切换校园卡后在门禁旁重新核验恢复
+1225. 新旧手机切换校园卡后在门禁旁重新核验恢复
    来源：[src/data/cc98.posts.json:2497](../src/data/cc98.posts.json#L2497)
-1237. 26-07-10 16:18
+1226. 26-07-10 16:18
    来源：[src/data/cc98.posts.json:2500](../src/data/cc98.posts.json#L2500)
-1238. 换了新手机后门禁刷不上，旧设备还挂着卡。得先确认新手机能正常打开校园卡页面，再带去门禁旁的机器现场重新核验，核验完门禁才恢复识别。
+1227. 换了新手机后门禁刷不上，旧设备还挂着卡。得先确认新手机能正常打开校园卡页面，再带去门禁旁的机器现场重新核验，核验完门禁才恢复识别。
    来源：[src/data/cc98.posts.json:2501](../src/data/cc98.posts.json#L2501)
-1239. 标记设备换绑记录
+1228. 标记设备换绑记录
    来源：[src/data/cc98.posts.json:2504](../src/data/cc98.posts.json#L2504)
-1240. 楼主给出了换机后的现场验证步骤
+1229. 楼主给出了换机后的现场验证步骤
    来源：[src/data/cc98.posts.json:2505](../src/data/cc98.posts.json#L2505)
-1241. 今天 16:20
+1230. 今天 16:20
    来源：[src/data/cc98.posts.json:2515](../src/data/cc98.posts.json#L2515)；[src/data/cc98.posts.json:2584](../src/data/cc98.posts.json#L2584)
-1242. 我换新手机时特意把旧手机带在身边，先看一眼解绑状态才敢出门。
+1231. 我换新手机时特意把旧手机带在身边，先看一眼解绑状态才敢出门。
    来源：[src/data/cc98.posts.json:2518](../src/data/cc98.posts.json#L2518)
-1243. 今天 16:22
+1232. 今天 16:22
    来源：[src/data/cc98.posts.json:2524](../src/data/cc98.posts.json#L2524)
-1244. 我上次在图书馆门口刷第一次直接失败，换到旁边机器核验完才过。
+1233. 我上次在图书馆门口刷第一次直接失败，换到旁边机器核验完才过。
    来源：[src/data/cc98.posts.json:2527](../src/data/cc98.posts.json#L2527)
-1245. 换机当天确实容易遇到设备冲突，在现场折腾一趟能弄好就算顺利。
+1234. 换机当天确实容易遇到设备冲突，在现场折腾一趟能弄好就算顺利。
    来源：[src/data/cc98.posts.json:2536](../src/data/cc98.posts.json#L2536)
-1246. 窗边那排空着
+1235. 窗边那排空着
    来源：[src/data/cc98.posts.json:2544](../src/data/cc98.posts.json#L2544)
-1247. 晚课后麦斯威各写各的作业找两三位安静同桌
+1236. 晚课后麦斯威各写各的作业找两三位安静同桌
    来源：[src/data/cc98.posts.json:2548](../src/data/cc98.posts.json#L2548)
-1248. 26-07-10 16:14
+1237. 26-07-10 16:14
    来源：[src/data/cc98.posts.json:2551](../src/data/cc98.posts.json#L2551)
-1249. 晚课后想找两三个人拼一张麦斯威的四人桌写作业，全程不开外放，各自安安静静赶工。由于电脑快没电了，更想坐靠插座那一侧。如果九点前过去还没位子就不等了，有同路的同学吗？
+1238. 晚课后想找两三个人拼一张麦斯威的四人桌写作业，全程不开外放，各自安安静静赶工。由于电脑快没电了，更想坐靠插座那一侧。如果九点前过去还没位子就不等了，有同路的同学吗？
    来源：[src/data/cc98.posts.json:2552](../src/data/cc98.posts.json#L2552)
-1250. 保留临时约伴帖
+1239. 保留临时约伴帖
    来源：[src/data/cc98.posts.json:2555](../src/data/cc98.posts.json#L2555)
-1251. 时间、地点和自习规则已经写明
+1240. 时间、地点和自习规则已经写明
    来源：[src/data/cc98.posts.json:2556](../src/data/cc98.posts.json#L2556)
-1252. 今天 16:16
+1241. 今天 16:16
    来源：[src/data/cc98.posts.json:2566](../src/data/cc98.posts.json#L2566)；[src/data/cc98.posts.json:2635](../src/data/cc98.posts.json#L2635)
-1253. 报名
+1242. 报名
    来源：[src/data/cc98.posts.json:2568](../src/data/cc98.posts.json#L2568)
-1254. 算我一个，我自备耳机和插线板，大概晚上七点四十左右能赶到。
+1243. 算我一个，我自备耳机和插线板，大概晚上七点四十左右能赶到。
    来源：[src/data/cc98.posts.json:2569](../src/data/cc98.posts.json#L2569)
-1255. 今天 16:18
+1244. 今天 16:18
    来源：[src/data/cc98.posts.json:2575](../src/data/cc98.posts.json#L2575)
-1256. 我今晚也急着赶报告，先确认下大家确实都不出声讨论题目吧？
+1245. 我今晚也急着赶报告，先确认下大家确实都不出声讨论题目吧？
    来源：[src/data/cc98.posts.json:2578](../src/data/cc98.posts.json#L2578)
-1257. 拼桌在公开位置碰头挺好的，走的时候记得把桌面顺手带干净就行。
+1246. 拼桌在公开位置碰头挺好的，走的时候记得把桌面顺手带干净就行。
    来源：[src/data/cc98.posts.json:2587](../src/data/cc98.posts.json#L2587)
-1258. 西门等外卖
+1247. 西门等外卖
    来源：[src/data/cc98.posts.json:2595](../src/data/cc98.posts.json#L2595)
-1259. 外卖备注蓝外套，结果楼下一共七人同时举手
+1248. 外卖备注蓝外套，结果楼下一共七人同时举手
    来源：[src/data/cc98.posts.json:2599](../src/data/cc98.posts.json#L2599)
-1260. 26-07-10 16:10
+1249. 26-07-10 16:10
    来源：[src/data/cc98.posts.json:2602](../src/data/cc98.posts.json#L2602)
-1261. 下课去宿舍楼下取外卖，我给外卖小哥备注穿蓝色外套。结果走到门口一看，整整齐齐站了七个人全穿蓝外套。小哥喊了一嗓子穿蓝衣服的，我一举手另外六个人也跟着举手，最后对饮料口味才拿到。
+1250. 下课去宿舍楼下取外卖，我给外卖小哥备注穿蓝色外套。结果走到门口一看，整整齐齐站了七个人全穿蓝外套。小哥喊了一嗓子穿蓝衣服的，我一举手另外六个人也跟着举手，最后对饮料口味才拿到。
    来源：[src/data/cc98.posts.json:2603](../src/data/cc98.posts.json#L2603)
-1262. 加入校园小场面
+1251. 加入校园小场面
    来源：[src/data/cc98.posts.json:2606](../src/data/cc98.posts.json#L2606)
-1263. 主题来自公共取餐区的日常误会
+1252. 主题来自公共取餐区的日常误会
    来源：[src/data/cc98.posts.json:2607](../src/data/cc98.posts.json#L2607)
-1264. 今天 16:12
+1253. 今天 16:12
    来源：[src/data/cc98.posts.json:2617](../src/data/cc98.posts.json#L2617)；[src/data/cc98.posts.json:2686](../src/data/cc98.posts.json#L2686)
-1265. 降温下雨大家都裹着同款冲锋衣，报个帽子颜色或者身高可能好点。
+1254. 降温下雨大家都裹着同款冲锋衣，报个帽子颜色或者身高可能好点。
    来源：[src/data/cc98.posts.json:2620](../src/data/cc98.posts.json#L2620)
-1266. 今天 16:14
+1255. 今天 16:14
    来源：[src/data/cc98.posts.json:2626](../src/data/cc98.posts.json#L2626)
-1267. 我也干过这事，备注背黑色电脑包，结果转头一看周围全是黑书包。
+1256. 我也干过这事，备注背黑色电脑包，结果转头一看周围全是黑书包。
    来源：[src/data/cc98.posts.json:2629](../src/data/cc98.posts.json#L2629)
-1268. 哈哈最后还是靠奶茶口味对上的，吃的喝的总不会撞得那么精准。
+1257. 哈哈最后还是靠奶茶口味对上的，吃的喝的总不会撞得那么精准。
    来源：[src/data/cc98.posts.json:2638](../src/data/cc98.posts.json#L2638)
-1269. 卡套夹住了
+1258. 卡套夹住了
    来源：[src/data/cc98.posts.json:2646](../src/data/cc98.posts.json#L2646)
-1270. 一楼饮水机旁窗台捡到深绿色磨损卡套的校园卡
+1259. 一楼饮水机旁窗台捡到深绿色磨损卡套的校园卡
    来源：[src/data/cc98.posts.json:2650](../src/data/cc98.posts.json#L2650)
-1271. 26-07-10 16:06
+1260. 26-07-10 16:06
    来源：[src/data/cc98.posts.json:2653](../src/data/cc98.posts.json#L2653)
-1272. 在一楼饮水机旁边的窗台上看到一张校园卡，装在深绿色、边缘有点磨损的卡套里。卡片我暂时留在原处没有挪动。失主看到帖子可以去现场核对卡面照片和姓名认领，希望同学尽快找回。
+1261. 在一楼饮水机旁边的窗台上看到一张校园卡，装在深绿色、边缘有点磨损的卡套里。卡片我暂时留在原处没有挪动。失主看到帖子可以去现场核对卡面照片和姓名认领，希望同学尽快找回。
    来源：[src/data/cc98.posts.json:2654](../src/data/cc98.posts.json#L2654)
-1273. 保留现场位置
+1262. 保留现场位置
    来源：[src/data/cc98.posts.json:2657](../src/data/cc98.posts.json#L2657)
-1274. 物品特征、所在位置和核对方式完整
+1263. 物品特征、所在位置和核对方式完整
    来源：[src/data/cc98.posts.json:2658](../src/data/cc98.posts.json#L2658)
-1275. 今天 16:08
+1264. 今天 16:08
    来源：[src/data/cc98.posts.json:2668](../src/data/cc98.posts.json#L2668)；[src/data/cc98.posts.json:2737](../src/data/cc98.posts.json#L2737)
-1276. 别在帖子里公开全名和卡号是对的，让丢卡同学自己去对卡套细节。
+1265. 别在帖子里公开全名和卡号是对的，让丢卡同学自己去对卡套细节。
    来源：[src/data/cc98.posts.json:2671](../src/data/cc98.posts.json#L2671)
-1277. 今天 16:10
+1266. 今天 16:10
    来源：[src/data/cc98.posts.json:2677](../src/data/cc98.posts.json#L2677)
-1278. 饮水机那儿来来往往人挺多的，要是晚点没人拿可以考虑放门卫处。
+1267. 饮水机那儿来来往往人挺多的，要是晚点没人拿可以考虑放门卫处。
    来源：[src/data/cc98.posts.json:2680](../src/data/cc98.posts.json#L2680)
-1279. 发帖只说卡套颜色和磨损挺稳妥的，留点关键信息现场核验最安全。
+1268. 发帖只说卡套颜色和磨损挺稳妥的，留点关键信息现场核验最安全。
    来源：[src/data/cc98.posts.json:2689](../src/data/cc98.posts.json#L2689)
-1280. 三号窗口观察员
+1269. 三号窗口观察员
    来源：[src/data/cc98.posts.json:2697](../src/data/cc98.posts.json#L2697)
-1281. 东二食堂三号窗口点餐界面改动导致排队小卡顿
+1270. 东二食堂三号窗口点餐界面改动导致排队小卡顿
    来源：[src/data/cc98.posts.json:2701](../src/data/cc98.posts.json#L2701)
-1282. 26-07-10 16:02
+1271. 26-07-10 16:02
    来源：[src/data/cc98.posts.json:2704](../src/data/cc98.posts.json#L2704)
-1283. 今天中午在东二食堂排三号窗口，发现队伍走得格外慢，大家到了打饭机前都在找入口。原来当天套餐入口挪到了屏幕最底部那一行，稍微晃一眼还真没看到，提醒后面来吃饭的同学留意下。
+1272. 今天中午在东二食堂排三号窗口，发现队伍走得格外慢，大家到了打饭机前都在找入口。原来当天套餐入口挪到了屏幕最底部那一行，稍微晃一眼还真没看到，提醒后面来吃饭的同学留意下。
    来源：[src/data/cc98.posts.json:2705](../src/data/cc98.posts.json#L2705)
-1284. 补充点餐界面变化
+1273. 补充点餐界面变化
    来源：[src/data/cc98.posts.json:2708](../src/data/cc98.posts.json#L2708)
-1285. 帖子说明了排队变慢的具体原因
+1274. 帖子说明了排队变慢的具体原因
    来源：[src/data/cc98.posts.json:2709](../src/data/cc98.posts.json#L2709)
-1286. 今天 16:04
+1275. 今天 16:04
    来源：[src/data/cc98.posts.json:2719](../src/data/cc98.posts.json#L2719)
-1287. 我刚去吃完，今天确实变成先选套餐后挑饭了，跟昨天的顺序不一样。
+1276. 我刚去吃完，今天确实变成先选套餐后挑饭了，跟昨天的顺序不一样。
    来源：[src/data/cc98.posts.json:2722](../src/data/cc98.posts.json#L2722)
-1288. 今天 16:06
+1277. 今天 16:06
    来源：[src/data/cc98.posts.json:2728](../src/data/cc98.posts.json#L2728)
-1289. 走到屏幕前才转头问同伴吃啥的，队伍真的会被整整齐齐卡住十几秒。
+1278. 走到屏幕前才转头问同伴吃啥的，队伍真的会被整整齐齐卡住十几秒。
    来源：[src/data/cc98.posts.json:2731](../src/data/cc98.posts.json#L2731)
-1290. 我也在屏幕前面愣了好几秒才找着按钮，新改的位置确实容易看漏。
+1279. 我也在屏幕前面愣了好几秒才找着按钮，新改的位置确实容易看漏。
    来源：[src/data/cc98.posts.json:2740](../src/data/cc98.posts.json#L2740)
-1291. 时间戳和打印队都要记清。
+1280. 时间戳和打印队都要记清。
    来源：[src/data/cc98.thread-personas.json:2](../src/data/cc98.thread-personas.json#L2)
-1292. 晚八点打印机
+1281. 晚八点打印机
    来源：[src/data/cc98.thread-personas.json:2](../src/data/cc98.thread-personas.json#L2)；[src/scenes/phone/P02_CC98/ThreadPage.tsx:41](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L41)
-1293. 路过带图，顺手报告风向和人流。
+1282. 路过带图，顺手报告风向和人流。
    来源：[src/data/cc98.thread-personas.json:3](../src/data/cc98.thread-personas.json#L3)
-1294. 玉泉风很大
+1283. 玉泉风很大
    来源：[src/data/cc98.thread-personas.json:3](../src/data/cc98.thread-personas.json#L3)；[src/scenes/phone/P02_CC98/ThreadPage.tsx:51](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L51)
-1295. 盯着座位、插座和没人取走的东西。
+1284. 盯着座位、插座和没人取走的东西。
    来源：[src/data/cc98.thread-personas.json:4](../src/data/cc98.thread-personas.json#L4)
-1296. 二南插座观察员
+1285. 二南插座观察员
    来源：[src/data/cc98.thread-personas.json:4](../src/data/cc98.thread-personas.json#L4)
-1297. 每天经过求是潮，偶尔能走出去。
+1286. 每天经过求是潮，偶尔能走出去。
    来源：[src/data/cc98.thread-personas.json:5](../src/data/cc98.thread-personas.json#L5)
-1298. 求是潮逆行者
+1287. 求是潮逆行者
    来源：[src/data/cc98.thread-personas.json:5](../src/data/cc98.thread-personas.json#L5)
-1299. 六分钱富豪
+1288. 六分钱富豪
    来源：[src/data/cc98.thread-personas.json:6](../src/data/cc98.thread-personas.json#L6)
-1300. 余额 0.06 元，账目记录完整。
+1289. 余额 0.06 元，账目记录完整。
    来源：[src/data/cc98.thread-personas.json:6](../src/data/cc98.thread-personas.json#L6)
-1301. 没有审核权限，只保留证据和结论。
+1290. 没有审核权限，只保留证据和结论。
    来源：[src/data/cc98.thread-personas.json:7](../src/data/cc98.thread-personas.json#L7)
-1302. 紫金港野生审核员
+1291. 紫金港野生审核员
    来源：[src/data/cc98.thread-personas.json:7](../src/data/cc98.thread-personas.json#L7)
-1303. narrator
+1292. narrator
    来源：[src/data/dialogue.lines.json:5](../src/data/dialogue.lines.json#L5)；[src/data/storyLines.ts:46](../src/data/storyLines.ts#L46)
-1304. 你没有5分钟了，但你很有勇气
+1293. 你没有5分钟了，但你很有勇气
    来源：[src/data/dialogue.lines.json:6](../src/data/dialogue.lines.json#L6)
-1305. xiaoying
+1294. xiaoying
    来源：[src/data/dialogue.lines.json:16](../src/data/dialogue.lines.json#L16)；[src/data/dialogue.lines.json:27](../src/data/dialogue.lines.json#L27)；[src/data/dialogue.lines.json:38](../src/data/dialogue.lines.json#L38)；[src/data/dialogue.lines.json:71](../src/data/dialogue.lines.json#L71)；[src/data/dialogue.lines.json:93](../src/data/dialogue.lines.json#L93)；[src/scenes/phone/P14_Wechat/index.tsx:407](../src/scenes/phone/P14_Wechat/index.tsx#L407)
-1306. 起床蠢货！！！
+1295. 起床蠢货！！！
    来源：[src/data/dialogue.lines.json:17](../src/data/dialogue.lines.json#L17)
-1307. 等等等等，你想翘课？没门！我不会让你签上的！
+1296. 等等等等，你想翘课？没门！我不会让你签上的！
    来源：[src/data/dialogue.lines.json:28](../src/data/dialogue.lines.json#L28)
-1308. 找你的数字去吧哈哈哈
+1297. 找你的数字去吧哈哈哈
    来源：[src/data/dialogue.lines.json:39](../src/data/dialogue.lines.json#L39)；[src/scenes/phone/P14_Wechat/index.tsx:1036](../src/scenes/phone/P14_Wechat/index.tsx#L1036)
-1309. system
-   来源：[src/data/dialogue.lines.json:49](../src/data/dialogue.lines.json#L49)；[src/data/dialogue.lines.json:60](../src/data/dialogue.lines.json#L60)；[src/data/dialogue.lines.json:82](../src/data/dialogue.lines.json#L82)；[src/data/storyLines.ts:46](../src/data/storyLines.ts#L46)；[src/data/storyLines.ts:54](../src/data/storyLines.ts#L54)；[src/scenes/phone/P02_CC98/index.tsx:657](../src/scenes/phone/P02_CC98/index.tsx#L657)；[src/scenes/phone/P02_CC98/index.tsx:808](../src/scenes/phone/P02_CC98/index.tsx#L808)；[src/scenes/phone/P07_Weather/index.tsx:29](../src/scenes/phone/P07_Weather/index.tsx#L29)；[src/scenes/phone/P07_Weather/index.tsx:44](../src/scenes/phone/P07_Weather/index.tsx#L44)；[src/scenes/phone/P07_Weather/index.tsx:48](../src/scenes/phone/P07_Weather/index.tsx#L48)；[src/scenes/phone/P07_Weather/index.tsx:51](../src/scenes/phone/P07_Weather/index.tsx#L51)；[src/scenes/phone/P07_Weather/index.tsx:90](../src/scenes/phone/P07_Weather/index.tsx#L90)；[src/scenes/phone/P07_Weather/index.tsx:93](../src/scenes/phone/P07_Weather/index.tsx#L93)；[src/scenes/phone/P13_PhoneHome/index.tsx:222](../src/scenes/phone/P13_PhoneHome/index.tsx#L222)；[src/scenes/phone/P13_PhoneHome/index.tsx:346](../src/scenes/phone/P13_PhoneHome/index.tsx#L346)；[src/scenes/phone/P13_PhoneHome/index.tsx:350](../src/scenes/phone/P13_PhoneHome/index.tsx#L350)；[src/scenes/phone/P14_Wechat/index.tsx:353](../src/scenes/phone/P14_Wechat/index.tsx#L353)；[src/scenes/phone/P14_Wechat/index.tsx:359](../src/scenes/phone/P14_Wechat/index.tsx#L359)；[src/scenes/phone/P14_Wechat/index.tsx:423](../src/scenes/phone/P14_Wechat/index.tsx#L423)；[src/scenes/phone/P14_Wechat/index.tsx:427](../src/scenes/phone/P14_Wechat/index.tsx#L427)；[src/scenes/phone/P14_Wechat/index.tsx:510](../src/scenes/phone/P14_Wechat/index.tsx#L510)；[src/scenes/phone/P15_Zjuding/index.tsx:76](../src/scenes/phone/P15_Zjuding/index.tsx#L76)；[src/scenes/phone/P15_Zjuding/index.tsx:78](../src/scenes/phone/P15_Zjuding/index.tsx#L78)；[src/scenes/phone/P15_Zjuding/index.tsx:79](../src/scenes/phone/P15_Zjuding/index.tsx#L79)；[src/scenes/phone/P15_Zjuding/index.tsx:80](../src/scenes/phone/P15_Zjuding/index.tsx#L80)；[src/scenes/phone/P15_Zjuding/index.tsx:83](../src/scenes/phone/P15_Zjuding/index.tsx#L83)；[src/scenes/phone/P15_Zjuding/index.tsx:85](../src/scenes/phone/P15_Zjuding/index.tsx#L85)；[src/scenes/phone/P15_Zjuding/index.tsx:86](../src/scenes/phone/P15_Zjuding/index.tsx#L86)；[src/scenes/phone/P15_Zjuding/index.tsx:89](../src/scenes/phone/P15_Zjuding/index.tsx#L89)；[src/scenes/phone/P15_Zjuding/index.tsx:91](../src/scenes/phone/P15_Zjuding/index.tsx#L91)；[src/scenes/phone/P15_Zjuding/index.tsx:92](../src/scenes/phone/P15_Zjuding/index.tsx#L92)；[src/scenes/phone/P15_Zjuding/index.tsx:93](../src/scenes/phone/P15_Zjuding/index.tsx#L93)；[src/scenes/phone/P15_Zjuding/index.tsx:94](../src/scenes/phone/P15_Zjuding/index.tsx#L94)；[src/scenes/phone/P15_Zjuding/index.tsx:97](../src/scenes/phone/P15_Zjuding/index.tsx#L97)；[src/scenes/phone/P15_Zjuding/index.tsx:98](../src/scenes/phone/P15_Zjuding/index.tsx#L98)；[src/scenes/phone/P15_Zjuding/index.tsx:99](../src/scenes/phone/P15_Zjuding/index.tsx#L99)；[src/scenes/phone/P15_Zjuding/index.tsx:100](../src/scenes/phone/P15_Zjuding/index.tsx#L100)；[src/scenes/phone/P15_Zjuding/index.tsx:642](../src/scenes/phone/P15_Zjuding/index.tsx#L642)；[src/scenes/phone/P15_Zjuding/index.tsx:657](../src/scenes/phone/P15_Zjuding/index.tsx#L657)；[src/scenes/phone/P15_Zjuding/index.tsx:687](../src/scenes/phone/P15_Zjuding/index.tsx#L687)；[src/scenes/phone/P15_Zjuding/index.tsx:780](../src/scenes/phone/P15_Zjuding/index.tsx#L780)；[src/scenes/phone/P15_Zjuding/index.tsx:947](../src/scenes/phone/P15_Zjuding/index.tsx#L947)；[src/scenes/phone/P15_Zjuding/index.tsx:1078](../src/scenes/phone/P15_Zjuding/index.tsx#L1078)；[src/scenes/phone/P15_Zjuding/index.tsx:2164](../src/scenes/phone/P15_Zjuding/index.tsx#L2164)；[src/scenes/rpg/BootScene.ts:206](../src/scenes/rpg/BootScene.ts#L206)；[src/scenes/rpg/BootScene.ts:208](../src/scenes/rpg/BootScene.ts#L208)；[src/scenes/rpg/BootScene.ts:619](../src/scenes/rpg/BootScene.ts#L619)
-1310. 余额暂时不足以购买尊严
+1298. system
+   来源：[src/data/dialogue.lines.json:49](../src/data/dialogue.lines.json#L49)；[src/data/dialogue.lines.json:60](../src/data/dialogue.lines.json#L60)；[src/data/dialogue.lines.json:82](../src/data/dialogue.lines.json#L82)；[src/data/storyLines.ts:46](../src/data/storyLines.ts#L46)；[src/data/storyLines.ts:54](../src/data/storyLines.ts#L54)；[src/scenes/phone/P02_CC98/index.tsx:657](../src/scenes/phone/P02_CC98/index.tsx#L657)；[src/scenes/phone/P02_CC98/index.tsx:808](../src/scenes/phone/P02_CC98/index.tsx#L808)；[src/scenes/phone/P07_Weather/index.tsx:29](../src/scenes/phone/P07_Weather/index.tsx#L29)；[src/scenes/phone/P07_Weather/index.tsx:44](../src/scenes/phone/P07_Weather/index.tsx#L44)；[src/scenes/phone/P07_Weather/index.tsx:48](../src/scenes/phone/P07_Weather/index.tsx#L48)；[src/scenes/phone/P07_Weather/index.tsx:51](../src/scenes/phone/P07_Weather/index.tsx#L51)；[src/scenes/phone/P07_Weather/index.tsx:90](../src/scenes/phone/P07_Weather/index.tsx#L90)；[src/scenes/phone/P07_Weather/index.tsx:93](../src/scenes/phone/P07_Weather/index.tsx#L93)；[src/scenes/phone/P13_PhoneHome/index.tsx:221](../src/scenes/phone/P13_PhoneHome/index.tsx#L221)；[src/scenes/phone/P13_PhoneHome/index.tsx:345](../src/scenes/phone/P13_PhoneHome/index.tsx#L345)；[src/scenes/phone/P13_PhoneHome/index.tsx:349](../src/scenes/phone/P13_PhoneHome/index.tsx#L349)；[src/scenes/phone/P14_Wechat/index.tsx:353](../src/scenes/phone/P14_Wechat/index.tsx#L353)；[src/scenes/phone/P14_Wechat/index.tsx:359](../src/scenes/phone/P14_Wechat/index.tsx#L359)；[src/scenes/phone/P14_Wechat/index.tsx:423](../src/scenes/phone/P14_Wechat/index.tsx#L423)；[src/scenes/phone/P14_Wechat/index.tsx:427](../src/scenes/phone/P14_Wechat/index.tsx#L427)；[src/scenes/phone/P14_Wechat/index.tsx:510](../src/scenes/phone/P14_Wechat/index.tsx#L510)；[src/scenes/phone/P15_Zjuding/index.tsx:76](../src/scenes/phone/P15_Zjuding/index.tsx#L76)；[src/scenes/phone/P15_Zjuding/index.tsx:78](../src/scenes/phone/P15_Zjuding/index.tsx#L78)；[src/scenes/phone/P15_Zjuding/index.tsx:79](../src/scenes/phone/P15_Zjuding/index.tsx#L79)；[src/scenes/phone/P15_Zjuding/index.tsx:80](../src/scenes/phone/P15_Zjuding/index.tsx#L80)；[src/scenes/phone/P15_Zjuding/index.tsx:83](../src/scenes/phone/P15_Zjuding/index.tsx#L83)；[src/scenes/phone/P15_Zjuding/index.tsx:85](../src/scenes/phone/P15_Zjuding/index.tsx#L85)；[src/scenes/phone/P15_Zjuding/index.tsx:86](../src/scenes/phone/P15_Zjuding/index.tsx#L86)；[src/scenes/phone/P15_Zjuding/index.tsx:89](../src/scenes/phone/P15_Zjuding/index.tsx#L89)；[src/scenes/phone/P15_Zjuding/index.tsx:91](../src/scenes/phone/P15_Zjuding/index.tsx#L91)；[src/scenes/phone/P15_Zjuding/index.tsx:92](../src/scenes/phone/P15_Zjuding/index.tsx#L92)；[src/scenes/phone/P15_Zjuding/index.tsx:93](../src/scenes/phone/P15_Zjuding/index.tsx#L93)；[src/scenes/phone/P15_Zjuding/index.tsx:94](../src/scenes/phone/P15_Zjuding/index.tsx#L94)；[src/scenes/phone/P15_Zjuding/index.tsx:97](../src/scenes/phone/P15_Zjuding/index.tsx#L97)；[src/scenes/phone/P15_Zjuding/index.tsx:98](../src/scenes/phone/P15_Zjuding/index.tsx#L98)；[src/scenes/phone/P15_Zjuding/index.tsx:99](../src/scenes/phone/P15_Zjuding/index.tsx#L99)；[src/scenes/phone/P15_Zjuding/index.tsx:100](../src/scenes/phone/P15_Zjuding/index.tsx#L100)；[src/scenes/phone/P15_Zjuding/index.tsx:642](../src/scenes/phone/P15_Zjuding/index.tsx#L642)；[src/scenes/phone/P15_Zjuding/index.tsx:657](../src/scenes/phone/P15_Zjuding/index.tsx#L657)；[src/scenes/phone/P15_Zjuding/index.tsx:687](../src/scenes/phone/P15_Zjuding/index.tsx#L687)；[src/scenes/phone/P15_Zjuding/index.tsx:780](../src/scenes/phone/P15_Zjuding/index.tsx#L780)；[src/scenes/phone/P15_Zjuding/index.tsx:947](../src/scenes/phone/P15_Zjuding/index.tsx#L947)；[src/scenes/phone/P15_Zjuding/index.tsx:1078](../src/scenes/phone/P15_Zjuding/index.tsx#L1078)；[src/scenes/phone/P15_Zjuding/index.tsx:2164](../src/scenes/phone/P15_Zjuding/index.tsx#L2164)；[src/scenes/rpg/BootScene.ts:206](../src/scenes/rpg/BootScene.ts#L206)；[src/scenes/rpg/BootScene.ts:208](../src/scenes/rpg/BootScene.ts#L208)；[src/scenes/rpg/BootScene.ts:619](../src/scenes/rpg/BootScene.ts#L619)
+1299. 余额暂时不足以购买尊严
    来源：[src/data/dialogue.lines.json:50](../src/data/dialogue.lines.json#L50)
-1311. 校园网已经尽力了，你也是
+1300. 校园网已经尽力了，你也是
    来源：[src/data/dialogue.lines.json:61](../src/data/dialogue.lines.json#L61)
-1312. 我知道你没钱买流量
+1301. 我知道你没钱买流量
    来源：[src/data/dialogue.lines.json:72](../src/data/dialogue.lines.json#L72)
-1313. 就差一次，真绝望
+1302. 就差一次，真绝望
    来源：[src/data/dialogue.lines.json:83](../src/data/dialogue.lines.json#L83)
-1314. 哈，一个废齿轮
+1303. 哈，一个废齿轮
    来源：[src/data/dialogue.lines.json:94](../src/data/dialogue.lines.json#L94)
-1315. 022 临时离座留言
+1304. 022 临时离座留言
    来源：[src/data/itemCatalog.ts:30](../src/data/itemCatalog.ts#L30)
-1316. 022 · 一层书库
+1305. 022 · 一层书库
    来源：[src/data/itemCatalog.ts:32](../src/data/itemCatalog.ts#L32)；[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:139](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L139)
-1317. 离开时长
+1306. 离开时长
    来源：[src/data/itemCatalog.ts:33](../src/data/itemCatalog.ts#L33)
-1318. 三分钟
+1307. 三分钟
    来源：[src/data/itemCatalog.ts:33](../src/data/itemCatalog.ts#L33)
-1319. 留言状态
+1308. 留言状态
    来源：[src/data/itemCatalog.ts:34](../src/data/itemCatalog.ts#L34)
-1320. 仍在占用
+1309. 仍在占用
    来源：[src/data/itemCatalog.ts:34](../src/data/itemCatalog.ts#L34)
-1321. 本人离开三分钟，回来前请勿使用。
+1310. 本人离开三分钟，回来前请勿使用。
    来源：[src/data/itemCatalog.ts:36](../src/data/itemCatalog.ts#L36)
-1322. 开始计时的时刻未填写。临时离座规则详见 CC98。
+1311. 开始计时的时刻未填写。临时离座规则详见 CC98。
    来源：[src/data/itemCatalog.ts:36](../src/data/itemCatalog.ts#L36)
-1323. 纸张边缘留有反复折叠痕迹。
+1312. 纸张边缘留有反复折叠痕迹。
    来源：[src/data/itemCatalog.ts:37](../src/data/itemCatalog.ts#L37)
-1324. 馆藏定位单
+1313. 馆藏定位单
    来源：[src/data/itemCatalog.ts:40](../src/data/itemCatalog.ts#L40)
-1325. 《三分钟离座法及其例外》
+1314. 《三分钟离座法及其例外》
    来源：[src/data/itemCatalog.ts:42](../src/data/itemCatalog.ts#L42)
-1326. 书名
+1315. 书名
    来源：[src/data/itemCatalog.ts:42](../src/data/itemCatalog.ts#L42)；[src/scenes/phone/P15_Zjuding/index.tsx:1650](../src/scenes/phone/P15_Zjuding/index.tsx#L1650)
-1327. 索书号
+1316. 索书号
    来源：[src/data/itemCatalog.ts:43](../src/data/itemCatalog.ts#L43)
-1328. 馆藏位置
+1317. 馆藏位置
    来源：[src/data/itemCatalog.ts:44](../src/data/itemCatalog.ts#L44)
-1329. 基础馆文学书架 · 755 段
+1318. 基础馆文学书架 · 755 段
    来源：[src/data/itemCatalog.ts:44](../src/data/itemCatalog.ts#L44)
-1330. 旧版离座规定存放于上述书架。
+1319. 旧版离座规定存放于上述书架。
    来源：[src/data/itemCatalog.ts:46](../src/data/itemCatalog.ts#L46)
-1331. 只供馆内查阅；查完能否离座，请查规定。
+1320. 只供馆内查阅；查完能否离座，请查规定。
    来源：[src/data/itemCatalog.ts:46](../src/data/itemCatalog.ts#L46)
-1332. 状态：仅馆内查阅。
+1321. 状态：仅馆内查阅。
    来源：[src/data/itemCatalog.ts:47](../src/data/itemCatalog.ts#L47)
-1333. 旧版临时离座恢复规定
+1322. 旧版临时离座恢复规定
    来源：[src/data/itemCatalog.ts:50](../src/data/itemCatalog.ts#L50)
-1334. 版本
+1323. 版本
    来源：[src/data/itemCatalog.ts:52](../src/data/itemCatalog.ts#L52)
-1335. 期末周修订版 · 已归档
+1324. 期末周修订版 · 已归档
    来源：[src/data/itemCatalog.ts:52](../src/data/itemCatalog.ts#L52)
-1336. 适用范围
+1325. 适用范围
    来源：[src/data/itemCatalog.ts:53](../src/data/itemCatalog.ts#L53)
-1337. 座位被非本人随身物持续占用
+1326. 座位被非本人随身物持续占用
    来源：[src/data/itemCatalog.ts:53](../src/data/itemCatalog.ts#L53)
-1338. 目标座位
+1327. 目标座位
    来源：[src/data/itemCatalog.ts:54](../src/data/itemCatalog.ts#L54)
-1339. 恢复申请须同时具备三类证明：
+1328. 恢复申请须同时具备三类证明：
    来源：[src/data/itemCatalog.ts:57](../src/data/itemCatalog.ts#L57)
-1340. 一、本人确实到馆；
+1329. 一、本人确实到馆；
    来源：[src/data/itemCatalog.ts:58](../src/data/itemCatalog.ts#L58)
-1341. 二、目标座位与凭据一致；
+1330. 二、目标座位与凭据一致；
    来源：[src/data/itemCatalog.ts:59](../src/data/itemCatalog.ts#L59)
-1342. 三、当前占用物不具备本人身份。
+1331. 三、当前占用物不具备本人身份。
    来源：[src/data/itemCatalog.ts:60](../src/data/itemCatalog.ts#L60)
-1343. 规则依据须先完成公开公示。
+1332. 规则依据须先完成公开公示。
    来源：[src/data/itemCatalog.ts:62](../src/data/itemCatalog.ts#L62)
-1344. 物品识别报告
+1333. 物品识别报告
    来源：[src/data/itemCatalog.ts:65](../src/data/itemCatalog.ts#L65)；[src/data/items.config.json:116](../src/data/items.config.json#L116)
-1345. 对象类型
+1334. 对象类型
    来源：[src/data/itemCatalog.ts:67](../src/data/itemCatalog.ts#L67)
-1346. 双肩书包
+1335. 双肩书包
    来源：[src/data/itemCatalog.ts:67](../src/data/itemCatalog.ts#L67)
-1347. 未识别
+1336. 未识别
    来源：[src/data/itemCatalog.ts:68](../src/data/itemCatalog.ts#L68)；[src/data/itemCatalog.ts:69](../src/data/itemCatalog.ts#L69)
-1348. 姓名
+1337. 姓名
    来源：[src/data/itemCatalog.ts:68](../src/data/itemCatalog.ts#L68)；[src/scenes/phone/P15_Zjuding/index.tsx:1297](../src/scenes/phone/P15_Zjuding/index.tsx#L1297)；[src/scenes/phone/P15_Zjuding/index.tsx:1363](../src/scenes/phone/P15_Zjuding/index.tsx#L1363)
-1349. 学号
+1338. 学号
    来源：[src/data/itemCatalog.ts:69](../src/data/itemCatalog.ts#L69)；[src/scenes/phone/P15_Zjuding/index.tsx:1301](../src/scenes/phone/P15_Zjuding/index.tsx#L1301)；[src/scenes/phone/P15_Zjuding/index.tsx:1375](../src/scenes/phone/P15_Zjuding/index.tsx#L1375)
-1350. 识别结果
+1339. 识别结果
    来源：[src/data/itemCatalog.ts:70](../src/data/itemCatalog.ts#L70)
-1351. 未检测到可签到主体
+1340. 未检测到可签到主体
    来源：[src/data/itemCatalog.ts:70](../src/data/itemCatalog.ts#L70)
-1352. 识别到双肩带、拉链与课本，未识别到姓名或学号。
+1341. 识别到双肩带、拉链与课本，未识别到姓名或学号。
    来源：[src/data/itemCatalog.ts:72](../src/data/itemCatalog.ts#L72)
-1353. 书包身份待馆内前台核验。图像识别不代替盖章。
+1342. 书包身份待馆内前台核验。图像识别不代替盖章。
    来源：[src/data/itemCatalog.ts:72](../src/data/itemCatalog.ts#L72)
-1354. 报告状态：待盖章。
+1343. 报告状态：待盖章。
    来源：[src/data/itemCatalog.ts:73](../src/data/itemCatalog.ts#L73)
-1355. 书包非本人证明
+1344. 书包非本人证明
    来源：[src/data/itemCatalog.ts:76](../src/data/itemCatalog.ts#L76)；[src/data/items.config.json:123](../src/data/items.config.json#L123)；[src/data/presentation-cues.ts:142](../src/data/presentation-cues.ts#L142)；[src/scenes/phone/P15_Zjuding/index.tsx:200](../src/scenes/phone/P15_Zjuding/index.tsx#L200)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:106](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L106)
-1356. 022 座位占用书包
+1345. 022 座位占用书包
    来源：[src/data/itemCatalog.ts:78](../src/data/itemCatalog.ts#L78)
-1357. 对象
+1346. 对象
    来源：[src/data/itemCatalog.ts:78](../src/data/itemCatalog.ts#L78)
-1358. 非本人
+1347. 非本人
    来源：[src/data/itemCatalog.ts:79](../src/data/itemCatalog.ts#L79)
-1359. 认证结论
+1348. 认证结论
    来源：[src/data/itemCatalog.ts:79](../src/data/itemCatalog.ts#L79)
-1360. 无 / 无
+1349. 无 / 无
    来源：[src/data/itemCatalog.ts:80](../src/data/itemCatalog.ts#L80)
-1361. 姓名 / 学号
+1350. 姓名 / 学号
    来源：[src/data/itemCatalog.ts:80](../src/data/itemCatalog.ts#L80)
-1362. 盖章来源
+1351. 盖章来源
    来源：[src/data/itemCatalog.ts:81](../src/data/itemCatalog.ts#L81)
-1363. 基础馆物品身份盖章机
+1352. 基础馆物品身份盖章机
    来源：[src/data/itemCatalog.ts:81](../src/data/itemCatalog.ts#L81)
-1364. 本证明仅证明书包。持有人仍需另交到馆材料。
+1353. 本证明仅证明书包。持有人仍需另交到馆材料。
    来源：[src/data/itemCatalog.ts:83](../src/data/itemCatalog.ts#L83)
-1365. 经核验，该书包无姓名、无学号，不具备独立占用座位的身份条件。
+1354. 经核验，该书包无姓名、无学号，不具备独立占用座位的身份条件。
    来源：[src/data/itemCatalog.ts:83](../src/data/itemCatalog.ts#L83)
-1366. 电子章：基础馆失物身份登记。
+1355. 电子章：基础馆失物身份登记。
    来源：[src/data/itemCatalog.ts:84](../src/data/itemCatalog.ts#L84)
-1367. 022 座位凭据
+1356. 022 座位凭据
    来源：[src/data/itemCatalog.ts:90](../src/data/itemCatalog.ts#L90)
-1368. 座位编号
+1357. 座位编号
    来源：[src/data/itemCatalog.ts:92](../src/data/itemCatalog.ts#L92)
-1369. 区域
+1358. 区域
    来源：[src/data/itemCatalog.ts:93](../src/data/itemCatalog.ts#L93)；[src/scenes/phone/P15_Zjuding/index.tsx:415](../src/scenes/phone/P15_Zjuding/index.tsx#L415)
-1370. 一层书库
+1359. 一层书库
    来源：[src/data/itemCatalog.ts:93](../src/data/itemCatalog.ts#L93)
-1371. 离座中 · 待公示
+1360. 离座中 · 待公示
    来源：[src/data/itemCatalog.ts:95](../src/data/itemCatalog.ts#L95)
-1372. 凭据状态
+1361. 凭据状态
    来源：[src/data/itemCatalog.ts:95](../src/data/itemCatalog.ts#L95)
-1373. 当前占用物：书包。
+1362. 当前占用物：书包。
    来源：[src/data/itemCatalog.ts:97](../src/data/itemCatalog.ts#L97)
-1374. 恢复处理需提交论坛公示。
+1363. 恢复处理需提交论坛公示。
    来源：[src/data/itemCatalog.ts:97](../src/data/itemCatalog.ts#L97)
-1375. 凭据来源：022 桌面夹缝。
+1364. 凭据来源：022 桌面夹缝。
    来源：[src/data/itemCatalog.ts:98](../src/data/itemCatalog.ts#L98)
-1376. 本人来过证明
+1365. 本人来过证明
    来源：[src/data/itemCatalog.ts:104](../src/data/itemCatalog.ts#L104)；[src/data/items.config.json:137](../src/data/items.config.json#L137)；[src/data/presentation-cues.ts:160](../src/data/presentation-cues.ts#L160)；[src/scenes/phone/P15_Zjuding/index.tsx:212](../src/scenes/phone/P15_Zjuding/index.tsx#L212)
-1377. 7 分钟
+1366. 7 分钟
    来源：[src/data/itemCatalog.ts:106](../src/data/itemCatalog.ts#L106)
-1378. 到馆时长
+1367. 到馆时长
    来源：[src/data/itemCatalog.ts:106](../src/data/itemCatalog.ts#L106)
-1379. 公示编号
+1368. 公示编号
    来源：[src/data/itemCatalog.ts:107](../src/data/itemCatalog.ts#L107)
-1380. 证明数量
+1369. 证明数量
    来源：[src/data/itemCatalog.ts:108](../src/data/itemCatalog.ts#L108)
-1381. 补录成功
+1370. 补录成功
    来源：[src/data/itemCatalog.ts:109](../src/data/itemCatalog.ts#L109)
-1382. 记录状态
+1371. 记录状态
    来源：[src/data/itemCatalog.ts:109](../src/data/itemCatalog.ts#L109)
-1383. 到馆已确认，座位使用仍需单独申请。
+1372. 到馆已确认，座位使用仍需单独申请。
    来源：[src/data/itemCatalog.ts:111](../src/data/itemCatalog.ts#L111)
-1384. 访问轨迹与 022 座位凭据的时间记录一致。
+1373. 访问轨迹与 022 座位凭据的时间记录一致。
    来源：[src/data/itemCatalog.ts:111](../src/data/itemCatalog.ts#L111)
-1385. 签发来源：浙大体艺访问记录补录。
+1374. 签发来源：浙大体艺访问记录补录。
    来源：[src/data/itemCatalog.ts:112](../src/data/itemCatalog.ts#L112)
-1386. 离座清退 PASS
+1375. 离座清退 PASS
    来源：[src/data/itemCatalog.ts:118](../src/data/itemCatalog.ts#L118)；[src/data/items.config.json:144](../src/data/items.config.json#L144)
-1387. 适用座位
+1376. 适用座位
    来源：[src/data/itemCatalog.ts:120](../src/data/itemCatalog.ts#L120)
-1388. 处理目标
+1377. 处理目标
    来源：[src/data/itemCatalog.ts:121](../src/data/itemCatalog.ts#L121)
-1389. 非本人占用书包
+1378. 非本人占用书包
    来源：[src/data/itemCatalog.ts:121](../src/data/itemCatalog.ts#L121)
-1390. 单次有效
+1379. 单次有效
    来源：[src/data/itemCatalog.ts:122](../src/data/itemCatalog.ts#L122)
-1391. 有效状态
+1380. 有效状态
    来源：[src/data/itemCatalog.ts:122](../src/data/itemCatalog.ts#L122)
-1392. 已完成公开公示与三项恢复材料核验。
+1381. 已完成公开公示与三项恢复材料核验。
    来源：[src/data/itemCatalog.ts:124](../src/data/itemCatalog.ts#L124)
-1393. 仅对登记为非本人的占用物有效。
+1382. 仅对登记为非本人的占用物有效。
    来源：[src/data/itemCatalog.ts:125](../src/data/itemCatalog.ts#L125)
-1394. 取餐号
+1383. 取餐号
    来源：[src/data/itemCatalog.ts:140](../src/data/itemCatalog.ts#L140)
-1395. 请取餐
+1384. 请取餐
    来源：[src/data/itemCatalog.ts:141](../src/data/itemCatalog.ts#L141)
-1396. 状态
+1385. 状态
    来源：[src/data/itemCatalog.ts:141](../src/data/itemCatalog.ts#L141)；[src/data/itemCatalog.ts:165](../src/data/itemCatalog.ts#L165)
-1397. 请凭号码取餐，实际餐品请听窗口叫号。
+1386. 请凭号码取餐，实际餐品请听窗口叫号。
    来源：[src/data/itemCatalog.ts:143](../src/data/itemCatalog.ts#L143)
-1398. 已完成点餐不等于已完成取餐。
+1387. 已完成点餐不等于已完成取餐。
    来源：[src/data/itemCatalog.ts:143](../src/data/itemCatalog.ts#L143)
-1399. 小票遗失，请回原队伍处理。
+1388. 小票遗失，请回原队伍处理。
    来源：[src/data/itemCatalog.ts:144](../src/data/itemCatalog.ts#L144)
-1400. 边角湿润
+1389. 边角湿润
    来源：[src/data/itemCatalog.ts:165](../src/data/itemCatalog.ts#L165)
-1401. 纸条飞走以后，地上的水迹断了。
+1390. 纸条飞走以后，地上的水迹断了。
    来源：[src/data/itemCatalog.ts:169](../src/data/itemCatalog.ts#L169)
-1402. 潮湿痕迹只能说明它经过了有水的地方。
+1391. 潮湿痕迹只能说明它经过了有水的地方。
    来源：[src/data/itemCatalog.ts:170](../src/data/itemCatalog.ts#L170)
-1403. 还得找目击记录和别的地点信息。
+1392. 还得找目击记录和别的地点信息。
    来源：[src/data/itemCatalog.ts:171](../src/data/itemCatalog.ts#L171)
-1404. 纸角滴水，文字还能辨认。
+1393. 纸角滴水，文字还能辨认。
    来源：[src/data/itemCatalog.ts:173](../src/data/itemCatalog.ts#L173)
-1405. 倒影坐标
+1394. 倒影坐标
    来源：[src/data/itemCatalog.ts:183](../src/data/itemCatalog.ts#L183)；[src/data/items.config.json:326](../src/data/items.config.json#L326)
-1406. 暗色细节
+1395. 暗色细节
    来源：[src/data/itemCatalog.ts:185](../src/data/itemCatalog.ts#L185)
-1407. 湖面左侧 / 桥影下方 / 亮点偏右
+1396. 湖面左侧 / 桥影下方 / 亮点偏右
    来源：[src/data/itemCatalog.ts:185](../src/data/itemCatalog.ts#L185)
-1408. 浅色细节
+1397. 浅色细节
    来源：[src/data/itemCatalog.ts:186](../src/data/itemCatalog.ts#L186)
-1409. 右侧路灯杆
+1398. 右侧路灯杆
    来源：[src/data/itemCatalog.ts:186](../src/data/itemCatalog.ts#L186)
-1410. 两种模式记录的是同一个位置。
+1399. 两种模式记录的是同一个位置。
    来源：[src/data/itemCatalog.ts:188](../src/data/itemCatalog.ts#L188)
-1411. 来源：启真湖倒影指示牌。
+1400. 来源：启真湖倒影指示牌。
    来源：[src/data/itemCatalog.ts:189](../src/data/itemCatalog.ts#L189)
-1412. 水滴
+1401. 水滴
    来源：[src/data/items.config.json:4](../src/data/items.config.json#L4)
-1413. 早八下雨时接到的水，免费。拿来浇盆栽，总算能给这场雨找点用处。
+1402. 早八下雨时接到的水，免费。拿来浇盆栽，总算能给这场雨找点用处。
    来源：[src/data/items.config.json:5](../src/data/items.config.json#L5)
-1414. 从控制中心取下的耳机，背面有个凹槽。没附保修条款，也没说不能装水。
+1403. 从控制中心取下的耳机，背面有个凹槽。没附保修条款，也没说不能装水。
    来源：[src/data/items.config.json:12](../src/data/items.config.json#L12)
-1415. 盛水的耳机
+1404. 盛水的耳机
    来源：[src/data/items.config.json:18](../src/data/items.config.json#L18)；[src/modules/InventoryController.ts:14](../src/modules/InventoryController.ts#L14)
-1416. 凹槽里盛了一点水，够浇盆栽。建议倒完再戴，听雨目前不需要这么彻底。
+1405. 凹槽里盛了一点水，够浇盆栽。建议倒完再戴，听雨目前不需要这么彻底。
    来源：[src/data/items.config.json:19](../src/data/items.config.json#L19)
-1417. 反转齿轮
+1406. 反转齿轮
    来源：[src/data/items.config.json:25](../src/data/items.config.json#L25)
-1418. 设置里的齿轮，背面刻着 9。正面管设置，背面藏数字，使用说明两面都没写。
+1407. 设置里的齿轮，背面刻着 9。正面管设置，背面藏数字，使用说明两面都没写。
    来源：[src/data/items.config.json:26](../src/data/items.config.json#L26)
-1419. 斜线
+1408. 斜线
    来源：[src/data/items.config.json:32](../src/data/items.config.json#L32)
-1420. 从朋友头像上取下的一撇。对方没收钱，也没要求你先转发。
+1409. 从朋友头像上取下的一撇。对方没收钱，也没要求你先转发。
    来源：[src/data/items.config.json:33](../src/data/items.config.json#L33)
-1421. 钥匙
+1410. 钥匙
    来源：[src/data/items.config.json:39](../src/data/items.config.json#L39)；[src/modules/InventoryController.ts:13](../src/modules/InventoryController.ts#L13)
-1422. 斜线和齿轮拼出的钥匙，轮廓能对上钟楼锁孔。配钥匙的地方在手机里，配钥匙的人是你。
+1411. 斜线和齿轮拼出的钥匙，轮廓能对上钟楼锁孔。配钥匙的地方在手机里，配钥匙的人是你。
    来源：[src/data/items.config.json:40](../src/data/items.config.json#L40)
-1423. 一袋肥料
+1412. 一袋肥料
    来源：[src/data/items.config.json:46](../src/data/items.config.json#L46)
-1424. 从钟楼里找到的一袋肥料，可以给盆栽施肥。清点钟楼物资时，大概没人想到要查这一项。
+1413. 从钟楼里找到的一袋肥料，可以给盆栽施肥。清点钟楼物资时，大概没人想到要查这一项。
    来源：[src/data/items.config.json:47](../src/data/items.config.json#L47)
-1425. 电子校园卡
+1414. 电子校园卡
    来源：[src/data/items.config.json:53](../src/data/items.config.json#L53)；[src/scenes/phone/P15_Zjuding/index.tsx:2046](../src/scenes/phone/P15_Zjuding/index.tsx#L2046)；[src/scenes/phone/P15_Zjuding/index.tsx:2048](../src/scenes/phone/P15_Zjuding/index.tsx#L2048)；[src/scenes/phone/P15_Zjuding/index.tsx:2049](../src/scenes/phone/P15_Zjuding/index.tsx#L2049)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:574](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L574)
-1426. 校园卡。姓名证明你在这里注册过，余额说明你在这里吃过饭。两项都很准确。
+1415. 校园卡。姓名证明你在这里注册过，余额说明你在这里吃过饭。两项都很准确。
    来源：[src/data/items.config.json:54](../src/data/items.config.json#L54)
-1427. 三角形
+1416. 三角形
    来源：[src/data/items.config.json:60](../src/data/items.config.json#L60)
-1428. 推送头像上松动的三角形，边缘平整，还能拼接。推送终于有了可以取用的内容。
+1417. 推送头像上松动的三角形，边缘平整，还能拼接。推送终于有了可以取用的内容。
    来源：[src/data/items.config.json:61](../src/data/items.config.json#L61)
-1429. 天气水滴
+1418. 天气水滴
    来源：[src/data/items.config.json:67](../src/data/items.config.json#L67)
-1430. 天气页面上的水滴，沾在手上是真的湿。预报准不准另说，取水不需要预约。
+1419. 天气页面上的水滴，沾在手上是真的湿。预报准不准另说，取水不需要预约。
    来源：[src/data/items.config.json:68](../src/data/items.config.json#L68)
-1431. 竖线
+1420. 竖线
    来源：[src/data/items.config.json:74](../src/data/items.config.json#L74)
-1432. 从导师头像上取下的一条竖线，笔直，能与别的图形拼合。这次没有附带修改意见。
+1421. 从导师头像上取下的一条竖线，笔直，能与别的图形拼合。这次没有附带修改意见。
    来源：[src/data/items.config.json:75](../src/data/items.config.json#L75)
-1433. 右移箭头
+1422. 右移箭头
    来源：[src/data/items.config.json:81](../src/data/items.config.json#L81)；[src/modules/InventoryController.ts:15](../src/modules/InventoryController.ts#L15)
-1434. 三角形与竖线拼成的右向箭头，可以推动数字或拨动缝隙里的东西。向左暂不支持。
+1423. 三角形与竖线拼成的右向箭头，可以推动数字或拨动缝隙里的东西。向左暂不支持。
    来源：[src/data/items.config.json:82](../src/data/items.config.json#L82)
-1435. 游戏手柄
+1424. 游戏手柄
    来源：[src/data/items.config.json:88](../src/data/items.config.json#L88)
-1436. CC98 二手市场六块钱成交。接到寝室里的角色身上就能走动，移动权限另购这件事没人提前说。
+1425. CC98 二手市场六块钱成交。接到寝室里的角色身上就能走动，移动权限另购这件事没人提前说。
    来源：[src/data/items.config.json:89](../src/data/items.config.json#L89)
-1437. 占座纸条
+1426. 占座纸条
    来源：[src/data/items.config.json:95](../src/data/items.config.json#L95)
-1438. 022 座位旁的纸条，写着“本人离开三分钟”，没写从几点开始算。可在 CC98 搜索同类记录。
+1427. 022 座位旁的纸条，写着“本人离开三分钟”，没写从几点开始算。可在 CC98 搜索同类记录。
    来源：[src/data/items.config.json:96](../src/data/items.config.json#L96)
-1439. 索书号 755
+1428. 索书号 755
    来源：[src/data/items.config.json:102](../src/data/items.config.json#L102)
-1440. 索书号 755，指向存放旧版离座规则的书架。想知道今天怎么离座，得先查旧规定。
+1429. 索书号 755，指向存放旧版离座规则的书架。想知道今天怎么离座，得先查旧规定。
    来源：[src/data/items.config.json:103](../src/data/items.config.json#L103)
-1441. 旧离座规定
+1430. 旧离座规定
    来源：[src/data/items.config.json:109](../src/data/items.config.json#L109)
-1442. 在书架背面找到的旧规定，可上传到 CC98 作证。新规要求补材料，旧规恰好算材料。
+1431. 在书架背面找到的旧规定，可上传到 CC98 作证。新规要求补材料，旧规恰好算材料。
    来源：[src/data/items.config.json:110](../src/data/items.config.json#L110)
-1443. 调暗照片后得到的识别报告，确认画面里是书包。结论还需前台盖章，肉眼看见暂不算数。
+1432. 调暗照片后得到的识别报告，确认画面里是书包。结论还需前台盖章，肉眼看见暂不算数。
    来源：[src/data/items.config.json:117](../src/data/items.config.json#L117)
-1444. 前台已经盖章，正式确认书包不是学生。可以上传到 CC98，结束这一项身份争议。
+1433. 前台已经盖章，正式确认书包不是学生。可以上传到 CC98，结束这一项身份争议。
    来源：[src/data/items.config.json:124](../src/data/items.config.json#L124)
-1445. 022 座位小票
+1434. 022 座位小票
    来源：[src/data/items.config.json:130](../src/data/items.config.json#L130)；[src/data/presentation-cues.ts:151](../src/data/presentation-cues.ts#L151)；[src/scenes/phone/P15_Zjuding/index.tsx:206](../src/scenes/phone/P15_Zjuding/index.tsx#L206)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:107](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L107)
-1446. 022 桌下夹缝里的小票，保留着占座记录。可上传到 CC98；座位还没坐到，材料先收齐了。
+1435. 022 桌下夹缝里的小票，保留着占座记录。可上传到 CC98；座位还没坐到，材料先收齐了。
    来源：[src/data/items.config.json:131](../src/data/items.config.json#L131)
-1447. 体艺补录出具的到馆证明，可上传到 CC98。本人来过，现在终于有附件了。
+1436. 体艺补录出具的到馆证明，可上传到 CC98。本人来过，现在终于有附件了。
    来源：[src/data/items.config.json:138](../src/data/items.config.json#L138)
-1448. 三项材料核准后得到的凭证，可对 022 座位上的书包使用。书包无需到场签字，它已经在场太久。
+1437. 三项材料核准后得到的凭证，可对 022 座位上的书包使用。书包无需到场签字，它已经在场太久。
    来源：[src/data/items.config.json:145](../src/data/items.config.json#L145)
-1449. 收回三只脏餐盘挣的 2.00 元，正好够骑一次车。工作按件算，路费一笔花完。
+1438. 收回三只脏餐盘挣的 2.00 元，正好够骑一次车。工作按件算，路费一笔花完。
    来源：[src/data/items.config.json:152](../src/data/items.config.json#L152)
-1450. 阿姨给的纸巾，一角有油，另一角还干净。擦车锁、擦海报玻璃都够用，暂时没有新的可领。
+1439. 阿姨给的纸巾，一角有油，另一角还干净。擦车锁、擦海报玻璃都够用，暂时没有新的可领。
    来源：[src/data/items.config.json:159](../src/data/items.config.json#L159)
-1451. 气泡水
+1440. 气泡水
    来源：[src/data/items.config.json:165](../src/data/items.config.json#L165)
-1452. 蓝色的气泡水，调配台原料之一。照货架顺序倒；新品的颜色管理比口味管理严格。
+1441. 蓝色的气泡水，调配台原料之一。照货架顺序倒；新品的颜色管理比口味管理严格。
    来源：[src/data/items.config.json:166](../src/data/items.config.json#L166)
-1453. 柠檬茶
+1442. 柠檬茶
    来源：[src/data/items.config.json:172](../src/data/items.config.json#L172)
-1454. 白色的柠檬茶，调配台原料之一。菜单上就这么印着，顺序得去看货架。
+1443. 白色的柠檬茶，调配台原料之一。菜单上就这么印着，顺序得去看货架。
    来源：[src/data/items.config.json:173](../src/data/items.config.json#L173)
-1455. 黑咖啡
+1444. 黑咖啡
    来源：[src/data/items.config.json:179](../src/data/items.config.json#L179)
-1456. 黑咖啡，调配台原料之一。颜色符合名称，已经比旁边那杯好认；倒入顺序仍按货架。
+1445. 黑咖啡，调配台原料之一。颜色符合名称，已经比旁边那杯好认；倒入顺序仍按货架。
    来源：[src/data/items.config.json:180](../src/data/items.config.json#L180)
-1457. 难喝饮料
+1446. 难喝饮料
    来源：[src/data/items.config.json:186](../src/data/items.config.json#L186)
-1458. 三种饮料倒错顺序的结果。可以自己喝，宣传位不收；难喝的原因倒是不用填表。
+1447. 三种饮料倒错顺序的结果。可以自己喝，宣传位不收；难喝的原因倒是不用填表。
    来源：[src/data/items.config.json:187](../src/data/items.config.json#L187)
-1459. 今日新品气泡水
+1448. 今日新品气泡水
    来源：[src/data/items.config.json:193](../src/data/items.config.json#L193)
-1460. 按货架顺序调好的新品，第三窗口宣传板留了空杯位。洒在地上会起两秒黏泡，记得看脚下。
+1449. 按货架顺序调好的新品，第三窗口宣传板留了空杯位。洒在地上会起两秒黏泡，记得看脚下。
    来源：[src/data/items.config.json:194](../src/data/items.config.json#L194)
-1461. 取餐号 0755。纸上只管叫号，没保证每个窗口端出的都一样。浅色操作时可交票，窗口残影里还能核对叫号记录。
+1450. 取餐号 0755。纸上只管叫号，没保证每个窗口端出的都一样。浅色操作时可交票，窗口残影里还能核对叫号记录。
    来源：[src/data/items.config.json:201](../src/data/items.config.json#L201)
-1462. 窗口包子
+1451. 窗口包子
    来源：[src/data/items.config.json:207](../src/data/items.config.json#L207)
-1463. 热包子，掰开还是馅。跑了这么多窗口，总算领到一份和菜单相符的东西。
+1452. 热包子，掰开还是馅。跑了这么多窗口，总算领到一份和菜单相符的东西。
    来源：[src/data/items.config.json:208](../src/data/items.config.json#L208)
-1464. 窗口豆浆
+1453. 窗口豆浆
    来源：[src/data/items.config.json:214](../src/data/items.config.json#L214)
-1465. 豆浆，杯盖扣得很紧。单据没附在里面，至少这杯不用过滤着喝。
+1454. 豆浆，杯盖扣得很紧。单据没附在里面，至少这杯不用过滤着喝。
    来源：[src/data/items.config.json:215](../src/data/items.config.json#L215)
-1466. 水煮蛋
+1455. 水煮蛋
    来源：[src/data/items.config.json:221](../src/data/items.config.json#L221)
-1467. 一枚水煮蛋。按号领餐，领成什么听窗口的。
+1456. 一枚水煮蛋。按号领餐，领成什么听窗口的。
    来源：[src/data/items.config.json:222](../src/data/items.config.json#L222)
-1468. 烫手的白粥
+1457. 烫手的白粥
    来源：[src/data/items.config.json:228](../src/data/items.config.json#L228)
-1469. 一碗烫手的白粥，米和水都很足。你找的那张纸不在碗里。
+1458. 一碗烫手的白粥，米和水都很足。你找的那张纸不在碗里。
    来源：[src/data/items.config.json:229](../src/data/items.config.json#L229)
-1470. 海报玻璃下的左半张票根，场次和票号还在，右侧验票区缺了一半。有票的证据充分，进场的条件不足。
+1459. 海报玻璃下的左半张票根，场次和票号还在，右侧验票区缺了一半。有票的证据充分，进场的条件不足。
    来源：[src/data/items.config.json:236](../src/data/items.config.json#L236)
-1471. 取票机补打的右半张票根，另一半验票区在这里。场次、票号和断口都能拿来比，补打服务只补这么多。
+1460. 取票机补打的右半张票根，另一半验票区在这里。场次、票号和断口都能拿来比，补打服务只补这么多。
    来源：[src/data/items.config.json:243](../src/data/items.config.json#L243)
-1472. 两半票根场次相同、票号一致，接缝不挡验票区。终于能过闸了，票根还得留着。
+1461. 两半票根场次相同、票号一致，接缝不挡验票区。终于能过闸了，票根还得留着。
    来源：[src/data/items.config.json:250](../src/data/items.config.json#L250)
-1473. 节目单残页·开场
+1462. 节目单残页·开场
    来源：[src/data/items.config.json:256](../src/data/items.config.json#L256)
-1474. 开场部分的残页。开演之前先说明演出即将开始，印得很郑重。简介里有几笔颜色偏淡。
+1463. 开场部分的残页。开演之前先说明演出即将开始，印得很郑重。简介里有几笔颜色偏淡。
    来源：[src/data/items.config.json:257](../src/data/items.config.json#L257)
-1475. 节目单残页·追光
+1464. 节目单残页·追光
    来源：[src/data/items.config.json:263](../src/data/items.config.json#L263)
-1476. 追光部分的残页。演员还没找到，灯位已经排好。简介里有几笔颜色偏淡。
+1465. 追光部分的残页。演员还没找到，灯位已经排好。简介里有几笔颜色偏淡。
    来源：[src/data/items.config.json:264](../src/data/items.config.json#L264)
-1477. 节目单残页·谢幕
+1466. 节目单残页·谢幕
    来源：[src/data/items.config.json:270](../src/data/items.config.json#L270)
-1478. 谢幕部分的残页。观众尚未入场，致谢名单已经写满。简介里有几笔颜色偏淡。
+1467. 谢幕部分的残页。观众尚未入场，致谢名单已经写满。简介里有几笔颜色偏淡。
    来源：[src/data/items.config.json:271](../src/data/items.config.json#L271)
-1479. 追光灯遥控器，放到灯控台才能操作。台上没按节目单走，台下暂时还能调灯。
+1468. 追光灯遥控器，放到灯控台才能操作。台上没按节目单走，台下暂时还能调灯。
    来源：[src/data/items.config.json:278](../src/data/items.config.json#L278)
-1480. 刷毛上沾着荧光粉，吹散后会附在纸面上。剧场备着这种道具，至少说明他们也遇到过看不见的演员。
+1469. 刷毛上沾着荧光粉，吹散后会附在纸面上。剧场备着这种道具，至少说明他们也遇到过看不见的演员。
    来源：[src/data/items.config.json:285](../src/data/items.config.json#L285)
-1481. 追光灯下抓到的替身，纸质和原件很接近。忙了一场，领到的是道具；还能留作诱饵。
+1470. 追光灯下抓到的替身，纸质和原件很接近。忙了一场，领到的是道具；还能留作诱饵。
    来源：[src/data/items.config.json:292](../src/data/items.config.json#L292)
-1482. 剧场外捡到的节目单，边角还在滴水。想查纸张去向，可以拿它去论坛或馆藏系统找记录。
+1471. 剧场外捡到的节目单，边角还在滴水。想查纸张去向，可以拿它去论坛或馆藏系统找记录。
    来源：[src/data/items.config.json:299](../src/data/items.config.json#L299)
-1483. 桥边
+1472. 桥边
    来源：[src/data/items.config.json:305](../src/data/items.config.json#L305)；[src/scenes/phone/P15_Zjuding/index.tsx:1431](../src/scenes/phone/P15_Zjuding/index.tsx#L1431)
-1484. CC98 目击回复提到了桥边。人没追上，地点只报了一半。
+1473. CC98 目击回复提到了桥边。人没追上，地点只报了一半。
    来源：[src/data/items.config.json:306](../src/data/items.config.json#L306)
-1485. 倒影
+1474. 倒影
    来源：[src/data/items.config.json:312](../src/data/items.config.json#L312)；[src/scenes/phone/P15_Zjuding/index.tsx:1432](../src/scenes/phone/P15_Zjuding/index.tsx#L1432)
-1486. 馆藏备注说页码只出现在倒影中。实物借走以后，连查页码也得换地方。
+1475. 馆藏备注说页码只出现在倒影中。实物借走以后，连查页码也得换地方。
    来源：[src/data/items.config.json:313](../src/data/items.config.json#L313)
-1487. 湖
+1476. 湖
    来源：[src/data/items.config.json:319](../src/data/items.config.json#L319)
-1488. 朋友转来湖面异常水纹的消息。有现场照片，比问“你到哪了”多一点用处。
+1477. 朋友转来湖面异常水纹的消息。有现场照片，比问“你到哪了”多一点用处。
    来源：[src/data/items.config.json:320](../src/data/items.config.json#L320)
-1489. 记录下的水面位置，能与浅色水纹对照。坐标有了，伸手还是够不着。
+1478. 记录下的水面位置，能与浅色水纹对照。坐标有了，伸手还是够不着。
    来源：[src/data/items.config.json:327](../src/data/items.config.json#L327)
-1490. 寝室吹风机
+1479. 寝室吹风机
    来源：[src/data/items.config.json:333](../src/data/items.config.json#L333)
-1491. 寝室书桌上的吹风机，插上就有风。天气页也留了接入口，宿舍电器的适用范围没人写上限。
+1480. 寝室书桌上的吹风机，插上就有风。天气页也留了接入口，宿舍电器的适用范围没人写上限。
    来源：[src/data/items.config.json:334](../src/data/items.config.json#L334)
-1492. 钓竿
+1481. 钓竿
    来源：[src/data/items.config.json:340](../src/data/items.config.json#L340)
-1493. 从湖面浮排边捞起的钓竿，钩子还在，能加诱饵或附件。上一位使用者的归还方式比较省事。
+1482. 从湖面浮排边捞起的钓竿，钩子还在，能加诱饵或附件。上一位使用者的归还方式比较省事。
    来源：[src/data/items.config.json:341](../src/data/items.config.json#L341)
-1494. 锈蚀柜钥匙
+1483. 锈蚀柜钥匙
    来源：[src/data/items.config.json:347](../src/data/items.config.json#L347)
-1495. 湖里钓起的柜钥匙，锈迹与码头储物柜对得上。柜子还锁着，钥匙先泡了水。
+1484. 湖里钓起的柜钥匙，锈迹与码头储物柜对得上。柜子还锁着，钥匙先泡了水。
    来源：[src/data/items.config.json:348](../src/data/items.config.json#L348)
-1496. 尼龙绳
+1485. 尼龙绳
    来源：[src/data/items.config.json:354](../src/data/items.config.json#L354)
-1497. 柜里的耐水尼龙绳，够绕网框一圈。柜门锁得很认真，里面值钱的也就这卷绳。
+1486. 柜里的耐水尼龙绳，够绕网框一圈。柜门锁得很认真，里面值钱的也就这卷绳。
    来源：[src/data/items.config.json:355](../src/data/items.config.json#L355)
-1498. 断裂网框
+1487. 断裂网框
    来源：[src/data/items.config.json:361](../src/data/items.config.json#L361)
-1499. 水下捞起的旧网框，网面脱落，框沿还能绑绳。报废了一半，另一半还得接着用。
+1488. 水下捞起的旧网框，网面脱落，框沿还能绑绳。报废了一半，另一半还得接着用。
    来源：[src/data/items.config.json:362](../src/data/items.config.json#L362)
-1500. 临时抄网
+1489. 临时抄网
    来源：[src/data/items.config.json:368](../src/data/items.config.json#L368)；[src/modules/InventoryController.ts:17](../src/modules/InventoryController.ts#L17)
-1501. 用尼龙绳重新绑好的网框，能托住钩不牢的东西。名称里保留“临时”，用多久再说。
+1490. 用尼龙绳重新绑好的网框，能托住钩不牢的东西。名称里保留“临时”，用多久再说。
    来源：[src/data/items.config.json:369](../src/data/items.config.json#L369)
-1502. 金属饲料罐，晃起来有颗粒声，盖子得借硬边撬开。泡了这么久没漏，防水比手机可靠。
+1491. 金属饲料罐，晃起来有颗粒声，盖子得借硬边撬开。泡了这么久没漏，防水比手机可靠。
    来源：[src/data/items.config.json:376](../src/data/items.config.json#L376)
-1503. 鱼食颗粒
+1492. 鱼食颗粒
    来源：[src/data/items.config.json:382](../src/data/items.config.json#L382)
-1504. 罐里倒出的鱼食，撒到鱼群附近能引鱼。鱼不查领取资格，看见吃的就来。
+1493. 罐里倒出的鱼食，撒到鱼群附近能引鱼。鱼不查领取资格，看见吃的就来。
    来源：[src/data/items.config.json:383](../src/data/items.config.json#L383)
-1505. 小鲤鱼
+1494. 小鲤鱼
    来源：[src/data/items.config.json:389](../src/data/items.config.json#L389)
-1506. 刚钓起的小鲤鱼，还在扑腾。围栏里的黑天鹅一直朝这边看，最好别一直攥在手里。
+1495. 刚钓起的小鲤鱼，还在扑腾。围栏里的黑天鹅一直朝这边看，最好别一直攥在手里。
    来源：[src/data/items.config.json:390](../src/data/items.config.json#L390)
-1507. 天鹅磁铁
+1496. 天鹅磁铁
    来源：[src/data/items.config.json:396](../src/data/items.config.json#L396)
-1508. 黑天鹅推来的磁性扣，可以固定在竿端。拿鱼换回一件金属，湖边的交易不开发票。
+1497. 黑天鹅推来的磁性扣，可以固定在竿端。拿鱼换回一件金属，湖边的交易不开发票。
    来源：[src/data/items.config.json:397](../src/data/items.config.json#L397)
-1509. 磁吸钓竿
+1498. 磁吸钓竿
    来源：[src/data/items.config.json:403](../src/data/items.config.json#L403)
-1510. 竿端装了磁性扣，能吸住夹纸的金属结构。为取回一张纸，钓具改装已经做到这一步。
+1499. 竿端装了磁性扣，能吸住夹纸的金属结构。为取回一张纸，钓具改装已经做到这一步。
    来源：[src/data/items.config.json:404](../src/data/items.config.json#L404)
-1511. 签到记录纸
+1500. 签到记录纸
    来源：[src/data/items.config.json:410](../src/data/items.config.json#L410)
-1512. 一路追回的签到记录纸。签到处还要另验校园卡；为了证明来过，你已经来回跑了好几趟。
+1501. 一路追回的签到记录纸。签到处还要另验校园卡；为了证明来过，你已经来回跑了好几趟。
    来源：[src/data/items.config.json:411](../src/data/items.config.json#L411)
-1513. 旧时针
+1502. 旧时针
    来源：[src/data/items.config.json:417](../src/data/items.config.json#L417)
-1514. 从面包坊传送带里取出的旧时针，轴孔与大厅旧钟相配。不在配料表上，得赶紧装回去。
+1503. 从面包坊传送带里取出的旧时针，轴孔与大厅旧钟相配。不在配料表上，得赶紧装回去。
    来源：[src/data/items.config.json:418](../src/data/items.config.json#L418)
-1515. 钟面定位片
+1504. 钟面定位片
    来源：[src/data/items.config.json:424](../src/data/items.config.json#L424)
-1516. 204 讲台抽屉里的透明定位片，边缘有两条短刻度，可装回大厅旧钟。缺这么一小片，校准还要跑好几个房间。
+1505. 204 讲台抽屉里的透明定位片，边缘有两条短刻度，可装回大厅旧钟。缺这么一小片，校准还要跑好几个房间。
    来源：[src/data/items.config.json:425](../src/data/items.config.json#L425)
-1517. 短撬棍
+1506. 短撬棍
    来源：[src/data/items.config.json:431](../src/data/items.config.json#L431)
-1518. 短撬棍，扁头能伸进保洁车轮罩的缝。工具已经找到，维修申请暂时省了。
+1507. 短撬棍，扁头能伸进保洁车轮罩的缝。工具已经找到，维修申请暂时省了。
    来源：[src/data/items.config.json:432](../src/data/items.config.json#L432)
-1519. 通用润滑油
+1508. 通用润滑油
    来源：[src/data/items.config.json:438](../src/data/items.config.json#L438)
-1520. 一小瓶润滑油，能处理轮轴和旧钟齿轮的卡滞。“通用”限于机械，不含门禁权限。
+1509. 一小瓶润滑油，能处理轮轴和旧钟齿轮的卡滞。“通用”限于机械，不含门禁权限。
    来源：[src/data/items.config.json:439](../src/data/items.config.json#L439)
-1521. 黄铜分针组件
+1510. 黄铜分针组件
    来源：[src/data/items.config.json:445](../src/data/items.config.json#L445)
-1522. 从 202 座椅间取回的黄铜分针组件，轴座磨损与大厅旧钟吻合。现在有了最后一分钟，还得自己带下楼。
+1511. 从 202 座椅间取回的黄铜分针组件，轴座磨损与大厅旧钟吻合。现在有了最后一分钟，还得自己带下楼。
    来源：[src/data/items.config.json:446](../src/data/items.config.json#L446)
-1523. 窗边豆浆
+1512. 窗边豆浆
    来源：[src/data/phonePhotoCatalog.ts:41](../src/data/phonePhotoCatalog.ts#L41)
-1524. 高数草稿还摊在桌上，豆浆已经冷了。
+1513. 高数草稿还摊在桌上，豆浆已经冷了。
    来源：[src/data/phonePhotoCatalog.ts:44](../src/data/phonePhotoCatalog.ts#L44)
-1525. 06月18日 08:43
+1514. 06月18日 08:43
    来源：[src/data/phonePhotoCatalog.ts:45](../src/data/phonePhotoCatalog.ts#L45)
-1526. 基础馆
+1515. 基础馆
    来源：[src/data/phonePhotoCatalog.ts:46](../src/data/phonePhotoCatalog.ts#L46)；[src/data/phonePhotoCatalog.ts:82](../src/data/phonePhotoCatalog.ts#L82)；[src/scenes/phone/P15_Zjuding/index.tsx:2223](../src/scenes/phone/P15_Zjuding/index.tsx#L2223)
-1527. 寝室晚饭
+1516. 寝室晚饭
    来源：[src/data/phonePhotoCatalog.ts:53](../src/data/phonePhotoCatalog.ts#L53)
-1528. 校园卡压着充电线，桌面没有收拾。
+1517. 校园卡压着充电线，桌面没有收拾。
    来源：[src/data/phonePhotoCatalog.ts:56](../src/data/phonePhotoCatalog.ts#L56)
-1529. 06月19日 19:16
+1518. 06月19日 19:16
    来源：[src/data/phonePhotoCatalog.ts:57](../src/data/phonePhotoCatalog.ts#L57)
-1530. 紫云宿舍
+1519. 紫云宿舍
    来源：[src/data/phonePhotoCatalog.ts:58](../src/data/phonePhotoCatalog.ts#L58)
-1531. 雨后早餐
+1520. 雨后早餐
    来源：[src/data/phonePhotoCatalog.ts:65](../src/data/phonePhotoCatalog.ts#L65)
-1532. 长椅还有水迹，纸袋放在靠内侧。
+1521. 长椅还有水迹，纸袋放在靠内侧。
    来源：[src/data/phonePhotoCatalog.ts:68](../src/data/phonePhotoCatalog.ts#L68)
-1533. 06月22日 07:28
+1522. 06月22日 07:28
    来源：[src/data/phonePhotoCatalog.ts:69](../src/data/phonePhotoCatalog.ts#L69)
-1534. 东区
+1523. 东区
    来源：[src/data/phonePhotoCatalog.ts:70](../src/data/phonePhotoCatalog.ts#L70)
-1535. 自习间隙
+1524. 自习间隙
    来源：[src/data/phonePhotoCatalog.ts:77](../src/data/phonePhotoCatalog.ts#L77)
-1536. 面包包装拆了一半，保温杯放在右边。
+1525. 面包包装拆了一半，保温杯放在右边。
    来源：[src/data/phonePhotoCatalog.ts:80](../src/data/phonePhotoCatalog.ts#L80)
-1537. 06月24日 16:02
+1526. 06月24日 16:02
    来源：[src/data/phonePhotoCatalog.ts:81](../src/data/phonePhotoCatalog.ts#L81)
-1538. 食堂打包
+1527. 食堂打包
    来源：[src/data/phonePhotoCatalog.ts:89](../src/data/phonePhotoCatalog.ts#L89)
-1539. 餐巾纸折在盒饭旁边，桌面很干净。
+1528. 餐巾纸折在盒饭旁边，桌面很干净。
    来源：[src/data/phonePhotoCatalog.ts:92](../src/data/phonePhotoCatalog.ts#L92)
-1540. 06月26日 18:51
+1529. 06月26日 18:51
    来源：[src/data/phonePhotoCatalog.ts:93](../src/data/phonePhotoCatalog.ts#L93)
-1541. 东区食堂
+1530. 东区食堂
    来源：[src/data/phonePhotoCatalog.ts:94](../src/data/phonePhotoCatalog.ts#L94)；[src/data/phonePhotoCatalog.ts:178](../src/data/phonePhotoCatalog.ts#L178)
-1542. 022 旧照
+1531. 022 旧照
    来源：[src/data/phonePhotoCatalog.ts:101](../src/data/phonePhotoCatalog.ts#L101)
-1543. 同一只 022 书包。侧袋里的半包纸，在 07:55 时已经存在。
+1532. 同一只 022 书包。侧袋里的半包纸，在 07:55 时已经存在。
    来源：[src/data/phonePhotoCatalog.ts:104](../src/data/phonePhotoCatalog.ts#L104)
-1544. 06月28日 07:55
+1533. 06月28日 07:55
    来源：[src/data/phonePhotoCatalog.ts:105](../src/data/phonePhotoCatalog.ts#L105)
-1545. 基础馆一层书库
+1534. 基础馆一层书库
    来源：[src/data/phonePhotoCatalog.ts:106](../src/data/phonePhotoCatalog.ts#L106)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:107](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L107)
-1546. 校门口的阴天
+1535. 校门口的阴天
    来源：[src/data/phonePhotoCatalog.ts:113](../src/data/phonePhotoCatalog.ts#L113)
-1547. 树荫压得很低，骑车的人都从拱门边绕过去。
+1536. 树荫压得很低，骑车的人都从拱门边绕过去。
    来源：[src/data/phonePhotoCatalog.ts:116](../src/data/phonePhotoCatalog.ts#L116)
-1548. 07月01日 14:32
+1537. 07月01日 14:32
    来源：[src/data/phonePhotoCatalog.ts:117](../src/data/phonePhotoCatalog.ts#L117)
-1549. 启真湖早晨
+1538. 启真湖早晨
    来源：[src/data/phonePhotoCatalog.ts:125](../src/data/phonePhotoCatalog.ts#L125)
-1550. 浮桥旁有两圈新波纹，车还停在柳树下面。
+1539. 浮桥旁有两圈新波纹，车还停在柳树下面。
    来源：[src/data/phonePhotoCatalog.ts:128](../src/data/phonePhotoCatalog.ts#L128)
-1551. 07月02日 09:12
+1540. 07月02日 09:12
    来源：[src/data/phonePhotoCatalog.ts:129](../src/data/phonePhotoCatalog.ts#L129)
-1552. 雨后的月牙楼
+1541. 雨后的月牙楼
    来源：[src/data/phonePhotoCatalog.ts:137](../src/data/phonePhotoCatalog.ts#L137)
-1553. 地砖还在反光，伞已经可以收起来了。
+1542. 地砖还在反光，伞已经可以收起来了。
    来源：[src/data/phonePhotoCatalog.ts:140](../src/data/phonePhotoCatalog.ts#L140)
-1554. 07月03日 16:47
+1543. 07月03日 16:47
    来源：[src/data/phonePhotoCatalog.ts:141](../src/data/phonePhotoCatalog.ts#L141)
-1555. 晚自习加餐
+1544. 晚自习加餐
    来源：[src/data/phonePhotoCatalog.ts:149](../src/data/phonePhotoCatalog.ts#L149)
-1556. 耳机缠在本子边，饭盒还留着一点热气。
+1545. 耳机缠在本子边，饭盒还留着一点热气。
    来源：[src/data/phonePhotoCatalog.ts:152](../src/data/phonePhotoCatalog.ts#L152)
-1557. 07月05日 21:06
+1546. 07月05日 21:06
    来源：[src/data/phonePhotoCatalog.ts:153](../src/data/phonePhotoCatalog.ts#L153)
-1558. 学习空间
+1547. 学习空间
    来源：[src/data/phonePhotoCatalog.ts:154](../src/data/phonePhotoCatalog.ts#L154)
-1559. 车筐里的雨衣
+1548. 车筐里的雨衣
    来源：[src/data/phonePhotoCatalog.ts:161](../src/data/phonePhotoCatalog.ts#L161)
-1560. 雨停得很快，车筐上还挂着水珠。
+1549. 雨停得很快，车筐上还挂着水珠。
    来源：[src/data/phonePhotoCatalog.ts:164](../src/data/phonePhotoCatalog.ts#L164)
-1561. 07月06日 12:23
+1550. 07月06日 12:23
    来源：[src/data/phonePhotoCatalog.ts:165](../src/data/phonePhotoCatalog.ts#L165)
-1562. 宿舍区
+1551. 宿舍区
    来源：[src/data/phonePhotoCatalog.ts:166](../src/data/phonePhotoCatalog.ts#L166)
-1563. 午饭排队
+1552. 午饭排队
    来源：[src/data/phonePhotoCatalog.ts:173](../src/data/phonePhotoCatalog.ts#L173)
-1564. 前面只剩三个人，番茄鸡蛋面先端到了。
+1553. 前面只剩三个人，番茄鸡蛋面先端到了。
    来源：[src/data/phonePhotoCatalog.ts:176](../src/data/phonePhotoCatalog.ts#L176)
-1565. 07月07日 11:54
+1554. 07月07日 11:54
    来源：[src/data/phonePhotoCatalog.ts:177](../src/data/phonePhotoCatalog.ts#L177)
-1566. 找到道具栏
+1555. 找到道具栏
    来源：[src/data/presentation-cues.ts:34](../src/data/presentation-cues.ts#L34)
-1567. 校园地图内出现了可调查的寝室据点
+1556. 校园地图内出现了可调查的寝室据点
    来源：[src/data/presentation-cues.ts:35](../src/data/presentation-cues.ts#L35)
-1568. 箱
+1557. 箱
    来源：[src/data/presentation-cues.ts:36](../src/data/presentation-cues.ts#L36)
-1569. 让地图人物回应你
+1558. 让地图人物回应你
    来源：[src/data/presentation-cues.ts:42](../src/data/presentation-cues.ts#L42)
-1570. 先让寝室里的人知道自己是谁
+1559. 先让寝室里的人知道自己是谁
    来源：[src/data/presentation-cues.ts:43](../src/data/presentation-cues.ts#L43)
-1571. 右移箭头已合成
+1560. 右移箭头已合成
    来源：[src/data/presentation-cues.ts:50](../src/data/presentation-cues.ts#L50)
-1572. 它能把一个目标向右移动两格
+1561. 它能把一个目标向右移动两格
    来源：[src/data/presentation-cues.ts:51](../src/data/presentation-cues.ts#L51)
-1573. 交易完成
+1562. 交易完成
    来源：[src/data/presentation-cues.ts:58](../src/data/presentation-cues.ts#L58)
-1574. 游戏手柄已放入道具栏
+1563. 游戏手柄已放入道具栏
    来源：[src/data/presentation-cues.ts:59](../src/data/presentation-cues.ts#L59)
-1575. 可以出门了
-   来源：[src/data/presentation-cues.ts:66](../src/data/presentation-cues.ts#L66)；[src/scenes/rpg/RpgGameHost.tsx:1538](../src/scenes/rpg/RpgGameHost.tsx#L1538)
-1576. 寝室出口已开放
+1564. 可以出门了
+   来源：[src/data/presentation-cues.ts:66](../src/data/presentation-cues.ts#L66)；[src/scenes/rpg/RpgGameHost.tsx:1536](../src/scenes/rpg/RpgGameHost.tsx#L1536)
+1565. 寝室出口已开放
    来源：[src/data/presentation-cues.ts:67](../src/data/presentation-cues.ts#L67)
-1577. 门
+1566. 门
    来源：[src/data/presentation-cues.ts:68](../src/data/presentation-cues.ts#L68)
-1578. 进入图书馆，找到 022
+1567. 进入图书馆，找到 022
    来源：[src/data/presentation-cues.ts:74](../src/data/presentation-cues.ts#L74)
-1579. 基础图书馆入口已开放
+1568. 基础图书馆入口已开放
    来源：[src/data/presentation-cues.ts:75](../src/data/presentation-cues.ts#L75)
-1580. 入馆记录待核对
+1569. 入馆记录待核对
    来源：[src/data/presentation-cues.ts:82](../src/data/presentation-cues.ts#L82)
-1581. 点击闸机旁的小屏查看两条时间
+1570. 点击闸机旁的小屏查看两条时间
    来源：[src/data/presentation-cues.ts:83](../src/data/presentation-cues.ts#L83)
-1582. 022 被书包占用
+1571. 022 被书包占用
    来源：[src/data/presentation-cues.ts:91](../src/data/presentation-cues.ts#L91)
-1583. 调查纸条与离座规则
+1572. 调查纸条与离座规则
    来源：[src/data/presentation-cues.ts:92](../src/data/presentation-cues.ts#L92)
-1584. 获得占座纸条
+1573. 获得占座纸条
    来源：[src/data/presentation-cues.ts:100](../src/data/presentation-cues.ts#L100)
-1585. 可拖入 CC98 搜索
+1574. 可拖入 CC98 搜索
    来源：[src/data/presentation-cues.ts:101](../src/data/presentation-cues.ts#L101)
-1586. 调查帖已找到
+1575. 调查帖已找到
    来源：[src/data/presentation-cues.ts:109](../src/data/presentation-cues.ts#L109)
-1587. 23 楼内容，5 条 ac01 可选
+1576. 23 楼内容，5 条 ac01 可选
    来源：[src/data/presentation-cues.ts:110](../src/data/presentation-cues.ts#L110)
-1588. 正确馆藏已确认
+1577. 正确馆藏已确认
    来源：[src/data/presentation-cues.ts:117](../src/data/presentation-cues.ts#L117)
-1589. 索书号 I247.55 / 755
+1578. 索书号 I247.55 / 755
    来源：[src/data/presentation-cues.ts:118](../src/data/presentation-cues.ts#L118)
-1590. 旧版离座规则
+1579. 旧版离座规则
    来源：[src/data/presentation-cues.ts:125](../src/data/presentation-cues.ts#L125)
-1591. 恢复 022 需要三项证明
+1580. 恢复 022 需要三项证明
    来源：[src/data/presentation-cues.ts:126](../src/data/presentation-cues.ts#L126)
-1592. 物品识别报告已生成
+1581. 物品识别报告已生成
    来源：[src/data/presentation-cues.ts:134](../src/data/presentation-cues.ts#L134)；[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:204](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L204)
-1593. 对象类型：书包
+1582. 对象类型：书包
    来源：[src/data/presentation-cues.ts:135](../src/data/presentation-cues.ts#L135)
-1594. 失物招领登记已盖章
+1583. 失物招领登记已盖章
    来源：[src/data/presentation-cues.ts:143](../src/data/presentation-cues.ts#L143)
-1595. 章
+1584. 章
    来源：[src/data/presentation-cues.ts:144](../src/data/presentation-cues.ts#L144)
-1596. 右移箭头仍保留在道具栏
+1585. 右移箭头仍保留在道具栏
    来源：[src/data/presentation-cues.ts:152](../src/data/presentation-cues.ts#L152)
-1597. 7 / 47 / 3 补录通过
+1586. 7 / 47 / 3 补录通过
    来源：[src/data/presentation-cues.ts:161](../src/data/presentation-cues.ts#L161)
-1598. 四项证据已公示
+1587. 四项证据已公示
    来源：[src/data/presentation-cues.ts:168](../src/data/presentation-cues.ts#L168)
-1599. 系统将说明帮顶与四位口令规则
+1588. 系统将说明帮顶与四位口令规则
    来源：[src/data/presentation-cues.ts:169](../src/data/presentation-cues.ts#L169)
-1600. 进入十大
+1589. 进入十大
    来源：[src/data/presentation-cues.ts:176](../src/data/presentation-cues.ts#L176)
-1601. 剧情帖排名 01
+1590. 剧情帖排名 01
    来源：[src/data/presentation-cues.ts:177](../src/data/presentation-cues.ts#L177)
-1602. 022 恢复申请已开放
+1591. 022 恢复申请已开放
    来源：[src/data/presentation-cues.ts:184](../src/data/presentation-cues.ts#L184)
-1603. 提交三项恢复证明
+1592. 提交三项恢复证明
    来源：[src/data/presentation-cues.ts:185](../src/data/presentation-cues.ts#L185)
-1604. 解除占座 PASS
+1593. 解除占座 PASS
    来源：[src/data/presentation-cues.ts:192](../src/data/presentation-cues.ts#L192)
-1605. 仅可用于 RPG 中的 022 书包
+1594. 仅可用于 RPG 中的 022 书包
    来源：[src/data/presentation-cues.ts:193](../src/data/presentation-cues.ts#L193)
-1606. 占座对象已转移
+1595. 占座对象已转移
    来源：[src/data/presentation-cues.ts:200](../src/data/presentation-cues.ts#L200)
-1607. 书包已送往失物招领
+1596. 书包已送往失物招领
    来源：[src/data/presentation-cues.ts:201](../src/data/presentation-cues.ts#L201)
-1608. 字还在往外走。
+1597. 先别走。
    来源：[src/data/prologue-interception.content.json:5](../src/data/prologue-interception.content.json#L5)
-1609. 窗口却留在原处。
-   来源：[src/data/prologue-interception.content.json:6](../src/data/prologue-interception.content.json#L6)
-1610. 这一次，
-   来源：[src/data/prologue-interception.content.json:7](../src/data/prologue-interception.content.json#L7)
-1611. 让一个“等”留下。
+1598. 等
    来源：[src/data/prologue-interception.content.json:8](../src/data/prologue-interception.content.json#L8)
-1612. 等
+1599. 走
    来源：[src/data/prologue-interception.content.json:11](../src/data/prologue-interception.content.json#L11)
-1613. 走
-   来源：[src/data/prologue-interception.content.json:14](../src/data/prologue-interception.content.json#L14)
-1614. 快
-   来源：[src/data/prologue-interception.content.json:15](../src/data/prologue-interception.content.json#L15)
-1615. 看
-   来源：[src/data/prologue-interception.content.json:16](../src/data/prologue-interception.content.json#L16)
-1616. 经度与纬度不存在。
+1600. 快
+   来源：[src/data/prologue-interception.content.json:12](../src/data/prologue-interception.content.json#L12)
+1601. 看
+   来源：[src/data/prologue-interception.content.json:13](../src/data/prologue-interception.content.json#L13)
+1602. 等一下，旁白！
+   来源：[src/data/prologue-interception.content.json:19](../src/data/prologue-interception.content.json#L19)
+1603. 一下
    来源：[src/data/prologue-interception.content.json:22](../src/data/prologue-interception.content.json#L22)
-1617. 时间和方向继续走。
-   来源：[src/data/prologue-interception.content.json:23](../src/data/prologue-interception.content.json#L23)
-1618. 两个坐标名，
-   来源：[src/data/prologue-interception.content.json:24](../src/data/prologue-interception.content.json#L24)
-1619. 都该留在这里。
-   来源：[src/data/prologue-interception.content.json:25](../src/data/prologue-interception.content.json#L25)
-1620. 经度
+1604. 方向
+   来源：[src/data/prologue-interception.content.json:27](../src/data/prologue-interception.content.json#L27)
+1605. 距离
    来源：[src/data/prologue-interception.content.json:28](../src/data/prologue-interception.content.json#L28)
-1621. 纬度
-   来源：[src/data/prologue-interception.content.json:29](../src/data/prologue-interception.content.json#L29)
-1622. 方向
-   来源：[src/data/prologue-interception.content.json:33](../src/data/prologue-interception.content.json#L33)
-1623. 距离
+1606. 帮我补个签到！
    来源：[src/data/prologue-interception.content.json:34](../src/data/prologue-interception.content.json#L34)
-1624. “旁白还没说完”。
-   来源：[src/data/prologue-interception.content.json:40](../src/data/prologue-interception.content.json#L40)
-1625. 字句散开了。
-   来源：[src/data/prologue-interception.content.json:41](../src/data/prologue-interception.content.json#L41)
-1626. 照原来的先后，
+1607. 帮我
+   来源：[src/data/prologue-interception.content.json:37](../src/data/prologue-interception.content.json#L37)
+1608. 补个
+   来源：[src/data/prologue-interception.content.json:38](../src/data/prologue-interception.content.json#L38)
+1609. 签到
+   来源：[src/data/prologue-interception.content.json:39](../src/data/prologue-interception.content.json#L39)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:59](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L59)
+1610. 已经
    来源：[src/data/prologue-interception.content.json:42](../src/data/prologue-interception.content.json#L42)
-1627. 把三段接回来。
+1611. 离开
    来源：[src/data/prologue-interception.content.json:43](../src/data/prologue-interception.content.json#L43)
-1628. 还没
-   来源：[src/data/prologue-interception.content.json:47](../src/data/prologue-interception.content.json#L47)
-1629. 说完
-   来源：[src/data/prologue-interception.content.json:48](../src/data/prologue-interception.content.json#L48)
-1630. 已经
-   来源：[src/data/prologue-interception.content.json:51](../src/data/prologue-interception.content.json#L51)
-1631. 离开
-   来源：[src/data/prologue-interception.content.json:52](../src/data/prologue-interception.content.json#L52)
-1632. 结束
-   来源：[src/data/prologue-interception.content.json:53](../src/data/prologue-interception.content.json#L53)
-1633. 它正在船尾对准航线。继续交替划桨。
+1612. 结束
+   来源：[src/data/prologue-interception.content.json:44](../src/data/prologue-interception.content.json#L44)
+1613. 等一下，旁白，帮我补个签到！
+   来源：[src/data/prologue-interception.content.json:49](../src/data/prologue-interception.content.json#L49)
+1614. 它正在船尾对准航线。继续交替划桨。
    来源：[src/data/pursuit.audio.content.json:59](../src/data/pursuit.audio.content.json#L59)
-1634. It is lining up behind you. Keep alternating.
+1615. It is lining up behind you. Keep alternating.
    来源：[src/data/pursuit.audio.content.json:60](../src/data/pursuit.audio.content.json#L60)
-1635. 闹钟
+1616. 闹钟
    来源：[src/data/scenes.config.json:2](../src/data/scenes.config.json#L2)
-1636. P00
+1617. P00
    来源：[src/data/scenes.config.json:2](../src/data/scenes.config.json#L2)
-1637. 07:55 起床
+1618. 07:55 起床
    来源：[src/data/scenes.config.json:3](../src/data/scenes.config.json#L3)
-1638. P01
+1619. P01
    来源：[src/data/scenes.config.json:3](../src/data/scenes.config.json#L3)
-1639. 手机主界面
+1620. 手机主界面
    来源：[src/data/scenes.config.json:4](../src/data/scenes.config.json#L4)
-1640. P13
+1621. P13
    来源：[src/data/scenes.config.json:4](../src/data/scenes.config.json#L4)
-1641. 微信 / 朋友头像谜题
+1622. 微信 / 朋友头像谜题
    来源：[src/data/scenes.config.json:5](../src/data/scenes.config.json#L5)
-1642. P14
+1623. P14
    来源：[src/data/scenes.config.json:5](../src/data/scenes.config.json#L5)
-1643. 浙大钉（加载/内页）
+1624. 浙大钉（加载/内页）
    来源：[src/data/scenes.config.json:6](../src/data/scenes.config.json#L6)
-1644. P15
+1625. P15
    来源：[src/data/scenes.config.json:6](../src/data/scenes.config.json#L6)
-1645. 浙大体艺
+1626. 浙大体艺
    来源：[src/data/scenes.config.json:7](../src/data/scenes.config.json#L7)；[src/scenes/phone/P08_Settings/index.tsx:30](../src/scenes/phone/P08_Settings/index.tsx#L30)
-1646. P06
+1627. P06
    来源：[src/data/scenes.config.json:7](../src/data/scenes.config.json#L7)
-1647. 天气 / 水滴谜题
+1628. 天气 / 水滴谜题
    来源：[src/data/scenes.config.json:8](../src/data/scenes.config.json#L8)
-1648. P07
+1629. P07
    来源：[src/data/scenes.config.json:8](../src/data/scenes.config.json#L8)
-1649. 玩家
+1630. 玩家
    来源：[src/data/storyLines.ts:60](../src/data/storyLines.ts#L60)；[src/scenes/phone/P02_CC98/index.tsx:140](../src/scenes/phone/P02_CC98/index.tsx#L140)
-1650. 基础图书馆门前
+1631. 基础图书馆门前
    来源：[src/demos/campus-map-demo.tsx:33](../src/demos/campus-map-demo.tsx#L33)
-1651. 大食堂门前
+1632. 大食堂门前
    来源：[src/demos/campus-map-demo.tsx:34](../src/demos/campus-map-demo.tsx#L34)
-1652. 追踪脚印
+1633. 追踪脚印
    来源：[src/demos/campus-map-demo.tsx:47](../src/demos/campus-map-demo.tsx#L47)
-1653. 抵达食堂
+1634. 抵达食堂
    来源：[src/demos/campus-map-demo.tsx:48](../src/demos/campus-map-demo.tsx#L48)
-1654. 进入食堂
+1635. 进入食堂
    来源：[src/demos/campus-map-demo.tsx:49](../src/demos/campus-map-demo.tsx#L49)
-1655. 寻找异常餐盘
+1636. 寻找异常餐盘
    来源：[src/demos/campus-map-demo.tsx:50](../src/demos/campus-map-demo.tsx#L50)
-1656. 调配今日新品
+1637. 调配今日新品
    来源：[src/demos/campus-map-demo.tsx:51](../src/demos/campus-map-demo.tsx#L51)
-1657. 破解点餐机
+1638. 破解点餐机
    来源：[src/demos/campus-map-demo.tsx:52](../src/demos/campus-map-demo.tsx#L52)
-1658. 寻找 0755 窗口
+1639. 寻找 0755 窗口
    来源：[src/demos/campus-map-demo.tsx:53](../src/demos/campus-map-demo.tsx#L53)
-1659. 封堵纸条出口
+1640. 封堵纸条出口
    来源：[src/demos/campus-map-demo.tsx:54](../src/demos/campus-map-demo.tsx#L54)
-1660. 准备继续追赶
+1641. 准备继续追赶
    来源：[src/demos/campus-map-demo.tsx:55](../src/demos/campus-map-demo.tsx#L55)
-1661. 追逐中
+1642. 追逐中
    来源：[src/demos/campus-map-demo.tsx:56](../src/demos/campus-map-demo.tsx#L56)
-1662. 抵达体艺馆
+1643. 抵达体艺馆
    来源：[src/demos/campus-map-demo.tsx:57](../src/demos/campus-map-demo.tsx#L57)
-1663. 地图加载中…
+1644. 地图加载中…
    来源：[src/demos/campus-map-demo.tsx:169](../src/demos/campus-map-demo.tsx#L169)
-1664. 食堂内的纸条已被逼出，已返回大食堂门前。
+1645. 食堂内的纸条已被逼出，已返回大食堂门前。
    来源：[src/demos/campus-map-demo.tsx:225](../src/demos/campus-map-demo.tsx#L225)
-1665. 大食堂剧情已重开：已到{{target.label}}，按空格进入。
+1646. 大食堂剧情已重开：已到{{target.label}}，按空格进入。
    来源：[src/demos/campus-map-demo.tsx:359](../src/demos/campus-map-demo.tsx#L359)
-1666. 已回到{{target.label}}，当前为自由探索。
+1647. 已回到{{target.label}}，当前为自由探索。
    来源：[src/demos/campus-map-demo.tsx:360](../src/demos/campus-map-demo.tsx#L360)
-1667. 紫金港校园大地图与大食堂剧情演示
+1648. 紫金港校园大地图与大食堂剧情演示
    来源：[src/demos/campus-map-demo.tsx:386](../src/demos/campus-map-demo.tsx#L386)
-1668. 校园与大食堂剧情交互区
+1649. 校园与大食堂剧情交互区
    来源：[src/demos/campus-map-demo.tsx:389](../src/demos/campus-map-demo.tsx#L389)
-1669. 大食堂剧情
+1650. 大食堂剧情
    来源：[src/demos/campus-map-demo.tsx:394](../src/demos/campus-map-demo.tsx#L394)；[src/demos/campus-map-demo.tsx:401](../src/demos/campus-map-demo.tsx#L401)
-1670. 紫金港校园大地图
+1651. 紫金港校园大地图
    来源：[src/demos/campus-map-demo.tsx:394](../src/demos/campus-map-demo.tsx#L394)
-1671. 演示操作
+1652. 演示操作
    来源：[src/demos/campus-map-demo.tsx:399](../src/demos/campus-map-demo.tsx#L399)
-1672. 自由探索
+1653. 自由探索
    来源：[src/demos/campus-map-demo.tsx:400](../src/demos/campus-map-demo.tsx#L400)
-1673. 切到深色
+1654. 切到深色
    来源：[src/demos/campus-map-demo.tsx:410](../src/demos/campus-map-demo.tsx#L410)
-1674. 切回浅色
+1655. 切回浅色
    来源：[src/demos/campus-map-demo.tsx:410](../src/demos/campus-map-demo.tsx#L410)
-1675. 回到角色
+1656. 回到角色
    来源：[src/demos/campus-map-demo.tsx:415](../src/demos/campus-map-demo.tsx#L415)
-1676. 缩小地图
-   来源：[src/demos/campus-map-demo.tsx:416](../src/demos/campus-map-demo.tsx#L416)；[src/scenes/rpg/RpgGameHost.tsx:2728](../src/scenes/rpg/RpgGameHost.tsx#L2728)
-1677. 放大地图
+1657. 缩小地图
+   来源：[src/demos/campus-map-demo.tsx:416](../src/demos/campus-map-demo.tsx#L416)；[src/scenes/rpg/RpgGameHost.tsx:2721](../src/scenes/rpg/RpgGameHost.tsx#L2721)
+1658. 放大地图
    来源：[src/demos/campus-map-demo.tsx:417](../src/demos/campus-map-demo.tsx#L417)
-1678. 全屏
+1659. 全屏
    来源：[src/demos/campus-map-demo.tsx:420](../src/demos/campus-map-demo.tsx#L420)
-1679. 坐标
+1660. 坐标
    来源：[src/demos/campus-map-demo.tsx:424](../src/demos/campus-map-demo.tsx#L424)
-1680. 缩放
+1661. 缩放
    来源：[src/demos/campus-map-demo.tsx:425](../src/demos/campus-map-demo.tsx#L425)
-1681. 剧情
+1662. 剧情
    来源：[src/demos/campus-map-demo.tsx:428](../src/demos/campus-map-demo.tsx#L428)
-1682. 浅色模式
+1663. 浅色模式
    来源：[src/demos/campus-map-demo.tsx:429](../src/demos/campus-map-demo.tsx#L429)
-1683. 深色模式
+1664. 深色模式
    来源：[src/demos/campus-map-demo.tsx:429](../src/demos/campus-map-demo.tsx#L429)
-1684. WASD / 方向键移动 · 空格交互 · Tab 切换明暗
+1665. WASD / 方向键移动 · 空格交互 · Tab 切换明暗
    来源：[src/demos/campus-map-demo.tsx:434](../src/demos/campus-map-demo.tsx#L434)
-1685. WASD / 方向键移动 · Shift 冲刺 · 空格进入 · 单击路面寻路
+1666. WASD / 方向键移动 · Shift 冲刺 · 空格进入 · 单击路面寻路
    来源：[src/demos/campus-map-demo.tsx:435](../src/demos/campus-map-demo.tsx#L435)
-1686. 触控方向与交互
+1667. 触控方向与交互
    来源：[src/demos/campus-map-demo.tsx:440](../src/demos/campus-map-demo.tsx#L440)
-1687. 向上移动
+1668. 向上移动
    来源：[src/demos/campus-map-demo.tsx:441](../src/demos/campus-map-demo.tsx#L441)
-1688. 向左移动
+1669. 向左移动
    来源：[src/demos/campus-map-demo.tsx:442](../src/demos/campus-map-demo.tsx#L442)
-1689. 向下移动
+1670. 向下移动
    来源：[src/demos/campus-map-demo.tsx:443](../src/demos/campus-map-demo.tsx#L443)
-1690. 向右移动
+1671. 向右移动
    来源：[src/demos/campus-map-demo.tsx:444](../src/demos/campus-map-demo.tsx#L444)
-1691. 空格
+1672. 空格
    来源：[src/demos/campus-map-demo.tsx:445](../src/demos/campus-map-demo.tsx#L445)；[src/scenes/rpg/RpgControlHints.ts:6](../src/scenes/rpg/RpgControlHints.ts#L6)
-1692. 页面运行出错
+1673. 页面运行出错
    来源：[src/ErrorBoundary.tsx:26](../src/ErrorBoundary.tsx#L26)
-1693. 多云
+1674. 多云
    来源：[src/modules/CampusWeatherModel.ts:5](../src/modules/CampusWeatherModel.ts#L5)；[src/modules/CampusWeatherModel.ts:13](../src/modules/CampusWeatherModel.ts#L13)
-1694. 小雨
+1675. 小雨
    来源：[src/modules/CampusWeatherModel.ts:5](../src/modules/CampusWeatherModel.ts#L5)；[src/modules/CampusWeatherModel.ts:11](../src/modules/CampusWeatherModel.ts#L11)
-1695. 校名缩写
+1676. 校名缩写
    来源：[src/modules/Cc98UnifiedLoginModel.ts:11](../src/modules/Cc98UnifiedLoginModel.ts#L11)
-1696. 取浙江大学英文名的三个大写字母。
+1677. 取浙江大学英文名的三个大写字母。
    来源：[src/modules/Cc98UnifiedLoginModel.ts:12](../src/modules/Cc98UnifiedLoginModel.ts#L12)
-1697. 校史年份
+1678. 校史年份
    来源：[src/modules/Cc98UnifiedLoginModel.ts:17](../src/modules/Cc98UnifiedLoginModel.ts#L17)
-1698. 接上求是书院创办的四位年份。
+1679. 接上求是书院创办的四位年份。
    来源：[src/modules/Cc98UnifiedLoginModel.ts:18](../src/modules/Cc98UnifiedLoginModel.ts#L18)
-1699. 结尾标点
+1680. 结尾标点
    来源：[src/modules/Cc98UnifiedLoginModel.ts:23](../src/modules/Cc98UnifiedLoginModel.ts#L23)
-1700. 保留认证公告最后的感叹号。
+1681. 保留认证公告最后的感叹号。
    来源：[src/modules/Cc98UnifiedLoginModel.ts:24](../src/modules/Cc98UnifiedLoginModel.ts#L24)
-1701. already\_authenticated
+1682. already\_authenticated
    来源：[src/modules/Cc98UnifiedLoginModel.ts:76](../src/modules/Cc98UnifiedLoginModel.ts#L76)
-1702. identity\_unavailable
+1683. identity\_unavailable
    来源：[src/modules/Cc98UnifiedLoginModel.ts:77](../src/modules/Cc98UnifiedLoginModel.ts#L77)
-1703. authenticated
+1684. authenticated
    来源：[src/modules/Cc98UnifiedLoginModel.ts:84](../src/modules/Cc98UnifiedLoginModel.ts#L84)
-1704. rejected
+1685. rejected
    来源：[src/modules/Cc98UnifiedLoginModel.ts:89](../src/modules/Cc98UnifiedLoginModel.ts#L89)
-1705. both
+1686. both
    来源：[src/modules/Cc98UnifiedLoginModel.ts:90](../src/modules/Cc98UnifiedLoginModel.ts#L90)
-1706. password
+1687. password
    来源：[src/modules/Cc98UnifiedLoginModel.ts:90](../src/modules/Cc98UnifiedLoginModel.ts#L90)
-1707. student\_id
+1688. student\_id
    来源：[src/modules/Cc98UnifiedLoginModel.ts:90](../src/modules/Cc98UnifiedLoginModel.ts#L90)
-1708. network
+1689. network
    来源：[src/modules/CheckinController.ts:19](../src/modules/CheckinController.ts#L19)
-1709. wrong\_code
+1690. wrong\_code
    来源：[src/modules/CheckinController.ts:24](../src/modules/CheckinController.ts#L24)
-1710. 磁性钓鱼竿
+1691. 磁性钓鱼竿
    来源：[src/modules/InventoryController.ts:18](../src/modules/InventoryController.ts#L18)
-1711. 手机放回桌面，点充电座接电；点手机拿起。
-   来源：[src/modules/PhoneBatteryController.ts:51](../src/modules/PhoneBatteryController.ts#L51)
-1712. 低电量模式已开启：亮度上限 45%，音乐已暂停。打开应用不扣电。
-   来源：[src/modules/PhoneBatteryController.ts:156](../src/modules/PhoneBatteryController.ts#L156)
-1713. 低电量模式已关闭：可手动调整亮度，打开应用不扣电。
-   来源：[src/modules/PhoneBatteryController.ts:157](../src/modules/PhoneBatteryController.ts#L157)
-1714. too\_far
-   来源：[src/modules/PhoneBatteryController.ts:170](../src/modules/PhoneBatteryController.ts#L170)
-1715. 接线够不到，请走到充电服务站旁。
-   来源：[src/modules/PhoneBatteryController.ts:171](../src/modules/PhoneBatteryController.ts#L171)
-1716. wrong\_mode
-   来源：[src/modules/PhoneBatteryController.ts:172](../src/modules/PhoneBatteryController.ts#L172)
-1717. 深色观察只能查看设备。切到浅色操作后接入充电线。
-   来源：[src/modules/PhoneBatteryController.ts:173](../src/modules/PhoneBatteryController.ts#L173)
-1718. 需要在现场与充电服务站交互，手机中不能接入电源。
-   来源：[src/modules/PhoneBatteryController.ts:174](../src/modules/PhoneBatteryController.ts#L174)
-1719. 当前电量 {{current.phoneBattery.percent}}%，暂不需要补电。
-   来源：[src/modules/PhoneBatteryController.ts:186](../src/modules/PhoneBatteryController.ts#L186)
-1720. 已接入{{source}}，电量 {{to}}%，已退出低电量模式。
-   来源：[src/modules/PhoneBatteryController.ts:208](../src/modules/PhoneBatteryController.ts#L208)
-1721. 电量降至 {{to}}%。点状态栏，可开启低电量模式或寻找附近电源。
-   来源：[src/modules/PhoneBatteryController.ts:233](../src/modules/PhoneBatteryController.ts#L233)
-1722. 吓吓你的
+1692. 吓吓你的
    来源：[src/modules/PhoneBatteryPrank.ts:19](../src/modules/PhoneBatteryPrank.ts#L19)
-1723. 请在 10秒之内充电，不然手机就会自动关机。
+1693. 请在 10秒之内充电，不然手机就会自动关机。
    来源：[src/modules/PhoneBatteryPrank.ts:22](../src/modules/PhoneBatteryPrank.ts#L22)
-1724. 左右移动浮漂，对准鱼影；按住蓄力，松手抛竿
+1694. 左右移动浮漂，对准鱼影；按住蓄力，松手抛竿
    来源：[src/modules/RhythmFishingEngine.ts:165](../src/modules/RhythmFishingEngine.ts#L165)
-1725. 四拍收放
+1695. 四拍收放
    来源：[src/modules/RhythmFishingEngine.ts:173](../src/modules/RhythmFishingEngine.ts#L173)
-1726. 它在猛拽，松手放线！
+1696. 它在猛拽，松手放线！
    来源：[src/modules/RhythmFishingEngine.ts:244](../src/modules/RhythmFishingEngine.ts#L244)
-1727. 蓄到绿色范围，松手抛竿
+1697. 蓄到绿色范围，松手抛竿
    来源：[src/modules/RhythmFishingEngine.ts:244](../src/modules/RhythmFishingEngine.ts#L244)
-1728. 左右跟住鱼影，按住收线
+1698. 左右跟住鱼影，按住收线
    来源：[src/modules/RhythmFishingEngine.ts:244](../src/modules/RhythmFishingEngine.ts#L244)
-1729. 抛偏了：左右移动浮漂，先对准鱼影
+1699. 抛偏了：左右移动浮漂，先对准鱼影
    来源：[src/modules/RhythmFishingEngine.ts:260](../src/modules/RhythmFishingEngine.ts#L260)
-1730. 太轻了：按住蓄到绿色范围再松手
+1700. 太轻了：按住蓄到绿色范围再松手
    来源：[src/modules/RhythmFishingEngine.ts:261](../src/modules/RhythmFishingEngine.ts#L261)
-1731. 太重了：这次早一点松手
+1701. 太重了：这次早一点松手
    来源：[src/modules/RhythmFishingEngine.ts:261](../src/modules/RhythmFishingEngine.ts#L261)
-1732. 跟着预备拍：稳、放、收、提
+1702. 跟着预备拍：稳、放、收、提
    来源：[src/modules/RhythmFishingEngine.ts:264](../src/modules/RhythmFishingEngine.ts#L264)
-1733. 放线缓一缓，等鱼影闪金再收竿
+1703. 放线缓一缓，等鱼影闪金再收竿
    来源：[src/modules/RhythmFishingEngine.ts:272](../src/modules/RhythmFishingEngine.ts#L272)
-1734. 收线太短：先按住稳住，再松手
+1704. 收线太短：先按住稳住，再松手
    来源：[src/modules/RhythmFishingEngine.ts:281](../src/modules/RhythmFishingEngine.ts#L281)
-1735. 线太紧了：猛拽时松手放线
+1705. 线太紧了：猛拽时松手放线
    来源：[src/modules/RhythmFishingEngine.ts:281](../src/modules/RhythmFishingEngine.ts#L281)
-1736. 鱼影没跟住：左右控线，再择机收竿
+1706. 鱼影没跟住：左右控线，再择机收竿
    来源：[src/modules/RhythmFishingEngine.ts:281](../src/modules/RhythmFishingEngine.ts#L281)
-1737. 脱了一钩，先跟住鱼影再提竿
+1707. 脱了一钩，先跟住鱼影再提竿
    来源：[src/modules/RhythmFishingEngine.ts:336](../src/modules/RhythmFishingEngine.ts#L336)
-1738. 收近了！留意下一次猛拽
+1708. 收近了！留意下一次猛拽
    来源：[src/modules/RhythmFishingEngine.ts:337](../src/modules/RhythmFishingEngine.ts#L337)
-1739. developer\_checkpoint\_session
+1709. developer\_checkpoint\_session
    来源：[src/modules/SaveController.ts:26](../src/modules/SaveController.ts#L26)
-1740. 匿名用户
+1710. 匿名用户
    来源：[src/scenes/phone/P02_CC98/index.tsx:72](../src/scenes/phone/P02_CC98/index.tsx#L72)
-1741. 刚刚
+1711. 刚刚
    来源：[src/scenes/phone/P02_CC98/index.tsx:79](../src/scenes/phone/P02_CC98/index.tsx#L79)；[src/scenes/phone/P02_CC98/index.tsx:240](../src/scenes/phone/P02_CC98/index.tsx#L240)
-1742. 如题。
+1712. 如题。
    来源：[src/scenes/phone/P02_CC98/index.tsx:80](../src/scenes/phone/P02_CC98/index.tsx#L80)
-1743. 今天 09:{{String(12 + index \* 2).padStart(2, "0")}}
+1713. 今天 09:{{String(12 + index \* 2).padStart(2, "0")}}
    来源：[src/scenes/phone/P02_CC98/index.tsx:83](../src/scenes/phone/P02_CC98/index.tsx#L83)
-1744. {{\[3, 8, 14\]\[index\]}}楼
+1714. {{\[3, 8, 14\]\[index\]}}楼
    来源：[src/scenes/phone/P02_CC98/index.tsx:84](../src/scenes/phone/P02_CC98/index.tsx#L84)
-1745. 今天 {{reply.time}}
+1715. 今天 {{reply.time}}
    来源：[src/scenes/phone/P02_CC98/index.tsx:111](../src/scenes/phone/P02_CC98/index.tsx#L111)
-1746. 今天 08:29
+1716. 今天 08:29
    来源：[src/scenes/phone/P02_CC98/index.tsx:128](../src/scenes/phone/P02_CC98/index.tsx#L128)
-1747. 今天 08:30
+1717. 今天 08:30
    来源：[src/scenes/phone/P02_CC98/index.tsx:138](../src/scenes/phone/P02_CC98/index.tsx#L138)
-1748. 今天 08:31
+1718. 今天 08:31
    来源：[src/scenes/phone/P02_CC98/index.tsx:149](../src/scenes/phone/P02_CC98/index.tsx#L149)
-1749. 网络提示
+1719. 网络提示
    来源：[src/scenes/phone/P02_CC98/index.tsx:151](../src/scenes/phone/P02_CC98/index.tsx#L151)
-1750. 今天 08:32
+1720. 今天 08:32
    来源：[src/scenes/phone/P02_CC98/index.tsx:160](../src/scenes/phone/P02_CC98/index.tsx#L160)
-1751. 系统回执
+1721. 系统回执
    来源：[src/scenes/phone/P02_CC98/index.tsx:162](../src/scenes/phone/P02_CC98/index.tsx#L162)
-1752. 23 楼
+1722. 23 楼
    来源：[src/scenes/phone/P02_CC98/index.tsx:185](../src/scenes/phone/P02_CC98/index.tsx#L185)
-1753. 【求助】022 座位今日临时离开
+1723. 【求助】022 座位今日临时离开
    来源：[src/scenes/phone/P02_CC98/index.tsx:186](../src/scenes/phone/P02_CC98/index.tsx#L186)
-1754. 12 楼
+1724. 12 楼
    来源：[src/scenes/phone/P02_CC98/index.tsx:186](../src/scenes/phone/P02_CC98/index.tsx#L186)
-1755. 来源不匹配：这是今日新帖，纸条引用的是旧版公开记录。
+1725. 来源不匹配：这是今日新帖，纸条引用的是旧版公开记录。
    来源：[src/scenes/phone/P02_CC98/index.tsx:186](../src/scenes/phone/P02_CC98/index.tsx#L186)
-1756. 来源为今日新帖，没有旧版离座规定的引用。
+1726. 来源为今日新帖，没有旧版离座规定的引用。
    来源：[src/scenes/phone/P02_CC98/index.tsx:186](../src/scenes/phone/P02_CC98/index.tsx#L186)
-1757. 【记录】二南 022 晚间使用情况
+1727. 【记录】二南 022 晚间使用情况
    来源：[src/scenes/phone/P02_CC98/index.tsx:187](../src/scenes/phone/P02_CC98/index.tsx#L187)
-1758. 31 楼
+1728. 31 楼
    来源：[src/scenes/phone/P02_CC98/index.tsx:187](../src/scenes/phone/P02_CC98/index.tsx#L187)
-1759. 发布时间为当日 22:40，早于纸条中的本次离座事件。
+1729. 发布时间为当日 22:40，早于纸条中的本次离座事件。
    来源：[src/scenes/phone/P02_CC98/index.tsx:187](../src/scenes/phone/P02_CC98/index.tsx#L187)
-1760. 时间不匹配：这条记录早于本次 022 占用事件。
+1730. 时间不匹配：这条记录早于本次 022 占用事件。
    来源：[src/scenes/phone/P02_CC98/index.tsx:187](../src/scenes/phone/P02_CC98/index.tsx#L187)
-1761. 【闲聊】一层书库今天还有位置吗
+1731. 【闲聊】一层书库今天还有位置吗
    来源：[src/scenes/phone/P02_CC98/index.tsx:188](../src/scenes/phone/P02_CC98/index.tsx#L188)
-1762. 18 楼
+1732. 18 楼
    来源：[src/scenes/phone/P02_CC98/index.tsx:188](../src/scenes/phone/P02_CC98/index.tsx#L188)
-1763. 附件不匹配：这条帖子没有纸条对应的离座凭据。
+1733. 附件不匹配：这条帖子没有纸条对应的离座凭据。
    来源：[src/scenes/phone/P02_CC98/index.tsx:188](../src/scenes/phone/P02_CC98/index.tsx#L188)
-1764. 正文提到 022，附件区为空。
+1734. 正文提到 022，附件区为空。
    来源：[src/scenes/phone/P02_CC98/index.tsx:188](../src/scenes/phone/P02_CC98/index.tsx#L188)
-1765. 本月
+1735. 本月
    来源：[src/scenes/phone/P02_CC98/index.tsx:197](../src/scenes/phone/P02_CC98/index.tsx#L197)
-1766. 本周
+1736. 本周
    来源：[src/scenes/phone/P02_CC98/index.tsx:197](../src/scenes/phone/P02_CC98/index.tsx#L197)
-1767. 发现
+1737. 发现
    来源：[src/scenes/phone/P02_CC98/index.tsx:197](../src/scenes/phone/P02_CC98/index.tsx#L197)
-1768. 活动
+1738. 活动
    来源：[src/scenes/phone/P02_CC98/index.tsx:197](../src/scenes/phone/P02_CC98/index.tsx#L197)
-1769. 今日
+1739. 今日
    来源：[src/scenes/phone/P02_CC98/index.tsx:197](../src/scenes/phone/P02_CC98/index.tsx#L197)；[src/scenes/phone/P02_CC98/index.tsx:843](../src/scenes/phone/P02_CC98/index.tsx#L843)
-1770. 往年今日
+1740. 往年今日
    来源：[src/scenes/phone/P02_CC98/index.tsx:197](../src/scenes/phone/P02_CC98/index.tsx#L197)
-1771. 新帖
+1741. 新帖
    来源：[src/scenes/phone/P02_CC98/index.tsx:200](../src/scenes/phone/P02_CC98/index.tsx#L200)；[src/scenes/phone/P02_CC98/index.tsx:980](../src/scenes/phone/P02_CC98/index.tsx#L980)
-1772. 关注
+1742. 关注
    来源：[src/scenes/phone/P02_CC98/index.tsx:201](../src/scenes/phone/P02_CC98/index.tsx#L201)；[src/scenes/phone/P02_CC98/index.tsx:940](../src/scenes/phone/P02_CC98/index.tsx#L940)
-1773. 版面
+1743. 版面
    来源：[src/scenes/phone/P02_CC98/index.tsx:202](../src/scenes/phone/P02_CC98/index.tsx#L202)
-1774. 校内日常、天气和临时消息
+1744. 校内日常、天气和临时消息
    来源：[src/scenes/phone/P02_CC98/index.tsx:224](../src/scenes/phone/P02_CC98/index.tsx#L224)
-1775. 匿名倾诉、互助和情绪整理
+1745. 匿名倾诉、互助和情绪整理
    来源：[src/scenes/phone/P02_CC98/index.tsx:225](../src/scenes/phone/P02_CC98/index.tsx#L225)
-1776. 步行、骑行和校内出行
+1746. 步行、骑行和校内出行
    来源：[src/scenes/phone/P02_CC98/index.tsx:226](../src/scenes/phone/P02_CC98/index.tsx#L226)
-1777. 资料、课程和复习讨论
+1747. 资料、课程和复习讨论
    来源：[src/scenes/phone/P02_CC98/index.tsx:227](../src/scenes/phone/P02_CC98/index.tsx#L227)
-1778. 电话卡、网络和通讯服务
+1748. 电话卡、网络和通讯服务
    来源：[src/scenes/phone/P02_CC98/index.tsx:228](../src/scenes/phone/P02_CC98/index.tsx#L228)
-1779. 馆内规则、座位和设备
+1749. 馆内规则、座位和设备
    来源：[src/scenes/phone/P02_CC98/index.tsx:229](../src/scenes/phone/P02_CC98/index.tsx#L229)
-1780. 自习地点与安静程度
+1750. 自习地点与安静程度
    来源：[src/scenes/phone/P02_CC98/index.tsx:230](../src/scenes/phone/P02_CC98/index.tsx#L230)
-1781. 窗口、排队和座位
+1751. 窗口、排队和座位
    来源：[src/scenes/phone/P02_CC98/index.tsx:231](../src/scenes/phone/P02_CC98/index.tsx#L231)
-1782. 打印、复印和取件
+1752. 打印、复印和取件
    来源：[src/scenes/phone/P02_CC98/index.tsx:232](../src/scenes/phone/P02_CC98/index.tsx#L232)
-1783. 校园卡使用和服务记录
+1753. 校园卡使用和服务记录
    来源：[src/scenes/phone/P02_CC98/index.tsx:233](../src/scenes/phone/P02_CC98/index.tsx#L233)
-1784. 遗失物和失物信息
+1754. 遗失物和失物信息
    来源：[src/scenes/phone/P02_CC98/index.tsx:234](../src/scenes/phone/P02_CC98/index.tsx#L234)
-1785. 闲置物品与当面交易提醒
+1755. 闲置物品与当面交易提醒
    来源：[src/scenes/phone/P02_CC98/index.tsx:235](../src/scenes/phone/P02_CC98/index.tsx#L235)
-1786. 轻松话题和校园小事
+1756. 轻松话题和校园小事
    来源：[src/scenes/phone/P02_CC98/index.tsx:236](../src/scenes/phone/P02_CC98/index.tsx#L236)
-1787. 课程与年份入口
+1757. 课程与年份入口
    来源：[src/scenes/phone/P02_CC98/index.tsx:295](../src/scenes/phone/P02_CC98/index.tsx#L295)
-1788. 先选课程，再按年份进入资料目录。
+1758. 先选课程，再按年份进入资料目录。
    来源：[src/scenes/phone/P02_CC98/index.tsx:296](../src/scenes/phone/P02_CC98/index.tsx#L296)
-1789. 旧自习讨论
+1759. 旧自习讨论
    来源：[src/scenes/phone/P02_CC98/index.tsx:300](../src/scenes/phone/P02_CC98/index.tsx#L300)
-1790. 旧帖能核对座位与插座记录，但日期可能已经过期。
+1760. 旧帖能核对座位与插座记录，但日期可能已经过期。
    来源：[src/scenes/phone/P02_CC98/index.tsx:301](../src/scenes/phone/P02_CC98/index.tsx#L301)
-1791. 今晚仍要现场核验
+1761. 今晚仍要现场核验
    来源：[src/scenes/phone/P02_CC98/index.tsx:305](../src/scenes/phone/P02_CC98/index.tsx#L305)
-1792. A2 的门牌、房间和通道以今晚实际情况为准。
+1762. A2 的门牌、房间和通道以今晚实际情况为准。
    来源：[src/scenes/phone/P02_CC98/index.tsx:306](../src/scenes/phone/P02_CC98/index.tsx#L306)
-1793. 首页推荐顺序
+1763. 首页推荐顺序
    来源：[src/scenes/phone/P02_CC98/index.tsx:310](../src/scenes/phone/P02_CC98/index.tsx#L310)
-1794. 推荐位会变化，无法作为资料目录。
+1764. 推荐位会变化，无法作为资料目录。
    来源：[src/scenes/phone/P02_CC98/index.tsx:311](../src/scenes/phone/P02_CC98/index.tsx#L311)
-1795. 直接照抄旧路线
+1765. 直接照抄旧路线
    来源：[src/scenes/phone/P02_CC98/index.tsx:315](../src/scenes/phone/P02_CC98/index.tsx#L315)
-1796. 旧路线没有记录今晚的封闭入口。
+1766. 旧路线没有记录今晚的封闭入口。
    来源：[src/scenes/phone/P02_CC98/index.tsx:316](../src/scenes/phone/P02_CC98/index.tsx#L316)
-1797. accepted
-   来源：[src/scenes/phone/P02_CC98/index.tsx:337](../src/scenes/phone/P02_CC98/index.tsx#L337)；[src/scenes/rpg/RpgGameHost.tsx:1532](../src/scenes/rpg/RpgGameHost.tsx#L1532)；[src/scenes/rpg/RpgGameHost.tsx:1616](../src/scenes/rpg/RpgGameHost.tsx#L1616)；[src/scenes/rpg/RpgGameHost.tsx:1644](../src/scenes/rpg/RpgGameHost.tsx#L1644)；[src/scenes/rpg/RpgGameHost.tsx:1652](../src/scenes/rpg/RpgGameHost.tsx#L1652)；[src/scenes/rpg/RpgGameHost.tsx:1664](../src/scenes/rpg/RpgGameHost.tsx#L1664)；[src/scenes/rpg/RpgGameHost.tsx:1682](../src/scenes/rpg/RpgGameHost.tsx#L1682)；[src/scenes/rpg/RpgGameHost.tsx:1707](../src/scenes/rpg/RpgGameHost.tsx#L1707)；[src/scenes/rpg/RpgGameHost.tsx:1717](../src/scenes/rpg/RpgGameHost.tsx#L1717)；[src/scenes/rpg/RpgGameHost.tsx:1724](../src/scenes/rpg/RpgGameHost.tsx#L1724)
-1798. already\_complete
+1767. accepted
+   来源：[src/scenes/phone/P02_CC98/index.tsx:337](../src/scenes/phone/P02_CC98/index.tsx#L337)；[src/scenes/rpg/RpgGameHost.tsx:1530](../src/scenes/rpg/RpgGameHost.tsx#L1530)；[src/scenes/rpg/RpgGameHost.tsx:1614](../src/scenes/rpg/RpgGameHost.tsx#L1614)；[src/scenes/rpg/RpgGameHost.tsx:1642](../src/scenes/rpg/RpgGameHost.tsx#L1642)；[src/scenes/rpg/RpgGameHost.tsx:1650](../src/scenes/rpg/RpgGameHost.tsx#L1650)；[src/scenes/rpg/RpgGameHost.tsx:1662](../src/scenes/rpg/RpgGameHost.tsx#L1662)；[src/scenes/rpg/RpgGameHost.tsx:1675](../src/scenes/rpg/RpgGameHost.tsx#L1675)；[src/scenes/rpg/RpgGameHost.tsx:1700](../src/scenes/rpg/RpgGameHost.tsx#L1700)；[src/scenes/rpg/RpgGameHost.tsx:1710](../src/scenes/rpg/RpgGameHost.tsx#L1710)；[src/scenes/rpg/RpgGameHost.tsx:1717](../src/scenes/rpg/RpgGameHost.tsx#L1717)
+1768. already\_complete
    来源：[src/scenes/phone/P02_CC98/index.tsx:339](../src/scenes/phone/P02_CC98/index.tsx#L339)
-1799. incorrect
+1769. incorrect
    来源：[src/scenes/phone/P02_CC98/index.tsx:341](../src/scenes/phone/P02_CC98/index.tsx#L341)
-1800. 这三项里混进了今晚无法使用的信息。再看一遍帖子和回复。
+1770. 这三项里混进了今晚无法使用的信息。再看一遍帖子和回复。
    来源：[src/scenes/phone/P02_CC98/index.tsx:342](../src/scenes/phone/P02_CC98/index.tsx#L342)
-1801. 学习天地资料索引已导入自习群。
+1771. 学习天地资料索引已导入自习群。
    来源：[src/scenes/phone/P02_CC98/index.tsx:349](../src/scenes/phone/P02_CC98/index.tsx#L349)
-1802. 筛选并导入学习天地资料
+1772. 筛选并导入学习天地资料
    来源：[src/scenes/phone/P02_CC98/index.tsx:354](../src/scenes/phone/P02_CC98/index.tsx#L354)
-1803. 导入前核对
+1773. 导入前核对
    来源：[src/scenes/phone/P02_CC98/index.tsx:356](../src/scenes/phone/P02_CC98/index.tsx#L356)
-1804. 选出今晚还能使用的三项信息
+1774. 选出今晚还能使用的三项信息
    来源：[src/scenes/phone/P02_CC98/index.tsx:357](../src/scenes/phone/P02_CC98/index.tsx#L357)
-1805. 已导入麦斯威夜间自习群
+1775. 已导入麦斯威夜间自习群
    来源：[src/scenes/phone/P02_CC98/index.tsx:383](../src/scenes/phone/P02_CC98/index.tsx#L383)
-1806. 从小码头下水。湖面比岸边安静，风从剧场方向过来。最后一张照片没同步上来，我先回岸上整理。
+1776. 从小码头下水。湖面比岸边安静，风从剧场方向过来。最后一张照片没同步上来，我先回岸上整理。
    来源：[src/scenes/phone/P02_CC98/index.tsx:462](../src/scenes/phone/P02_CC98/index.tsx#L462)
-1807. 启真湖 · 22:37:05
+1777. 启真湖 · 22:37:05
    来源：[src/scenes/phone/P02_CC98/index.tsx:463](../src/scenes/phone/P02_CC98/index.tsx#L463)
-1808. 晚上水面反光挺亮，靠岸别太快。
+1778. 晚上水面反光挺亮，靠岸别太快。
    来源：[src/scenes/phone/P02_CC98/index.tsx:466](../src/scenes/phone/P02_CC98/index.tsx#L466)
-1809. 最后一张图像是朝东边拍的。
+1779. 最后一张图像是朝东边拍的。
    来源：[src/scenes/phone/P02_CC98/index.tsx:467](../src/scenes/phone/P02_CC98/index.tsx#L467)
-1810. 本次记录准备结束，选择楼主的最后一条回复。
+1780. 本次记录准备结束，选择楼主的最后一条回复。
    来源：[src/scenes/phone/P02_CC98/index.tsx:470](../src/scenes/phone/P02_CC98/index.tsx#L470)
-1811. qizhen-summary
+1781. qizhen-summary
    来源：[src/scenes/phone/P02_CC98/index.tsx:474](../src/scenes/phone/P02_CC98/index.tsx#L474)；[src/scenes/phone/P02_CC98/index.tsx:484](../src/scenes/phone/P02_CC98/index.tsx#L484)
-1812. 安全返航
+1782. 安全返航
    来源：[src/scenes/phone/P02_CC98/index.tsx:478](../src/scenes/phone/P02_CC98/index.tsx#L478)
-1813. 船和人都回来了。湖上的事先记到这里，剩下的等我整理。
+1783. 船和人都回来了。湖上的事先记到这里，剩下的等我整理。
    来源：[src/scenes/phone/P02_CC98/index.tsx:479](../src/scenes/phone/P02_CC98/index.tsx#L479)
-1814. 细节暂不公开
+1784. 细节暂不公开
    来源：[src/scenes/phone/P02_CC98/index.tsx:488](../src/scenes/phone/P02_CC98/index.tsx#L488)
-1815. 最后一段发生了点不适合写进划船记录的事。人已上岸，其他细节暂时保留。
+1785. 最后一段发生了点不适合写进划船记录的事。人已上岸，其他细节暂时保留。
    来源：[src/scenes/phone/P02_CC98/index.tsx:489](../src/scenes/phone/P02_CC98/index.tsx#L489)
-1816. 发布收尾并保存时间
+1786. 发布收尾并保存时间
    来源：[src/scenes/phone/P02_CC98/index.tsx:492](../src/scenes/phone/P02_CC98/index.tsx#L492)
-1817. 纸条已读取。请核对搜索结果的来源、时间和附件。
+1787. 纸条已读取。请核对搜索结果的来源、时间和附件。
    来源：[src/scenes/phone/P02_CC98/index.tsx:563](../src/scenes/phone/P02_CC98/index.tsx#L563)
-1818. 湿纸特征已加入搜索。找到一条刚发布的目击帖。
+1788. 湿纸特征已加入搜索。找到一条刚发布的目击帖。
    来源：[src/scenes/phone/P02_CC98/index.tsx:568](../src/scenes/phone/P02_CC98/index.tsx#L568)
-1819. 校内讨论和临时信息
+1789. 校内讨论和临时信息
    来源：[src/scenes/phone/P02_CC98/index.tsx:625](../src/scenes/phone/P02_CC98/index.tsx#L625)
-1820. CC98 仅支持校园网。请切换后重新进入。
+1790. CC98 仅支持校园网。请切换后重新进入。
    来源：[src/scenes/phone/P02_CC98/index.tsx:657](../src/scenes/phone/P02_CC98/index.tsx#L657)
-1821. CC98 校园网验证
+1791. CC98 校园网验证
    来源：[src/scenes/phone/P02_CC98/index.tsx:671](../src/scenes/phone/P02_CC98/index.tsx#L671)
-1822. 网络验证失败
+1792. 网络验证失败
    来源：[src/scenes/phone/P02_CC98/index.tsx:675](../src/scenes/phone/P02_CC98/index.tsx#L675)
-1823. 校内访问验证
+1793. 校内访问验证
    来源：[src/scenes/phone/P02_CC98/index.tsx:675](../src/scenes/phone/P02_CC98/index.tsx#L675)
-1824. 正在恢复手机票务页面
+1794. 正在恢复手机票务页面
    来源：[src/scenes/phone/P02_CC98/index.tsx:677](../src/scenes/phone/P02_CC98/index.tsx#L677)
-1825. 正在连接校园网服务
+1795. 正在连接校园网服务
    来源：[src/scenes/phone/P02_CC98/index.tsx:677](../src/scenes/phone/P02_CC98/index.tsx#L677)
-1826. 正在检查 ZJUWLAN
+1796. 正在检查 ZJUWLAN
    来源：[src/scenes/phone/P02_CC98/index.tsx:678](../src/scenes/phone/P02_CC98/index.tsx#L678)
-1827. 这条 23 楼记录尚未满足调查门槛。
+1797. 这条 23 楼记录尚未满足调查门槛。
    来源：[src/scenes/phone/P02_CC98/index.tsx:731](../src/scenes/phone/P02_CC98/index.tsx#L731)
-1828. CC98 帖子已保存到本机。
+1798. CC98 帖子已保存到本机。
    来源：[src/scenes/phone/P02_CC98/index.tsx:752](../src/scenes/phone/P02_CC98/index.tsx#L752)
-1829. CC98 帖子已恢复为默认内容。
+1799. CC98 帖子已恢复为默认内容。
    来源：[src/scenes/phone/P02_CC98/index.tsx:808](../src/scenes/phone/P02_CC98/index.tsx#L808)
-1830. CC98热门话题
+1800. CC98热门话题
    来源：[src/scenes/phone/P02_CC98/index.tsx:812](../src/scenes/phone/P02_CC98/index.tsx#L812)
-1831. 退出 CC98，返回手机主页
+1801. 退出 CC98，返回手机主页
    来源：[src/scenes/phone/P02_CC98/index.tsx:817](../src/scenes/phone/P02_CC98/index.tsx#L817)
-1832. 热门话题
+1802. 热门话题
    来源：[src/scenes/phone/P02_CC98/index.tsx:820](../src/scenes/phone/P02_CC98/index.tsx#L820)
-1833. 开发者帖子维护
+1803. 开发者帖子维护
    来源：[src/scenes/phone/P02_CC98/index.tsx:821](../src/scenes/phone/P02_CC98/index.tsx#L821)
-1834. 更多
+1804. 更多
    来源：[src/scenes/phone/P02_CC98/index.tsx:822](../src/scenes/phone/P02_CC98/index.tsx#L822)
-1835. CC98更多菜单
+1805. CC98更多菜单
    来源：[src/scenes/phone/P02_CC98/index.tsx:822](../src/scenes/phone/P02_CC98/index.tsx#L822)
-1836. 保存帖子
+1806. 保存帖子
    来源：[src/scenes/phone/P02_CC98/index.tsx:825](../src/scenes/phone/P02_CC98/index.tsx#L825)
-1837. 编辑帖子
+1807. 编辑帖子
    来源：[src/scenes/phone/P02_CC98/index.tsx:825](../src/scenes/phone/P02_CC98/index.tsx#L825)
-1838. 保存
+1808. 保存
    来源：[src/scenes/phone/P02_CC98/index.tsx:826](../src/scenes/phone/P02_CC98/index.tsx#L826)
-1839. 编辑
+1809. 编辑
    来源：[src/scenes/phone/P02_CC98/index.tsx:826](../src/scenes/phone/P02_CC98/index.tsx#L826)
-1840. 恢复默认帖子
+1810. 恢复默认帖子
    来源：[src/scenes/phone/P02_CC98/index.tsx:834](../src/scenes/phone/P02_CC98/index.tsx#L834)
-1841. 关闭菜单
+1811. 关闭菜单
    来源：[src/scenes/phone/P02_CC98/index.tsx:837](../src/scenes/phone/P02_CC98/index.tsx#L837)
-1842. 热门话题时间筛选
+1812. 热门话题时间筛选
    来源：[src/scenes/phone/P02_CC98/index.tsx:842](../src/scenes/phone/P02_CC98/index.tsx#L842)
-1843. CC98占座调查搜索
+1813. CC98占座调查搜索
    来源：[src/scenes/phone/P02_CC98/index.tsx:848](../src/scenes/phone/P02_CC98/index.tsx#L848)
-1844. 可接收道具
+1814. 可接收道具
    来源：[src/scenes/phone/P02_CC98/index.tsx:849](../src/scenes/phone/P02_CC98/index.tsx#L849)；[src/scenes/phone/P02_CC98/index.tsx:883](../src/scenes/phone/P02_CC98/index.tsx#L883)
-1845. 资料搜索
+1815. 资料搜索
    来源：[src/scenes/phone/P02_CC98/index.tsx:849](../src/scenes/phone/P02_CC98/index.tsx#L849)
-1846. CC98 搜索内容
+1816. CC98 搜索内容
    来源：[src/scenes/phone/P02_CC98/index.tsx:853](../src/scenes/phone/P02_CC98/index.tsx#L853)
-1847. 022 占座纸条
+1817. 022 占座纸条
    来源：[src/scenes/phone/P02_CC98/index.tsx:855](../src/scenes/phone/P02_CC98/index.tsx#L855)
-1848. 把占座纸条拖到这里
+1818. 把占座纸条拖到这里
    来源：[src/scenes/phone/P02_CC98/index.tsx:856](../src/scenes/phone/P02_CC98/index.tsx#L856)
-1849. 搜索
+1819. 搜索
    来源：[src/scenes/phone/P02_CC98/index.tsx:858](../src/scenes/phone/P02_CC98/index.tsx#L858)；[src/scenes/phone/P02_CC98/index.tsx:892](../src/scenes/phone/P02_CC98/index.tsx#L892)；[src/scenes/phone/P15_Zjuding/index.tsx:1647](../src/scenes/phone/P15_Zjuding/index.tsx#L1647)；[src/scenes/phone/P15_Zjuding/index.tsx:2070](../src/scenes/phone/P15_Zjuding/index.tsx#L2070)；[src/scenes/phone/P15_Zjuding/index.tsx:2073](../src/scenes/phone/P15_Zjuding/index.tsx#L2073)
-1850. 搜索结果
+1820. 搜索结果
    来源：[src/scenes/phone/P02_CC98/index.tsx:860](../src/scenes/phone/P02_CC98/index.tsx#L860)
-1851. 拖入纸条或点击搜索后显示候选记录。
+1821. 拖入纸条或点击搜索后显示候选记录。
    来源：[src/scenes/phone/P02_CC98/index.tsx:872](../src/scenes/phone/P02_CC98/index.tsx#L872)
-1852. 论坛会根据纸条内容建立 23 楼调查索引。
+1822. 论坛会根据纸条内容建立 23 楼调查索引。
    来源：[src/scenes/phone/P02_CC98/index.tsx:876](../src/scenes/phone/P02_CC98/index.tsx#L876)
-1853. 湿纸目击搜索
+1823. 湿纸目击搜索
    来源：[src/scenes/phone/P02_CC98/index.tsx:882](../src/scenes/phone/P02_CC98/index.tsx#L882)
-1854. 目击搜索
+1824. 目击搜索
    来源：[src/scenes/phone/P02_CC98/index.tsx:883](../src/scenes/phone/P02_CC98/index.tsx#L883)
-1855. 湿纸目击搜索内容
+1825. 湿纸目击搜索内容
    来源：[src/scenes/phone/P02_CC98/index.tsx:887](../src/scenes/phone/P02_CC98/index.tsx#L887)
-1856. 剧院门口 湿纸
+1826. 剧院门口 湿纸
    来源：[src/scenes/phone/P02_CC98/index.tsx:889](../src/scenes/phone/P02_CC98/index.tsx#L889)
-1857. 把湿掉的节目单拖到这里
+1827. 把湿掉的节目单拖到这里
    来源：[src/scenes/phone/P02_CC98/index.tsx:890](../src/scenes/phone/P02_CC98/index.tsx#L890)
-1858. 先用实物特征建立目击范围。
+1828. 先用实物特征建立目击范围。
    来源：[src/scenes/phone/P02_CC98/index.tsx:895](../src/scenes/phone/P02_CC98/index.tsx#L895)
-1859. CC98版面目录
+1829. CC98版面目录
    来源：[src/scenes/phone/P02_CC98/index.tsx:901](../src/scenes/phone/P02_CC98/index.tsx#L901)
-1860. 全部版面
+1830. 全部版面
    来源：[src/scenes/phone/P02_CC98/index.tsx:904](../src/scenes/phone/P02_CC98/index.tsx#L904)
-1861. 选择一个版面查看帖子
+1831. 选择一个版面查看帖子
    来源：[src/scenes/phone/P02_CC98/index.tsx:905](../src/scenes/phone/P02_CC98/index.tsx#L905)
-1862. 个
+1832. 个
    来源：[src/scenes/phone/P02_CC98/index.tsx:907](../src/scenes/phone/P02_CC98/index.tsx#L907)；[src/scenes/phone/P02_CC98/index.tsx:957](../src/scenes/phone/P02_CC98/index.tsx#L957)
-1863. ；公开快照 {{snapshot.capturedOn}}，今日贴数 {{snapshot.todayPostCount}}，总主题数 {{snapshot.totalTopicCount}}
+1833. ；公开快照 {{snapshot.capturedOn}}，今日贴数 {{snapshot.todayPostCount}}，总主题数 {{snapshot.totalTopicCount}}
    来源：[src/scenes/phone/P02_CC98/index.tsx:913](../src/scenes/phone/P02_CC98/index.tsx#L913)
-1864. 进入{{board}}版面，共{{postCount}}帖{{snapshotLabel}}
+1834. 进入{{board}}版面，共{{postCount}}帖{{snapshotLabel}}
    来源：[src/scenes/phone/P02_CC98/index.tsx:920](../src/scenes/phone/P02_CC98/index.tsx#L920)
-1865. 帖
+1835. 帖
    来源：[src/scenes/phone/P02_CC98/index.tsx:926](../src/scenes/phone/P02_CC98/index.tsx#L926)；[src/scenes/phone/P02_CC98/index.tsx:983](../src/scenes/phone/P02_CC98/index.tsx#L983)
-1866. · 今日
+1836. · 今日
    来源：[src/scenes/phone/P02_CC98/index.tsx:929](../src/scenes/phone/P02_CC98/index.tsx#L929)
-1867. · 总主题
+1837. · 总主题
    来源：[src/scenes/phone/P02_CC98/index.tsx:929](../src/scenes/phone/P02_CC98/index.tsx#L929)
-1868. 公开快照 ·
+1838. 公开快照 ·
    来源：[src/scenes/phone/P02_CC98/index.tsx:929](../src/scenes/phone/P02_CC98/index.tsx#L929)
-1869. 关注{{board}}
+1839. 关注{{board}}
    来源：[src/scenes/phone/P02_CC98/index.tsx:937](../src/scenes/phone/P02_CC98/index.tsx#L937)
-1870. 取消关注{{board}}
+1840. 取消关注{{board}}
    来源：[src/scenes/phone/P02_CC98/index.tsx:937](../src/scenes/phone/P02_CC98/index.tsx#L937)
-1871. 已关注
+1841. 已关注
    来源：[src/scenes/phone/P02_CC98/index.tsx:940](../src/scenes/phone/P02_CC98/index.tsx#L940)；[src/scenes/phone/P14_Wechat/index.tsx:578](../src/scenes/phone/P14_Wechat/index.tsx#L578)
-1872. CC98我的页面
+1842. CC98我的页面
    来源：[src/scenes/phone/P02_CC98/index.tsx:948](../src/scenes/phone/P02_CC98/index.tsx#L948)
-1873. 我的浏览
+1843. 我的浏览
    来源：[src/scenes/phone/P02_CC98/index.tsx:951](../src/scenes/phone/P02_CC98/index.tsx#L951)
-1874. 本次打开过的帖子会留在这里
+1844. 本次打开过的帖子会留在这里
    来源：[src/scenes/phone/P02_CC98/index.tsx:952](../src/scenes/phone/P02_CC98/index.tsx#L952)
-1875. 条
+1845. 条
    来源：[src/scenes/phone/P02_CC98/index.tsx:954](../src/scenes/phone/P02_CC98/index.tsx#L954)；[src/scenes/phone/P02_CC98/index.tsx:958](../src/scenes/phone/P02_CC98/index.tsx#L958)；[src/scenes/phone/P15_Zjuding/index.tsx:422](../src/scenes/phone/P15_Zjuding/index.tsx#L422)；[src/scenes/phone/P15_Zjuding/index.tsx:1694](../src/scenes/phone/P15_Zjuding/index.tsx#L1694)
-1876. 关注版面
+1846. 关注版面
    来源：[src/scenes/phone/P02_CC98/index.tsx:957](../src/scenes/phone/P02_CC98/index.tsx#L957)
-1877. 浏览记录
+1847. 浏览记录
    来源：[src/scenes/phone/P02_CC98/index.tsx:958](../src/scenes/phone/P02_CC98/index.tsx#L958)
-1878. 最近浏览
+1848. 最近浏览
    来源：[src/scenes/phone/P02_CC98/index.tsx:961](../src/scenes/phone/P02_CC98/index.tsx#L961)
-1879. 还没有浏览记录。打开一篇帖子后会出现在这里。
+1849. 还没有浏览记录。打开一篇帖子后会出现在这里。
    来源：[src/scenes/phone/P02_CC98/index.tsx:970](../src/scenes/phone/P02_CC98/index.tsx#L970)
-1880. CC98帖子列表
+1850. CC98帖子列表
    来源：[src/scenes/phone/P02_CC98/index.tsx:973](../src/scenes/phone/P02_CC98/index.tsx#L973)
-1881. ‹ 全部版面
+1851. ‹ 全部版面
    来源：[src/scenes/phone/P02_CC98/index.tsx:977](../src/scenes/phone/P02_CC98/index.tsx#L977)
-1882. 关注的版面
+1852. 关注的版面
    来源：[src/scenes/phone/P02_CC98/index.tsx:980](../src/scenes/phone/P02_CC98/index.tsx#L980)
-1883. 按发布时间排列
+1853. 按发布时间排列
    来源：[src/scenes/phone/P02_CC98/index.tsx:981](../src/scenes/phone/P02_CC98/index.tsx#L981)
-1884. 本版面当前可见帖子
+1854. 本版面当前可见帖子
    来源：[src/scenes/phone/P02_CC98/index.tsx:981](../src/scenes/phone/P02_CC98/index.tsx#L981)
-1885. 可在版面页调整关注
+1855. 可在版面页调整关注
    来源：[src/scenes/phone/P02_CC98/index.tsx:981](../src/scenes/phone/P02_CC98/index.tsx#L981)
-1886. 可导入自习群
+1856. 可导入自习群
    来源：[src/scenes/phone/P02_CC98/index.tsx:1017](../src/scenes/phone/P02_CC98/index.tsx#L1017)
-1887. 已导入自习群
+1857. 已导入自习群
    来源：[src/scenes/phone/P02_CC98/index.tsx:1017](../src/scenes/phone/P02_CC98/index.tsx#L1017)
-1888. 回复 ·
+1858. 回复 ·
    来源：[src/scenes/phone/P02_CC98/index.tsx:1022](../src/scenes/phone/P02_CC98/index.tsx#L1022)
-1889. 浏览
+1859. 浏览
    来源：[src/scenes/phone/P02_CC98/index.tsx:1023](../src/scenes/phone/P02_CC98/index.tsx#L1023)
-1890. 正文
+1860. 正文
    来源：[src/scenes/phone/P02_CC98/index.tsx:1036](../src/scenes/phone/P02_CC98/index.tsx#L1036)
-1891. 这个版面暂时没有可显示的帖子。
+1861. 这个版面暂时没有可显示的帖子。
    来源：[src/scenes/phone/P02_CC98/index.tsx:1041](../src/scenes/phone/P02_CC98/index.tsx#L1041)
-1892. CC98主导航
+1862. CC98主导航
    来源：[src/scenes/phone/P02_CC98/index.tsx:1045](../src/scenes/phone/P02_CC98/index.tsx#L1045)
-1893. 提取目击关键词
+1863. 提取目击关键词
    来源：[src/scenes/phone/P02_CC98/index.tsx:1104](../src/scenes/phone/P02_CC98/index.tsx#L1104)
-1894. 目击信息可归纳为一个地点关键词
+1864. 目击信息可归纳为一个地点关键词
    来源：[src/scenes/phone/P02_CC98/index.tsx:1105](../src/scenes/phone/P02_CC98/index.tsx#L1105)
-1895. 记录关键词：桥边
+1865. 记录关键词：桥边
    来源：[src/scenes/phone/P02_CC98/index.tsx:1107](../src/scenes/phone/P02_CC98/index.tsx#L1107)
-1896. 已取得：桥边
+1866. 已取得：桥边
    来源：[src/scenes/phone/P02_CC98/index.tsx:1107](../src/scenes/phone/P02_CC98/index.tsx#L1107)
-1897. 关闭帖子编辑
+1867. 关闭帖子编辑
    来源：[src/scenes/phone/P02_CC98/index.tsx:1125](../src/scenes/phone/P02_CC98/index.tsx#L1125)
-1898. CC98小程序
+1868. CC98小程序
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:19](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L19)
-1899. 热门
+1869. 热门
    来源：[src/scenes/phone/P02_CC98/index.tsx:199](../src/scenes/phone/P02_CC98/index.tsx#L199)；[src/scenes/phone/P02_CC98/ThreadPage.tsx:20](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L20)
-1900. 今天 08:22
+1870. 今天 08:22
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:21](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L21)
-1901. 楼主
+1871. 楼主
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:22](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L22)
-1902. 1楼
+1872. 1楼
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:23](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L23)
-1903. 纸飞机维修员
+1873. 纸飞机维修员
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:25](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L25)
-1904. 增加论坛经验 755
+1874. 增加论坛经验 755
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:26](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L26)
-1905. 帖子成功把常识送进流程
+1875. 帖子成功把常识送进流程
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:27](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L27)
-1906. 热门回复
+1876. 热门回复
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:35](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L35)
-1907. 只看楼主
+1877. 只看楼主
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:36](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L36)
-1908. 今天 08:24
+1878. 今天 08:24
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:42](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L42)
-1909. 先 bd 留言。问题能不能解决不确定，队形必须先完整。
+1879. 先 bd 留言。问题能不能解决不确定，队形必须先完整。
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:45](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L45)
-1910. 今天 08:27
+1880. 今天 08:27
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:52](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L52)
-1911. bd 图先补上，楼主今晚大概能收到一点抽象支援。
+1881. bd 图先补上，楼主今晚大概能收到一点抽象支援。
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:55](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L55)
-1912. CC98帖子：{{post.title}}
+1882. CC98帖子：{{post.title}}
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:120](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L120)
-1913. 返回热门话题
+1883. 返回热门话题
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:122](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L122)
-1914. 退出帖子，返回热门话题
+1884. 退出帖子，返回热门话题
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:132](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L132)
-1915. 退出帖子
+1885. 退出帖子
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:133](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L133)
-1916. 已锁定无法回复
+1886. 已锁定无法回复
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:142](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L142)
-1917. 用户
+1887. 用户
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:164](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L164)；[src/scenes/phone/P15_Zjuding/index.tsx:2004](../src/scenes/phone/P15_Zjuding/index.tsx#L2004)
-1918. 操作
+1888. 操作
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:168](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L168)
-1919. 理由
+1889. 理由
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:172](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L172)
-1920. ⚙ 操作
+1890. ⚙ 操作
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:178](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L178)；[src/scenes/phone/P02_CC98/ThreadPage.tsx:235](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L235)
-1921. ↶ 回复
+1891. ↶ 回复
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:179](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L179)；[src/scenes/phone/P02_CC98/ThreadPage.tsx:236](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L236)
-1922. 图书管理员
+1892. 图书管理员
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:197](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L197)
-1923. 今天 08:55
+1893. 今天 08:55
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:198](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L198)
-1924. 管理员
+1894. 管理员
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:200](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L200)
-1925. 24楼
+1895. 24楼
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:201](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L201)
-1926. 您好已收到您的问题反馈，请前往图书馆程序进行系统申诉。
+1896. 您好已收到您的问题反馈，请前往图书馆程序进行系统申诉。
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:203](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L203)
-1927. 回复筛选
+1897. 回复筛选
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:209](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L209)
-1928. 匿名用户{{index + 1}}
+1898. 匿名用户{{index + 1}}
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:221](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L221)
-1929. CC98 bd 表情包
+1899. CC98 bd 表情包
    来源：[src/scenes/phone/P02_CC98/ThreadPage.tsx:230](../src/scenes/phone/P02_CC98/ThreadPage.tsx#L230)
-1930. 现在没有需要带走的水。
+1900. 现在没有需要带走的水。
    来源：[src/scenes/phone/P07_Weather/index.tsx:29](../src/scenes/phone/P07_Weather/index.tsx#L29)
-1931. 湖区状态已经更新。
+1901. 湖区状态已经更新。
    来源：[src/scenes/phone/P07_Weather/index.tsx:44](../src/scenes/phone/P07_Weather/index.tsx#L44)；[src/scenes/phone/P07_Weather/index.tsx:90](../src/scenes/phone/P07_Weather/index.tsx#L90)
-1932. 当前没有待处理的湖区记录。
+1902. 当前没有待处理的湖区记录。
    来源：[src/scenes/phone/P07_Weather/index.tsx:48](../src/scenes/phone/P07_Weather/index.tsx#L48)
-1933. 先从寝室书桌拿到吹风机。
+1903. 先从寝室书桌拿到吹风机。
    来源：[src/scenes/phone/P07_Weather/index.tsx:48](../src/scenes/phone/P07_Weather/index.tsx#L48)
-1934. 当前无法开始校准。
+1904. 当前无法开始校准。
    来源：[src/scenes/phone/P07_Weather/index.tsx:51](../src/scenes/phone/P07_Weather/index.tsx#L51)
-1935. 这件道具无法送风 · 请拖入寝室吹风机
+1905. 这件道具无法送风 · 请拖入寝室吹风机
    来源：[src/scenes/phone/P07_Weather/index.tsx:60](../src/scenes/phone/P07_Weather/index.tsx#L60)
-1936. 当前道具无法送风 · 请改用寝室吹风机
+1906. 当前道具无法送风 · 请改用寝室吹风机
    来源：[src/scenes/phone/P07_Weather/index.tsx:74](../src/scenes/phone/P07_Weather/index.tsx#L74)
-1937. 道具栏已展开 · 拖入吹风机，键盘可按空格选中
+1907. 道具栏已展开 · 拖入吹风机，键盘可按空格选中
    来源：[src/scenes/phone/P07_Weather/index.tsx:78](../src/scenes/phone/P07_Weather/index.tsx#L78)
-1938. 湖区状态已更新。
+1908. 湖区状态已更新。
    来源：[src/scenes/phone/P07_Weather/index.tsx:85](../src/scenes/phone/P07_Weather/index.tsx#L85)
-1939. 校准记录无效，请重新对齐。
+1909. 校准记录无效，请重新对齐。
    来源：[src/scenes/phone/P07_Weather/index.tsx:93](../src/scenes/phone/P07_Weather/index.tsx#L93)
-1940. 退出天气，返回手机主页
+1910. 退出天气，返回手机主页
    来源：[src/scenes/phone/P07_Weather/index.tsx:100](../src/scenes/phone/P07_Weather/index.tsx#L100)
-1941. 杭州 · 紫金港
+1911. 杭州 · 紫金港
    来源：[src/scenes/phone/P07_Weather/index.tsx:101](../src/scenes/phone/P07_Weather/index.tsx#L101)
-1942. °C
-   来源：[src/scenes/phone/P07_Weather/index.tsx:125](../src/scenes/phone/P07_Weather/index.tsx#L125)；[src/scenes/phone/P07_Weather/index.tsx:126](../src/scenes/phone/P07_Weather/index.tsx#L126)；[src/scenes/phone/P13_PhoneHome/index.tsx:694](../src/scenes/phone/P13_PhoneHome/index.tsx#L694)
-1943. 体感温度
+1912. °C
+   来源：[src/scenes/phone/P07_Weather/index.tsx:125](../src/scenes/phone/P07_Weather/index.tsx#L125)；[src/scenes/phone/P07_Weather/index.tsx:126](../src/scenes/phone/P07_Weather/index.tsx#L126)；[src/scenes/phone/P13_PhoneHome/index.tsx:692](../src/scenes/phone/P13_PhoneHome/index.tsx#L692)
+1913. 体感温度
    来源：[src/scenes/phone/P07_Weather/index.tsx:126](../src/scenes/phone/P07_Weather/index.tsx#L126)
-1944. 天气详情
+1914. 天气详情
    来源：[src/scenes/phone/P07_Weather/index.tsx:129](../src/scenes/phone/P07_Weather/index.tsx#L129)
-1945. 湿度
+1915. 湿度
    来源：[src/scenes/phone/P07_Weather/index.tsx:130](../src/scenes/phone/P07_Weather/index.tsx#L130)
-1946. 西南风 2级
-   来源：[src/scenes/phone/P07_Weather/index.tsx:131](../src/scenes/phone/P07_Weather/index.tsx#L131)；[src/scenes/phone/P13_PhoneHome/index.tsx:702](../src/scenes/phone/P13_PhoneHome/index.tsx#L702)
-1947. 降水
+1916. 西南风 2级
+   来源：[src/scenes/phone/P07_Weather/index.tsx:131](../src/scenes/phone/P07_Weather/index.tsx#L131)；[src/scenes/phone/P13_PhoneHome/index.tsx:700](../src/scenes/phone/P13_PhoneHome/index.tsx#L700)
+1917. 降水
    来源：[src/scenes/phone/P07_Weather/index.tsx:132](../src/scenes/phone/P07_Weather/index.tsx#L132)
-1948. 已经停止
+1918. 已经停止
    来源：[src/scenes/phone/P07_Weather/index.tsx:132](../src/scenes/phone/P07_Weather/index.tsx#L132)
-1949. 正在发生
+1919. 正在发生
    来源：[src/scenes/phone/P07_Weather/index.tsx:132](../src/scenes/phone/P07_Weather/index.tsx#L132)
-1950. 处理湖区云图
+1920. 处理湖区云图
    来源：[src/scenes/phone/P07_Weather/index.tsx:134](../src/scenes/phone/P07_Weather/index.tsx#L134)
-1951. 返回码头确认
+1921. 返回码头确认
    来源：[src/scenes/phone/P07_Weather/index.tsx:134](../src/scenes/phone/P07_Weather/index.tsx#L134)
-1952. 暂不适合下水
+1922. 暂不适合下水
    来源：[src/scenes/phone/P07_Weather/index.tsx:134](../src/scenes/phone/P07_Weather/index.tsx#L134)
-1953. 处理黏着物
+1923. 处理黏着物
    来源：[src/scenes/phone/P07_Weather/index.tsx:135](../src/scenes/phone/P07_Weather/index.tsx#L135)
-1954. 湖区状态已更新
+1924. 湖区状态已更新
    来源：[src/scenes/phone/P07_Weather/index.tsx:147](../src/scenes/phone/P07_Weather/index.tsx#L147)；[src/scenes/phone/P07_Weather/index.tsx:159](../src/scenes/phone/P07_Weather/index.tsx#L159)
-1955. 吹风机校准接口，从道具栏拖入寝室吹风机；键盘可先选中吹风机后确认此接口
+1925. 吹风机校准接口，从道具栏拖入寝室吹风机；键盘可先选中吹风机后确认此接口
    来源：[src/scenes/phone/P07_Weather/index.tsx:149](../src/scenes/phone/P07_Weather/index.tsx#L149)
-1956. 湖区记录尚未开放
+1926. 湖区记录尚未开放
    来源：[src/scenes/phone/P07_Weather/index.tsx:150](../src/scenes/phone/P07_Weather/index.tsx#L150)
-1957. 接入寝室吹风机
+1927. 接入寝室吹风机
    来源：[src/scenes/phone/P07_Weather/index.tsx:159](../src/scenes/phone/P07_Weather/index.tsx#L159)
-1958. 缺少可用设备
+1928. 缺少可用设备
    来源：[src/scenes/phone/P07_Weather/index.tsx:159](../src/scenes/phone/P07_Weather/index.tsx#L159)
-1959. 暂无湖区记录
+1929. 暂无湖区记录
    来源：[src/scenes/phone/P07_Weather/index.tsx:159](../src/scenes/phone/P07_Weather/index.tsx#L159)
-1960. 返回码头确认{{state.qizhenLake.weatherControlBestMoves &gt; 0 ? \` · 最少 ${state.qizhenLake.weatherControlBestMoves} 次校正\` : ""}}
+1930. 返回码头确认{{state.qizhenLake.weatherControlBestMoves &gt; 0 ? \` · 最少 ${state.qizhenLake.weatherControlBestMoves} 次校正\` : ""}}
    来源：[src/scenes/phone/P07_Weather/index.tsx:161](../src/scenes/phone/P07_Weather/index.tsx#L161)
-1961. 从左侧道具栏拖到此接口
+1931. 从左侧道具栏拖到此接口
    来源：[src/scenes/phone/P07_Weather/index.tsx:163](../src/scenes/phone/P07_Weather/index.tsx#L163)
-1962. 先检查寝室书桌
+1932. 先检查寝室书桌
    来源：[src/scenes/phone/P07_Weather/index.tsx:163](../src/scenes/phone/P07_Weather/index.tsx#L163)
-1963. 完成码头检查后再查看
+1933. 完成码头检查后再查看
    来源：[src/scenes/phone/P07_Weather/index.tsx:164](../src/scenes/phone/P07_Weather/index.tsx#L164)
-1964. 收集天气水滴
+1934. 收集天气水滴
    来源：[src/scenes/phone/P07_Weather/index.tsx:171](../src/scenes/phone/P07_Weather/index.tsx#L171)
-1965. 天气水滴尚未开放
+1935. 天气水滴尚未开放
    来源：[src/scenes/phone/P07_Weather/index.tsx:171](../src/scenes/phone/P07_Weather/index.tsx#L171)
-1966. 天气水滴已收集
+1936. 天气水滴已收集
    来源：[src/scenes/phone/P07_Weather/index.tsx:171](../src/scenes/phone/P07_Weather/index.tsx#L171)
-1967. 还没有开始外出打卡
+1937. 还没有开始外出打卡
    来源：[src/scenes/phone/P07_Weather/index.tsx:176](../src/scenes/phone/P07_Weather/index.tsx#L176)
-1968. 接住一滴水
+1938. 接住一滴水
    来源：[src/scenes/phone/P07_Weather/index.tsx:176](../src/scenes/phone/P07_Weather/index.tsx#L176)
-1969. 水滴已收集
+1939. 水滴已收集
    来源：[src/scenes/phone/P07_Weather/index.tsx:176](../src/scenes/phone/P07_Weather/index.tsx#L176)
-1970. 你都还没有开始外出打卡，一滴雨都不会落到你身上。
+1940. 你都还没有开始外出打卡，一滴雨都不会落到你身上。
    来源：[src/scenes/phone/P07_Weather/index.tsx:177](../src/scenes/phone/P07_Weather/index.tsx#L177)
-1971. 它正在道具栏里等着被使用
+1941. 它正在道具栏里等着被使用
    来源：[src/scenes/phone/P07_Weather/index.tsx:177](../src/scenes/phone/P07_Weather/index.tsx#L177)
-1972. 这滴水看起来比天气预报更有用
+1942. 这滴水看起来比天气预报更有用
    来源：[src/scenes/phone/P07_Weather/index.tsx:177](../src/scenes/phone/P07_Weather/index.tsx#L177)
-1973. 微信
+1943. 微信
    来源：[src/scenes/phone/P08_Settings/index.tsx:29](../src/scenes/phone/P08_Settings/index.tsx#L29)；[src/scenes/phone/P08_Settings/index.tsx:55](../src/scenes/phone/P08_Settings/index.tsx#L55)；[src/scenes/phone/P14_Wechat/index.tsx:154](../src/scenes/phone/P14_Wechat/index.tsx#L154)；[src/scenes/phone/P14_Wechat/index.tsx:799](../src/scenes/phone/P14_Wechat/index.tsx#L799)
-1974. 浙大钉
-   来源：[src/scenes/phone/P08_Settings/index.tsx:31](../src/scenes/phone/P08_Settings/index.tsx#L31)；[src/scenes/phone/P08_Settings/index.tsx:57](../src/scenes/phone/P08_Settings/index.tsx#L57)；[src/scenes/phone/P13_PhoneHome/index.tsx:838](../src/scenes/phone/P13_PhoneHome/index.tsx#L838)
-1975. 设置
-   来源：[src/scenes/phone/P08_Settings/index.tsx:32](../src/scenes/phone/P08_Settings/index.tsx#L32)；[src/scenes/phone/P08_Settings/index.tsx:146](../src/scenes/phone/P08_Settings/index.tsx#L146)；[src/scenes/phone/P08_Settings/index.tsx:149](../src/scenes/phone/P08_Settings/index.tsx#L149)；[src/scenes/phone/P13_PhoneHome/index.tsx:469](../src/scenes/phone/P13_PhoneHome/index.tsx#L469)
-1976. 照片
-   来源：[src/scenes/phone/P08_Settings/index.tsx:33](../src/scenes/phone/P08_Settings/index.tsx#L33)；[src/scenes/phone/P08_Settings/index.tsx:54](../src/scenes/phone/P08_Settings/index.tsx#L54)；[src/scenes/phone/P08_Settings/index.tsx:139](../src/scenes/phone/P08_Settings/index.tsx#L139)；[src/scenes/phone/P13_PhoneHome/index.tsx:475](../src/scenes/phone/P13_PhoneHome/index.tsx#L475)；[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:119](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L119)
-1977. 记录恢复
-   来源：[src/scenes/phone/P08_Settings/index.tsx:34](../src/scenes/phone/P08_Settings/index.tsx#L34)；[src/scenes/phone/P13_PhoneHome/index.tsx:482](../src/scenes/phone/P13_PhoneHome/index.tsx#L482)；[src/scenes/phone/P13_PhoneHome/index.tsx:731](../src/scenes/phone/P13_PhoneHome/index.tsx#L731)
-1978. 录音
-   来源：[src/scenes/phone/P08_Settings/index.tsx:35](../src/scenes/phone/P08_Settings/index.tsx#L35)；[src/scenes/phone/P13_PhoneHome/index.tsx:494](../src/scenes/phone/P13_PhoneHome/index.tsx#L494)
-1979. 时钟
+1944. 浙大钉
+   来源：[src/scenes/phone/P08_Settings/index.tsx:31](../src/scenes/phone/P08_Settings/index.tsx#L31)；[src/scenes/phone/P08_Settings/index.tsx:57](../src/scenes/phone/P08_Settings/index.tsx#L57)；[src/scenes/phone/P13_PhoneHome/index.tsx:836](../src/scenes/phone/P13_PhoneHome/index.tsx#L836)
+1945. 设置
+   来源：[src/scenes/phone/P08_Settings/index.tsx:32](../src/scenes/phone/P08_Settings/index.tsx#L32)；[src/scenes/phone/P08_Settings/index.tsx:146](../src/scenes/phone/P08_Settings/index.tsx#L146)；[src/scenes/phone/P08_Settings/index.tsx:149](../src/scenes/phone/P08_Settings/index.tsx#L149)；[src/scenes/phone/P13_PhoneHome/index.tsx:468](../src/scenes/phone/P13_PhoneHome/index.tsx#L468)
+1946. 照片
+   来源：[src/scenes/phone/P08_Settings/index.tsx:33](../src/scenes/phone/P08_Settings/index.tsx#L33)；[src/scenes/phone/P08_Settings/index.tsx:54](../src/scenes/phone/P08_Settings/index.tsx#L54)；[src/scenes/phone/P08_Settings/index.tsx:139](../src/scenes/phone/P08_Settings/index.tsx#L139)；[src/scenes/phone/P13_PhoneHome/index.tsx:474](../src/scenes/phone/P13_PhoneHome/index.tsx#L474)；[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:119](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L119)
+1947. 记录恢复
+   来源：[src/scenes/phone/P08_Settings/index.tsx:34](../src/scenes/phone/P08_Settings/index.tsx#L34)；[src/scenes/phone/P13_PhoneHome/index.tsx:481](../src/scenes/phone/P13_PhoneHome/index.tsx#L481)；[src/scenes/phone/P13_PhoneHome/index.tsx:729](../src/scenes/phone/P13_PhoneHome/index.tsx#L729)
+1948. 录音
+   来源：[src/scenes/phone/P08_Settings/index.tsx:35](../src/scenes/phone/P08_Settings/index.tsx#L35)；[src/scenes/phone/P13_PhoneHome/index.tsx:493](../src/scenes/phone/P13_PhoneHome/index.tsx#L493)
+1949. 时钟
    来源：[src/scenes/phone/P08_Settings/index.tsx:38](../src/scenes/phone/P08_Settings/index.tsx#L38)；[src/scenes/phone/P08_Settings/index.tsx:56](../src/scenes/phone/P08_Settings/index.tsx#L56)
-1980. 查看当前连接
+1950. 查看当前连接
    来源：[src/scenes/phone/P08_Settings/index.tsx:42](../src/scenes/phone/P08_Settings/index.tsx#L42)
-1981. 网
+1951. 网
    来源：[src/scenes/phone/P08_Settings/index.tsx:42](../src/scenes/phone/P08_Settings/index.tsx#L42)
-1982. 校园网络与移动数据
+1952. 校园网络与移动数据
    来源：[src/scenes/phone/P08_Settings/index.tsx:42](../src/scenes/phone/P08_Settings/index.tsx#L42)
-1983. 背景音乐
+1953. 背景音乐
    来源：[src/scenes/phone/P08_Settings/index.tsx:43](../src/scenes/phone/P08_Settings/index.tsx#L43)
-1984. 声
+1954. 声
    来源：[src/scenes/phone/P08_Settings/index.tsx:43](../src/scenes/phone/P08_Settings/index.tsx#L43)
-1985. 声音与振动
+1955. 声音与振动
    来源：[src/scenes/phone/P08_Settings/index.tsx:43](../src/scenes/phone/P08_Settings/index.tsx#L43)
-1986. 亮度与可读性
+1956. 亮度与可读性
    来源：[src/scenes/phone/P08_Settings/index.tsx:44](../src/scenes/phone/P08_Settings/index.tsx#L44)
-1987. 显
+1957. 显
    来源：[src/scenes/phone/P08_Settings/index.tsx:44](../src/scenes/phone/P08_Settings/index.tsx#L44)
-1988. 显示与辅助
+1958. 显示与辅助
    来源：[src/scenes/phone/P08_Settings/index.tsx:44](../src/scenes/phone/P08_Settings/index.tsx#L44)；[src/scenes/phone/P08_Settings/index.tsx:136](../src/scenes/phone/P08_Settings/index.tsx#L136)
-1989. 移动图标与恢复排布
+1959. 移动图标与恢复排布
    来源：[src/scenes/phone/P08_Settings/index.tsx:45](../src/scenes/phone/P08_Settings/index.tsx#L45)
-1990. 桌
+1960. 桌
    来源：[src/scenes/phone/P08_Settings/index.tsx:45](../src/scenes/phone/P08_Settings/index.tsx#L45)
-1991. 桌面与壁纸
+1961. 桌面与壁纸
    来源：[src/scenes/phone/P08_Settings/index.tsx:45](../src/scenes/phone/P08_Settings/index.tsx#L45)；[src/scenes/phone/P08_Settings/index.tsx:137](../src/scenes/phone/P08_Settings/index.tsx#L137)
-1992. 恢复可选应用
+1962. 恢复可选应用
    来源：[src/scenes/phone/P08_Settings/index.tsx:46](../src/scenes/phone/P08_Settings/index.tsx#L46)
-1993. 应
+1963. 应
    来源：[src/scenes/phone/P08_Settings/index.tsx:46](../src/scenes/phone/P08_Settings/index.tsx#L46)
-1994. 应用管理
+1964. 应用管理
    来源：[src/scenes/phone/P08_Settings/index.tsx:46](../src/scenes/phone/P08_Settings/index.tsx#L46)；[src/scenes/phone/P08_Settings/index.tsx:138](../src/scenes/phone/P08_Settings/index.tsx#L138)
-1995. 权
+1965. 权
    来源：[src/scenes/phone/P08_Settings/index.tsx:47](../src/scenes/phone/P08_Settings/index.tsx#L47)
-1996. 相机、照片与网络
+1966. 相机、照片与网络
    来源：[src/scenes/phone/P08_Settings/index.tsx:47](../src/scenes/phone/P08_Settings/index.tsx#L47)
-1997. 隐私与权限
+1967. 隐私与权限
    来源：[src/scenes/phone/P08_Settings/index.tsx:47](../src/scenes/phone/P08_Settings/index.tsx#L47)；[src/scenes/phone/P08_Settings/index.tsx:139](../src/scenes/phone/P08_Settings/index.tsx#L139)
-1998. 电
+1968. 电
    来源：[src/scenes/phone/P08_Settings/index.tsx:48](../src/scenes/phone/P08_Settings/index.tsx#L48)
-1999. 电池与后台活动
+1969. 电池与后台活动
    来源：[src/scenes/phone/P08_Settings/index.tsx:48](../src/scenes/phone/P08_Settings/index.tsx#L48)；[src/scenes/phone/P08_Settings/index.tsx:140](../src/scenes/phone/P08_Settings/index.tsx#L140)
-2000. 检查 07:55 记录
+1970. 检查 07:55 记录
    来源：[src/scenes/phone/P08_Settings/index.tsx:48](../src/scenes/phone/P08_Settings/index.tsx#L48)
-2001. 存档与运行状态
+1971. 存档与运行状态
    来源：[src/scenes/phone/P08_Settings/index.tsx:49](../src/scenes/phone/P08_Settings/index.tsx#L49)
-2002. 系
+1972. 系
    来源：[src/scenes/phone/P08_Settings/index.tsx:49](../src/scenes/phone/P08_Settings/index.tsx#L49)
-2003. 系统诊断与关于
+1973. 系统诊断与关于
    来源：[src/scenes/phone/P08_Settings/index.tsx:49](../src/scenes/phone/P08_Settings/index.tsx#L49)；[src/scenes/phone/P08_Settings/index.tsx:141](../src/scenes/phone/P08_Settings/index.tsx#L141)
-2004. 07:48
+1974. 07:48
    来源：[src/scenes/phone/P08_Settings/index.tsx:53](../src/scenes/phone/P08_Settings/index.tsx#L53)
-2005. 天气卡片刷新
+1975. 天气卡片刷新
    来源：[src/scenes/phone/P08_Settings/index.tsx:53](../src/scenes/phone/P08_Settings/index.tsx#L53)
-2006. 07:55
+1976. 07:55
    来源：[src/scenes/phone/P08_Settings/index.tsx:54](../src/scenes/phone/P08_Settings/index.tsx#L54)；[src/scenes/phone/P08_Settings/index.tsx:56](../src/scenes/phone/P08_Settings/index.tsx#L56)；[src/scenes/phone/P08_Settings/index.tsx:57](../src/scenes/phone/P08_Settings/index.tsx#L57)
-2007. 重新建立 IMG\_0755 索引
+1977. 重新建立 IMG\_0755 索引
    来源：[src/scenes/phone/P08_Settings/index.tsx:54](../src/scenes/phone/P08_Settings/index.tsx#L54)
-2008. 07:52
+1978. 07:52
    来源：[src/scenes/phone/P08_Settings/index.tsx:55](../src/scenes/phone/P08_Settings/index.tsx#L55)
-2009. 同步两条新消息
+1979. 同步两条新消息
    来源：[src/scenes/phone/P08_Settings/index.tsx:55](../src/scenes/phone/P08_Settings/index.tsx#L55)
-2010. 系统时间被后台唤醒
+1980. 系统时间被后台唤醒
    来源：[src/scenes/phone/P08_Settings/index.tsx:56](../src/scenes/phone/P08_Settings/index.tsx#L56)
-2011. 恢复 A2 室内定位
+1981. 恢复 A2 室内定位
    来源：[src/scenes/phone/P08_Settings/index.tsx:57](../src/scenes/phone/P08_Settings/index.tsx#L57)
-2012. 08:02
+1982. 08:02
    来源：[src/scenes/phone/P08_Settings/index.tsx:58](../src/scenes/phone/P08_Settings/index.tsx#L58)
-2013. 读取热门话题缓存
+1983. 读取热门话题缓存
    来源：[src/scenes/phone/P08_Settings/index.tsx:58](../src/scenes/phone/P08_Settings/index.tsx#L58)
-2014. {{APP\_LABELS\[appId\]}}已移动。
+1984. {{APP\_LABELS\[appId\]}}已移动。
    来源：[src/scenes/phone/P08_Settings/index.tsx:96](../src/scenes/phone/P08_Settings/index.tsx#L96)
-2015. {{APP\_LABELS\[appId\]}}已回到桌面。
+1985. {{APP\_LABELS\[appId\]}}已回到桌面。
    来源：[src/scenes/phone/P08_Settings/index.tsx:101](../src/scenes/phone/P08_Settings/index.tsx#L101)
-2016. 屏幕亮度
+1986. 屏幕亮度
    来源：[src/scenes/phone/P08_Settings/index.tsx:136](../src/scenes/phone/P08_Settings/index.tsx#L136)
-2017. 照片取证会读取这个亮度值。
+1987. 照片取证会读取这个亮度值。
    来源：[src/scenes/phone/P08_Settings/index.tsx:136](../src/scenes/phone/P08_Settings/index.tsx#L136)
-2018. 核对旧桌面截图
+1988. 核对旧桌面截图
    来源：[src/scenes/phone/P08_Settings/index.tsx:137](../src/scenes/phone/P08_Settings/index.tsx#L137)
-2019. 恢复默认顺序
+1989. 恢复默认顺序
    来源：[src/scenes/phone/P08_Settings/index.tsx:137](../src/scenes/phone/P08_Settings/index.tsx#L137)
-2020. 将{{APP\_LABELS\[appId\]}}后移
+1990. 将{{APP\_LABELS\[appId\]}}后移
    来源：[src/scenes/phone/P08_Settings/index.tsx:137](../src/scenes/phone/P08_Settings/index.tsx#L137)
-2021. 将{{APP\_LABELS\[appId\]}}前移
+1991. 将{{APP\_LABELS\[appId\]}}前移
    来源：[src/scenes/phone/P08_Settings/index.tsx:137](../src/scenes/phone/P08_Settings/index.tsx#L137)
-2022. 旧截图第一排
+1992. 旧截图第一排
    来源：[src/scenes/phone/P08_Settings/index.tsx:137](../src/scenes/phone/P08_Settings/index.tsx#L137)
-2023. 微信 浙大钉 照片 CC98
+1993. 微信 浙大钉 照片 CC98
    来源：[src/scenes/phone/P08_Settings/index.tsx:137](../src/scenes/phone/P08_Settings/index.tsx#L137)
-2024. 桌面也支持长按图标进入编辑。这里可用按钮精确调整顺序。
+1994. 桌面也支持长按图标进入编辑。这里可用按钮精确调整顺序。
    来源：[src/scenes/phone/P08_Settings/index.tsx:137](../src/scenes/phone/P08_Settings/index.tsx#L137)
-2025. 桌面已恢复默认顺序。
+1995. 桌面已恢复默认顺序。
    来源：[src/scenes/phone/P08_Settings/index.tsx:137](../src/scenes/phone/P08_Settings/index.tsx#L137)
-2026. 当前阶段还没有可删除的可选应用。
+1996. 当前阶段还没有可删除的可选应用。
    来源：[src/scenes/phone/P08_Settings/index.tsx:138](../src/scenes/phone/P08_Settings/index.tsx#L138)
-2027. 当前允许从桌面移除
+1997. 当前允许从桌面移除
    来源：[src/scenes/phone/P08_Settings/index.tsx:138](../src/scenes/phone/P08_Settings/index.tsx#L138)
-2028. 恢复
+1998. 恢复
    来源：[src/scenes/phone/P08_Settings/index.tsx:138](../src/scenes/phone/P08_Settings/index.tsx#L138)
-2029. 没有从桌面移除的可选应用。
+1999. 没有从桌面移除的可选应用。
    来源：[src/scenes/phone/P08_Settings/index.tsx:138](../src/scenes/phone/P08_Settings/index.tsx#L138)
-2030. 微信、照片、CC98、浙大钉、设置等剧情应用只能移动。
+2000. 微信、照片、CC98、浙大钉、设置等剧情应用只能移动。
    来源：[src/scenes/phone/P08_Settings/index.tsx:138](../src/scenes/phone/P08_Settings/index.tsx#L138)
-2031. 保存剧情照片
+2001. 保存剧情照片
    来源：[src/scenes/phone/P08_Settings/index.tsx:139](../src/scenes/phone/P08_Settings/index.tsx#L139)
-2032. 取证时使用
+2002. 取证时使用
    来源：[src/scenes/phone/P08_Settings/index.tsx:139](../src/scenes/phone/P08_Settings/index.tsx#L139)
-2033. 相机
+2003. 相机
    来源：[src/scenes/phone/P08_Settings/index.tsx:139](../src/scenes/phone/P08_Settings/index.tsx#L139)
-2034. 校园网络
+2004. 校园网络
    来源：[src/scenes/phone/P08_Settings/index.tsx:139](../src/scenes/phone/P08_Settings/index.tsx#L139)
-2035. CC98 与校内服务
+2005. CC98 与校内服务
    来源：[src/scenes/phone/P08_Settings/index.tsx:139](../src/scenes/phone/P08_Settings/index.tsx#L139)
-2036. 当前没有需要核验的剧情记录。
+2006. 当前没有需要核验的剧情记录。
    来源：[src/scenes/phone/P08_Settings/index.tsx:140](../src/scenes/phone/P08_Settings/index.tsx#L140)
-2037. 核验所选记录
+2007. 核验所选记录
    来源：[src/scenes/phone/P08_Settings/index.tsx:140](../src/scenes/phone/P08_Settings/index.tsx#L140)
-2038. 记录已归档
+2008. 记录已归档
    来源：[src/scenes/phone/P08_Settings/index.tsx:140](../src/scenes/phone/P08_Settings/index.tsx#L140)
-2039. 选出同时发生在 07:55 的三条异常活动。
+2009. 选出同时发生在 07:55 的三条异常活动。
    来源：[src/scenes/phone/P08_Settings/index.tsx:140](../src/scenes/phone/P08_Settings/index.tsx#L140)
-2040. 存档
+2010. 存档
    来源：[src/scenes/phone/P08_Settings/index.tsx:141](../src/scenes/phone/P08_Settings/index.tsx#L141)
-2041. 个可见
+2011. 个可见
    来源：[src/scenes/phone/P08_Settings/index.tsx:141](../src/scenes/phone/P08_Settings/index.tsx#L141)
-2042. 游戏时间
+2012. 游戏时间
    来源：[src/scenes/phone/P08_Settings/index.tsx:141](../src/scenes/phone/P08_Settings/index.tsx#L141)
-2043. 桌面应用
+2013. 桌面应用
    来源：[src/scenes/phone/P08_Settings/index.tsx:141](../src/scenes/phone/P08_Settings/index.tsx#L141)
-2044. 自动保存与上一版本恢复
+2014. 自动保存与上一版本恢复
    来源：[src/scenes/phone/P08_Settings/index.tsx:141](../src/scenes/phone/P08_Settings/index.tsx#L141)
-2045. 返回设置
+2015. 返回设置
    来源：[src/scenes/phone/P08_Settings/index.tsx:148](../src/scenes/phone/P08_Settings/index.tsx#L148)
-2046. 退出设置，返回手机主页
+2016. 退出设置，返回手机主页
    来源：[src/scenes/phone/P08_Settings/index.tsx:148](../src/scenes/phone/P08_Settings/index.tsx#L148)
-2047. root
+2017. root
    来源：[src/scenes/phone/P08_Settings/index.tsx:148](../src/scenes/phone/P08_Settings/index.tsx#L148)
-2048. PHONE SYSTEM
+2018. PHONE SYSTEM
    来源：[src/scenes/phone/P08_Settings/index.tsx:149](../src/scenes/phone/P08_Settings/index.tsx#L149)
-2049. 搜索设置项
+2019. 搜索设置项
    来源：[src/scenes/phone/P08_Settings/index.tsx:152](../src/scenes/phone/P08_Settings/index.tsx#L152)
-2050. 塞不进去。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:120](../src/scenes/phone/P13_PhoneHome/index.tsx#L120)
-2051. 钥匙旋转 90°——咔哒。塔楼吐出\[一袋肥料\]。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:146](../src/scenes/phone/P13_PhoneHome/index.tsx#L146)
-2052. 当前网络无法打开 CC98，请先恢复可访问的网络环境。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:190](../src/scenes/phone/P13_PhoneHome/index.tsx#L190)
-2053. 这条推送现在只负责占位置。
+2020. 塞不进去。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:119](../src/scenes/phone/P13_PhoneHome/index.tsx#L119)
+2021. 钥匙旋转 90°——咔哒。塔楼吐出\[一袋肥料\]。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:145](../src/scenes/phone/P13_PhoneHome/index.tsx#L145)
+2022. 当前网络无法打开 CC98，请先恢复可访问的网络环境。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:189](../src/scenes/phone/P13_PhoneHome/index.tsx#L189)
+2023. 这条推送现在只负责占位置。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:217](../src/scenes/phone/P13_PhoneHome/index.tsx#L217)
+2024. 头像边缘松了一点，再点一次。
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:218](../src/scenes/phone/P13_PhoneHome/index.tsx#L218)
-2054. 头像边缘松了一点，再点一次。
+2025. 三角形已经翘起，再点一次就能取下。
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:219](../src/scenes/phone/P13_PhoneHome/index.tsx#L219)
-2055. 三角形已经翘起，再点一次就能取下。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:220](../src/scenes/phone/P13_PhoneHome/index.tsx#L220)
-2056. 设置图标只剩一个空位，风从里面吹过。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:228](../src/scenes/phone/P13_PhoneHome/index.tsx#L228)
-2057. 这个应用参与剧情，只能移动位置。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:346](../src/scenes/phone/P13_PhoneHome/index.tsx#L346)
-2058. {{appId === "tiyi" ? "浙大体艺" : "求是潮 755"}}已从桌面移除，可在设置中恢复。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:350](../src/scenes/phone/P13_PhoneHome/index.tsx#L350)
-2059. 获得第 3 位：9
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:373](../src/scenes/phone/P13_PhoneHome/index.tsx#L373)
-2060. 钟楼已经把秘密交出去了。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:381](../src/scenes/phone/P13_PhoneHome/index.tsx#L381)
-2061. 钟楼大门紧锁。锁孔的形状有点奇怪。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:385](../src/scenes/phone/P13_PhoneHome/index.tsx#L385)
-2062. 接住了一滴早八雨。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:395](../src/scenes/phone/P13_PhoneHome/index.tsx#L395)
-2063. 它绝对不会开花。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:402](../src/scenes/phone/P13_PhoneHome/index.tsx#L402)
-2064. 从桌面移除{{definition.label}}
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:604](../src/scenes/phone/P13_PhoneHome/index.tsx#L604)
-2065. 像素风浙大首页
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:619](../src/scenes/phone/P13_PhoneHome/index.tsx#L619)
-2066. 钟楼
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:651](../src/scenes/phone/P13_PhoneHome/index.tsx#L651)
-2067. 湖边盆栽
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:671](../src/scenes/phone/P13_PhoneHome/index.tsx#L671)
-2068. 湖边盆栽，已开花
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:671](../src/scenes/phone/P13_PhoneHome/index.tsx#L671)
-2069. 天气：{{campusWeather.label}}，{{weatherTemperature}} 摄氏度
+2026. 设置图标只剩一个空位，风从里面吹过。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:227](../src/scenes/phone/P13_PhoneHome/index.tsx#L227)
+2027. 这个应用参与剧情，只能移动位置。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:345](../src/scenes/phone/P13_PhoneHome/index.tsx#L345)
+2028. {{appId === "tiyi" ? "浙大体艺" : "求是潮 755"}}已从桌面移除，可在设置中恢复。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:349](../src/scenes/phone/P13_PhoneHome/index.tsx#L349)
+2029. 获得第 3 位：9
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:372](../src/scenes/phone/P13_PhoneHome/index.tsx#L372)
+2030. 钟楼已经把秘密交出去了。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:380](../src/scenes/phone/P13_PhoneHome/index.tsx#L380)
+2031. 钟楼大门紧锁。锁孔的形状有点奇怪。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:384](../src/scenes/phone/P13_PhoneHome/index.tsx#L384)
+2032. 接住了一滴早八雨。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:394](../src/scenes/phone/P13_PhoneHome/index.tsx#L394)
+2033. 它绝对不会开花。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:401](../src/scenes/phone/P13_PhoneHome/index.tsx#L401)
+2034. 从桌面移除{{definition.label}}
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:603](../src/scenes/phone/P13_PhoneHome/index.tsx#L603)
+2035. 像素风浙大首页
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:618](../src/scenes/phone/P13_PhoneHome/index.tsx#L618)
+2036. 钟楼
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:649](../src/scenes/phone/P13_PhoneHome/index.tsx#L649)
+2037. 湖边盆栽
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:669](../src/scenes/phone/P13_PhoneHome/index.tsx#L669)
+2038. 湖边盆栽，已开花
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:669](../src/scenes/phone/P13_PhoneHome/index.tsx#L669)
+2039. 天气：{{campusWeather.label}}，{{weatherTemperature}} 摄氏度
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:677](../src/scenes/phone/P13_PhoneHome/index.tsx#L677)
+2040. 打开天气
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:679](../src/scenes/phone/P13_PhoneHome/index.tsx#L679)
-2070. 打开天气
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:681](../src/scenes/phone/P13_PhoneHome/index.tsx#L681)
-2071. 收集水滴
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:688](../src/scenes/phone/P13_PhoneHome/index.tsx#L688)
-2072. 最高 20°C / 最低 15°C
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:698](../src/scenes/phone/P13_PhoneHome/index.tsx#L698)
-2073. 空气湿度
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:701](../src/scenes/phone/P13_PhoneHome/index.tsx#L701)
-2074. 拖动图标调整位置
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:708](../src/scenes/phone/P13_PhoneHome/index.tsx#L708)
-2075. 完成
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:709](../src/scenes/phone/P13_PhoneHome/index.tsx#L709)；[src/scenes/rpg/RpgGameHost.tsx:3001](../src/scenes/rpg/RpgGameHost.tsx#L3001)
-2076. 应用
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:712](../src/scenes/phone/P13_PhoneHome/index.tsx#L712)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:160](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L160)
-2077. 掉落的齿轮，背面刻着 9
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:719](../src/scenes/phone/P13_PhoneHome/index.tsx#L719)
-2078. 通知列表
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:725](../src/scenes/phone/P13_PhoneHome/index.tsx#L725)
-2079. 第一波未抢到：当前网速过慢，第二波即将开放
+2041. 收集水滴
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:686](../src/scenes/phone/P13_PhoneHome/index.tsx#L686)
+2042. 最高 20°C / 最低 15°C
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:696](../src/scenes/phone/P13_PhoneHome/index.tsx#L696)
+2043. 空气湿度
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:699](../src/scenes/phone/P13_PhoneHome/index.tsx#L699)
+2044. 拖动图标调整位置
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:706](../src/scenes/phone/P13_PhoneHome/index.tsx#L706)
+2045. 完成
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:707](../src/scenes/phone/P13_PhoneHome/index.tsx#L707)；[src/scenes/rpg/RpgGameHost.tsx:2994](../src/scenes/rpg/RpgGameHost.tsx#L2994)
+2046. 应用
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:710](../src/scenes/phone/P13_PhoneHome/index.tsx#L710)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:160](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L160)
+2047. 掉落的齿轮，背面刻着 9
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:717](../src/scenes/phone/P13_PhoneHome/index.tsx#L717)
+2048. 通知列表
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:723](../src/scenes/phone/P13_PhoneHome/index.tsx#L723)
+2049. 第一波未抢到：当前网速过慢，第二波即将开放
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:758](../src/scenes/phone/P13_PhoneHome/index.tsx#L758)
+2050. 第一波抢票成功，运气很好，钱包没那么好
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:760](../src/scenes/phone/P13_PhoneHome/index.tsx#L760)
-2080. 第一波抢票成功，运气很好，钱包没那么好
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:762](../src/scenes/phone/P13_PhoneHome/index.tsx#L762)
-2081. 08:32 第二波取票回执已同步
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:763](../src/scenes/phone/P13_PhoneHome/index.tsx#L763)
-2082. 图书馆：您有一本书已逾期 755 天
+2051. 08:32 第二波取票回执已同步
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:761](../src/scenes/phone/P13_PhoneHome/index.tsx#L761)
+2052. 图书馆：您有一本书已逾期 755 天
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:775](../src/scenes/phone/P13_PhoneHome/index.tsx#L775)
+2053. 您有一本书已逾期 755 天
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:777](../src/scenes/phone/P13_PhoneHome/index.tsx#L777)
-2083. 您有一本书已逾期 755 天
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:779](../src/scenes/phone/P13_PhoneHome/index.tsx#L779)
-2084. CC98：Re: 三楼书架是不是多了一层？
+2054. CC98：Re: 三楼书架是不是多了一层？
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:780](../src/scenes/phone/P13_PhoneHome/index.tsx#L780)
+2055. Re: 三楼书架是不是多了一层？
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:782](../src/scenes/phone/P13_PhoneHome/index.tsx#L782)
-2085. Re: 三楼书架是不是多了一层？
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:784](../src/scenes/phone/P13_PhoneHome/index.tsx#L784)
-2086. 照片：新增照片「看不清的书脊」
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:787](../src/scenes/phone/P13_PhoneHome/index.tsx#L787)
-2087. 三角形已收集
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:826](../src/scenes/phone/P13_PhoneHome/index.tsx#L826)
-2088. 系统方向推送
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:826](../src/scenes/phone/P13_PhoneHome/index.tsx#L826)
-2089. 方向校准
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:830](../src/scenes/phone/P13_PhoneHome/index.tsx#L830)
-2090. 课程提醒
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:830](../src/scenes/phone/P13_PhoneHome/index.tsx#L830)
-2091. 签到记录未更新。你本人仍未抵达。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:831](../src/scenes/phone/P13_PhoneHome/index.tsx#L831)
-2092. 头像方向正确，正文方向未知。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:831](../src/scenes/phone/P13_PhoneHome/index.tsx#L831)
-2093. 校园地图已恢复访问，寝室入口可用。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:838](../src/scenes/phone/P13_PhoneHome/index.tsx#L838)
-2094. 课堂签到仍在等待四位代码。
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:844](../src/scenes/phone/P13_PhoneHome/index.tsx#L844)
-2095. 学在浙大
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:844](../src/scenes/phone/P13_PhoneHome/index.tsx#L844)；[src/scenes/phone/P15_Zjuding/index.tsx:1396](../src/scenes/phone/P15_Zjuding/index.tsx#L1396)；[src/scenes/phone/P15_Zjuding/index.tsx:1415](../src/scenes/phone/P15_Zjuding/index.tsx#L1415)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:55](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L55)
-2096. 天气：{{weatherNotification}}
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:852](../src/scenes/phone/P13_PhoneHome/index.tsx#L852)；[src/scenes/phone/P13_PhoneHome/index.tsx:860](../src/scenes/phone/P13_PhoneHome/index.tsx#L860)
-2097. 页面切换
+2056. 照片：新增照片「看不清的书脊」
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:785](../src/scenes/phone/P13_PhoneHome/index.tsx#L785)
+2057. 三角形已收集
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:824](../src/scenes/phone/P13_PhoneHome/index.tsx#L824)
+2058. 系统方向推送
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:824](../src/scenes/phone/P13_PhoneHome/index.tsx#L824)
+2059. 方向校准
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:828](../src/scenes/phone/P13_PhoneHome/index.tsx#L828)
+2060. 课程提醒
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:828](../src/scenes/phone/P13_PhoneHome/index.tsx#L828)
+2061. 签到记录未更新。你本人仍未抵达。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:829](../src/scenes/phone/P13_PhoneHome/index.tsx#L829)
+2062. 头像方向正确，正文方向未知。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:829](../src/scenes/phone/P13_PhoneHome/index.tsx#L829)
+2063. 校园地图已恢复访问，寝室入口可用。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:836](../src/scenes/phone/P13_PhoneHome/index.tsx#L836)
+2064. 课堂签到仍在等待四位代码。
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:842](../src/scenes/phone/P13_PhoneHome/index.tsx#L842)
+2065. 学在浙大
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:842](../src/scenes/phone/P13_PhoneHome/index.tsx#L842)；[src/scenes/phone/P15_Zjuding/index.tsx:1396](../src/scenes/phone/P15_Zjuding/index.tsx#L1396)；[src/scenes/phone/P15_Zjuding/index.tsx:1415](../src/scenes/phone/P15_Zjuding/index.tsx#L1415)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:55](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L55)
+2066. 天气：{{weatherNotification}}
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:850](../src/scenes/phone/P13_PhoneHome/index.tsx#L850)；[src/scenes/phone/P13_PhoneHome/index.tsx:858](../src/scenes/phone/P13_PhoneHome/index.tsx#L858)
+2067. 页面切换
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:868](../src/scenes/phone/P13_PhoneHome/index.tsx#L868)
+2068. 第 1 页
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:869](../src/scenes/phone/P13_PhoneHome/index.tsx#L869)
+2069. 第 2 页
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:870](../src/scenes/phone/P13_PhoneHome/index.tsx#L870)
-2098. 第 1 页
+2070. 第 3 页
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:871](../src/scenes/phone/P13_PhoneHome/index.tsx#L871)
-2099. 第 2 页
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:872](../src/scenes/phone/P13_PhoneHome/index.tsx#L872)
-2100. 第 3 页
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:873](../src/scenes/phone/P13_PhoneHome/index.tsx#L873)
-2101. 记录恢复：检测到未同步记录
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:877](../src/scenes/phone/P13_PhoneHome/index.tsx#L877)
-2102. 朋友
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:910](../src/scenes/phone/P13_PhoneHome/index.tsx#L910)；[src/scenes/phone/P14_Wechat/index.tsx:994](../src/scenes/phone/P14_Wechat/index.tsx#L994)
-2103. 快快老师在点名，学在浙大
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:911](../src/scenes/phone/P13_PhoneHome/index.tsx#L911)
-2104. 这是签到码：XX……
+2071. 记录恢复：检测到未同步记录
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:875](../src/scenes/phone/P13_PhoneHome/index.tsx#L875)
+2072. 朋友
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:908](../src/scenes/phone/P13_PhoneHome/index.tsx#L908)；[src/scenes/phone/P14_Wechat/index.tsx:994](../src/scenes/phone/P14_Wechat/index.tsx#L994)
+2073. 快快老师在点名，学在浙大
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:909](../src/scenes/phone/P13_PhoneHome/index.tsx#L909)
+2074. 这是签到码：XX……
+   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:910](../src/scenes/phone/P13_PhoneHome/index.tsx#L910)
+2075. 现在
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:912](../src/scenes/phone/P13_PhoneHome/index.tsx#L912)
-2105. 现在
-   来源：[src/scenes/phone/P13_PhoneHome/index.tsx:914](../src/scenes/phone/P13_PhoneHome/index.tsx#L914)
-2106. 照片 IMG\_0755.JPG
+2076. 照片 IMG\_0755.JPG
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:116](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L116)
-2107. 关闭照片
+2077. 关闭照片
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:118](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L118)
-2108. 022书包拍摄界面
+2078. 022书包拍摄界面
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:124](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L124)
-2109. 保持画面居中
+2079. 保持画面居中
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:125](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L125)
-2110. 对准 022 书包
+2080. 对准 022 书包
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:125](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L125)
-2111. 还没有在 022 现场确认书包。
+2081. 还没有在 022 现场确认书包。
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:131](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L131)
-2112. 目标已对准，点击快门。
+2082. 目标已对准，点击快门。
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:131](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L131)
-2113. 拍摄 022 书包
+2083. 拍摄 022 书包
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:132](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L132)
-2114. 反光的书包标签
+2084. 反光的书包标签
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:143](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L143)
-2115. 可读的书包标签
+2085. 可读的书包标签
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:143](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L143)
-2116. 书包标签
+2086. 书包标签
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:160](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L160)
-2117. 高数教材 x1
+2087. 高数教材 x1
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:161](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L161)
-2118. 水杯 x1 充电器 x1
+2088. 水杯 x1 充电器 x1
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:162](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L162)
-2119. 半包纸 x1
+2089. 半包纸 x1
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:163](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L163)
-2120. 姓名：未检测到
+2090. 姓名：未检测到
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:164](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L164)
-2121. 学号：未检测到
+2091. 学号：未检测到
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:165](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L165)
-2122. 人格：加载失败
+2092. 人格：加载失败
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:166](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L166)
-2123. 标签反光，无法识别
+2093. 标签反光，无法识别
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:170](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L170)
-2124. 控制中心亮度
+2094. 控制中心亮度
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:186](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L186)
-2125. 照片直接读取系统亮度
+2095. 照片直接读取系统亮度
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:188](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L188)
-2126. 还没有拍到 022 上的书包。
+2096. 还没有拍到 022 上的书包。
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:192](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L192)
-2127. 识别稳定，标签内容已锁定。
+2097. 识别稳定，标签内容已锁定。
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:194](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L194)
-2128. 标签边缘已出现，识别信号仍不稳定。
+2098. 标签边缘已出现，识别信号仍不稳定。
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:196](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L196)
-2129. 光照太亮了，识别器无法对焦。
+2099. 光照太亮了，识别器无法对焦。
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:197](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L197)
-2130. 旧相册里还有一张同场景照片
+2100. 旧相册里还有一张同场景照片
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:204](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L204)
-2131. 找到同一只 022 书包的旧照，核对半包纸出现的时间。
+2101. 找到同一只 022 书包的旧照，核对半包纸出现的时间。
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:205](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L205)
-2132. 查看 022 旧照
+2102. 查看 022 旧照
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:211](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L211)
-2133. 已写入报告
+2103. 已写入报告
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:211](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L211)
-2134. 照片筛选
+2104. 照片筛选
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:218](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L218)
-2135. 最近 {{LIBRARY\_ROLL\_PHOTOS.length}} 张
+2105. 最近 {{LIBRARY\_ROLL\_PHOTOS.length}} 张
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:221](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L221)
-2136. 校园与日常
+2106. 校园与日常
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:222](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L222)
-2137. 校园与日常照片
+2107. 校园与日常照片
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:230](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L230)
-2138. 最近照片
+2108. 最近照片
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:230](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L230)
-2139. campus\_life
+2109. campus\_life
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:230](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L230)
-2140. 预览 {{photo.title}}
+2110. 预览 {{photo.title}}
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:236](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L236)
-2141. 6 张校园与日常照片。它们只用于补足相册内容，不参与证据判定。
+2111. 6 张校园与日常照片。它们只用于补足相册内容，不参与证据判定。
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:251](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L251)
-2142. {{LIBRARY\_ROLL\_PHOTOS.length}} 张最近照片。点开可以查看细节。
+2112. {{LIBRARY\_ROLL\_PHOTOS.length}} 张最近照片。点开可以查看细节。
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:252](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L252)
-2143. {{selectedRollPhoto.file}} · {{selectedRollPhoto.location}}
+2113. {{selectedRollPhoto.file}} · {{selectedRollPhoto.location}}
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:259](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L259)
-2144. {{selectedRollPhoto.title}}，{{selectedRollPhoto.detail}}
+2114. {{selectedRollPhoto.title}}，{{selectedRollPhoto.detail}}
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:264](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L264)
-2145. 旧照与刚拍下的标签内容一致。
+2115. 旧照与刚拍下的标签内容一致。
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:268](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L268)
-2146. 先把刚拍下的主照片亮度降到 20% 以下。
+2116. 先把刚拍下的主照片亮度降到 20% 以下。
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:268](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L268)
-2147. 已写入物品报告
+2117. 已写入物品报告
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:270](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L270)
-2148. 用旧照补全物品报告
+2118. 用旧照补全物品报告
    来源：[src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx:270](../src/scenes/phone/P13_PhoneHome/PhotoEvidenceOverlay.tsx#L270)
-2149. 203 还开着吗？我电脑没关。
+2119. 203 还开着吗？我电脑没关。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:33](../src/scenes/phone/P14_Wechat/index.tsx#L33)
-2150. 林昊
+2120. 林昊
    来源：[src/scenes/phone/P14_Wechat/index.tsx:33](../src/scenes/phone/P14_Wechat/index.tsx#L33)；[src/scenes/phone/P14_Wechat/index.tsx:686](../src/scenes/phone/P14_Wechat/index.tsx#L686)
-2151. 陈嘉
+2121. 陈嘉
    来源：[src/scenes/phone/P14_Wechat/index.tsx:34](../src/scenes/phone/P14_Wechat/index.tsx#L34)；[src/scenes/phone/P14_Wechat/index.tsx:37](../src/scenes/phone/P14_Wechat/index.tsx#L37)
-2152. 刚看见保安从东边过去。
+2122. 刚看见保安从东边过去。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:34](../src/scenes/phone/P14_Wechat/index.tsx#L34)
-2153. 东边入口已经封了，别再往那边走。
+2123. 东边入口已经封了，别再往那边走。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:35](../src/scenes/phone/P14_Wechat/index.tsx#L35)
-2154. 周琪
+2124. 周琪
    来源：[src/scenes/phone/P14_Wechat/index.tsx:35](../src/scenes/phone/P14_Wechat/index.tsx#L35)
-2155. 室友
+2125. 室友
    来源：[src/scenes/phone/P14_Wechat/index.tsx:36](../src/scenes/phone/P14_Wechat/index.tsx#L36)
-2156. 我在西侧看见保洁推车，大厅主入口应该还能进。
+2126. 我在西侧看见保洁推车，大厅主入口应该还能进。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:36](../src/scenes/phone/P14_Wechat/index.tsx#L36)
-2157. 陈嘉撤回了一条消息
+2127. 陈嘉撤回了一条消息
    来源：[src/scenes/phone/P14_Wechat/index.tsx:37](../src/scenes/phone/P14_Wechat/index.tsx#L37)
-2158. 公众号 · 22:40
+2128. 公众号 · 22:40
    来源：[src/scenes/phone/P14_Wechat/index.tsx:82](../src/scenes/phone/P14_Wechat/index.tsx#L82)
-2159. 紫金港楼宇服务
+2129. 紫金港楼宇服务
    来源：[src/scenes/phone/P14_Wechat/index.tsx:82](../src/scenes/phone/P14_Wechat/index.tsx#L82)；[src/scenes/phone/P14_Wechat/index.tsx:160](../src/scenes/phone/P14_Wechat/index.tsx#L160)
-2160. 校园楼宇运行通知
+2130. 校园楼宇运行通知
    来源：[src/scenes/phone/P14_Wechat/index.tsx:87](../src/scenes/phone/P14_Wechat/index.tsx#L87)
-2161. 夜间闭楼与入口调整
+2131. 夜间闭楼与入口调整
    来源：[src/scenes/phone/P14_Wechat/index.tsx:88](../src/scenes/phone/P14_Wechat/index.tsx#L88)
-2162. 22:45 起，
+2132. 22:45 起，
    来源：[src/scenes/phone/P14_Wechat/index.tsx:90](../src/scenes/phone/P14_Wechat/index.tsx#L90)
-2163. 北教学区一处楼宇
+2133. 北教学区一处楼宇
    来源：[src/scenes/phone/P14_Wechat/index.tsx:90](../src/scenes/phone/P14_Wechat/index.tsx#L90)
-2164. 段永平教学楼
+2134. 段永平教学楼
    来源：[src/scenes/phone/P14_Wechat/index.tsx:90](../src/scenes/phone/P14_Wechat/index.tsx#L90)
-2165. 进入夜间清楼。A 楼一层东侧入口暂停通行，人员请从大厅主入口进入。
+2135. 进入夜间清楼。A 楼一层东侧入口暂停通行，人员请从大厅主入口进入。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:90](../src/scenes/phone/P14_Wechat/index.tsx#L90)
-2166. 主电梯保留运行，楼层开放情况以现场提示为准。
+2136. 主电梯保留运行，楼层开放情况以现场提示为准。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:91](../src/scenes/phone/P14_Wechat/index.tsx#L91)
-2167. 保存通知
+2137. 保存通知
    来源：[src/scenes/phone/P14_Wechat/index.tsx:93](../src/scenes/phone/P14_Wechat/index.tsx#L93)
-2168. 通知已保存
+2138. 通知已保存
    来源：[src/scenes/phone/P14_Wechat/index.tsx:93](../src/scenes/phone/P14_Wechat/index.tsx#L93)
-2169. 麦斯威夜间自习群
+2139. 麦斯威夜间自习群
    来源：[src/scenes/phone/P14_Wechat/index.tsx:104](../src/scenes/phone/P14_Wechat/index.tsx#L104)；[src/scenes/phone/P14_Wechat/index.tsx:107](../src/scenes/phone/P14_Wechat/index.tsx#L107)；[src/scenes/phone/P14_Wechat/index.tsx:166](../src/scenes/phone/P14_Wechat/index.tsx#L166)
-2170. 返回微信消息列表
+2140. 返回微信消息列表
    来源：[src/scenes/phone/P14_Wechat/index.tsx:106](../src/scenes/phone/P14_Wechat/index.tsx#L106)
-2171. 群聊 · 18人
+2141. 群聊 · 18人
    来源：[src/scenes/phone/P14_Wechat/index.tsx:107](../src/scenes/phone/P14_Wechat/index.tsx#L107)
-2172. 选中两条能够同时确认“哪边关闭”和“哪边可进入”的消息。
+2142. 选中两条能够同时确认“哪边关闭”和“哪边可进入”的消息。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:112](../src/scenes/phone/P14_Wechat/index.tsx#L112)
-2173. 选择
+2143. 选择
    来源：[src/scenes/phone/P14_Wechat/index.tsx:126](../src/scenes/phone/P14_Wechat/index.tsx#L126)
-2174. 已选
+2144. 已选
    来源：[src/scenes/phone/P14_Wechat/index.tsx:126](../src/scenes/phone/P14_Wechat/index.tsx#L126)
-2175. 22:42 入口调整截图 · 东侧关闭 / 西侧主入口可通行
+2145. 22:42 入口调整截图 · 东侧关闭 / 西侧主入口可通行
    来源：[src/scenes/phone/P14_Wechat/index.tsx:133](../src/scenes/phone/P14_Wechat/index.tsx#L133)
-2176. 保存路线截图
+2146. 保存路线截图
    来源：[src/scenes/phone/P14_Wechat/index.tsx:142](../src/scenes/phone/P14_Wechat/index.tsx#L142)
-2177. 截图已保存
+2147. 截图已保存
    来源：[src/scenes/phone/P14_Wechat/index.tsx:142](../src/scenes/phone/P14_Wechat/index.tsx#L142)
-2178. 微信恢复证据
+2148. 微信恢复证据
    来源：[src/scenes/phone/P14_Wechat/index.tsx:151](../src/scenes/phone/P14_Wechat/index.tsx#L151)
-2179. 退出微信，返回手机主页
+2149. 退出微信，返回手机主页
    来源：[src/scenes/phone/P14_Wechat/index.tsx:153](../src/scenes/phone/P14_Wechat/index.tsx#L153)；[src/scenes/phone/P14_Wechat/index.tsx:807](../src/scenes/phone/P14_Wechat/index.tsx#L807)
-2180. 消息
+2150. 消息
    来源：[src/scenes/phone/P14_Wechat/index.tsx:154](../src/scenes/phone/P14_Wechat/index.tsx#L154)；[src/scenes/phone/P15_Zjuding/index.tsx:146](../src/scenes/phone/P15_Zjuding/index.tsx#L146)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:80](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L80)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:88](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L88)
-2181. 楼
+2151. 楼
    来源：[src/scenes/phone/P14_Wechat/index.tsx:159](../src/scenes/phone/P14_Wechat/index.tsx#L159)
-2182. 有一条未归档的运行通知
+2152. 有一条未归档的运行通知
    来源：[src/scenes/phone/P14_Wechat/index.tsx:160](../src/scenes/phone/P14_Wechat/index.tsx#L160)
-2183. 已存
+2153. 已存
    来源：[src/scenes/phone/P14_Wechat/index.tsx:162](../src/scenes/phone/P14_Wechat/index.tsx#L162)；[src/scenes/phone/P14_Wechat/index.tsx:168](../src/scenes/phone/P14_Wechat/index.tsx#L168)
-2184. 有两条消息可组成路线截图
+2154. 有两条消息可组成路线截图
    来源：[src/scenes/phone/P14_Wechat/index.tsx:166](../src/scenes/phone/P14_Wechat/index.tsx#L166)
-2185. 返回记录恢复
+2155. 返回记录恢复
    来源：[src/scenes/phone/P14_Wechat/index.tsx:171](../src/scenes/phone/P14_Wechat/index.tsx#L171)；[src/scenes/phone/P15_Zjuding/index.tsx:450](../src/scenes/phone/P15_Zjuding/index.tsx#L450)
-2186. 任务更新：找回四位签到码
+2156. 任务更新：找回四位签到码
    来源：[src/scenes/phone/P14_Wechat/index.tsx:240](../src/scenes/phone/P14_Wechat/index.tsx#L240)
-2187. 咔——斜线断了一截，挂在头像框上晃悠。
+2157. 咔——斜线断了一截，挂在头像框上晃悠。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:335](../src/scenes/phone/P14_Wechat/index.tsx#L335)
-2188. 导师头像现在不接受附件。
+2158. 导师头像现在不接受附件。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:353](../src/scenes/phone/P14_Wechat/index.tsx#L353)
-2189. 卡扣反而更紧了。它需要能渗进胶缝的东西。
+2159. 卡扣反而更紧了。它需要能渗进胶缝的东西。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:359](../src/scenes/phone/P14_Wechat/index.tsx#L359)
-2190. 竖线滑落了。获得道具：竖线
+2160. 竖线滑落了。获得道具：竖线
    来源：[src/scenes/phone/P14_Wechat/index.tsx:367](../src/scenes/phone/P14_Wechat/index.tsx#L367)
-2191. 或许可以再斜一点
+2161. 或许可以再斜一点
    来源：[src/scenes/phone/P14_Wechat/index.tsx:391](../src/scenes/phone/P14_Wechat/index.tsx#L391)
-2192. 它也想转转罢
+2162. 它也想转转罢
    来源：[src/scenes/phone/P14_Wechat/index.tsx:393](../src/scenes/phone/P14_Wechat/index.tsx#L393)
-2193. 斜线晃了晃，还没掉。
+2163. 斜线晃了晃，还没掉。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:395](../src/scenes/phone/P14_Wechat/index.tsx#L395)
-2194. 头像上的斜线纹丝不动。
+2164. 头像上的斜线纹丝不动。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:396](../src/scenes/phone/P14_Wechat/index.tsx#L396)
-2195. 检测到未经授权的友情支援。
+2165. 检测到未经授权的友情支援。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:407](../src/scenes/phone/P14_Wechat/index.tsx#L407)
-2196. 你戳了戳剩下的一端……
+2166. 你戳了戳剩下的一端……
    来源：[src/scenes/phone/P14_Wechat/index.tsx:410](../src/scenes/phone/P14_Wechat/index.tsx#L410)
-2197. 导师的消息，还是等签完到再回吧。
+2167. 导师的消息，还是等签完到再回吧。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:418](../src/scenes/phone/P14_Wechat/index.tsx#L418)
-2198. 头像中间留下了一道很干净的空隙。
+2168. 头像中间留下了一道很干净的空隙。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:423](../src/scenes/phone/P14_Wechat/index.tsx#L423)
-2199. 这条竖线被透明胶和两枚卡扣封在头像框里。
+2169. 这条竖线被透明胶和两枚卡扣封在头像框里。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:427](../src/scenes/phone/P14_Wechat/index.tsx#L427)
-2200. 这条聊天还不能作为地点记录。
+2170. 这条聊天还不能作为地点记录。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:510](../src/scenes/phone/P14_Wechat/index.tsx#L510)
-2201. 已从聊天中保存地点词：湖面。
+2171. 已从聊天中保存地点词：湖面。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:513](../src/scenes/phone/P14_Wechat/index.tsx#L513)
-2202. 已保存通知
+2172. 已保存通知
    来源：[src/scenes/phone/P14_Wechat/index.tsx:545](../src/scenes/phone/P14_Wechat/index.tsx#L545)
-2203. · 校园日常记录
+2173. · 校园日常记录
    来源：[src/scenes/phone/P14_Wechat/index.tsx:561](../src/scenes/phone/P14_Wechat/index.tsx#L561)
-2204. 阅读
+2174. 阅读
    来源：[src/scenes/phone/P14_Wechat/index.tsx:561](../src/scenes/phone/P14_Wechat/index.tsx#L561)
-2205. {{chapterFourWechatContent.official.name}}公众号主页
+2175. {{chapterFourWechatContent.official.name}}公众号主页
    来源：[src/scenes/phone/P14_Wechat/index.tsx:571](../src/scenes/phone/P14_Wechat/index.tsx#L571)
-2206. 后勤
+2176. 后勤
    来源：[src/scenes/phone/P14_Wechat/index.tsx:573](../src/scenes/phone/P14_Wechat/index.tsx#L573)；[src/scenes/phone/P14_Wechat/index.tsx:834](../src/scenes/phone/P14_Wechat/index.tsx#L834)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:99](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L99)
-2207. 夜间通知 ·
+2177. 夜间通知 ·
    来源：[src/scenes/phone/P14_Wechat/index.tsx:588](../src/scenes/phone/P14_Wechat/index.tsx#L588)
-2208. 已保存
+2178. 已保存
    来源：[src/scenes/phone/P14_Wechat/index.tsx:592](../src/scenes/phone/P14_Wechat/index.tsx#L592)
-2209. 主线通知
+2179. 主线通知
    来源：[src/scenes/phone/P14_Wechat/index.tsx:592](../src/scenes/phone/P14_Wechat/index.tsx#L592)
-2210. 往期推文
+2180. 往期推文
    来源：[src/scenes/phone/P14_Wechat/index.tsx:595](../src/scenes/phone/P14_Wechat/index.tsx#L595)；[src/scenes/phone/P14_Wechat/index.tsx:597](../src/scenes/phone/P14_Wechat/index.tsx#L597)；[src/scenes/phone/P14_Wechat/index.tsx:629](../src/scenes/phone/P14_Wechat/index.tsx#L629)
-2211. 校园日常
+2181. 校园日常
    来源：[src/scenes/phone/P14_Wechat/index.tsx:595](../src/scenes/phone/P14_Wechat/index.tsx#L595)；[src/scenes/phone/P14_Wechat/index.tsx:597](../src/scenes/phone/P14_Wechat/index.tsx#L597)；[src/scenes/phone/P14_Wechat/index.tsx:624](../src/scenes/phone/P14_Wechat/index.tsx#L624)
-2212. daily
+2182. daily
    来源：[src/scenes/phone/P14_Wechat/index.tsx:595](../src/scenes/phone/P14_Wechat/index.tsx#L595)
-2213. 篇
+2183. 篇
    来源：[src/scenes/phone/P14_Wechat/index.tsx:598](../src/scenes/phone/P14_Wechat/index.tsx#L598)
-2214. 公众号自定义菜单
+2184. 公众号自定义菜单
    来源：[src/scenes/phone/P14_Wechat/index.tsx:618](../src/scenes/phone/P14_Wechat/index.tsx#L618)
-2215. 夜间通知
+2185. 夜间通知
    来源：[src/scenes/phone/P14_Wechat/index.tsx:619](../src/scenes/phone/P14_Wechat/index.tsx#L619)
-2216. 档
+2186. 档
    来源：[src/scenes/phone/P14_Wechat/index.tsx:669](../src/scenes/phone/P14_Wechat/index.tsx#L669)
-2217. 学习天地资料索引
+2187. 学习天地资料索引
    来源：[src/scenes/phone/P14_Wechat/index.tsx:671](../src/scenes/phone/P14_Wechat/index.tsx#L671)
-2218. 群文件 ›
+2188. 群文件 ›
    来源：[src/scenes/phone/P14_Wechat/index.tsx:674](../src/scenes/phone/P14_Wechat/index.tsx#L674)
-2219. 保存录音
+2189. 保存录音
    来源：[src/scenes/phone/P14_Wechat/index.tsx:709](../src/scenes/phone/P14_Wechat/index.tsx#L709)
-2220. 已归档
+2190. 已归档
    来源：[src/scenes/phone/P14_Wechat/index.tsx:709](../src/scenes/phone/P14_Wechat/index.tsx#L709)
-2221. 待现场核验
+2191. 待现场核验
    来源：[src/scenes/phone/P14_Wechat/index.tsx:713](../src/scenes/phone/P14_Wechat/index.tsx#L713)
-2222. 群聊截图 · 2F
+2192. 群聊截图 · 2F
    来源：[src/scenes/phone/P14_Wechat/index.tsx:713](../src/scenes/phone/P14_Wechat/index.tsx#L713)
-2223. 现场照片 · 3F
+2193. 现场照片 · 3F
    来源：[src/scenes/phone/P14_Wechat/index.tsx:717](../src/scenes/phone/P14_Wechat/index.tsx#L717)
-2224. 照片已完成对照
+2194. 照片已完成对照
    来源：[src/scenes/phone/P14_Wechat/index.tsx:734](../src/scenes/phone/P14_Wechat/index.tsx#L734)
-2225. 不调用设备权限，不下载真实应用。
+2195. 不调用设备权限，不下载真实应用。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:777](../src/scenes/phone/P14_Wechat/index.tsx#L777)
-2226. 仅模拟扫码、获取和安装。
+2196. 仅模拟扫码、获取和安装。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:777](../src/scenes/phone/P14_Wechat/index.tsx#L777)
-2227. 需要联网才能获取更新包。
+2197. 需要联网才能获取更新包。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:780](../src/scenes/phone/P14_Wechat/index.tsx#L780)
-2228. 模拟扫码获取更新
+2198. 模拟扫码获取更新
    来源：[src/scenes/phone/P14_Wechat/index.tsx:781](../src/scenes/phone/P14_Wechat/index.tsx#L781)
-2229. 需要网络连接
+2199. 需要网络连接
    来源：[src/scenes/phone/P14_Wechat/index.tsx:781](../src/scenes/phone/P14_Wechat/index.tsx#L781)
-2230. 安装更新
+2200. 安装更新
    来源：[src/scenes/phone/P14_Wechat/index.tsx:783](../src/scenes/phone/P14_Wechat/index.tsx#L783)
-2231. 更新包已就绪
+2201. 更新包已就绪
    来源：[src/scenes/phone/P14_Wechat/index.tsx:783](../src/scenes/phone/P14_Wechat/index.tsx#L783)
-2232. 返回桌面，重新进入体艺
+2202. 返回桌面，重新进入体艺
    来源：[src/scenes/phone/P14_Wechat/index.tsx:785](../src/scenes/phone/P14_Wechat/index.tsx#L785)
-2233. 更新已安装
+2203. 更新已安装
    来源：[src/scenes/phone/P14_Wechat/index.tsx:785](../src/scenes/phone/P14_Wechat/index.tsx#L785)
-2234. 公众号服务菜单
+2204. 公众号服务菜单
    来源：[src/scenes/phone/P14_Wechat/index.tsx:790](../src/scenes/phone/P14_Wechat/index.tsx#L790)
-2235. 场馆预约
+2205. 场馆预约
    来源：[src/scenes/phone/P14_Wechat/index.tsx:791](../src/scenes/phone/P14_Wechat/index.tsx#L791)
-2236. 修读办法
+2206. 修读办法
    来源：[src/scenes/phone/P14_Wechat/index.tsx:791](../src/scenes/phone/P14_Wechat/index.tsx#L791)
-2237. 联系我们
+2207. 联系我们
    来源：[src/scenes/phone/P14_Wechat/index.tsx:792](../src/scenes/phone/P14_Wechat/index.tsx#L792)
-2238. 聊天(
+2208. 聊天(
    来源：[src/scenes/phone/P14_Wechat/index.tsx:809](../src/scenes/phone/P14_Wechat/index.tsx#L809)
-2239. 已登录 2 台设备 ›
+2209. 已登录 2 台设备 ›
    来源：[src/scenes/phone/P14_Wechat/index.tsx:814](../src/scenes/phone/P14_Wechat/index.tsx#L814)
-2240. 体艺
+2210. 体艺
    来源：[src/scenes/phone/P14_Wechat/index.tsx:819](../src/scenes/phone/P14_Wechat/index.tsx#L819)
-2241. 公众号 · 联系我们
+2211. 公众号 · 联系我们
    来源：[src/scenes/phone/P14_Wechat/index.tsx:820](../src/scenes/phone/P14_Wechat/index.tsx#L820)
-2242. 浙大体育与艺术
+2212. 浙大体育与艺术
    来源：[src/scenes/phone/P14_Wechat/index.tsx:820](../src/scenes/phone/P14_Wechat/index.tsx#L820)
-2243. 等你从 CC98 导入资料索引
+2213. 等你从 CC98 导入资料索引
    来源：[src/scenes/phone/P14_Wechat/index.tsx:828](../src/scenes/phone/P14_Wechat/index.tsx#L828)
-2244. 路线讨论已保存
+2214. 路线讨论已保存
    来源：[src/scenes/phone/P14_Wechat/index.tsx:828](../src/scenes/phone/P14_Wechat/index.tsx#L828)
-2245. 学习天地资料已加入群文件
+2215. 学习天地资料已加入群文件
    来源：[src/scenes/phone/P14_Wechat/index.tsx:828](../src/scenes/phone/P14_Wechat/index.tsx#L828)
-2246. 文件传输助手：只有你给自己发的表情包。
+2216. 文件传输助手：只有你给自己发的表情包。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:847](../src/scenes/phone/P14_Wechat/index.tsx#L847)
-2247. 文件传输助手
+2217. 文件传输助手
    来源：[src/scenes/phone/P14_Wechat/index.tsx:851](../src/scenes/phone/P14_Wechat/index.tsx#L851)
-2248. \[图片\]
+2218. \[图片\]
    来源：[src/scenes/phone/P14_Wechat/index.tsx:852](../src/scenes/phone/P14_Wechat/index.tsx#L852)
-2249. 已保存 {{chapterFourWechat.archiveCount}} 项现场资料
+2219. 已保存 {{chapterFourWechat.archiveCount}} 项现场资料
    来源：[src/scenes/phone/P14_Wechat/index.tsx:852](../src/scenes/phone/P14_Wechat/index.tsx#L852)
-2250. 打开朋友聊天
+2220. 打开朋友聊天
    来源：[src/scenes/phone/P14_Wechat/index.tsx:862](../src/scenes/phone/P14_Wechat/index.tsx#L862)
-2251. 朋友头像
+2221. 朋友头像
    来源：[src/scenes/phone/P14_Wechat/index.tsx:868](../src/scenes/phone/P14_Wechat/index.tsx#L868)
-2252. 导师：实验报告仍然不会自己完成。
+2222. 导师：实验报告仍然不会自己完成。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:922](../src/scenes/phone/P14_Wechat/index.tsx#L922)
-2253. 导师头像上的竖线
+2223. 导师头像上的竖线
    来源：[src/scenes/phone/P14_Wechat/index.tsx:928](../src/scenes/phone/P14_Wechat/index.tsx#L928)
-2254. 导师
+2224. 导师
    来源：[src/scenes/phone/P14_Wechat/index.tsx:950](../src/scenes/phone/P14_Wechat/index.tsx#L950)
-2255. 头像胶缝里似乎缺一点能流动的东西。
+2225. 头像胶缝里似乎缺一点能流动的东西。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:954](../src/scenes/phone/P14_Wechat/index.tsx#L954)
-2256. 两枚卡扣在发亮，中间的竖线还是拔不动。
+2226. 两枚卡扣在发亮，中间的竖线还是拔不动。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:956](../src/scenes/phone/P14_Wechat/index.tsx#L956)
-2257. 头像框中间多了一条被封住的竖线。
+2227. 头像框中间多了一条被封住的竖线。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:957](../src/scenes/phone/P14_Wechat/index.tsx#L957)
-2258. 请把实验报告的初稿发我一下。
+2228. 请把实验报告的初稿发我一下。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:958](../src/scenes/phone/P14_Wechat/index.tsx#L958)
-2259. 聊天
+2229. 聊天
    来源：[src/scenes/phone/P14_Wechat/index.tsx:969](../src/scenes/phone/P14_Wechat/index.tsx#L969)
-2260. 联系人
+2230. 联系人
    来源：[src/scenes/phone/P14_Wechat/index.tsx:973](../src/scenes/phone/P14_Wechat/index.tsx#L973)
-2261. 探索
+2231. 探索
    来源：[src/scenes/phone/P14_Wechat/index.tsx:977](../src/scenes/phone/P14_Wechat/index.tsx#L977)
-2262. 我的
+2232. 我的
    来源：[src/scenes/phone/P14_Wechat/index.tsx:981](../src/scenes/phone/P14_Wechat/index.tsx#L981)；[src/scenes/phone/P15_Zjuding/index.tsx:147](../src/scenes/phone/P15_Zjuding/index.tsx#L147)；[src/scenes/phone/P15_Zjuding/index.tsx:152](../src/scenes/phone/P15_Zjuding/index.tsx#L152)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:81](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L81)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:89](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L89)
-2263. 返回聊天列表
+2233. 返回聊天列表
    来源：[src/scenes/phone/P14_Wechat/index.tsx:992](../src/scenes/phone/P14_Wechat/index.tsx#L992)
-2264. 快快老师在点名，学在浙大。
+2234. 快快老师在点名，学在浙大。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:1005](../src/scenes/phone/P14_Wechat/index.tsx#L1005)
-2265. 这是签到码
+2235. 这是签到码
    来源：[src/scenes/phone/P14_Wechat/index.tsx:1013](../src/scenes/phone/P14_Wechat/index.tsx#L1013)
-2266. 等等等等，你想翘课？没门！
+2236. 等等等等，你想翘课？没门！
    来源：[src/scenes/phone/P14_Wechat/index.tsx:1033](../src/scenes/phone/P14_Wechat/index.tsx#L1033)
-2267. 我不会让你签上的！
+2237. 我不会让你签上的！
    来源：[src/scenes/phone/P14_Wechat/index.tsx:1034](../src/scenes/phone/P14_Wechat/index.tsx#L1034)
-2268. 跳过小影语音
+2238. 跳过小影语音
    来源：[src/scenes/phone/P14_Wechat/index.tsx:1045](../src/scenes/phone/P14_Wechat/index.tsx#L1045)
-2269. 成功了吗
+2239. 成功了吗
    来源：[src/scenes/phone/P14_Wechat/index.tsx:1053](../src/scenes/phone/P14_Wechat/index.tsx#L1053)
-2270. wx-msg wx-qizhen-message {{line.startsWith("自动回复：") ? "is-self" : ""}}
+2240. wx-msg wx-qizhen-message {{line.startsWith("自动回复：") ? "is-self" : ""}}
    来源：[src/scenes/phone/P14_Wechat/index.tsx:1083](../src/scenes/phone/P14_Wechat/index.tsx#L1083)
-2271. 自动回复：
+2241. 自动回复：
    来源：[src/scenes/phone/P14_Wechat/index.tsx:1084](../src/scenes/phone/P14_Wechat/index.tsx#L1084)
-2272. 身份信息未读取
+2242. 身份信息未读取
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:67](../src/scenes/phone/P15_Zjuding/index.tsx#L67)
-2273. 拜托了，帮我改一下签到记录
+2243. 拜托了，帮我改一下签到记录
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:77](../src/scenes/phone/P15_Zjuding/index.tsx#L77)；[src/scenes/phone/P15_Zjuding/index.tsx:84](../src/scenes/phone/P15_Zjuding/index.tsx#L84)
-2274. player
+2244. player
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:77](../src/scenes/phone/P15_Zjuding/index.tsx#L77)；[src/scenes/phone/P15_Zjuding/index.tsx:84](../src/scenes/phone/P15_Zjuding/index.tsx#L84)；[src/scenes/phone/P15_Zjuding/index.tsx:90](../src/scenes/phone/P15_Zjuding/index.tsx#L90)
-2275. 先把校园卡收好。寝室里的人还需要找到移动方法。
+2245. 先把校园卡收好。寝室里的人还需要找到移动方法。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:86](../src/scenes/phone/P15_Zjuding/index.tsx#L86)
-2276. 别打扰我……哦，你已经完事了，速度还挺快的
+2246. 别打扰我……哦，你已经完事了，速度还挺快的
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:97](../src/scenes/phone/P15_Zjuding/index.tsx#L97)
-2277. 我以为你要在寝室“就再睡一会儿”呢
+2247. 我以为你要在寝室“就再睡一会儿”呢
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:98](../src/scenes/phone/P15_Zjuding/index.tsx#L98)
-2278. 你知道的，去图书馆要先完成座位预约。
+2248. 你知道的，去图书馆要先完成座位预约。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:99](../src/scenes/phone/P15_Zjuding/index.tsx#L99)
-2279. 基础馆一层书库022，记住了。
+2249. 基础馆一层书库022，记住了。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:100](../src/scenes/phone/P15_Zjuding/index.tsx#L100)
-2280. 馆藏检索
+2250. 馆藏检索
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:132](../src/scenes/phone/P15_Zjuding/index.tsx#L132)；[src/scenes/phone/P15_Zjuding/index.tsx:1535](../src/scenes/phone/P15_Zjuding/index.tsx#L1535)；[src/scenes/phone/P15_Zjuding/index.tsx:1536](../src/scenes/phone/P15_Zjuding/index.tsx#L1536)；[src/scenes/phone/P15_Zjuding/index.tsx:1539](../src/scenes/phone/P15_Zjuding/index.tsx#L1539)；[src/scenes/phone/P15_Zjuding/index.tsx:1540](../src/scenes/phone/P15_Zjuding/index.tsx#L1540)
-2281. 借阅信息
+2251. 借阅信息
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:133](../src/scenes/phone/P15_Zjuding/index.tsx#L133)
-2282. 阅
+2252. 阅
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:133](../src/scenes/phone/P15_Zjuding/index.tsx#L133)
-2283. 座位预约
+2253. 座位预约
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:134](../src/scenes/phone/P15_Zjuding/index.tsx#L134)；[src/scenes/phone/P15_Zjuding/index.tsx:1543](../src/scenes/phone/P15_Zjuding/index.tsx#L1543)
-2284. 空间预约
+2254. 空间预约
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:135](../src/scenes/phone/P15_Zjuding/index.tsx#L135)
-2285. 荐
+2255. 荐
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:136](../src/scenes/phone/P15_Zjuding/index.tsx#L136)
-2286. 求是荐书
+2256. 求是荐书
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:136](../src/scenes/phone/P15_Zjuding/index.tsx#L136)
-2287. 新书通报
+2257. 新书通报
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:137](../src/scenes/phone/P15_Zjuding/index.tsx#L137)
-2288. 查收查引
+2258. 查收查引
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:138](../src/scenes/phone/P15_Zjuding/index.tsx#L138)
-2289. 引
+2259. 引
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:138](../src/scenes/phone/P15_Zjuding/index.tsx#L138)
-2290. 图书馆缴费
+2260. 图书馆缴费
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:139](../src/scenes/phone/P15_Zjuding/index.tsx#L139)
-2291. 失物招领 · 前台工作人员
+2261. 失物招领 · 前台工作人员
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:202](../src/scenes/phone/P15_Zjuding/index.tsx#L202)
-2292. 一层书库 · 022 桌面夹缝
+2262. 一层书库 · 022 桌面夹缝
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:208](../src/scenes/phone/P15_Zjuding/index.tsx#L208)
-2293. 浙大体艺 · 到馆记录补录
+2263. 浙大体艺 · 到馆记录补录
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:214](../src/scenes/phone/P15_Zjuding/index.tsx#L214)
-2294. 二层
+2264. 二层
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:219](../src/scenes/phone/P15_Zjuding/index.tsx#L219)；[src/scenes/phone/P15_Zjuding/index.tsx:220](../src/scenes/phone/P15_Zjuding/index.tsx#L220)
-2295. 二层南
+2265. 二层南
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:219](../src/scenes/phone/P15_Zjuding/index.tsx#L219)
-2296. 二层北
+2266. 二层北
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:220](../src/scenes/phone/P15_Zjuding/index.tsx#L220)
-2297. 三层
+2267. 三层
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:221](../src/scenes/phone/P15_Zjuding/index.tsx#L221)；[src/scenes/phone/P15_Zjuding/index.tsx:222](../src/scenes/phone/P15_Zjuding/index.tsx#L222)
-2298. 三层东
+2268. 三层东
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:221](../src/scenes/phone/P15_Zjuding/index.tsx#L221)
-2299. 三层南
+2269. 三层南
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:222](../src/scenes/phone/P15_Zjuding/index.tsx#L222)
-2300. 返回，离开{{title}}
+2270. 返回，离开{{title}}
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:246](../src/scenes/phone/P15_Zjuding/index.tsx#L246)
-2301. {{title}}更多菜单
+2271. {{title}}更多菜单
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:248](../src/scenes/phone/P15_Zjuding/index.tsx#L248)
-2302. 页面导航
+2272. 页面导航
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:268](../src/scenes/phone/P15_Zjuding/index.tsx#L268)；[src/scenes/phone/P15_Zjuding/index.tsx:1612](../src/scenes/phone/P15_Zjuding/index.tsx#L1612)
-2303. 22:44:31
+2273. 22:44:31
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:342](../src/scenes/phone/P15_Zjuding/index.tsx#L342)
-2304. 剧场前厅
+2274. 剧场前厅
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:344](../src/scenes/phone/P15_Zjuding/index.tsx#L344)
-2305. 18 秒
+2275. 18 秒
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:345](../src/scenes/phone/P15_Zjuding/index.tsx#L345)
-2306. 已认证设备
+2276. 已认证设备
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:346](../src/scenes/phone/P15_Zjuding/index.tsx#L346)；[src/scenes/phone/P15_Zjuding/index.tsx:412](../src/scenes/phone/P15_Zjuding/index.tsx#L412)
-2307. 22:43:11
+2277. 22:43:11
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:353](../src/scenes/phone/P15_Zjuding/index.tsx#L353)
-2308. 基础图书馆南侧
+2278. 基础图书馆南侧
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:355](../src/scenes/phone/P15_Zjuding/index.tsx#L355)
-2309. 3 秒
+2279. 3 秒
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:356](../src/scenes/phone/P15_Zjuding/index.tsx#L356)；[src/scenes/phone/P15_Zjuding/index.tsx:367](../src/scenes/phone/P15_Zjuding/index.tsx#L367)
-2310. 未知设备
+2280. 未知设备
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:357](../src/scenes/phone/P15_Zjuding/index.tsx#L357)；[src/scenes/phone/P15_Zjuding/index.tsx:368](../src/scenes/phone/P15_Zjuding/index.tsx#L368)
-2311. 22:44:12
+2281. 22:44:12
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:364](../src/scenes/phone/P15_Zjuding/index.tsx#L364)
-2312. 启真湖小码头
+2282. 启真湖小码头
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:366](../src/scenes/phone/P15_Zjuding/index.tsx#L366)
-2313. 网络记录筛选
+2283. 网络记录筛选
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:401](../src/scenes/phone/P15_Zjuding/index.tsx#L401)
-2314. 缺失时段末段
+2284. 缺失时段末段
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:405](../src/scenes/phone/P15_Zjuding/index.tsx#L405)
-2315. 最后 1 分钟
+2285. 最后 1 分钟
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:406](../src/scenes/phone/P15_Zjuding/index.tsx#L406)
-2316. 会话
+2286. 会话
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:409](../src/scenes/phone/P15_Zjuding/index.tsx#L409)
-2317. 未知设备 · 短会话
+2287. 未知设备 · 短会话
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:411](../src/scenes/phone/P15_Zjuding/index.tsx#L411)
-2318. 全校
+2288. 全校
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:416](../src/scenes/phone/P15_Zjuding/index.tsx#L416)
-2319. 北教学区 A 区
+2289. 北教学区 A 区
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:417](../src/scenes/phone/P15_Zjuding/index.tsx#L417)
-2320. 其他楼宇
+2290. 其他楼宇
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:418](../src/scenes/phone/P15_Zjuding/index.tsx#L418)
-2321. 接入记录结果
+2291. 接入记录结果
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:421](../src/scenes/phone/P15_Zjuding/index.tsx#L421)
-2322. 查询结果
+2292. 查询结果
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:422](../src/scenes/phone/P15_Zjuding/index.tsx#L422)
-2323. 接入点
+2293. 接入点
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:427](../src/scenes/phone/P15_Zjuding/index.tsx#L427)
-2324. 位置
+2294. 位置
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:428](../src/scenes/phone/P15_Zjuding/index.tsx#L428)
-2325. 设备
+2295. 设备
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:429](../src/scenes/phone/P15_Zjuding/index.tsx#L429)
-2326. 记录已保存
+2296. 记录已保存
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:436](../src/scenes/phone/P15_Zjuding/index.tsx#L436)
-2327. 保存这条记录
+2297. 保存这条记录
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:437](../src/scenes/phone/P15_Zjuding/index.tsx#L437)
-2328. 可从任意维度开始筛选，也可直接保存候选记录。系统不会替你判定候选，最终冲突由证据矩阵统一核验。
+2298. 可从任意维度开始筛选，也可直接保存候选记录。系统不会替你判定候选，最终冲突由证据矩阵统一核验。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:442](../src/scenes/phone/P15_Zjuding/index.tsx#L442)
-2329. 记录核验结果
+2299. 记录核验结果
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:444](../src/scenes/phone/P15_Zjuding/index.tsx#L444)
-2330. 林星宇
+2300. 林星宇
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:445](../src/scenes/phone/P15_Zjuding/index.tsx#L445)
-2331. 这不是我的手机。
+2301. 这不是我的手机。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:445](../src/scenes/phone/P15_Zjuding/index.tsx#L445)
-2332. 北教学区 A 区的一处大厅
+2302. 北教学区 A 区的一处大厅
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:446](../src/scenes/phone/P15_Zjuding/index.tsx#L446)
-2333. 段永平教学楼一楼
+2303. 段永平教学楼一楼
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:446](../src/scenes/phone/P15_Zjuding/index.tsx#L446)
-2334. 留下了三秒会话。
+2304. 留下了三秒会话。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:446](../src/scenes/phone/P15_Zjuding/index.tsx#L446)
-2335. 设备名也不是你的。它借用了你的校园身份，在
+2305. 设备名也不是你的。它借用了你的校园身份，在
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:446](../src/scenes/phone/P15_Zjuding/index.tsx#L446)
-2336. 可选座位地图
+2306. 可选座位地图
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:476](../src/scenes/phone/P15_Zjuding/index.tsx#L476)
-2337. 选择座位{{leftSeat}}
+2307. 选择座位{{leftSeat}}
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:492](../src/scenes/phone/P15_Zjuding/index.tsx#L492)
-2338. 选择座位{{rightSeat}}
+2308. 选择座位{{rightSeat}}
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:504](../src/scenes/phone/P15_Zjuding/index.tsx#L504)
-2339. 北向
+2309. 北向
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:522](../src/scenes/phone/P15_Zjuding/index.tsx#L522)
-2340. 07月10日 · 今天
+2310. 07月10日 · 今天
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:560](../src/scenes/phone/P15_Zjuding/index.tsx#L560)；[src/scenes/phone/P15_Zjuding/index.tsx:2242](../src/scenes/phone/P15_Zjuding/index.tsx#L2242)
-2341. 全部座位
+2311. 全部座位
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:563](../src/scenes/phone/P15_Zjuding/index.tsx#L563)；[src/scenes/phone/P15_Zjuding/index.tsx:2264](../src/scenes/phone/P15_Zjuding/index.tsx#L2264)
-2342. 主馆
+2312. 主馆
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:608](../src/scenes/phone/P15_Zjuding/index.tsx#L608)；[src/scenes/phone/P15_Zjuding/index.tsx:2223](../src/scenes/phone/P15_Zjuding/index.tsx#L2223)
-2343. 请连接校园网后重新进入浙大钉。
+2313. 请连接校园网后重新进入浙大钉。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:642](../src/scenes/phone/P15_Zjuding/index.tsx#L642)
-2344. reservation
+2314. reservation
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:651](../src/scenes/phone/P15_Zjuding/index.tsx#L651)
-2345. 读卡器没有读到有效证件。
+2315. 读卡器没有读到有效证件。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:657](../src/scenes/phone/P15_Zjuding/index.tsx#L657)
-2346. 证件信息已读入。
+2316. 证件信息已读入。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:676](../src/scenes/phone/P15_Zjuding/index.tsx#L676)
-2347. 读卡区只认校园身份凭证。这件道具没有姓名和学号。
+2317. 读卡区只认校园身份凭证。这件道具没有姓名和学号。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:687](../src/scenes/phone/P15_Zjuding/index.tsx#L687)
-2348. 馆藏检索没有识别这件道具中的页码特征。
+2318. 馆藏检索没有识别这件道具中的页码特征。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:719](../src/scenes/phone/P15_Zjuding/index.tsx#L719)
-2349. 节目单的潮湿页码已送入馆藏状态检索。
+2319. 节目单的潮湿页码已送入馆藏状态检索。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:727](../src/scenes/phone/P15_Zjuding/index.tsx#L727)
-2350. 这个槽位需要对应名称的恢复证明。
+2320. 这个槽位需要对应名称的恢复证明。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:743](../src/scenes/phone/P15_Zjuding/index.tsx#L743)
-2351. 退出浙大钉
+2321. 退出浙大钉
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:785](../src/scenes/phone/P15_Zjuding/index.tsx#L785)；[src/scenes/phone/P15_Zjuding/index.tsx:2001](../src/scenes/phone/P15_Zjuding/index.tsx#L2001)
-2352. 个人资料
+2322. 个人资料
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:789](../src/scenes/phone/P15_Zjuding/index.tsx#L789)；[src/scenes/phone/P15_Zjuding/index.tsx:2001](../src/scenes/phone/P15_Zjuding/index.tsx#L2001)
-2353. 账号与安全
+2323. 账号与安全
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:789](../src/scenes/phone/P15_Zjuding/index.tsx#L789)；[src/scenes/phone/P15_Zjuding/index.tsx:2001](../src/scenes/phone/P15_Zjuding/index.tsx#L2001)
-2354. 收藏号码
+2324. 收藏号码
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:793](../src/scenes/phone/P15_Zjuding/index.tsx#L793)；[src/scenes/phone/P15_Zjuding/index.tsx:1317](../src/scenes/phone/P15_Zjuding/index.tsx#L1317)
-2355. 最近通话
+2325. 最近通话
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:793](../src/scenes/phone/P15_Zjuding/index.tsx#L793)；[src/scenes/phone/P15_Zjuding/index.tsx:1317](../src/scenes/phone/P15_Zjuding/index.tsx#L1317)
-2356. 我的预约
+2326. 我的预约
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:797](../src/scenes/phone/P15_Zjuding/index.tsx#L797)；[src/scenes/phone/P15_Zjuding/index.tsx:1810](../src/scenes/phone/P15_Zjuding/index.tsx#L1810)
-2357. 当前没有已确认的图书馆预约。
+2327. 当前没有已确认的图书馆预约。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:804](../src/scenes/phone/P15_Zjuding/index.tsx#L804)
-2358. 刷新空位
+2328. 刷新空位
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:808](../src/scenes/phone/P15_Zjuding/index.tsx#L808)；[src/scenes/phone/P15_Zjuding/index.tsx:1810](../src/scenes/phone/P15_Zjuding/index.tsx#L1810)
-2359. 刷新座位
+2329. 刷新座位
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:808](../src/scenes/phone/P15_Zjuding/index.tsx#L808)；[src/scenes/phone/P15_Zjuding/index.tsx:1896](../src/scenes/phone/P15_Zjuding/index.tsx#L1896)
-2360. 已重新读取本机座位状态：{{selectedRoom}}空闲 {{activeRoom?.available ?? 0}} 席。
+2330. 已重新读取本机座位状态：{{selectedRoom}}空闲 {{activeRoom?.available ?? 0}} 席。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:809](../src/scenes/phone/P15_Zjuding/index.tsx#L809)
-2361. 预约规则
+2331. 预约规则
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:812](../src/scenes/phone/P15_Zjuding/index.tsx#L812)；[src/scenes/phone/P15_Zjuding/index.tsx:1810](../src/scenes/phone/P15_Zjuding/index.tsx#L1810)；[src/scenes/phone/P15_Zjuding/index.tsx:1896](../src/scenes/phone/P15_Zjuding/index.tsx#L1896)
-2362. 预约页只接受当前剧情已开放的馆舍、区域和座位。
+2332. 预约页只接受当前剧情已开放的馆舍、区域和座位。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:813](../src/scenes/phone/P15_Zjuding/index.tsx#L813)
-2363. 取消预约
+2333. 取消预约
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:816](../src/scenes/phone/P15_Zjuding/index.tsx#L816)；[src/scenes/phone/P15_Zjuding/index.tsx:1896](../src/scenes/phone/P15_Zjuding/index.tsx#L1896)
-2364. 已确认预约保持不变。
+2334. 已确认预约保持不变。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:817](../src/scenes/phone/P15_Zjuding/index.tsx#L817)
-2365. 找回账号
+2335. 找回账号
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:820](../src/scenes/phone/P15_Zjuding/index.tsx#L820)；[src/scenes/phone/P15_Zjuding/index.tsx:1289](../src/scenes/phone/P15_Zjuding/index.tsx#L1289)
-2366. 请通过电子校园卡重新读取身份。
+2336. 请通过电子校园卡重新读取身份。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:821](../src/scenes/phone/P15_Zjuding/index.tsx#L821)
-2367. 安全提示
+2337. 安全提示
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:824](../src/scenes/phone/P15_Zjuding/index.tsx#L824)；[src/scenes/phone/P15_Zjuding/index.tsx:1289](../src/scenes/phone/P15_Zjuding/index.tsx#L1289)
-2368. 账号信息由电子校园卡状态读取。
+2338. 账号信息由电子校园卡状态读取。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:825](../src/scenes/phone/P15_Zjuding/index.tsx#L825)
-2369. 当前状态已显示。
+2339. 当前状态已显示。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:828](../src/scenes/phone/P15_Zjuding/index.tsx#L828)
-2370. 它看了看你的空手，又缩回了红圈里。
+2340. 它看了看你的空手，又缩回了红圈里。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:947](../src/scenes/phone/P15_Zjuding/index.tsx#L947)
-2371. 求是印章没有回应。
+2341. 求是印章没有回应。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:951](../src/scenes/phone/P15_Zjuding/index.tsx#L951)
-2372. 任务更新：找到道具栏
+2342. 任务更新：找到道具栏
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:972](../src/scenes/phone/P15_Zjuding/index.tsx#L972)
-2373. 任务更新：找到移动的办法
+2343. 任务更新：找到移动的办法
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:976](../src/scenes/phone/P15_Zjuding/index.tsx#L976)
-2374. 任务更新：让地图人物回应你
+2344. 任务更新：让地图人物回应你
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:979](../src/scenes/phone/P15_Zjuding/index.tsx#L979)
-2375. 当前预约为{{libraryReservation.library}}{{libraryReservation.targetRoom}} 022，本次任务不支持改签。
+2345. 当前预约为{{libraryReservation.library}}{{libraryReservation.targetRoom}} 022，本次任务不支持改签。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1031](../src/scenes/phone/P15_Zjuding/index.tsx#L1031)
-2376. 本章的 022 状态由图书馆现场记录管理。
+2346. 本章的 022 状态由图书馆现场记录管理。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1044](../src/scenes/phone/P15_Zjuding/index.tsx#L1044)
-2377. 座位 {{state.ui.librarySelectedSeat ?? "022"}} 已预约，不能在当前任务中改签。
+2347. 座位 {{state.ui.librarySelectedSeat ?? "022"}} 已预约，不能在当前任务中改签。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1048](../src/scenes/phone/P15_Zjuding/index.tsx#L1048)
-2378. 请先选择一个白色座位。
+2348. 请先选择一个白色座位。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1057](../src/scenes/phone/P15_Zjuding/index.tsx#L1057)
-2379. 座位 {{state.ui.librarySelectedSeat}} 已预约。
+2349. 座位 {{state.ui.librarySelectedSeat}} 已预约。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1061](../src/scenes/phone/P15_Zjuding/index.tsx#L1061)
-2380. 预约来源不匹配：请选择基础馆。
+2350. 预约来源不匹配：请选择基础馆。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1073](../src/scenes/phone/P15_Zjuding/index.tsx#L1073)
-2381. 预约区域不匹配：请选择一层书库。
+2351. 预约区域不匹配：请选择一层书库。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1074](../src/scenes/phone/P15_Zjuding/index.tsx#L1074)
-2382. 座位凭据不匹配：目标座位为 022。
+2352. 座位凭据不匹配：目标座位为 022。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1075](../src/scenes/phone/P15_Zjuding/index.tsx#L1075)
-2383. 系统还没有开放本次座位预约。
+2353. 系统还没有开放本次座位预约。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1076](../src/scenes/phone/P15_Zjuding/index.tsx#L1076)
-2384. 预约成功：基础馆一层书库 022。
+2354. 预约成功：基础馆一层书库 022。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1083](../src/scenes/phone/P15_Zjuding/index.tsx#L1083)
-2385. 请输入书名、作者或索书号。
+2355. 请输入书名、作者或索书号。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1092](../src/scenes/phone/P15_Zjuding/index.tsx#L1092)
-2386. 检索完成：发现 1 条异常外借记录。
+2356. 检索完成：发现 1 条异常外借记录。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1104](../src/scenes/phone/P15_Zjuding/index.tsx#L1104)
-2387. 没有找到与“{{query}}”相符的馆藏。
+2357. 没有找到与“{{query}}”相符的馆藏。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1112](../src/scenes/phone/P15_Zjuding/index.tsx#L1112)
-2388. 检索完成：找到 {{results.length}} 本馆藏。
+2358. 检索完成：找到 {{results.length}} 本馆藏。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1116](../src/scenes/phone/P15_Zjuding/index.tsx#L1116)
-2389. 检索完成：找到 {{results.length}} 本相似馆藏
+2359. 检索完成：找到 {{results.length}} 本相似馆藏
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1122](../src/scenes/phone/P15_Zjuding/index.tsx#L1122)
-2390. 当前无法保存这条异常定位信息。
+2360. 当前无法保存这条异常定位信息。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1127](../src/scenes/phone/P15_Zjuding/index.tsx#L1127)
-2391. {{qizhenContent.locationSearch.catalog.player}} / {{qizhenContent.locationSearch.catalog.system}}
+2361. {{qizhenContent.locationSearch.catalog.player}} / {{qizhenContent.locationSearch.catalog.system}}
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1130](../src/scenes/phone/P15_Zjuding/index.tsx#L1130)
-2392. 地图没有从这件道具中读到地点关键词。
+2362. 地图没有从这件道具中读到地点关键词。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1136](../src/scenes/phone/P15_Zjuding/index.tsx#L1136)
-2393. 当前没有需要合并的地点线索。
+2363. 当前没有需要合并的地点线索。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1140](../src/scenes/phone/P15_Zjuding/index.tsx#L1140)
-2394. 这条记录已经参与检索。
+2364. 这条记录已经参与检索。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1144](../src/scenes/phone/P15_Zjuding/index.tsx#L1144)
-2395. 三条记录还没有全部对齐。
+2365. 三条记录还没有全部对齐。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1159](../src/scenes/phone/P15_Zjuding/index.tsx#L1159)
-2396. 启真湖入口还没有在大地图上开放。
+2366. 启真湖入口还没有在大地图上开放。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1167](../src/scenes/phone/P15_Zjuding/index.tsx#L1167)
-2397. 已获得线索：索书号 {{result.callNumber}}。
+2367. 已获得线索：索书号 {{result.callNumber}}。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1174](../src/scenes/phone/P15_Zjuding/index.tsx#L1174)；[src/scenes/phone/P15_Zjuding/index.tsx:1187](../src/scenes/phone/P15_Zjuding/index.tsx#L1187)
-2398. {{result.title}}的索书号和 022 没有可核对的关系。
+2368. {{result.title}}的索书号和 022 没有可核对的关系。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1182](../src/scenes/phone/P15_Zjuding/index.tsx#L1182)
-2399. 十大排名还没有被图书馆系统同步。
+2369. 十大排名还没有被图书馆系统同步。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1193](../src/scenes/phone/P15_Zjuding/index.tsx#L1193)
-2400. 恢复申请只在帖子进入十大第一后开放。
+2370. 恢复申请只在帖子进入十大第一后开放。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1197](../src/scenes/phone/P15_Zjuding/index.tsx#L1197)
-2401. 该证明还未获得、已提交，或当前申请尚未开放。
+2371. 该证明还未获得、已提交，或当前申请尚未开放。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1206](../src/scenes/phone/P15_Zjuding/index.tsx#L1206)
-2402. 三项恢复材料尚未齐全。
+2372. 三项恢复材料尚未齐全。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1220](../src/scenes/phone/P15_Zjuding/index.tsx#L1220)
-2403. 浙大钉加载中
+2373. 浙大钉加载中
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1233](../src/scenes/phone/P15_Zjuding/index.tsx#L1233)
-2404. 请连接校园网后重新进入
+2374. 请连接校园网后重新进入
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1244](../src/scenes/phone/P15_Zjuding/index.tsx#L1244)
-2405. 统一身份认证
+2375. 统一身份认证
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1287](../src/scenes/phone/P15_Zjuding/index.tsx#L1287)
-2406. 登录帮助
+2376. 登录帮助
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1289](../src/scenes/phone/P15_Zjuding/index.tsx#L1289)
-2407. 校园身份信息
+2377. 校园身份信息
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1293](../src/scenes/phone/P15_Zjuding/index.tsx#L1293)
-2408. 旧登录入口已合并到电子校园卡。
+2378. 旧登录入口已合并到电子校园卡。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1294](../src/scenes/phone/P15_Zjuding/index.tsx#L1294)
-2409. 前往部门黄页
+2379. 前往部门黄页
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1305](../src/scenes/phone/P15_Zjuding/index.tsx#L1305)
-2410. 浙大钉部门黄页
+2380. 浙大钉部门黄页
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1313](../src/scenes/phone/P15_Zjuding/index.tsx#L1313)
-2411. 部门黄页
+2381. 部门黄页
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1315](../src/scenes/phone/P15_Zjuding/index.tsx#L1315)；[src/scenes/phone/P15_Zjuding/index.tsx:2057](../src/scenes/phone/P15_Zjuding/index.tsx#L2057)；[src/scenes/phone/P15_Zjuding/index.tsx:2061](../src/scenes/phone/P15_Zjuding/index.tsx#L2061)；[src/scenes/phone/P15_Zjuding/index.tsx:2062](../src/scenes/phone/P15_Zjuding/index.tsx#L2062)
-2412. 黄页菜单
+2382. 黄页菜单
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1317](../src/scenes/phone/P15_Zjuding/index.tsx#L1317)
-2413. 部门联系人
+2383. 部门联系人
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1320](../src/scenes/phone/P15_Zjuding/index.tsx#L1320)
-2414. 联络寝室人物
+2384. 联络寝室人物
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1328](../src/scenes/phone/P15_Zjuding/index.tsx#L1328)
-2415. 校园卡读卡区
+2385. 校园卡读卡区
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1334](../src/scenes/phone/P15_Zjuding/index.tsx#L1334)
-2416. 电子校园卡已读取
+2386. 电子校园卡已读取
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1345](../src/scenes/phone/P15_Zjuding/index.tsx#L1345)
-2417. 校园身份读卡区
+2387. 校园身份读卡区
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1345](../src/scenes/phone/P15_Zjuding/index.tsx#L1345)
-2418. 正在识别持卡人字段……
+2388. 正在识别持卡人字段……
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1348](../src/scenes/phone/P15_Zjuding/index.tsx#L1348)
-2419. 姓名与 10 位学号已填入
+2389. 姓名与 10 位学号已填入
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1350](../src/scenes/phone/P15_Zjuding/index.tsx#L1350)
-2420. 校园卡已对准，点击读取
+2390. 校园卡已对准，点击读取
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1352](../src/scenes/phone/P15_Zjuding/index.tsx#L1352)
-2421. 点击查看提示，或将身份凭证放入此处
+2391. 点击查看提示，或将身份凭证放入此处
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1353](../src/scenes/phone/P15_Zjuding/index.tsx#L1353)
-2422. 联络未命名人物
+2392. 联络未命名人物
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1360](../src/scenes/phone/P15_Zjuding/index.tsx#L1360)
-2423. 请输入校园卡上的完整身份
+2393. 请输入校园卡上的完整身份
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1360](../src/scenes/phone/P15_Zjuding/index.tsx#L1360)
-2424. 校园卡姓名
+2394. 校园卡姓名
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1370](../src/scenes/phone/P15_Zjuding/index.tsx#L1370)
-2425. 10 位学号
+2395. 10 位学号
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1383](../src/scenes/phone/P15_Zjuding/index.tsx#L1383)
-2426. ☎ 呼叫
+2396. ☎ 呼叫
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1388](../src/scenes/phone/P15_Zjuding/index.tsx#L1388)
-2427. 已联络：{{actOneContent.studentName}}
+2397. 已联络：{{actOneContent.studentName}}
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1388](../src/scenes/phone/P15_Zjuding/index.tsx#L1388)
-2428. 校务签到
+2398. 校务签到
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1404](../src/scenes/phone/P15_Zjuding/index.tsx#L1404)
-2429. 返回浙大钉
+2399. 返回浙大钉
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1411](../src/scenes/phone/P15_Zjuding/index.tsx#L1411)
-2430. 学在浙大导航
+2400. 学在浙大导航
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1412](../src/scenes/phone/P15_Zjuding/index.tsx#L1412)
-2431. 当前位于学在浙大。
+2401. 当前位于学在浙大。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1413](../src/scenes/phone/P15_Zjuding/index.tsx#L1413)
-2432. 方向靠近桥
+2402. 方向靠近桥
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1431](../src/scenes/phone/P15_Zjuding/index.tsx#L1431)
-2433. CC98 目击帖
+2403. CC98 目击帖
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1431](../src/scenes/phone/P15_Zjuding/index.tsx#L1431)
-2434. 馆藏异常记录
+2404. 馆藏异常记录
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1432](../src/scenes/phone/P15_Zjuding/index.tsx#L1432)
-2435. 页码只出现在倒影中
+2405. 页码只出现在倒影中
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1432](../src/scenes/phone/P15_Zjuding/index.tsx#L1432)
-2436. 湖面
+2406. 湖面
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1433](../src/scenes/phone/P15_Zjuding/index.tsx#L1433)
-2437. 湖面出现逆风水纹
+2407. 湖面出现逆风水纹
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1433](../src/scenes/phone/P15_Zjuding/index.tsx#L1433)
-2438. 微信聊天
+2408. 微信聊天
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1433](../src/scenes/phone/P15_Zjuding/index.tsx#L1433)
-2439. 三条记录来自不同应用。先取得地点词，再在这里逐条接入。
+2409. 三条记录来自不同应用。先取得地点词，再在这里逐条接入。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1446](../src/scenes/phone/P15_Zjuding/index.tsx#L1446)
-2440. 校园地图地点检索
+2410. 校园地图地点检索
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1448](../src/scenes/phone/P15_Zjuding/index.tsx#L1448)
-2441. 保留原始来源，核对三条地点记录
+2411. 保留原始来源，核对三条地点记录
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1453](../src/scenes/phone/P15_Zjuding/index.tsx#L1453)
-2442. 交叉检索台
+2412. 交叉检索台
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1453](../src/scenes/phone/P15_Zjuding/index.tsx#L1453)
-2443. 三源地点记录
+2413. 三源地点记录
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1458](../src/scenes/phone/P15_Zjuding/index.tsx#L1458)
-2444. 已接入
+2414. 已接入
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1461](../src/scenes/phone/P15_Zjuding/index.tsx#L1461)；[src/scenes/phone/P15_Zjuding/index.tsx:1479](../src/scenes/phone/P15_Zjuding/index.tsx#L1479)
-2445. 待核对
+2415. 待核对
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1462](../src/scenes/phone/P15_Zjuding/index.tsx#L1462)
-2446. 入口已标记
+2416. 入口已标记
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1462](../src/scenes/phone/P15_Zjuding/index.tsx#L1462)
-2447. 收集中
+2417. 收集中
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1462](../src/scenes/phone/P15_Zjuding/index.tsx#L1462)
-2448. 提取词：
+2418. 提取词：
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1476](../src/scenes/phone/P15_Zjuding/index.tsx#L1476)
-2449. 导入
+2419. 导入
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1481](../src/scenes/phone/P15_Zjuding/index.tsx#L1481)
-2450. 导入{{clue.source}}的地点词{{clue.label}}
+2420. 导入{{clue.source}}的地点词{{clue.label}}
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1481](../src/scenes/phone/P15_Zjuding/index.tsx#L1481)
-2451. 未取得
+2421. 未取得
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1483](../src/scenes/phone/P15_Zjuding/index.tsx#L1483)
-2452. 核对地点交点
+2422. 核对地点交点
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1490](../src/scenes/phone/P15_Zjuding/index.tsx#L1490)
-2453. 前往大地图上的启真湖入口
+2423. 前往大地图上的启真湖入口
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1505](../src/scenes/phone/P15_Zjuding/index.tsx#L1505)
-2454. 浙大移动图书馆
+2424. 浙大移动图书馆
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1513](../src/scenes/phone/P15_Zjuding/index.tsx#L1513)；[src/scenes/phone/P15_Zjuding/index.tsx:1515](../src/scenes/phone/P15_Zjuding/index.tsx#L1515)；[src/scenes/phone/P15_Zjuding/index.tsx:1626](../src/scenes/phone/P15_Zjuding/index.tsx#L1626)
-2455. 未读取身份的读者头像
+2425. 未读取身份的读者头像
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1520](../src/scenes/phone/P15_Zjuding/index.tsx#L1520)
-2456. 校园卡持卡人读者头像
+2426. 校园卡持卡人读者头像
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1520](../src/scenes/phone/P15_Zjuding/index.tsx#L1520)
-2457. 022恢复申请
+2427. 022恢复申请
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1559](../src/scenes/phone/P15_Zjuding/index.tsx#L1559)；[src/scenes/phone/P15_Zjuding/index.tsx:1560](../src/scenes/phone/P15_Zjuding/index.tsx#L1560)；[src/scenes/phone/P15_Zjuding/index.tsx:1563](../src/scenes/phone/P15_Zjuding/index.tsx#L1563)；[src/scenes/phone/P15_Zjuding/index.tsx:1565](../src/scenes/phone/P15_Zjuding/index.tsx#L1565)
-2458. 返回现场
+2428. 返回现场
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1569](../src/scenes/phone/P15_Zjuding/index.tsx#L1569)；[src/scenes/phone/P15_Zjuding/index.tsx:1570](../src/scenes/phone/P15_Zjuding/index.tsx#L1570)；[src/scenes/phone/P15_Zjuding/index.tsx:1573](../src/scenes/phone/P15_Zjuding/index.tsx#L1573)；[src/scenes/phone/P15_Zjuding/index.tsx:1574](../src/scenes/phone/P15_Zjuding/index.tsx#L1574)；[src/scenes/phone/P15_Zjuding/index.tsx:1918](../src/scenes/phone/P15_Zjuding/index.tsx#L1918)
-2459. 022 座位恢复申请已开放
+2429. 022 座位恢复申请已开放
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1581](../src/scenes/phone/P15_Zjuding/index.tsx#L1581)
-2460. 帖子当前排名 01，可提交三项证明。
+2430. 帖子当前排名 01，可提交三项证明。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1582](../src/scenes/phone/P15_Zjuding/index.tsx#L1582)
-2461. 活动日历
+2431. 活动日历
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1589](../src/scenes/phone/P15_Zjuding/index.tsx#L1589)
-2462. （活动报名）“我著·我...
+2432. （活动报名）“我著·我...
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1591](../src/scenes/phone/P15_Zjuding/index.tsx#L1591)
-2463. （活动报名）书香浙大·开...
+2433. （活动报名）书香浙大·开...
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1591](../src/scenes/phone/P15_Zjuding/index.tsx#L1591)
-2464. 通知公告
+2434. 通知公告
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1594](../src/scenes/phone/P15_Zjuding/index.tsx#L1594)
-2465. 关于新增校外数据库访...
+2435. 关于新增校外数据库访...
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1596](../src/scenes/phone/P15_Zjuding/index.tsx#L1596)
-2466. 图书馆数字资源校外访...
+2436. 图书馆数字资源校外访...
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1596](../src/scenes/phone/P15_Zjuding/index.tsx#L1596)
-2467. 规章制度
+2437. 规章制度
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1599](../src/scenes/phone/P15_Zjuding/index.tsx#L1599)
-2468. 读者文明使用空间须知
+2438. 读者文明使用空间须知
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1601](../src/scenes/phone/P15_Zjuding/index.tsx#L1601)
-2469. 图书馆座位预约管理规则
+2439. 图书馆座位预约管理规则
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1601](../src/scenes/phone/P15_Zjuding/index.tsx#L1601)
-2470. 图书馆馆藏检索
+2440. 图书馆馆藏检索
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1624](../src/scenes/phone/P15_Zjuding/index.tsx#L1624)
-2471. 文献库选择
+2441. 文献库选择
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1630](../src/scenes/phone/P15_Zjuding/index.tsx#L1630)
-2472. 当前正在使用中文文献库。
+2442. 当前正在使用中文文献库。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1631](../src/scenes/phone/P15_Zjuding/index.tsx#L1631)
-2473. 中文文献库
+2443. 中文文献库
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1631](../src/scenes/phone/P15_Zjuding/index.tsx#L1631)
-2474. 检索条件
+2444. 检索条件
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1635](../src/scenes/phone/P15_Zjuding/index.tsx#L1635)
-2475. 搜索文献
+2445. 搜索文献
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1643](../src/scenes/phone/P15_Zjuding/index.tsx#L1643)
-2476. 馆藏检索关键词
+2446. 馆藏检索关键词
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1644](../src/scenes/phone/P15_Zjuding/index.tsx#L1644)
-2477. 检索范围
+2447. 检索范围
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1649](../src/scenes/phone/P15_Zjuding/index.tsx#L1649)
-2478. 当前检索字段固定为书名，高级检索可查看其他条件。
+2448. 当前检索字段固定为书名，高级检索可查看其他条件。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1650](../src/scenes/phone/P15_Zjuding/index.tsx#L1650)
-2479. 检索字段
+2449. 检索字段
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1650](../src/scenes/phone/P15_Zjuding/index.tsx#L1650)
-2480. 当前馆藏范围为全部馆藏。
+2450. 当前馆藏范围为全部馆藏。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1651](../src/scenes/phone/P15_Zjuding/index.tsx#L1651)
-2481. 馆藏范围
+2451. 馆藏范围
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1651](../src/scenes/phone/P15_Zjuding/index.tsx#L1651)
-2482. 全部馆藏
+2452. 全部馆藏
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1651](../src/scenes/phone/P15_Zjuding/index.tsx#L1651)
-2483. 高级检索
+2453. 高级检索
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1657](../src/scenes/phone/P15_Zjuding/index.tsx#L1657)
-2484. 收起高级检索
+2454. 收起高级检索
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1657](../src/scenes/phone/P15_Zjuding/index.tsx#L1657)
-2485. 检索到的书籍数：
+2455. 检索到的书籍数：
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1659](../src/scenes/phone/P15_Zjuding/index.tsx#L1659)
-2486. 高级检索字段
+2456. 高级检索字段
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1662](../src/scenes/phone/P15_Zjuding/index.tsx#L1662)
-2487. 包含全部关键词
+2457. 包含全部关键词
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1663](../src/scenes/phone/P15_Zjuding/index.tsx#L1663)
-2488. 题名匹配
+2458. 题名匹配
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1663](../src/scenes/phone/P15_Zjuding/index.tsx#L1663)
-2489. 全部分类
+2459. 全部分类
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1664](../src/scenes/phone/P15_Zjuding/index.tsx#L1664)
-2490. 索书号分类
+2460. 索书号分类
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1664](../src/scenes/phone/P15_Zjuding/index.tsx#L1664)
-2491. 馆藏地点
+2461. 馆藏地点
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1665](../src/scenes/phone/P15_Zjuding/index.tsx#L1665)
-2492. 基础图书馆
+2462. 基础图书馆
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1665](../src/scenes/phone/P15_Zjuding/index.tsx#L1665)；[src/scenes/rpg/ZijingangCampusLayout.ts:100](../src/scenes/rpg/ZijingangCampusLayout.ts#L100)
-2493. 异常外借状态
+2463. 异常外借状态
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1672](../src/scenes/phone/P15_Zjuding/index.tsx#L1672)
-2494. 签到记录夹页
+2464. 签到记录夹页
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1673](../src/scenes/phone/P15_Zjuding/index.tsx#L1673)
-2495. 异常外借
+2465. 异常外借
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1673](../src/scenes/phone/P15_Zjuding/index.tsx#L1673)
-2496. 记录关键词：倒影
+2466. 记录关键词：倒影
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1680](../src/scenes/phone/P15_Zjuding/index.tsx#L1680)
-2497. 已取得：倒影
+2467. 已取得：倒影
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1680](../src/scenes/phone/P15_Zjuding/index.tsx#L1680)
-2498. 馆藏检索结果
+2468. 馆藏检索结果
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1692](../src/scenes/phone/P15_Zjuding/index.tsx#L1692)
-2499. 检索结果
+2469. 检索结果
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1694](../src/scenes/phone/P15_Zjuding/index.tsx#L1694)
-2500. 选择馆藏{{result.title}}
+2470. 选择馆藏{{result.title}}
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1700](../src/scenes/phone/P15_Zjuding/index.tsx#L1700)
-2501. {{result.title}}封面
+2471. {{result.title}}封面
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1701](../src/scenes/phone/P15_Zjuding/index.tsx#L1701)
-2502. 著者：
+2472. 著者：
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1704](../src/scenes/phone/P15_Zjuding/index.tsx#L1704)
-2503. 索书号：
+2473. 索书号：
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1705](../src/scenes/phone/P15_Zjuding/index.tsx#L1705)
-2504. 无检索结果
+2474. 无检索结果
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1716](../src/scenes/phone/P15_Zjuding/index.tsx#L1716)
-2505. 没有匹配馆藏
+2475. 没有匹配馆藏
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1717](../src/scenes/phone/P15_Zjuding/index.tsx#L1717)
-2506. 可尝试书名、作者或索书号中的连续文字。
+2476. 可尝试书名、作者或索书号中的连续文字。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1718](../src/scenes/phone/P15_Zjuding/index.tsx#L1718)
-2507. 新书推荐
+2477. 新书推荐
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1721](../src/scenes/phone/P15_Zjuding/index.tsx#L1721)；[src/scenes/phone/P15_Zjuding/index.tsx:1722](../src/scenes/phone/P15_Zjuding/index.tsx#L1722)
-2508. 输入题名后，相似书籍会同时列出。
+2478. 输入题名后，相似书籍会同时列出。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1723](../src/scenes/phone/P15_Zjuding/index.tsx#L1723)
-2509. 022座位恢复申请
+2479. 022座位恢复申请
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1733](../src/scenes/phone/P15_Zjuding/index.tsx#L1733)；[src/scenes/phone/P15_Zjuding/index.tsx:1735](../src/scenes/phone/P15_Zjuding/index.tsx#L1735)
-2510. 基础馆 · 一层书库
+2480. 基础馆 · 一层书库
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1742](../src/scenes/phone/P15_Zjuding/index.tsx#L1742)
-2511. CC98 公示排名：01
+2481. CC98 公示排名：01
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1743](../src/scenes/phone/P15_Zjuding/index.tsx#L1743)
-2512. 恢复材料进度 {{submitted.length}}/3
+2482. 恢复材料进度 {{submitted.length}}/3
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1747](../src/scenes/phone/P15_Zjuding/index.tsx#L1747)
-2513. 旧版规则 · 恢复条件
+2483. 旧版规则 · 恢复条件
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1751](../src/scenes/phone/P15_Zjuding/index.tsx#L1751)
-2514. CC98 公示已生效。三份材料分别确认占用物身份、座位编号与本人到馆记录。
+2484. CC98 公示已生效。三份材料分别确认占用物身份、座位编号与本人到馆记录。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1752](../src/scenes/phone/P15_Zjuding/index.tsx#L1752)
-2515. 恢复证明槽位
+2485. 恢复证明槽位
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1754](../src/scenes/phone/P15_Zjuding/index.tsx#L1754)
-2516. 待取得
+2486. 待取得
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1758](../src/scenes/phone/P15_Zjuding/index.tsx#L1758)
-2517. 可提交
+2487. 可提交
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1758](../src/scenes/phone/P15_Zjuding/index.tsx#L1758)
-2518. 已核验
+2488. 已核验
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1758](../src/scenes/phone/P15_Zjuding/index.tsx#L1758)
-2519. 来源：
+2489. 来源：
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1774](../src/scenes/phone/P15_Zjuding/index.tsx#L1774)
-2520. 材料已锁定到本次申请
+2490. 材料已锁定到本次申请
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1775](../src/scenes/phone/P15_Zjuding/index.tsx#L1775)
-2521. 道具栏已识别，可提交校验
+2491. 道具栏已识别，可提交校验
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1775](../src/scenes/phone/P15_Zjuding/index.tsx#L1775)
-2522. 提交
+2492. 提交
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1782](../src/scenes/phone/P15_Zjuding/index.tsx#L1782)
-2523. 座位释放PASS已签发
+2493. 座位释放PASS已签发
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1790](../src/scenes/phone/P15_Zjuding/index.tsx#L1790)
-2524. PASS 已签发
+2494. PASS 已签发
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1792](../src/scenes/phone/P15_Zjuding/index.tsx#L1792)；[src/scenes/phone/P15_Zjuding/index.tsx:1885](../src/scenes/phone/P15_Zjuding/index.tsx#L1885)
-2525. 凭证只对 RPG 图书馆内的 022 书包生效。
+2495. 凭证只对 RPG 图书馆内的 022 书包生效。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1793](../src/scenes/phone/P15_Zjuding/index.tsx#L1793)
-2526. 回图书馆处理书包
+2496. 回图书馆处理书包
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1794](../src/scenes/phone/P15_Zjuding/index.tsx#L1794)
-2527. 生成 022 座位释放 PASS
+2497. 生成 022 座位释放 PASS
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1798](../src/scenes/phone/P15_Zjuding/index.tsx#L1798)
-2528. 图书馆空间列表
+2498. 图书馆空间列表
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1806](../src/scenes/phone/P15_Zjuding/index.tsx#L1806)
-2529. 图书馆空间预约...
+2499. 图书馆空间预约...
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1808](../src/scenes/phone/P15_Zjuding/index.tsx#L1808)；[src/scenes/phone/P15_Zjuding/index.tsx:1894](../src/scenes/phone/P15_Zjuding/index.tsx#L1894)
-2530. 空间预约菜单
+2500. 空间预约菜单
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1810](../src/scenes/phone/P15_Zjuding/index.tsx#L1810)
-2531. 收起座位预约栏
+2501. 收起座位预约栏
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1814](../src/scenes/phone/P15_Zjuding/index.tsx#L1814)
-2532. 展开座位预约栏
+2502. 展开座位预约栏
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1814](../src/scenes/phone/P15_Zjuding/index.tsx#L1814)
-2533. 预
+2503. 预
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1816](../src/scenes/phone/P15_Zjuding/index.tsx#L1816)
-2534. 约
+2504. 约
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1816](../src/scenes/phone/P15_Zjuding/index.tsx#L1816)
-2535. 座
+2505. 座
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1816](../src/scenes/phone/P15_Zjuding/index.tsx#L1816)
-2536. 空间选择模式
+2506. 空间选择模式
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1820](../src/scenes/phone/P15_Zjuding/index.tsx#L1820)
-2537. 列表
+2507. 列表
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1821](../src/scenes/phone/P15_Zjuding/index.tsx#L1821)
-2538. 快速选择
+2508. 快速选择
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1822](../src/scenes/phone/P15_Zjuding/index.tsx#L1822)
-2539. 空间
+2509. 空间
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1825](../src/scenes/phone/P15_Zjuding/index.tsx#L1825)
-2540. 显示
+2510. 显示
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1825](../src/scenes/phone/P15_Zjuding/index.tsx#L1825)
-2541. 选择馆舍，当前{{selectedLibrary}}
+2511. 选择馆舍，当前{{selectedLibrary}}
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1826](../src/scenes/phone/P15_Zjuding/index.tsx#L1826)
-2542. 可预约空间列表
+2512. 可预约空间列表
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1831](../src/scenes/phone/P15_Zjuding/index.tsx#L1831)
-2543. {{room.label}}自习空间
+2513. {{room.label}}自习空间
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1835](../src/scenes/phone/P15_Zjuding/index.tsx#L1835)
-2544. 空闲
+2514. 空闲
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1840](../src/scenes/phone/P15_Zjuding/index.tsx#L1840)；[src/scenes/phone/P15_Zjuding/index.tsx:1852](../src/scenes/phone/P15_Zjuding/index.tsx#L1852)
-2545. 预约{{room.label}}
+2515. 预约{{room.label}}
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1841](../src/scenes/phone/P15_Zjuding/index.tsx#L1841)
-2546. 该馆暂未开放可预约空间
+2516. 该馆暂未开放可预约空间
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1845](../src/scenes/phone/P15_Zjuding/index.tsx#L1845)；[src/scenes/phone/P15_Zjuding/index.tsx:1855](../src/scenes/phone/P15_Zjuding/index.tsx#L1855)
-2547. 没有更多了
+2517. 没有更多了
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1845](../src/scenes/phone/P15_Zjuding/index.tsx#L1845)
-2548. 快速选择空间
+2518. 快速选择空间
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1848](../src/scenes/phone/P15_Zjuding/index.tsx#L1848)
-2549. 我的中心
+2519. 我的中心
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1861](../src/scenes/phone/P15_Zjuding/index.tsx#L1861)
-2550. 当前位于空间预约列表。
+2520. 当前位于空间预约列表。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1863](../src/scenes/phone/P15_Zjuding/index.tsx#L1863)
-2551. 座位已恢复
+2521. 座位已恢复
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1881](../src/scenes/phone/P15_Zjuding/index.tsx#L1881)
-2552. 清退已执行
+2522. 清退已执行
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1883](../src/scenes/phone/P15_Zjuding/index.tsx#L1883)
-2553. 恢复申请待提交
+2523. 恢复申请待提交
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1887](../src/scenes/phone/P15_Zjuding/index.tsx#L1887)
-2554. 公示审核中
+2524. 公示审核中
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1889](../src/scenes/phone/P15_Zjuding/index.tsx#L1889)
-2555. 占用异常
+2525. 占用异常
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1890](../src/scenes/phone/P15_Zjuding/index.tsx#L1890)
-2556. 图书馆座位选择
+2526. 图书馆座位选择
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1892](../src/scenes/phone/P15_Zjuding/index.tsx#L1892)
-2557. 选座菜单
+2527. 选座菜单
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1896](../src/scenes/phone/P15_Zjuding/index.tsx#L1896)
-2558. 查看平面图 ›
+2528. 查看平面图 ›
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1903](../src/scenes/phone/P15_Zjuding/index.tsx#L1903)
-2559. 已切换到下方平面图。
+2529. 已切换到下方平面图。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1903](../src/scenes/phone/P15_Zjuding/index.tsx#L1903)
-2560. {{selectedRoom}}：座位 {{seatCount}}，当前空闲 {{activeRoom?.available ?? 0}}。
+2530. {{selectedRoom}}：座位 {{seatCount}}，当前空闲 {{activeRoom?.available ?? 0}}。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1904](../src/scenes/phone/P15_Zjuding/index.tsx#L1904)
-2561. 查看房间详情 ›
+2531. 查看房间详情 ›
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1904](../src/scenes/phone/P15_Zjuding/index.tsx#L1904)
-2562. 当前空余 {{activeRoom?.available ?? 0}} 个座位。
+2532. 当前空余 {{activeRoom?.available ?? 0}} 个座位。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1907](../src/scenes/phone/P15_Zjuding/index.tsx#L1907)
-2563. 空余
+2533. 空余
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1907](../src/scenes/phone/P15_Zjuding/index.tsx#L1907)
-2564. 022调查状态
+2534. 022调查状态
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1911](../src/scenes/phone/P15_Zjuding/index.tsx#L1911)
-2565. 当前现场状态
+2535. 当前现场状态
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1914](../src/scenes/phone/P15_Zjuding/index.tsx#L1914)
-2566. 书包仍在现场，手机页面只负责查询与提交材料。
+2536. 书包仍在现场，手机页面只负责查询与提交材料。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1916](../src/scenes/phone/P15_Zjuding/index.tsx#L1916)
-2567. 现场已清空，座位等待本人确认。
+2537. 现场已清空，座位等待本人确认。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1916](../src/scenes/phone/P15_Zjuding/index.tsx#L1916)
-2568. 预约日期与时段
+2538. 预约日期与时段
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1921](../src/scenes/phone/P15_Zjuding/index.tsx#L1921)
-2569. 座位显示模式
+2539. 座位显示模式
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1934](../src/scenes/phone/P15_Zjuding/index.tsx#L1934)
-2570. 地图模式
+2540. 地图模式
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1935](../src/scenes/phone/P15_Zjuding/index.tsx#L1935)
-2571. 列表模式
+2541. 列表模式
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1936](../src/scenes/phone/P15_Zjuding/index.tsx#L1936)
-2572. 筛选：
+2542. 筛选：
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1940](../src/scenes/phone/P15_Zjuding/index.tsx#L1940)
-2573. 已选：
+2543. 已选：
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1940](../src/scenes/phone/P15_Zjuding/index.tsx#L1940)
-2574. 筛选
+2544. 筛选
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1941](../src/scenes/phone/P15_Zjuding/index.tsx#L1941)
-2575. 座位分区
+2545. 座位分区
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1947](../src/scenes/phone/P15_Zjuding/index.tsx#L1947)
-2576. 可选座位列表
+2546. 可选座位列表
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1967](../src/scenes/phone/P15_Zjuding/index.tsx#L1967)
-2577. 手机端保留调查记录；书包、小票与 PASS 操作均在图书馆现场完成。
+2547. 手机端保留调查记录；书包、小票与 PASS 操作均在图书馆现场完成。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1977](../src/scenes/phone/P15_Zjuding/index.tsx#L1977)
-2578. 返回
+2548. 返回
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1981](../src/scenes/phone/P15_Zjuding/index.tsx#L1981)
-2579. 立即预约
+2549. 立即预约
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1983](../src/scenes/phone/P15_Zjuding/index.tsx#L1983)
-2580. 预约成功
+2550. 预约成功
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1983](../src/scenes/phone/P15_Zjuding/index.tsx#L1983)
-2581. 浙大钉首页
+2551. 浙大钉首页
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1990](../src/scenes/phone/P15_Zjuding/index.tsx#L1990)
-2582. 打开个人菜单
+2552. 打开个人菜单
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1996](../src/scenes/phone/P15_Zjuding/index.tsx#L1996)
-2583. 个人菜单
+2553. 个人菜单
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2000](../src/scenes/phone/P15_Zjuding/index.tsx#L2000)
-2584. 浙江大学
+2554. 浙江大学
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2007](../src/scenes/phone/P15_Zjuding/index.tsx#L2007)
-2585. 打开浙大百事通搜索
+2555. 打开浙大百事通搜索
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2010](../src/scenes/phone/P15_Zjuding/index.tsx#L2010)
-2586. 百事通
+2556. 百事通
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2011](../src/scenes/phone/P15_Zjuding/index.tsx#L2011)；[src/scenes/phone/P15_Zjuding/index.tsx:2014](../src/scenes/phone/P15_Zjuding/index.tsx#L2014)
-2587. 系统红圈
+2557. 系统红圈
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2027](../src/scenes/phone/P15_Zjuding/index.tsx#L2027)
-2588. 求
+2558. 求
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2030](../src/scenes/phone/P15_Zjuding/index.tsx#L2030)；[src/scenes/phone/P15_Zjuding/index.tsx:2033](../src/scenes/phone/P15_Zjuding/index.tsx#L2033)
-2589. /求是学院（归口...
+2559. /求是学院（归口...
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2037](../src/scenes/phone/P15_Zjuding/index.tsx#L2037)
-2590. 身份码
+2560. 身份码
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2042](../src/scenes/phone/P15_Zjuding/index.tsx#L2042)；[src/scenes/phone/P15_Zjuding/index.tsx:2043](../src/scenes/phone/P15_Zjuding/index.tsx#L2043)
-2591. 校园钱包
+2561. 校园钱包
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2052](../src/scenes/phone/P15_Zjuding/index.tsx#L2052)；[src/scenes/phone/P15_Zjuding/index.tsx:2053](../src/scenes/phone/P15_Zjuding/index.tsx#L2053)
-2592. 搜索浙大钉应用与服务
+2562. 搜索浙大钉应用与服务
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2069](../src/scenes/phone/P15_Zjuding/index.tsx#L2069)
-2593. 搜索应用与服务
+2563. 搜索应用与服务
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2070](../src/scenes/phone/P15_Zjuding/index.tsx#L2070)
-2594. 浙大百事通
+2564. 浙大百事通
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2073](../src/scenes/phone/P15_Zjuding/index.tsx#L2073)；[src/scenes/phone/P15_Zjuding/index.tsx:2172](../src/scenes/phone/P15_Zjuding/index.tsx#L2172)
-2595. 浙大钉应用
+2565. 浙大钉应用
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2076](../src/scenes/phone/P15_Zjuding/index.tsx#L2076)
-2596. 系统对话，点击任意位置继续
+2566. 系统对话，点击任意位置继续
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2140](../src/scenes/phone/P15_Zjuding/index.tsx#L2140)
-2597. 搜索应用
+2567. 搜索应用
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2174](../src/scenes/phone/P15_Zjuding/index.tsx#L2174)
-2598. 输入应用名称
+2568. 输入应用名称
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2180](../src/scenes/phone/P15_Zjuding/index.tsx#L2180)
-2599. 没有匹配的应用
+2569. 没有匹配的应用
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2200](../src/scenes/phone/P15_Zjuding/index.tsx#L2200)
-2600. 选择馆舍
+2570. 选择馆舍
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2221](../src/scenes/phone/P15_Zjuding/index.tsx#L2221)
-2601. 农医馆
+2571. 农医馆
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2223](../src/scenes/phone/P15_Zjuding/index.tsx#L2223)
-2602. 紫金港西区馆
+2572. 紫金港西区馆
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2223](../src/scenes/phone/P15_Zjuding/index.tsx#L2223)
-2603. 已选择{{library}}。
+2573. 已选择{{library}}。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2230](../src/scenes/phone/P15_Zjuding/index.tsx#L2230)
-2604. 预约日期
+2574. 预约日期
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2240](../src/scenes/phone/P15_Zjuding/index.tsx#L2240)
-2605. 07月11日 · 明天
+2575. 07月11日 · 明天
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2242](../src/scenes/phone/P15_Zjuding/index.tsx#L2242)
-2606. 07月12日 · 后天
+2576. 07月12日 · 后天
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2242](../src/scenes/phone/P15_Zjuding/index.tsx#L2242)
-2607. 预约时段
+2577. 预约时段
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2251](../src/scenes/phone/P15_Zjuding/index.tsx#L2251)
-2608. 筛选座位
+2578. 筛选座位
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2262](../src/scenes/phone/P15_Zjuding/index.tsx#L2262)
-2609. 安静区
+2579. 安静区
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2264](../src/scenes/phone/P15_Zjuding/index.tsx#L2264)
-2610. 靠窗
+2580. 靠窗
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2264](../src/scenes/phone/P15_Zjuding/index.tsx#L2264)
-2611. 有电源
+2581. 有电源
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2264](../src/scenes/phone/P15_Zjuding/index.tsx#L2264)
-2612. 当前座位筛选已切换为：{{filter}}。
+2582. 当前座位筛选已切换为：{{filter}}。
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2265](../src/scenes/phone/P15_Zjuding/index.tsx#L2265)
-2613. 确认预约
+2583. 确认预约
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2273](../src/scenes/phone/P15_Zjuding/index.tsx#L2273)；[src/scenes/phone/P15_Zjuding/index.tsx:2284](../src/scenes/phone/P15_Zjuding/index.tsx#L2284)
-2614. 号座位
+2584. 号座位
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2275](../src/scenes/phone/P15_Zjuding/index.tsx#L2275)
-2615. 再想一下
+2585. 再想一下
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2281](../src/scenes/phone/P15_Zjuding/index.tsx#L2281)
-2616. 学
+2586. 学
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:56](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L56)
-2617. 课程
+2587. 课程
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:59](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L59)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:69](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L69)
-2618. 签到
-   来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:59](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L59)
-2619. 学习
+2588. 学习
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:59](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L59)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:483](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L483)
-2620. 智云课堂
+2589. 智云课堂
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:65](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L65)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:71](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L71)
-2621. 云
+2590. 云
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:66](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L66)
-2622. 课件
+2591. 课件
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:69](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L69)
-2623. 课堂
+2592. 课堂
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:69](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L69)
-2624. 日程
+2593. 日程
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:69](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L69)
-2625. 校园地图
+2594. 校园地图
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1449](../src/scenes/phone/P15_Zjuding/index.tsx#L1449)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:75](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L75)
-2626. 导航
+2595. 导航
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:79](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L79)
-2627. 地图
+2596. 地图
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:79](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L79)
-2628. 网络缴费
+2597. 网络缴费
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:85](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L85)
-2629. 连接
+2598. 连接
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:89](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L89)
-2630. 校园网
+2599. 校园网
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:89](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L89)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:371](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L371)
-2631. 账户
+2600. 账户
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:89](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L89)
-2632. 后勤服务
+2601. 后勤服务
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:95](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L95)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:73](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L73)
-2633. 勤
+2602. 勤
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:96](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L96)
-2634. 报修
+2603. 报修
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:99](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L99)
-2635. 服务
+2604. 服务
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:99](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L99)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:485](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L485)
-2636. 网络
+2605. 网络
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:99](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L99)
-2637. 寻
+2606. 寻
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:106](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L106)
-2638. 档案
+2607. 档案
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:109](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L109)
-2639. 失物
+2608. 失物
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:109](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L109)
-2640. 书包
+2609. 书包
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:109](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L109)
-2641. 证明
+2610. 证明
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:109](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L109)
-2642. 访客预约
+2611. 访客预约
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:115](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L115)
-2643. 访
+2612. 访
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:116](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L116)
-2644. 草稿
+2613. 草稿
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:119](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L119)
-2645. 访客
+2614. 访客
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:119](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L119)
-2646. 入校
+2615. 入校
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:119](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L119)
-2647. 预约
+2616. 预约
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1841](../src/scenes/phone/P15_Zjuding/index.tsx#L1841)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:119](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L119)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:129](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L129)
-2648. 图
+2617. 图
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:126](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L126)
-2649. 馆藏
+2618. 馆藏
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:129](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L129)
-2650. 图书
+2619. 图书
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:129](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L129)
-2651. 慧学外语
+2620. 慧学外语
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:135](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L135)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:76](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L76)
-2652. 词汇
+2621. 词汇
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:139](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L139)
-2653. 卡片
+2622. 卡片
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:139](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L139)
-2654. 外语
+2623. 外语
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:139](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L139)
-2655. 英语
+2624. 英语
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:139](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L139)
-2656. 开发反馈
+2625. 开发反馈
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:145](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L145)
-2657. 信
+2626. 信
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:146](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L146)
-2658. 反馈
+2627. 反馈
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:149](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L149)
-2659. 开发者
+2628. 开发者
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:149](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L149)
-2660. 意见
+2629. 意见
    来源：[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:149](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L149)
-2661. 新
+2630. 新
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:137](../src/scenes/phone/P15_Zjuding/index.tsx#L137)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:152](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L152)
-2662. 全部
+2631. 全部
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:404](../src/scenes/phone/P15_Zjuding/index.tsx#L404)；[src/scenes/phone/P15_Zjuding/index.tsx:410](../src/scenes/phone/P15_Zjuding/index.tsx#L410)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:156](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L156)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:160](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L160)
-2663. 工作台
+2632. 工作台
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:145](../src/scenes/phone/P15_Zjuding/index.tsx#L145)；[src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts:160](../src/scenes/phone/P15_Zjuding/ZjudingAppRegistry.ts#L160)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:87](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L87)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:492](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L492)
-2664. 校园参观
+2633. 校园参观
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:62](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L62)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:431](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L431)
-2665. 功能建议
+2634. 功能建议
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:66](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L66)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:474](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L474)
-2666. 网络账户
+2635. 网络账户
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:72](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L72)
-2667. 访客预约预览
+2636. 访客预约预览
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:75](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L75)
-2668. 开发者反馈
+2637. 开发者反馈
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:77](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L77)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:473](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L473)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:576](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L576)
-2669. 全部应用
+2638. 全部应用
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:78](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L78)
-2670. 通讯录
+2639. 通讯录
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:144](../src/scenes/phone/P15_Zjuding/index.tsx#L144)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:79](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L79)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:86](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L86)
-2671. 首页
+2640. 首页
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:143](../src/scenes/phone/P15_Zjuding/index.tsx#L143)；[src/scenes/phone/P15_Zjuding/index.tsx:151](../src/scenes/phone/P15_Zjuding/index.tsx#L151)；[src/scenes/phone/P15_Zjuding/index.tsx:1861](../src/scenes/phone/P15_Zjuding/index.tsx#L1861)；[src/scenes/phone/P15_Zjuding/index.tsx:1862](../src/scenes/phone/P15_Zjuding/index.tsx#L1862)；[src/scenes/phone/P15_Zjuding/index.tsx:1863](../src/scenes/phone/P15_Zjuding/index.tsx#L1863)；[src/scenes/phone/P15_Zjuding/index.tsx:2101](../src/scenes/phone/P15_Zjuding/index.tsx#L2101)；[src/scenes/phone/P15_Zjuding/index.tsx:2103](../src/scenes/phone/P15_Zjuding/index.tsx#L2103)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:85](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L85)
-2672. 北教学区 A-204
+2641. 北教学区 A-204
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:93](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L93)
-2673. 化学工程基础
+2642. 化学工程基础
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:93](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L93)
-2674. 课程资料已缓存在本机。
+2643. 课程资料已缓存在本机。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:93](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L93)
-2675. 周一 08:00
+2644. 周一 08:00
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:93](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L93)
-2676. 数据方法与 AI4S
+2645. 数据方法与 AI4S
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:94](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L94)
-2677. 线上课堂
+2646. 线上课堂
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:94](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L94)
-2678. 周三 13:15
+2647. 周三 13:15
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:94](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L94)
-2679. 最近一次课件仅供预览。
+2648. 最近一次课件仅供预览。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:94](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L94)
-2680. 安全提醒已读取，不产生签到记录。
+2649. 安全提醒已读取，不产生签到记录。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:95](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L95)
-2681. 东教学区 3-106
+2650. 东教学区 3-106
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:95](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L95)
-2682. 实验室安全
+2651. 实验室安全
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:95](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L95)
-2683. 周五 10:00
+2652. 周五 10:00
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:95](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L95)
-2684. 导向；路径识别
+2653. 导向；路径识别
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:99](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L99)
-2685. 倒影；反射
+2654. 倒影；反射
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:100](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L100)
-2686. 维修；保养
+2655. 维修；保养
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:101](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L101)
-2687. 书包物品识别报告
+2656. 书包物品识别报告
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:105](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L105)
-2688. 照片·本机识别
+2657. 照片·本机识别
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:105](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L105)
-2689. 图书馆前台
+2658. 图书馆前台
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:106](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L106)
-2690. 本人到馆证明
+2659. 本人到馆证明
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:108](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L108)
-2691. 浙大体艺·到馆记录
+2660. 浙大体艺·到馆记录
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:108](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L108)
-2692. 游戏反馈
+2661. 游戏反馈
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:113](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L113)
-2693. ## 反馈内容 / {{content}} / ## 游戏 / 7:55
+2662. ## 反馈内容 / {{content}} / ## 游戏 / 7:55
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:116](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L116)
-2694. ## 反馈内容 / 请描述问题、复现步骤或建议。 / ## 游戏 / 7:55
+2663. ## 反馈内容 / 请描述问题、复现步骤或建议。 / ## 游戏 / 7:55
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:117](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L117)
-2695. 校园网已连接
+2664. 校园网已连接
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:209](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L209)
-2696. 当前使用移动数据
+2665. 当前使用移动数据
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:211](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L211)
-2697. 当前处于离线状态
+2666. 当前处于离线状态
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:212](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L212)
-2698. 校园网状态
+2667. 校园网状态
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:224](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L224)
-2699. 校园身份已读取
+2668. 校园身份已读取
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:231](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L231)
-2700. {{studentName}}·{{studentId}}
+2669. {{studentName}}·{{studentId}}
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:232](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L232)
-2701. 查看校园卡
+2670. 查看校园卡
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:233](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L233)
-2702. 图书馆座位预约
+2671. 图书馆座位预约
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:240](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L240)
-2703. 已预约 {{state.ui.librarySelectedSeat ?? "022"}} 号座位
+2672. 已预约 {{state.ui.librarySelectedSeat ?? "022"}} 号座位
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:241](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L241)
-2704. 查看图书馆
+2673. 查看图书馆
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:242](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L242)
-2705. 图书馆服务已开放
+2674. 图书馆服务已开放
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:248](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L248)
-2706. 当前可用功能以图书馆首页实际状态为准。
+2675. 当前可用功能以图书馆首页实际状态为准。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:249](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L249)
-2707. 打开图书馆
+2676. 打开图书馆
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:250](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L250)
-2708. 请先填写意见内容。
+2677. 请先填写意见内容。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:311](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L311)
-2709. 反馈草稿已保存。
+2678. 反馈草稿已保存。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:316](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L316)
-2710. 反馈内容已保留在当前页面。
+2679. 反馈内容已保留在当前页面。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:317](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L317)
-2711. 反馈内容已清空。
+2680. 反馈内容已清空。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:323](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L323)
-2712. 本机课程预览
+2681. 本机课程预览
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:342](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L342)
-2713. 门课程
+2682. 门课程
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:343](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L343)
-2714. 查看课程日程和缓存说明，不产生签到或成绩记录。
+2683. 查看课程日程和缓存说明，不产生签到或成绩记录。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:344](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L344)
-2715. 课程列表
+2684. 课程列表
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:346](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L346)
-2716. 查看
+2685. 查看
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1601](../src/scenes/phone/P15_Zjuding/index.tsx#L1601)；[src/scenes/phone/P15_Zjuding/index.tsx:1782](../src/scenes/phone/P15_Zjuding/index.tsx#L1782)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:353](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L353)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:391](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L391)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:394](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L394)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:411](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L411)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:574](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L574)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:575](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L575)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:576](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L576)
-2717. 当前连接
+2686. 当前连接
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:366](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L366)
-2718. 页面只读取本机网络状态，不扣费、不充值、不生成账单。
+2687. 页面只读取本机网络状态，不扣费、不充值、不生成账单。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:368](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L368)
-2719. 可用
+2688. 可用
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:371](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L371)
-2720. 浙大钉与 CC98 需要校园网。
+2689. 浙大钉与 CC98 需要校园网。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:371](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L371)
-2721. 备用
+2690. 备用
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:372](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L372)
-2722. 浙大体艺的网络规则与浙大钉不同。
+2691. 浙大体艺的网络规则与浙大钉不同。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:372](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L372)
-2723. 查看连接说明
+2692. 查看连接说明
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:375](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L375)
-2724. 收起连接说明
+2693. 收起连接说明
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:375](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L375)
-2725. 如需切换网络，请返回手机控制中心。本页不会自动修改网络模式。
+2694. 如需切换网络，请返回手机控制中心。本页不会自动修改网络模式。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:378](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L378)
-2726. 校园服务聚合
+2695. 校园服务聚合
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:386](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L386)
-2727. 后勤状态台
+2696. 后勤状态台
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:387](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L387)
-2728. 所有条目只读取已开放的本地功能，未提交任何报修工单。
+2697. 所有条目只读取已开放的本地功能，未提交任何报修工单。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:388](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L388)
-2729. 网络服务
+2698. 网络服务
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:391](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L391)
-2730. 当前阶段未开放
+2699. 当前阶段未开放
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:392](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L392)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:393](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L393)
-2731. 进入
+2700. 进入
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:392](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L392)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:393](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L393)
-2732. 图书馆服务
+2701. 图书馆服务
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:1533](../src/scenes/phone/P15_Zjuding/index.tsx#L1533)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:392](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L392)
-2733. 未开放
+2702. 未开放
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:392](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L392)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:393](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L393)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:574](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L574)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:575](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L575)
-2734. 已开放
+2703. 已开放
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:392](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L392)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:393](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L393)
-2735. 校园导航
+2704. 校园导航
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:393](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L393)
-2736. 部门黄页可用
+2705. 部门黄页可用
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:394](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L394)
-2737. 服务联络
+2706. 服务联络
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:394](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L394)
-2738. 公共联络表可查看
+2707. 公共联络表可查看
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:394](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L394)
-2739. 仅显示已公开记录
+2708. 仅显示已公开记录
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:402](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L402)
-2740. 份本机档案
+2709. 份本机档案
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:403](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L403)
-2741. 查看档案不会生成证明、改变物品或推进图书馆进度。
-   来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:404](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L404)
-2742. 已公开失物档案
+2710. 已公开失物档案
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:407](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L407)
-2743. 本机已取得
+2711. 本机已取得
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:410](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L410)
-2744. 后续只会在相关记录真正取得后显示。
+2712. 暂无已公开档案
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:416](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L416)
-2745. 暂无已公开档案
-   来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:416](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L416)
-2746. 本机预览工具
+2713. 本机预览工具
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:424](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L424)
-2747. 访客信息草稿
+2714. 访客信息草稿
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:425](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L425)
-2748. 草稿仅保存在当前浏览器会话，不代表正式入校申请。
+2715. 草稿仅保存在当前浏览器会话，不代表正式入校申请。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:426](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L426)
-2749. 访客预览草稿
+2716. 访客预览草稿
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:428](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L428)
-2750. 访客姓名
+2717. 访客姓名
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:429](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L429)
-2751. 用于本机预览
+2718. 用于本机预览
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:429](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L429)
-2752. 到访日期
+2719. 到访日期
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:430](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L430)
-2753. 例如：08月24日
+2720. 例如：08月24日
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:430](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L430)
-2754. 到访用途
+2721. 到访用途
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:431](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L431)
-2755. 亲友来访
+2722. 亲友来访
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:431](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L431)
-2756. 学术交流
+2723. 学术交流
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:431](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L431)
-2757. 保存预览草稿
+2724. 保存预览草稿
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:432](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L432)
-2758. 清空
+2725. 清空
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:432](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L432)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:476](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L476)
-2759. 未提交·本机预览
+2726. 未提交·本机预览
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:434](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L434)
-2760. 本地微卡片
+2727. 本地微卡片
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:442](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L442)
-2761. 校园场景外语
+2728. 校园场景外语
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:443](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L443)
-2762. 点击卡片查看中文释义与场景例句。
+2729. 点击卡片查看中文释义与场景例句。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:444](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L444)
-2763. 外语卡片
+2730. 外语卡片
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:446](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L446)
-2764. 点击查看释义
+2731. 点击查看释义
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:451](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L451)
-2765. 7:55 开发者通道
+2732. 7:55 开发者通道
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:465](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L465)
-2766. 向开发团队反馈
+2733. 向开发团队反馈
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:466](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L466)
-2767. 整理问题或建议后，可直接前往 GitHub 提交 Issue。
+2734. 整理问题或建议后，可直接前往 GitHub 提交 Issue。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:467](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L467)
-2768. 7:55 开发者链接
+2735. 7:55 开发者链接
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:469](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L469)
-2769. GitHub 仓库
+2736. GitHub 仓库
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:470](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L470)
-2770. 提交 Issue
+2737. 提交 Issue
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:471](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L471)
-2771. 交互问题
+2738. 交互问题
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:474](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L474)
-2772. 内容校对
+2739. 内容校对
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:474](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L474)
-2773. 反馈内容
+2740. 反馈内容
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:475](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L475)
-2774. 描述问题、复现步骤或建议
+2741. 描述问题、复现步骤或建议
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:475](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L475)
-2775. 保存草稿
+2742. 保存草稿
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:476](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L476)
-2776. 校园
+2743. 校园
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:484](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L484)
-2777. 统一应用目录
+2744. 统一应用目录
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:491](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L491)
-2778. 应用状态与首页、搜索完全一致。未开放项保留原名称与静态图标。
+2745. 应用状态与首页、搜索完全一致。未开放项保留原名称与静态图标。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:493](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L493)
-2779. 校园公开联络表
+2746. 校园公开联络表
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:522](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L522)
-2780. 个服务联络点
+2747. 个服务联络点
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:523](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L523)
-2781. 号码来自当前游戏内容，页面不会直接拨号。
-   来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:524](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L524)
-2782. 部门联系方式
+2748. 部门联系方式
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:526](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L526)
-2783. 部门黄页会在剧情恢复校园身份后开放。
+2749. 部门黄页会在剧情恢复校园身份后开放。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:531](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L531)
-2784. 打开部门黄页
+2750. 打开部门黄页
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:531](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L531)
-2785. 当前已公开状态
+2751. 当前已公开状态
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:538](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L538)
-2786. 条消息
+2752. 条消息
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:539](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L539)
-2787. 只聚合已发生的网络、身份、预约和记录状态。
+2753. 只聚合已发生的网络、身份、预约和记录状态。
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:540](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L540)
-2788. 消息列表
+2754. 消息列表
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:542](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L542)
-2789. 已读
+2755. 已读
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:559](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L559)
-2790. 取得电子校园卡后显示
+2756. 取得电子校园卡后显示
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:570](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L570)
-2791. 身份未读取
+2757. 身份未读取
    来源：[src/scenes/phone/P15_Zjuding/index.tsx:2007](../src/scenes/phone/P15_Zjuding/index.tsx#L2007)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:570](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L570)
-2792. 校园身份
+2758. 校园身份
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:570](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L570)
-2793. 当前网络
+2759. 当前网络
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:573](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L573)
-2794. 详情
+2760. 详情
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:573](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L573)
-2795. 未读取
+2761. 未读取
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:574](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L574)
-2796. 已读取
+2762. 已读取
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:574](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L574)
-2797. 当前无预约
+2763. 当前无预约
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:575](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L575)
-2798. 图书馆预约
+2764. 图书馆预约
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:575](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L575)
-2799. 座位 {{state.ui.librarySelectedSeat ?? "022"}}
+2765. 座位 {{state.ui.librarySelectedSeat ?? "022"}}
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:575](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L575)
-2800. GitHub Issues
+2766. GitHub Issues
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:576](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L576)
-2801. 返回，离开{{PANEL\_TITLES\[panel\]}}
+2767. 返回，离开{{PANEL\_TITLES\[panel\]}}
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:587](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L587)
-2802. 浙大钉导航
+2768. 浙大钉导航
    来源：[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:593](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L593)
-2803. 基础图书馆入口 · {{RPG\_CONTROL\_HINTS.libraryGate}}
+2769. 基础图书馆入口 · {{RPG\_CONTROL\_HINTS.libraryGate}}
    来源：[src/scenes/rpg/BootScene.ts:171](../src/scenes/rpg/BootScene.ts#L171)
-2804. 东区大食堂入口 · {{formatRpgInteractionHint("进入食堂")}}
+2770. 东区大食堂入口 · {{formatRpgInteractionHint("进入食堂")}}
    来源：[src/scenes/rpg/BootScene.ts:176](../src/scenes/rpg/BootScene.ts#L176)
-2805. 剧场入口 · {{formatRpgInteractionHint("进入剧场")}}
+2771. 剧场入口 · {{formatRpgInteractionHint("进入剧场")}}
    来源：[src/scenes/rpg/BootScene.ts:181](../src/scenes/rpg/BootScene.ts#L181)
-2806. 共享单车
-   来源：[src/scenes/rpg/BootScene.ts:573](../src/scenes/rpg/BootScene.ts#L573)；[src/scenes/rpg/BootScene.ts:582](../src/scenes/rpg/BootScene.ts#L582)；[src/scenes/rpg/BootScene.ts:590](../src/scenes/rpg/BootScene.ts#L590)；[src/scenes/rpg/BootScene.ts:601](../src/scenes/rpg/BootScene.ts#L601)；[src/scenes/rpg/RpgGameHost.tsx:1653](../src/scenes/rpg/RpgGameHost.tsx#L1653)；[src/scenes/rpg/RpgItemUseGuidance.ts:206](../src/scenes/rpg/RpgItemUseGuidance.ts#L206)；[src/scenes/rpg/RpgItemUseGuidance.ts:207](../src/scenes/rpg/RpgItemUseGuidance.ts#L207)；[src/scenes/rpg/RpgItemUseGuidance.ts:208](../src/scenes/rpg/RpgItemUseGuidance.ts#L208)；[src/scenes/rpg/RpgItemUseGuidance.ts:209](../src/scenes/rpg/RpgItemUseGuidance.ts#L209)
-2807. 共享单车交互尚未开放，请先完成食堂内部流程。
+2772. 共享单车
+   来源：[src/scenes/rpg/BootScene.ts:573](../src/scenes/rpg/BootScene.ts#L573)；[src/scenes/rpg/BootScene.ts:582](../src/scenes/rpg/BootScene.ts#L582)；[src/scenes/rpg/BootScene.ts:590](../src/scenes/rpg/BootScene.ts#L590)；[src/scenes/rpg/BootScene.ts:601](../src/scenes/rpg/BootScene.ts#L601)；[src/scenes/rpg/RpgGameHost.tsx:1651](../src/scenes/rpg/RpgGameHost.tsx#L1651)；[src/scenes/rpg/RpgItemUseGuidance.ts:206](../src/scenes/rpg/RpgItemUseGuidance.ts#L206)；[src/scenes/rpg/RpgItemUseGuidance.ts:207](../src/scenes/rpg/RpgItemUseGuidance.ts#L207)；[src/scenes/rpg/RpgItemUseGuidance.ts:208](../src/scenes/rpg/RpgItemUseGuidance.ts#L208)；[src/scenes/rpg/RpgItemUseGuidance.ts:209](../src/scenes/rpg/RpgItemUseGuidance.ts#L209)
+2773. 共享单车交互尚未开放，请先完成食堂内部流程。
    来源：[src/scenes/rpg/BootScene.ts:574](../src/scenes/rpg/BootScene.ts#L574)
-2808. wrong\_item
-   来源：[src/scenes/rpg/BootScene.ts:581](../src/scenes/rpg/BootScene.ts#L581)；[src/scenes/rpg/RpgGameHost.tsx:1589](../src/scenes/rpg/RpgGameHost.tsx#L1589)
-2809. 共享单车当前只接收纸巾或 2 元现金。
+2774. wrong\_item
+   来源：[src/scenes/rpg/BootScene.ts:581](../src/scenes/rpg/BootScene.ts#L581)；[src/scenes/rpg/RpgGameHost.tsx:1587](../src/scenes/rpg/RpgGameHost.tsx#L1587)
+2775. 共享单车当前只接收纸巾或 2 元现金。
    来源：[src/scenes/rpg/BootScene.ts:583](../src/scenes/rpg/BootScene.ts#L583)
-2810. missed\_target
+2776. missed\_target
    来源：[src/scenes/rpg/BootScene.ts:590](../src/scenes/rpg/BootScene.ts#L590)；[src/scenes/rpg/BootScene.ts:600](../src/scenes/rpg/BootScene.ts#L600)；[src/scenes/rpg/RpgInventoryDock.tsx:301](../src/scenes/rpg/RpgInventoryDock.tsx#L301)
-2811. 松手点没有进入共享单车车身的高亮范围。
+2777. 松手点没有进入共享单车车身的高亮范围。
    来源：[src/scenes/rpg/BootScene.ts:602](../src/scenes/rpg/BootScene.ts#L602)
-2812. success
+2778. success
    来源：[src/scenes/rpg/BootScene.ts:626](../src/scenes/rpg/BootScene.ts#L626)
-2813. 启真湖拒绝被钓
+2779. 启真湖拒绝被钓
    来源：[src/scenes/rpg/LakeFishingRitualVisual.ts:87](../src/scenes/rpg/LakeFishingRitualVisual.ts#L87)
-2814. 这一竿 · {{options.targetLabel}}
+2780. 这一竿 · {{options.targetLabel}}
    来源：[src/scenes/rpg/LakeFishingRitualVisual.ts:88](../src/scenes/rpg/LakeFishingRitualVisual.ts#L88)
-2815. 01 / 瞄准抛竿
+2781. 01 / 瞄准抛竿
    来源：[src/scenes/rpg/LakeFishingRitualVisual.ts:89](../src/scenes/rpg/LakeFishingRitualVisual.ts#L89)
-2816. 按住
+2782. 按住
    来源：[src/scenes/rpg/LakeFishingRitualVisual.ts:90](../src/scenes/rpg/LakeFishingRitualVisual.ts#L90)
-2817. 松开
+2783. 松开
    来源：[src/scenes/rpg/LakeFishingRitualVisual.ts:90](../src/scenes/rpg/LakeFishingRitualVisual.ts#L90)
-2818. 左右对准鱼影，按住蓄力后松手
+2784. 左右对准鱼影，按住蓄力后松手
    来源：[src/scenes/rpg/LakeFishingRitualVisual.ts:94](../src/scenes/rpg/LakeFishingRitualVisual.ts#L94)
-2819. 线的张力
+2785. 线的张力
    来源：[src/scenes/rpg/LakeFishingRitualVisual.ts:96](../src/scenes/rpg/LakeFishingRitualVisual.ts#L96)
-2820. A / D 控线 · Space 收线 / 放线
+2786. A / D 控线 · Space 收线 / 放线
    来源：[src/scenes/rpg/LakeFishingRitualVisual.ts:97](../src/scenes/rpg/LakeFishingRitualVisual.ts#L97)
-2821. 它也在钓你。
+2787. 它也在钓你。
    来源：[src/scenes/rpg/LakeFishingRitualVisual.ts:98](../src/scenes/rpg/LakeFishingRitualVisual.ts#L98)；[src/scenes/rpg/LakeFishingRitualVisual.ts:189](../src/scenes/rpg/LakeFishingRitualVisual.ts#L189)
-2822. 收竿离开 · Esc
+2788. 收竿离开 · Esc
    来源：[src/scenes/rpg/LakeFishingRitualVisual.ts:99](../src/scenes/rpg/LakeFishingRitualVisual.ts#L99)
-2823. 嘎！松手！
+2789. 嘎！松手！
    来源：[src/scenes/rpg/LakeFishingRitualVisual.ts:189](../src/scenes/rpg/LakeFishingRitualVisual.ts#L189)
-2824. 现在，起鱼！
+2790. 现在，起鱼！
    来源：[src/scenes/rpg/LakeFishingRitualVisual.ts:189](../src/scenes/rpg/LakeFishingRitualVisual.ts#L189)
-2825. 听四拍，准备开始
+2791. 听四拍，准备开始
    来源：[src/scenes/rpg/LakeFishingRitualVisual.ts:232](../src/scenes/rpg/LakeFishingRitualVisual.ts#L232)
-2826. campus-minimap
+2792. campus-minimap
    来源：[src/scenes/rpg/RpgCameraController.ts:27](../src/scenes/rpg/RpgCameraController.ts#L27)
-2827. WASD 移动
+2793. WASD 移动
    来源：[src/scenes/rpg/RpgControlHints.ts:2](../src/scenes/rpg/RpgControlHints.ts#L2)
-2828. 空格键
+2794. 空格键
    来源：[src/scenes/rpg/RpgControlHints.ts:3](../src/scenes/rpg/RpgControlHints.ts#L3)
-2829. WASD 移动 · 空格键进入
+2795. WASD 移动 · 空格键进入
    来源：[src/scenes/rpg/RpgControlHints.ts:4](../src/scenes/rpg/RpgControlHints.ts#L4)
-2830. 空格键继续
+2796. 空格键继续
    来源：[src/scenes/rpg/RpgControlHints.ts:5](../src/scenes/rpg/RpgControlHints.ts#L5)
-2831. 拖动道具 {{label}}
+2797. 拖动道具 {{label}}
    来源：[src/scenes/rpg/RpgControlHints.ts:14](../src/scenes/rpg/RpgControlHints.ts#L14)
-2832. 启真湖的帖子已经归档,不能再补拍了。
+2798. 启真湖的帖子已经归档,不能再补拍了。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:250](../src/scenes/rpg/RpgGameHost.tsx#L250)
+2799. 这里构不成画面,换个位置再试。
    来源：[src/scenes/rpg/RpgGameHost.tsx:251](../src/scenes/rpg/RpgGameHost.tsx#L251)
-2833. 这里构不成画面,换个位置再试。
+2800. 这张照片已经不在记录里了,重新拍一张。
    来源：[src/scenes/rpg/RpgGameHost.tsx:252](../src/scenes/rpg/RpgGameHost.tsx#L252)
-2834. 这张照片已经不在记录里了,重新拍一张。
+2801. 草稿和照片对不上,请重新拍摄。
    来源：[src/scenes/rpg/RpgGameHost.tsx:253](../src/scenes/rpg/RpgGameHost.tsx#L253)
-2835. 草稿和照片对不上,请重新拍摄。
+2802. 先把该选的都选好,再存草稿。
    来源：[src/scenes/rpg/RpgGameHost.tsx:254](../src/scenes/rpg/RpgGameHost.tsx#L254)
-2836. 先把该选的都选好,再存草稿。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:255](../src/scenes/rpg/RpgGameHost.tsx#L255)
-2837. {{targetLabel}}已完成当前操作。
+2803. {{targetLabel}}已完成当前操作。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:433](../src/scenes/rpg/RpgGameHost.tsx#L433)
+2804. 切到浅色操作后再使用道具。
    来源：[src/scenes/rpg/RpgGameHost.tsx:434](../src/scenes/rpg/RpgGameHost.tsx#L434)
-2838. 切到浅色操作后再使用道具。
+2805. {{targetLabel}}当前需要其他道具。
    来源：[src/scenes/rpg/RpgGameHost.tsx:435](../src/scenes/rpg/RpgGameHost.tsx#L435)
-2839. {{targetLabel}}当前需要其他道具。
+2806. 当前目标还没有观察记录；深色观察可补充坐标。
    来源：[src/scenes/rpg/RpgGameHost.tsx:436](../src/scenes/rpg/RpgGameHost.tsx#L436)
-2840. 当前目标还没有观察记录；深色观察可补充坐标。
+2807. 普通鱼钩无法固定纸条。需要完成湖区道具链。
    来源：[src/scenes/rpg/RpgGameHost.tsx:437](../src/scenes/rpg/RpgGameHost.tsx#L437)
-2841. 普通鱼钩无法固定纸条。需要完成湖区道具链。
+2808. 这个目标已经完成，请查看当前任务。
    来源：[src/scenes/rpg/RpgGameHost.tsx:438](../src/scenes/rpg/RpgGameHost.tsx#L438)
-2842. 这个目标已经完成，请查看当前任务。
+2809. 当前剧情条件尚未满足。
    来源：[src/scenes/rpg/RpgGameHost.tsx:439](../src/scenes/rpg/RpgGameHost.tsx#L439)
-2843. 当前剧情条件尚未满足。
+2810. 该交互点当前未开放。
    来源：[src/scenes/rpg/RpgGameHost.tsx:440](../src/scenes/rpg/RpgGameHost.tsx#L440)
-2844. 该交互点当前未开放。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:441](../src/scenes/rpg/RpgGameHost.tsx#L441)
-2845. 当前操作已记录。
+2811. 当前操作已记录。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:458](../src/scenes/rpg/RpgGameHost.tsx#L458)
+2812. 当前操作已经完成。
    来源：[src/scenes/rpg/RpgGameHost.tsx:459](../src/scenes/rpg/RpgGameHost.tsx#L459)
-2846. 当前操作已经完成。
+2813. 切换到目标要求的现实模式后重试。
    来源：[src/scenes/rpg/RpgGameHost.tsx:460](../src/scenes/rpg/RpgGameHost.tsx#L460)
-2847. 切换到目标要求的现实模式后重试。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:461](../src/scenes/rpg/RpgGameHost.tsx#L461)
-2848. 当前流程还不能安装手柄。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1527](../src/scenes/rpg/RpgGameHost.tsx#L1527)
-2849. 角色
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1533](../src/scenes/rpg/RpgGameHost.tsx#L1533)；[src/scenes/rpg/RpgItemUseGuidance.ts:130](../src/scenes/rpg/RpgItemUseGuidance.ts#L130)；[src/scenes/rpg/RpgItemUseGuidance.ts:131](../src/scenes/rpg/RpgItemUseGuidance.ts#L131)；[src/scenes/rpg/RpgItemUseGuidance.ts:132](../src/scenes/rpg/RpgItemUseGuidance.ts#L132)；[src/scenes/rpg/RpgItemUseGuidance.ts:133](../src/scenes/rpg/RpgItemUseGuidance.ts#L133)
-2850. unavailable
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1555](../src/scenes/rpg/RpgGameHost.tsx#L1555)；[src/scenes/rpg/RpgGameHost.tsx:1563](../src/scenes/rpg/RpgGameHost.tsx#L1563)；[src/scenes/rpg/RpgGameHost.tsx:1621](../src/scenes/rpg/RpgGameHost.tsx#L1621)
-2851. wrong\_target
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1580](../src/scenes/rpg/RpgGameHost.tsx#L1580)；[src/scenes/rpg/RpgGameHost.tsx:1589](../src/scenes/rpg/RpgGameHost.tsx#L1589)；[src/scenes/rpg/RpgInteractionContract.ts:1353](../src/scenes/rpg/RpgInteractionContract.ts#L1353)
-2852. cleaned
+2814. 当前流程还不能安装手柄。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1525](../src/scenes/rpg/RpgGameHost.tsx#L1525)
+2815. 角色
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1531](../src/scenes/rpg/RpgGameHost.tsx#L1531)；[src/scenes/rpg/RpgItemUseGuidance.ts:130](../src/scenes/rpg/RpgItemUseGuidance.ts#L130)；[src/scenes/rpg/RpgItemUseGuidance.ts:131](../src/scenes/rpg/RpgItemUseGuidance.ts#L131)；[src/scenes/rpg/RpgItemUseGuidance.ts:132](../src/scenes/rpg/RpgItemUseGuidance.ts#L132)；[src/scenes/rpg/RpgItemUseGuidance.ts:133](../src/scenes/rpg/RpgItemUseGuidance.ts#L133)
+2816. unavailable
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1553](../src/scenes/rpg/RpgGameHost.tsx#L1553)；[src/scenes/rpg/RpgGameHost.tsx:1561](../src/scenes/rpg/RpgGameHost.tsx#L1561)；[src/scenes/rpg/RpgGameHost.tsx:1619](../src/scenes/rpg/RpgGameHost.tsx#L1619)
+2817. wrong\_target
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1578](../src/scenes/rpg/RpgGameHost.tsx#L1578)；[src/scenes/rpg/RpgGameHost.tsx:1587](../src/scenes/rpg/RpgGameHost.tsx#L1587)；[src/scenes/rpg/RpgInteractionContract.ts:1353](../src/scenes/rpg/RpgInteractionContract.ts#L1353)
+2818. cleaned
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1642](../src/scenes/rpg/RpgGameHost.tsx#L1642)
+2819. 共享单车车锁
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1643](../src/scenes/rpg/RpgGameHost.tsx#L1643)；[src/scenes/rpg/RpgItemUseGuidance.ts:202](../src/scenes/rpg/RpgItemUseGuidance.ts#L202)；[src/scenes/rpg/RpgItemUseGuidance.ts:203](../src/scenes/rpg/RpgItemUseGuidance.ts#L203)
+2820. 清洁车锁需要浅色操作。
    来源：[src/scenes/rpg/RpgGameHost.tsx:1644](../src/scenes/rpg/RpgGameHost.tsx#L1644)
-2853. 共享单车车锁
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1645](../src/scenes/rpg/RpgGameHost.tsx#L1645)；[src/scenes/rpg/RpgItemUseGuidance.ts:202](../src/scenes/rpg/RpgItemUseGuidance.ts#L202)；[src/scenes/rpg/RpgItemUseGuidance.ts:203](../src/scenes/rpg/RpgItemUseGuidance.ts#L203)
-2854. 清洁车锁需要浅色操作。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1646](../src/scenes/rpg/RpgGameHost.tsx#L1646)
-2855. rule
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1646](../src/scenes/rpg/RpgGameHost.tsx#L1646)；[src/scenes/rpg/RpgGameHost.tsx:1654](../src/scenes/rpg/RpgGameHost.tsx#L1654)
-2856. paid
+2821. rule
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1644](../src/scenes/rpg/RpgGameHost.tsx#L1644)；[src/scenes/rpg/RpgGameHost.tsx:1652](../src/scenes/rpg/RpgGameHost.tsx#L1652)
+2822. paid
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1650](../src/scenes/rpg/RpgGameHost.tsx#L1650)
+2823. 付款需要浅色操作，且车锁表面已经清洁。
    来源：[src/scenes/rpg/RpgGameHost.tsx:1652](../src/scenes/rpg/RpgGameHost.tsx#L1652)
-2857. 付款需要浅色操作，且车锁表面已经清洁。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1654](../src/scenes/rpg/RpgGameHost.tsx#L1654)
-2858. 入口海报
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1665](../src/scenes/rpg/RpgGameHost.tsx#L1665)；[src/scenes/rpg/RpgItemUseGuidance.ts:217](../src/scenes/rpg/RpgItemUseGuidance.ts#L217)；[src/scenes/rpg/RpgItemUseGuidance.ts:218](../src/scenes/rpg/RpgItemUseGuidance.ts#L218)
-2859. 检票闸机右侧读票器
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1683](../src/scenes/rpg/RpgGameHost.tsx#L1683)；[src/scenes/rpg/RpgItemUseGuidance.ts:224](../src/scenes/rpg/RpgItemUseGuidance.ts#L224)；[src/scenes/rpg/RpgItemUseGuidance.ts:227](../src/scenes/rpg/RpgItemUseGuidance.ts#L227)
-2860. 验票完成，闸机已经放行；临时观演票会保留。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1685](../src/scenes/rpg/RpgGameHost.tsx#L1685)
-2861. 当前剧情条件不允许验票，请先完成入口取票流程。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1686](../src/scenes/rpg/RpgGameHost.tsx#L1686)
-2862. 道具箱旁票据扫描器
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1708](../src/scenes/rpg/RpgGameHost.tsx#L1708)；[src/scenes/rpg/RpgItemUseGuidance.ts:234](../src/scenes/rpg/RpgItemUseGuidance.ts#L234)；[src/scenes/rpg/RpgItemUseGuidance.ts:237](../src/scenes/rpg/RpgItemUseGuidance.ts#L237)
-2863. 票据扫描完成，道具箱已经解锁；临时观演票已完成用途并从道具栏移除。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1710](../src/scenes/rpg/RpgGameHost.tsx#L1710)
-2864. 扫描票据需要浅色操作、临时观演票和当前道具布置阶段。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1711](../src/scenes/rpg/RpgGameHost.tsx#L1711)
-2865. 后台通风口
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1718](../src/scenes/rpg/RpgGameHost.tsx#L1718)；[src/scenes/rpg/RpgItemUseGuidance.ts:249](../src/scenes/rpg/RpgItemUseGuidance.ts#L249)；[src/scenes/rpg/RpgItemUseGuidance.ts:252](../src/scenes/rpg/RpgItemUseGuidance.ts#L252)；[src/scenes/rpg/RpgItemUseGuidance.ts:254](../src/scenes/rpg/RpgItemUseGuidance.ts#L254)
-2866. 灯光控制台
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1725](../src/scenes/rpg/RpgGameHost.tsx#L1725)；[src/scenes/rpg/RpgItemUseGuidance.ts:258](../src/scenes/rpg/RpgItemUseGuidance.ts#L258)；[src/scenes/rpg/RpgItemUseGuidance.ts:261](../src/scenes/rpg/RpgItemUseGuidance.ts#L261)；[src/scenes/rpg/RpgItemUseGuidance.ts:263](../src/scenes/rpg/RpgItemUseGuidance.ts#L263)
-2867. 你被救起并送回寝室。先找到吹风机。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1769](../src/scenes/rpg/RpgGameHost.tsx#L1769)
-2868. 浮排边钓鱼竿
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1789](../src/scenes/rpg/RpgGameHost.tsx#L1789)
-2869. fishingRod
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1789](../src/scenes/rpg/RpgGameHost.tsx#L1789)；[src/scenes/rpg/RpgGameHost.tsx:1810](../src/scenes/rpg/RpgGameHost.tsx#L1810)；[src/scenes/rpg/RpgGameHost.tsx:1822](../src/scenes/rpg/RpgGameHost.tsx#L1822)
-2870. 钓鱼竿装饵框
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1792](../src/scenes/rpg/RpgGameHost.tsx#L1792)；[src/scenes/rpg/RpgItemUseGuidance.ts:300](../src/scenes/rpg/RpgItemUseGuidance.ts#L300)
-2871. decoyPaper
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1792](../src/scenes/rpg/RpgGameHost.tsx#L1792)
-2872. 已观察抛竿点
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1798](../src/scenes/rpg/RpgGameHost.tsx#L1798)
-2873. 湖区道具点
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1803](../src/scenes/rpg/RpgGameHost.tsx#L1803)
-2874. 工具装配框
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1812](../src/scenes/rpg/RpgGameHost.tsx#L1812)；[src/scenes/rpg/RpgItemUseGuidance.ts:293](../src/scenes/rpg/RpgItemUseGuidance.ts#L293)；[src/scenes/rpg/RpgItemUseGuidance.ts:319](../src/scenes/rpg/RpgItemUseGuidance.ts#L319)；[src/scenes/rpg/RpgItemUseGuidance.ts:322](../src/scenes/rpg/RpgItemUseGuidance.ts#L322)；[src/scenes/rpg/RpgItemUseGuidance.ts:324](../src/scenes/rpg/RpgItemUseGuidance.ts#L324)；[src/scenes/rpg/RpgItemUseGuidance.ts:325](../src/scenes/rpg/RpgItemUseGuidance.ts#L325)；[src/scenes/rpg/RpgItemUseGuidance.ts:363](../src/scenes/rpg/RpgItemUseGuidance.ts#L363)；[src/scenes/rpg/RpgItemUseGuidance.ts:366](../src/scenes/rpg/RpgItemUseGuidance.ts#L366)；[src/scenes/rpg/RpgItemUseGuidance.ts:367](../src/scenes/rpg/RpgItemUseGuidance.ts#L367)；[src/scenes/rpg/RpgItemUseGuidance.ts:368](../src/scenes/rpg/RpgItemUseGuidance.ts#L368)
-2875. 物品栏四件材料
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1812](../src/scenes/rpg/RpgGameHost.tsx#L1812)
-2876. inventory
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1812](../src/scenes/rpg/RpgGameHost.tsx#L1812)
-2877. 黑天鹅投喂区
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1819](../src/scenes/rpg/RpgGameHost.tsx#L1819)；[src/scenes/rpg/RpgItemUseGuidance.ts:355](../src/scenes/rpg/RpgItemUseGuidance.ts#L355)；[src/scenes/rpg/RpgItemUseGuidance.ts:358](../src/scenes/rpg/RpgItemUseGuidance.ts#L358)
-2878. 黑天鹅围栏
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1822](../src/scenes/rpg/RpgGameHost.tsx#L1822)
-2879. 纸条本体水纹
-   来源：[src/scenes/rpg/RpgGameHost.tsx:1826](../src/scenes/rpg/RpgGameHost.tsx#L1826)；[src/scenes/rpg/RpgItemUseGuidance.ts:374](../src/scenes/rpg/RpgItemUseGuidance.ts#L374)；[src/scenes/rpg/RpgItemUseGuidance.ts:376](../src/scenes/rpg/RpgItemUseGuidance.ts#L376)；[src/scenes/rpg/RpgItemUseGuidance.ts:377](../src/scenes/rpg/RpgItemUseGuidance.ts#L377)
-2880. 电子校园卡：{{actOneContent.studentName}} · {{actOneContent.studentId}}
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2479](../src/scenes/rpg/RpgGameHost.tsx#L2479)
-2881. 电子校园卡：身份信息尚未读取
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2480](../src/scenes/rpg/RpgGameHost.tsx#L2480)
-2882. 手柄已连接：WASD 或方向键移动，空格键交互。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2489](../src/scenes/rpg/RpgGameHost.tsx#L2489)
-2883. 手柄有电，角色还没有姓名。去部门黄页读取校园卡。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2490](../src/scenes/rpg/RpgGameHost.tsx#L2490)
-2884. 手柄已连接，浙大体艺还没有开始课外锻炼。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2491](../src/scenes/rpg/RpgGameHost.tsx#L2491)
-2885. 道具栏里没有手柄。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2492](../src/scenes/rpg/RpgGameHost.tsx#L2492)
-2886. 当前任务还没有开放手柄控制。
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2493](../src/scenes/rpg/RpgGameHost.tsx#L2493)
-2887. 地图资源加载进度
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2602](../src/scenes/rpg/RpgGameHost.tsx#L2602)
-2888. 重试加载
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2614](../src/scenes/rpg/RpgGameHost.tsx#L2614)
-2889. campusCard
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2792](../src/scenes/rpg/RpgGameHost.tsx#L2792)
-2890. 使用游戏手柄
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2800](../src/scenes/rpg/RpgGameHost.tsx#L2800)
-2891. 单击连接手柄，双击查看完整详情
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2801](../src/scenes/rpg/RpgGameHost.tsx#L2801)
-2892. gamepad
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2805](../src/scenes/rpg/RpgGameHost.tsx#L2805)
-2893. 手柄
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2806](../src/scenes/rpg/RpgGameHost.tsx#L2806)
-2894. ◀ 控线
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2863](../src/scenes/rpg/RpgGameHost.tsx#L2863)
-2895. 按住收线
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2863](../src/scenes/rpg/RpgGameHost.tsx#L2863)
-2896. 控线 ▶
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2863](../src/scenes/rpg/RpgGameHost.tsx#L2863)
-2897. 松手放线 / 起鱼
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2864](../src/scenes/rpg/RpgGameHost.tsx#L2864)
-2898. 皮划艇划桨手势和交互按钮
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2868](../src/scenes/rpg/RpgGameHost.tsx#L2868)
-2899. 左桨，上划前进，下划后退，轻触默认前进
+2824. 入口海报
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1663](../src/scenes/rpg/RpgGameHost.tsx#L1663)；[src/scenes/rpg/RpgItemUseGuidance.ts:217](../src/scenes/rpg/RpgItemUseGuidance.ts#L217)；[src/scenes/rpg/RpgItemUseGuidance.ts:218](../src/scenes/rpg/RpgItemUseGuidance.ts#L218)
+2825. 检票闸机右侧读票器
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1676](../src/scenes/rpg/RpgGameHost.tsx#L1676)；[src/scenes/rpg/RpgItemUseGuidance.ts:224](../src/scenes/rpg/RpgItemUseGuidance.ts#L224)；[src/scenes/rpg/RpgItemUseGuidance.ts:227](../src/scenes/rpg/RpgItemUseGuidance.ts#L227)
+2826. 验票完成，闸机已经放行；临时观演票会保留。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1678](../src/scenes/rpg/RpgGameHost.tsx#L1678)
+2827. 当前剧情条件不允许验票，请先完成入口取票流程。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1679](../src/scenes/rpg/RpgGameHost.tsx#L1679)
+2828. 道具箱旁票据扫描器
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1701](../src/scenes/rpg/RpgGameHost.tsx#L1701)；[src/scenes/rpg/RpgItemUseGuidance.ts:234](../src/scenes/rpg/RpgItemUseGuidance.ts#L234)；[src/scenes/rpg/RpgItemUseGuidance.ts:237](../src/scenes/rpg/RpgItemUseGuidance.ts#L237)
+2829. 票据扫描完成，道具箱已经解锁；临时观演票已完成用途并从道具栏移除。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1703](../src/scenes/rpg/RpgGameHost.tsx#L1703)
+2830. 扫描票据需要浅色操作、临时观演票和当前道具布置阶段。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1704](../src/scenes/rpg/RpgGameHost.tsx#L1704)
+2831. 后台通风口
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1711](../src/scenes/rpg/RpgGameHost.tsx#L1711)；[src/scenes/rpg/RpgItemUseGuidance.ts:249](../src/scenes/rpg/RpgItemUseGuidance.ts#L249)；[src/scenes/rpg/RpgItemUseGuidance.ts:252](../src/scenes/rpg/RpgItemUseGuidance.ts#L252)；[src/scenes/rpg/RpgItemUseGuidance.ts:254](../src/scenes/rpg/RpgItemUseGuidance.ts#L254)
+2832. 灯光控制台
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1718](../src/scenes/rpg/RpgGameHost.tsx#L1718)；[src/scenes/rpg/RpgItemUseGuidance.ts:258](../src/scenes/rpg/RpgItemUseGuidance.ts#L258)；[src/scenes/rpg/RpgItemUseGuidance.ts:261](../src/scenes/rpg/RpgItemUseGuidance.ts#L261)；[src/scenes/rpg/RpgItemUseGuidance.ts:263](../src/scenes/rpg/RpgItemUseGuidance.ts#L263)
+2833. 你被救起并送回寝室。先找到吹风机。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1762](../src/scenes/rpg/RpgGameHost.tsx#L1762)
+2834. 浮排边钓鱼竿
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1782](../src/scenes/rpg/RpgGameHost.tsx#L1782)
+2835. fishingRod
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1782](../src/scenes/rpg/RpgGameHost.tsx#L1782)；[src/scenes/rpg/RpgGameHost.tsx:1803](../src/scenes/rpg/RpgGameHost.tsx#L1803)；[src/scenes/rpg/RpgGameHost.tsx:1815](../src/scenes/rpg/RpgGameHost.tsx#L1815)
+2836. 钓鱼竿装饵框
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1785](../src/scenes/rpg/RpgGameHost.tsx#L1785)；[src/scenes/rpg/RpgItemUseGuidance.ts:300](../src/scenes/rpg/RpgItemUseGuidance.ts#L300)
+2837. decoyPaper
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1785](../src/scenes/rpg/RpgGameHost.tsx#L1785)
+2838. 已观察抛竿点
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1791](../src/scenes/rpg/RpgGameHost.tsx#L1791)
+2839. 湖区道具点
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1796](../src/scenes/rpg/RpgGameHost.tsx#L1796)
+2840. 工具装配框
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1805](../src/scenes/rpg/RpgGameHost.tsx#L1805)；[src/scenes/rpg/RpgItemUseGuidance.ts:293](../src/scenes/rpg/RpgItemUseGuidance.ts#L293)；[src/scenes/rpg/RpgItemUseGuidance.ts:319](../src/scenes/rpg/RpgItemUseGuidance.ts#L319)；[src/scenes/rpg/RpgItemUseGuidance.ts:322](../src/scenes/rpg/RpgItemUseGuidance.ts#L322)；[src/scenes/rpg/RpgItemUseGuidance.ts:324](../src/scenes/rpg/RpgItemUseGuidance.ts#L324)；[src/scenes/rpg/RpgItemUseGuidance.ts:325](../src/scenes/rpg/RpgItemUseGuidance.ts#L325)；[src/scenes/rpg/RpgItemUseGuidance.ts:363](../src/scenes/rpg/RpgItemUseGuidance.ts#L363)；[src/scenes/rpg/RpgItemUseGuidance.ts:366](../src/scenes/rpg/RpgItemUseGuidance.ts#L366)；[src/scenes/rpg/RpgItemUseGuidance.ts:367](../src/scenes/rpg/RpgItemUseGuidance.ts#L367)；[src/scenes/rpg/RpgItemUseGuidance.ts:368](../src/scenes/rpg/RpgItemUseGuidance.ts#L368)
+2841. 物品栏四件材料
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1805](../src/scenes/rpg/RpgGameHost.tsx#L1805)
+2842. inventory
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1805](../src/scenes/rpg/RpgGameHost.tsx#L1805)
+2843. 黑天鹅投喂区
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1812](../src/scenes/rpg/RpgGameHost.tsx#L1812)；[src/scenes/rpg/RpgItemUseGuidance.ts:355](../src/scenes/rpg/RpgItemUseGuidance.ts#L355)；[src/scenes/rpg/RpgItemUseGuidance.ts:358](../src/scenes/rpg/RpgItemUseGuidance.ts#L358)
+2844. 黑天鹅围栏
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1815](../src/scenes/rpg/RpgGameHost.tsx#L1815)
+2845. 纸条本体水纹
+   来源：[src/scenes/rpg/RpgGameHost.tsx:1819](../src/scenes/rpg/RpgGameHost.tsx#L1819)；[src/scenes/rpg/RpgItemUseGuidance.ts:374](../src/scenes/rpg/RpgItemUseGuidance.ts#L374)；[src/scenes/rpg/RpgItemUseGuidance.ts:376](../src/scenes/rpg/RpgItemUseGuidance.ts#L376)；[src/scenes/rpg/RpgItemUseGuidance.ts:377](../src/scenes/rpg/RpgItemUseGuidance.ts#L377)
+2846. 电子校园卡：{{actOneContent.studentName}} · {{actOneContent.studentId}}
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2472](../src/scenes/rpg/RpgGameHost.tsx#L2472)
+2847. 电子校园卡：身份信息尚未读取
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2473](../src/scenes/rpg/RpgGameHost.tsx#L2473)
+2848. 手柄已连接：WASD 或方向键移动，空格键交互。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2482](../src/scenes/rpg/RpgGameHost.tsx#L2482)
+2849. 手柄有电，角色还没有姓名。去部门黄页读取校园卡。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2483](../src/scenes/rpg/RpgGameHost.tsx#L2483)
+2850. 手柄已连接，浙大体艺还没有开始课外锻炼。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2484](../src/scenes/rpg/RpgGameHost.tsx#L2484)
+2851. 道具栏里没有手柄。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2485](../src/scenes/rpg/RpgGameHost.tsx#L2485)
+2852. 当前任务还没有开放手柄控制。
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2486](../src/scenes/rpg/RpgGameHost.tsx#L2486)
+2853. 地图资源加载进度
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2595](../src/scenes/rpg/RpgGameHost.tsx#L2595)
+2854. 重试加载
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2607](../src/scenes/rpg/RpgGameHost.tsx#L2607)
+2855. campusCard
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2785](../src/scenes/rpg/RpgGameHost.tsx#L2785)
+2856. 使用游戏手柄
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2793](../src/scenes/rpg/RpgGameHost.tsx#L2793)
+2857. 单击连接手柄，双击查看完整详情
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2794](../src/scenes/rpg/RpgGameHost.tsx#L2794)
+2858. gamepad
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2798](../src/scenes/rpg/RpgGameHost.tsx#L2798)
+2859. 手柄
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2799](../src/scenes/rpg/RpgGameHost.tsx#L2799)
+2860. ◀ 控线
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2856](../src/scenes/rpg/RpgGameHost.tsx#L2856)
+2861. 按住收线
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2856](../src/scenes/rpg/RpgGameHost.tsx#L2856)
+2862. 控线 ▶
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2856](../src/scenes/rpg/RpgGameHost.tsx#L2856)
+2863. 松手放线 / 起鱼
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2857](../src/scenes/rpg/RpgGameHost.tsx#L2857)
+2864. 皮划艇划桨手势和交互按钮
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2861](../src/scenes/rpg/RpgGameHost.tsx#L2861)
+2865. 左桨，上划前进，下划后退，轻触默认前进
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2865](../src/scenes/rpg/RpgGameHost.tsx#L2865)
+2866. willowBranchPaddle
    来源：[src/scenes/rpg/RpgGameHost.tsx:2872](../src/scenes/rpg/RpgGameHost.tsx#L2872)
-2900. willowBranchPaddle
+2867. 左桨
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2873](../src/scenes/rpg/RpgGameHost.tsx#L2873)
+2868. ↑ 前进
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2874](../src/scenes/rpg/RpgGameHost.tsx#L2874)；[src/scenes/rpg/RpgGameHost.tsx:2888](../src/scenes/rpg/RpgGameHost.tsx#L2888)
+2869. ↑前进 · ↓后退
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2874](../src/scenes/rpg/RpgGameHost.tsx#L2874)；[src/scenes/rpg/RpgGameHost.tsx:2888](../src/scenes/rpg/RpgGameHost.tsx#L2888)
+2870. ↓ 后退
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2874](../src/scenes/rpg/RpgGameHost.tsx#L2874)；[src/scenes/rpg/RpgGameHost.tsx:2888](../src/scenes/rpg/RpgGameHost.tsx#L2888)
+2871. 右桨，上划前进，下划后退，轻触默认前进
    来源：[src/scenes/rpg/RpgGameHost.tsx:2879](../src/scenes/rpg/RpgGameHost.tsx#L2879)
-2901. 左桨
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2880](../src/scenes/rpg/RpgGameHost.tsx#L2880)
-2902. ↑ 前进
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2881](../src/scenes/rpg/RpgGameHost.tsx#L2881)；[src/scenes/rpg/RpgGameHost.tsx:2895](../src/scenes/rpg/RpgGameHost.tsx#L2895)
-2903. ↑前进 · ↓后退
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2881](../src/scenes/rpg/RpgGameHost.tsx#L2881)；[src/scenes/rpg/RpgGameHost.tsx:2895](../src/scenes/rpg/RpgGameHost.tsx#L2895)
-2904. ↓ 后退
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2881](../src/scenes/rpg/RpgGameHost.tsx#L2881)；[src/scenes/rpg/RpgGameHost.tsx:2895](../src/scenes/rpg/RpgGameHost.tsx#L2895)
-2905. 右桨，上划前进，下划后退，轻触默认前进
+2872. warningSignPaddle
    来源：[src/scenes/rpg/RpgGameHost.tsx:2886](../src/scenes/rpg/RpgGameHost.tsx#L2886)
-2906. warningSignPaddle
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2893](../src/scenes/rpg/RpgGameHost.tsx#L2893)
-2907. 右桨
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2894](../src/scenes/rpg/RpgGameHost.tsx#L2894)
-2908. 与当前湖区目标交互
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2897](../src/scenes/rpg/RpgGameHost.tsx#L2897)
-2909. 交互（键盘为空格键）
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2913](../src/scenes/rpg/RpgGameHost.tsx#L2913)
-2910. 请将设备横过来继续 RPG
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2922](../src/scenes/rpg/RpgGameHost.tsx#L2922)
-2911. 点击闸机小屏，核对入馆与到达时间
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2974](../src/scenes/rpg/RpgGameHost.tsx#L2974)
-2912. 前往一层书库寻找 022
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2974](../src/scenes/rpg/RpgGameHost.tsx#L2974)
-2913. 调查纸条提到的公开记录
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2975](../src/scenes/rpg/RpgGameHost.tsx#L2975)
-2914. 检查书包旁边的占座纸条
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2975](../src/scenes/rpg/RpgGameHost.tsx#L2975)
-2915. 用占座纸条查找公开记录
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2977](../src/scenes/rpg/RpgGameHost.tsx#L2977)
-2916. 并行收集四项公示材料（{{evidenceReadyCount}}/4）
+2873. 右桨
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2887](../src/scenes/rpg/RpgGameHost.tsx#L2887)
+2874. 与当前湖区目标交互
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2890](../src/scenes/rpg/RpgGameHost.tsx#L2890)
+2875. 交互（键盘为空格键）
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2906](../src/scenes/rpg/RpgGameHost.tsx#L2906)
+2876. 请将设备横过来继续 RPG
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2915](../src/scenes/rpg/RpgGameHost.tsx#L2915)
+2877. 点击闸机小屏，核对入馆与到达时间
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2967](../src/scenes/rpg/RpgGameHost.tsx#L2967)
+2878. 前往一层书库寻找 022
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2967](../src/scenes/rpg/RpgGameHost.tsx#L2967)
+2879. 调查纸条提到的公开记录
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2968](../src/scenes/rpg/RpgGameHost.tsx#L2968)
+2880. 检查书包旁边的占座纸条
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2968](../src/scenes/rpg/RpgGameHost.tsx#L2968)
+2881. 用占座纸条查找公开记录
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2970](../src/scenes/rpg/RpgGameHost.tsx#L2970)
+2882. 并行收集四项公示材料（{{evidenceReadyCount}}/4）
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2978](../src/scenes/rpg/RpgGameHost.tsx#L2978)
+2883. 把已取得材料上传到 CC98
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2979](../src/scenes/rpg/RpgGameHost.tsx#L2979)
+2884. 确认系统说明，开始筛选有效回复
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2981](../src/scenes/rpg/RpgGameHost.tsx#L2981)
+2885. 让证据公示进入 CC98 十大
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2982](../src/scenes/rpg/RpgGameHost.tsx#L2982)
+2886. 完成图书馆座位恢复申请
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2983](../src/scenes/rpg/RpgGameHost.tsx#L2983)
+2887. 对 022 书包使用离座清退 PASS
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2984](../src/scenes/rpg/RpgGameHost.tsx#L2984)
+2888. 坐到已经恢复的 022
    来源：[src/scenes/rpg/RpgGameHost.tsx:2985](../src/scenes/rpg/RpgGameHost.tsx#L2985)
-2917. 把已取得材料上传到 CC98
+2889. 与 022 继续对话
    来源：[src/scenes/rpg/RpgGameHost.tsx:2986](../src/scenes/rpg/RpgGameHost.tsx#L2986)
-2918. 确认系统说明，开始筛选有效回复
+2890. 追上逃跑的记录纸条
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2987](../src/scenes/rpg/RpgGameHost.tsx#L2987)
+2891. 前往基础图书馆，寻找系统的朋友
    来源：[src/scenes/rpg/RpgGameHost.tsx:2988](../src/scenes/rpg/RpgGameHost.tsx#L2988)
-2919. 让证据公示进入 CC98 十大
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2989](../src/scenes/rpg/RpgGameHost.tsx#L2989)
-2920. 完成图书馆座位恢复申请
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2990](../src/scenes/rpg/RpgGameHost.tsx#L2990)
-2921. 对 022 书包使用离座清退 PASS
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2991](../src/scenes/rpg/RpgGameHost.tsx#L2991)
-2922. 坐到已经恢复的 022
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2992](../src/scenes/rpg/RpgGameHost.tsx#L2992)
-2923. 与 022 继续对话
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2993](../src/scenes/rpg/RpgGameHost.tsx#L2993)
-2924. 追上逃跑的记录纸条
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2994](../src/scenes/rpg/RpgGameHost.tsx#L2994)
-2925. 前往基础图书馆，寻找系统的朋友
-   来源：[src/scenes/rpg/RpgGameHost.tsx:2995](../src/scenes/rpg/RpgGameHost.tsx#L2995)
-2926. 说明
-   来源：[src/scenes/rpg/RpgGameHost.tsx:3004](../src/scenes/rpg/RpgGameHost.tsx#L3004)
-2927. 调查
-   来源：[src/scenes/rpg/RpgGameHost.tsx:3018](../src/scenes/rpg/RpgGameHost.tsx#L3018)
-2928. 深色模式只读取线索和异常，不执行实体操作。
+2892. 说明
+   来源：[src/scenes/rpg/RpgGameHost.tsx:2997](../src/scenes/rpg/RpgGameHost.tsx#L2997)
+2893. 调查
+   来源：[src/scenes/rpg/RpgGameHost.tsx:3011](../src/scenes/rpg/RpgGameHost.tsx#L3011)
+2894. 深色模式只读取线索和异常，不执行实体操作。
    来源：[src/scenes/rpg/RpgInteractionContract.ts:44](../src/scenes/rpg/RpgInteractionContract.ts#L44)
-2929. 浅色操作
+2895. 浅色操作
    来源：[src/scenes/rpg/RpgInteractionContract.ts:47](../src/scenes/rpg/RpgInteractionContract.ts#L47)
-2930. 浅色模式执行移动、拖放、清洁、付款和设备操作。
+2896. 浅色模式执行移动、拖放、清洁、付款和设备操作。
    来源：[src/scenes/rpg/RpgInteractionContract.ts:48](../src/scenes/rpg/RpgInteractionContract.ts#L48)
-2931. 公告栏前的签到记录纸条
+2897. 公告栏前的签到记录纸条
    来源：[src/scenes/rpg/RpgInteractionContract.ts:520](../src/scenes/rpg/RpgInteractionContract.ts#L520)
-2932. 一楼旧钟
+2898. 一楼旧钟
    来源：[src/scenes/rpg/RpgInteractionContract.ts:538](../src/scenes/rpg/RpgInteractionContract.ts#L538)
-2933. 与一楼前台值班助理交谈
+2899. 与一楼前台值班助理交谈
    来源：[src/scenes/rpg/RpgInteractionContract.ts:628](../src/scenes/rpg/RpgInteractionContract.ts#L628)
-2934. 与二楼电梯口值班安全员交谈
+2900. 与二楼电梯口值班安全员交谈
    来源：[src/scenes/rpg/RpgInteractionContract.ts:643](../src/scenes/rpg/RpgInteractionContract.ts#L643)
-2935. 与三楼参照教室教师交谈
+2901. 与三楼参照教室教师交谈
    来源：[src/scenes/rpg/RpgInteractionContract.ts:653](../src/scenes/rpg/RpgInteractionContract.ts#L653)
-2936. 查看苏步青生平
+2902. 查看苏步青生平
    来源：[src/scenes/rpg/RpgInteractionContract.ts:663](../src/scenes/rpg/RpgInteractionContract.ts#L663)
-2937. 查看竺可桢生平
+2903. 查看竺可桢生平
    来源：[src/scenes/rpg/RpgInteractionContract.ts:673](../src/scenes/rpg/RpgInteractionContract.ts#L673)
-2938. 查看路甬祥生平
+2904. 查看路甬祥生平
    来源：[src/scenes/rpg/RpgInteractionContract.ts:683](../src/scenes/rpg/RpgInteractionContract.ts#L683)
-2939. 查看陈建功生平
+2905. 查看陈建功生平
    来源：[src/scenes/rpg/RpgInteractionContract.ts:693](../src/scenes/rpg/RpgInteractionContract.ts#L693)
-2940. 查看谈家桢生平
+2906. 查看谈家桢生平
    来源：[src/scenes/rpg/RpgInteractionContract.ts:703](../src/scenes/rpg/RpgInteractionContract.ts#L703)
-2941. 查看程开甲生平
+2907. 查看程开甲生平
    来源：[src/scenes/rpg/RpgInteractionContract.ts:713](../src/scenes/rpg/RpgInteractionContract.ts#L713)
-2942. 观察 104 黑板擦痕
+2908. 观察 104 黑板擦痕
    来源：[src/scenes/rpg/RpgInteractionContract.ts:723](../src/scenes/rpg/RpgInteractionContract.ts#L723)
-2943. 检查 105 讲台回放
+2909. 检查 105 讲台回放
    来源：[src/scenes/rpg/RpgInteractionContract.ts:739](../src/scenes/rpg/RpgInteractionContract.ts#L739)
-2944. 三楼晨间教室布置参照
+2910. 三楼晨间教室布置参照
    来源：[src/scenes/rpg/RpgInteractionContract.ts:755](../src/scenes/rpg/RpgInteractionContract.ts#L755)
-2945. 204 教室残影组
+2911. 204 教室残影组
    来源：[src/scenes/rpg/RpgInteractionContract.ts:768](../src/scenes/rpg/RpgInteractionContract.ts#L768)
-2946. mismatched\_nonce
+2912. mismatched\_nonce
    来源：[src/scenes/rpg/RpgInteractionContract.ts:1347](../src/scenes/rpg/RpgInteractionContract.ts#L1347)
-2947. wrong\_scene
+2913. wrong\_scene
    来源：[src/scenes/rpg/RpgInteractionContract.ts:1350](../src/scenes/rpg/RpgInteractionContract.ts#L1350)
-2948. wrong\_bounds
+2914. wrong\_bounds
    来源：[src/scenes/rpg/RpgInteractionContract.ts:1356](../src/scenes/rpg/RpgInteractionContract.ts#L1356)
-2949. stale\_projection
+2915. stale\_projection
    来源：[src/scenes/rpg/RpgInteractionContract.ts:1361](../src/scenes/rpg/RpgInteractionContract.ts#L1361)
-2950. invalid\_player
+2916. invalid\_player
    来源：[src/scenes/rpg/RpgInteractionContract.ts:1370](../src/scenes/rpg/RpgInteractionContract.ts#L1370)
-2951. spatial\_claim\_mismatch
+2917. spatial\_claim\_mismatch
    来源：[src/scenes/rpg/RpgInteractionContract.ts:1386](../src/scenes/rpg/RpgInteractionContract.ts#L1386)
-2952. 需要{{contract.label}}：{{contract.shortHint}}
+2918. 需要{{contract.label}}：{{contract.shortHint}}
    来源：[src/scenes/rpg/RpgInteractionContract.ts:1628](../src/scenes/rpg/RpgInteractionContract.ts#L1628)
-2953. {{ITEM\_META\[itemId\].name}}已使用。
+2919. {{ITEM\_META\[itemId\].name}}已使用。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:105](../src/scenes/rpg/RpgInventoryDock.tsx#L105)
-2954. 距离太远，未能使用。
+2920. 距离太远，未能使用。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:106](../src/scenes/rpg/RpgInventoryDock.tsx#L106)
-2955. 道具不匹配。
+2921. 道具不匹配。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:107](../src/scenes/rpg/RpgInventoryDock.tsx#L107)
-2956. 当前模式无法进行这项操作。
+2922. 当前模式无法进行这项操作。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:109](../src/scenes/rpg/RpgInventoryDock.tsx#L109)
-2957. 尚未记录目标位置。
+2923. 尚未记录目标位置。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:110](../src/scenes/rpg/RpgInventoryDock.tsx#L110)
-2958. 钓钩无法固定纸张。
+2924. 钓钩无法固定纸张。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:111](../src/scenes/rpg/RpgInventoryDock.tsx#L111)
-2959. 这项操作已经完成。
+2925. 这项操作已经完成。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:112](../src/scenes/rpg/RpgInventoryDock.tsx#L112)
-2960. 这次使用没有生效。
+2926. 这次使用没有生效。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:113](../src/scenes/rpg/RpgInventoryDock.tsx#L113)
-2961. consumed
+2927. consumed
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:144](../src/scenes/rpg/RpgInventoryDock.tsx#L144)
-2962. input\_blocked
+2928. input\_blocked
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:158](../src/scenes/rpg/RpgInventoryDock.tsx#L158)
-2963. 道具没有进入游戏画布，请拖到场景中的对应物体。
+2929. 道具没有进入游戏画布，请拖到场景中的对应物体。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:302](../src/scenes/rpg/RpgInventoryDock.tsx#L302)
-2964. RPG 道具栏
+2930. RPG 道具栏
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:331](../src/scenes/rpg/RpgInventoryDock.tsx#L331)
-2965. 道具
+2931. 道具
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:336](../src/scenes/rpg/RpgInventoryDock.tsx#L336)
-2966. 拖动{{ITEM\_META\[itemId\].name}}，{{isPaperItem(itemId) ? "单击" : "双击"}}查看详情
+2932. 拖动{{ITEM\_META\[itemId\].name}}，{{isPaperItem(itemId) ? "单击" : "双击"}}查看详情
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:344](../src/scenes/rpg/RpgInventoryDock.tsx#L344)
-2967. 四件材料组合
+2933. 四件材料组合
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:364](../src/scenes/rpg/RpgInventoryDock.tsx#L364)
-2968. 绳和网框已用于旧抄网，装上磁铁与钓竿即可完成组装。
+2934. 绳和网框已用于旧抄网，装上磁铁与钓竿即可完成组装。
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:365](../src/scenes/rpg/RpgInventoryDock.tsx#L365)
-2969. 四件材料已齐：尼龙绳、断裂网框、天鹅磁铁、钓竿
+2935. 四件材料已齐：尼龙绳、断裂网框、天鹅磁铁、钓竿
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:365](../src/scenes/rpg/RpgInventoryDock.tsx#L365)
-2970. 组合四件材料
+2936. 组合四件材料
    来源：[src/scenes/rpg/RpgInventoryDock.tsx:366](../src/scenes/rpg/RpgInventoryDock.tsx#L366)；[src/scenes/rpg/RpgInventoryDock.tsx:367](../src/scenes/rpg/RpgInventoryDock.tsx#L367)
-2971. 校园卡在手机应用和地图入口中读取
+2937. 校园卡在手机应用和地图入口中读取
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:13](../src/scenes/rpg/RpgItemUseGuidance.ts#L13)
-2972. 前往 CC98 搜索栏提交占座纸条
+2938. 前往 CC98 搜索栏提交占座纸条
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:14](../src/scenes/rpg/RpgItemUseGuidance.ts#L14)
-2973. 前往 CC98 证据上传区提交旧版规定
+2939. 前往 CC98 证据上传区提交旧版规定
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:15](../src/scenes/rpg/RpgItemUseGuidance.ts#L15)
-2974. 前往 CC98 或恢复申请页面提交证明
+2940. 前往 CC98 或恢复申请页面提交证明
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:16](../src/scenes/rpg/RpgItemUseGuidance.ts#L16)；[src/scenes/rpg/RpgItemUseGuidance.ts:18](../src/scenes/rpg/RpgItemUseGuidance.ts#L18)
-2975. 前往 CC98 或恢复申请页面提交凭据
+2941. 前往 CC98 或恢复申请页面提交凭据
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:17](../src/scenes/rpg/RpgItemUseGuidance.ts#L17)
-2976. 到食堂左下角混合台倒入玻璃杯
+2942. 到食堂左下角混合台倒入玻璃杯
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:19](../src/scenes/rpg/RpgItemUseGuidance.ts#L19)；[src/scenes/rpg/RpgItemUseGuidance.ts:20](../src/scenes/rpg/RpgItemUseGuidance.ts#L20)；[src/scenes/rpg/RpgItemUseGuidance.ts:21](../src/scenes/rpg/RpgItemUseGuidance.ts#L21)
-2977. 在食堂地图中拖到自己身上喝掉
+2943. 在食堂地图中拖到自己身上喝掉
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:22](../src/scenes/rpg/RpgItemUseGuidance.ts#L22)
-2978. 到食堂第五个打饭窗口上方的宣传灯箱空杯位
+2944. 到食堂第五个打饭窗口上方的宣传灯箱空杯位
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:23](../src/scenes/rpg/RpgItemUseGuidance.ts#L23)
-2979. 靠近取餐窗口后按空格使用；纸包鸡需在深色第三窗口交票
+2945. 靠近取餐窗口后按空格使用；纸包鸡需在深色第三窗口交票
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:24](../src/scenes/rpg/RpgItemUseGuidance.ts#L24)
-2980. 食物彩蛋，没有剧情用途
+2946. 食物彩蛋，没有剧情用途
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:25](../src/scenes/rpg/RpgItemUseGuidance.ts#L25)；[src/scenes/rpg/RpgItemUseGuidance.ts:26](../src/scenes/rpg/RpgItemUseGuidance.ts#L26)；[src/scenes/rpg/RpgItemUseGuidance.ts:27](../src/scenes/rpg/RpgItemUseGuidance.ts#L27)；[src/scenes/rpg/RpgItemUseGuidance.ts:28](../src/scenes/rpg/RpgItemUseGuidance.ts#L28)
-2981. 与另一半临时票合成，无需拖到场景
+2947. 与另一半临时票合成，无需拖到场景
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:29](../src/scenes/rpg/RpgItemUseGuidance.ts#L29)；[src/scenes/rpg/RpgItemUseGuidance.ts:30](../src/scenes/rpg/RpgItemUseGuidance.ts#L30)
-2982. 到剧院灯光控制台打开节目单排序
+2948. 到剧院灯光控制台打开节目单排序
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:31](../src/scenes/rpg/RpgItemUseGuidance.ts#L31)；[src/scenes/rpg/RpgItemUseGuidance.ts:32](../src/scenes/rpg/RpgItemUseGuidance.ts#L32)；[src/scenes/rpg/RpgItemUseGuidance.ts:33](../src/scenes/rpg/RpgItemUseGuidance.ts#L33)
-2983. 前往 CC98 或馆藏检索提交湿节目单
+2949. 前往 CC98 或馆藏检索提交湿节目单
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:34](../src/scenes/rpg/RpgItemUseGuidance.ts#L34)
-2984. 前往校园地图搜索栏提交地点关键词
+2950. 前往校园地图搜索栏提交地点关键词
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:35](../src/scenes/rpg/RpgItemUseGuidance.ts#L35)；[src/scenes/rpg/RpgItemUseGuidance.ts:36](../src/scenes/rpg/RpgItemUseGuidance.ts#L36)；[src/scenes/rpg/RpgItemUseGuidance.ts:37](../src/scenes/rpg/RpgItemUseGuidance.ts#L37)
-2985. 坐标会在启真湖布置假纸条时自动核验
+2951. 坐标会在启真湖布置假纸条时自动核验
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:38](../src/scenes/rpg/RpgItemUseGuidance.ts#L38)
-2986. 靠近目标，把道具拖到物体本身后松手。
+2952. 靠近目标，把道具拖到物体本身后松手。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:41](../src/scenes/rpg/RpgItemUseGuidance.ts#L41)
-2987. ready
+2953. ready
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:42](../src/scenes/rpg/RpgItemUseGuidance.ts#L42)
-2988. 当前可以使用
+2954. 当前可以使用
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:43](../src/scenes/rpg/RpgItemUseGuidance.ts#L43)
-2989. 当前使用条件未满足
+2955. 当前使用条件未满足
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:50](../src/scenes/rpg/RpgItemUseGuidance.ts#L50)
-2990. passive
+2956. passive
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:56](../src/scenes/rpg/RpgItemUseGuidance.ts#L56)
-2991. 无需拖动
+2957. 无需拖动
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:57](../src/scenes/rpg/RpgItemUseGuidance.ts#L57)
-2992. elsewhere
+2958. elsewhere
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:62](../src/scenes/rpg/RpgItemUseGuidance.ts#L62)
-2993. 本场景没有使用点
+2959. 本场景没有使用点
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:63](../src/scenes/rpg/RpgItemUseGuidance.ts#L63)
-2994. 保留该道具，跟随当前任务前往对应页面或场景。
+2960. 保留该道具，跟随当前任务前往对应页面或场景。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:64](../src/scenes/rpg/RpgItemUseGuidance.ts#L64)
-2995. 旧钟时针插槽
+2961. 旧钟时针插槽
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:94](../src/scenes/rpg/RpgItemUseGuidance.ts#L94)
-2996. 旧钟定位盘插槽
+2962. 旧钟定位盘插槽
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:99](../src/scenes/rpg/RpgItemUseGuidance.ts#L99)
-2997. 清洁车车轮
+2963. 清洁车车轮
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:105](../src/scenes/rpg/RpgItemUseGuidance.ts#L105)；[src/scenes/rpg/RpgItemUseGuidance.ts:114](../src/scenes/rpg/RpgItemUseGuidance.ts#L114)
-2998. 先靠近保洁车检查卡住的车轮。
+2964. 先靠近保洁车检查卡住的车轮。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:105](../src/scenes/rpg/RpgItemUseGuidance.ts#L105)
-2999. 清洁车轮罩
+2965. 清洁车轮罩
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:108](../src/scenes/rpg/RpgItemUseGuidance.ts#L108)
-3000. 先把润滑油拖到清洁车车轮，修好后仍会保留半瓶。
+2966. 先把润滑油拖到清洁车车轮，修好后仍会保留半瓶。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:114](../src/scenes/rpg/RpgItemUseGuidance.ts#L114)
-3001. 把剩下的半瓶润滑油拖到旧钟齿轮。
+2967. 把剩下的半瓶润滑油拖到旧钟齿轮。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:117](../src/scenes/rpg/RpgItemUseGuidance.ts#L117)
-3002. 旧钟齿轮
+2968. 旧钟齿轮
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:117](../src/scenes/rpg/RpgItemUseGuidance.ts#L117)
-3003. 润滑油的剧情用途已经完成。
+2969. 润滑油的剧情用途已经完成。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:119](../src/scenes/rpg/RpgItemUseGuidance.ts#L119)
-3004. 大厅旧钟表盘
+2970. 大厅旧钟表盘
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:123](../src/scenes/rpg/RpgItemUseGuidance.ts#L123)
-3005. 靠近旧钟，把黄铜分针组件拖到可见表盘内松手。
+2971. 靠近旧钟，把黄铜分针组件拖到可见表盘内松手。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:123](../src/scenes/rpg/RpgItemUseGuidance.ts#L123)
-3006. 手柄已经连接并等待方向输入校验。
+2972. 手柄已经连接并等待方向输入校验。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:129](../src/scenes/rpg/RpgItemUseGuidance.ts#L129)
-3007. 先在部门黄页完成角色命名。
+2973. 先在部门黄页完成角色命名。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:130](../src/scenes/rpg/RpgItemUseGuidance.ts#L130)
-3008. 先在浙大体艺开始课外锻炼。
+2974. 先在浙大体艺开始课外锻炼。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:131](../src/scenes/rpg/RpgItemUseGuidance.ts#L131)
-3009. 先在 CC98 完成手柄购买。
+2975. 先在 CC98 完成手柄购买。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:132](../src/scenes/rpg/RpgItemUseGuidance.ts#L132)
-3010. 把手柄拖到角色身体范围内，并在人物轮廓内松手。
+2976. 把手柄拖到角色身体范围内，并在人物轮廓内松手。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:133](../src/scenes/rpg/RpgItemUseGuidance.ts#L133)
-3011. 文学书架 755 段
+2977. 文学书架 755 段
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:142](../src/scenes/rpg/RpgItemUseGuidance.ts#L142)；[src/scenes/rpg/RpgItemUseGuidance.ts:143](../src/scenes/rpg/RpgItemUseGuidance.ts#L143)
-3012. 先完成馆藏检索并取得索书号 755。
+2978. 先完成馆藏检索并取得索书号 755。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:143](../src/scenes/rpg/RpgItemUseGuidance.ts#L143)
-3013. 前台正在人工核验并盖章，等待流程完成。
+2979. 前台正在人工核验并盖章，等待流程完成。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:146](../src/scenes/rpg/RpgItemUseGuidance.ts#L146)
-3014. 靠近前台，把物品识别报告拖到工作人员与盖章台之间。
+2980. 靠近前台，把物品识别报告拖到工作人员与盖章台之间。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:151](../src/scenes/rpg/RpgItemUseGuidance.ts#L151)
-3015. 前台工作人员
+2981. 前台工作人员
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:151](../src/scenes/rpg/RpgItemUseGuidance.ts#L151)；[src/scenes/rpg/RpgItemUseGuidance.ts:152](../src/scenes/rpg/RpgItemUseGuidance.ts#L152)
-3016. 先在照片页面生成物品识别报告。
+2982. 先在照片页面生成物品识别报告。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:152](../src/scenes/rpg/RpgItemUseGuidance.ts#L152)
-3017. 022 座位凭据已经取出，右移箭头已完成最后用途。
+2983. 022 座位凭据已经取出，右移箭头已完成最后用途。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:157](../src/scenes/rpg/RpgItemUseGuidance.ts#L157)
-3018. 022 占座书包
+2984. 022 占座书包
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:163](../src/scenes/rpg/RpgItemUseGuidance.ts#L163)；[src/scenes/rpg/RpgItemUseGuidance.ts:164](../src/scenes/rpg/RpgItemUseGuidance.ts#L164)
-3019. 先完成公开公示和三项恢复材料，取得清退 PASS。
+2985. 先完成公开公示和三项恢复材料，取得清退 PASS。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:164](../src/scenes/rpg/RpgItemUseGuidance.ts#L164)
-3020. 1、2、3号取餐窗口验票槽
+2986. 1、2、3号取餐窗口验票槽
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:170](../src/scenes/rpg/RpgItemUseGuidance.ts#L170)
-3021. 取餐号只在取餐阶段使用。先完成当前食堂任务。
+2987. 取餐号只在取餐阶段使用。先完成当前食堂任务。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:170](../src/scenes/rpg/RpgItemUseGuidance.ts#L170)
-3022. 不需要拖拽或站位。浅色操作可在对应窗口交票；深色观察可补充查看窗口残影。
+2988. 不需要拖拽或站位。浅色操作可在对应窗口交票；深色观察可补充查看窗口残影。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:172](../src/scenes/rpg/RpgItemUseGuidance.ts#L172)
-3023. 取餐窗口
+2989. 取餐窗口
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:172](../src/scenes/rpg/RpgItemUseGuidance.ts#L172)
-3024. 靠近混合台打开调配窗口，再点击对应饮料倒入大玻璃杯。
+2990. 靠近混合台打开调配窗口，再点击对应饮料倒入大玻璃杯。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:185](../src/scenes/rpg/RpgItemUseGuidance.ts#L185)
-3025. 左下角混合台
+2991. 左下角混合台
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:185](../src/scenes/rpg/RpgItemUseGuidance.ts#L185)
-3026. 第五个打饭窗口下方的宣传板空杯位
+2992. 第五个打饭窗口下方的宣传板空杯位
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:192](../src/scenes/rpg/RpgItemUseGuidance.ts#L192)
-3027. 先靠近宣传板，再把今日新品气泡水拖进发光的空杯位。
+2993. 先靠近宣传板，再把今日新品气泡水拖进发光的空杯位。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:192](../src/scenes/rpg/RpgItemUseGuidance.ts#L192)
-3028. 把难喝饮料拖到人物身上可以喝掉，但不会推进剧情。
+2994. 把难喝饮料拖到人物身上可以喝掉，但不会推进剧情。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:195](../src/scenes/rpg/RpgItemUseGuidance.ts#L195)
-3029. 玩家自己
+2995. 玩家自己
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:195](../src/scenes/rpg/RpgItemUseGuidance.ts#L195)
-3030. 车锁已经擦净，2 元现金可以用于付款。
+2996. 车锁已经擦净，2 元现金可以用于付款。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:201](../src/scenes/rpg/RpgItemUseGuidance.ts#L201)
-3031. 切回浅色模式后再清洁车锁。
+2997. 切回浅色模式后再清洁车锁。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:202](../src/scenes/rpg/RpgItemUseGuidance.ts#L202)
-3032. 先用纸巾清洁车锁。
+2998. 先用纸巾清洁车锁。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:206](../src/scenes/rpg/RpgItemUseGuidance.ts#L206)
-3033. 切回浅色模式后付款。
+2999. 切回浅色模式后付款。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:207](../src/scenes/rpg/RpgItemUseGuidance.ts#L207)
-3034. 现金余额不足 2 元。回食堂完成收餐盘，领取 2 元和油渍纸巾。
+3000. 现金余额不足 2 元。回食堂完成收餐盘，领取 2 元和油渍纸巾。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:208](../src/scenes/rpg/RpgItemUseGuidance.ts#L208)
-3035. 把 2 元现金拖到共享单车范围内，并在车身上松手。
+3001. 把 2 元现金拖到共享单车范围内，并在车身上松手。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:209](../src/scenes/rpg/RpgItemUseGuidance.ts#L209)
-3036. 海报玻璃已经擦净。
+3002. 海报玻璃已经擦净。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:216](../src/scenes/rpg/RpgItemUseGuidance.ts#L216)
-3037. 擦拭海报只在剧院入口取票阶段开放。
+3003. 擦拭海报只在剧院入口取票阶段开放。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:217](../src/scenes/rpg/RpgItemUseGuidance.ts#L217)
-3038. 切回浅色模式后擦拭海报玻璃。
+3004. 切回浅色模式后擦拭海报玻璃。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:218](../src/scenes/rpg/RpgItemUseGuidance.ts#L218)
-3039. 从海报右侧靠近，把油渍纸巾拖到玻璃污渍上。
+3005. 从海报右侧靠近，把油渍纸巾拖到玻璃污渍上。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:219](../src/scenes/rpg/RpgItemUseGuidance.ts#L219)
-3040. 入口海报玻璃
+3006. 入口海报玻璃
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:219](../src/scenes/rpg/RpgItemUseGuidance.ts#L219)
-3041. 深色模式只读取异常；切回浅色操作后再把票拖入读票器。
+3007. 深色模式只读取异常；切回浅色操作后再把票拖入读票器。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:224](../src/scenes/rpg/RpgItemUseGuidance.ts#L224)
-3042. 靠近读票器，把票拖到右侧验票槽内松手。
+3008. 靠近读票器，把票拖到右侧验票槽内松手。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:228](../src/scenes/rpg/RpgItemUseGuidance.ts#L228)
-3043. 票据扫描已经完成，临时观演票已从道具栏移除。
+3009. 票据扫描已经完成，临时观演票已从道具栏移除。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:232](../src/scenes/rpg/RpgItemUseGuidance.ts#L232)
-3044. 深色模式可查看道具箱残影；切回浅色模式后扫描票据。
+3010. 深色模式可查看道具箱残影；切回浅色模式后扫描票据。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:234](../src/scenes/rpg/RpgItemUseGuidance.ts#L234)
-3045. 靠近道具箱旁的扫描器，把票拖到扫描口内松手。
+3011. 靠近道具箱旁的扫描器，把票拖到扫描口内松手。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:238](../src/scenes/rpg/RpgItemUseGuidance.ts#L238)
-3046. 入场核验已完成。票会在后台道具箱阶段再次使用，先完成当前节目单任务。
+3012. 入场核验已完成。票会在后台道具箱阶段再次使用，先完成当前节目单任务。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:242](../src/scenes/rpg/RpgItemUseGuidance.ts#L242)
-3047. 当前流程不需要再次拖动临时观演票。
+3013. 当前流程不需要再次拖动临时观演票。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:244](../src/scenes/rpg/RpgItemUseGuidance.ts#L244)
-3048. 后台纸屑已经显影，荧光粉刷已从道具栏移除。
+3014. 后台纸屑已经显影，荧光粉刷已从道具栏移除。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:247](../src/scenes/rpg/RpgItemUseGuidance.ts#L247)
-3049. 先在后台完成票据扫描并打开道具箱，取得荧光粉刷。
+3015. 先在后台完成票据扫描并打开道具箱，取得荧光粉刷。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:249](../src/scenes/rpg/RpgItemUseGuidance.ts#L249)
-3050. 切回浅色操作后，把荧光粉刷拖入通风口。
+3016. 切回浅色操作后，把荧光粉刷拖入通风口。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:252](../src/scenes/rpg/RpgItemUseGuidance.ts#L252)
-3051. 靠近通风口，把荧光粉刷拖到栅格上。
+3017. 靠近通风口，把荧光粉刷拖到栅格上。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:254](../src/scenes/rpg/RpgItemUseGuidance.ts#L254)
-3052. 先完成后台纸屑显影，灯光控制台随后开放。
+3018. 先完成后台纸屑显影，灯光控制台随后开放。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:258](../src/scenes/rpg/RpgItemUseGuidance.ts#L258)
-3053. 深色模式只观察追光残影；切回浅色操作后启动灯光控制台。
+3019. 深色模式只观察追光残影；切回浅色操作后启动灯光控制台。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:261](../src/scenes/rpg/RpgItemUseGuidance.ts#L261)
-3054. 从下方靠近控制台，把追光灯遥控器拖到控制面板上。
+3020. 从下方靠近控制台，把追光灯遥控器拖到控制面板上。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:263](../src/scenes/rpg/RpgItemUseGuidance.ts#L263)
-3055. 靠近灯光控制台打开节目单排序，无需把节目单拖到控制台。
+3021. 靠近灯光控制台打开节目单排序，无需把节目单拖到控制台。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:266](../src/scenes/rpg/RpgItemUseGuidance.ts#L266)
-3056. 深色观察只记录坐标。切回浅色操作后使用道具。
+3022. 深色观察只记录坐标。切回浅色操作后使用道具。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:274](../src/scenes/rpg/RpgItemUseGuidance.ts#L274)
-3057. 假纸条已经固定到鱼钩上并从道具栏移除。
+3023. 假纸条已经固定到鱼钩上并从道具栏移除。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:277](../src/scenes/rpg/RpgItemUseGuidance.ts#L277)
-3058. 先在大湖浮排边找到钓鱼竿。
+3024. 先在大湖浮排边找到钓鱼竿。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:279](../src/scenes/rpg/RpgItemUseGuidance.ts#L279)
-3059. 纸条倒影装饵框
+3025. 纸条倒影装饵框
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:279](../src/scenes/rpg/RpgItemUseGuidance.ts#L279)；[src/scenes/rpg/RpgItemUseGuidance.ts:282](../src/scenes/rpg/RpgItemUseGuidance.ts#L282)；[src/scenes/rpg/RpgItemUseGuidance.ts:284](../src/scenes/rpg/RpgItemUseGuidance.ts#L284)
-3060. 先划回大湖，再寻找纸条倒影装饵框。
+3026. 先划回大湖，再寻找纸条倒影装饵框。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:282](../src/scenes/rpg/RpgItemUseGuidance.ts#L282)
-3061. 把船划到纸条倒影附近，再把假纸条拖到对应水纹。
+3027. 把船划到纸条倒影附近，再把假纸条拖到对应水纹。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:285](../src/scenes/rpg/RpgItemUseGuidance.ts#L285)
-3062. 纸条倒影水纹
+3028. 纸条倒影水纹
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:285](../src/scenes/rpg/RpgItemUseGuidance.ts#L285)
-3063. 船头磁吸组合位
+3029. 船头磁吸组合位
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:291](../src/scenes/rpg/RpgItemUseGuidance.ts#L291)
-3064. 先划到黑天鹅围栏区。
+3030. 先划到黑天鹅围栏区。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:291](../src/scenes/rpg/RpgItemUseGuidance.ts#L291)
-3065. 船头工具区
+3031. 船头工具区
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:294](../src/scenes/rpg/RpgItemUseGuidance.ts#L294)
-3066. 让船头对准工具区，把钓鱼竿拖到天鹅磁扣旁。
+3032. 让船头对准工具区，把钓鱼竿拖到天鹅磁扣旁。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:294](../src/scenes/rpg/RpgItemUseGuidance.ts#L294)
-3067. 当前抛竿点位于大湖，先划回大湖。
+3033. 当前抛竿点位于大湖，先划回大湖。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:297](../src/scenes/rpg/RpgItemUseGuidance.ts#L297)
-3068. 可用抛竿点
+3034. 可用抛竿点
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:297](../src/scenes/rpg/RpgItemUseGuidance.ts#L297)；[src/scenes/rpg/RpgItemUseGuidance.ts:302](../src/scenes/rpg/RpgItemUseGuidance.ts#L302)；[src/scenes/rpg/RpgItemUseGuidance.ts:303](../src/scenes/rpg/RpgItemUseGuidance.ts#L303)
-3069. 先把假纸条拖到钓鱼竿装饵框。
+3035. 先把假纸条拖到钓鱼竿装饵框。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:300](../src/scenes/rpg/RpgItemUseGuidance.ts#L300)
-3070. 把船划到目标水纹附近后抛竿。深色观察可补充记录位置，直接钓纸条会显示失败原因。
+3036. 把船划到目标水纹附近后抛竿。深色观察可补充记录位置，直接钓纸条会显示失败原因。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:303](../src/scenes/rpg/RpgItemUseGuidance.ts#L303)
-3071. 码头储物柜已经打开。
+3037. 码头储物柜已经打开。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:308](../src/scenes/rpg/RpgItemUseGuidance.ts#L308)
-3072. 返回小码头，储物柜锁孔只在码头区域开放。
+3038. 返回小码头，储物柜锁孔只在码头区域开放。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:310](../src/scenes/rpg/RpgItemUseGuidance.ts#L310)
-3073. 码头储物柜
+3039. 码头储物柜
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:310](../src/scenes/rpg/RpgItemUseGuidance.ts#L310)；[src/scenes/rpg/RpgItemUseGuidance.ts:311](../src/scenes/rpg/RpgItemUseGuidance.ts#L311)；[src/scenes/rpg/RpgItemUseGuidance.ts:312](../src/scenes/rpg/RpgItemUseGuidance.ts#L312)
-3074. 返回小码头，靠近柜门，把钥匙拖到锁孔。
+3040. 返回小码头，靠近柜门，把钥匙拖到锁孔。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:312](../src/scenes/rpg/RpgItemUseGuidance.ts#L312)
-3075. 两件道具已组合为临时抄网。
+3041. 两件道具已组合为临时抄网。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:316](../src/scenes/rpg/RpgItemUseGuidance.ts#L316)
-3076. 先取得另一个组合部件。
+3042. 先取得另一个组合部件。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:319](../src/scenes/rpg/RpgItemUseGuidance.ts#L319)
-3077. 回到大湖的浮标组合位。
+3043. 回到大湖的浮标组合位。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:322](../src/scenes/rpg/RpgItemUseGuidance.ts#L322)
-3078. 把尼龙绳或破损网框拖入装配框。
+3044. 把尼龙绳或破损网框拖入装配框。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:325](../src/scenes/rpg/RpgItemUseGuidance.ts#L325)
-3079. 密封饲料盒已经取回。
+3045. 密封饲料盒已经取回。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:330](../src/scenes/rpg/RpgItemUseGuidance.ts#L330)
-3080. 浮排系绳下方
+3046. 浮排系绳下方
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:332](../src/scenes/rpg/RpgItemUseGuidance.ts#L332)；[src/scenes/rpg/RpgItemUseGuidance.ts:333](../src/scenes/rpg/RpgItemUseGuidance.ts#L333)；[src/scenes/rpg/RpgItemUseGuidance.ts:334](../src/scenes/rpg/RpgItemUseGuidance.ts#L334)
-3081. 进入浮排直河道，再靠近浮排系绳。
+3047. 进入浮排直河道，再靠近浮排系绳。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:332](../src/scenes/rpg/RpgItemUseGuidance.ts#L332)
-3082. 进入直河道，让船头对准浮排下方，把抄网拖到密封饲料盒上。
+3048. 进入直河道，让船头对准浮排下方，把抄网拖到密封饲料盒上。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:334](../src/scenes/rpg/RpgItemUseGuidance.ts#L334)
-3083. 饲料盒已经打开。
+3049. 饲料盒已经打开。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:339](../src/scenes/rpg/RpgItemUseGuidance.ts#L339)
-3084. 返回浮排直河道，开盒位在浮排上缘。
+3050. 返回浮排直河道，开盒位在浮排上缘。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:341](../src/scenes/rpg/RpgItemUseGuidance.ts#L341)
-3085. 浮排开盒位
+3051. 浮排开盒位
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:341](../src/scenes/rpg/RpgItemUseGuidance.ts#L341)；[src/scenes/rpg/RpgItemUseGuidance.ts:342](../src/scenes/rpg/RpgItemUseGuidance.ts#L342)
-3086. 浮排硬边
+3052. 浮排硬边
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:343](../src/scenes/rpg/RpgItemUseGuidance.ts#L343)
-3087. 让船头对准浮排硬边，把密封饲料盒拖到边缘上开启。
+3053. 让船头对准浮排硬边，把密封饲料盒拖到边缘上开启。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:343](../src/scenes/rpg/RpgItemUseGuidance.ts#L343)
-3088. 回到大湖的鱼群水纹位置。
+3054. 回到大湖的鱼群水纹位置。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:348](../src/scenes/rpg/RpgItemUseGuidance.ts#L348)
-3089. 鱼群水纹
+3055. 鱼群水纹
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:348](../src/scenes/rpg/RpgItemUseGuidance.ts#L348)；[src/scenes/rpg/RpgItemUseGuidance.ts:350](../src/scenes/rpg/RpgItemUseGuidance.ts#L350)；[src/scenes/rpg/RpgItemUseGuidance.ts:351](../src/scenes/rpg/RpgItemUseGuidance.ts#L351)
-3090. 把饲料颗粒拖入鱼群水纹；深色观察可补充记录位置。
+3056. 把饲料颗粒拖入鱼群水纹；深色观察可补充记录位置。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:351](../src/scenes/rpg/RpgItemUseGuidance.ts#L351)
-3091. 黑天鹅
+3057. 黑天鹅
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:357](../src/scenes/rpg/RpgItemUseGuidance.ts#L357)
-3092. 让船头对准黑天鹅，把小鲤鱼拖到天鹅面前。
+3058. 让船头对准黑天鹅，把小鲤鱼拖到天鹅面前。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:357](../src/scenes/rpg/RpgItemUseGuidance.ts#L357)
-3093. 划到黑天鹅围栏区。
+3059. 划到黑天鹅围栏区。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:358](../src/scenes/rpg/RpgItemUseGuidance.ts#L358)
-3094. 划到黑天鹅围栏区的船头装配位。
+3060. 划到黑天鹅围栏区的船头装配位。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:363](../src/scenes/rpg/RpgItemUseGuidance.ts#L363)
-3095. 把磁性扣拖到钓鱼竿所在的装配框。
+3061. 把磁性扣拖到钓鱼竿所在的装配框。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:367](../src/scenes/rpg/RpgItemUseGuidance.ts#L367)
-3096. 钓鱼竿当前不在道具栏。
+3062. 钓鱼竿当前不在道具栏。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:368](../src/scenes/rpg/RpgItemUseGuidance.ts#L368)
-3097. 纸条已经被固定，进入返航追逐。
+3063. 纸条已经被固定，进入返航追逐。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:372](../src/scenes/rpg/RpgItemUseGuidance.ts#L372)
-3098. 纸条本体水纹位于黑天鹅围栏区。
+3064. 纸条本体水纹位于黑天鹅围栏区。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:374](../src/scenes/rpg/RpgItemUseGuidance.ts#L374)
-3099. 把磁性钓鱼竿拖入纸条本体水纹；深色观察可补充记录位置。
+3065. 把磁性钓鱼竿拖入纸条本体水纹；深色观察可补充记录位置。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:377](../src/scenes/rpg/RpgItemUseGuidance.ts#L377)
-3100. 当前{{current.label}}。点击切换到{{next.label}}
+3066. 当前{{current.label}}。点击切换到{{next.label}}
    来源：[src/scenes/rpg/RpgRealityModeToggle.tsx:26](../src/scenes/rpg/RpgRealityModeToggle.tsx#L26)
-3101. {{current.shortHint}} 点击切换到{{next.label}}。
+3067. {{current.shortHint}} 点击切换到{{next.label}}。
    来源：[src/scenes/rpg/RpgRealityModeToggle.tsx:27](../src/scenes/rpg/RpgRealityModeToggle.tsx#L27)
-3102. 当前模式
+3068. 当前模式
    来源：[src/scenes/rpg/RpgRealityModeToggle.tsx:35](../src/scenes/rpg/RpgRealityModeToggle.tsx#L35)
-3103. 切换：
+3069. 切换：
    来源：[src/scenes/rpg/RpgRealityModeToggle.tsx:37](../src/scenes/rpg/RpgRealityModeToggle.tsx#L37)
-3104. 紫云碧峰
+3070. 紫云碧峰
    来源：[src/scenes/rpg/ZijingangCampusLayout.ts:54](../src/scenes/rpg/ZijingangCampusLayout.ts#L54)
-3105. 东区大食堂
+3071. 东区大食堂
    来源：[src/scenes/rpg/ZijingangCampusLayout.ts:73](../src/scenes/rpg/ZijingangCampusLayout.ts#L73)
 

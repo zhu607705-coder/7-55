@@ -318,31 +318,31 @@ export async function phoneRecoveryCase(h) {
         await h.importSave(path.join(h.fixtureDir, filename));
         await closeInventory();
         let value = await read(`legacy ${percent}% accepted`);
-        h.check(value.state.phoneBattery.percent === percent && value.state.phoneBattery.lowPowerMode && value.state.ui.brightness === 40,
-          `${h.id}: ordinary legacy ${percent}% import preserves the low-battery input`);
+        const consumptionOnly = state => Object.keys(state.phoneBattery).length === 1 && Object.hasOwn(state.phoneBattery, 'percent') && !Object.hasOwn(state.ui, 'homeDeskReturnScene');
+        const noRetiredControls = value => !(value.visibleControls || []).some(c => ['PutPhoneOnDesk', 'HomeChargingDock', 'DeskDockContact', 'DeskUnplug', 'LowPowerToggle'].includes(c.name));
+        h.check(value.state.phoneBattery.percent === percent && consumptionOnly(value.state) && value.state.ui.brightness === 40,
+          `${h.id}: ordinary legacy ${percent}% import preserves charge and brightness while removing retired power fields`);
+        h.check(noRetiredControls(value), `${h.id}: imported home exposes no charging return control`);
         await click('HomeBonsaiOpen'); await page('bonsai');
-        await click('PutPhoneOnDesk'); await page('desktop');
-        await click('DeskDockContact');
-        await h.poll(async () => (await read()).visibleControls.some(c => c.name === 'DeskChargingStatus' && /^连接 [1-9][0-9]*%/.test(c.text)), 'actual incomplete charging session is visible');
-        value = await read('real partial charge before cancellation');
-        h.check(value.state.phoneBattery.percent === percent, `${h.id}: visible charging progress does not grant energy early`);
-        await click('DeskPhonePickup'); await page('bonsai');
+        value = await read(`ordinary bonsai entry at ${percent}%`);
+        h.check(noRetiredControls(value) && !value.state.flags.plantLit,
+          `${h.id}: bonsai remains reachable without charging and dim light cannot satisfy the plant`);
+        await home(); await click('HomeBonsaiOpen'); await page('bonsai');
         await h.interval(2400);
-        value = await read(`cancelled ${percent}% charge`);
-        h.check(value.state.phoneBattery.percent === percent && !value.state.flags.plantLit,
-          `${h.id}: early pickup cancels actual charging without granting energy or light`);
-        await click('PutPhoneOnDesk'); await page('desktop');
-        await shot(`dock-${percent}-before`);
-        const began = Date.now(), rechargeCount = value.state.phoneBattery.rechargeCount;
-        await click('DeskDockContact'); await click('DeskDockContact');
-        await h.poll(async () => (await read()).state.phoneBattery.percent >= 45, 'real desktop charge completes', 12000);
-        value = await read(`charged ${percent}% through actual dock`);
-        h.check(Date.now() - began >= 2200 && value.state.phoneBattery.rechargeCount === rechargeCount + 1 && !value.state.phoneBattery.lowPowerMode,
-          `${h.id}: duplicate start grants exactly one real 2200ms charge and exits low-power mode`);
-        h.check(value.state.ui.brightness === 40 && !value.state.flags.plantLit && !value.state.flags.flowerBloomed,
-          `${h.id}: charging does not change brightness or award plant progression`);
-        await shot(`dock-${percent}-charged`);
-        await click('DeskPhonePickup'); await page('bonsai');
+        value = await read(`navigation and elapsed time at ${percent}%`);
+        h.check(value.state.phoneBattery.percent === percent && !value.state.flags.plantLit && consumptionOnly(value.state),
+          `${h.id}: repeated return and elapsed time neither recharge nor award plant light`);
+        await shot(`battery-${percent}-unchanged`);
+        await h.importSave(path.join(h.fixtureDir, `compat-c1-desk-${percent}-v35.json`));
+        await closeInventory(); await page('bonsai');
+        value = await read(`legacy desk ${percent}% restored to bonsai`);
+        h.check(value.state.currentScene === 'bonsai' && value.state.phoneBattery.percent === percent && consumptionOnly(value.state) && noRetiredControls(value),
+          `${h.id}: ordinary legacy desktop import returns to its original app without an unavailable pickup control`);
+        await h.settings(); await h.saveProgressAndWait(`consumption-only ${percent}% before reload`); await h.startStory(true);
+        await page('bonsai');
+        value = await read(`legacy ${percent}% migration survives reload`);
+        h.check(value.state.phoneBattery.percent === percent && consumptionOnly(value.state) && value.state.ui.brightness === 40 && !value.state.flags.plantLit,
+          `${h.id}: normal save and reload preserve zero/one battery and unfinished plant without retired charging state`);
         const brightnessOpening = await read();
         await click('ControlCenterTrigger');
         const { value: before, slider } = await waitForBrightnessControl(h, brightnessOpening.sampleFrame);
@@ -350,15 +350,21 @@ export async function phoneRecoveryCase(h) {
         evidence.inputs.push({ name: 'ControlBrightness', method: h.touch ? 'ordinaryTouchTap' : 'ordinaryMouseClick', at: Date.now(), sampleFrame: before.sampleFrame, rect: slider.rect });
         await h.clickPoint(await h.renderPoint({ x: slider.rect.x + slider.rect.width / 2, y: slider.rect.y + slider.rect.height * .05 }, before));
         await h.poll(async () => (await read()).state.ui.brightness >= 80, 'manual brightness reaches original plant threshold');
+        value = await read(`manual brightness at ${percent}%`);
+        h.check(value.state.phoneBattery.percent === percent && value.state.ui.brightnessUserAdjusted && noRetiredControls(value),
+          `${h.id}: manual brightness remains uncapped and recorded at zero/one battery`);
+        const wasPlaying = value.state.ui.musicPlaying;
+        await click('ControlMusicPlay');
+        await h.poll(async () => (await read()).state.ui.musicPlaying !== wasPlaying, 'music remains usable at zero/one battery');
         await shot(`control-center-${percent}`);
         await click('PhoneNav_close');
         await h.poll(async () => (await read()).state.flags.flowerBloomed, 'original watered/fertilized/light conditions bloom');
         value = await read(`recovered original plant path from ${percent}%`);
         h.check(value.state.flags.plantWatered && value.state.flags.plantFertilized && value.state.flags.plantLit && !value.state.flags.flowerEightTaken,
-          `${h.id}: original three plant conditions still apply; charging never collects the digit`);
-        await shot(`plant-${percent}-recovered`); await h.assertLayout(`charging recovery ${percent}%`);
+          `${h.id}: original three plant conditions still apply; migration and manual brightness never collect the digit`);
+        await shot(`plant-${percent}-recovered`); await h.assertLayout(`battery migration recovery ${percent}%`);
       }
-      evidence.coverage.push('legacy 0% and 1% ordinary imports', 'real dock cancel and duplicate-safe 2200ms recharge', 'manual brightness and original plant gates');
+      evidence.coverage.push('legacy 0% and 1% ordinary imports', 'retired desk returns to original app', 'consumption-only save/reload and repeated app navigation', 'uncapped manual brightness and music at zero/one battery', 'original plant gates');
     },
     'c1-tiyi': async () => {
       await h.importSave(path.join(h.fixtureDir, 'before_c1_tiyi_digit.json'));

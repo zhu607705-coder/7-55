@@ -57,11 +57,6 @@ func run() -> void:
  host.add_child(physical);await frames()
  check(physical.get_node_or_null("TactileMaterialState")==null,"physical paper not buttonized")
  physical.queue_free()
- var dock=load("res://scripts/ui/home_charging_dock.gd").new();host.add_child(dock)
- var contact: Button=dock._target("Contact",Rect2(0,0,76,58),"连接充电座")
- await frames()
- check(contact.get_node_or_null("TactileMaterialState")==null,"real charging contact stays an object hotspot")
- dock.queue_free();await frames()
  for script_path: String in ["phone_drop_button.gd","inventory_item.gd","clock_visual_card.gd"]:
   var object_button: Button=load("res://scripts/ui/"+script_path).new()
   host.add_child(object_button);await frames()

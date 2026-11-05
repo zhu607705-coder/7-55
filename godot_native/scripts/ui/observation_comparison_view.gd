@@ -1,9 +1,11 @@
 extends VBoxContainer
 ## Player-directed comparison only. All content is supplied by the earned-card model.
 signal close_requested
+const PhoneOverlay=preload("res://scripts/ui/phone_overlay_shell.gd")
+var phone_builder: RefCounted
 const UI = preload("res://scripts/ui/native_ui_theme.gd")
 const Typography = preload("res://scripts/ui/native_typography.gd")
-const Hardware = preload("res://scripts/ui/interaction_chrome.gd")
+const Journal = preload("res://scripts/ui/native_journal_view.gd")
 const ItemArt = preload("res://scripts/ui/phone_chrome.gd")
 var session: RefCounted
 var message: Label
@@ -11,6 +13,9 @@ var slots: Array[Button] = []
 var content: VBoxContainer
 var compare_button: Button
 var swap_button: Button
+
+func _init() -> void:
+	set_meta("phone_ui_scope",true)
 
 func configure(value: RefCounted) -> void:
 	session = value
@@ -22,8 +27,9 @@ func _ready() -> void:
 	_render()
 
 func _label(text: String, size_value: int=16, color: Color=UI.INK) -> Label:
+	if phone_builder!=null:return PhoneOverlay.label(phone_builder,text,16 if size_value>=18 else 13,color)
 	var label := Label.new()
-	Typography.apply_body(label)
+	Journal.style_label(label,maxi(15,size_value),color)
 	label.text = text
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -32,23 +38,23 @@ func _label(text: String, size_value: int=16, color: Color=UI.INK) -> Label:
 	return label
 
 func _button(text: String, id: String, action: Callable, selected: bool=false) -> Button:
+	if phone_builder!=null:
+		var phone_button:=PhoneOverlay.action(phone_builder,text,action,Color("fff0cc") if selected else phone_builder.PAPER)
+		phone_button.name=id
+		phone_button.set_meta("phone_button_role","segment" if id.begins_with("ObservationSlot") else "action")
+		phone_button.set_meta("phone_button_selected",selected)
+		phone_button.custom_minimum_size.y=44
+		return phone_button
 	var button := Button.new()
 	button.name = id
 	button.text = text
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	button.custom_minimum_size = Vector2(0,48)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	Typography.apply_body(button)
-	button.add_theme_font_size_override("font_size",16)
-	for state_name in ["font_color","font_hover_color","font_pressed_color","font_focus_color"]:
-		button.add_theme_color_override(state_name,Hardware.INK)
-	button.add_theme_color_override("font_disabled_color",Color("6d736f"))
-	var normal := Hardware.style(Color("f5efdf"),Hardware.CORAL if selected else Hardware.EDGE,1)
-	normal.content_margin_left=12; normal.content_margin_right=12
-	normal.content_margin_top=10; normal.content_margin_bottom=10
-	var hover: StyleBoxFlat=normal.duplicate(); hover.bg_color=Color("eee3cd")
-	Hardware.apply_states(button,normal,hover)
-	Hardware.set_selected(button,selected)
+	button.set_meta("phone_button_role","segment" if id.begins_with("ObservationSlot") else "action")
+	button.set_meta("phone_button_selected",selected)
+	Journal.style_button(button,selected)
+	Journal.style_label(button,16,Journal.INK)
 	button.pressed.connect(action)
 	return button
 
@@ -124,8 +130,8 @@ func _add_option_art(option: Button, entry: Dictionary) -> void:
 func _comparison_card(entry: Dictionary, index: int) -> void:
 	var panel := PanelContainer.new(); panel.name="ObservationCard"+str(index)
 	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	# The containing notebook owns the paper; cards are unboxed content leaves.
-	var leaf := Hardware.style(Color.TRANSPARENT,Hardware.EDGE,0)
+	# Earned evidence remains unboxed content separated by a flat ink rule.
+	var leaf := Journal.paper_box(Color.TRANSPARENT,Journal.LINE,0)
 	leaf.border_width_bottom=1
 	leaf.content_margin_left=4; leaf.content_margin_right=4
 	leaf.content_margin_top=8; leaf.content_margin_bottom=16
@@ -143,5 +149,16 @@ func _comparison_card(entry: Dictionary, index: int) -> void:
 
 func _restore_focus(id: String) -> void:
 	if not is_inside_tree(): return
+	# Wrapped evidence settles after the modal receives its real column width.
+	# Focusing during the first zero-width layout scrolls past the back action.
+	await get_tree().process_frame
+	if not is_inside_tree(): return
+	await get_tree().process_frame
+	if not is_inside_tree(): return
 	var target := find_child(id,true,false)
-	if target is Control and target.visible and not (target is Button and target.disabled): target.grab_focus()
+	if target is Control and target.visible and not (target is Button and target.disabled):
+		target.grab_focus()
+		var ancestor: Node=get_parent()
+		while ancestor!=null:
+			if ancestor is ScrollContainer:ancestor.ensure_control_visible(target);break
+			ancestor=ancestor.get_parent()

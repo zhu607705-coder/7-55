@@ -49,7 +49,7 @@ func _run() -> void:
 	state.restore_formal()
 	check(state.d==checkpoint_before,"formal state survives named checkpoint")
 	var merged: Dictionary = state.merge_defaults(fresh,{"phoneBattery":{"percent":9}})
-	check(merged.phoneBattery.percent==9 and merged.phoneBattery.has("lowPowerMode"),"nested default merge retains sibling fields")
+	check(merged.phoneBattery=={"percent":9},"nested battery merge contains no retired charging fields")
 	var before: Dictionary = state.d.duplicate(true)
 	state.begin_preview(3,"canteen_interior")
 	check(state.developer_mode,"preview isolated")

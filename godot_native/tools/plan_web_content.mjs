@@ -224,7 +224,7 @@ const bootRoots = [
   'scripts/world.gd', 'scripts/ui/world_viewport_container.gd',
   // Later phone/presentation hosts use explicit *_SCRIPT paths and are created
   // by Main only after content admission for their actual scene/session.
-  'scripts/media/audio_director.gd', 'scripts/media/c3_media_host.gd', 'scripts/media/c3_battery_prank.gd',
+  'scripts/media/audio_director.gd', 'scripts/media/c3_media_host.gd',
 ];
 const eagerWorldRoots = [
   'scripts/ui/chapter4_world_layers.gd', 'scripts/ui/chapter3_world_layers.gd', 'scripts/ui/library_world_layers.gd',

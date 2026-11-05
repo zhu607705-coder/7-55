@@ -7,8 +7,8 @@ uniform sampler2D fine_glyph_atlas : filter_nearest, repeat_disable;
 uniform sampler2D hanzi_masks : filter_nearest, repeat_disable;
 uniform float mask_count = 66.0;
 uniform vec2 flow_cell = vec2(4.0,6.0);
-uniform float assembly_duration = .28;
-uniform float assembly_distance = 90.0;
+uniform float assembly_duration = .42;
+uniform float assembly_distance = 110.0;
 uniform vec2 stroke_cell = vec2(3.0,4.0);
 uniform float field_occupancy = .95;
 uniform float word_cell_size = 4.0;
@@ -89,7 +89,10 @@ vec4 terminal_field(vec2 p) {
 			vec2 cell=floor(destination/stroke_cell);
 			if(int(floor(hash_cell(cell+vec2(17.0,31.0))*4.0))!=side_index) continue;
 			if(stroke_mask(destination,i)<.5) continue;
-			float ink=ascii_ink(destination,stroke_cell,vec2(0.0),3.0,1.0,true);
+			// Keep glyphs travelling inside the fixed Hanzi silhouette after assembly.
+			// This is ink-only motion: collision, word shape and reading remain stable.
+			vec2 stroke_velocity=reduced_motion ? vec2(0.0) : vec2(0.0,18.0);
+			float ink=ascii_ink(destination,stroke_cell,stroke_velocity,3.0,1.0,true);
 			float strength=word_data[i].w*(.88+.12*hash_cell(cell));
 			color=mix(color,vec3(219.0,237.0,244.0)/255.0,ink*strength);
 		}

@@ -156,7 +156,7 @@ func _redraw() -> void:
 	if source_animation==null or stage.is_empty():return
 	var fraction: float=0 if validation_reference or reduced_motion else clampf(source_frame_position(elapsed)-frame,0,1)
 	render_source_frame(stage,frame,fraction)
-	pause_cover.visible=paused
+	pause_cover.visible=false # Non-interactive transition has no player pause UI.
 
 ## The sampled timeline is frame-indexed exactly like the source overlay. No
 ## elapsed simulation value, collision or controller proof enters this renderer.
@@ -286,7 +286,7 @@ func play(next_stage: String,retry: bool=false,reduce: bool=false) -> bool:
 	if not ready3d:
 		stage=next_stage;status="failed";show();_layout()
 		caption.text="动画资源未能载入，可退出后重试。已保存的进度保持不变。"
-		pause_button.disabled=true;skip_button.disabled=true
+		skip_button.disabled=true
 		return false
 	return super.play(next_stage,retry,reduce)
 

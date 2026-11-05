@@ -48,7 +48,6 @@ import {
   ChapterThreeCanteenController
 } from "../../modules/ChapterThreeCanteenController";
 import { ChapterThreeTheaterController } from "../../modules/ChapterThreeTheaterController";
-import { PhoneBatteryController } from "../../modules/PhoneBatteryController";
 import {
   ChapterThreeQizhenLakeController,
   type QizhenActionResult,
@@ -583,7 +582,6 @@ export function RpgGameHost({
   const libraryController = useMemo(() => new LibraryFinalsController(store, events), [events, store]);
   const canteenController = useMemo(() => new ChapterThreeCanteenController(store, events), [events, store]);
   const theaterController = useMemo(() => new ChapterThreeTheaterController(store, events), [events, store]);
-  const batteryController = useMemo(() => new PhoneBatteryController(store, events), [events, store]);
   const qizhenController = useMemo(() => new ChapterThreeQizhenLakeController(store, events), [events, store]);
   const chapter4ClosureSessionRegistry = useMemo(() => new ChapterFourClosureSessionRegistry(), []);
   const chapter4Controller = useMemo(
@@ -1666,11 +1664,6 @@ const [chapter4MaintenanceDiagnosisFeedback, setChapter4MaintenanceDiagnosisFeed
         });
       } else if (event.name === "rpg_theater_ticket_kiosk_requested") {
         theaterController.inspectTicketKiosk();
-      } else if (event.name === "rpg_theater_charge_requested") {
-        batteryController.rechargeAtStation(String(event.payload?.stationId ?? ""), {
-          x: Number(event.payload?.x ?? NaN),
-          y: Number(event.payload?.y ?? NaN)
-        });
       } else if (event.name === "rpg_theater_ticket_code_submitted") {
         theaterController.submitTicketCode(String(event.payload?.code ?? ""));
       } else if (event.name === "rpg_theater_ticket_combine_requested") {
@@ -1908,7 +1901,7 @@ const [chapter4MaintenanceDiagnosisFeedback, setChapter4MaintenanceDiagnosisFeed
         qizhenController.completeEscape();
       }
     });
-  }, [batteryController, canteenController, events, qizhenController, store, theaterController]);
+  }, [canteenController, events, qizhenController, store, theaterController]);
 
   const completeQizhenRainRescueCinematic = useCallback((result: QizhenRainRescueCinematicResult) => {
     setQizhenRainRescueCinematicOpen(false);

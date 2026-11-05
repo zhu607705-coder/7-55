@@ -7,6 +7,15 @@ func chase_pending(director: Node) -> bool:
 func chase_effects(director: Node) -> bool:
 	return director.effects.any(func(entry):return str(entry.id).begins_with("canteen_chase_") or str(entry.id).begins_with("native_chase_"))
 
+func pause_action(game: Control, source: Button) -> Button:
+	var overlay=game.shared_pause_overlay
+	for button: Button in overlay.action_buttons:
+		if button.text==source.text:
+			check(overlay.is_open() and button.is_visible_in_tree() and not button.disabled,"paused original action is actually reachable on the shared card: "+source.text)
+			return button
+	check(false,"paused original action missing from shared card: "+source.text)
+	return source
+
 func run() -> void:
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial()
 	state.d.native.chapter=3;state.d.native.page="phone_home";state.d.native.scene="campus_bootstrap"
@@ -23,7 +32,7 @@ func run() -> void:
 		check(chase_effects(director),"source collision has real effect owners before Pause/Exit")
 		await tap(game.pause_button)
 		check(game.paused and old_music.stream_paused and director._paused_prefixes.has("canteen_chase_"),"root Pause acquires the broad source chase audio owner")
-		await tap(game.exit_button)
+		await tap(pause_action(game,game.exit_button))
 		check(not is_instance_valid(shell.active_game),"root Exit removes the active chase")
 		check(not director._paused_prefixes.has("canteen_chase_") and not director._paused_prefixes.has("native_chase_"),"Exit clears both activity pause keys")
 		check(not chase_effects(director) and not chase_pending(director),"Exit retires old effects and scheduled chase cues")
@@ -43,13 +52,13 @@ func run() -> void:
 		await frames(2);await tap(game.pause_button)
 		var same_music: AudioStreamPlayer=director.music
 		var same_stream: AudioStream=same_music.stream
-		await tap(game.retry_button)
+		await tap(pause_action(game,game.retry_button))
 		check(not game.running and not game.paused and game.model.tick==0,"paused Retry returns to ready")
 		check(not chase_effects(director),"Retry retires old collision effects before resume")
 		await tap(game.start_button)
 		check(director.music==same_music and same_music.stream==same_stream and same_music.playing and not same_music.stream_paused,"Retry/Start preserves and resumes the same music owner")
 		await tap(game.pause_button)
-		await tap(game.start_button)
+		await tap(game.shared_pause_overlay.resume_button)
 		check(director.music==same_music and not same_music.stream_paused,"ordinary Pause/Continue still resumes the same owner")
 		await tap(game.exit_button)
 	await shell.shutdown();shell.queue_free();await frames()

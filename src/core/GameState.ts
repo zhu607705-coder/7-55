@@ -14,9 +14,7 @@ export function createInitialGameState(): GameState {
     networkMode: "campus_wifi",
     themeMode: "normal",
     phoneBattery: {
-      percent: 17,
-      lowPowerMode: false,
-      rechargeCount: 0
+      percent: 17
     },
     digits: {
       d1: null,
@@ -365,12 +363,14 @@ export function createInitialGameState(): GameState {
       finalCode: null
     },
     ui: {
-      homeDeskReturnScene: null,
       controlCenterOpen: false,
       autoRotate: false,
       musicPlaying: false,
       musicMuted: false,
-      brightness: 33,
+      brightness: 65,
+      brightnessRevision: 1,
+      brightnessUserAdjusted: false,
+      brightnessLegacy100Repaired: false,
       homeAppOrder: [...DEFAULT_PHONE_HOME_APP_ORDER],
       hiddenHomeAppIds: [],
       inventoryOpen: false,

@@ -1,7 +1,5 @@
 extends "res://scripts/chapters/c3_base.gd"
 const CanteenObjective = preload("res://scripts/presentation/canteen_objective.gd")
-const ChargeSession = preload("res://scripts/media/c3_charging_session.gd")
-var charge_session: RefCounted
 const SceneSession = preload("res://scripts/presentation/c3_scene_session.gd")
 const RehearsalSession = preload("res://scripts/games/theater_rehearsal_session.gd")
 const RehearsalModel = preload("res://scripts/games/theater_shadow_rehearsal_model.gd")
@@ -257,18 +255,9 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 		c.entryPaperEscaped=true
 		return response()
 	if action.begins_with("c3_target:"): return physical(s,action.trim_prefix("c3_target:"))
-	if action=="c3_charge_result":
-		if not value is ChargeSession or value!=charge_session: return locked("补电回执已失效。")
-		if charge_session.phase=="cancelled": return response("接线已断开，本次补电未完成。")
-		if not charge_session.consume(s): return locked("补电尚未完成。")
-		if s.phoneBattery.percent>=45 and not s.phoneBattery.lowPowerMode: return response("当前电量 %d%%，暂不需要补电。" % int(s.phoneBattery.percent))
-		s.phoneBattery.percent=maxi(45, int(s.phoneBattery.percent))
-		s.phoneBattery.lowPowerMode=false
-		s.phoneBattery.rechargeCount+=1
-		return response("已接入手机充电服务站，电量已补充，低电量模式已关闭。亮度可自行调整。")
 	if action=="c3_network":
 		if str(value) not in ["campus_wifi","cellular","offline"]: return locked()
-		if s.networkMode!=value: s.phoneBattery.percent=mini(int(s.phoneBattery.percent),maxi(1,int(s.phoneBattery.percent)-1))
+		if s.networkMode!=value: s.phoneBattery.percent=maxi(0,int(s.phoneBattery.percent)-1)
 		s.networkMode=value
 		return response("已切换网络。")
 	if action=="c3_open_map": return {"handled":true,"page":"c3_campus_map"}
@@ -702,13 +691,6 @@ func theater_target(s: Dictionary, entry: Dictionary) -> Dictionary:
 	var dark: bool = mode(s,"theaterHunt")=="dark"
 	match str(entry.kind):
 		"rehearsal": return _begin_rehearsal(s)
-		"charger":
-			if dark: return locked("深色观察只能查看设备。切到浅色操作后接入充电线。")
-			if s.phoneBattery.percent>=45 and not s.phoneBattery.lowPowerMode: return response("当前电量 %d%%，暂不需要补电。" % int(s.phoneBattery.percent))
-			if not ChargeSession.rejection(s).is_empty(): return locked("请走到充电服务站旁接线。")
-			if charge_session!=null and charge_session.phase=="charging": return response("正在补电，请在设备旁稍候")
-			charge_session=ChargeSession.new("theater", s)
-			return {"handled":true,"world_effect":{"script":"res://scripts/media/c3_charging.gd","session":charge_session,"on_event":"c3_charge_result","target_id":"theater_charging_station"}}
 		"poster":
 			if t.phase!="entry_ticket" or t.posterCleaned: return locked()
 			if dark or not own(s,"greaseTissue"): return response(prose("chapter3-theater.content","ticket.posterGlare"))
@@ -796,7 +778,7 @@ func targets(scene: String, s: Dictionary) -> Array:
 				rehearsal_target.art_size=[120,100]
 				list.append(rehearsal_target)
 				continue
-			var allowed: Array={"entry_ticket":["poster","kiosk","gate","charger"],"program_search":["console","program","charger"],"prop_setup":["prop","scanner","vent","charger"],"spotlight_ready":["console","charger"],"complete":["exit","charger"]}.get(s.theaterHunt.phase,["charger"])
+			var allowed: Array={"entry_ticket":["poster","kiosk","gate"],"program_search":["console","program"],"prop_setup":["prop","scanner","vent"],"spotlight_ready":["console"],"complete":["exit"]}.get(s.theaterHunt.phase,[])
 			if entry.kind not in allowed and not (entry.kind=="prop" and s.theaterHunt.propBoxOpened): continue
 		if scene=="canteen_interior":
 			if not side_active(s.canteenHunt): continue
@@ -821,10 +803,6 @@ func targets(scene: String, s: Dictionary) -> Array:
 		if entry.kind=="tray":
 			result.art="res://assets/native/chapter3/tray_dirty.svg" if s.native.mode=="dark" and entry.id in TRAYS and s.canteenHunt.trayTaskStarted else "res://assets/native/chapter3/tray_clean.svg"
 			result.art_size=[28,28]
-		if entry.kind=="charger":
-			result.art="res://assets/native/chapter3/charging_station.svg"
-			result.art_size=[80,84]
-			result.art_offset=[0,-2]
 		if entry.kind=="program":
 			if s.theaterHunt.collectedProgramIds.has(entry.programId): continue
 			result.art="res://assets/rpg/theater/generated/icons/item_theater_program_"+str(entry.programId)+".png"

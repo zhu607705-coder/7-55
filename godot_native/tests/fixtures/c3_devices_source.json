@@ -1,6 +1,6 @@
 {
   "sources": {
-    "src/scenes/rpg/TheaterInteriorScene.ts": "2b041bb08127f781be95457c30de3fa0d95aaed28756588214dcf0f64c20c7a1",
+    "src/scenes/rpg/TheaterInteriorScene.ts": "deb02d184c8c77951b891f881c69205155545f11f56b8a18e5242ce7f0918b53",
     "src/modules/ChapterThreeTheaterController.ts": "5d6ef51e91ca6129706b61112d848c92f9b9172f6bcd6687e3090c417609a119",
     "src/scenes/rpg/CanteenInteriorScene.ts": "8e564a232e7eac0ab10278386a6901fceb6dd8a275443cf9cecaf48c09e4b6eb"
   },

@@ -58,6 +58,7 @@ func run() -> void:
 	var ordinary := player(shell)
 	var manual := player(shell); manual.stream_paused = true
 	var replaced := player(shell)
+	var stopped := player(shell)
 	var owned := player(shell.audio_director, "web_visibility_owner")
 	shell.audio_director.pause_prefix("web_visibility_")
 	check(is_equal_approx(ordinary.stream.get_length(), 4.0) and ordinary.has_stream_playback(), "pause probe uses an actual four-second AudioServer playback")
@@ -72,7 +73,7 @@ func run() -> void:
 	var boundary_position := ordinary.get_playback_position()
 	check(boundary_probe.paused_at_focus_out, "captured playback is already paused when focus handlers run")
 	boundary_probe.queue_free()
-	check(not paused, "platform leaves the previously running SceneTree running")
+	check(paused and bridge._owns_tree_pause, "background platform temporarily owns the previously running SceneTree pause")
 	check(ordinary.stream_paused and manual.stream_paused and owned.stream_paused, "hidden boundary immediately pauses actual live audio")
 	check(not shell.audio_director.pause_for_platform(), "repeated platform pause does not acquire another clock lease")
 	var frozen: int = shell.audio_director.presentation_clock()
@@ -86,10 +87,16 @@ func run() -> void:
 	check(owned.stream_paused, "prefix resume during hiding cannot restart audio")
 	# This newer playback is not the capability captured by the hidden boundary.
 	replaced.stream = wave(); replaced.play(); replaced.stream_paused = true
+	var replacement_playback := replaced.get_stream_playback()
+	var new_manual := player(shell); new_manual.stream_paused = true
+	stopped.stop()
 	bridge._apply_visibility(false)
-	check(not ordinary.stream_paused and manual.stream_paused, "return resumes only playback that was not manually paused")
+	check(not paused and not ordinary.stream_paused and manual.stream_paused, "return releases its tree lease and resumes only playback that was not manually paused")
 	check(not owned.stream_paused, "a prefix released during hiding is not restored as a stale manual pause")
 	check(replaced.stream_paused, "return cannot resume a replacement stream")
+	check(replaced.get_stream_playback() == replacement_playback, "resume never replaces a newer playback identity")
+	check(new_manual.stream_paused, "return cannot resume a newly created manually paused player")
+	check(not stopped.playing and not stopped.has_stream_playback(), "return cannot restart a captured playback stopped while hidden")
 	var once: int = shell.audio_director.presentation_clock()
 	shell.audio_director.resume_from_platform()
 	check(absi(shell.audio_director.presentation_clock() - once) < 20, "repeated platform resume is idempotent")
@@ -116,14 +123,75 @@ func run() -> void:
 	bridge._apply_visibility(true)
 	await create_timer(.10).timeout
 	shell._on_content_blocking(false)
-	check(not paused and ordinary.stream_paused and bridge._document_hidden, "finishing content restores its tree lease but retains real browser hiding")
+	check(paused and ordinary.stream_paused and bridge._document_hidden, "finishing content retains the platform tree and audio guards until browser hiding ends")
 	check(shell.audio_director.presentation_clock() == content_clock, "overlapping content and hiding exclude wall time only once")
 	bridge._apply_visibility(false)
-	check(not ordinary.stream_paused and manual.stream_paused, "last pause owner restores the original manual audio ownership")
+	check(not paused and not ordinary.stream_paused and manual.stream_paused, "last pause owner restores its tree lease and original manual audio ownership")
 	paused = true
 	shell._on_content_blocking(true); shell._on_content_blocking(false)
 	check(paused, "content loading never resumes a tree paused by another owner")
 	paused = false; shell.web_platform = null
+	# Real local CloudSaves modal: no transport, account or persistent writes.
+	var cloud: Node = load("res://scripts/platform/cloud_saves.gd").new()
+	root.add_child(cloud); cloud._build_surface(); cloud._cover.hide()
+	shell.web_platform = bridge
+	var orders: Array = [
+		["cloud","hidden","focus","content"], ["hidden","content","cloud","focus"],
+		["content","cloud","focus","hidden"], ["focus","hidden","content","cloud"]]
+	for acquire_order: Array in orders:
+		for release_order: Array in orders:
+			ordinary.stream_paused = false; manual.stream_paused = true; replaced.stream_paused = true; new_manual.stream_paused = true; stopped.stop()
+			for guard: String in acquire_order:
+				match guard:
+					"cloud":cloud._cover.show();cloud._pause()
+					"hidden":bridge._apply_visibility(true)
+					"focus":bridge._apply_focus(false)
+					"content":shell._on_content_blocking(true)
+			for index: int in release_order.size():
+				match str(release_order[index]):
+					"cloud":cloud._resume()
+					"hidden":bridge._apply_visibility(false)
+					"focus":bridge._apply_focus(true)
+					"content":shell._on_content_blocking(false)
+				var final_owner := index == release_order.size()-1
+				check(paused != final_owner, "nested guards release only after every owner: "+str(acquire_order)+" / "+str(release_order)+" / "+str(index))
+				check(manual.stream_paused and replaced.stream_paused and new_manual.stream_paused and not stopped.playing, "nested owners preserve manual, replacement, new-player and stopped states")
+				check(ordinary.stream_paused != final_owner, "ordinary audio stays frozen until the final nested owner releases")
+	# Retain actual audio silence and deadline time while Cloud outlives browser guards.
+	var clock_probe: Node = Director.new();shell.add_child(clock_probe)
+	clock_probe.setup(func() -> Dictionary:return state.d);clock_probe.set_process(false)
+	var clock_voice := player(clock_probe,"cloud_clock_voice")
+	var clock_effect := player(clock_probe,"cloud_clock_effect")
+	clock_probe.voice=clock_voice;clock_probe.voice_deadline=clock_probe.presentation_clock()+500
+	clock_probe.effects.append({"player":clock_effect,"id":"cloud_clock_effect","deadline":clock_probe.presentation_clock()+500,"bus":""})
+	clock_probe.scheduled.append({"id":"cloud_clock_pending","at":clock_probe.presentation_clock()+500,"cue":{},"sequence":1})
+	ordinary.stream_paused=false;manual.stream_paused=true
+	bridge._apply_visibility(true);cloud._cover.show();cloud._pause();bridge._apply_visibility(false)
+	var cloud_frozen_position := ordinary.get_playback_position()
+	var cloud_frozen_clock: int = clock_probe.presentation_clock()
+	var remaining_deadlines: Array = [clock_probe.voice_deadline-cloud_frozen_clock,clock_probe.effects[0].deadline-cloud_frozen_clock,clock_probe.scheduled[0].at-cloud_frozen_clock]
+	var pending_before: Array = clock_probe.scheduled.duplicate(true)
+	var cloud_wait_started := Time.get_ticks_usec()
+	while Time.get_ticks_usec()-cloud_wait_started < 140000:await create_timer(.02).timeout
+	check(absf(ordinary.get_playback_position()-cloud_frozen_position)<.02, "remaining cloud owner freezes the real AudioServer playhead")
+	clock_probe._process(0)
+	check(clock_probe.presentation_clock()==cloud_frozen_clock and clock_probe.scheduled==pending_before, "cloud remaining guard freezes the director clock and pending cue offsets for real wall time")
+	check(clock_probe.voice==clock_voice and clock_probe.effects.size()==1, "cloud remaining guard cannot consume voice or effect cutoff deadlines")
+	cloud._resume();check(not paused and not ordinary.stream_paused and manual.stream_paused, "cloud final release restores only the intended playback owners")
+	var after_cloud_clock: int = clock_probe.presentation_clock()
+	var after_remaining: Array = [clock_probe.voice_deadline-after_cloud_clock,clock_probe.effects[0].deadline-after_cloud_clock,clock_probe.scheduled[0].at-after_cloud_clock]
+	for index: int in 3:check(after_remaining[index]>=remaining_deadlines[index]-20 and after_remaining[index]<=remaining_deadlines[index], "cloud final release retains authored remaining voice/effect/scheduled time: "+str(index))
+	check(clock_probe.pause_for_platform(), "independent clock owner can acquire after the shared lease finishes")
+	var external_clock: int = clock_probe.presentation_clock()
+	cloud._cover.show();cloud._pause();cloud._resume()
+	check(clock_probe.presentation_clock()==external_clock and clock_probe._platform_pause_at>=0, "shared cloud lease never releases a pre-existing director clock owner")
+	clock_probe.resume_from_platform()
+	await clock_probe.shutdown();clock_probe.queue_free()
+	paused=true;cloud._cover.show();cloud._pause();bridge._apply_visibility(true)
+	cloud._resume();bridge._apply_visibility(false)
+	check(paused, "cloud and platform preserve a tree paused before either lease")
+	paused=false
+	cloud.queue_free();shell.web_platform=null
 	# C3's actual fallback host must stop at focus loss, before hidden wall time.
 	var voice_host: Node = load("res://scripts/media/c3_media_host.gd").new()
 	shell.add_child(voice_host)
@@ -147,7 +215,7 @@ func run() -> void:
 	check(game.paused and game.phase == "lock", "return does not silently resume or complete C1")
 	shell.active_game = null; game.queue_free()
 	check(state.d == before and FileAccess.get_file_as_bytes(state.SAVE_PATH) == primary, "all lifecycle probes preserve State and formal save bytes")
-	for item in [ordinary, manual, replaced, owned]: item.stop(); item.stream = null; item.queue_free()
+	for item in [ordinary, manual, replaced, owned, stopped, new_manual]: item.stop(); item.stream = null; item.queue_free()
 	test_deadline_shift_contract()
 	await test_director_clock()
 	await voice_host.shutdown(); voice_host.queue_free()

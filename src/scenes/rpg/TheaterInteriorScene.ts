@@ -23,12 +23,7 @@ import type { GameSubtitleTone } from "../../components/GameSubtitleFrame";
 import { textFeedbackDuration } from "../../modules/AudioDirector";
 import type { GameState, ItemId, TheaterMode, TheaterProgramId } from "../../core/types";
 import theaterContent from "../../data/chapter3-theater.content.json";
-import {
-  checkPhoneChargingStation,
-  PHONE_BATTERY_RECHARGE_PERCENT,
-  PHONE_CHARGING_DURATION_MS,
-  THEATER_CHARGING_STATION
-} from "../../core/PhoneChargingStation";
+
 import { formatRpgDragHint, formatRpgInteractionHint } from "./RpgControlHints";
 import { RPG_HUD_LAYOUT } from "./RpgHudLayout";
 import {
@@ -173,7 +168,6 @@ interface PendingFeedback {
 
 function theaterDropTargetLabel(kind: TheaterInteractionTarget["kind"]): string {
   return {
-    charger: "手机充电服务站",
     poster: "入口海报",
     gate: "检票闸机右侧读票器",
     scanner: "道具箱旁票据扫描器",
@@ -193,10 +187,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
   private obstacles!: Phaser.Physics.Arcade.StaticGroup;
   private exitDoor!: RpgInteriorDoorRuntime;
   private entranceSensorOpen = false;
-  private chargingElapsedMs: number | null = null;
-  private chargingBar!: Phaser.GameObjects.Rectangle;
-  private chargingPhone!: Phaser.GameObjects.Container;
-  private chargingStatus!: Phaser.GameObjects.Text;
   private exitTransitioning = false;
   private gateBlocker: Phaser.GameObjects.Rectangle | null = null;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -393,7 +383,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
 
     this.createProgramFragments();
     this.createTicketInspectionPoint();
-    this.createChargingStation();
     this.syncTicketInspectionPoint(state);
     this.createWorldHotspots();
     // Interactions attach to the visible fixtures; no floating world markers.
@@ -416,25 +405,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.runtime.emit("theater_interior_opened");
 
     this.entranceSensorOpen = false;
-    this.chargingElapsedMs = null;
-    const cancelHiddenCharge = () => {
-      if (document.hidden) this.cancelCharging();
-    };
-    const cancelOnPause = () => this.cancelCharging();
-    document.addEventListener("visibilitychange", cancelHiddenCharge);
-    this.events.on(Phaser.Scenes.Events.PAUSE, cancelOnPause);
-    this.events.on(Phaser.Scenes.Events.SLEEP, cancelOnPause);
-    const detachChargingListeners = () => {
-      this.cancelCharging(false);
-      document.removeEventListener("visibilitychange", cancelHiddenCharge);
-      this.events.off(Phaser.Scenes.Events.PAUSE, cancelOnPause);
-      this.events.off(Phaser.Scenes.Events.SLEEP, cancelOnPause);
-      this.events.off(Phaser.Scenes.Events.SHUTDOWN, detachChargingListeners);
-      this.events.off(Phaser.Scenes.Events.DESTROY, detachChargingListeners);
-    };
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, detachChargingListeners);
-    this.events.once(Phaser.Scenes.Events.DESTROY, detachChargingListeners);
-
     if (this.currentPhase === "entry_ticket" && !state.theaterHunt.posterCleaned && !state.theaterHunt.ticketCodeRead) {
       this.dialogueLocked = true;
       this.time.delayedCall(this.reducedMotion ? 160 : 1100, () => {
@@ -481,7 +451,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
     this.updateOcclusion();
     this.updateEntranceSensor();
     this.exitDoor.updateActorOcclusion(this.player);
-    this.updateChargingStation(delta, state);
 
     const targets = this.getActiveTargets(state);
     const nearest = findNearestTheaterTarget(this.player.x, this.player.y, targets);
@@ -624,89 +593,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
     }
   }
 
-  private createChargingStation(): void {
-    const { x, y } = THEATER_CHARGING_STATION;
-    // Retrofit the existing cabinet in source pixels: retain its wood body,
-    // add a fixed battery sign, sockets and short cables on the front face.
-    const g = this.add.graphics().setDepth(945);
-    g.fillStyle(0x172f32).fillRect(x - 31, y - 42, 62, 18);
-    g.lineStyle(2, 0x96d9c8).strokeRect(x - 31, y - 42, 62, 18);
-    this.add.text(x, y - 33, "充电", {
-      fontFamily: '"Fusion Pixel 12px Proportional SC", monospace', fontSize: "13px", color: "#d4f7e6"
-    }).setOrigin(0.5).setDepth(946);
-    g.fillStyle(0x142d30).fillRect(x - 28, y - 17, 56, 52);
-    g.lineStyle(2, 0x71897f).strokeRect(x - 28, y - 17, 56, 52);
-    g.lineStyle(2, 0xc5e8da).strokeRect(x - 15, y - 11, 28, 12);
-    g.fillStyle(0xc5e8da).fillRect(x + 14, y - 8, 3, 6);
-    this.chargingBar = this.add.rectangle(x - 12, y - 8, 22, 6, 0x72dfad)
-      .setOrigin(0).setDepth(947);
-    [-15, 15].forEach((offset) => {
-      g.fillStyle(0x9db2ad).fillRect(x + offset - 5, y + 8, 10, 5);
-      g.fillStyle(0x091717).fillRect(x + offset - 3, y + 9, 6, 2);
-      g.lineStyle(2, 0xa1c1b5).beginPath().moveTo(x + offset, y + 13)
-        .lineTo(x + offset, y + 25).lineTo(x + offset - 7, y + 25)
-        .lineTo(x + offset - 7, y + 18).strokePath();
-    });
-    const phoneBody = this.add.rectangle(0, 0, 15, 24, 0x121e26).setStrokeStyle(2, 0xbad5cf);
-    const phoneScreen = this.add.rectangle(0, -2, 9, 14, 0x72dfad);
-    this.chargingPhone = this.add.container(x + 12, y + 22, [phoneBody, phoneScreen]).setDepth(950).setVisible(false);
-    this.chargingStatus = this.add.text(x, y + 47, "", {
-      fontFamily: '"Fusion Pixel 12px Proportional SC", monospace', fontSize: "12px",
-      color: "#d4f7e6", backgroundColor: "#13252b", padding: { x: 5, y: 3 }
-    }).setOrigin(0.5, 0).setDepth(951).setVisible(false);
-  }
-
-  private beginCharging(state: GameState): void {
-    if (this.chargingElapsedMs !== null) return;
-    const rejection = checkPhoneChargingStation(state, THEATER_CHARGING_STATION.id, this.player);
-    if (rejection) {
-      this.showFeedback(rejection === "wrong_mode"
-        ? "充电站配有两条接线。切到浅色操作后可以接入手机。"
-        : "请走到充电服务站旁接线。", "system", FEEDBACK_GUIDANCE_MS);
-      return;
-    }
-    if (state.phoneBattery.percent >= PHONE_BATTERY_RECHARGE_PERCENT) {
-      this.showFeedback(`当前电量 ${state.phoneBattery.percent}%，暂不需要补电。`, "system");
-      return;
-    }
-    this.chargingElapsedMs = 0;
-    this.chargingPhone.setVisible(true);
-  }
-
-  private cancelCharging(feedback = true): void {
-    if (this.chargingElapsedMs === null) return;
-    this.chargingElapsedMs = null;
-    this.chargingPhone?.setVisible(false);
-    this.chargingStatus?.setVisible(false);
-    if (feedback && this.scene.isActive()) {
-      this.showFeedback("接线已断开，本次补电未完成。", "system");
-    }
-  }
-
-  private updateChargingStation(delta: number, state: GameState): void {
-    const rejection = checkPhoneChargingStation(state, THEATER_CHARGING_STATION.id, this.player);
-    if (this.chargingElapsedMs !== null) {
-      if (rejection || document.hidden || this.panel || this.spotlightPanel || this.exitTransitioning) {
-        this.cancelCharging();
-      } else {
-        this.chargingElapsedMs += Math.min(delta, 100);
-        if (this.chargingElapsedMs >= PHONE_CHARGING_DURATION_MS) {
-          this.chargingElapsedMs = null;
-          this.chargingPhone.setVisible(false);
-          this.runtime.emit("rpg_theater_charge_requested", {
-            stationId: THEATER_CHARGING_STATION.id, x: this.player.x, y: this.player.y
-          });
-        }
-      }
-    }
-    const battery = this.runtime.getState().phoneBattery.percent;
-    const progress = this.chargingElapsedMs === null ? 0 : this.chargingElapsedMs / PHONE_CHARGING_DURATION_MS;
-    this.chargingBar.setScale(this.chargingElapsedMs === null ? battery / 100 : progress, 1);
-    const status = this.chargingElapsedMs === null ? `电量 ${battery}%` : `补电 ${Math.floor(progress * 100)}%`;
-    if (this.chargingStatus.text !== status) this.chargingStatus.setText(status);
-    this.chargingStatus.setVisible(!rejection);
-  }
-
   private createProgramFragments(): void {
     THEATER_INTERACTION_TARGETS.filter((target) => target.kind === "program").forEach((target) => {
       const programId = target.programId!;
@@ -847,7 +733,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
       theater_prop_scanner: { x: 364, y: 170, width: 76, height: 94 },
       theater_backstage_vent: { x: 936, y: 95, width: 78, height: 55 },
       theater_exit: { x: 836, y: 842, width: 156, height: 92 },
-      theater_charging_station: THEATER_CHARGING_STATION
     };
     Object.entries(bounds).forEach(([id, rect]) => {
       const target = THEATER_INTERACTION_TARGETS.find((candidate) => candidate.id === id);
@@ -1205,35 +1090,30 @@ export class TheaterInteriorScene extends Phaser.Scene {
   }
 
   private getActiveTargets(state: GameState): TheaterInteractionTarget[] {
-    const charger = THEATER_INTERACTION_TARGETS.filter((target) => target.kind === "charger");
     if (state.theaterHunt.phase === "entry_ticket") {
-      return THEATER_INTERACTION_TARGETS.filter((target) => ["poster", "kiosk", "gate", "charger"].includes(target.kind));
+      return THEATER_INTERACTION_TARGETS.filter((target) => ["poster", "kiosk", "gate"].includes(target.kind));
     }
     if (state.theaterHunt.phase === "program_search") {
       return THEATER_INTERACTION_TARGETS.filter((target) => (
-        target.kind === "console" || target.kind === "charger"
+        target.kind === "console"
         || (target.kind === "program"
           && target.programId !== undefined
           && !state.theaterHunt.collectedProgramIds.includes(target.programId))
       ));
     }
     if (state.theaterHunt.phase === "prop_setup") {
-      return THEATER_INTERACTION_TARGETS.filter((target) => ["prop", "scanner", "vent", "charger"].includes(target.kind));
+      return THEATER_INTERACTION_TARGETS.filter((target) => ["prop", "scanner", "vent"].includes(target.kind));
     }
     if (state.theaterHunt.phase === "spotlight_ready") {
-      return THEATER_INTERACTION_TARGETS.filter((target) => target.kind === "console" || target.kind === "charger");
+      return THEATER_INTERACTION_TARGETS.filter((target) => target.kind === "console");
     }
     if (state.theaterHunt.phase === "complete") {
-      return THEATER_INTERACTION_TARGETS.filter((target) => target.kind === "exit" || target.kind === "charger");
+      return THEATER_INTERACTION_TARGETS.filter((target) => target.kind === "exit");
     }
-    return charger;
+    return [];
   }
 
   private triggerTarget(target: TheaterInteractionTarget, state: GameState): void {
-    if (target.kind === "charger") {
-      this.beginCharging(state);
-      return;
-    }
     if (target.kind === "exit") {
       this.beginTheaterExit();
       return;
@@ -1359,10 +1239,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
       || (target.kind === "console" && state.theaterHunt.phase === "spotlight_ready" && state.items.spotlightRemote)
       || (target.kind === "scanner" && state.items.temporaryTheaterTicket)
       || (target.kind === "vent" && state.items.fluorescentBrush);
-    const label = target.kind === "charger"
-      ? state.theaterHunt.mode === "dark" ? "查看充电服务站"
-        : this.chargingElapsedMs !== null ? "正在补电，请在设备旁稍候" : "接入手机充电线"
-      : target.kind === "poster"
+    const label = target.kind === "poster"
       ? dragOnly ? "油渍纸巾 → 入口海报" : "查看海报栏"
       : target.kind === "kiosk"
         ? state.items.theaterTicketHalfB || state.items.temporaryTheaterTicket
@@ -1384,8 +1261,7 @@ export class TheaterInteriorScene extends Phaser.Scene {
                     ? "离开剧院"
                     : dragOnly ? "荧光粉刷 → 后台通风口" : "检查后台通风口";
     this.promptText
-      .setText(target.kind === "charger" && this.chargingElapsedMs !== null
-        ? label : dragOnly ? formatRpgDragHint(label) : formatRpgInteractionHint(label))
+      .setText(dragOnly ? formatRpgDragHint(label) : formatRpgInteractionHint(label))
       .setVisible(true);
   }
 
@@ -2001,13 +1877,6 @@ export class TheaterInteriorScene extends Phaser.Scene {
       },
       scene: "theater_interior",
       interiorDoor: this.exitDoor.getDebugSnapshot(),
-      chargingStation: {
-        id: THEATER_CHARGING_STATION.id,
-        active: this.chargingElapsedMs !== null,
-        elapsedMs: Math.round(this.chargingElapsedMs ?? 0),
-        rejection: checkPhoneChargingStation(state, THEATER_CHARGING_STATION.id, this.player),
-        percent: state.phoneBattery.percent
-      },
       checkpoint: state.rpgCheckpoint,
       activeTargets: this.getActiveTargets(state).map((candidate) => ({
         id: candidate.id,

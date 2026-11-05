@@ -13,8 +13,7 @@ func run()->void:
 		["games/identity_stamp.gd","font"],
 		["presentation/c3_bike_world_view.gd","font"],
 		["presentation/c3_reversal_view.gd","font"],
-		["presentation/chapter4_lamp_closure.gd","SummaryFont"],
-		["media/c3_charging_view.gd","PIXEL_FONT"]]:
+		["presentation/chapter4_lamp_closure.gd","SummaryFont"]]:
 		var view=load("res://scripts/"+row[0]).new()
 		check(view.get(row[1])==Typography.body_font(),"runtime family matches common UI: "+row[0])
 		if view is Node:view.free()

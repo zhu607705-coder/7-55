@@ -1,4 +1,6 @@
 extends Control
+const SharedPauseOverlay = preload("res://scripts/ui/native_pause_overlay.gd")
+var shared_pause_overlay
 ## Source TheaterImpossibleShow.ts native presentation and 50ms validated model.
 signal finished(result: Dictionary)
 signal attempt_submitted(result: Dictionary)
@@ -68,6 +70,7 @@ func _button(text: String,rect: Rect2,callback: Callable) -> Button:
 	for role: String in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color","font_disabled_color"]: button.add_theme_color_override(role,INK)
 	button.pressed.connect(callback); add_child(button); return button
 func _ready() -> void:
+	shared_pause_overlay = SharedPauseOverlay.mount(self, _primary)
 	set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT); size=Vector2(960,540); mouse_filter=Control.MOUSE_FILTER_STOP
 	font=preload("res://scripts/ui/native_typography.gd").body_font()
 	if state.is_empty(): setup(config)
@@ -99,6 +102,7 @@ func _pause() -> void:
 func resolve(accepted: bool,last_act: bool=false) -> void:
 	approved=accepted; final_act=last_act; screen="result"; running=false; queued_dash=false; _release_pointer(); refresh()
 func _input(event: InputEvent) -> void:
+	if is_instance_valid(shared_pause_overlay) and shared_pause_overlay.is_open(): return
 	if not event is InputEventKey or event.keycode!=KEY_SPACE: return
 	# Running Space belongs to the advertised dash, before a focused toolbar
 	# button can consume ui_accept. Keep ownership through release, even if
@@ -109,6 +113,7 @@ func _input(event: InputEvent) -> void:
 	else: gameplay_space_owned=false
 	get_viewport().set_input_as_handled()
 func _unhandled_key_input(event: InputEvent) -> void:
+	if is_instance_valid(shared_pause_overlay) and shared_pause_overlay.is_open(): return
 	if not event is InputEventKey or not event.pressed or event.echo: return
 	if event.keycode==KEY_ESCAPE: _pause(); get_viewport().set_input_as_handled()
 	elif event.keycode in [KEY_ENTER,KEY_KP_ENTER] and screen!="running": _primary(); get_viewport().set_input_as_handled()
@@ -128,6 +133,7 @@ func _release_pointer()->void:
 func _accept_pointer(point:Vector2)->bool:
 	return Rect2(56,126,848,289).has_point(pointer_to_model(point))
 func _gui_input(event: InputEvent) -> void:
+	if is_instance_valid(shared_pause_overlay) and shared_pause_overlay.is_open(): return
 	if screen!="running": return
 	if event is InputEventScreenTouch:
 		if event.pressed and not event.canceled and pointer_device.is_empty() and _accept_pointer(event.position):
@@ -143,6 +149,7 @@ func _gui_input(event: InputEvent) -> void:
 	elif event is InputEventMouseMotion and pointer_device=="mouse" and event.device==pointer_source_device and event.device!=InputEvent.DEVICE_ID_EMULATION:
 		pointer=pointer_to_model(event.position)
 func _process(delta: float) -> void:
+	_sync_shared_pause()
 	if screen!="paused":
 		visual_time+=minf(delta,.1);hurt_feedback=maxf(0,hurt_feedback-delta);hit_remaining=maxf(0,hit_remaining-delta)
 	if screen=="running":
@@ -161,6 +168,7 @@ func _process(delta: float) -> void:
 				attempt_submitted.emit({"version":2,"round":state.round,"attempt":state.attempt,"inputs":trace.duplicate(true)})
 	refresh()
 func refresh() -> void:
+	_sync_shared_pause()
 	if not is_instance_valid(label): return
 	var act: Dictionary=Model.ACTS[state.round]
 	badge.text="第 %d 幕 / 3 · %s" % [state.round+1,act.title]
@@ -174,7 +182,7 @@ func refresh() -> void:
 	label.text="标点 %d/%d     灯芯 %s%s     %ds" % [state.collected.size(),act.count,"●".repeat(state.lives),"○".repeat(3-state.lives),ceili((1600-state.tick)/20.0)]
 	dash_button.text="谢幕冷却 %ds" % ceili(state.dashCooldown/20.0) if state.dashCooldown>0 else "谢幕 · Space"
 	dash_button.visible=screen=="running"; pause_button.visible=screen=="running"
-	start_button.visible=screen!="running"; start_button.disabled=screen=="awaiting"; overlay_title.visible=screen!="running"; overlay_body.visible=screen!="running"
+	start_button.visible=screen not in ["running","paused"]; start_button.disabled=screen=="awaiting"; overlay_title.visible=screen not in ["running","paused"]; overlay_body.visible=screen not in ["running","paused"]
 	match screen:
 		"intro": overlay_title.text=act.title; overlay_body.text=act.subtitle+"\n按住舞台拖动，或用 WASD / 方向键移动。\nSpace「谢幕」可以短暂穿过障碍。"; start_button.text="让灯自己演"
 		"paused": overlay_title.text="演出暂停，影子也停下了"; overlay_body.text="按继续后再演。计时和动作都从暂停处恢复。"; start_button.text="继续演出"
@@ -204,3 +212,9 @@ func draw_ui(canvas:CanvasItem)->void:
 		var hint:String=("椅子或观众碰断了光 · 已接好的光保留" if state.round==2 else "影子咬掉了一截光。谢幕可以冲过去。") if hurt_feedback>0 else ("追上游走的标点 · 集齐后从嘴里退场" if state.round==0 else ("同色两枚及时接亮 · 换站位避开椅子遮光" if state.round==1 else "同色成对 · 避开椅子和观众"))
 		canvas.draw_string(font,Vector2(69,493),hint,HORIZONTAL_ALIGNMENT_LEFT,540,14,Color(.035,.025,.045,.85))
 		canvas.draw_string(font,Vector2(68,491),hint,HORIZONTAL_ALIGNMENT_LEFT,540,14,Color("d9c6c1"))
+
+func _sync_shared_pause() -> void:
+	if not is_instance_valid(shared_pause_overlay): return
+	shared_pause_overlay.present(is_visible_in_tree() and (screen == "paused"))
+	if screen == "paused":
+		start_button.hide(); overlay_title.hide(); overlay_body.hide()

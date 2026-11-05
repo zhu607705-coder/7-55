@@ -37,7 +37,7 @@ func switch_network_at_reserve() -> void:
 	await click(find_named(shell,"ControlCenterTrigger"))
 	await click(find_named(shell,"ControlNetwork_cellular"))
 	await click(find_named(shell,"PhoneNav_close"))
-	check(state.d.networkMode=="cellular" and state.d.phoneBattery.percent==1,"real network switch preserves the final1percent reserve")
+	check(state.d.networkMode=="cellular" and state.d.phoneBattery.percent==0,"real network switch consumes the last percent without blocking the original prank")
 func contained(inner: Rect2,outer: Rect2) -> bool:
 	return outer.grow(0.1).encloses(inner)
 func check_loading_art() -> void:

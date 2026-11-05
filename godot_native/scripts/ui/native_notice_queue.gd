@@ -1,24 +1,17 @@
 extends RefCounted
-## Runtime-only reading order. No story, save, audio or surface authority.
+## One runtime-only transient notice. No story, save, audio or surface authority.
 var current: Dictionary={}
+# Kept as an empty compatibility view for existing diagnostics. Authored story
+# sequences belong to their own scheduler, never to this transient lane.
 var pending: Array[Dictionary]=[]
 
 func enqueue(text: String,speaker: String,duration: float,exact: bool=false) -> void:
 	if text.strip_edges().is_empty(): return
-	if current.get("text","")==text:
-		if exact:
-			current.duration=duration
-			current.remaining=maxf(0,duration-float(current.elapsed))
-			current.speaker=speaker
-			current.exact=true
-		return
-	for item: Dictionary in pending:
-		if item.text!=text: continue
-		if exact: item.duration=duration; item.remaining=duration; item.speaker=speaker; item.exact=true
-		return
-	var item: Dictionary={"text":text,"speaker":speaker,"duration":duration,"remaining":duration,"elapsed":0.0,"exact":exact}
-	if current.is_empty(): current=item
-	else: pending.append(item)
+	# Each new interaction replaces the previous result immediately, including
+	# repeated text. Give the new result its own complete lifetime.
+	duration=maxf(0,duration)
+	pending.clear()
+	current={"text":text,"speaker":speaker,"duration":duration,"remaining":duration,"elapsed":0.0,"exact":exact}
 
 func advance(delta: float) -> void:
 	if current.is_empty(): return
@@ -32,7 +25,7 @@ func sync_remaining(value: float) -> void:
 	current.elapsed=maxf(float(current.elapsed),float(current.duration)-float(current.remaining))
 
 func finish() -> void:
-	current=pending.pop_front() if not pending.is_empty() else {}
+	current={}; pending.clear()
 
 func discard(text: String) -> void:
 	pending=pending.filter(func(item: Dictionary) -> bool: return item.text!=text)

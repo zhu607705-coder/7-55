@@ -4,8 +4,8 @@ extends RefCounted
 const STROKE_GLYPHS="@#%*+"
 const Layout=preload("res://scripts/games/prologue_word_model.gd")
 const FLOW_CELL=Vector2(4,6)
-const ASSEMBLY_DURATION=.28
-const ASSEMBLY_DISTANCE=90.0
+const ASSEMBLY_DURATION=.42
+const ASSEMBLY_DISTANCE=110.0
 const STROKE_CELL=Vector2(3,4)
 const FIELD_OCCUPANCY=.95
 const FIELD_RECT=Rect2(Vector2.ZERO,Layout.EXTENT)

@@ -1087,8 +1087,6 @@ export interface GameFlags {
 
 /** 手机系统层 UI 状态（控制中心开关等） */
 export interface UiState {
-  /** Runtime navigation only; lets a saved C1 desk return to the phone without replaying wake. */
-  homeDeskReturnScene: "phone_home" | "bonsai" | null;
   controlCenterOpen: boolean;
   autoRotate: boolean;
   musicPlaying: boolean;
@@ -1096,6 +1094,11 @@ export interface UiState {
   musicMuted: boolean;
   /** 0-100 */
   brightness: number;
+  /** Versioned relative-brightness default; preserves later manual choices. */
+  brightnessRevision: number;
+  brightnessUserAdjusted: boolean;
+  /** One-time repair receipt for the unmarked full-brightness opening default. */
+  brightnessLegacy100Repaired: boolean;
   /** 手机桌面图标顺序。读取旧存档时会补齐新应用并过滤未知 id。 */
   homeAppOrder: PhoneHomeAppId[];
   /** 仅记录玩家从桌面删除的可选应用。剧情应用不会进入此列表。 */
@@ -1118,17 +1121,10 @@ export interface UiState {
   seenChapterIntros: ChapterId[];
 }
 
-/**
- * 手机电量是持久化的轻量资源。合法存档可保留 0%；显式网络切换保留现有正电量的 1% 底线。
- * 应用导航不消耗电量。
- */
+/** 手机电量只随耗电操作下降至 0；不限制亮度、音乐、导航或剧情。 */
 export interface PhoneBatteryState {
   /** 0-100 */
   percent: number;
-  /** 开启后限制亮度并暂停音乐；不改变应用导航成本。 */
-  lowPowerMode: boolean;
-  /** 成功连接场景内电源的累计次数，仅用于反馈与调试。 */
-  rechargeCount: number;
 }
 
 export interface GameState {

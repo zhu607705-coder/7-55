@@ -51,11 +51,6 @@ export function ControlCenter({ state }: ControlCenterProps) {
   }
 
   function toggleMusic() {
-    if (state.phoneBattery.lowPowerMode && !state.ui.musicPlaying) {
-      playSfx("03_");
-      kit.flags.toast("低电量模式下音乐已暂停。关闭低电量模式后可以播放。", "task");
-      return;
-    }
     playSfx("02_");
     const next = !state.ui.musicPlaying;
     kit.flags.setUi("musicPlaying", next);
@@ -86,8 +81,7 @@ export function ControlCenter({ state }: ControlCenterProps) {
     }
     const rect = el.getBoundingClientRect();
     const ratio = 1 - (clientY - rect.top) / rect.height;
-    const maxBrightness = state.phoneBattery.lowPowerMode ? 45 : 100;
-    const value = Math.round(Math.max(0, Math.min(maxBrightness, ratio * 100)));
+    const value = Math.round(Math.max(0, Math.min(100, ratio * 100)));
     kit.flags.setUi("brightness", value);
   }
 
@@ -143,11 +137,6 @@ export function ControlCenter({ state }: ControlCenterProps) {
   function resetProgress() {
     playSfx("03_");
     kit.save.resetProgress();
-  }
-
-  function toggleLowPowerMode() {
-    playSfx("02_");
-    kit.battery.setLowPowerMode(!state.phoneBattery.lowPowerMode);
   }
 
   const brightness = state.ui.brightness;
@@ -232,7 +221,7 @@ export function ControlCenter({ state }: ControlCenterProps) {
             aria-label="亮度"
             aria-valuenow={brightness}
             aria-valuemin={0}
-            aria-valuemax={state.phoneBattery.lowPowerMode ? 45 : 100}
+            aria-valuemax={100}
             tabIndex={0}
             onPointerDown={onSliderPointerDown}
             onPointerMove={onSliderPointerMove}
@@ -243,8 +232,7 @@ export function ControlCenter({ state }: ControlCenterProps) {
             }}
             onKeyDown={(e) => {
               if (e.key === "ArrowUp") {
-                const maxBrightness = state.phoneBattery.lowPowerMode ? 45 : 100;
-                kit.flags.setUi("brightness", Math.min(maxBrightness, brightness + 10));
+                kit.flags.setUi("brightness", Math.min(100, brightness + 10));
               }
               if (e.key === "ArrowDown") {
                 kit.flags.setUi("brightness", Math.max(0, brightness - 10));
@@ -291,13 +279,12 @@ export function ControlCenter({ state }: ControlCenterProps) {
         </div>
 
         <section
-          className={`cc-power ${state.phoneBattery.lowPowerMode ? "is-saving" : ""} ${batteryPercent <= 5 ? "is-critical" : ""}`}
+          className={`cc-power ${batteryPercent <= 5 ? "is-critical" : ""}`}
           aria-label="电量管理"
         >
           <header>
             <div>
               <strong>电池 {batteryPercent}%</strong>
-              <span>打开应用不额外扣电</span>
             </div>
             <i aria-hidden="true">BAT</i>
           </header>
@@ -311,25 +298,6 @@ export function ControlCenter({ state }: ControlCenterProps) {
           >
             <i style={{ width: `${batteryPercent}%` }} />
           </div>
-          <Button variant="ghost" data-layout="content"
-            type="button"
-            className={`cc-low-power ${state.phoneBattery.lowPowerMode ? "is-on" : ""}`}
-            onClick={toggleLowPowerMode}
-            aria-pressed={state.phoneBattery.lowPowerMode}
-          >
-            <strong>{state.phoneBattery.lowPowerMode ? "关闭低电量模式" : "开启低电量模式"}</strong>
-            <span>{state.phoneBattery.lowPowerMode ? "解除亮度上限，可手动调高" : "亮度限至 45%，暂停音乐"}</span>
-          </Button>
-          <p className="cc-power-location">
-            {state.rpgScene === "theater_interior"
-              ? "剧场入口左侧设有充电服务站，需走到设备旁接线。"
-              : state.actOne.phase === "prologue"
-                ? "可从主页或盆栽放下手机，点桌面充电座接线。"
-                : "充电需要在现场与充电服务站交互。"}
-          </p>
-          {batteryPercent === 1 ? (
-            <p className="cc-power-reserve" role="status">电量仅剩 1%，请寻找现场充电服务站。</p>
-          ) : null}
         </section>
 
         <section className="cc-save-manager" aria-label="存档管理">

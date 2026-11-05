@@ -122,7 +122,7 @@ func readers(touch: bool,before: String) -> void:
 			Input.parse_input_event(event);Input.flush_buffered_events();await frames()
 			event=event.duplicate();event.pressed=false;Input.parse_input_event(event);Input.flush_buffered_events();await frames()
 		else:
-			await gesture(node("LearnReaderDone" if id=="LearnCourse_1" else "LearnReaderBack"),touch)
+			await gesture(node("LearnReaderBack"),touch)
 		check(node("LearnReader")==null and shell.phone_builder.zjuding_page=="learn","reader back/close restores the same learning page")
 		check(story()==before,"closing local information preserves story state")
 

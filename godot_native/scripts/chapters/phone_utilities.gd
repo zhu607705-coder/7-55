@@ -49,14 +49,10 @@ func dispatch(s: Dictionary, id: String, value: Variant) -> Dictionary:
 		"phone_music_mute":
 			s.ui.musicMuted = not s.ui.musicMuted
 			return _ok()
-		"phone_low_power":
-			s.phoneBattery.lowPowerMode = not s.phoneBattery.lowPowerMode
-			if s.phoneBattery.lowPowerMode:
-				s.ui.brightness = minf(45,s.ui.brightness)
-				s.ui.musicPlaying = false
-			return _ok("低电量模式已开启：亮度上限 45%，音乐已暂停。打开应用不扣电。" if s.phoneBattery.lowPowerMode else "低电量模式已关闭：可手动调整亮度，打开应用不扣电。")
 		"phone_settings_brightness":
-			if str(value).is_valid_float(): s.ui.brightness = clampf(float(value),0,45 if s.phoneBattery.lowPowerMode else 100)
+			if str(value).is_valid_float():
+				s.ui.brightness = clampf(float(value),0,100)
+				preload("res://scripts/ui/phone_brightness_policy.gd").mark_manual(s)
 			return _ok()
 		"phone_app_move":
 			if s.actOne.phase == "prologue" or not value is Dictionary: return _ok()

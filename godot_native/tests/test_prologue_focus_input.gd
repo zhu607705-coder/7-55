@@ -83,8 +83,13 @@ func run()->void:
   var difference=desired-game.session.board_x
   keyboard(-1 if difference < -3 else 1 if difference>3 else 0);game._process(.01)
  keyboard(0);game._process(0)
- check(game.misses>0 and game.phase=="intercept" and game.blocks==0 and results.is_empty(),"a real missed target continues the current stage without granting proof or requiring a retry button")
- check(root.gui_get_focus_owner()==game,"automatic continuation preserves root keyboard focus")
+ check(game.misses>0 and game.phase=="intercept" and game.session.phase=="hint" and game.blocks==0 and results.is_empty(),"a real missed target waits for explicit retry without granting proof")
+ var failed_misses=game.misses;var failed_clock=game.session.clock
+ tick(1);game._process(0)
+ check(game.session.phase=="hint" and game.misses==failed_misses and game.session.clock==failed_clock and game.retry_button.visible and not game.retry_button.disabled,"idle failure remains frozen and exposes the original retry control")
+ check(root.gui_get_focus_owner()==game,"failure retains root keyboard focus")
+ await click(game.retry_button.get_global_rect().get_center());game._process(0)
+ check(game.phase=="deploy" and game.session.phase=="clue" and game.blocks==0 and game.session.collected.is_empty() and root.gui_get_focus_owner()==game,"real pointer retry restarts only this round and restores keyboard ownership")
  # Earn one coordinate, then miss the other through actual keyboard movement.
  for i in 9000:
   if game.session.stage==1 and game.session.collected.size()==1:break
@@ -100,7 +105,9 @@ func run()->void:
   var difference=desired-game.session.board_x
   keyboard(-1 if difference < -3 else 1 if difference>3 else 0);game._process(.01)
  keyboard(0)
- check(game.misses>prior_misses and game.session.stage==earned_stage and game.session.collected==earned and game.blocks==1,"silent retry preserves the actual earned coordinate and completed first stage")
+ check(game.misses>prior_misses and game.session.phase=="hint" and game.session.stage==earned_stage and game.session.collected==earned and game.blocks==1,"failed partial round waits without erasing its evidence or completed first stage")
+ tick(.4);key(KEY_ENTER,true);key(KEY_ENTER,false);game._process(0)
+ check(game.phase=="deploy" and game.session.phase=="clue" and game.session.stage==earned_stage and game.session.collected.is_empty() and game.blocks==1 and game.session.captures.size()==1 and root.gui_get_focus_owner()==game,"real keyboard retry clears only the failed round and preserves completed-stage proof and focus")
  var started=game.session.clock
  var reached=until_phase("lock",140);keyboard(0)
  check(reached and game.blocks==3,"real root keyboard selection earns all three semantic stages")
@@ -111,8 +118,7 @@ func run()->void:
  check(game.session.clock-started>=reading_seconds,"fast interception still includes the authored final clue-reading interval and real contacts")
  game._process(0)
  check(not game.lock_help_open and game.lock_help_button.visible and game.lock_release_count==0,"narrator lock starts with optional keyboard help collapsed")
- var initial_lock_feedback:String=game._lock_feedback()
- check(not initial_lock_feedback.contains("按住") and not initial_lock_feedback.contains("1.4") and not initial_lock_feedback.contains("Enter"),"initial narrator feedback does not expose the hold solution or duration")
+ check(Rect2(Vector2.ZERO,Vector2(430,820)).has_point(game._lock_center()) and game.hold_ms==0 and results.is_empty(),"final lock offers an in-view physical target without granting hold proof")
  await click(game.lock_help_button.get_global_rect().get_center());game._process(0)
  check(game.lock_help_open and game.hold_ms==0 and root.gui_get_focus_owner()==game,"optional real keyboard-help control opens without earning a hold")
  await click(game.lock_help_button.get_global_rect().get_center());game._process(0)
@@ -120,7 +126,7 @@ func run()->void:
  if not reached:finish();return
  key(KEY_SPACE,true);tick(.7);key(KEY_SPACE,false)
  check(game.hold_ms==0 and results.is_empty(),"short root Space hold resets without completing")
- check(game.lock_release_count==1 and game._lock_feedback()!=initial_lock_feedback,"a short physical release offers feedback without granting lock proof")
+ check(game.lock_release_count==1 and game.phase=="lock" and results.is_empty(),"a short physical release records the attempt without granting lock proof")
  key(KEY_SPACE,true);tick(.6);key(KEY_ESCAPE,true);key(KEY_ESCAPE,false);key(KEY_SPACE,false);game._process(0)
  check(game.paused and game.hold_ms==0 and not game.holding,"pausing a hold clears the held input")
  check(game.lock_release_count==1,"pausing does not count as a failed release or escalate assistance")
