@@ -47,7 +47,7 @@ static func _grain(canvas: RID, rect: Rect2, unit: float, dark: bool = false) ->
 		var start := area.position+Vector2(px,py)*area.size
 		RenderingServer.canvas_item_add_line(canvas,start,start+Vector2(0.7,0.15)*unit,color,0.6*unit,true)
 
-static func draw_button(canvas: RID, rect: Rect2, variant: String, unit: float, hover: float, press: float, disabled: float) -> void:
+static func draw_button(canvas: RID, rect: Rect2, variant: String, unit: float, hover: float, press: float, disabled: float, flat: bool = false) -> void:
 	if rect.size.x < 4.0 or rect.size.y < 4.0: return
 	if variant in ["ghost","text"]:
 		# Icon / navigation hit regions stay transparent. Hover is a quiet ink wash,
@@ -58,12 +58,14 @@ static func draw_button(canvas: RID, rect: Rect2, variant: String, unit: float, 
 			var y := rect.end.y-2.0*unit
 			RenderingServer.canvas_item_add_line(canvas,Vector2(rect.position.x+4*unit,y),Vector2(rect.end.x-4*unit,y),Color(SOFT_INK,0.45*(1.0-disabled)),unit,true)
 		return
-	var face := rect; face.position.y += press*unit
+	var face := rect
+	if not flat: face.position.y += press*unit
 	var points := _contour(face,unit)
-	var shadow := _contour(face,unit)
-	var shift := Vector2(2.0,3.0)*unit*(1.0-press)*(1.0-disabled)
-	for i in shadow.size(): shadow[i] += shift
-	_fill(canvas,shadow,Color(INK,0.4*(1.0-disabled)))
+	if not flat:
+		var shadow := _contour(face,unit)
+		var shift := Vector2(2.0,3.0)*unit*(1.0-press)*(1.0-disabled)
+		for i in shadow.size(): shadow[i] += shift
+		_fill(canvas,shadow,Color(INK,0.4*(1.0-disabled)))
 	_fill(canvas,points,face_color(variant,hover,disabled))
 	_grain(canvas,face,unit,variant == "primary" and disabled < 0.5)
 	var edge := EDGE.lerp(GOLD,hover*0.3).lerp(Color("a99c89"),disabled)

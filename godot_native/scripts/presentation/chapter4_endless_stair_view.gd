@@ -1,4 +1,7 @@
 extends Control
+const SharedPauseOverlay = preload("res://scripts/ui/native_pause_overlay.gd")
+var shared_pause_overlay
+var pause_exit_button: Button
 ## Version B: a finite, continuous 12-flight stairwell. No campaign or save writes.
 ## Geometry stays at fixed world coordinates. Only the camera follows the ascent.
 signal finished(result: Dictionary)
@@ -93,6 +96,7 @@ var font: Font
 
 
 func _ready() -> void:
+	shared_pause_overlay = SharedPauseOverlay.mount(self, _resume_shared_pause)
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if ResourceLoader.exists("res://assets/native/endless_stair_b3/stair_text.ttf"):
@@ -572,6 +576,7 @@ func _build_ui() -> void:
 	start_button.add_theme_font_override("font",preload("res://scripts/ui/native_typography.gd").body_font())
 	column.add_child(start_button)
 	var back := Button.new()
+	pause_exit_button = back
 	back.text = "离开预览"
 	back.custom_minimum_size.y = 42
 	back.pressed.connect(_request_exit)
@@ -602,6 +607,7 @@ func _request_exit() -> void:
 	if viewport: viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	_clear_input()
 	exited.emit()
+	_sync_shared_pause()
 
 func _exit_standalone_preview() -> void:
 	# The canonical preview scene connects this signal. Embedded hosts keep
@@ -638,8 +644,9 @@ func _show_menu(text: String, button: String) -> void:
 	_clear_input()
 	instruction.text = text
 	start_button.text = button
-	menu.show()
+	menu.visible = not focus_paused
 	_fit.call_deferred()
+	_sync_shared_pause()
 
 func _start() -> void:
 	model.reset()
@@ -672,6 +679,7 @@ func _start() -> void:
 	current_beat = -1
 	subtitle_until = 0
 	subtitle.text = ""
+	_sync_shared_pause()
 
 func _menu_action() -> void:
 	if focus_paused and model.status == "running":
@@ -680,6 +688,7 @@ func _menu_action() -> void:
 		viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 		menu.hide()
 	else: _start()
+	_sync_shared_pause()
 
 func _adjust_input_mask(mask: int) -> int:
 	var axis: int = int((mask&Model.RIGHT)!=0)-int((mask&Model.LEFT)!=0)
@@ -778,6 +787,7 @@ func _physics_process(_delta: float) -> void:
 		else: _show_menu("被追上或失足\n留意断阶与平台挡物，Space 跳过", "重试")
 
 func _process(delta: float) -> void:
+	_sync_shared_pause()
 	if camera != null: _present(delta)
 
 func _present(delta: float) -> void:
@@ -887,6 +897,7 @@ func _hand_pixel(guard: bool, direction: String, frame: int) -> Vector2:
 	return anchors[direction][frame%8]
 
 func _input(event: InputEvent) -> void:
+	if is_instance_valid(shared_pause_overlay) and shared_pause_overlay.is_open(): return
 	if event is InputEventScreenTouch and event.canceled:
 		var owned_primary: bool = primary_touch == event.index
 		_cancel_touch(event.index)
@@ -904,6 +915,7 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.device != InputEvent.DEVICE_ID_EMULATION and event.button_index==MOUSE_BUTTON_LEFT and not event.pressed: _pointer_press(-1,event.position,false)
 
 func _unhandled_input(event: InputEvent) -> void:
+	if is_instance_valid(shared_pause_overlay) and shared_pause_overlay.is_open(): return
 	# Also guard direct dispatch and unusual canceled+pressed platform events.
 	if event is InputEventScreenTouch and event.canceled:
 		_cancel_touch(event.index)
@@ -967,6 +979,7 @@ func _lose_focus() -> void:
 	focus_paused=true
 	_show_menu("已暂停，点击继续", "继续")
 	viewport.render_target_update_mode=SubViewport.UPDATE_ONCE
+	_sync_shared_pause()
 
 func _story_beat() -> void:
 	var n := int(floor(model.player.x / 30.6))
@@ -1141,3 +1154,25 @@ func _update_near_blockers() -> void:
 			if relative.dot(forward)+half.dot(forward.abs()) < -.00001:continue
 			near_blockers.append(box)
 	beam_candidate_count=near_blockers.size()
+
+func _sync_shared_pause() -> void:
+	if not is_instance_valid(shared_pause_overlay): return
+	var pause_actions: Array[Dictionary] = []
+	for button in [pause_exit_button]:
+		if is_instance_valid(button) and button.visible:
+			pause_actions.append({"text":button.text,"callback":_activate_pause_action.bind(button),"disabled":button.disabled})
+	shared_pause_overlay.set_actions(pause_actions)
+	shared_pause_overlay.present(is_visible_in_tree() and (focus_paused and model.status == "running"))
+	if focus_paused and model.status == "running": menu.hide()
+
+func _resume_shared_pause() -> void:
+	# A repeat activation must never toggle back to pause or restart a run.
+	if not (focus_paused and model.status == "running"): return
+	_menu_action()
+	_sync_shared_pause()
+
+func _activate_pause_action(button: Button) -> void:
+	# Reuse the authored signal, including its existing confirmation flow.
+	if not is_instance_valid(button) or button.disabled or not button.visible: return
+	button.pressed.emit()
+	if is_inside_tree(): _sync_shared_pause()

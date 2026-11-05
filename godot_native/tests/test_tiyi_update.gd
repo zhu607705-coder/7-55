@@ -105,7 +105,7 @@ func run() -> void:
 		legacy.actOne.exerciseStarted=earned; legacy.flags.tiyiCountTaken=true; legacy.digits.d2="7"
 		check(import_snapshot(legacy,35).get("ok",false),"v35 missing field accepted")
 		check(state.d.actOne.tiyiUpdateStage==("legacy_ready" if earned else "not_started"),"only earned C2 evidence gives legacy access")
-		check(state.d.ui.homeDeskReturnScene==null,"old desktop navigation defaults to no return context")
+		check(not state.d.ui.has("homeDeskReturnScene"),"old desktop navigation defaults to no return context")
 		var before=state.d.duplicate(true)
 		for version in [36,0,-1,34]:
 			check(not import_snapshot(legacy,version).get("ok",false) and state.d==before,"missing stage rejects unsupported/current version "+str(version))
@@ -113,8 +113,8 @@ func run() -> void:
 		var bad=state.initial(); bad.actOne.tiyiUpdateStage=invalid
 		check(not import_snapshot(bad,36).get("ok",false),"explicit bad stage rejected "+str(invalid))
 	var missing_desk=state.initial(); missing_desk.ui.erase("homeDeskReturnScene")
-	check(not state.validate_snapshot(missing_desk),"live v36 saves never accept absent desktop fields")
-	check(not import_snapshot(missing_desk,36).get("ok",false),"v36 missing desktop field rejected independently")
+	check(state.validate_snapshot(missing_desk),"live saves no longer require retired desktop return metadata")
+	check(import_snapshot(missing_desk,36).get("ok",false),"current snapshot imports without retired desktop return metadata")
 	var missing_update=state.initial(); missing_update.actOne.erase("tiyiUpdateStage")
 	check(not state.validate_snapshot(missing_update),"live v36 saves never accept absent update fields")
 	for invalid in ["wrong",true,0]:
@@ -124,8 +124,8 @@ func run() -> void:
 	check(import_snapshot(explicit,35).get("ok",false) and state.d.actOne.tiyiUpdateStage=="package_ready","explicit valid stage not overwritten by earned evidence")
 	check(state.save_game() and state.load_game() and state.d.actOne.tiyiUpdateStage=="package_ready","current state round trips through normal save/load")
 	var desk=state.initial(); desk.currentScene="desktop"; desk.native.page="desktop"; desk.ui.homeDeskReturnScene="bonsai"
-	check(import_snapshot(desk,36).get("ok",false) and state.d.ui.homeDeskReturnScene=="bonsai","valid C1 desktop return survives import")
+	check(import_snapshot(desk,36).get("ok",false) and state.d.native.page=="bonsai" and not state.d.ui.has("homeDeskReturnScene"),"legacy C1 desktop returns directly to the saved phone page")
 	desk.currentScene="phone_home"; desk.native.page="phone_home"
-	check(import_snapshot(desk,36).get("ok",false) and state.d.ui.homeDeskReturnScene==null,"stale desktop return is sanitized like source without charging progress")
+	check(import_snapshot(desk,36).get("ok",false) and not state.d.ui.has("homeDeskReturnScene"),"stale desktop return is sanitized like source without charging progress")
 	print("TIYI_UPDATE: %d checks; %d failures" % [checks,failures])
 	quit(1 if failures else 0)

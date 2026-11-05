@@ -1,4 +1,5 @@
 extends Node
+const PhoneBrightness = preload("res://scripts/ui/phone_brightness_policy.gd")
 ## Single owner of native progression, persistence, and presentation requests.
 signal changed
 signal feedback(message: String)
@@ -9,10 +10,9 @@ signal world_teleport(position: Array)
 signal media_requested(config: Dictionary)
 signal world_effect_requested(config: Dictionary)
 signal capture_requested(config: Dictionary)
-signal battery_reserve_used(percent: int)
 signal story_reset
 signal snapshot_saved
-signal battery_recharged
+signal battery_reserve_used(percent: int)
 signal action_completed(action: String,previous: Dictionary,next: Dictionary,result: Dictionary)
 const ProfileStorage = preload("res://scripts/platform/profile_storage.gd")
 var SAVE_PATH := "user://save.json"
@@ -147,17 +147,6 @@ func get_library_story_session(delta_ms: float = 0) -> RefCounted:
 func get_phone_entry_session() -> RefCounted:
 	return game_architecture().get_system("Chapters").get_phone_entry_session()
 
-func get_home_desk_controller() -> RefCounted:
-	for module in modules:
-		if module.get("home_desk") != null:
-			module.home_desk.route(d)
-			return module.home_desk
-	return null
-
-func get_home_charging_session() -> RefCounted:
-	var desk := get_home_desk_controller()
-	return desk.session if desk != null else null
-
 func advance_phone_entry(delta_ms: float) -> Array:
 	var session:=get_phone_entry_session()
 	if session==null: return []
@@ -193,11 +182,11 @@ func act(action: String, value: Variant = null) -> Dictionary:
 func _accept_result(action: String,previous_state: Dictionary,result: Dictionary) -> Dictionary:
 	var ephemeral: bool=action in ["c4_clock_begin","c4_clock_event","c4_clock_cancel","c3_rehearsal_begin","c3_rehearsal_result","c3_rehearsal_cancel","c3_chest_begin","c3_chest_clear","c3_chest_take","c3_chest_clue","c3_chest_inspect","c3_chest_place","c3_chest_turn","c3_chest_open","c3_chest_cancel"] and result.get("ephemeral",false)==true
 	var previous_page: String=str(previous_state.native.page)
-	var previous_network: String=str(previous_state.networkMode)
-	var previous_battery: int=int(previous_state.phoneBattery.percent)
+	# Preserve the original prank on a network action already at 1%; actual
+	# battery may continue to 0 and this signal has no gameplay authority.
+	if str(previous_state.networkMode)!=str(d.networkMode) and int(previous_state.phoneBattery.percent)==1:
+		battery_reserve_used.emit(1)
 	last_result=result
-	if previous_network!=str(d.networkMode) and previous_battery<=1: battery_reserve_used.emit(int(d.phoneBattery.percent))
-	if int(d.phoneBattery.percent)>previous_battery: battery_recharged.emit()
 	if result.has("page"): d.native.page=str(result.page)
 	if result.has("scene"):
 		d.native.scene=str(result.scene); d.rpgScene=str(result.scene)
@@ -240,8 +229,7 @@ func source_app(page: String) -> String:
 	return game_architecture().get_system("Chapters").source_app(page)
 
 func _consume_scene_open(_previous: String, _next: String) -> void:
-	# Navigation is not a battery drain. In particular, opening an app must not
-	# spend or manufacture the 0/1-percent reserve, nor trigger its prank.
+	# Opening apps never drains or restores the consumption-only battery.
 	pass
 
 func story_input_locked() -> bool:
@@ -306,12 +294,12 @@ func _matches_shape(template: Variant, value: Variant, depth: int = 0, location:
 	if template is Dictionary:
 		if not value is Dictionary: return false
 		for key in template:
+			if location==".ui" and key in ["brightnessRevision","brightnessUserAdjusted","brightnessLegacy100Repaired"] and not value.has(key): continue
 			# Added consumption receipt; older native saves have no such field.
 			# Present values still pass the ordinary boolean shape check below.
 			if location==".qizhenLake" and key=="legacyNetMaterialsConsumed" and not value.has(key): continue
 			# Only the versioned native import/load boundary may migrate this absence.
 			if location==".actOne" and key=="tiyiUpdateStage" and not value.has(key): continue
-			if location==".ui" and key=="homeDeskReturnScene" and not value.has(key): continue
 			if not value.has(key) or not _matches_shape(template[key],value[key],depth+1,location+"."+str(key)): return false
 		return true
 	if template is Array:
@@ -380,6 +368,8 @@ func _capture_portable_bundle(fresh: bool=false) -> Dictionary:
 	if fresh and d.get("cc98") is Dictionary: clean.cc98=d.cc98.duplicate(true)
 	clean.ui.controlCenterOpen=false;clean.ui.inventoryOpen=false;clean.ui.selectedItem=null;clean.native.selected_item=""
 	if not validate_snapshot(clean): return {"ok":false,"message":"当前进度尚未通过存档校验。"}
+	# Validate legacy fields before retiring them from this portable copy.
+	_upgrade_legacy_phone_state(clean)
 	var service=load("res://scripts/data/cc98_store.gd")
 	var posts: String=FileAccess.get_file_as_string(service.posts_path) if FileAccess.file_exists(service.posts_path) else "[]"
 	var overrides: String=FileAccess.get_file_as_string(service.quest_path) if FileAccess.file_exists(service.quest_path) else "{}"
@@ -416,6 +406,8 @@ func prepare_cloud_bundle(bundle: Variant, images: Dictionary) -> Dictionary:
 		documents[key]=JSON.parse_string(text)
 	if not load("res://scripts/data/cc98_store.gd").validate_bundle(documents): return {"ok":false,"message":"个人编辑文档未通过校验。"}
 	_upgrade_legacy_net_receipt(envelope.state);_upgrade_legacy_v36_fields(envelope.state)
+	# Upgrade before defaults add brightnessRevision and conceal legacy absence.
+	_upgrade_legacy_phone_state(envelope.state)
 	var candidate: Dictionary=merge_defaults(initial(),envelope.state)
 	_sanitize_runtime_resume(candidate)
 	var archive: Dictionary=JOURNAL_ARCHIVE.prepare(candidate,images)
@@ -468,8 +460,9 @@ func _safe_json(value: Variant, depth: int = 0) -> bool:
 func validate_snapshot(value: Variant, allow_legacy_v35_fields: bool=false) -> bool:
 	if not value is Dictionary or not _safe_json(value): return false
 	if not _matches_shape(initial(),value): return false
+	if not PhoneBrightness.valid_preference(value.ui): return false
 	if not _domain_guard.validate(value): return false
-	if not allow_legacy_v35_fields and (not value.actOne.has("tiyiUpdateStage") or not value.ui.has("homeDeskReturnScene")): return false
+	if not allow_legacy_v35_fields and not value.actOne.has("tiyiUpdateStage"): return false
 	if value.actOne.has("tiyiUpdateStage") and value.actOne.tiyiUpdateStage not in preload("res://scripts/chapters/tiyi_access.gd").STAGES: return false
 	if value.ui.has("homeDeskReturnScene") and value.ui.homeDeskReturnScene not in [null,"phone_home","bonsai"]: return false
 	if value.native.has("campus_network_account") and not preload("res://scripts/chapters/campus_network_account.gd").valid(value.native.campus_network_account):return false
@@ -591,6 +584,7 @@ func save_game() -> bool:
 	if not persistence_ready or developer_mode or _saving or not validate_snapshot(d): return false
 	_saving = true
 	var clean := d.duplicate(true)
+	_upgrade_legacy_phone_state(clean)
 	clean.ui.controlCenterOpen = false
 	clean.ui.inventoryOpen = false
 	clean.ui.selectedItem = null
@@ -639,11 +633,12 @@ func _read_native_save(path: String) -> Dictionary:
 	if not _valid_native_v36_fields(envelope): return {}
 	_upgrade_legacy_net_receipt(envelope.state)
 	_upgrade_legacy_v36_fields(envelope.state)
+	_upgrade_legacy_phone_state(envelope.state)
 	return envelope
 
 func _valid_native_v36_fields(envelope: Dictionary) -> bool:
 	# A missing field is an exact v35 migration, never an unbounded old-schema pass.
-	if envelope.state.actOne.has("tiyiUpdateStage") and envelope.state.ui.has("homeDeskReturnScene"): return true
+	if envelope.state.actOne.has("tiyiUpdateStage"): return true
 	var version: Variant=envelope.get("sourceVersion")
 	return (version is int or version is float) and version==35
 
@@ -653,7 +648,21 @@ func _upgrade_legacy_v36_fields(snapshot: Dictionary) -> void:
 		# Preserve earned exercise/water, never infer installation from C1's 7,
 		# network mode, chapter number or an advanced phase alone.
 		a.tiyiUpdateStage="legacy_ready" if a.exerciseStarted or a.weatherWaterTaken else "not_started"
-	if not snapshot.ui.has("homeDeskReturnScene"): snapshot.ui.homeDeskReturnScene=null
+
+func _upgrade_legacy_phone_state(snapshot: Dictionary) -> void:
+	PhoneBrightness.upgrade_legacy(snapshot)
+	# Old charging sessions were never durable. Retire their scalar metadata
+	# without inventing energy; brightness repair above is separately bounded.
+	snapshot.phoneBattery.erase("lowPowerMode")
+	snapshot.phoneBattery.erase("rechargeCount")
+	var previous_page: Variant=snapshot.ui.get("homeDeskReturnScene")
+	if previous_page in ["phone_home","bonsai"] and snapshot.actOne.phase=="prologue" and not snapshot.flags.checkinDone and snapshot.runtimeMode=="phone" and snapshot.currentScene=="desktop":
+		snapshot.currentScene=previous_page
+		if snapshot.native.page=="desktop": snapshot.native.page=previous_page
+	snapshot.ui.erase("homeDeskReturnScene")
+	if snapshot.native.get("save_import") is Dictionary:
+		var migration:=_migration_instance()
+		if migration!=null: migration.upgrade_phone_predecessor_provenance(snapshot)
 
 func _upgrade_legacy_net_receipt(snapshot: Dictionary) -> void:
 	# Raw native save has already passed structural/domain validation. Preserve
@@ -664,9 +673,7 @@ func _upgrade_legacy_net_receipt(snapshot: Dictionary) -> void:
 
 func _sanitize_runtime_resume(snapshot: Dictionary) -> void:
 	if snapshot.theaterHunt.propBoxOpened: preload("res://scripts/games/theater_chest_mechanism.gd").ensure(snapshot)
-	# Match source SaveStore: this is a bounded C1 desktop return location,
-	# not a persistent charging session or a later-chapter navigation grant.
-	if snapshot.actOne.phase!="prologue" or snapshot.flags.checkinDone or snapshot.runtimeMode!="phone" or snapshot.currentScene!="desktop": snapshot.ui.homeDeskReturnScene=null
+	_upgrade_legacy_phone_state(snapshot)
 	# The source lake rehydrates at its checkpoint, not a stale moving/chasing
 	# framebuffer position. This never alters a saved photo recipe or story fact.
 	var positions: Dictionary=snapshot.native.get("positions",{})
@@ -729,6 +736,7 @@ func import_save(path: String) -> Dictionary:
 		if not _valid_native_v36_fields(envelope): return {"ok":false,"message":"新增存档字段无效，当前进度未改变。"}
 		_upgrade_legacy_net_receipt(envelope.state)
 		_upgrade_legacy_v36_fields(envelope.state)
+		_upgrade_legacy_phone_state(envelope.state)
 		candidate = merge_defaults(initial(),envelope.state)
 		if envelope.has("cc98Stores"):
 			store_service=load("res://scripts/data/cc98_store.gd")

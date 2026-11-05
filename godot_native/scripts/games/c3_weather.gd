@@ -1,4 +1,6 @@
 extends Control
+const SharedPauseOverlay = preload("res://scripts/ui/native_pause_overlay.gd")
+var shared_pause_overlay
 signal finished(result: Dictionary)
 signal cancelled
 const TARGET: Array = [34.0,52.0,70.0]
@@ -23,6 +25,7 @@ var layout_label_size:=Vector2.ZERO
 var FONT: Font=preload("res://scripts/ui/native_typography.gd").body_font()
 func setup(_config: Dictionary) -> void: pass
 func _ready() -> void:
+	shared_pause_overlay = SharedPauseOverlay.mount(self, _resume_shared_pause)
 	set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
 	size=Vector2(960,540)
 	label=Label.new()
@@ -52,7 +55,7 @@ func _ready() -> void:
 	start_button.text="开始调整"
 	start_button.position=Vector2(390,445)
 	start_button.size=Vector2(180,48)
-	start_button.pressed.connect(func() -> void: started=true; paused=false; start_button.hide())
+	start_button.pressed.connect(_resume_shared_pause)
 	add_child(start_button)
 	exit_button=Button.new()
 	_style_button(exit_button)
@@ -68,13 +71,15 @@ func _notification(what: int) -> void:
 		directions=[0,0,0]
 		touch_directions=[0,0,0]
 		paused=true
-		if is_instance_valid(start_button): start_button.text="继续调整"; start_button.show()
+		if is_instance_valid(start_button): start_button.hide()
+		_sync_shared_pause()
 func set_direction(band: int, direction: int) -> void:
 	if directions[band]!=direction and direction!=0:
 		moves+=1
 		controlled[band]=true
 	directions[band]=direction
 func _process(delta: float) -> void:
+	_sync_shared_pause()
 	_apply_presentation_layout()
 	if not started or paused: return
 	var keys: Array = [[KEY_Z,KEY_C],[KEY_A,KEY_D],[KEY_Q,KEY_E]]
@@ -150,3 +155,25 @@ func _draw() -> void:
 		draw_circle(Vector2(145+positions[band]*6.6,y),19,Color("eaf1f7"))
 		draw_circle(Vector2(135+positions[band]*6.6,y+8),14,Color("eaf1f7"))
 		draw_circle(Vector2(160+positions[band]*6.6,y+6),15,Color("eaf1f7"))
+
+func _sync_shared_pause() -> void:
+	if not is_instance_valid(shared_pause_overlay): return
+	var pause_actions: Array[Dictionary] = []
+	for button in [exit_button]:
+		if is_instance_valid(button) and button.visible:
+			pause_actions.append({"text":button.text,"callback":_activate_pause_action.bind(button),"disabled":button.disabled})
+	shared_pause_overlay.set_actions(pause_actions)
+	shared_pause_overlay.present(is_visible_in_tree() and (paused))
+	if paused: start_button.hide()
+
+func _resume_shared_pause() -> void:
+	# Same action as the existing start/continue control.
+	started=true; paused=false; start_button.hide()
+	_sync_shared_pause()
+
+
+func _activate_pause_action(button: Button) -> void:
+	# Reuse the authored signal, including its existing confirmation flow.
+	if not is_instance_valid(button) or button.disabled or not button.visible: return
+	button.pressed.emit()
+	if is_inside_tree(): _sync_shared_pause()

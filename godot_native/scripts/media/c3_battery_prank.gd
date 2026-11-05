@@ -1,5 +1,6 @@
 extends Control
 ## Source PhoneBatteryPrank presentation. Never mutates battery or navigation.
+const PhoneNotice=preload("res://scripts/ui/native_phone_notice.gd")
 var deadline: int = -1
 var used: bool = false
 var read_state: Callable
@@ -26,12 +27,8 @@ func setup(state_reader: Callable) -> void:
 	style.content_margin_bottom = 10
 	panel.add_theme_stylebox_override("panel",style)
 	add_child(panel)
-	notice = Label.new()
+	notice = PhoneNotice.create("","手机系统")
 	notice.name = "BatteryPrankText"
-	notice.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	notice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	notice.add_theme_font_size_override("font_size",16)
-	notice.add_theme_color_override("font_color",Color("d4f7e6"))
 	panel.add_child(notice)
 	resized.connect(_layout_notice)
 	_layout_notice()
@@ -44,8 +41,11 @@ func _layout_notice() -> void:
 	var phone_surface := size.y > size.x
 	var width := minf(390 if phone_surface else 360, maxf(1, size.x-40))
 	panel.position = Vector2((size.x-width)/2.0 if phone_surface else 20,112 if phone_surface else 20)
+	notice.custom_minimum_size=Vector2.ZERO
+	notice.size=Vector2.ZERO
 	panel.custom_minimum_size = Vector2(width,0)
 	panel.size = Vector2(width,0)
+	_update_notice_view()
 
 func consume_reserve(percent: int) -> void:
 	if percent != 1 or used: return
@@ -75,11 +75,42 @@ func view(now: int) -> Dictionary:
 	return {"kind":"warning","text":"请在 10秒之内充电，不然手机就会自动关机。","seconds":int(ceil(float(deadline-now)/1000))}
 
 func _process(_delta: float) -> void:
+	tick(Time.get_ticks_msec())
+
+func tick(now: int) -> void:
+	# Explicit presentation clock keeps exact timing testable without changing runtime pacing.
 	if deadline < 0: return
 	if read_state.is_valid() and int(read_state.call().get("phoneBattery",{}).get("percent",100)) > 1: reset(); return
-	var current: Dictionary = view(Time.get_ticks_msec())
+	var current: Dictionary = view(now)
 	visible = not current.is_empty()
-	if notice!=null and visible: notice.text = "手机系统\n"+str(current.text)+("\n剩余 %d 秒" % int(current.seconds) if current.kind=="warning" else "")
+	if notice!=null and visible: _update_notice_view(current)
+
+func _update_notice_view(current: Dictionary={}) -> void:
+	if not is_instance_valid(notice): return
+	if current.is_empty(): current=view(Time.get_ticks_msec())
+	var body:=str(current.get("text",""))+("\n剩余 %d 秒" % int(current.seconds) if current.get("kind","")=="warning" else "")
+	if size.y>size.x:
+		panel.add_theme_stylebox_override("panel",StyleBoxEmpty.new())
+		PhoneNotice.set_message(notice,body,"手机系统")
+		var style:=PhoneNotice.card_style(PhoneNotice.WARNING_PAPER if current.get("kind","")=="warning" else PhoneNotice.PAPER)
+		style.content_margin_left=60; style.content_margin_right=12; style.content_margin_top=35; style.content_margin_bottom=10
+		notice.add_theme_stylebox_override("normal",style)
+		notice.add_theme_color_override("font_color",PhoneNotice.INK)
+		notice.get_node("NoticeAvatar").show(); notice.get_node("NoticeSpeaker").show()
+		notice.custom_minimum_size=Vector2.ZERO
+		var measured:=PhoneNotice.layout(notice,panel.size.x)
+		notice.custom_minimum_size=measured
+		panel.update_minimum_size()
+		panel.size=measured
+	else:
+		# The world warning keeps its existing authored dark presentation.
+		var style:=StyleBoxFlat.new(); style.bg_color=Color("101923"); style.border_color=Color("a5dcd6"); style.set_border_width_all(2)
+		style.content_margin_left=14; style.content_margin_right=14; style.content_margin_top=10; style.content_margin_bottom=10
+		panel.add_theme_stylebox_override("panel",style)
+		notice.add_theme_stylebox_override("normal",StyleBoxEmpty.new())
+		notice.add_theme_color_override("font_color",Color("d4f7e6"))
+		notice.get_node("NoticeAvatar").hide(); notice.get_node("NoticeSpeaker").hide()
+		notice.custom_minimum_size=Vector2.ZERO; notice.text="手机系统\n"+body; notice.visible=not body.is_empty()
 
 func _stop_audio() -> void:
 	if is_instance_valid(audio):

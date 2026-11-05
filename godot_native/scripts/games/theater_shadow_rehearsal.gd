@@ -48,7 +48,6 @@ var trial_records:Dictionary={}
 var study=Study.new()
 var field=Rect2()
 var selected := "left_fan"
-var paused := false
 var help_open := false
 var done := false
 var disposed := false
@@ -91,7 +90,7 @@ const TOUCH_SLOP := 10.0
 
 func setup(value: Dictionary) -> void:
 	config=value.duplicate(true);model=Model.new();state=model.snapshot()
-	selected="left_fan";paused=false;help_open=false;menu_open=false;done=false;disposed=false
+	selected="left_fan";help_open=false;menu_open=false;done=false;disposed=false
 	notebook_open=false;notebook_page=0;notebook_pages.clear();trial_records.clear()
 	study=Study.new()
 	_clear_input();undo_groups.clear();last_round=-1
@@ -154,7 +153,7 @@ func _build() -> void:
 	menu_panel=PanelContainer.new();menu_panel.name="RehearsalPaperMenu";SelectedUi.apply_paper_panel(menu_panel,Vector2(16,12));add_child(menu_panel)
 	var menu_column=VBoxContainer.new();menu_column.add_theme_constant_override("separation",6);menu_panel.add_child(menu_column)
 	var menu_title=Label.new();menu_title.text="排练单";menu_title.add_theme_font_size_override("font_size",22);menu_title.add_theme_color_override("font_color",PaperInk.INK);TheaterUi.heading(menu_title);menu_column.add_child(menu_title)
-	for spec: Array in [["RehearsalMenuClose","回到舞台",_close_menu],["RehearsalMenuUndo","撤回",_menu_undo],["RehearsalMenuRestart","重排本幕",_menu_restart],["RehearsalMenuPause","暂停",_menu_pause],["RehearsalMenuExit","返回现场",_cancel]]:
+	for spec: Array in [["RehearsalMenuClose","回到舞台",_close_menu],["RehearsalMenuUndo","撤回",_menu_undo],["RehearsalMenuRestart","重排本幕",_menu_restart],["RehearsalMenuExit","返回现场",_cancel]]:
 		var button=Button.new();button.name=spec[0];button.text=spec[1];button.custom_minimum_size.y=44;button.focus_mode=Control.FOCUS_NONE;TheaterUi.button(button,spec[0]=="RehearsalMenuClose");button.pressed.connect(spec[2]);menu_controls[spec[0]]=button
 		menu_column.add_child(button)
 	menu_panel.hide();_layout()
@@ -243,7 +242,7 @@ func _refresh() -> void:
 	if built and field.size.x>0:_layout_stage_hud()
 	queue_redraw()
 func _apply(action: Dictionary) -> bool:
-	if disposed or done or paused or help_open or menu_open or model==null or not stage_action.is_empty() or is_instance_valid(performance):return false
+	if disposed or done or help_open or menu_open or model==null or not stage_action.is_empty() or is_instance_valid(performance):return false
 	var accepted: bool=model.apply(action)
 	if accepted:
 		if action.kind in ["move","spread","lamp"]:
@@ -278,7 +277,7 @@ func _selected_object() -> Dictionary:
 		if object.id==selected:return object
 	return {}
 func _cycle_selection() -> void:
-	if paused or help_open or menu_open or not stage_action.is_empty():return
+	if help_open or menu_open or not stage_action.is_empty():return
 	stage_hover=""
 	var objects: Array=state.objects.duplicate()
 	objects.append({"id":"lamp"})
@@ -293,7 +292,7 @@ func _nudge(delta: Vector2) -> void:
 	var next: Vector2=Vector2(float(object.x),float(object.depth))+Vector2(delta.x,delta.y if object.depthMovable else 0.0)
 	_move_prop(selected,next)
 func _move_prop(id: String,next: Vector2) -> void:
-	if paused or help_open or menu_open or done or disposed or state.get("screen")!="playing":return
+	if help_open or menu_open or done or disposed or state.get("screen")!="playing":return
 	var object: Dictionary={}
 	for candidate: Dictionary in state.objects:
 		if candidate.id==id:object=candidate;break
@@ -338,7 +337,7 @@ func _begin_lamp(id:int,local:Vector2)->void:
 
 func _intro() -> void:
 	_clear_input();help_open=true;notebook_open=false;help_title.text="借扇成蝶"
-	help_body.text="扇影要合上幕上的旧痕。\n\n拖底座移动道具，拉扇骨铜扣开合；台灯可左右、前后拖动，点灯试演。\n\n桌上节目册可翻阅线索，右侧拉绳开启合演，左侧幕缝退场。\n\n手机横屏，双指轻触撤回、按住打开排练单；键盘 Tab 选物、空格操作，方向键移动，Shift＋左右键开合，Esc 暂停。"
+	help_body.text="扇影要合上幕上的旧痕。\n\n拖底座移动道具，拉扇骨铜扣开合；台灯可左右、前后拖动，点灯试演。\n\n桌上节目册可翻阅线索，右侧拉绳开启合演，左侧幕缝退场。\n\n手机横屏，双指轻触撤回、按住打开排练单；键盘 Tab 选物、空格操作，方向键移动，Shift＋左右键开合，Esc 打开排练单。"
 	help_close.text="开始排练";help_panel.show();_layout_reading();help_panel.move_to_front()
 	help_body.scroll_to_line(0)
 func _help() -> void:
@@ -374,33 +373,29 @@ func _previous_hint()->void:
 	notebook_page-=1;help_panel.turn_page(-1,bool(config.get("settings",{}).get("reducedMotion",false)));_render_notebook()
 func _close_help() -> void:
 	help_open=false;help_panel.turn_amount=0.0;help_panel.hide();_clear_input();_layout();grab_focus()
-	if paused:_open_menu()
+
 func _open_menu() -> void:
 	if disposed or done or help_open:return
 	_clear_input();menu_open=true;menu_panel.show();menu_panel.move_to_front()
-	menu_controls.RehearsalMenuPause.text="继续" if paused else "暂停"
 	menu_controls.RehearsalMenuUndo.disabled=not state.undoAvailable or state.screen!="playing"
 	menu_controls.RehearsalMenuRestart.disabled=state.screen!="playing";queue_redraw()
 func _close_menu() -> void:
-	menu_open=false;paused=false;menu_panel.hide();_clear_input();grab_focus();queue_redraw()
+	menu_open=false;menu_panel.hide();_clear_input();grab_focus();queue_redraw()
+
 func _menu_undo() -> void:
 	_close_menu();_undo()
 func _menu_restart() -> void:
 	_close_menu();_apply({"kind":"restart"})
-func _menu_pause() -> void:
-	_pause();menu_controls.RehearsalMenuPause.text="继续" if paused else "暂停"
 func _lamp_action() -> void:
-	if paused or help_open or menu_open:return
+	if help_open or menu_open:return
 	if state.screen=="round_complete":_continue_stage()
 	else:_try_stage()
-func _pause() -> void:
-	if done or disposed:return
-	_clear_input();paused=not paused;queue_redraw()
 func _focus_out() -> void:
+	# Arrangement is turn-based. Stop gestures without opening a pause/menu
+	# or dismissing the user's reading sheet. Live performance owns its QTE.
 	_clear_input()
-	if is_instance_valid(performance):return
-	if not done and not disposed:paused=true;queue_redraw()
-	if not help_open:_open_menu()
+	queue_redraw()
+
 func _visibility_changed() -> void:
 	if not visible:_focus_out()
 func _clear_input() -> void:
@@ -414,8 +409,8 @@ func _process(delta: float) -> void:
 		gesture_age+=delta
 		if gesture_age>=HOLD_SECONDS:
 			if two_fingers:_open_menu()
-			elif not drag_id.is_empty() and not paused and not help_open and not menu_open:_help()
-	if model==null or paused or help_open or menu_open or done or disposed:return
+			elif not drag_id.is_empty() and not help_open and not menu_open:_help()
+	if model==null or help_open or menu_open or done or disposed:return
 	if not stage_action.is_empty():
 		stage_action_age+=minf(delta,.1);queue_redraw()
 		if stage_action_age>=STAGE_ACTION_SECONDS:
@@ -465,7 +460,7 @@ func _stage_object_at(local:Vector2)->String:
 	return ""
 
 func _begin_stage_object(id:int,local:Vector2)->bool:
-	if paused or help_open or menu_open or not stage_action.is_empty():return false
+	if help_open or menu_open or not stage_action.is_empty():return false
 	var object:String=_stage_object_at(local)
 	if object.is_empty():return false
 	pointer_id=id;stage_pressed=object;stage_press_origin=local;stage_pull=0.0;selected=object
@@ -488,13 +483,13 @@ func _release_stage_object(local:Vector2)->String:
 	return ""
 
 func _activate_stage_object(id:String)->void:
-	if id not in StageObjects.IDS or paused or help_open or menu_open or disposed or done or is_instance_valid(performance) or not stage_action.is_empty() or size.x<size.y:return
+	if id not in StageObjects.IDS or help_open or menu_open or disposed or done or is_instance_valid(performance) or not stage_action.is_empty() or size.x<size.y:return
 	_clear_input();selected=id;stage_action=id
 	if config.get("settings",{}).get("reducedMotion",false):stage_action_age=STAGE_ACTION_SECONDS
 	queue_redraw()
 
 func _start_pointer(id: int,local: Vector2) -> bool:
-	if paused or help_open or menu_open or done or disposed or not stage_action.is_empty() or size.x<size.y or state.get("screen")!="playing" or not field.has_point(local):return false
+	if help_open or menu_open or done or disposed or not stage_action.is_empty() or size.x<size.y or state.get("screen")!="playing" or not field.has_point(local):return false
 	var point: Vector2=_logical(local);var object_id: String="";var fold:bool=false
 	var props:Array=_sorted_props()
 	for i:int in range(props.size()-1,-1,-1):
@@ -517,7 +512,6 @@ func _drag_pointer(local: Vector2) -> void:
 	_move_prop(drag_id,Vector2((point.x-480)/56,(450-point.y)/22))
 func _touch_begin(index: int,local: Vector2) -> bool:
 	if help_open or menu_open or not stage_action.is_empty() or not touch_landscape():return false
-	if paused:_open_menu();return true
 	if pointer_id==-1:_clear_input()
 	fingers[index]={"start":local,"current":local}
 	if gesture_consumed:return true
@@ -572,7 +566,7 @@ func _input(event: InputEvent) -> void:
 			if event.pressed and event.keycode==KEY_ESCAPE:_clear_input();_open_menu()
 			get_viewport().set_input_as_handled();return
 		if event.keycode in [KEY_LEFT,KEY_RIGHT,KEY_UP,KEY_DOWN,KEY_A,KEY_D,KEY_W,KEY_S]:
-			if event.pressed and not paused and not help_open and not menu_open:
+			if event.pressed and not help_open and not menu_open:
 				fold_keys=event.shift_pressed
 				held[event.keycode]=true;key_clock=0.075
 				var direction: Vector2=_held_direction()
@@ -586,7 +580,7 @@ func _input(event: InputEvent) -> void:
 			if help_open:_close_help()
 			elif menu_open:_close_menu()
 			else:_open_menu()
-		elif paused or help_open or menu_open:return
+		elif help_open or menu_open:return
 		elif event.keycode==KEY_TAB:_cycle_selection()
 		elif event.keycode==KEY_Z:_undo()
 		elif event.keycode==KEY_R:_apply({"kind":"restart"})
@@ -617,7 +611,7 @@ func _input(event: InputEvent) -> void:
 		if event.pressed:
 			var local:Vector2=_local(event.position)
 			if pointer_id==-99 and _begin_stage_object(-1,local):get_viewport().set_input_as_handled()
-			elif pointer_id==-99 and size.x>=size.y and not paused and not help_open and not menu_open and stage_action.is_empty() and field.has_point(local) and lamp_rect().has_point(_logical(local)):
+			elif pointer_id==-99 and size.x>=size.y and not help_open and not menu_open and stage_action.is_empty() and field.has_point(local) and lamp_rect().has_point(_logical(local)):
 				_begin_lamp(-1,local);fingers[-1]={"start":local,"current":local};get_viewport().set_input_as_handled()
 			elif pointer_id==-99 and _start_pointer(-1,local):get_viewport().set_input_as_handled()
 		elif pointer_id==-1:
@@ -630,7 +624,7 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 	elif event is InputEventMouseMotion:
 		var local:Vector2=_local(event.position)
-		stage_hover=_stage_object_at(local) if not paused and not help_open and not menu_open else ""
+		stage_hover=_stage_object_at(local) if not help_open and not menu_open else ""
 		mouse_default_cursor_shape=Control.CURSOR_POINTING_HAND if not stage_hover.is_empty() else Control.CURSOR_ARROW
 		if pointer_id!=-1:queue_redraw();return
 		if not stage_pressed.is_empty():_drag_stage_object(local);get_viewport().set_input_as_handled();return
@@ -771,7 +765,7 @@ func _draw_stage() -> void:
 			var x:float=0 if side==0 else 960-width
 			draw_rect(Rect2(x,0,width,426),Color("594147"))
 			for fold:int in range(0,int(width),18):draw_rect(Rect2(x+fold,0,3,426),Color("453B43"))
-	if paused:draw_rect(Rect2(Vector2.ZERO,LOGICAL),Color(0.06,0.07,0.10,.63))
+	# Arrangement has no player pause scrim; reading/menu retain their owners.
 
 func _draw_cue_sheet(rect:Rect2)->void:
 	# Only the screen-space cue/feedback sheets use the UI skin. Physical stage
@@ -798,7 +792,7 @@ func geometry_snapshot() -> Dictionary:
 		var actual:=Rect2(field.position+rect.position/LOGICAL*field.size,rect.size/LOGICAL*field.size)
 		stage_objects[id]=[actual.position.x,actual.position.y,actual.size.x,actual.size.y]
 	var lamp=Rect2(field.position+lamp_rect().position/LOGICAL*field.size,lamp_rect().size/LOGICAL*field.size)
-	return {"field":[field.position.x,field.position.y,field.size.x,field.size.y],"props":props,"stageObjects":stage_objects,"stageAction":stage_action,"lamp":[lamp.position.x,lamp.position.y,lamp.size.x,lamp.size.y],"notebook":{"open":notebook_open and help_open,"page":notebook_page,"recordedTrial":trial_records.has(int(state.round)),"studyReady":study.snapshot(int(state.round)).ready,"studySealed":study.snapshot(int(state.round)).sealed,"tracing":notebook.tracing_geometry()},"light":light_geometry(),"selected":selected,"paused":paused,"helpOpen":help_open,"menuOpen":menu_open,"touchLayout":touch_layout(),"rotationRequired":touch_layout() and size.x<size.y,"state":state.duplicate(true),"stagePlate":StagePlate.TEXTURE_PATH if StagePlate.valid_texture(textures.get("stage")) else "diagnostic","cueSheet":[cue_sheet.position.x,cue_sheet.position.y,cue_sheet.size.x,cue_sheet.size.y],"hudOwner":str(stage_hud.get_path()),"hudVisible":stage_hud.visible,"performance":performance.geometry_snapshot() if is_instance_valid(performance) else null}
+	return {"field":[field.position.x,field.position.y,field.size.x,field.size.y],"props":props,"stageObjects":stage_objects,"stageAction":stage_action,"lamp":[lamp.position.x,lamp.position.y,lamp.size.x,lamp.size.y],"notebook":{"open":notebook_open and help_open,"page":notebook_page,"recordedTrial":trial_records.has(int(state.round)),"studyReady":study.snapshot(int(state.round)).ready,"studySealed":study.snapshot(int(state.round)).sealed,"tracing":notebook.tracing_geometry()},"light":light_geometry(),"selected":selected,"paused":false,"helpOpen":help_open,"menuOpen":menu_open,"touchLayout":touch_layout(),"rotationRequired":touch_layout() and size.x<size.y,"state":state.duplicate(true),"stagePlate":StagePlate.TEXTURE_PATH if StagePlate.valid_texture(textures.get("stage")) else "diagnostic","cueSheet":[cue_sheet.position.x,cue_sheet.position.y,cue_sheet.size.x,cue_sheet.size.y],"hudOwner":str(stage_hud.get_path()),"hudVisible":stage_hud.visible,"performance":performance.geometry_snapshot() if is_instance_valid(performance) else null}
 func _watch_performance() -> bool:
 	if disposed or done or is_instance_valid(performance):return false
 	var state_node:Node=get_node_or_null("/root/State")
@@ -810,7 +804,7 @@ func _watch_performance() -> bool:
 	_clear_input()
 	var visibility:Array=[]
 	for node:Control in _hud_nodes():visibility.append({"node":weakref(node),"visible":node.visible})
-	performance_restore={"paused":paused,"helpOpen":help_open,"menuOpen":menu_open,"visibility":visibility,"viewSize":size,"touchLayout":touch_layout()}
+	performance_restore={"paused":false,"helpOpen":help_open,"menuOpen":menu_open,"visibility":visibility,"viewSize":size,"touchLayout":touch_layout()}
 	performance=show;show.z_index=20;add_child(show);show.configure_activity_layout(size,false)
 	_hide_under_performance();queue_redraw()
 	show.closed.connect(func(reason:String):
@@ -818,7 +812,7 @@ func _watch_performance() -> bool:
 		performance=null;show.queue_free()
 		if disposed:return
 		if reason=="context_changed":_cancel();return
-		paused=bool(performance_restore.get("paused",false));help_open=bool(performance_restore.get("helpOpen",false));menu_open=bool(performance_restore.get("menuOpen",false))
+		help_open=bool(performance_restore.get("helpOpen",false));menu_open=bool(performance_restore.get("menuOpen",false))
 		_clear_input();curtain_age=0.0;_layout()
 		help_panel.visible=help_open;menu_panel.visible=menu_open
 		if performance_restore.get("viewSize")==size and performance_restore.get("touchLayout")==touch_layout():

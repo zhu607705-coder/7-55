@@ -154,6 +154,14 @@ func run() -> void:
 	bridge._exit_tree()
 	bridge._on_save_observation([last_token, a, ""])
 	check(not bridge._save_pending and bridge._save_token > last_token and bridge._persistence_host == null, "exit invalidates callbacks and releases private transport references")
+	# Detached cleanup above must not query a missing tree. Attached teardown
+	# must still release the shared pause presentation environment gate.
+	var attached := Platform.new()
+	root.add_child(attached)
+	Platform.PauseOverlay.set_environment_blocked(self,true)
+	root.remove_child(attached)
+	check(not Platform.PauseOverlay._environment_blocked,"attached platform teardown releases pause environment gate")
+	attached.free()
 	verify_bounded_sync(state)
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(state.SAVE_PATH))
 	bridge.free(); state.free()

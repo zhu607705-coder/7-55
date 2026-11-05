@@ -10,7 +10,9 @@ const CharacterFlow=preload("res://scripts/games/prologue_character_flow.gd")
 const AsciiField=preload("res://scripts/games/prologue_ascii_field.gdshader")
 const AsciiAtlas=preload("res://assets/native/prologue_terminal_20261022/ascii_glyph_atlas.png")
 const FineAsciiAtlas=preload("res://assets/native/prologue_terminal_20261022/ascii_fine_glyph_atlas.png")
+const PauseOverlay=preload("res://scripts/ui/native_pause_overlay.gd")
 const NativeUi=preload("res://scripts/ui/native_ui_theme.gd")
+const Typography=preload("res://scripts/ui/native_typography.gd")
 const DIALOGUE=["旁白：喂！你拽我弹窗干什么？！快松手！要未响应了！", "玩家：帮我补签到！", "玩家：不帮就一起死机！", "旁白：行行行！算你狠！我帮你想办法还不行吗？先把手指挪开！"]
 const INK=CharacterFlow.INK
 const PAPER=CharacterFlow.PANEL
@@ -24,6 +26,11 @@ var hold_ms=0.0
 var holding=false
 var dragging=false
 var paused=false
+var pause_reason:=""
+var platform_suspended:=false
+var _playback_suspended:=false
+var _skip_resume_frame:=false
+var pause_overlay: CanvasLayer
 var done=false
 var dialogue_index=0
 var intro_elapsed_ms=0.0
@@ -48,6 +55,8 @@ var lock_release_count=0
 var field_material:ShaderMaterial
 var field_texture:ImageTexture
 var text_flow_clock=0.0
+var retry_button:Button
+var retry_wait=0.0
 
 func _ready()->void:
 	field_material=ShaderMaterial.new();field_material.shader=AsciiField;material=field_material
@@ -69,20 +78,28 @@ func _ready()->void:
 	content=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/prologue-interception.content.json"))
 	mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL;grab_focus()
 	success_view=SuccessPresentation.new();add_child(success_view)
-	resume_button=_button("返回字流",_resume)
+	pause_overlay=PauseOverlay.mount(self,_resume)
+	resume_button=pause_overlay.resume_button
 	resume_button.name="PrologueResume"
 	success_continue=_button("收起回执",_continue_success)
 	success_continue.name="CheckinSuccessContinue"
-	NativeUi.apply_button(success_continue,Color("F4EAD5"),Color("44332D"),Color("A1744E"),0,2,16,Vector2(12,6),Color("44332D"))
-	success_continue.add_theme_font_override("font",SuccessPresentation.PIXEL_FONT)
 	lock_help_button=_button("键盘帮助",_toggle_lock_help)
 	lock_help_button.name="NarratorLockKeyboardHelp"
-	get_tree().root.focus_exited.connect(_pause)
+	retry_button=_button("重试",_retry_round)
+	retry_button.name="NarratorRetryRound"
+	get_tree().root.focus_exited.connect(_on_window_focus_out)
+	get_tree().root.focus_entered.connect(_on_window_focus_in)
 	_reset_session()
 
 func _button(text:String,callback:Callable)->Button:
-	var button=Button.new();button.text=text;button.pressed.connect(callback);add_child(button)
-	NativeUi.apply_button(button,CharacterFlow.PANEL,INK,CharacterFlow.RULE,0,1,16,Vector2(12,6),CharacterFlow.ACCENT)
+	var button=Button.new();button.text=text
+	# These are phone presentation controls, not objects in the terminal puzzle.
+	# Declare ownership before registration so every native state uses the
+	# existing flat phone material without changing story art or hit geometry.
+	button.set_meta("phone_ui_scope",true)
+	Typography.apply_body(button)
+	NativeUi.apply_button(button,NativeUi.PAPER,NativeUi.INK,NativeUi.INK,0,2,16,Vector2(12,6))
+	button.pressed.connect(callback);add_child(button)
 	return button
 
 func _reset_session()->void:
@@ -93,14 +110,14 @@ func _reset_session()->void:
 	_sync()
 
 func start(request:Dictionary)->void:
-	config=request;done=false;paused=false;dialogue_index=0;hold_ms=0;intro_elapsed_ms=0;text_flow_clock=0
-	lock_help_open=false;lock_release_count=0
+	config=request;done=false;paused=false;pause_reason="";platform_suspended=false;_skip_resume_frame=false;_sync_playback_suspension();dialogue_index=0;hold_ms=0;intro_elapsed_ms=0;text_flow_clock=0
+	lock_help_open=false;lock_release_count=0;retry_wait=0
 	reduced_motion=bool(request.get("reduced_motion",false))
 	_reset_session();_clear_input();_switch("blackout" if request.get("resume",false) else "success")
 
 func _continue_success()->void:
 	# This only advances a local visual beat, never the chapter or interception proof.
-	if phase!="success" or paused or done:return
+	if phase!="success" or paused or platform_suspended or done:return
 	_switch("error");grab_focus()
 
 func _clear_input()->void:
@@ -108,7 +125,7 @@ func _clear_input()->void:
 	session.stop_pointer()
 
 func _toggle_lock_help()->void:
-	if phase!="lock" or paused or done:return
+	if phase!="lock" or paused or platform_suspended or done:return
 	lock_help_open=not lock_help_open
 	lock_help_button.text="收起键盘帮助" if lock_help_open else "键盘帮助"
 	grab_focus();queue_redraw()
@@ -118,29 +135,81 @@ func _release_lock()->void:
 	holding=false;hold_ms=0
 
 func _lock_feedback()->String:
-	if holding and hold_ms>0:return "旁白还在挣扎，那个字却慢慢稳了下来。"
-	if lock_release_count>=3:return "它每次刚安静下来，旁白就趁空隙溜走。"
-	if lock_release_count==2:return "刚才碰到时，那个字停了一下。"
-	if lock_release_count==1:return "差一点，话头又溜走了。"
-	return "旁白像是要把最后半句话带走。"
+	return "再按住一会儿" if lock_release_count>0 else "按住"
 
-func _pause()->void:
-	if paused or done:return
-	paused=true;_clear_input()
+func _retry_round()->void:
+	if paused or platform_suspended or done or session.phase!="hint" or retry_wait<.35:return
+	_clear_input();session.continue_stage();retry_wait=0
+	phase="deploy";grab_focus();queue_redraw()
+
+func _round_goal()->String:
+	var words:Array=session.current().get("targets",[])
+	return (" → " if session.current().get("ordered",false) else " · ").join(words)
+
+func _round_error()->String:
+	match str(session.hint.get("reason","")):
+		"meaning":return "接错了"
+		"order":return "先接“%s”" % session.missing()[0] if not session.missing().is_empty() else "顺序不对"
+	return "没接住"
+
+func _movement_hint()->String:
+	# One invitation to touch the object, gone as soon as the player moves it.
+	return "拖动窗口" if session.stage==0 and session.moved_distance<6 and session.phase!="hint" else ""
+
+func supports_player_pause() -> bool:
+	# Only the moving interception and timed hold are real-time play. Receipts,
+	# transitions and dialogue use a transient lifecycle freeze, never a modal.
+	return (phase=="lock" or (phase in ["deploy","intercept"] and session.phase!="hint")) and not done
+
+func _sync_playback_suspension() -> void:
+	var blocked:=paused or platform_suspended
+	if blocked==_playback_suspended:return
+	_playback_suspended=blocked
+	presentation_requested.emit("prologue_playback_paused" if blocked else "prologue_playback_resumed",{})
+
+func _pause(reason: String="manual")->void:
+	if paused or not supports_player_pause():return
+	paused=true;pause_reason=reason;_clear_input()
 	if phase=="lock":hold_ms=0
-	presentation_requested.emit("prologue_playback_paused",{})
+	_sync_playback_suspension();_sync_pause_surface()
+
+func set_platform_suspended(suspended: bool) -> void:
+	if suspended!=platform_suspended:
+		platform_suspended=suspended
+		_clear_input()
+		if phase=="lock":hold_ms=0
+		# Ignore the first resumed native/rAF frame rather than spending time
+		# accumulated while the app was hidden on a receipt or transition.
+		if not suspended:_skip_resume_frame=true
+	if suspended:_pause("focus")
+	_sync_playback_suspension();_sync_pause_surface()
+
+func _on_window_focus_out() -> void:
+	# WebPlatform owns browser hidden/focus/loading overlap. Native windows
+	# use the same lifecycle guard without adding a static-screen pause UI.
+	if not OS.has_feature("web"):set_platform_suspended(true)
+	else:_pause("focus")
+
+func _on_window_focus_in() -> void:
+	if not OS.has_feature("web"):set_platform_suspended(false)
+
+func _sync_pause_surface() -> void:
+	if is_instance_valid(pause_overlay):pause_overlay.present(paused and supports_player_pause(),pause_reason,not platform_suspended)
 
 func _resume()->void:
-	if not paused or done:return
-	paused=false;grab_focus()
-	presentation_requested.emit("prologue_playback_resumed",{})
+	if not paused or done or platform_suspended:return
+	paused=false;pause_reason="";_clear_input();_skip_resume_frame=false
+	_sync_playback_suspension();_sync_pause_surface();grab_focus()
 
 func _exit_tree()->void:
 	presentation_requested.emit("prologue_scene_closed",{})
-	if get_tree().root.focus_exited.is_connected(_pause):get_tree().root.focus_exited.disconnect(_pause)
+	if get_tree().root.focus_exited.is_connected(_on_window_focus_out):get_tree().root.focus_exited.disconnect(_on_window_focus_out)
+	if get_tree().root.focus_entered.is_connected(_on_window_focus_in):get_tree().root.focus_entered.disconnect(_on_window_focus_in)
 
 func _switch(next:String)->void:
 	phase=next;elapsed=0
+	if not supports_player_pause():paused=false;pause_reason=""
+	_sync_playback_suspension();_sync_pause_surface()
 	if is_instance_valid(success_view):success_view.visible=phase=="success"
 	match phase:
 		"blackout":presentation_requested.emit("prologue_blackout_started",{"durationMs":7000})
@@ -156,16 +225,16 @@ func _switch(next:String)->void:
 func _layout_controls()->void:
 	display_scale=minf(size.x/430.0,size.y/820.0)
 	field=Rect2((size-Vector2(430,820)*display_scale)/2,Vector2(430,820)*display_scale)
-	var visible_game=phase in ["deploy","intercept"]
-	for button:Button in [resume_button,success_continue,lock_help_button]:
+	for button:Button in [success_continue,lock_help_button,retry_button]:
 		button.scale=Vector2.ONE*display_scale
 	success_view.position=field.position;success_view.scale=Vector2.ONE*display_scale
 	success_view.visible=phase=="success"
 	success_continue.visible=phase=="success" and (elapsed>=1.8 or reduced_motion) and not paused
-	resume_button.text="返回字流" if visible_game else "返回回执" if phase=="success" else "返回交涉" if phase in ["lock","caught"] else "返回剧情"
 	lock_help_button.visible=phase=="lock" and not paused
-	resume_button.visible=paused
-	for item:Array in [[resume_button,Rect2(115,668,200,48)],[success_continue,Rect2(125,704,180,48)],[lock_help_button,Rect2(118,704,194,42)]]:
+	retry_button.visible=session.phase=="hint" and phase=="intercept" and not paused
+	retry_button.disabled=retry_wait<.35
+	_sync_pause_surface()
+	for item:Array in [[success_continue,Rect2(125,704,180,48)],[lock_help_button,Rect2(118,704,194,42)],[retry_button,Rect2(138,480,154,48)]]:
 		var rect:Rect2=item[1];item[0].position=field.position+rect.position*display_scale;item[0].size=rect.size
 
 func _sync()->void:
@@ -173,9 +242,10 @@ func _sync()->void:
 
 func _process(delta:float)->void:
 	_layout_controls()
-	if paused or done:
-		if phase=="success":success_view.pose(elapsed,reduced_motion,paused)
+	if paused or platform_suspended or done:
+		if phase=="success":success_view.pose(elapsed,reduced_motion,paused or platform_suspended)
 		_update_terminal_field();queue_redraw();return
+	if _skip_resume_frame:_skip_resume_frame=false;return
 	var dt=clampf(delta,0,.25)
 	text_flow_clock+=dt
 	elapsed+=dt
@@ -186,13 +256,12 @@ func _process(delta:float)->void:
 			match event.kind:
 				"stage_complete":presentation_requested.emit("prologue_error_intercepted",{"blockedCount":event.completed,"requiredBlocks":3})
 				"miss":
-					presentation_requested.emit("prologue_error_intercept_missed",{"misses":event.misses,"maxMisses":3})
-					if int(event.hint.tier)==3:presentation_requested.emit("prologue_error_round_failed",{"misses":event.misses})
+					presentation_requested.emit("prologue_error_intercept_missed",{"misses":event.misses,"retryCurrentRound":true})
+					presentation_requested.emit("prologue_error_round_failed",{"misses":event.misses,"round":session.stage+1})
 		if session.phase=="hint":
-			# Keep the earned collection and the current grip; re-emit missing words.
-			var target=session.board_target
-			session.continue_stage()
-			session.set_target(target)
+			retry_wait+=dt
+			_clear_input()
+		else:retry_wait=0
 		_sync()
 		if session.phase=="complete":_switch("lock")
 		else:phase="deploy" if session.phase=="clue" else "intercept"
@@ -221,7 +290,7 @@ func _process(delta:float)->void:
 				if elapsed>=.7:
 					done=true
 					finished.emit({"interceptedCount":blocks,"lockHeldMs":hold_ms,"failed":false,"dialogueCount":4,"whiteoutCompleted":true})
-	if phase=="success":success_view.pose(elapsed,reduced_motion,paused)
+	if phase=="success":success_view.pose(elapsed,reduced_motion,paused or platform_suspended)
 	_update_terminal_field();queue_redraw()
 
 func _logical(point:Vector2)->Vector2:return (point-field.position)/maxf(.0001,display_scale)
@@ -230,10 +299,13 @@ func board_center()->Vector2:return field.position+Vector2(session.board_x,WordM
 func _lock_center()->Vector2:return lock_from.lerp(Vector2(215,352),clampf(elapsed/.55,0,1))
 
 func _gui_input(event:InputEvent)->void:
-	if paused:return
+	if paused or platform_suspended:return
 	if event is InputEventKey and not event.echo:
 		var code=event.physical_keycode if event.physical_keycode else event.keycode
-		if code in [KEY_SPACE,KEY_ENTER] and phase=="success":
+		if code in [KEY_SPACE,KEY_ENTER] and session.phase=="hint" and phase=="intercept":
+			if event.pressed:_retry_round()
+			accept_event()
+		elif code in [KEY_SPACE,KEY_ENTER] and phase=="success":
 			if event.pressed:_continue_success()
 			accept_event()
 		elif code in [KEY_A,KEY_LEFT]:left_held=event.pressed;accept_event()
@@ -243,6 +315,18 @@ func _gui_input(event:InputEvent)->void:
 			else:_release_lock()
 			accept_event()
 		elif code==KEY_ESCAPE and event.pressed:_pause();accept_event()
+	elif event is InputEventJoypadMotion and event.axis==JOY_AXIS_LEFT_X:
+		left_held=event.axis_value<-.3;right_held=event.axis_value>.3;accept_event()
+	elif event is InputEventJoypadButton:
+		if event.button_index==JOY_BUTTON_DPAD_LEFT:left_held=event.pressed
+		elif event.button_index==JOY_BUTTON_DPAD_RIGHT:right_held=event.pressed
+		elif event.button_index==JOY_BUTTON_A:
+			if phase=="lock":
+				if event.pressed:holding=true
+				else:_release_lock()
+			elif event.pressed and session.phase=="hint":_retry_round()
+			elif event.pressed and phase=="success":_continue_success()
+		accept_event()
 	elif event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
 		_pointer_begin(event.position,-1) if event.pressed else _pointer_end(-1)
 		accept_event()
@@ -254,7 +338,7 @@ func _gui_input(event:InputEvent)->void:
 	elif event is InputEventScreenDrag and dragging and pointer_id==event.index:_pointer_move(event.position);accept_event()
 
 func _pointer_begin(point:Vector2,id:int)->void:
-	if session.reviewing or pointer_id!=-99:return
+	if session.reviewing or session.phase=="hint" or pointer_id!=-99:return
 	var local=_logical(point)
 	if phase=="lock":
 		if local.distance_to(_lock_center())<=58:holding=true;pointer_id=id
@@ -306,22 +390,25 @@ func _narration_card(text:String,y:float,height:float,speaker:String,font_size:i
 	_text(speaker,y+24,PaperInk.SOFT_INK,14)
 	_text(text,y+64,PaperInk.INK,font_size,348,true)
 
+func _retained_sentence()->String:
+	# Each round still owns its actual captures. Read their authored sentence
+	# order, so the unordered second round cannot scramble the player's plea.
+	if session.stages.is_empty() or session.completed_stages!=session.stages.size():return ""
+	for stage_index:int in session.stages.size():
+		for word:String in session.stages[stage_index].get("targets",[]):
+			var earned=false
+			for capture:Dictionary in session.captures:
+				if int(capture.stage)==stage_index and str(capture.word)==word:
+					earned=true;break
+			if not earned:return ""
+	return str(content.get("retainedLine",""))
+
 func _retained_words(y:float)->void:
-	# Keep each earned word intact; these are records of actual contacts, not
-	# advance answers or another puzzle-completion authority.
-	var font=get_theme_default_font();var width=0.0;var words:Array=[]
-	for capture:Dictionary in session.captures:
-		var word=str(capture.word)
-		var extent=font.get_string_size(word,HORIZONTAL_ALIGNMENT_LEFT,-1,17).x+16
-		words.append({"word":word,"width":extent});width+=extent
-	width+=maxi(0,words.size()-1)*6
-	_text("已留下",y-16,CharacterFlow.MUTED,14)
-	var x=(430-width)/2
-	for word:Dictionary in words:
-		draw_rect(Rect2(x,y,word.width,34),PAPER)
-		draw_rect(Rect2(x,y,word.width,34),CharacterFlow.RULE,false,1)
-		draw_string(font,Vector2(x+8,y+23),word.word,HORIZONTAL_ALIGNMENT_LEFT,-1,17,INK)
-		x+=word.width+6
+	var sentence=_retained_sentence()
+	if sentence.is_empty():return
+	# This is a record of all six real contacts, never another completion gate.
+	draw_rect(Rect2(30,y,370,60),PAPER)
+	_text(sentence,y+34,INK,20,338,true)
 
 func _update_terminal_field()->void:
 	var bodies=PackedVector4Array();bodies.resize(CharacterFlow.WORD_SLOTS)
@@ -408,28 +495,28 @@ func _draw()->void:
 			if intro_segments.size()>=3 and intro_elapsed_ms<8500:
 				var index=2 if intro_elapsed_ms>=6800 else 1 if intro_elapsed_ms>=3400 else 0
 				_narration_card(str(intro_segments[index]),98,112,"旁白",18)
-			if not session.captures.is_empty():_text("已留下："+" · ".join(session.captures.map(func(c):return c.word)),219,INK,17)
+			_text(_round_goal(),248,INK,18)
+			var invitation=_movement_hint()
+			if not invitation.is_empty():_text(invitation,724,CharacterFlow.MUTED,15)
 			for contact:Dictionary in session.contacts:
 				var age=session.clock-float(contact.time)
 				if age<.22:draw_line(contact.point-Vector2(9+age*30,0),contact.point+Vector2(9+age*30,0),Color(INK,1-age/.22),2)
 			_draw_board()
+			if session.phase=="hint":
+				draw_rect(Rect2(95,396,240,154),PAPER)
+				_text(_round_error(),445,INK,20)
 			if reduced_motion and phase=="deploy":
 				var fragments:Array=session.current().get("fragments",[])
 				for i:int in fragments.size():_text(str(fragments[i]),337+i*56,INK,23)
 		elif phase=="lock":
-			_narration_card(_lock_feedback(),110,126,"眼前的字",20)
+			_text(_lock_feedback(),442,INK,18)
 			var center=_lock_center()
 			draw_arc(center,55,0,TAU,64,CharacterFlow.RULE,1)
 			draw_arc(center,62,-PI/2,-PI/2+TAU*hold_ms/1400,60,CharacterFlow.ACCENT,3)
 			if elapsed>=.55 and not session.captures.is_empty():_retained_words(520)
-			if lock_help_open:_text("空格 / Enter 与触碰圆圈等效。\n按键状态会同步到这个字。",624,CharacterFlow.MUTED,15)
+			if lock_help_open:_text("按住空格 / Enter / 手柄 A",624,CharacterFlow.MUTED,15)
 		elif phase=="caught":
 			var line:String=DIALOGUE[dialogue_index]
 			var colon=line.find("：")
 			_narration_card(line.substr(colon+1),286,206,line.left(colon),23)
-	if paused:
-		var pause_rect:=Rect2(30,540,370,190)
-		draw_rect(pause_rect,PaperInk.PAPER);PaperInk.draw_panel(get_canvas_item(),pause_rect)
-		_text("已暂停",582,PaperInk.INK,25)
-		_text("文字已停住，已留下的字仍在。" if phase in ["deploy","intercept"] else "这一段停在这里。",624,PaperInk.INK,17)
 	draw_set_transform(Vector2.ZERO)

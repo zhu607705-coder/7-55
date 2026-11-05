@@ -63,8 +63,8 @@ func run()->void:
 	root.size=Vector2i(1280,720);view.configure_activity_layout(Vector2(root.size));await frames()
 	view.tick(.1,true);var before:float=view.model.elapsed_ms
 	await mouse(view.pause_button);view.tick(.1,true)
-	check(view.model.manually_paused and view.model.elapsed_ms==before and view.pause_button.text=="继续","Real Pause freezes the clock and exposes explicit Continue")
-	await mouse(view.pause_button);view.tick(.1,true)
+	check(view.model.manually_paused and view.model.elapsed_ms==before and view.shared_pause_overlay.is_open() and view.shared_pause_overlay.resume_button.text=="继续","Real Pause freezes the clock and exposes explicit Continue")
+	await mouse(view.shared_pause_overlay.resume_button);view.tick(.1,true)
 	check(not view.model.manually_paused and view.model.elapsed_ms>before,"Real Continue resumes only this presentation")
 	view.grab_focus();await frames();await key(KEY_SPACE);before=view.model.elapsed_ms;view.tick(.1,true)
 	check(view.model.manually_paused and view.model.elapsed_ms==before,"Focused Space is an equivalent pause action")
@@ -72,7 +72,7 @@ func run()->void:
 	root.focus_exited.emit();view.tick(.1,true)
 	check(view.model.focus_paused and view.model.elapsed_ms==before,"Actual window focus signal freezes animation without advancing story")
 	root.focus_entered.emit();view.tick(.1,true);check(view.model.elapsed_ms==before,"Focus return preserves explicit resume requirement")
-	await mouse(view.pause_button);view.tick(.1,true);before=view.model.elapsed_ms
+	await mouse(view.shared_pause_overlay.resume_button);view.tick(.1,true);before=view.model.elapsed_ms
 	blocked=true;view.tick(.1,true);check(view.model.elapsed_ms==before,"Host occlusion freezes playback")
 	blocked=false;fixture.ui.controlCenterOpen=true;view.tick(.1,true);check(view.model.elapsed_ms==before,"Control Center freezes the clock")
 	fixture.ui.controlCenterOpen=false;fixture.native.settings.reduced_motion=true;view.tick(.1,true)

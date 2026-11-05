@@ -1,5 +1,5 @@
 extends "res://tests/test_c3_canteen_devices_controls.gd"
-## Real device controls + State feedback, preserving the separate unread FIFO.
+## Real device controls + State feedback, preserving separate latest-feedback and authored narrative owners.
 ## Seeded isolated state is setup, not earned campaign/OS desktop acceptance.
 func tick_reading(count:int) -> void:
 	for i in count:shell.world._process(.05);shell._process(.05)
@@ -17,34 +17,26 @@ func run() -> void:
 	shell._clear_notice_presentations();shell.world.subtitle="";shell.world.subtitle_left=0
 	state.feedback.emit("操作前甲通知");state.feedback.emit("操作前乙通知");tick_reading(10)
 	var unread:float=shell.notice_queue.current.remaining
-	check(unread>0 and unread<2.4 and shell.world.subtitle=="操作前甲通知","ordinary notice is genuinely partly read before opening the device")
+	check(unread>0 and unread<2.4 and shell.world.subtitle=="操作前乙通知","ordinary notice is genuinely partly read before opening the device")
 	# An external clear is not acknowledgement of reading this queue item.
 	shell.world.subtitle="";shell.world.subtitle_left=0;shell._layout_toast()
-	check(shell.world.subtitle=="操作前甲通知" and is_equal_approx(shell.notice_queue.current.remaining,unread),"external clear resumes the same unread notice rather than consuming it")
+	check(shell.world.subtitle=="操作前乙通知" and is_equal_approx(shell.notice_queue.current.remaining,unread),"external clear resumes the same unread notice rather than consuming it")
 	await open_world("ordering_kiosk")
 	var panel:Control=shell.c3_device_panel
 	if not is_instance_valid(panel):await teardown();quit(1);return
 	await click(panel.controls.D);shell._process(0)
 	check(shell.world.subtitle.contains("只能查看") and panel.labels.title.visible,"actual dark Order rejection immediately replaces the device observation")
 	check(shell.notice_surface.is_empty() and not shell.toast.visible and shell.toast.text.is_empty(),"device correction has no second generic notice surface")
-	check(is_equal_approx(shell.notice_queue.current.remaining,unread) and shell.notice_queue.pending.size()==1,"local action preserves partly read current and earlier pending ordinary message")
+	check(is_equal_approx(shell.notice_queue.current.remaining,unread) and shell.notice_queue.pending.is_empty(),"local correction preserves only the unexpired latest ordinary message")
 	state.feedback.emit("操作期间丙通知");tick_reading(12)
-	check(shell.world.subtitle.contains("只能查看") and is_equal_approx(shell.notice_queue.current.remaining,unread) and shell.notice_queue.pending.size()==2,"ambient arrival waits without replacing the correction or spending unread time")
+	check(shell.world.subtitle.contains("只能查看") and shell.notice_queue.current.text=="操作期间丙通知" and is_equal_approx(shell.notice_queue.current.elapsed,.6) and shell.notice_queue.pending.is_empty(),"latest ambient arrival replaces old ordinary feedback while hidden time advances beneath the correction")
 	var facts:Dictionary=state.d.duplicate(true)
 	await click(panel.controls.D);shell._process(0)
 	check(state.d.canteenHunt.orderAttemptCount==facts.canteenHunt.orderAttemptCount and state.d.canteenHunt.orderedMenuOption==facts.canteenHunt.orderedMenuOption and state.d.items==facts.items and state.d.wallet==facts.wallet and shell.world.subtitle.contains("只能查看"),"repeated real rejected action stays readable without granting an order")
 	await key(KEY_ESCAPE);shell._process(0)
 	check(not is_instance_valid(shell.c3_device_panel) and shell.world.subtitle.contains("只能查看") and shell.notice_surface.is_empty(),"closing device preserves its remaining local result instead of replaying observation")
-	for i in 200:
-		if shell.notice_surface=="world":break
-		tick_reading(1)
-	check(shell.world.subtitle=="操作前甲通知" and is_equal_approx(shell.world.subtitle_left,unread),"ordinary FIFO resumes exactly its earlier unread lifetime after local expiry")
-	wait_notice_release("操作前甲通知")
-	check(shell.world.subtitle=="操作前乙通知" and is_equal_approx(shell.world.subtitle_left,2.4),"earlier pending message follows once at full duration")
-	wait_notice_release("操作前乙通知")
-	check(shell.world.subtitle=="操作期间丙通知" and is_equal_approx(shell.world.subtitle_left,clampf(1.6+"操作期间丙通知".length()*.12,2.4,6.5)),"device-time ambient arrival follows once in FIFO order")
-	wait_notice_release("操作期间丙通知")
-	check(shell.notice_queue.current.is_empty() and shell.notice_queue.pending.is_empty() and shell.world.subtitle.is_empty(),"local correction and observations never replay as ordinary queued notifications")
+	tick_reading(200)
+	check(shell.notice_queue.current.is_empty() and shell.notice_queue.pending.is_empty() and shell.world.subtitle.is_empty(),"local correction expires without replaying old ordinary messages or observations")
 	# A real accepted order dismisses its panel and issues the original narrative.
 	await open_world("ordering_kiosk");panel=shell.c3_device_panel
 	await click(panel.controls.mode);await click(panel.controls.D)
@@ -55,8 +47,8 @@ func run() -> void:
 	check(is_zero_approx(float(shell.world.hud_metrics(shell.world._hud_line()).body_height)),"visible order dialogue has no leftover local feedback HUD row")
 	var owner:RefCounted=shell.c3_narrative_host.current
 	state.feedback.emit("对白期间丁通知");shell._process(8)
-	check(shell.c3_narrative_host.current==owner and not shell.toast.visible and shell.notice_surface.is_empty(),"handoff keeps the real narrative owner and holds ambient notification")
-	check(shell.notice_queue.current.get("text","")=="对白期间丁通知" and is_equal_approx(shell.notice_queue.current.remaining,clampf(1.6+"对白期间丁通知".length()*.12,2.4,6.5)),"scene takeover does not charge or duplicate its waiting ordinary message")
+	check(shell.c3_narrative_host.current==owner and not shell.toast.visible and shell.notice_surface.is_empty(),"handoff keeps the real narrative owner while ordinary notification expires unseen")
+	check(shell.notice_queue.current.is_empty() and shell.notice_queue.pending.is_empty(),"scene takeover never retains expired ordinary messages for replay")
 	await teardown()
 	# Independent ownership fixture: another source replaces the same wording.
 	# A subsequent real order may retire only its own revision, never this one.

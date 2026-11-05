@@ -15,6 +15,17 @@ func check(value: bool, message: String) -> void:
 	if not value: errors += 1; push_error(message)
 func tick(seconds: float) -> void:
 	for index in range(int(round(seconds/.01))): game._process(.01)
+func retry_round() -> void:
+	game._process(0)
+	var button: Button=game.retry_button
+	check(button.is_visible_in_tree() and not button.disabled,"failed round offers an actually visible enabled retry control")
+	var missed_before: int=game.misses
+	var point: Vector2=button.get_global_rect().get_center()
+	for down: bool in [true,false]:
+		var event:=InputEventMouseButton.new();event.position=point;event.global_position=point;event.button_index=MOUSE_BUTTON_LEFT;event.pressed=down
+		var motion:=InputEventMouseMotion.new();motion.position=point;motion.global_position=point;root.push_input(motion,true)
+		root.push_input(event,true);game._process(.01);await process_frame
+	check(game.session.phase=="clue" and game.phase=="deploy" and game.misses==missed_before and results.is_empty(),"actual pointer retry restarts only the failed round without replaying or granting completion")
 func count(id: String) -> int:
 	return events.filter(func(entry: Dictionary) -> bool: return entry.id==id).size()
 func _initialize() -> void: call_deferred("run")
@@ -41,6 +52,7 @@ func finish() -> void:
 	quit(1 if errors else 0)
 
 func run() -> void:
+	root.size=Vector2i(430,820)
 	var state: Dictionary = {"native":{"page":"ending","settings":{"music":true,"effects":true,"volume":1}},"ui":{}}
 	var initial: String=JSON.stringify(state)
 	audio=Director.new(); root.add_child(audio); audio.setup(func() -> Dictionary: return state)
@@ -85,13 +97,18 @@ func run() -> void:
 	check(absf(audio.voice.get_playback_position()-playback)<.04,"paused voice offset cannot drift")
 	game._resume(); await process_frame
 	check(not audio.voice.stream_paused and count("prologue_playback_resumed")==1,"resume continues same clip")
-	# Real misses keep flowing without replaying the original narration.
+	# Each failed round waits for real explicit retry; narration remains single-owner.
+	game.show();game.grab_focus()
 	for tick_index in range(6000):
 		if game.misses>=3:break
+		if game.session.phase=="hint" and game.retry_wait>=.35:await retry_round()
 		tick(.01)
-	check(game.phase=="intercept" and count("prologue_error_intercept_missed")==3 and count("prologue_error_round_failed")==1,"three real missed targets preserve their authored audio cues while the stage continues")
-	check(events.filter(func(e: Dictionary) -> bool: return e.id=="prologue_error_intercept_missed")[2].payload=={"misses":3,"maxMisses":3},"third miss retains the existing presentation payload")
-	check(count("prologue_narrator_intro")==1 and pending_voice("vo_prologue_narrator_intro").is_empty(),"automatic continuation does not replay the original narration")
+	var missed: Array=events.filter(func(e: Dictionary) -> bool:return e.id=="prologue_error_intercept_missed")
+	check(game.phase=="intercept" and game.session.phase=="hint" and missed.size()==3 and count("prologue_error_round_failed")==3,"three actual failed rounds require explicit retries and retain all miss and round-failed cues")
+	if missed.size()!=3:await finish();return
+	check(missed[2].payload=={"misses":3,"retryCurrentRound":true},"third miss reports the current explicit-retry presentation payload")
+	check(count("prologue_narrator_intro")==1 and pending_voice("vo_prologue_narrator_intro").is_empty(),"explicit retries never replay the original narration")
+	tick(.4);await retry_round()
 	check(WordDriver.until(game,"lock"),"actual word selection and board collisions earn the lock")
 	check(game.phase=="lock" and count("prologue_error_intercepted")==3 and count("prologue_error_lock_ready")==1,"three completed semantic stages emit the original lock cue once")
 	game.holding=true; tick(1.41)
@@ -108,9 +125,10 @@ func run() -> void:
 	check(burst.map(func(p: Dictionary) -> int: return int(p.cue.get("offsetMs",0)))==[0,300,620,760],"burst preserves exact0/300/620/760ms scheduled effects/musicstop")
 	if burst.size()!=4: await finish(); return
 	var stop_deadline: int=int(burst[3].at)
-	game._pause(); var pending: int=audio.scheduled.size(); await wait_msec(850)
-	check(audio.scheduled.size()==pending and audio.music!=null,"pause freezes delayed burst cue offsets and music stop")
-	game._resume()
+	game._pause();check(not game.paused,"non-interactive burst has no player pause latch")
+	game.set_platform_suspended(true); var pending: int=audio.scheduled.size(); await wait_msec(850)
+	check(audio.scheduled.size()==pending and audio.music!=null,"background lifecycle freezes delayed burst cue offsets and music stop")
+	game.set_platform_suspended(false)
 	check(int(burst[3].at)>=stop_deadline+850,"resume shifts the760ms stop deadline by the actual pause duration")
 	stop_deadline=int(burst[3].at)
 	var wait_deadline: int=Time.get_ticks_msec()+3000

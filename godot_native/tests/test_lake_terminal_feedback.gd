@@ -20,8 +20,8 @@ func run() -> void:
 	root.add_child(game);game.set_process(false)
 	game.finished.connect(func(result: Dictionary):delivered.append(result))
 	check(game._modal_title()=="准备好了吗？","ordinary ready title")
-	game.begin();game.toggle_pause()
-	check(game._modal_title()=="已暂停","ordinary pause title")
+	game.begin();game.model.press("left");game.model.release("left");game.toggle_pause()
+	check(game.paused and game.shared_pause_overlay.is_open() and game.shared_pause_overlay.title.text=="已暂停" and not game.shared_pause_overlay.body.visible,"ordinary pause title")
 	game.begin()
 	# The genuine input-only solver produces a replay-verifiable proof, not a forged outcome.
 	var solved: RefCounted=Solver.new().solve_fishing("locker_key")

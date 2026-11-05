@@ -145,8 +145,12 @@ export function PhoneShell({
     else stage.removeAttribute("inert");
   }, [inputBlocked]);
 
-  // 亮度遮罩：亮度越低越暗（最多 0.3），拉满则完全通透
-  const veilOpacity = Math.max(0, (70 - state.ui.brightness) / 70) * 0.3;
+  // Neutral65 matches the old unfiltered100. Below it only dim; the shipped
+  // native renderer separately grades65–100 with its bounded HSL composite.
+  // This retained React reference claims dimmer parity, not that native pass.
+  const savedBrightness = Math.max(0, Math.min(100, state.ui.brightness));
+  const displayBrightness = savedBrightness;
+  const veilOpacity = Math.max(0, 1 - displayBrightness / 65) * 0.35;
   const scaleStyle = {
     "--phone-scale": phoneScale,
     "--phone-stage-width": `${PHONE_VIEWPORT_WIDTH * phoneScale}px`,

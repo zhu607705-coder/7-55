@@ -3,7 +3,9 @@ const View=preload("res://scripts/games/theater_shadow_rehearsal.gd")
 const Proof=preload("res://tests/helpers/theater_rehearsal_proof.gd")
 var checks:=0
 var failures:=0
-func _initialize() -> void:run.call_deferred()
+func _initialize() -> void:
+	create_timer(20.0).timeout.connect(func():push_error("THEATER_REHEARSAL_UI: bounded completion watchdog expired");quit(1))
+	run.call_deferred()
 func check(ok: bool,label: String) -> void:
 	checks+=1
 	if not ok:failures+=1;push_error("THEATER_REHEARSAL_UI: "+label)
@@ -39,9 +41,9 @@ func run() -> void:
 			if button.visible:check(button.position.x>=0 and button.position.y>=0 and button.position.x+button.size.x<=size2.x+1 and button.position.y+button.size.y<=size2.y+1,"visible control remains inside available viewport: "+button.name)
 		check(not view.controls.RehearsalTry.visible and not view.controls.RehearsalNext.visible,"stage trials and curtain changes use the physical lamp without a duplicate bottom action")
 	view.configure_activity_layout(Vector2(1280,720),false);await process_frame
-	view._intro();view._focus_out();view._close_help()
-	check(view.paused and view.menu_open and view.menu_panel.visible,"Closing a reading sheet after focus loss exposes explicit resume instead of an inert stage")
-	view._close_menu();check(not view.paused and not view.menu_open,"The visible resume action restores stage input after interrupted reading")
+	view._intro();var interrupted_reading:Dictionary=view.model.snapshot();view._focus_out()
+	check(view.help_open and view.help_panel.visible and not view.menu_open and view.model.snapshot()==interrupted_reading,"Focus loss preserves the reading sheet and turn-based model without opening pause")
+	view._close_help();check(not view.help_open and not view.menu_open and view.held.is_empty(),"Closing interrupted reading restores stage input without a pause gate")
 	var rapid_before: float=float(view.state.objects[0].x)
 	key(KEY_RIGHT,true);key(KEY_RIGHT,false);await process_frame
 	check(is_equal_approx(float(view.state.objects[0].x),rapid_before+0.12),"a complete short key press in one rendering frame moves exactly once")
@@ -65,9 +67,9 @@ func run() -> void:
 	view._undo();view.selected="left_fan"
 	view._help();var before: Dictionary=view.model.snapshot();key(KEY_RIGHT,true);await create_timer(.12).timeout;key(KEY_RIGHT,false)
 	check(view.model.snapshot()==before and view.help_panel.visible,"reading freezes keyboard motion and penalties")
-	view._close_help();view._pause();before=view.model.snapshot();key(KEY_RIGHT,true);await create_timer(.12).timeout;key(KEY_RIGHT,false)
-	check(view.model.snapshot()==before and view.paused,"pause keeps the stage unchanged until explicit resume")
-	view._pause();view.configure_activity_layout(Vector2(390,844),true);await process_frame
+	view._close_help();view._open_menu();before=view.model.snapshot();key(KEY_RIGHT,true);await create_timer(.12).timeout;key(KEY_RIGHT,false)
+	check(view.model.snapshot()==before and view.menu_open,"paper menu blocks keyboard motion and preserves the turn-based model")
+	view._close_menu();view.configure_activity_layout(Vector2(390,844),true);await process_frame
 	touch(5,Vector2(2,2),true);touch(5,Vector2(2,2),false);await process_frame
 	check(view.rotation_label.visible and view.controls.RehearsalExit.visible and not view.controls.RehearsalTry.visible,"portrait fallback explains rotation and retains a real Return action")
 	before=view.model.snapshot();start=point(view,"left_fan");touch(5,start,true);drag(5,start+Vector2(25,0));touch(5,start+Vector2(25,0),false);await process_frame
@@ -84,10 +86,10 @@ func run() -> void:
 	start=point(view,"left_fan");touch(5,start,true);await create_timer(.68).timeout;touch(5,start,false);await process_frame
 	check(view.help_open and view.state.hintTier==1 and view.help_panel.visible,"holding a real prop requests the first observation layer")
 	view._close_help();touch(1,p1,true);touch(2,p2,true);await create_timer(.68).timeout;touch(1,p1,false);touch(2,p2,false);await process_frame
-	check(view.menu_open and view.menu_panel.visible and not view.paused,"two-finger hold opens the temporary paper rehearsal sheet")
+	check(view.menu_open and view.menu_panel.visible,"two-finger hold opens the temporary paper rehearsal sheet")
 	for button:Button in view.menu_controls.values():check(button.get_global_rect().size.y>=44 and Rect2(Vector2.ZERO,view.size).encloses(button.get_global_rect()),"paper menu exposes a bounded real action "+button.name)
-	view.menu_controls.RehearsalMenuPause.pressed.emit();check(view.paused and view.menu_open,"paper Pause leaves the stage explicitly paused")
-	view.menu_controls.RehearsalMenuClose.pressed.emit();check(not view.paused and not view.menu_open,"paper Return resumes explicitly and clears the gesture")
+	check(not view.menu_controls.has("RehearsalMenuPause") and view.menu_controls.has("RehearsalMenuRestart") and view.menu_controls.has("RehearsalMenuExit"),"turn-based paper menu retains restart and exit without a pause action")
+	view.menu_controls.RehearsalMenuClose.pressed.emit();check(not view.menu_open and view.fingers.is_empty() and view.held.is_empty(),"paper Return restores input and clears the gesture")
 	start=point(view,"left_fan");touch(5,start,true);drag(5,start+Vector2(20,0));before=view.model.snapshot();view.configure_activity_layout(Vector2(900,430),false);drag(5,start+Vector2(60,0));touch(5,start,false);await process_frame
 	check(view.model.snapshot()==before and view.fingers.is_empty() and view.drag_id.is_empty(),"resize cancels a live touch owner without moving at stale coordinates")
 	view.configure_activity_layout(Vector2(844,390),false);await process_frame
@@ -101,7 +103,7 @@ func run() -> void:
 	check(absf(view.state.lampDepth-1.1)<.001 and absf(view.state.lampX-.6)<.001 and view.state.attempts==light_before.attempts,"one finger moves both source axes without trial on release")
 	view._undo();check(view.state.projections==light_before.projections and view.state.lampDepth==light_before.lampDepth,"mobile undo restores shadows and lamp position together")
 	touch(5,light_start,true);drag(5,light_end);view._focus_out();before=view.model.snapshot();drag(5,light_end+Vector2(0,-30));touch(5,light_end,false);await process_frame
-	check(view.model.snapshot()==before and view.drag_id.is_empty() and view.menu_open,"focus loss cancels a lamp drag without a delayed move or trial")
+	check(view.model.snapshot()==before and view.drag_id.is_empty() and not view.menu_open,"focus loss cancels a lamp drag without a delayed move, trial or pause gate")
 	view._close_menu();view._undo()
 	touch(5,light_start,true);drag(5,light_end);before=view.model.snapshot();view.configure_activity_layout(Vector2(900,430),false);drag(5,light_end+Vector2(30,0));touch(5,light_end,false);await process_frame
 	check(view.model.snapshot()==before and view.fingers.is_empty(),"resizing cancels source movement at stale pointer coordinates")
@@ -116,7 +118,7 @@ func run() -> void:
 	check(view.pointer_id==-99 and view.drag_id.is_empty(),"real finger supersedes synthetic mouse ownership and releases cleanly")
 	view.last_touch_ms=-1000;var attempt_count:int=int(view.state.attempts);mouse(lamp,true);mouse(lamp,false);await process_frame
 	check(int(view.state.attempts)==attempt_count+1,"a later physical mouse can operate the same visible lamp on a hybrid touch surface")
-	view._focus_out();check(view.paused and view.menu_open and view.held.is_empty() and view.drag_id.is_empty(),"touch focus loss clears inputs and exposes explicit paper-menu resume")
+	before=view.model.snapshot();view._focus_out();await create_timer(.12).timeout;check(not view.menu_open and view.held.is_empty() and view.drag_id.is_empty() and view.model.snapshot()==before,"touch focus loss clears inputs and preserves the turn-based model without pause")
 	view._close_menu();view.model=load("res://scripts/games/theater_shadow_rehearsal_model.gd").new();view._refresh()
 	for stage in 3:
 		check(Proof.solve_round(view.model),"view uses the same deterministic physical model in stage "+str(stage));view._refresh()

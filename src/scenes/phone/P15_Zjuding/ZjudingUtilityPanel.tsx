@@ -401,7 +401,7 @@ export function ZjudingUtilityPanel({
         <section className="zju-utility-summary">
           <small>仅显示已公开记录</small>
           <strong>{acquiredLostFoundItems.length} 份本机档案</strong>
-          <p>查看档案不会生成证明、改变物品或推进图书馆进度。</p>
+
         </section>
         {acquiredLostFoundItems.length ? (
           <section className="zju-utility-list" aria-label="已公开失物档案">
@@ -413,7 +413,7 @@ export function ZjudingUtilityPanel({
             ))}
           </section>
         ) : (
-          <section className="zju-utility-empty"><strong>暂无已公开档案</strong><p>后续只会在相关记录真正取得后显示。</p></section>
+          <section className="zju-utility-empty"><strong>暂无已公开档案</strong></section>
         )}
       </>
     );
@@ -521,7 +521,7 @@ export function ZjudingUtilityPanel({
         <section className="zju-utility-summary">
           <small>校园公开联络表</small>
           <strong>{departments.length} 个服务联络点</strong>
-          <p>号码来自当前游戏内容，页面不会直接拨号。</p>
+
         </section>
         <section className="zju-utility-contact-list" aria-label="部门联系方式">
           {departments.map((department) => (

@@ -1,5 +1,4 @@
 extends RefCounted
-const PaperInk=preload("res://scripts/ui/paper_ink_material.gd")
 const Typography = preload("res://scripts/ui/native_typography.gd")
 const CampusWayfinding = preload("res://scripts/ui/campus_wayfinding.gd")
 ## Source-native mobile library. UI-local navigation and draft selection only.
@@ -75,13 +74,13 @@ func base(b, title: String, back: Callable) -> Control:
 func body(b, root: Control, key: String, height: float, bottom: float=0, background: Color=Color.TRANSPARENT) -> Control:
 	var scroll=ScrollContainer.new(); scroll.name="LibraryScroll_"+key; scroll.position=Vector2(0,54); scroll.size=Vector2(378,b.APP_HEIGHT-54-bottom); scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED; root.add_child(scroll)
 	var inner=Control.new(); inner.custom_minimum_size=Vector2(370,maxf(scroll.size.y,height)); inner.size=inner.custom_minimum_size; scroll.add_child(inner)
-	if background.a>0: b._panel(inner,Rect2(0,0,378,inner.size.y),PaperInk.PAPER)
+	if background.a>0: b._panel(inner,Rect2(0,0,378,inner.size.y),background)
 	scroll.get_v_scroll_bar().value_changed.connect(func(value): scroll_positions[key]=int(value))
 	root.ready.connect(func(): scroll.scroll_vertical=int(scroll_positions.get(key,0)))
 	return inner
 
 func bottom_nav(b, root: Control, spaces_page: bool=false) -> void:
-	b._paper_panel(root,Rect2(0,b.APP_HEIGHT-60,378,60),PaperInk.PAPER,PaperInk.EDGE,0,1)
+	b._panel(root,Rect2(0,b.APP_HEIGHT-60,378,60),Color.WHITE,Color("dce0e6"),0,1)
 	for i in range(2):
 		b._label(root,["⌂","◎"][i],Rect2(i*189,b.APP_HEIGHT-56,189,27),22,Color("666666"),HORIZONTAL_ALIGNMENT_CENTER)
 		b._label(root,"首页" if i==0 else "我的中心" if spaces_page else "我的",Rect2(i*189,b.APP_HEIGHT-28,189,22),12,Color("666666"),HORIZONTAL_ALIGNMENT_CENTER)
@@ -99,7 +98,7 @@ func home(b) -> Control:
 	b._label(inner,"3250100755 ▱" if identity else "▓▓▓▓▓▓▓▓",Rect2(97,58,194,24),14,Color.WHITE)
 	b._label(inner,"✉",Rect2(313,19,48,44),28,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
 	b._label(inner,"?",Rect2(336,92,24,27),20,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
-	b._paper_panel(inner,Rect2(14,139,345,251),PaperInk.PAPER,PaperInk.EDGE,0,3)
+	b._panel(inner,Rect2(14,139,345,251),Color.WHITE,Color("a8a59d"),0,3)
 	var reservation=b.s.actOne.phase in ["reservation_required","movement_ready","complete"] or b.s.ui.librarySeatReserved
 	var recovery_open=b.s.ui.libraryFinalsPhase in ["top_ten_reached","recovery_application","pass_ready","backpack_removed","seat_recovered","friend_contacted"]
 	var apps=[
@@ -136,7 +135,7 @@ func home(b) -> Control:
 		y+=74
 	var info=b.campus_services.copy.library
 	for entry in [[info.open_hours_label,info.open_hours_val],[info.borrow_status_label,info.borrow_status_val],[info.seat_reserve_label,"座位 "+str(b.s.ui.librarySelectedSeat) if b.s.ui.librarySeatReserved else info.seat_reserve_status]]:
-		b._paper_panel(inner,Rect2(14,y,345,82),PaperInk.PAPER,PaperInk.EDGE,0,1)
+		b._panel(inner,Rect2(14,y,345,82),Color.WHITE,Color("d8dce2"),0,1)
 		b._label(inner,str(entry[0]),Rect2(27,y+10,317,25),17)
 		b._label(inner,str(entry[1]),Rect2(27,y+43,317,27),14,MUTED)
 		y+=93
@@ -158,6 +157,22 @@ func enter_room(b, room: String) -> void:
 	if not b.s.ui.librarySeatReserved: selected_seat=""
 	goto(b,"seat")
 
+func mark_segment(button: Button, selected: bool) -> void:
+	# Selection is presentation state, never inferred from an old blue swatch.
+	button.set_meta("phone_button_role","segment")
+	button.set_meta("phone_button_selected",selected)
+	button.toggle_mode=true
+	button.set_pressed_no_signal(selected)
+	if selected:
+		# Keep the state mark inside the colored face: a white bottom border
+		# disappears against this app's white content area below the tabs.
+		var mark=ColorRect.new(); mark.name="LibrarySelectionIndicator"
+		mark.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		mark.color=button.get_theme_color("font_color")
+		mark.size=Vector2(minf(48,button.size.x-16),3)
+		mark.position=Vector2((button.size.x-mark.size.x)/2,button.size.y-7)
+		button.add_child(mark)
+
 func spaces(b) -> Control:
 	var root=base(b,"图书馆空间预约...",func(): goto(b,"home"))
 	# Keep this page's sans-serif role deterministic on native and Web.
@@ -166,7 +181,8 @@ func spaces(b) -> Control:
 	var rail_background: Panel=b._panel(root,Rect2(0,54,width,b.APP_HEIGHT-114),Color("061a49"))
 	var rail: Button=b._button(root,"»\n\n座\n位\n预\n约" if not rail_collapsed else "»",Rect2(0,61,width,265),func(): rail_collapsed=not rail_collapsed; refresh(b),Color.TRANSPARENT,Color.WHITE,0,Color.TRANSPARENT); rail.name="LibraryReservationRail"
 	var available_rooms=rooms(b)
-	var inner=body(b,root,"spaces",170+available_rooms.size()*150,60,Color.WHITE)
+	var room_height=ceili(available_rooms.size()/2.0)*104 if space_mode=="quick" else available_rooms.size()*150
+	var inner=body(b,root,"spaces",138+room_height+58,60,Color.WHITE)
 	# The rail overlays the internal scroll region, as in the source two-column shell.
 	root.move_child(rail_background,root.get_child_count()-1)
 	root.move_child(rail,root.get_child_count()-1)
@@ -174,6 +190,7 @@ func spaces(b) -> Control:
 	for i in range(2):
 		var active=space_mode==["list","quick"][i]
 		var button: Button=b._button(inner,["列表","快速选择"][i],Rect2(width+i*(378-width)/2.0,0,(378-width)/2.0,46),func(): space_mode=["list","quick"][i]; refresh(b),Color("39589e") if active else Color("122e66"),Color.WHITE,0,Color.TRANSPARENT); button.name="LibrarySpaceMode_"+["list","quick"][i]
+		mark_segment(button,active)
 	b._label(inner,"显示 %s 空间" % available_rooms.size(),Rect2(left+8,63,142,34),14,Color("737373"))
 	var library_choice: Button=b._button(inner,selected_library+" ▾",Rect2(224,58,136,49),func(): sheet="libraries"; refresh(b),Color.WHITE,INK,4,Color("bdbdbd")); library_choice.name="LibraryChooseBuilding"; library_choice.add_theme_font_size_override("font_size",15)
 	b._panel(inner,Rect2(left,117,working_width,1),Color("aaaaaa"))
@@ -182,6 +199,7 @@ func spaces(b) -> Control:
 		var room: Array=available_rooms[i]
 		if space_mode=="quick":
 			var quick: Button=b._button(inner,str(room[0])+"\n空闲 "+str(room[3]),Rect2(left+(i%2)*(working_width/2+2),132+int(i/2)*104,working_width/2-4,94),func(): enter_room(b,str(room[0])),Color("eef3fa"),BLUE,0,Color("acbbce")); quick.name="LibraryRoom_"+str(i); quick.add_theme_font_size_override("font_size",16)
+			y=maxi(y,132+int(i/2)*104+94+12)
 			continue
 		var art: TextureRect=b._image(inner,"ui/library_room_"+str(room[4])+".png",Rect2(left,y,105,116)); art.name="LibraryRoomPhoto_"+str(i); art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		if room[4]=="foundation":
@@ -192,7 +210,9 @@ func spaces(b) -> Control:
 		b._label(inner,"座位 %s　空闲 %s" % [room[2],room[3]],Rect2(left+122,y+41,working_width-122,25),12,Color("888888"))
 		var reserve: Button=b._button(inner,"预约",Rect2(left+122,y+80,64,34),func(): enter_room(b,str(room[0])),Color("39589e"),Color.WHITE,2,Color.TRANSPARENT); reserve.name="LibraryRoom_"+str(i); reserve.add_theme_font_size_override("font_size",15)
 		b._panel(inner,Rect2(left,y+137,working_width,1),Color("d2d2d2")); y+=150
-	b._label(inner,"没有更多了" if not available_rooms.is_empty() else "该馆暂未开放可预约空间",Rect2(left,y,working_width,46),14,Color("999999"),HORIZONTAL_ALIGNMENT_CENTER)
+	b._label(inner,"没有更多了" if not available_rooms.is_empty() else "该馆暂未开放可预约空间",Rect2(left,y,working_width,46),14,MUTED,HORIZONTAL_ALIGNMENT_CENTER).name="LibraryRoomsEnd"
+	inner.custom_minimum_size.y=maxf(inner.get_parent().size.y,y+58)
+	inner.size.y=inner.custom_minimum_size.y
 	bottom_nav(b,root,true)
 	if not sheet.is_empty(): add_sheet(b,root)
 	Typography.apply_body_text_tree(root)
@@ -213,7 +233,7 @@ func seats(b) -> Control:
 	var count=seat_count(b)
 	var active=b.s.ui.libraryFinalsPhase in ["occupied_seat_found","evidence_gathering","bd_briefing","top_ten_rising","top_ten_reached","recovery_application","pass_ready","backpack_removed","seat_recovered","friend_contacted"]
 	var inner=body(b,root,"seat",772,60,Color("f7f7f5"))
-	b._paper_panel(inner,Rect2(0,0,378,91),PaperInk.PAPER,PaperInk.EDGE,0,1)
+	b._panel(inner,Rect2(0,0,378,91),Color.WHITE,Color("bdbab4"),0,1)
 	b._label(inner,selected_library+" · "+selected_room,Rect2(16,9,282,29),19)
 	var map_link: Button=b._button(inner,"查看平面图 ›",Rect2(16,43,104,36),func(): seat_view="map"; refresh(b),Color.TRANSPARENT,BLUE,0,Color.TRANSPARENT); map_link.add_theme_font_size_override("font_size",12)
 	var detail: Button=b._button(inner,"查看房间详情 ›",Rect2(124,43,125,36),func(): b._toast(root,"%s：座位 %s，当前空闲 %s。" % [selected_room,count,count-(1 if b.s.ui.librarySeatReserved else 0)]),Color.TRANSPARENT,BLUE,0,Color.TRANSPARENT); detail.add_theme_font_size_override("font_size",12)
@@ -224,7 +244,7 @@ func seats(b) -> Control:
 	if active:
 		var puzzle: Dictionary=b.s.ui.libraryFinalsPuzzle
 		var status="座位已恢复" if puzzle.playerSeated else "清退已执行" if puzzle.backpackEvicted else "PASS 已签发" if puzzle.evictionPassGenerated else "恢复申请待提交" if b.s.ui.libraryFinalsPhase=="recovery_application" else "公示审核中" if b.s.ui.libraryFinalsPhase in ["bd_briefing","top_ten_rising","top_ten_reached"] else "占用异常"
-		b._paper_panel(inner,Rect2(12,103,352,95),Color("ecf2fa"),BLUE,0,2)
+		b._panel(inner,Rect2(12,103,352,95),Color("ecf2fa"),BLUE,0,2)
 		b._label(inner,"022",Rect2(23,116,55,36),24,BLUE)
 		b._label(inner,"当前现场状态 · "+status,Rect2(85,112,267,25),14,BLUE)
 		b._label(inner,"现场已清空，座位等待本人确认。" if puzzle.backpackEvicted else "书包仍在现场，手机页面只负责查询与提交材料。",Rect2(85,139,260,48),12,MUTED)
@@ -234,6 +254,7 @@ func seats(b) -> Control:
 	var top=211 if active else 181
 	for i in range(2):
 		var button: Button=b._button(inner,["地图模式","列表模式"][i],Rect2(14+i*176,top,176,39),func(): seat_view=["map","list"][i]; refresh(b),BLUE if seat_view==["map","list"][i] else Color.WHITE,Color.WHITE if seat_view==["map","list"][i] else BLUE,0,Color("a7a39b")); button.name="LibrarySeatView_"+["map","list"][i]; button.add_theme_font_size_override("font_size",14)
+		mark_segment(button,seat_view==["map","list"][i])
 	b._label(inner,"已选："+(selected_seat if not selected_seat.is_empty() else "-")+"　筛选："+seat_filter,Rect2(16,top+46,268,34),13)
 	var filter_button: Button=b._button(inner,"▽≡ 筛选",Rect2(284,top+46,80,34),func(): sheet="filter"; refresh(b),Color.TRANSPARENT,BLUE,0,Color.TRANSPARENT); filter_button.name="LibrarySeatFilter"; filter_button.add_theme_font_size_override("font_size",14)
 	var y=top+88
@@ -241,6 +262,7 @@ func seats(b) -> Control:
 		var sections=int(ceil(count/32.0))
 		for section in range(sections):
 			var button: Button=b._button(inner,"%03d–%03d" % [section*32+1,mini(count,(section+1)*32)],Rect2(14+(section%5)*70,y+int(section/5)*32,67,29),func(): seat_section=section; refresh(b),Color("39589e") if section==seat_section else Color.WHITE,Color.WHITE if section==seat_section else BLUE,0,Color("bbc8df")); button.name="LibrarySeatSection_"+str(section); button.add_theme_font_size_override("font_size",10)
+			mark_segment(button,section==seat_section)
 		y+=int(ceil(sections/5.0))*32+7
 		b._panel(inner,Rect2(14,y,350,347),Color.WHITE,Color("9d9a93"),0,2)
 		b._label(inner,"N\n▲",Rect2(329,y+9,24,40),11,INK,HORIZONTAL_ALIGNMENT_CENTER)
@@ -271,7 +293,7 @@ func seats(b) -> Control:
 		for i in range(count):
 			var seat="%03d" % (i+1)
 			var target: Button=b._button(list,seat,Rect2((i%4)*81,int(i/4)*42,75,36),func(): select_seat(b,root,seat),BLUE if seat==selected_seat else Color.WHITE,Color.WHITE if seat==selected_seat else INK,0,Color("9d9a93")); target.name="LibrarySeat_"+seat; target.add_theme_font_size_override("font_size",13)
-	b._paper_panel(root,Rect2(0,b.APP_HEIGHT-60,378,60),Color.WHITE,Color("c9c4b9"),0,1)
+	b._panel(root,Rect2(0,b.APP_HEIGHT-60,378,60),Color.WHITE,Color("c9c4b9"),0,1)
 	b._button(root,"↶ 返回",Rect2(13,b.APP_HEIGHT-49,102,39),func(): goto(b,"spaces"),Color.WHITE,BLUE,0,BLUE).name="LibrarySeatBack"
 	b._button(root,"预约成功" if b.s.ui.librarySeatReserved else "立即预约",Rect2(126,b.APP_HEIGHT-49,239,39),func():
 		if selected_seat.is_empty(): b._toast(root,"请先选择一个白色座位。")

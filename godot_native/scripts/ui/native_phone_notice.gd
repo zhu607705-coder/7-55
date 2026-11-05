@@ -4,7 +4,12 @@ extends RefCounted
 static var FONT: Font=preload("res://scripts/ui/native_typography.gd").body_font()
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
-const UiMaterial=preload("res://scripts/ui/campus_ui_material.gd")
+# One flat phone-paper container for banners, inbox summaries and system feedback.
+# Queue/timers, app routes and puzzle actions remain with their existing owners.
+const MUTED=Color("625b50")
+const WARNING_PAPER=Color("fff0e7")
+const SUMMARY_BODY_SIZE=13
+const SUMMARY_TITLE_SIZE=16
 const INK=Color("222322")
 const PAPER=Ui.PAPER
 const SPEAKERS={"system":"系统","narrator":"旁白","task":"任务","success":"记录","error":"提示","broadcast":"广播","player":"我","xiaoying":"小影"}
@@ -32,13 +37,12 @@ static func create(text: String="",speaker: String="系统") -> Label:
 	label.add_theme_font_size_override("font_size",16)
 	label.add_theme_color_override("font_color",INK)
 	label.add_theme_constant_override("line_spacing",2)
-	var card:=UiMaterial.panel_style("paper",{"paper":PAPER},Vector2.ZERO)
-	card.content_margin_left=66; card.content_margin_right=10
-	card.content_margin_top=37; card.content_margin_bottom=8
-	card.border_width_left=3; card.border_color=UiMaterial.PAPER_EDGE
+	var card:=card_style()
+	card.content_margin_left=60; card.content_margin_right=12
+	card.content_margin_top=35; card.content_margin_bottom=10
 	label.add_theme_stylebox_override("normal",card)
 	var avatar:=Panel.new(); avatar.name="NoticeAvatar"; avatar.size=Vector2(36,36); avatar.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	avatar.add_theme_stylebox_override("panel",Ui.box(Color("e5dece"),UiMaterial.PAPER_EDGE,1)); label.add_child(avatar)
+	avatar.add_theme_stylebox_override("panel",Ui.box(Color("eee5d1"),INK,1)); label.add_child(avatar)
 	var icon:=TextureRect.new(); icon.name="Icon"; icon.position=Vector2(8,8); icon.size=Vector2(20,20); icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE; icon.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST; icon.mouse_filter=Control.MOUSE_FILTER_IGNORE; avatar.add_child(icon)
 	var heading:=Label.new(); heading.name="NoticeSpeaker"; heading.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	Typography.apply_display(heading); heading.add_theme_font_size_override("font_size",16); heading.add_theme_color_override("font_color",INK)
@@ -61,25 +65,99 @@ static func set_message(label: Label,text: String,speaker: String="系统") -> v
 	label.visible=not text.is_empty()
 	var heading:Label=label.get_node("NoticeSpeaker")
 	heading.text=speaker
-	var accent:Color=Color("924a3b") if speaker in ["提示","我"] else Color("6f503d") if speaker=="旁白" else UiMaterial.NAVY
+	var accent:Color=accent_for(speaker)
 	heading.add_theme_color_override("font_color",accent)
 	# Role hierarchy is visual only; the existing queue owns message order and
 	# lifetime, and avatar/speaker identities remain unchanged.
-	var card:StyleBoxFlat=label.get_theme_stylebox("normal").duplicate()
-	card.border_color=accent
-	card.border_width_top=0;card.border_width_right=0;card.border_width_bottom=1
+	var card:=card_style()
+	card.content_margin_left=60; card.content_margin_right=12
+	card.content_margin_top=35; card.content_margin_bottom=10
+	card.bg_color=WARNING_PAPER if speaker=="提示" else PAPER
+	card.border_color=INK
+	card.set_border_width_all(2)
 	label.add_theme_stylebox_override("normal",card)
 	label.get_node("NoticeAvatar/Icon").texture=icon_for(speaker)
 
 static func layout(label: Label,width: float) -> Vector2:
-	var inner_width:=maxf(24,width-76)
+	# Resolve wrapping at the final width before reading the minimum height.
+	# A newly attached zero-width Label otherwise caches one line per glyph.
+	label.size.x=width
+	label.update_minimum_size()
+	var inner_width:=maxf(24,width-72)
 	var font:Font=label.get_theme_font("font")
 	var font_size:int=label.get_theme_font_size("font_size")
 	var measured:=font.get_multiline_string_size(label.text,HORIZONTAL_ALIGNMENT_LEFT,inner_width,font_size)
 	var line_count:=maxi(1,ceili(measured.y/font.get_height(font_size)))
-	var height:=maxf(69,37+measured.y+maxi(0,line_count-1)*2+8)
+	var height:=maxf(69,35+measured.y+maxi(0,line_count-1)*2+10)
 	label.size=Vector2(width,height)
-	label.get_node("NoticeSpeaker").position=Vector2(66,8)
-	label.get_node("NoticeSpeaker").size=Vector2(inner_width,26)
+	label.get_node("NoticeSpeaker").position=Vector2(60,7)
+	label.get_node("NoticeSpeaker").size=Vector2(maxf(24,inner_width-float(label.get_meta("notice_close_space",0))),26)
 	label.get_node("NoticeAvatar").position=Vector2(10,(height-36)/2)
 	return label.size
+
+static func accent_for(speaker: String) -> Color:
+	if speaker in ["提示","我"]: return Color("853e34")
+	if speaker=="记录": return Color("365b42")
+	return INK
+
+static func card_style(fill: Color=PAPER) -> StyleBoxFlat:
+	return Ui.box(fill,INK,2,0,Vector2.ZERO)
+
+static func style_summary(card: Control) -> void:
+	card.set_meta("phone_notification",true)
+	if card is Button:
+		# The notice owns its children and flat paper state as one composition.
+		# Do not infer a ghost/hotspot from this deliberately blank Button text.
+		card.set_meta("tactile_exempt",true)
+		card.set_meta("phone_button_role","composite")
+		var styles:=Ui.button_styles(PAPER,INK,INK,0,2,Vector2.ZERO)
+		for state: String in styles: card.add_theme_stylebox_override(state,styles[state])
+	else: card.add_theme_stylebox_override("panel",card_style())
+
+static func summary_height(width: float,text: String) -> float:
+	var body:=FONT.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,maxf(24,width-66),SUMMARY_BODY_SIZE)
+	return maxf(58,30+body.y+10)
+
+static func add_summary(card: Control,title: String,body: String,time: String="") -> void:
+	style_summary(card)
+	var width:=card.size.x
+	var heading:=Label.new(); heading.name="NoticeTitle"; heading.text=title
+	Typography.apply_display(heading); heading.add_theme_font_size_override("font_size",SUMMARY_TITLE_SIZE)
+	heading.add_theme_color_override("font_color",INK); heading.position=Vector2(54,6)
+	heading.size=Vector2(maxf(24,width-66-(62 if not time.is_empty() else 0)),24)
+	heading.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS; heading.clip_text=true
+	heading.mouse_filter=Control.MOUSE_FILTER_IGNORE; card.add_child(heading)
+	var text:=Label.new(); text.name="NoticeBody"; text.text=body
+	Typography.apply_body(text); text.add_theme_font_size_override("font_size",SUMMARY_BODY_SIZE)
+	text.add_theme_color_override("font_color",MUTED); text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	text.position=Vector2(54,30); text.size=Vector2(maxf(24,width-66),maxf(20,card.size.y-40))
+	text.mouse_filter=Control.MOUSE_FILTER_IGNORE; card.add_child(text)
+	if not time.is_empty():
+		var stamp:=Label.new(); stamp.name="NoticeTime"; stamp.text=time
+		Typography.apply_body(stamp); stamp.add_theme_font_size_override("font_size",11)
+		stamp.add_theme_color_override("font_color",MUTED); stamp.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+		stamp.position=Vector2(width-70,9); stamp.size=Vector2(58,18)
+		stamp.mouse_filter=Control.MOUSE_FILTER_IGNORE; card.add_child(stamp)
+	if card is Button: card.tooltip_text=title+"："+body
+
+static func inline_style(role: String="system") -> StyleBoxFlat:
+	# Form results stay beside their fields, rather than entering the transient
+	# lane. The same paper, stroke and type roles work at their compact size.
+	var fill:Color=WARNING_PAPER if role in ["error","warning"] else Color("edf3e6") if role=="success" else PAPER
+	return Ui.box(fill,INK,2,0,Vector2(12,8))
+
+static func style_inline(label: Label,role: String="system",font_size: int=14) -> void:
+	label.set_meta("phone_notice_surface","inline")
+	label.set_meta("phone_notice_role",role)
+	Typography.apply_body(label)
+	label.add_theme_font_size_override("font_size",font_size)
+	label.add_theme_color_override("font_color",accent_for("提示" if role in ["error","warning"] else "记录" if role=="success" else "系统"))
+	label.add_theme_constant_override("line_spacing",2)
+	label.add_theme_stylebox_override("normal",inline_style(role))
+	label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	label.horizontal_alignment=HORIZONTAL_ALIGNMENT_LEFT
+	label.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+	label.mouse_filter=Control.MOUSE_FILTER_IGNORE
+
+static func dialog_style(padding: Vector2=Vector2(16,16)) -> StyleBoxFlat:
+	return Ui.box(PAPER,INK,2,0,padding)

@@ -25,7 +25,7 @@ let nativeSites=0, wrappedSites=0;
 function walk(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const file=path.join(dir,entry.name);if(entry.isDirectory())walk(file);else if(file.endsWith('.tsx')){const source=ts.createSourceFile(file,fs.readFileSync(file,'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);function visit(node){if(ts.isJsxOpeningElement(node)||ts.isJsxSelfClosingElement(node)){const tag=node.tagName.getText(source);if(tag==='button')nativeSites++;if(tag==='Button')wrappedSites++;}ts.forEachChild(node,visit)}visit(source);}}}
 walk('src');
 assert.equal(nativeSites,coverage.filter(x=>x.decision==='scene-object').length,'Every unstyled native button is explicitly inventoried (including implementation)');
-assert.equal(wrappedSites,353,'352 migrated sites and the chapter introduction');
+assert.equal(wrappedSites,352,'351 migrated sites and the chapter introduction');
 const shell=fs.readFileSync('godot_native/web/index.html','utf8');
 for(const id of ['start-game','retry-game','boot-motion-toggle'])assert.match(shell,new RegExp(`<button class="tactile-button"[^>]*id="${id}"[^>]*type="button"`));
 console.log(`Button material PASS: source inline/hash/tamper, ${wrappedSites} shared controls, ${nativeSites} inventoried objects/implementation, three production shell controls`);

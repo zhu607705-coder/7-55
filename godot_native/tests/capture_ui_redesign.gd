@@ -250,7 +250,13 @@ func audit_buttons(node: Node) -> Dictionary:
 			var identity: String=str(child.get_path())
 			if exempt:audit.objects_or_surfaces.append(identity)
 			elif child.get_node_or_null("TactileMaterialState")!=null:
-				audit.styled.append({"path":identity,"variant":child.get_meta("tactile_variant"),"size":child.get_meta("tactile_size"),"disabled":child.disabled})
+				var material_contract := button_material_contract(child)
+				if not material_contract.valid:
+					audit.missing.append(identity+": "+str(material_contract.reason))
+				else:
+					material_contract.erase("valid")
+					material_contract.merge({"path":identity,"disabled":child.disabled})
+					audit.styled.append(material_contract)
 				if child.name=="NativeModalClose":
 					var face: StyleBox=child.get_theme_stylebox("normal")
 					var text_width: float=child.get_theme_font("font").get_string_size(child.text,HORIZONTAL_ALIGNMENT_LEFT,-1,child.get_theme_font_size("font_size")).x
@@ -260,3 +266,26 @@ func audit_buttons(node: Node) -> Dictionary:
 		var nested: Dictionary=audit_buttons(child)
 		for key: String in audit:audit[key].append_array(nested[key])
 	return audit
+
+
+static func button_material_contract(button: Button) -> Dictionary:
+	# A controller's presence is not proof of styling. Validate the concrete
+	# resources bound to every native state, without inventing tactile metadata
+	# for authored phone controls or exempting missing custom navigation skins.
+	const Flat = preload("res://scripts/ui/phone_flat_button_material.gd")
+	const Tactile = preload("res://scripts/ui/tactile_button_material.gd")
+	const Controller = preload("res://scripts/ui/tactile_button_state.gd")
+	var controller: Node = button.get_node_or_null("TactileMaterialState")
+	if not controller is Controller:
+		return {"valid":false,"reason":"missing material controller"}
+	if controller.phone_flat:
+		for mode: String in ["normal","hover","pressed","hover_pressed","disabled","focus"]:
+			if not button.has_theme_stylebox_override(mode) or not button.get_theme_stylebox(mode) is Flat:
+				return {"valid":false,"reason":"missing phone flat state: "+mode}
+		return {"valid":true,"material":"phone_flat","role":str(button.get_meta("phone_button_role","action")),"font_size":button.get_theme_font_size("font_size")}
+	for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]:
+		if not button.has_theme_stylebox_override(mode) or not button.get_theme_stylebox(mode) is Tactile:
+			return {"valid":false,"reason":"missing tactile state: "+mode}
+	if not button.has_meta("tactile_variant") or not button.has_meta("tactile_size"):
+		return {"valid":false,"reason":"missing tactile material identity"}
+	return {"valid":true,"material":"story_flat" if controller.material.paper_flat else "tactile","variant":button.get_meta("tactile_variant"),"size":button.get_meta("tactile_size")}

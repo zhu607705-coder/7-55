@@ -5,13 +5,15 @@ import ts from 'typescript';
 const failures = []; let checks = 0;
 const check = (condition, message) => { checks++; if (!condition) failures.push(message); };
 const server = await createServer({ configFile: false, appType: 'custom', logLevel: 'error', optimizeDeps: {noDiscovery: true, include: []}, server: {middlewareMode:true,ws:false} });
-const stages = JSON.parse(readFileSync('src/data/prologue-interception.content.json','utf8')).stages;
+const content = JSON.parse(readFileSync('src/data/prologue-interception.content.json','utf8'));
+const stages = content.stages;
 const report = {checks:0, failures:[], negativeControl:{}, runs:[], sourceHashes:{}};
 try {
   const m = await server.ssrLoadModule('/src/scenes/phone/P12_Ending/InterceptionModel.ts');
   const { createInterceptionState:create, stepInterception:step, continueInterception:resume, sweepRectangles:sweep, WINDOW_BODY:board } = m;
   check(stages.length===3 && stages.reduce((n,s)=>n+s.targets.length,0)===6,'three semantic gates require six authored target words');
-  check(JSON.stringify(stages.map(s=>s.targets))===JSON.stringify([['等'],['经度','纬度'],['旁白','还没','说完']]),'target literals and authored order preserved');
+  check(JSON.stringify(stages.map(s=>s.targets))===JSON.stringify([['等'],['一下','旁白'],['帮我','补个','签到']]),'target words form the player plea in authored order');
+  check(content.retainedLine.replace(/[，！]/g,'')===stages.flatMap(s=>s.targets).join(''),'final sentence uses only the six earned words, with punctuation');
   check(!stages[0].ordered&&!stages[1].ordered&&stages[2].ordered,'only third stage imposes order');
   const a = {x:215,y:400,width:80,height:48,angle:0}, b={x:215,y:658,width:164,height:58,angle:0};
   const contact=sweep(a,0,500,b);
@@ -43,13 +45,13 @@ try {
   s=seed('走'); s.words[0].demonstration=true; s.moved=true; step(s,180); check(s.failure==='wrong_word','actively intercepting a background demonstration still gives semantic feedback');
   s=seed('走'); step(s,180); check(s.phase==='hint'&&s.failure==='wrong_word'&&s.collected.length===0,'wrong semantic word freezes at collision');
   const frozen=JSON.stringify(s.words); step(s,10000,{direction:1}); check(JSON.stringify(s.words)===frozen&&s.failures===1,'hint remains frozen and cannot accumulate failures');
-  s=seed('纬度',1); step(s,180); check(s.collected[0]==='纬度'&&s.phase==='playing','second stage accepts reversed coordinate order');
-  s.words=[{...s.words[0],id:2,text:'经度',y:590,vy:300,contacted:false}]; step(s,180); check(s.phase==='stage_complete','unordered coordinate set completes only after both');
-  s=seed('还没',2); step(s,180); check(s.phase==='hint'&&s.failure==='wrong_order'&&!s.collected.length,'third stage rejects wrong original sentence order');
-  s=seed('旁白',2); step(s,180); s.words=[{...s.words[0],id:2,text:'说完',y:590,vy:300,contacted:false}]; step(s,180);
-  check(s.phase==='hint'&&s.collected.join()==='旁白','wrong order preserves already recovered sentence prefix');
-  const stage=s.stage; resume(s); check(s.phase==='playing'&&s.stage===stage&&s.collected.join()==='旁白'&&s.words.length===0,'continue safely respawns only missing words in same stage');
-  s.words=[{...seed('还没',2).words[0],text:'还没'}]; step(s,180); check(s.collected.join()==='旁白,还没','continuation accepts next required fragment');
+  s=seed('旁白',1); step(s,180); check(s.collected[0]==='旁白'&&s.phase==='playing','second stage accepts either order for the second-round words');
+  s.words=[{...s.words[0],id:2,text:'一下',y:590,vy:300,contacted:false}]; step(s,180); check(s.phase==='stage_complete','unordered second-round set completes only after both');
+  s=seed('补个',2); step(s,180); check(s.phase==='hint'&&s.failure==='wrong_order'&&!s.collected.length,'third stage rejects wrong original sentence order');
+  s=seed('帮我',2); step(s,180); s.words=[{...s.words[0],id:2,text:'签到',y:590,vy:300,contacted:false}]; step(s,180);
+  check(s.phase==='hint'&&s.collected.join()==='帮我','wrong order preserves already recovered sentence prefix');
+  const stage=s.stage; resume(s); check(s.phase==='playing'&&s.stage===stage&&s.collected.join()==='帮我'&&s.words.length===0,'continue safely respawns only missing words in same stage');
+  s.words=[{...seed('补个',2).words[0],text:'补个'}]; step(s,180); check(s.collected.join()==='帮我,补个','continuation accepts next required fragment');
   s=seed('走'); s.words[0].x=60; s.words[0].y=760; step(s,100); check(s.failures===0,'unblocked distractor may leave without penalty');
   s=seed('等'); s.words[0].x=60; s.words[0].y=770; step(s,20); check(s.failure==='not_moved','stationary target miss explains unmoved window');
   resume(s); s.moved=true; s.words=[{...seed('等').words[0],x:60,y:770}]; step(s,20); check(s.failure==='wrong_side','moved window on wrong side gets distinct feedback');
@@ -73,7 +75,7 @@ try {
     step(s,10,{targetX}); elapsed+=10;
     if(s.completedStages!==lastStages){check(s.completedStages===lastStages+1,'normal input crosses one proof gate at a time');lastStages=s.completedStages;}
   }
-  check(s.phase==='complete'&&s.completedStages===3&&s.collected.join()==='旁白,还没,说完','normal continuous input finishes all semantic targets in order');
+  check(s.phase==='complete'&&s.completedStages===3&&s.collected.join()==='帮我,补个,签到','normal continuous input finishes all semantic targets in order');
   check(elapsed>=35000&&elapsed<=110000,`observation plus actual input remains a readable minute-scale sequence (${elapsed}ms)`);
   report.runs.push({name:'normal-continuous-input',elapsedMs:elapsed,recoveries,completedStages:s.completedStages});
   const {createGameStore}=await server.ssrLoadModule('/src/core/GameState.ts');

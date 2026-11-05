@@ -44,8 +44,8 @@ export function StatusBar({ state }: StatusBarProps) {
       </span>
       <Button variant="ghost" data-layout="content"
         type="button"
-        className={`sb-right ${batteryTone} ${state.phoneBattery.lowPowerMode ? "is-saving" : ""}`}
-        aria-label={`打开控制中心，当前电量 ${batteryPercent}%${state.phoneBattery.lowPowerMode ? "，低电量模式已开启" : ""}`}
+        className={`sb-right ${batteryTone}`}
+        aria-label={`打开控制中心，当前电量 ${batteryPercent}%`}
         onClick={() => kit.flags.setUi("controlCenterOpen", true)}
       >
         {network === "campus_wifi" ? (
