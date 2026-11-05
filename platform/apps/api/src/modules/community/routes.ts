@@ -67,12 +67,17 @@ export function registerCommunity(
       `${cookieName}=${value}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secureCookies ? "; Secure" : ""}`,
     );
   }
+  const viewers = new WeakMap<FastifyRequest, Promise<User | null>>();
   async function viewer(request: FastifyRequest): Promise<User | null> {
     if (!options.authing) return null;
+    const existing = viewers.get(request);
+    if (existing) return existing;
     const raw = token(request);
-    return raw
+    const result = raw
       ? store.session(digest(raw), options.authing?.issuer, options.operators)
-      : null;
+      : Promise.resolve(null);
+    viewers.set(request, result);
+    return result;
   }
   async function member(request: FastifyRequest): Promise<User> {
     const user = await viewer(request);
