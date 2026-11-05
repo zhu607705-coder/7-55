@@ -306,3 +306,43 @@ test('library: failed Settings input is never resent and retains its own origina
   await assert.rejects(f.run(), /Timeout: settings opened/);
   assert.deepEqual(f.keys, [{ key: 'F10', at: 0 }]); assert.equal(f.clock, 20000);
 });
+
+const importSource = between(runner, 'async function importSave(', '// Focused CI scenario:');
+function importFixture({ sourcePage = 'desktop', targetPage = 'bonsai', feedback = true, chapter = 1, scene = '' } = {}) {
+  const envelope = { format: '7-55-godot-native', version: 1, state: { native: { chapter: 1, page: sourcePage, scene: '' } } };
+  const before = { state: { native: { chapter: 1, page: 'bonsai', scene: '' } }, saveDigest: 'same', visibleControls: [], developerToolsAvailable: false };
+  const after = copy(before); after.state.native = { chapter, page: targetPage, scene };
+  if (feedback) after.visibleControls.push({ text: '存档已导入' });
+  let clock = 0, reads = 0; const calls = [], imports = [];
+  const run = vm.runInNewContext(`${pollSource}\n${importSource}\nimportSave`, {
+    Date: { now: () => clock }, interval: async ms => { clock += ms; },
+    readFile: async () => JSON.stringify(envelope), path: { basename: value => value, resolve: value => value }, hash: () => 'fixture-hash',
+    check: (value, label) => assert.ok(value, label), snapshot: async () => copy(reads++ === 0 ? before : after),
+    state: value => value?.state, controls: value => value?.visibleControls || [], settings: async () => {}, clickControl: async () => {},
+    active: { imports, cdp: { send: async (method, params) => { calls.push({ method, params }); return { root: { nodeId: 1 }, nodeId: 2 }; } } },
+    acceptPortraitFallback: async () => { throw Error('unexpected world fallback'); },
+  });
+  return { run, calls, imports, get clock() { return clock; } };
+}
+test('legacy desk import explicitly expects migrated bonsai while retaining actual file-picker input', async () => {
+  const f = importFixture();
+  const result = await f.run('compat-c1-desk-0-v35.json', { expectedPage: 'bonsai' });
+  assert.equal(result.state.native.page, 'bonsai');
+  assert.equal(f.calls.filter(call => call.method === 'DOM.setFileInputFiles').length, 1);
+  assert.equal(f.imports[0].page, 'bonsai');
+  assert.match(phone, /compat-c1-desk-\$\{percent\}-v35\.json`\), \{ expectedPage: 'bonsai' \}/);
+});
+test('ordinary imports still require the route contained in their file', async () => {
+  await importFixture({ sourcePage: 'bonsai' }).run('ordinary.json');
+  await assert.rejects(importFixture().run('legacy-without-explicit-expectation.json'), /Timeout: validated native import/);
+});
+for (const [label, options] of [
+  ['unmigrated desktop', { targetPage: 'desktop' }],
+  ['wrong chapter', { chapter: 2 }],
+  ['wrong scene', { scene: 'dorm_hub' }],
+  ['same-route cached state without import feedback', { feedback: false }],
+]) test(`migrated import rejects ${label} within the unchanged timeout`, async () => {
+  const f = importFixture(options);
+  await assert.rejects(f.run('legacy.json', { expectedPage: 'bonsai' }), /Timeout: validated native import/);
+  assert.equal(f.clock, 60000); assert.equal(f.imports.length, 0);
+});

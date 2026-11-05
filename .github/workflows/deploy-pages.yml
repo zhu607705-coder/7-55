@@ -248,7 +248,6 @@ jobs:
           node godot_native/tests/test_web_network_observation.mjs
           node godot_native/tests/test_web_streaming_fault_lifecycle.mjs
           node godot_native/tests/test_web_save_diagnostics.mjs
-          node godot_native/tests/test_web_import_receipt.mjs
           node godot_native/tests/test_web_input_completion.mjs
 
   browser_baseline:

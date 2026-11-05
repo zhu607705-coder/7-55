@@ -391,7 +391,7 @@ export async function phoneRecoveryCase(h) {
         h.check(value.state.phoneBattery.percent === percent && !value.state.flags.plantLit && consumptionOnly(value.state),
           `${h.id}: repeated return and elapsed time neither recharge nor award plant light`);
         await shot(`battery-${percent}-unchanged`);
-        await h.importSave(path.join(h.fixtureDir, `compat-c1-desk-${percent}-v35.json`), {page: 'bonsai'});
+        await h.importSave(path.join(h.fixtureDir, `compat-c1-desk-${percent}-v35.json`), { expectedPage: 'bonsai' });
         await closeInventory(); await page('bonsai');
         value = await read(`legacy desk ${percent}% restored to bonsai`);
         h.check(value.state.currentScene === 'bonsai' && value.state.phoneBattery.percent === percent && consumptionOnly(value.state) && noRetiredControls(value),
