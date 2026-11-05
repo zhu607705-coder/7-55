@@ -993,10 +993,11 @@ func player_visual() -> Dictionary:
 		if walk_clock<=0 and player_turn.is_empty():
 			if direction=="side" and player_side_idle!=null:texture=player_side_idle
 			elif direction=="left" and player_left_idle!=null:texture=player_left_idle
-	var visual:Dictionary={"texture":texture,"flip_h":flip,"direction":direction,"angle":float(pose.angle)}
 	if scene_id=="library_interior" and library_layers!=null and library_layers.animations.ready:
+		var visual:Dictionary={"texture":texture,"flip_h":flip,"direction":direction,"angle":float(pose.angle)}
 		visual.merge(library_layers.animations.actor(direction,flip,walk_clock*1000,walk_clock>0 and player_turn.is_empty()),true)
-	return visual
+		return visual
+	return {"texture":texture,"flip_h":flip,"direction":direction,"angle":float(pose.angle)}
 
 func player_geometry() -> Dictionary:
 	var actor:=player_visual()

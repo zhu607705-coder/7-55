@@ -72,12 +72,20 @@ func run() -> void:
 	bridge._on_browser_file(["", "too_large"])
 	bridge._on_browser_file(["", "read_error"])
 	check(message.size() == 2 and message[0].contains("过大") and message[1].contains("无法读取"), "browser read and size failures give visible feedback")
+	var rejected_receipt: Dictionary = bridge.read_snapshot().importReceipt
+	check(rejected_receipt.sequence == 2 and not rejected_receipt.ok and rejected_receipt.sourceDigest.is_empty(), "failed browser reads publish only a rejected observation")
 	check(state.d == before and disk(state.SAVE_PATH) == primary, "browser transport errors never modify progression")
 	var native: Dictionary = before.duplicate(true)
 	native.native.settings.text_scale = 1.25
-	result = bridge.import_text(JSON.stringify({"format": "7-55-godot-native", "version": 1, "sourceVersion": 35, "state": native}))
+	var native_payload := JSON.stringify({"format": "7-55-godot-native", "version": 1, "sourceVersion": 35, "state": native})
+	result = bridge.import_text(native_payload)
 	check(result.ok and state.d.native.settings.text_scale == 1.25, "native upload reaches the original State validation and save transaction")
 	check(not FileAccess.file_exists(bridge.IMPORT_PATH), "successful upload retires the temporary source file")
+	bridge._on_browser_file([native_payload, ""])
+	var accepted_receipt: Dictionary = bridge.read_snapshot().importReceipt
+	check(accepted_receipt.sequence == 3 and accepted_receipt.ok and accepted_receipt.sourceDigest == native_payload.sha256_text(), "same-state browser import acknowledges the exact validated input")
+	accepted_receipt.ok = false
+	check(bridge.read_snapshot().importReceipt.ok, "mutating an observed receipt cannot change the platform's copy")
 	state.d = state.initial()
 	check(state.load_game() and state.d.native.settings.text_scale == 1.25, "uploaded state survives the actual native file reload")
 	result = bridge.import_text(JSON.stringify({"version": 35, "state": state.initial()}))

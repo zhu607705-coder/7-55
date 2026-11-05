@@ -577,16 +577,18 @@ async function assertLayout(label) {
   return geometry;
 }
 async function settings() { await press('F10'); await poll(async () => controls(await snapshot()).some(c => c.text === '导入存档'), 'settings opened'); }
-async function importSave(filename) {
+async function importSave(filename, expectedRoute = {}) {
   const bytes = await readFile(filename); const envelope = JSON.parse(bytes); check(envelope.format === '7-55-godot-native' && envelope.version === 1 && envelope.state, `ordinary native portable envelope: ${path.basename(filename)}`);
   const beforeImport = await snapshot();
   await settings(); await clickControl('导入存档');
   const document = await active.cdp.send('DOM.getDocument', { depth: 0 }); const input = await active.cdp.send('DOM.querySelector', { nodeId: document.root.nodeId, selector: '#godot-save-import' }); check(input.nodeId > 0, 'shipped save file picker input exists');
   await active.cdp.send('DOM.setFileInputFiles', { nodeId: input.nodeId, files: [path.resolve(filename)] });
-  const expected = envelope.state.native;
-  const changedRoute = expected.chapter !== state(beforeImport).native.chapter || expected.page !== state(beforeImport).native.page || expected.scene !== state(beforeImport).native.scene;
+  const expected = { ...envelope.state.native, ...expectedRoute };
+  const sourceDigest = hash(bytes);
+  const previousSequence = beforeImport.importReceipt?.sequence ?? 0;
   const s = await poll(async () => {
-    const s = await snapshot(); const complete = changedRoute || s?.saveDigest !== beforeImport.saveDigest || controls(s).some(c => /存档已导入/.test(c.text)) || /存档已导入/.test(s?.world?.subtitle || '');
+    const s = await snapshot(); const receipt = s?.importReceipt;
+    const complete = receipt?.sequence > previousSequence && receipt.sourceDigest === sourceDigest && receipt.ok === true;
     return complete && state(s)?.native?.chapter === expected.chapter && state(s).native.page === expected.page && state(s).native.scene === expected.scene ? s : null;
   }, `validated native import completes ${path.basename(filename)}`, 60000);
   const firstAcceptedAt = Date.now();
@@ -596,7 +598,7 @@ async function importSave(filename) {
   await interval(350);
   check(s.developerToolsAvailable === false, 'ordinary imported save remains formal progression');
   const completed = await snapshot();
-  active.imports.push({ filename: path.basename(filename), sha256: hash(bytes), bytes: bytes.length, chapter: expected.chapter, page: expected.page, scene: expected.scene, firstAcceptedAt, observedAt: Date.now(), saveDigest: completed.saveDigest });
+  active.imports.push({ filename: path.basename(filename), sha256: sourceDigest, bytes: bytes.length, chapter: expected.chapter, page: expected.page, scene: expected.scene, receiptSequence: s.importReceipt.sequence, firstAcceptedAt, observedAt: Date.now(), saveDigest: completed.saveDigest });
   if (completed.world?.visible) await acceptPortraitFallback();
   return completed;
 }

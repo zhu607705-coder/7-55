@@ -40,6 +40,7 @@ var _save_explicit := false
 var _save_started_ms := 0
 var _save_sync_requests := 0
 var _save_last_sync_ms := 0
+var _import_receipt: Dictionary = {"sequence": 0, "sourceDigest": "", "ok": false}
 # Observation only: count the original controller signal, never dispatch it.
 var _observed_dorm_prop_actions := 0
 var _accepted_theater_exits := 0
@@ -460,15 +461,20 @@ func export_save() -> Error:
 
 func _on_browser_file(args: Array) -> void:
 	if args.size() != 2: return
-	if str(args[1]) == "too_large":
-		import_finished.emit("文件过大，不是有效存档。")
-		return
-	if not str(args[1]).is_empty():
-		import_finished.emit("无法读取存档文件，当前进度未改变。")
-		return
-	# The same bounded importer validates both native and legacy browser saves.
-	# No browser callback can supply an action, checkpoint, or progression flag.
-	import_finished.emit(str(import_text(str(args[0])).message))
+	var text := str(args[0])
+	var read_error := str(args[1])
+	var result: Dictionary
+	if read_error == "too_large":
+		result = {"ok": false, "message": "文件过大，不是有效存档。"}
+	elif not read_error.is_empty():
+		result = {"ok": false, "message": "无法读取存档文件，当前进度未改变。"}
+	else:
+		# The same bounded importer validates both native and legacy browser saves.
+		# No browser callback can supply an action, checkpoint, or progression flag.
+		result = import_text(text)
+	# Observation only: acknowledge the exact input after State has processed it.
+	_import_receipt = {"sequence": int(_import_receipt.sequence) + 1, "sourceDigest": text.sha256_text() if read_error.is_empty() else "", "ok": bool(result.get("ok", false))}
+	import_finished.emit(str(result.message))
 
 func import_text(text: String) -> Dictionary:
 	if text.to_utf8_buffer().size() > MAX_SAVE_BYTES:
@@ -641,7 +647,7 @@ func read_snapshot() -> Dictionary:
 	var content: Dictionary = shell.get_node("/root/WebContent").read_snapshot()
 	var landscape_preferred: bool=(is_instance_valid(shell.world_frame) and shell.world_frame.is_visible_in_tree()) or (is_instance_valid(shell.active_game) and shell.game_viewport.x>shell.game_viewport.y)
 	if content.get("retryVisible", false): controls.append({"name": "RetryRequiredContent", "text": "重试", "type": "Button", "rect": content.retryRect, "disabled": false})
-	return {"sampleFrame": Engine.get_process_frames(), "engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "documentFocused": _document_focused, "platformPaused": _suspended, "awaitingResume": false, "content": content, "savePersistence": read_save_persistence(), "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "activity":game.get("activity",{}), "world": world, "presentation":{"landscapePreferred":landscape_preferred}, "phoneRect": _rect(shell.phone.get_global_rect()) if is_instance_valid(shell.phone) else {}, "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
+	return {"sampleFrame": Engine.get_process_frames(), "engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "documentFocused": _document_focused, "platformPaused": _suspended, "awaitingResume": false, "content": content, "savePersistence": read_save_persistence(), "importReceipt": _import_receipt.duplicate(true), "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "activity":game.get("activity",{}), "world": world, "presentation":{"landscapePreferred":landscape_preferred}, "phoneRect": _rect(shell.phone.get_global_rect()) if is_instance_valid(shell.phone) else {}, "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
 
 func _exit_tree() -> void:
 	if _owns_tree_pause and is_inside_tree():TreePauseLease.release(get_tree(),self)
