@@ -1,0 +1,391 @@
+{
+	"assets": {
+		"backpack": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1315,
+				1196
+			],
+			"outputSha256": "3bbe2b88b1bdcd8c7808a6a5f51004ed8af4cce80c167066c9950bf3f88c79cb",
+			"palette": "755-campus-morning-32",
+			"size": [
+				542,
+				700
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/backpack.png",
+			"sourceSha256": "d78f844f066351186e50d323ad3e98416d25340148b92ddc5f57be6d7d084294",
+			"uniformScale": true
+		},
+		"chair_east": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1024,
+				1536
+			],
+			"outputSha256": "5e44ad4e4fc346dba31b485c5ccaa801def414a67c801c6154fdcee6e7cb1b79",
+			"palette": "755-campus-morning-32",
+			"size": [
+				319,
+				700
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/chair_east.png",
+			"sourceSha256": "8c3b6f03fe68c545e767a797c5f508f88b86ee4a932eb20accf59ed02a7335ed",
+			"uniformScale": true
+		},
+		"chair_north": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1024,
+				1536
+			],
+			"outputSha256": "e424e8aa8b3514b5784cc6103a4b760fc2e4c21d8c880e297af10ccbd5304157",
+			"palette": "755-campus-morning-32",
+			"size": [
+				466,
+				700
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/chair_north.png",
+			"sourceSha256": "d3683e63b569836c274a151a7f5ba54ef656c4e354bd5fa235345b9fb737cf37",
+			"uniformScale": true
+		},
+		"chair_south": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1024,
+				1536
+			],
+			"outputSha256": "a1fc692268c9c4d842cc09ce58ee6588cd7846ef3ba7ee53beeb1689c248f738",
+			"palette": "755-campus-morning-32",
+			"size": [
+				387,
+				700
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/chair_south.png",
+			"sourceSha256": "86418503040274cd631e0499d8e9c238d1d477c6e67a0bb552c4ceb45b355c92",
+			"uniformScale": true
+		},
+		"chair_west": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1278,
+				1230
+			],
+			"outputSha256": "0388f1110099bac92eaaf7af576cb41f63295f588dd74c997aa2d54c987039ef",
+			"palette": "755-campus-morning-32",
+			"size": [
+				293,
+				608
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/chair_west.png",
+			"sourceSha256": "db577c8ae489e7dbfb929b3ae8a8147dcf7eb93cbac2c1fe7f848fe105754ae2",
+			"uniformScale": true
+		},
+		"clean_plate": {
+			"binaryAlpha": false,
+			"masterSize": [
+				1619,
+				971
+			],
+			"outputSha256": "601c99441c8c66de5b0b6e4e09bfd624d11c838ce79d1e4deef4d33009a8f917",
+			"palette": "755-campus-morning-32",
+			"size": [
+				1500,
+				900
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/clean_plate.png",
+			"sourceSha256": "f14acae8ba7fc5dbf7854bc01e4596d27259b7a261ace6b8472d9702898bd5f3",
+			"uniformScale": true
+		},
+		"counter": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1760,
+				893
+			],
+			"outputSha256": "46e2ba6f132e723e3472a5f91c23d3e8785d671d3f09f72369589dc24db33605",
+			"palette": "755-campus-morning-32",
+			"size": [
+				700,
+				358
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/counter.png",
+			"sourceSha256": "24bcf41b3c7943010ef615b948dc6d310e4423a1aed9a863dac472fdcb25b7ee",
+			"uniformScale": true
+		},
+		"diagonal_rail": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1536,
+				1024
+			],
+			"outputSha256": "8a5109751febfa32dd7e8b4e04713d61be685e970f47ebcad229dc5f22c95c58",
+			"palette": "755-campus-morning-32",
+			"size": [
+				559,
+				699
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/diagonal_rail.png",
+			"sourceSha256": "b4826550e2e95ecd1a9f7fd610772769e820ac9abeace412be3b58337d5f25f5",
+			"uniformScale": true
+		},
+		"glass_panel": {
+			"binaryAlpha": false,
+			"masterSize": [
+				1190,
+				1322
+			],
+			"outputSha256": "d73f2c7f28ae710f7817f60640d9dc80c6e34ccdefa245d1fc3a6b631099f5cc",
+			"palette": "755-campus-morning-32",
+			"size": [
+				190,
+				700
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/glass_panel.png",
+			"sourceSha256": "99931cff293f1b2ab1f63c25457e741c8fd0aee0ff7d0269ce78cf6af3256bf7",
+			"uniformScale": true
+		},
+		"lamp": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1312,
+				1199
+			],
+			"outputSha256": "65b3506a610643f00e38fa7e5c3eddc7a61d0c56dcc41420689af1b1ed4d26da",
+			"palette": "755-campus-morning-32",
+			"size": [
+				508,
+				653
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/lamp.png",
+			"sourceSha256": "bbed57027261c66799619ca16c9a9e824697bbffc203a9aef6af52a5520bd50a",
+			"uniformScale": true
+		},
+		"low_bookcase": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1659,
+				948
+			],
+			"outputSha256": "13cb7240652a0c9905f81b2dbdf3f493c2ea2a6e4053d475b04cfacbe230ad59",
+			"palette": "755-campus-morning-32",
+			"size": [
+				700,
+				359
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/low_bookcase.png",
+			"sourceSha256": "daf955645f5a2bfb58a2754290cc00443f7e4b721d5cec72a3184a43ddb39d44",
+			"uniformScale": true
+		},
+		"notice_board": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1145,
+				1373
+			],
+			"outputSha256": "2f25fe6c306f55475c2f9900f63cc366a803ec15710127ee02d08df001218607",
+			"palette": "755-campus-morning-32",
+			"size": [
+				445,
+				700
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/notice_board.png",
+			"sourceSha256": "db84ba40ea8d7b53ccef3bda63aca1b72fe2277e400f74dc670e3f9984f55b4b",
+			"uniformScale": true
+		},
+		"open_book": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1536,
+				1024
+			],
+			"outputSha256": "c3bc082523ad03b7a1fc113388eb66df78e368a0386e658bd765ef4be0d02d77",
+			"palette": "755-campus-morning-32",
+			"size": [
+				489,
+				302
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/open_book.png",
+			"sourceSha256": "f4a2441f91e2c6f1663535b9e7c0ed8cfd8a79a636decc19b004a12149c925ce",
+			"uniformScale": true
+		},
+		"plant": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1140,
+				1380
+			],
+			"outputSha256": "c77ea0ec90b4996559c8b4b891ee74c60ba181648ce92d2bfd9186ad66f82cfe",
+			"palette": "755-campus-morning-32",
+			"size": [
+				440,
+				700
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/plant.png",
+			"sourceSha256": "4827f141731203dc962b815f2880ed15673500124908211810db7677a452bb8b",
+			"uniformScale": true
+		},
+		"printer": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1199,
+				1312
+			],
+			"outputSha256": "d07346b75979f14986fbbab15f9c6b98bf25f408461e2a2a7e23486c8b2d131d",
+			"palette": "755-campus-morning-32",
+			"size": [
+				417,
+				700
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/printer.png",
+			"sourceSha256": "a13895c8eea1ad8b6c6248b9d859187480f33c646201cc50ee16af2a47d30cc5",
+			"uniformScale": true
+		},
+		"rail": {
+			"binaryAlpha": true,
+			"masterSize": [
+				2172,
+				724
+			],
+			"outputSha256": "137a59abae58250f813270fe09d02348071409102b2c36a99b334720603fffd3",
+			"palette": "755-campus-morning-32",
+			"size": [
+				700,
+				106
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/rail.png",
+			"sourceSha256": "c82fd4caf5d0fd699c12f157e48d3d81d0ad28a53981cd16de5d0116878e7848",
+			"uniformScale": true
+		},
+		"shelf_broad": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1594,
+				987
+			],
+			"outputSha256": "70cbf5bee56e18912cda9150b62badcc29a9b3cd439e5efc72f94670b61283f7",
+			"palette": "755-campus-morning-32",
+			"size": [
+				700,
+				328
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/shelf_broad.png",
+			"sourceSha256": "6c9bf5e51df629d43b75b6274076bb270ed9d3f3daba8719e3b95ce92292018f",
+			"uniformScale": true
+		},
+		"shelf_divider": {
+			"binaryAlpha": true,
+			"masterSize": [
+				835,
+				1884
+			],
+			"outputSha256": "5abaead46729b8172d6c94d5f9a3a131d8aa6b6953e9c630bff67a28c79de932",
+			"palette": "755-campus-morning-32",
+			"size": [
+				200,
+				1370
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/shelf_stack.png",
+			"sourceSha256": "eaf018416ba3866c25c13fcd8ccb79deb06808301c49667f99935968cd08e2f3",
+			"southFacePixels": 315,
+			"uniformScale": true
+		},
+		"shelf_row": {
+			"binaryAlpha": true,
+			"masterSize": [
+				835,
+				1884
+			],
+			"outputSha256": "ee466f03cf77115108b817555d3311d198b689d42f5ac6dcb99e5ba5eec0f0e5",
+			"palette": "755-campus-morning-32",
+			"size": [
+				225,
+				1155
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/shelf_stack.png",
+			"sourceSha256": "eaf018416ba3866c25c13fcd8ccb79deb06808301c49667f99935968cd08e2f3",
+			"southFacePixels": 354,
+			"uniformScale": true
+		},
+		"table": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1430,
+				1100
+			],
+			"outputSha256": "9b1170460fd9e826cffd5cec81161df921d1d1de5859e4d90d24fcbc9d1bc4f7",
+			"palette": "755-campus-morning-32",
+			"size": [
+				700,
+				537
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/table.png",
+			"sourceSha256": "f04877a9f27169cd4f241128e4788df6781b9040851f9649af1609a1e43c7d9a",
+			"uniformScale": true
+		},
+		"table_oblique": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1586,
+				992
+			],
+			"outputSha256": "b93daf0a366296d55817ed835466e64f3f6583998b3ece2c069ccd21061ba9ad",
+			"palette": "755-campus-morning-32",
+			"size": [
+				700,
+				391
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/table_oblique.png",
+			"sourceSha256": "22c1b5bde5b25d80dca1cc0ac686486bb6e84068573d3a50401a14efeae470dc",
+			"uniformScale": true
+		},
+		"terminal": {
+			"binaryAlpha": true,
+			"masterSize": [
+				1448,
+				1086
+			],
+			"outputSha256": "40c2fa86bcc143a9f28ee447ac7683ff848cf7eff270e05858f66095114d8c86",
+			"palette": "755-campus-morning-32",
+			"size": [
+				594,
+				624
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/terminal.png",
+			"sourceSha256": "8bc4e38f3b6ac8ca6c7c8b1979d0544bcaa8092df363b0210c4b0df98edfe52c",
+			"uniformScale": true
+		},
+		"turnstile": {
+			"binaryAlpha": true,
+			"masterSize": [
+				790,
+				1989
+			],
+			"outputSha256": "5b541ab8074e33cae438498a03040271a4cd8e5d7431410999a532d0c9339a60",
+			"palette": "755-campus-morning-32",
+			"size": [
+				121,
+				700
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/turnstile.png",
+			"sourceSha256": "7259e77919a87a4a9b8985dc5513e56c47aeac521ff5b1c6df8bf1cd1eaf5bd8",
+			"uniformScale": true
+		},
+		"water_dispenser": {
+			"binaryAlpha": true,
+			"masterSize": [
+				933,
+				1686
+			],
+			"outputSha256": "03d5c9d1d070aa2cc439ada40e3575395abccecd2180d0a87027ac4049fa7644",
+			"palette": "755-campus-morning-32",
+			"size": [
+				295,
+				700
+			],
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/water_cooler.png",
+			"sourceSha256": "87ec0d7f5a924e7114ec1a3db8c20101cbfec1e4473516cc7686abc3d066a82e",
+			"uniformScale": true
+		}
+	},
+	"engine": "4.7.1-stable (official)"
+}

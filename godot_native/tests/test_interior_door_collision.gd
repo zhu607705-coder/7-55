@@ -73,19 +73,18 @@ func run()->void:
 	for id:String in ["library_entrance","library_front_desk","library_shelf_755"]:
 		var spawn:Dictionary=world.spec.spawns[id]
 		check(world.can_stand(Vector2(spawn.x,spawn.y)),"original source checkpoint remains physically open "+id)
-	# The retained seat checkpoint (1180,500) already intersects the authored
-	# south reading rail. This entrance repair must not silently move that rail
-	# or declare the old occupied point walkable; the validated nearby fixture
-	# uses (1180,480). Track the independent source mismatch explicitly.
 	check(world.can_stand(Vector2(1180,480)),"existing validated reading-area arrival stays physically open")
-	var old_seat:=Vector2(1180,500)
-	check(not world.can_stand(old_seat) and world.collisions.any(func(r:Dictionary)->bool:return r.id=="reading_south_rail" and Metrics.foot_rect(old_seat).intersects(world._rect(r))),"retained seat spawn mismatch remains attributable to its original rail, not the new wall bases")
+	check(world.can_stand(Vector2(1180,500)),"seat checkpoint clears the separately rendered reading rail")
+	# A saved position in the former horizontal-stack aisle now intersects a
+	# north-south stack. Exercise actual Continue recovery against that footprint.
+	var old_aisle:=Vector2(642,277)
+	check(not world.can_stand(old_aisle),"former horizontal aisle is occupied by the restored vertical stack")
 	for stand:Vector2 in [Vector2(548,355),Vector2(1255,480),Vector2(700,623),Vector2(827,591)]:
 		check(world.can_stand(stand),"measured shelf, bag, catalog and printer operating stands remain open "+str(stand))
 	check(state.begin_checkpoint("c2-seat-arrival"),"retained ordinary seat-arrival checkpoint prerequisites")
-	state.d.native.player={"scene":"library_interior","x":1180.,"y":500.};state.d.native.positions={"library_interior:":{"x":1180.,"y":500.}}
+	state.d.native.player={"scene":"library_interior","x":642.,"y":277.};state.d.native.positions={"library_interior:":{"x":642.,"y":277.}}
 	world.world_key="";world.scene_id="";world.refresh_world();world._process(0)
-	check(world.player!=old_seat and world.can_stand(world.player),"ordinary scene entry resolves occupied source seat point through existing safe-spawn recovery")
+	check(world.player!=old_aisle and world.can_stand(world.player),"ordinary scene entry resolves the former aisle through existing safe-spawn recovery")
 	state.developer_mode=false;check(state.save_game(),"ordinary recovered seat position validates for durable save")
 	state.d=state.initial();check(state.load_game(),"ordinary recovered seat save restores through production importer")
 	world.world_key="";world.refresh_world();world._process(0)

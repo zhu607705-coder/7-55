@@ -480,13 +480,20 @@ func _show_phone_surface() -> void:
 	_layout()
 	phone_world_return.grab_focus()
 
+func _library_reading_locked()->bool:
+	if str(State.d.native.page)!="library_rule" or not State.d.ui.libraryFinalsPuzzle.archivedRuleCollected or State.d.ui.libraryFinalsPuzzle.archivedRuleRead:return false
+	var reader:Node=page_body.find_child("LibraryRuleReader",true,false) if is_instance_valid(page_body) else null
+	return reader!=null and not bool(reader.get_meta("end_seen",false))
+
 func _return_from_phone() -> void:
+	if _library_reading_locked():return
 	if not _has_world_scene() or _surface_navigation_blocked(): return
 	State.d.runtimeMode = "rpg"
 	State.save_game()
 	_show_world_mobile()
 
 func _back_from_phone() -> void:
+	if _library_reading_locked():return
 	# Escape follows the same visible navigation callbacks as pointer/touch.
 	# Only the phone homepage hands control back to the world.
 	if is_instance_valid(phone_document):
@@ -514,6 +521,8 @@ func _on_controller_page_intent(_action: String,_previous: Dictionary,current: D
 		_refresh_inventory_dock()
 		_layout()
 	if _action=="lib_shelf" and _begin_library_reveal(_previous,current,result): return
+	if result.get("page","") in ["library_rule","library_record"] and current.native.scene=="library_interior":
+		_open_library_world_document.call_deferred(str(result.page));return
 	if result.has("open_c4_floor_selection"):
 		_open_chapter4_floor_selection(result.open_c4_floor_selection)
 		return
@@ -624,6 +633,17 @@ func _cancel_library_reveal() -> void:
 func _validate_library_reveal() -> void:
 	if not pending_library_reveal.is_empty() and not _library_reveal_current(): _cancel_library_reveal()
 
+func _open_library_world_document(page:String)->void:
+	if State.d.native.page!=page or State.d.native.scene!="library_interior" or not pending_library_reveal.is_empty():return
+	if is_instance_valid(modal):return
+	if world.library_layers!=null and world.library_layers.shelf_animating:return
+	_show_world_mobile()
+	phone_builder.s=State.d
+	modal=preload("res://scripts/ui/library_world_document.gd").new()
+	modal.configure(self,phone_builder,page,State.get_view(page))
+	add_child(modal);_layout_modal()
+	phone_chrome.set_input_blocked(true)
+
 func _library_world_presentation(cue: String,payload: Dictionary,layer: RefCounted) -> void:
 	if cue!="library_archived_rule_reveal_completed":
 		_game_presentation(cue,payload)
@@ -637,10 +657,7 @@ func _library_world_presentation(cue: String,payload: Dictionary,layer: RefCount
 	pending_library_reveal={}
 	_game_presentation(cue,payload)
 	world_page_origin_scene="library_interior"
-	_cancel_surface_gestures()
-	mobile_world=false
-	_layout()
-	phone_world_return.grab_focus()
+	_open_library_world_document("library_rule")
 
 func _layout() -> void:
 	if flc_entry_mode:
@@ -1021,6 +1038,8 @@ func _refresh() -> void:
 		n.page="phone_home"
 		State.d.ui.controlCenterOpen=true
 	var page: String = n.page
+	if page in ["library_rule","library_record"] and n.scene=="library_interior" and not is_instance_valid(modal):
+		_open_library_world_document.call_deferred(page)
 	# Preserve the source Photos mount baseline behind Control Center overlays.
 	var photos_mounted := not mobile_world
 	if photo_brightness_session.observe(page if photos_mounted else "",State.d.ui):
@@ -2791,6 +2810,7 @@ func _combine_inventory_items(a: String,b: String) -> void:
 	State.act("c1_combine",{"a":a,"b":b})
 
 func _on_phone_page(page: String) -> void:
+	if _library_reading_locked():return
 	_cancel_library_reveal()
 	if page=="control_center":
 		if not _theater_departure_active():

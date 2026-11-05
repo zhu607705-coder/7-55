@@ -537,6 +537,12 @@ func read_snapshot() -> Dictionary:
 		world = _properties(shell.world, ["scene_id", "player", "camera", "zoom", "size", "mobile_exploration", "last_zone", "last_vehicle", "subtitle", "subtitle_left", "nearby", "touch_axis", "facing", "player_flip", "mobile_confirmed_target_id"])
 		world["visible"] = shell.world_frame.is_visible_in_tree()
 		world["rect"] = _rect(shell.world_view.get_global_rect())
+		if world.scene_id == "library_interior" and shell.world.library_layers != null:
+			var layers: RefCounted = shell.world.library_layers
+			world["librarySeat"] = {"id":layers.local_chair, "settled":layers.chair_age >= layers.SIT_SECONDS}
+		var actor:Dictionary=shell.world.player_visual()
+		if actor.get("animation","")=="library_generated_16":
+			world["actorAnimation"]={"family":actor.animation,"frame":actor.motion_frame,"direction":actor.direction,"mirrored":actor.flip_h,"cycleMs":880,"frames":16}
 		if is_instance_valid(shell.world.selected_overlay):
 			var overlay:Control=shell.world.selected_overlay
 			world["chrome"]={"taskColumnVisible":overlay.task.is_visible_in_tree(),"modeLabelVisible":overlay.mode.is_visible_in_tree(),"interactionRect":_rect(overlay.plaque.get_global_rect())}

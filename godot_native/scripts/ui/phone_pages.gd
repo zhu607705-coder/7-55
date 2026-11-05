@@ -1247,6 +1247,14 @@ func _cc98(view: Dictionary) -> Control:
 	_label(root,"今日　 发现　 本周　 本月　 往年今日　 活动",Rect2(11,61,359,36),14,Color("337ea3"),HORIZONTAL_ALIGNMENT_CENTER)
 	var search=_line_edit(root,"搜索帖子、版面与校园资料",Rect2(12,104,354,37),cc98_query)
 	search.name="Cc98Search"
+	if s.ui.libraryFinalsPhase=="evidence_gathering" and s.items.occupancyNote and not s.ui.libraryFinalsPuzzle.investigationOpened:
+		search.set_drag_forwarding(Callable(),func(_at,data):
+			return data is Dictionary and data.get("kind")=="inventory_item" and data.get("item")=="occupancyNote",func(_at,_data):
+			cc98_query="022 占座";cc98_note_ready=true;action_requested.emit("phone_refresh",{}))
+		search.text_submitted.connect(func(query):
+			cc98_query=str(query)
+			cc98_note_ready="022" in cc98_query or "占座" in cc98_query or "三分钟" in cc98_query
+			action_requested.emit("phone_refresh",{}))
 	var scroll=ScrollContainer.new(); scroll.position=Vector2(0,151); scroll.size=Vector2(378,APP_HEIGHT-151-61-(55 if cc98_editing else 0))
 	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED; root.add_child(scroll)
 	var feed=VBoxContainer.new(); feed.size_flags_horizontal=Control.SIZE_EXPAND_FILL; feed.add_theme_constant_override("separation",0); scroll.add_child(feed)
@@ -1423,15 +1431,17 @@ func _cc98_thread(post: Dictionary) -> Control:
 
 func _cc98_note_search(feed: Control) -> void:
 	var box=_base(Color("e7eef3"),567 if cc98_note_ready else 136)
-	_label(box,"资料搜索　　可接收道具",Rect2(13,8,352,30),17,Color("2c7797"))
-	_label(box,"022 占座纸条" if s.items.occupancyNote else "把占座纸条拖到这里",Rect2(13,49,252,37),16,MUTED)
+	_label(box,"资料搜索",Rect2(13,8,352,30),17,Color("2c7797"))
+	_label(box,"022 占座" if cc98_note_ready else "输入关键词或拖入占座纸条",Rect2(13,49,252,37),16,MUTED)
 	var drop=DropButton.new(); drop.position=Vector2(13,47); drop.size=Vector2(252,42); drop.name="Cc98NoteDrop"
 	for mode in ["normal","hover","pressed","focus"]: drop.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 	drop.item_dropped.connect(func(item):
-		if item=="occupancyNote" and s.items.occupancyNote: cc98_note_ready=true; action_requested.emit("phone_refresh",{}))
+		if item=="occupancyNote" and s.items.occupancyNote: cc98_query="022 占座"; cc98_note_ready=true; action_requested.emit("phone_refresh",{}))
 	box.add_child(drop)
 	_button(box,"搜索",Rect2(277,47,87,39),func():
-		if s.items.occupancyNote: cc98_note_ready=true; action_requested.emit("phone_refresh",{}),Color("28769b"),Color.WHITE).name="Cc98NoteSearch"
+		if s.items.occupancyNote:
+			cc98_note_ready="022" in cc98_query or "占座" in cc98_query or "三分钟" in cc98_query
+			action_requested.emit("phone_refresh",{}),Color("28769b"),Color.WHITE).name="Cc98NoteSearch"
 	if cc98_note_ready:
 		var results=[["seat-022-backpack","【求助】022 的书包占座三天了","23 楼","一层书库 022 有个书包，纸条写着离开三分钟。人没回来，座位也没有空。"],["seat-022-old-source","【求助】022 座位今日临时离开","12 楼","来源为今日新帖，没有旧版离座规定的引用。"],["seat-022-wrong-time","【记录】二南 022 晚间使用情况","31 楼","发布时间为当日 22:40，早于纸条中的本次离座事件。"],["seat-022-missing-attachment","【闲聊】一层书库今天还有位置吗","18 楼","正文提到 022，附件区为空。"]]
 		for i in range(results.size()):
@@ -1442,7 +1452,7 @@ func _cc98_note_search(feed: Control) -> void:
 			card.name="Cc98Result_"+str(result[0])
 			_label(card,str(result[1])+"　"+str(result[2]),Rect2(10,6,330,40),17,Color("28769b"))
 			_label(card,str(result[3]),Rect2(10,50,330,42),13,MUTED)
-	else: _label(box,"拖入纸条或点击搜索后显示候选记录。",Rect2(13,97,352,28),13,MUTED)
+	else: _label(box,"在顶部输入关键词并搜索，或拖入纸条。",Rect2(13,97,352,28),13,MUTED)
 	feed.add_child(box)
 
 func _cc98_story(view: Dictionary) -> Control:
@@ -1846,6 +1856,7 @@ func _directory() -> Control:
 	return root
 
 func _library(page: String, view: Dictionary) -> Control:
+	if page=="library_rule":return preload("res://scripts/ui/library_rule_reader.gd").new().build(self,view)
 	if page in ["library_app","library_catalog","library_recovery","c3_lake_catalog"]: return native_library.build(self,page)
 	var rows: Array = view.get("rows",[])
 	var root = _base(Color("f5f6fa"),maxf(460,200+rows.size()*196))
@@ -1880,17 +1891,24 @@ func _library(page: String, view: Dictionary) -> Control:
 func _photos(view: Dictionary) -> Control:
 	var photo_data: Array = JSON.parse_string(FileAccess.get_file_as_string("res://data/native_phone_photos.json"))
 	var selected = str(s.native.get("lib_selected_photo",""))
-	var root = _base(Color("f5f6fa"),640)
+	var root = _base(Color("f5f6fa"),820)
 	if not selected.is_empty():
 		for photo in photo_data:
 			if photo.id != selected: continue
 			_header(root,str(photo.title),Color.WHITE,INK,func(): action_requested.emit("lib_close_photo",null),"back","返回相册")
 			_image(root,str(photo.image),Rect2(14,72,350,335))
-			_label(root,"%s · %s\n%s · %s" % [photo.file,photo.location,photo.capturedAt,photo.detail],Rect2(21,422,336,104),18)
+			_label(root,str(photo.file),Rect2(64,422,296,28),18,INK).name="PhotoFilename"
+			_label(root,"%s · %s" % [photo.location,photo.capturedAt],Rect2(64,456,296,60),14,MUTED).name="PhotoCaptureMetadata"
+			var detail_height:float=_cc98_text_height(str(photo.detail),296,18)
+			_label(root,str(photo.detail),Rect2(64,528,296,detail_height),18,INK).name="PhotoDescription"
+			var next_y:float=588+detail_height
 			if photo.get("storyRole","") == "library_clue":
-				_label(root,"旧照与刚拍下的标签内容一致。" if s.ui.libraryFinalsPuzzle.photoDimmed else "先把刚拍下的主照片亮度降到 20% 以下。",Rect2(21,530,336,55),17,MUTED)
-				if s.ui.libraryFinalsPuzzle.photoDimmed and not s.ui.libraryFinalsPuzzle.itemReportGenerated: _act(root,"用旧照补全物品报告",Rect2(27,591,324,46),"lib_item_report",null,Color("d7e5d7"))
-			_act(root,"返回相册",Rect2(267,6,100,41),"lib_close_photo",null,Color("f5f6fa"),MUTED,0,Color.TRANSPARENT)
+				_label(root,"两张照片中的标签内容一致。" if s.ui.libraryFinalsPuzzle.photoDimmed else "旧照里的书包侧袋露出半包纸。新照片的标签上还有反光。",Rect2(64,next_y,296,76),17,MUTED).name="PhotoComparison"
+				next_y+=92
+				if s.ui.libraryFinalsPuzzle.photoDimmed and not s.ui.libraryFinalsPuzzle.itemReportGenerated:
+					_act(root,"整理物品识别报告",Rect2(64,next_y,296,48),"lib_item_report",null,Color("d7e5d7")).name="PhotoReportAction"
+					next_y+=64
+			root.custom_minimum_size.y=maxf(640,next_y+24);root.size.y=root.custom_minimum_size.y
 			return root
 	_header(root,"照片",Color.WHITE,INK,func(): page_requested.emit("phone_home"),"exit","退出照片，返回手机主页")
 	if not s.ui.libraryFinalsPuzzle.photoCaptured:
@@ -1903,26 +1921,26 @@ func _photos(view: Dictionary) -> Control:
 	evidence_surface.configure(float(s.ui.brightness),s.ui.libraryFinalsPuzzle,bool(s.native.get("settings",{}).get("reduced_motion",false)))
 	root.add_child(evidence_surface)
 	var readable: bool = evidence_surface.exposure.readable
-	_label(root,"控制中心亮度　%s%%" % int(s.ui.brightness),Rect2(22,419,333,35),19)
-	_label(root,"识别稳定，标签内容已锁定。" if readable else "光照太亮了，识别器无法对焦。" if float(s.ui.brightness)>56 else "标签边缘已出现，识别信号仍不稳定。",Rect2(22,457,333,56),18,MUTED)
+	_label(root,"控制中心亮度　%s%%" % int(s.ui.brightness),Rect2(64,419,296,35),19)
+	_label(root,"标签上的字已经能辨认。" if readable else "标签中央反光发白，有些字看不清。" if float(s.ui.brightness)>56 else "字迹开始显现，仍有几处被反光遮住。",Rect2(64,457,296,62),18,MUTED)
 	var y = 527
 	if readable:
-		_label(root,"旧相册里还有一张同场景照片",Rect2(20,y,338,39),19)
-		_act(root,"查看 022 旧照",Rect2(22,y+44,334,45),"lib_view_photo","seat_022_clue",Color("e7eddf"))
+		_label(root,"旧相册里还有一张同场景照片",Rect2(64,y,296,39),19)
+		_act(root,"查看 022 旧照",Rect2(64,y+44,296,45),"lib_view_photo","seat_022_clue",Color("e7eddf"))
 		y += 105
-	_act(root,"最近 12 张",Rect2(15,y,170,42),"lib_photo_filter","recent",Color("e4e8ed"))
-	_act(root,"校园与日常",Rect2(193,y,170,42),"lib_photo_filter","campus_life",Color("e4e8ed"))
+	_act(root,"最近 12 张",Rect2(64,y,140,42),"lib_photo_filter","recent",Color("e4e8ed"))
+	_act(root,"校园与日常",Rect2(216,y,144,42),"lib_photo_filter","campus_life",Color("e4e8ed"))
 	y += 55
 	var index = 0
 	for photo in photo_data:
 		if s.native.get("lib_photo_filter","recent")=="campus_life" and photo.albumId != "campus_life": continue
-		var x = 14+(index%3)*119
-		var top = y+int(index/3)*119
-		var thumbnail = _act(root,"",Rect2(x,top,111,111),"lib_view_photo",photo.id,Color.WHITE,INK,2,Color("ccd2da"))
-		_image(thumbnail,str(photo.image),Rect2(3,3,105,83))
-		_label(thumbnail,str(photo.file).substr(4,4),Rect2(4,88,103,18),13,MUTED,HORIZONTAL_ALIGNMENT_CENTER)
+		var x = 64+(index%2)*152
+		var top = y+int(index/2)*145
+		var thumbnail = _act(root,"",Rect2(x,top,144,136),"lib_view_photo",photo.id,Color.WHITE,INK,2,Color("ccd2da"))
+		_image(thumbnail,str(photo.image),Rect2(3,3,138,106))
+		_label(thumbnail,str(photo.file).substr(4,4),Rect2(4,114,136,18),13,MUTED,HORIZONTAL_ALIGNMENT_CENTER)
 		index += 1
-	root.custom_minimum_size.y = y+ceil(index/3.0)*119+24
+	root.custom_minimum_size.y = y+ceil(index/2.0)*145+24
 	root.size.y = root.custom_minimum_size.y
 	return root
 

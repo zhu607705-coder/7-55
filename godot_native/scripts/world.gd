@@ -145,6 +145,7 @@ var room204_object: Node2D
 var native_canteen: Node2D
 var native_dorm: Node2D
 var library_layers: RefCounted
+var _library_shelf_applied_offset:float=NAN
 var chapter3_layers: RefCounted
 var furniture_drag_preview: Control
 var _native_table_drag:=false
@@ -253,6 +254,7 @@ func refresh_world() -> void:
 	var prior_position := player
 	var key := incoming + ":" + (floor_id+":"+time_id+":"+phase_id if incoming == "duan_yongping_temporal_maze" else zone+":"+vehicle_id if incoming == "qizhen_lake" else "")
 	targets = State.get_targets(incoming)
+	if incoming=="library_interior" and library_layers!=null:library_layers.align_object_targets(targets)
 	if key == world_key and pending_teleport == Vector2.INF:
 		_sync_npc_feedback()
 		queue_redraw()
@@ -274,6 +276,8 @@ func refresh_world() -> void:
 	world_size = Vector2(float(spec.worldSize.width),float(spec.worldSize.height))
 	background_rect = Rect2(Vector2.ZERO,world_size)
 	collisions = spec.get("collisions",[]).duplicate(true)
+	if scene_id=="library_interior" and library_layers!=null and library_layers.objects.ready:
+		collisions=library_layers.objects.collisions(collisions)
 	if chapter3_layers!=null: collisions=chapter3_layers.adjusted_collisions(collisions,State.d)
 	foreground = []
 	if scene_id!="duan_yongping_temporal_maze":north_space.clear()
@@ -359,6 +363,9 @@ func refresh_world() -> void:
 		if not image_path.is_empty() and ResourceLoader.exists(State.asset(image_path)):background=load(State.asset(image_path))
 		else:background=null
 	if scene_id=="library_interior" and library_layers!=null and library_layers.rebuild.ready:background=library_layers.rebuild.clean_plate
+	if scene_id=="library_interior" and library_layers!=null and library_layers.objects.ready:
+		background=library_layers.objects.clean_plate
+		foreground.clear() # Fixed glass and furniture now own transparent foreground surfaces.
 	north_objects.configure(scene_id,floor_id,background)
 	if is_instance_valid(north_props):north_props.sync()
 	collisions=north_objects.adjusted_collisions(collisions)
@@ -381,6 +388,7 @@ func refresh_world() -> void:
 		# Validate the same rotated full hull that the live session will use.
 		kayak.heading = float(spawn.get("heading",-PI/2))
 	if not can_stand(player): player = _find_safe(player)
+	_library_shelf_applied_offset=float(library_layers.shelf_offset) if scene_id=="library_interior" and library_layers!=null and library_layers.objects.ready else NAN
 	transition_alpha = 1.0
 	safe_player = player
 	if kayak!=null: kayak.position = player
@@ -438,6 +446,58 @@ func _door_collision_rects()->Array[Rect2]:
 	if scene_id=="library_interior":return library_door.collision_rects()
 	if scene_id=="theater_interior" and chapter3_layers!=null:return chapter3_layers.doors.collision_rects()
 	return []
+
+func _library_shelf_static_clearance(destination:Vector2)->bool:
+	# Check the entire short push against all other bodies and exact ground.
+	# Only the cabinet causing this contact is excluded from this path query.
+	var feet:Rect2=PlayerMetrics.foot_rect(player).merge(PlayerMetrics.foot_rect(destination))
+	var visual:Rect2=PlayerMetrics.visual_rect(player,display_scale_at(player)).merge(PlayerMetrics.visual_rect(destination,display_scale_at(destination)))
+	if not Rect2(Vector2.ZERO,world_size).encloses(visual):return false
+	if world_space.scene_id==scene_id and (not world_space.visual_bounds.encloses(visual) or not world_space.allows_ground(feet)):return false
+	if not mask.is_empty() and not SpatialRules.mask_allows_rect(feet,mask,mask_meta):return false
+	for obstacle:Dictionary in collisions:
+		if obstacle.get("nativeLibraryObject",false) and obstacle.get("id","")=="north_display_shelf":continue
+		if feet.intersects(_rect(library_layers.replace_collision(obstacle))):return false
+	for doorway:Rect2 in _door_collision_rects():
+		if feet.intersects(doorway):return false
+	return true
+
+func _resolve_library_shelf_contact()->bool:
+	if scene_id!="library_interior" or library_layers==null or not library_layers.objects.ready:return false
+	var current:float=float(library_layers.shelf_offset)
+	if not is_finite(_library_shelf_applied_offset):_library_shelf_applied_offset=current;return false
+	if current==_library_shelf_applied_offset:return false
+	var previous:float=_library_shelf_applied_offset
+	_library_shelf_applied_offset=current
+	var feet:Rect2=PlayerMetrics.foot_rect(player)
+	var was_legal:bool=_library_shelf_static_clearance(player)
+	var touching:=false
+	var allow_left:=true;var allow_right:=true
+	var left:=INF;var right:float=-INF
+	for obstacle:Dictionary in collisions:
+		if not obstacle.get("nativeLibraryObject",false) or obstacle.get("id","")!="north_display_shelf":continue
+		var prior:Rect2=_rect(library_layers.objects.shifted_collision(obstacle,previous))
+		if feet.intersects(prior):was_legal=false
+		if feet.position.y<prior.end.y and feet.end.y>prior.position.y:
+			allow_left=allow_left and feet.end.x<=prior.position.x
+			allow_right=allow_right and feet.position.x>=prior.end.x
+		var moved:Rect2=_rect(library_layers.replace_collision(obstacle))
+		if feet.intersects(moved):touching=true
+		if feet.position.y<moved.end.y and feet.end.y>moved.position.y:
+			left=minf(left,moved.position.x);right=maxf(right,moved.end.x)
+	if not was_legal or not touching or can_stand(player):return false
+	var distances:Array[float]=[]
+	if allow_left:distances.append(left-feet.end.x-SpatialRules.CONTACT_EPSILON)
+	if allow_right:distances.append(right-feet.position.x+SpatialRules.CONTACT_EPSILON)
+	distances.sort_custom(func(a:float,b:float):return absf(a)<absf(b))
+	for distance:float in distances:
+		var destination:=player+Vector2(distance,0)
+		if not can_stand(destination) or not _library_shelf_static_clearance(destination):continue
+		player=destination;safe_player=player
+		_cancel_floor_route();move_target=Vector2.INF
+		_sync_player();_update_camera();queue_redraw()
+		return true
+	return false
 
 func interior_door_snapshot()->Dictionary:
 	# Detached measurements for ordinary input acceptance; no mutation port.
@@ -559,6 +619,33 @@ func _try_interact(target: Dictionary = {}) -> void:
 		guard_close_requested=true
 		return
 	if action=="c3_target:theater_exit" and is_instance_valid(host_node) and host_node.has_method("_begin_theater_departure") and host_node._begin_theater_departure():return
+	if scene_id == "library_interior" and library_layers != null and library_layers.objects.ready:
+		var chair_id := str(target.get("id",""))
+		if library_layers.CHAIR_IDS.has(chair_id) and action in ["lib_catalog_terminal", "lib_sit", "library_study"]:
+			if library_layers.local_chair == chair_id:
+				if action == "library_study":
+					library_layers.leave_chair()
+					queue_redraw()
+				elif library_layers.chair_age >= library_layers.SIT_SECONDS and action == "lib_catalog_terminal":
+					State.act(action)
+				return
+			var chair: Rect2 = library_layers.objects.areas[library_layers.CHAIR_IDS[chair_id]]
+			var approach := Vector2(chair.get_center().x, chair.end.y - PlayerMetrics.FOOT_CENTER_OFFSET.y)
+			if player.y < approach.y - 12.0 or player.distance_to(approach) > 58.0:
+				State.feedback.emit("请从椅子后面靠近再坐下。")
+				return
+			_cancel_floor_route()
+			move_target = Vector2.INF
+			player_turn.clear()
+			facing = "up"
+			player_flip = false
+			walk_clock = 0.0
+			library_layers.begin_chair(chair_id, player, action if action == "lib_sit" else "")
+			if action == "lib_catalog_terminal":
+				State.feedback.emit("坐下后，点击电脑查询馆藏。")
+			queue_redraw()
+			return
+		if action != "lib_geometry_study": library_layers.leave_chair()
 	var result: Dictionary=State.act(action,target.get("value"))
 	_sync_npc_feedback()
 	if NpcFeedbackBindings.dialogue_accepted(scene_id,target,result,State.d) and _npc_feedback_visible() and not _npc_feedback_cinematic():
@@ -716,6 +803,8 @@ func _process(delta: float) -> void:
 		return
 	delta=minf(delta,.05)
 	_tick_npc_feedback(capture_delta_ms / 1000.0)
+	if library_layers!=null and library_layers.book.pulling and (not library_layers.book.matches(_library_book_context()) or not is_visible_in_tree() or _interaction_presentation_blocks() or _shell_input_blocked()):
+		library_layers.book.cancel();queue_redraw()
 	if _inventory_owns_pointer(): cancel_exploration_gestures()
 	if not kayak_mouse_gesture.is_empty() and not _kayak_mouse_valid(): kayak_mouse_gesture.clear()
 	if _floor_feedback_left>0:
@@ -732,7 +821,10 @@ func _process(delta: float) -> void:
 		if is_instance_valid(native_canteen) and native_canteen.is_active():native_canteen.sync(State.d,scene_id)
 		if scene_id in ["canteen_interior","theater_interior"]: collisions=chapter3_layers.adjusted_collisions(collisions,State.d)
 	if library_layers!=null:
+		# A canceled reveal can settle the cabinet while the world is hidden.
+		_resolve_library_shelf_contact()
 		library_layers.tick(delta,State.d)
+		_resolve_library_shelf_contact()
 		for event: Dictionary in library_layers.take_cues():
 			if is_instance_valid(host_node): host_node._library_world_presentation(str(event.id),event.get("payload",{}),library_layers)
 		# The terminal cue can hand the visible surface to its earned reader.
@@ -786,6 +878,14 @@ func _process(delta: float) -> void:
 		axis = move_target-player
 		_input_kind = "touch"
 		if axis.length() < 6: move_target = Vector2.INF; axis = Vector2.ZERO
+	if scene_id == "library_interior" and library_layers != null and not library_layers.local_chair.is_empty():
+		if axis.length_squared() > 0:
+			library_layers.leave_chair()
+		else:
+			var chair_action: String = library_layers.advance_chair(delta)
+			if not chair_action.is_empty():
+				State.act(chair_action)
+				return
 	if kayak:
 		axis = Vector2.ZERO
 		move_target = Vector2.INF
@@ -893,7 +993,10 @@ func player_visual() -> Dictionary:
 		if walk_clock<=0 and player_turn.is_empty():
 			if direction=="side" and player_side_idle!=null:texture=player_side_idle
 			elif direction=="left" and player_left_idle!=null:texture=player_left_idle
-	return {"texture":texture,"flip_h":flip,"direction":direction,"angle":float(pose.angle)}
+	var visual:Dictionary={"texture":texture,"flip_h":flip,"direction":direction,"angle":float(pose.angle)}
+	if scene_id=="library_interior" and library_layers!=null and library_layers.animations.ready:
+		visual.merge(library_layers.animations.actor(direction,flip,walk_clock*1000,walk_clock>0 and player_turn.is_empty()),true)
+	return visual
 
 func player_geometry() -> Dictionary:
 	var actor:=player_visual()
@@ -1003,7 +1106,14 @@ func _pick_target(point: Vector2, inventory_drop: bool=false) -> Dictionary:
 	return object_picker.pick(point,targets,inventory_drop)
 
 func _render_context() -> Dictionary:
-	return {"origin":size/2-camera*zoom,"zoom":zoom,"player":player,"player_ground_y":_ground_y(player),"scene_id":scene_id,"floor":_last_floor,"nearby_id":str(nearby.get("id","")),"background":background,"mode_mix":mode_mix,"actor_occluders":_actor_occluders()}
+	var ground := _ground_y(player)
+	var seated_chair := ""
+	if scene_id == "library_interior" and library_layers != null:
+		var chair_pose: Dictionary = library_layers.local_chair_pose()
+		if not chair_pose.is_empty():
+			ground = lerpf(ground, chair_pose.depth, chair_pose.settle)
+			if chair_pose.settle > 0.5: seated_chair = chair_pose.chair
+	return {"origin":size/2-camera*zoom,"zoom":zoom,"player":player,"player_ground_y":ground,"seated_chair":seated_chair,"scene_id":scene_id,"floor":_last_floor,"nearby_id":str(nearby.get("id","")),"background":background,"mode_mix":mode_mix,"actor_occluders":_actor_occluders()}
 
 func _actor_occluders()->Array:
 	# Native furniture owns its own shared actor planes; the retained source
@@ -1133,23 +1243,45 @@ func _draw_base_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	if chapter3_layers!=null: chapter3_layers.draw_back(canvas,layer_context,State.d)
 	if library_layers!=null: library_layers.draw_back(canvas,layer_context,State.d)
 	library_door.draw(canvas,layer_context,false)
+	if library_layers!=null:library_layers.draw_entrance(canvas,layer_context,false)
 func _draw_actor_pass(canvas: CanvasItem,layer_context: Dictionary,defer_foreground:bool=false) -> void:
 	var origin: Vector2=layer_context.origin
 	north_objects.draw_objects(canvas,layer_context,false)
 	var actor:Dictionary=player_visual()
+	var drawn_player:Vector2=player
+	var seated_fraction := 0.0
+	var seated_art := false
+	var chair_pose: Dictionary = library_layers.local_chair_pose() if scene_id == "library_interior" and library_layers != null else {}
+	if not chair_pose.is_empty():
+		drawn_player = chair_pose.point
+		seated_fraction = chair_pose.settle
+		var idle: Texture2D = library_layers.animations.idles.get("up", player_frames.get("up", [null])[0])
+		seated_art = seated_fraction >= 0.5 and library_layers.animations.seated != null
+		actor = {"texture":library_layers.animations.seated if seated_art else idle, "flip_h":false, "angle":0.0}
+	elif scene_id=="library_interior" and library_layers!=null and library_layers.objects.ready and library_layers.motion.sit_ms>=0:
+		drawn_player=library_layers.motion.actor_pose(player).point
+		if not player_frames.get("up",[]).is_empty():actor={"texture":player_frames.up[0],"flip_h":false,"angle":0.0}
 	var ordered_targets: Array=_ordered_targets()
 	for target in ordered_targets:
 		if not _target_in_front(target): _draw_target(target,origin,canvas)
 	if not presentation_actor_hidden and not kayak and actor.texture!=null:
 		var frame:Texture2D=actor.texture
-		var visual: Rect2 = PlayerMetrics.visual_rect(player,display_scale_at(player))
-		draw_ellipse_shadow(origin+(player+Vector2(0,39))*zoom,Vector2(19,6)*zoom,canvas)
+		var visual: Rect2 = PlayerMetrics.visual_rect(drawn_player,display_scale_at(player))
+		var shadow_scale:=display_scale_at(player)/PlayerMetrics.DISPLAY_SCALE if scene_id=="library_interior" else 1.0
+		if seated_fraction < 0.5:
+			draw_ellipse_shadow(origin+(drawn_player+Vector2(0,39))*zoom,Vector2(19,6)*zoom*shadow_scale,canvas)
 		var actor_ids: Array=[]
 		for target: Dictionary in targets:
 			if target.get("follow_player",false): actor_ids.push_front(str(target.id))
 		if not actor_ids.is_empty(): register_object_surface(actor_ids,player_geometry())
-		canvas.draw_set_transform(origin+player*zoom,deg_to_rad(float(actor.angle)),Vector2.ONE*zoom)
-		canvas.draw_texture_rect(frame,Rect2(visual.position-player,Vector2(-visual.size.x,visual.size.y) if actor.flip_h else visual.size),false)
+		canvas.draw_set_transform(origin+drawn_player*zoom,deg_to_rad(float(actor.angle)),Vector2.ONE*zoom)
+		if seated_fraction > 0.0:
+			var visible_fraction := 1.0 if seated_art else 1.0 - 0.25 * seated_fraction
+			var source_rect := Rect2(Vector2.ZERO, frame.get_size() * Vector2(1.0, visible_fraction))
+			var seated_rect := Rect2(visual.position - drawn_player + Vector2(0, -9.0 * seated_fraction), visual.size * Vector2(1.0, visible_fraction))
+			canvas.draw_texture_rect_region(frame, seated_rect, source_rect)
+		else:
+			canvas.draw_texture_rect(frame,Rect2(visual.position-drawn_player,Vector2(-visual.size.x,visual.size.y) if actor.flip_h else visual.size),false)
 		canvas.draw_set_transform(Vector2.ZERO)
 	if defer_foreground:_draw_actor_foreground_prefix(canvas,layer_context)
 	else:_draw_actor_foreground(canvas,layer_context)
@@ -1198,6 +1330,7 @@ func _draw_actor_foreground_suffix(canvas: CanvasItem,layer_context: Dictionary)
 	if chapter3_layers!=null: chapter3_layers.draw_landmarks(canvas,layer_context,State.d)
 	if library_layers!=null: library_layers.draw_front(canvas,layer_context,State.d)
 	library_door.draw(canvas,layer_context,true)
+	if library_layers!=null:library_layers.draw_entrance(canvas,layer_context,true)
 func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	var origin: Vector2=layer_context.origin
 	if lake_session!=null: lake_session.draw(canvas,origin,zoom,bool(State.d.native.settings.reduced_motion))
@@ -1219,6 +1352,15 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 		if is_instance_valid(overflow_feedback):overflow_feedback.hide()
 		if transition_alpha>0:canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(.04,.08,.12,transition_alpha))
 		return
+	if scene_id=="library_interior" and library_layers!=null:
+		var receiver:=Rect2()
+		if is_instance_valid(host_node):
+			var handle:Control=host_node.get("inventory_handle")
+			var surface:Control=host_node.get("world_view")
+			if is_instance_valid(handle) and handle.is_visible_in_tree() and is_instance_valid(surface):
+				var surface_rect:Rect2=surface.get_global_rect()
+				if surface_rect.has_area():receiver=Rect2((handle.get_global_rect().position-surface_rect.position)*size/surface_rect.size,handle.get_global_rect().size*size/surface_rect.size)
+		library_layers.draw_feedback(canvas,layer_context,size,receiver)
 	if scene_id=="campus_bootstrap":
 		var campus_visible:=exploration_safe_rect()
 		CampusWayfinding.draw_label(canvas,layer_context,font,hud_display_scale(),campus_visible)
@@ -1395,6 +1537,7 @@ func _gui_input(event: InputEvent) -> void:
 	if is_instance_valid(native_dorm):native_dorm.observe_input(event)
 	if capture_mode or _scene_presentation_blocks() or _shell_input_blocked(): return
 	if is_instance_valid(host_node) and is_instance_valid(host_node.get("world_effect")) and host_node.world_effect.get_meta("blocks_input",false): return
+	if _library_book_input(event):accept_event();return
 	if _kayak_mouse_input(event): accept_event(); return
 	if (mobile_exploration or touch_controls or event is InputEventScreenTouch or event is InputEventScreenDrag) and _mobile_exploration_input(event): return
 	if event is InputEventMouseMotion and (event.button_mask & MOUSE_BUTTON_MASK_RIGHT or event.button_mask & MOUSE_BUTTON_MASK_MIDDLE):
@@ -1427,6 +1570,55 @@ func _gui_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
 		_try_interact()
 		accept_event()
+
+func _library_book_context()->Array:
+	return _direct_gesture_context()+[player,State.d.native.mode,State.d.ui.libraryFinalsPhase]
+
+func _library_book_input(event:InputEvent)->bool:
+	if scene_id!="library_interior" or library_layers==null or not library_layers.objects.ready:return false
+	var id:=-999
+	var pressed:=false
+	var released:=false
+	var canceled:=false
+	if event is InputEventMouse:
+		if event.device==-1:return false
+		if event is InputEventMouseButton:
+			if event.button_index!=MOUSE_BUTTON_LEFT:return false
+			pressed=event.pressed;released=not pressed
+	elif event is InputEventScreenTouch:
+		id=event.index;pressed=event.pressed;released=not pressed;canceled=event.canceled
+	elif event is InputEventScreenDrag:id=event.index
+	else:return false
+	var book:RefCounted=library_layers.book
+	if book.pulling and id!=book.pointer_id:
+		if pressed:book.cancel();queue_redraw();return true
+		return false
+	var point:Vector2=(event.position-size/2)/zoom+camera
+	var target:Dictionary={}
+	for candidate:Dictionary in targets:
+		if candidate.id=="library_shelf_755":target=candidate;break
+	if book.pulling:
+		if canceled or not Rect2(Vector2.ZERO,size).has_point(event.position) or not is_visible_in_tree() or _interaction_presentation_blocks() or _shell_input_blocked() or not book.matches(_library_book_context()):
+			book.cancel();queue_redraw();return true
+		if released:
+			var extracted:bool=book.finish(point)
+			if extracted and not target.is_empty():
+				State.select_item("callNumber755")
+				_try_interact(target)
+			elif not extracted:State.feedback.emit("按住755号书的书脊，向下抽出。")
+		else:book.drag(point)
+		queue_redraw();return true
+	if not pressed or not book.available() or target.is_empty():return false
+	var hit:Rect2=book.geometry(library_layers.objects,library_layers.shelf_offset).rect.grow(10)
+	if not hit.has_point(point):return false
+	if State.d.native.mode!="light":
+		State.feedback.emit("切换到浅色操作，再向下抽出这本书。");return true
+	if _distance(target)>float(target.radius):
+		if _queue_target_approach(target):_floor_pending_interaction.clear()
+		return true
+	cancel_exploration_gestures()
+	book.begin(id,point,_library_book_context())
+	grab_focus();queue_redraw();return true
 
 func _get_drag_data(at_position: Vector2) -> Variant:
 	if capture_mode or _interaction_presentation_blocks() or _shell_input_blocked() or chapter4_layers == null or scene_id != "duan_yongping_temporal_maze": return null
@@ -1668,6 +1860,7 @@ func _notification(what: int) -> void:
 
 func cancel_exploration_gestures() -> void:
 	_cancel_table_drag()
+	if library_layers!=null:library_layers.book.cancel()
 	touch_axis=Vector2.ZERO;move_target=Vector2.INF
 	mobile_confirmed_target_id="";mobile_confirmed_world_key=""
 	if direct_gestures!=null:direct_gestures.cancel()
@@ -1759,6 +1952,11 @@ func _mobile_local_from_root(point: Vector2) -> Vector2:
 func handle_root_exploration_pointer(event: InputEvent) -> bool:
 	# GUI owns acquisition. Capture only an existing scene pointer; inventory,
 	# native furniture dragging and modal presses retain their original owner.
+	if library_layers!=null and library_layers.book.pulling:
+		var book_event:InputEvent=event.duplicate()
+		if book_event is InputEventMouse or book_event is InputEventScreenTouch or book_event is InputEventScreenDrag:
+			book_event.position=_mobile_local_from_root(event.position)
+			return _library_book_input(book_event)
 	var id:int=-999
 	if event is InputEventScreenTouch or event is InputEventScreenDrag:
 		if event is InputEventScreenTouch and event.pressed:return false
@@ -1888,6 +2086,11 @@ func _floor_anchor_bounds(visible: Rect2) -> Rect2:
 	return Rect2(visible.position-feet.position,visible.size-feet.size)
 
 func _floor_obstacles() -> Array:
+	# The separated library contains real chair/pot bases instead of a few
+	# oversized furniture boxes. Preserve every base while budgeting its graph.
+	var library_objects:bool=scene_id=="library_interior" and library_layers!=null and library_layers.objects.ready
+	_floor_planner.corner_limit=320 if library_objects else MobileFloorRoute.MAX_CORNERS
+	_floor_planner.edge_limit=8192 if library_objects else MobileFloorRoute.MAX_EDGES
 	var feet:=PlayerMetrics.foot_rect(Vector2.ZERO)
 	var native_furniture:bool=is_instance_valid(native_canteen) and native_canteen.is_active()
 	# Append route-local doors/voids without mutating the native geometry cache.

@@ -1,0 +1,33 @@
+{
+  "tool": "built-in image_gen",
+  "model_exposed": false,
+  "requested_model": "image2.6",
+  "outputs": {
+    "walk_side": {
+      "original": "originals/walk_side.png",
+      "sha256": "1559a16a130abca5db7f0e0742e65a82fb4af6ad1d868a6869763ebaa068bb5e",
+      "generated_filename": "exec-a19e12e9-8647-4652-a9cc-17f4c31de0ce.png"
+    },
+    "walk_down": {
+      "original": "originals/walk_down.png",
+      "sha256": "516872b07e4170480e4462bfc5a82763b57385b12f40c22f4631063ec1d84368",
+      "generated_filename": "exec-7ef6ce6a-917a-4863-a98b-b30a344a6ebc.png"
+    },
+    "walk_up": {
+      "original": "originals/walk_up.png",
+      "sha256": "44d0da4557702f3d178cc587ba7ed3a424563fb056ba980cad8aec233a348c8b",
+      "generated_filename": "exec-fb1855c0-a486-4fcf-bcd3-6f2a8a8f01d2.png"
+    },
+    "library_book": {
+      "original": "originals/library_book.png",
+      "sha256": "10b3b5c807d291b6bd522fdba174aa0dd9f291e5b8af7209253778d13866eaa1",
+      "generated_filename": "exec-2a6ac741-af05-4a1d-abef-54711da65097.png"
+    },
+    "player_seated": {
+      "original": "originals/player_seated.png",
+      "sha256": "056f3cbb0862163723450ccfd9011cd7727233de40380b725b046d8b65de9225",
+      "generated_filename": "exec-a924a80b-1dc2-456a-89ed-4665a2d1b774.png",
+      "reference": "player_up_idle.png"
+    }
+  }
+}
