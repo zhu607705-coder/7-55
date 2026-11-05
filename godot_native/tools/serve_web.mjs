@@ -20,7 +20,7 @@ function quality(header,name) {
 }
 function mime(file) {
   if(/^boot\/index-wasm-\d{4}-[a-f0-9]{16}\.bin$/.test(file))return 'application/wasm';
-  return ({'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.wasm':'application/wasm','.pck':'application/octet-stream','.bin':'application/octet-stream','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp','.jpg':'image/jpeg','.woff2':'font/woff2','.ogv':'video/ogg','.ogg':'audio/ogg','.mp3':'audio/mpeg','.txt':'text/plain; charset=utf-8'})[path.extname(file)]||'application/octet-stream';
+  return ({'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.wasm':'application/wasm','.pck':'application/octet-stream','.bin':'application/octet-stream','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp','.jpg':'image/jpeg','.woff2':'font/woff2','.ogv':'video/ogg','.mp4':'video/mp4','.ogg':'audio/ogg','.mp3':'audio/mpeg','.txt':'text/plain; charset=utf-8'})[path.extname(file)]||'application/octet-stream';
 }
 export function createWebServer({directory}) {
   const root=fs.realpathSync(directory);

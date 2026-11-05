@@ -34,7 +34,9 @@ const limits = { siteBytes: 950_000_000, packBytes: 800_000_000, wasmBytes: 70_0
 const deliveryTools = ['tools/web_button_material.mjs', 'tools/build_web.mjs', 'tools/managed_validation_process.mjs', 'tools/build_panorama_tiles.mjs', 'tools/convert_media.sh', 'tools/media_conversion_cache.cjs', 'tools/resource_import_cache.mjs', 'tools/plan_web_content.mjs', 'tools/partition_web_pack.mjs', 'tools/partition_web_pack.gd', 'tools/web_content_delivery.mjs', 'tools/web_content_chunks.mjs', 'tools/web_story_content_policy.mjs', 'tools/web_boot_chunks.mjs', 'tools/web_audio_compat.mjs', 'tools/web_boot_typography.mjs', 'tools/web_precompress.mjs', 'tools/serve_web.mjs'];
 const bootArtSource = 'web/boot_art/morning_room.webp';
 const bootArtPlaceholder = '__755_BOOT_ART_MORNING_ROOM__';
-const browserSources = [buttonMaterialSource, 'web/index.html', 'web/player-account.js', 'web/cloud-saves.js', 'web/content_loader.js', 'web/scene_orientation.js', 'web/boot_intro.js', 'web/boot_art/.gdignore', bootArtSource, ...bootTypographySources];
+const stagePreviewDirectory = 'liangzhu-trailer';
+const stagePreviewFiles = ['index.html', 'poster.jpg', 'voiced.mp4', 'score.mp4'];
+const browserSources = [...stagePreviewFiles.map(file => `web/${stagePreviewDirectory}/${file}`), buttonMaterialSource, 'web/index.html', 'web/player-account.js', 'web/cloud-saves.js', 'web/content_loader.js', 'web/scene_orientation.js', 'web/boot_intro.js', 'web/boot_art/.gdignore', bootArtSource, ...bootTypographySources];
 // Exports are hosting artifacts, not editor resources. Git ignores do not stop
 // Godot's resource scanner from creating sidecars inside immutable site output.
 // Establish the parent boundary before the editor/import/export process runs.
@@ -243,6 +245,11 @@ if (!verifyOnly) {
   inlineBootPresentation();
   inlineButtonMaterial(project, output);
   copyBootPresentationAssets();
+  const stagePreviewOutput = path.join(output, stagePreviewDirectory);
+  fs.mkdirSync(stagePreviewOutput, { recursive: true });
+  for (const file of stagePreviewFiles) {
+    fs.copyFileSync(path.join(project, 'web', stagePreviewDirectory, file), path.join(stagePreviewOutput, file));
+  }
   installBootTypography(project, output);
   bindScript('index.js');
   // Validate the complete Godot export before assigning any resources to packs.
@@ -319,7 +326,12 @@ if (files.some(file => /service\.worker|\.worker\.js$|\.side\.wasm$/.test(file.p
 const siteBytes = files.reduce((total, file) => total + file.bytes, 0);
 // Hosted originals duplicate their static transport chunks. Count both in the
 // hosting budget, and count only chunks in the player's initial transfer.
-const initialFiles = files.filter(file => !file.path.endsWith('.gz') && !file.path.startsWith('content/') && file.path !== 'content-inventory.json' && (!boot || !['index.pck', 'index.wasm'].includes(file.path)));
+for (const file of stagePreviewFiles) {
+  const relative = `${stagePreviewDirectory}/${file}`;
+  const hosted = files.find(row => row.path === relative);
+  if (!hosted || hosted.sha256 !== fileSha256(path.join(project, 'web', relative))) throw new Error(`Stage preview differs from the source: ${relative}`);
+}
+const initialFiles = files.filter(file => !file.path.startsWith(stagePreviewDirectory + '/') && !file.path.endsWith('.gz') && !file.path.startsWith('content/') && file.path !== 'content-inventory.json' && (!boot || !['index.pck', 'index.wasm'].includes(file.path)));
 const initialPayloadBytes = initialFiles.reduce((sum, file) => sum + file.bytes, 0);
 const gzipBySource = new Map((transportCompression?.files ?? []).map(file => [file.source, file]));
 const initialGzipPayloadBytes = initialFiles.reduce((sum, file) => sum + (gzipBySource.get(file.path)?.bytes ?? file.bytes), 0);
