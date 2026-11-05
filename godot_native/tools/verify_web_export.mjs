@@ -575,13 +575,15 @@ async function assertLayout(label) {
   return geometry;
 }
 async function settings() { await press('F10'); await poll(async () => controls(await snapshot()).some(c => c.text === '导入存档'), 'settings opened'); }
-async function importSave(filename) {
+async function importSave(filename, { expectedPage } = {}) {
   const bytes = await readFile(filename); const envelope = JSON.parse(bytes); check(envelope.format === '7-55-godot-native' && envelope.version === 1 && envelope.state, `ordinary native portable envelope: ${path.basename(filename)}`);
   const beforeImport = await snapshot();
   await settings(); await clickControl('导入存档');
   const document = await active.cdp.send('DOM.getDocument', { depth: 0 }); const input = await active.cdp.send('DOM.querySelector', { nodeId: document.root.nodeId, selector: '#godot-save-import' }); check(input.nodeId > 0, 'shipped save file picker input exists');
   await active.cdp.send('DOM.setFileInputFiles', { nodeId: input.nodeId, files: [path.resolve(filename)] });
-  const expected = envelope.state.native;
+  // Legacy routes may migrate. The scenario must explicitly name the expected
+  // destination; every other import retains the portable file route contract.
+  const expected = { ...envelope.state.native, page: expectedPage ?? envelope.state.native.page };
   const changedRoute = expected.chapter !== state(beforeImport).native.chapter || expected.page !== state(beforeImport).native.page || expected.scene !== state(beforeImport).native.scene;
   const s = await poll(async () => {
     const s = await snapshot(); const complete = changedRoute || s?.saveDigest !== beforeImport.saveDigest || controls(s).some(c => /存档已导入/.test(c.text)) || /存档已导入/.test(s?.world?.subtitle || '');

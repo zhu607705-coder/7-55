@@ -101,6 +101,26 @@ func run() -> void:
  check(symbol.get_theme_color("font_color").a==0,"flat state does not reveal duplicate native symbol text")
  check(symbol.get_node("NativeSymbolIcon").ink==Color.WHITE,"symbol keeps authored ink")
  symbol.queue_free();await frames()
+ # Both shared frame back and C35 intro use this custom navigation subclass.
+ var app_frame=load("res://scripts/ui/phone_app_frame.gd")
+ var audit=load("res://tests/capture_ui_redesign.gd")
+ for back_name: String in ["PhoneAppBack","C35IntroBack"]:
+  var page: Control
+  if back_name=="PhoneAppBack":page=app_frame.new()
+  else:page=load("res://scripts/ui/chapter3_phone_pages.gd").new().recovery_intro()
+  phone.add_child(page);await frames()
+  var back: Button=page.find_child(back_name,true,false)
+  check(back.get_node_or_null("TactileMaterialState")!=null,"custom navigation declares UI ownership: "+back_name)
+  check(audit.button_material_contract(back).valid,"actual navigation passes material audit: "+back_name)
+  check(back.size==Vector2(44,44),"navigation preserves target geometry: "+back_name)
+  for mode: String in ["normal","hover","pressed","hover_pressed","disabled","focus"]:
+   var bound: StyleBox=back.get_theme_stylebox(mode)
+   check(bound is Flat,"navigation uses flat native state: "+back_name+"/"+mode)
+   # Inspect before the deferred adapter repair: a broken state must fail.
+   back.add_theme_stylebox_override(mode,StyleBoxEmpty.new())
+   check(not audit.button_material_contract(back).valid,"audit rejects broken state: "+back_name+"/"+mode)
+   back.add_theme_stylebox_override(mode,bound)
+  page.queue_free();await frames()
  # Normal, keyboard, pointer and disabled actions remain native.
  button=make_button(phone);await frames();button.pressed.connect(func():activations+=1);button.grab_focus()
  for down: bool in [true,false]:
