@@ -17,6 +17,7 @@ var status: String="idle"
 var frame: int=0
 var elapsed: float=0.0
 var paused: bool=false
+var _skip_resume_frame:=false
 var reduced_motion: bool=false
 var skipped: bool=false
 var generation: int=0
@@ -24,7 +25,6 @@ var manual_clock: bool=false
 var touch_buttons: Dictionary={}
 var _layout_size:=Vector2.ZERO
 var skip_button: Button
-var pause_button: Button
 var exit_button: Button
 var caption: Label
 class Film extends Control:
@@ -49,7 +49,6 @@ func _ready() -> void:
 	caption.add_theme_font_override("font",_font)
 	caption.add_theme_color_override("font_color",Color("eff4e8"))
 	add_child(caption)
-	pause_button=_button("暂停",func():set_paused(not paused))
 	skip_button=_button("跳过动画",skip)
 	exit_button=_button("退出",cancel)
 	resized.connect(_layout)
@@ -68,7 +67,7 @@ func play(next_stage: String, retry: bool=false, reduce: bool=false) -> bool:
 	if next_stage not in ["start","finish"]:return false
 	generation+=1
 	stage=next_stage;status="playing";frame=0;elapsed=0
-	paused=false;reduced_motion=reduce;skipped=retry and stage=="start"
+	paused=false;_skip_resume_frame=false;reduced_motion=reduce;skipped=retry and stage=="start"
 	show();_layout();grab_focus()
 	if reduced_motion or skipped:
 		frame=last_frame();elapsed=source_frame_seconds(frame)
@@ -84,6 +83,7 @@ func _process(delta: float) -> void:
 ## Visible time only; no catch-up after minimisation. Explicitly driven in tests.
 func advance(delta: float) -> void:
 	if status!="playing" or paused or not is_finite(delta) or delta<=0:return
+	if _skip_resume_frame:_skip_resume_frame=false;return
 	elapsed+=minf(delta,0.25)
 	frame=mini(last_frame(),int(floor(source_frame_position(elapsed)+0.00001)))
 	_redraw()
@@ -100,8 +100,8 @@ func skip() -> void:
 func set_paused(value: bool) -> void:
 	if status!="playing" or paused==value:return
 	paused=value
+	if not value:_skip_resume_frame=true
 	touch_buttons.clear()
-	if is_instance_valid(pause_button):pause_button.text="继续" if paused else "暂停"
 	pause_changed.emit(paused);_redraw()
 
 func cancel() -> void:
@@ -126,13 +126,14 @@ func _complete_generation(expected: int,allow_paused: bool=false) -> void:
 
 func _notification(what: int) -> void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_WM_WINDOW_FOCUS_OUT]:set_paused(true)
+	elif what in [NOTIFICATION_APPLICATION_FOCUS_IN,NOTIFICATION_WM_WINDOW_FOCUS_IN]:set_paused(false)
 
 func _input(event: InputEvent) -> void:
 	if not visible or status not in ["playing","failed"]:return
 	if event is InputEventScreenTouch:
 		var point: Vector2=get_global_transform_with_canvas().affine_inverse()*event.position
 		if event.pressed:
-			for button: Button in [pause_button,skip_button,exit_button]:
+			for button: Button in [skip_button,exit_button]:
 				if button.visible and not button.disabled and button.get_rect().has_point(point):
 					touch_buttons[event.index]=button;get_viewport().set_input_as_handled();return
 		elif touch_buttons.has(event.index):
@@ -142,8 +143,7 @@ func _input(event: InputEvent) -> void:
 		return
 	if status!="playing":return
 	if event is InputEventKey and event.pressed and not event.echo:
-		if event.physical_keycode==KEY_ESCAPE:set_paused(not paused);get_viewport().set_input_as_handled()
-		elif event.physical_keycode==KEY_ENTER:skip();get_viewport().set_input_as_handled()
+		if event.physical_keycode==KEY_ENTER:skip();get_viewport().set_input_as_handled()
 
 func _layout() -> void:
 	if not is_instance_valid(caption):return
@@ -153,16 +153,15 @@ func _layout() -> void:
 	var mobile: bool=size.x<600
 	var button_y: float=maxf(0,size.y-60)
 	var gap: float=10
-	var bw: float=minf(140,(size.x-40-2*gap)/3)
-	var left: float=(size.x-(bw*3+gap*2))/2
-	for pair: Array in [[pause_button,0],[skip_button,1],[exit_button,2]]:
+	var bw: float=minf(180,(size.x-40-gap)/2)
+	var left: float=(size.x-(bw*2+gap))/2
+	for pair: Array in [[skip_button,0],[exit_button,1]]:
 		pair[0].position=Vector2(left+(bw+gap)*pair[1],button_y)
 		pair[0].size=Vector2(bw,46)
 	caption.position=Vector2(16,maxf(8,button_y-66 if mobile else button_y-47))
 	caption.size=Vector2(maxf(1,size.x-32),56 if mobile else 36)
 	caption.add_theme_font_size_override("font_size",16 if mobile else 19)
 	caption.text="纸条沿主干道飞走。" if stage=="start" else "755 米骑行完成，纸条钻进剧院。"
-	pause_button.text="继续" if paused else "暂停"
 	_redraw()
 
 ## Same full-scene sizing seam as the live chase; controls stay physical pixels.

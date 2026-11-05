@@ -1,4 +1,6 @@
 extends Control
+const SharedPauseOverlay = preload("res://scripts/ui/native_pause_overlay.gd")
+var shared_pause_overlay
 signal finished(result: Dictionary)
 signal cancelled
 signal presentation_requested(id: String, payload: Dictionary)
@@ -15,6 +17,9 @@ var config: Dictionary={}
 var model: RefCounted
 var running: bool=false
 var paused: bool=false
+var _lifecycle_suspended:=false
+var _playback_suspended:=false
+var _skip_lifecycle_frame:=false
 var sent: bool=false
 var accumulator: float=0
 var retry_wait: float=0
@@ -78,6 +83,7 @@ func pickup_pose()->Dictionary:
 
 
 func _ready() -> void:
+	shared_pause_overlay = SharedPauseOverlay.mount(self, _resume_shared_pause)
 	mouse_filter=Control.MOUSE_FILTER_STOP
 	clip_contents=true
 	background=load("res://assets/rpg/interiors/canteen_interior.png")
@@ -210,21 +216,36 @@ func restart() -> void:
 		start_button.hide()
 	refresh()
 
+func supports_player_pause() -> bool:
+	return model!=null and running and not sent and not _pickup_active and model.status=="running"
+
+func _sync_playback_suspension() -> void:
+	var blocked:=paused or _lifecycle_suspended
+	if blocked==_playback_suspended:return
+	_playback_suspended=blocked
+	presentation_requested.emit("native_activity_paused" if blocked else "native_activity_resumed",{"prefixes":["canteen_defense_","canteen_pickup_","canteen_paper_package_","canteen_paper_burst_","canteen_paper_camera_"]})
+
 func toggle_pause() -> void:
-	if not running and not _pickup_active: return
+	if not supports_player_pause() and not paused: return
 	paused=not paused
-	presentation_requested.emit("native_activity_paused" if paused else "native_activity_resumed",{"prefixes":["canteen_defense_","canteen_pickup_","canteen_paper_package_","canteen_paper_burst_","canteen_paper_camera_"]})
+	_sync_playback_suspension()
 	clear_input()
 	start_button.text="继续拦截"
-	start_button.visible=paused
+	start_button.visible=false
 	refresh()
 
 func _notification(what: int) -> void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_WM_WINDOW_FOCUS_OUT]:
+		_lifecycle_suspended=true
 		clear_input()
-		if (running or _pickup_active) and not paused: toggle_pause()
+		if supports_player_pause() and not paused:toggle_pause()
+		_sync_playback_suspension()
+	elif what in [NOTIFICATION_APPLICATION_FOCUS_IN,NOTIFICATION_WM_WINDOW_FOCUS_IN]:
+		if _lifecycle_suspended:_skip_lifecycle_frame=true
+		_lifecycle_suspended=false;_sync_playback_suspension()
 
 func _input(event: InputEvent) -> void:
+	if is_instance_valid(shared_pause_overlay) and shared_pause_overlay.is_open(): return
 	if not visible or not model: return
 	if event is InputEventKey and not event.echo:
 		var code: int=event.physical_keycode
@@ -273,6 +294,7 @@ func _input(event: InputEvent) -> void:
 		if mouse_stick: mouse_stick=false; touch_direction=Vector2.ZERO
 
 func _gui_input(event: InputEvent) -> void:
+	if is_instance_valid(shared_pause_overlay) and shared_pause_overlay.is_open(): return
 	if not running or paused or not model or model.status!="running": return
 	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and event.device!=-1 and event.pressed:
 		if compact_layout and event.position.distance_to(stick_center)<72:
@@ -294,6 +316,9 @@ func _pointer_source(point: Vector2) -> Vector2:
 	return (point-board_view.position-view.offset)/view.zoom
 
 func _process(delta: float) -> void:
+	_sync_shared_pause()
+	if _lifecycle_suspended:return
+	if _skip_lifecycle_frame:_skip_lifecycle_frame=false;return
 	if _pickup_active:
 		if not paused: _pickup_tick(minf(delta,.1)*1000)
 		queue_redraw(); return
@@ -340,6 +365,8 @@ func _process(delta: float) -> void:
 	refresh()
 
 func refresh() -> void:
+	_sync_playback_suspension()
+	_sync_shared_pause()
 	if not model or not is_instance_valid(timer): return
 	timer.text="守住出口  %02d 秒     拦回 %d 次     %s"%[int(ceil(maxf(0,60000-model.elapsed_ms)/1000)),model.turnarounds,"冲刺就绪" if model.dash_cooldown<=0 else "冲刺冷却 %.1fs"%(model.dash_cooldown/1000)]
 	if compact_layout:
@@ -350,18 +377,19 @@ func refresh() -> void:
 	if compact_layout: hint.text="左摇杆移动 · 右侧冲刺"
 	if model.status=="lost": hint.text="纸条从%s溜走了。准备重新拦截"%{"northwest":"左上门","south_gap":"左中下通道","southeast":"右下门"}[model.failure_exit]
 	if sent: hint.text="" # Authored victory dialogue belongs to the scene queue after this beat.
-	if paused: hint.text="已暂停，计时与纸条位置已冻结"
+	if paused: hint.text=""
 	var subtitle:=pickup_subtitle()
 	if _pickup_active:
 		title.text="食堂 · 取餐窗口"
 		timer.text=""
-		hint.text=subtitle if not subtitle.is_empty() else ("已暂停" if paused else "")
+		hint.text=subtitle if not subtitle.is_empty() else ""
 		dash_button.hide();retry_button.disabled=true
 	else:
 		title.text="食堂 · 守住出口";retry_button.disabled=false
 	if not subtitle.is_empty(): hint.text=subtitle
 	queue_redraw()
 	if is_instance_valid(board_view): board_view.queue_redraw(); overview.queue_redraw()
+	_sync_shared_pause()
 
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO,size if compact_layout else Vector2(960,540)),Color("111d25"))
@@ -382,10 +410,10 @@ func _draw() -> void:
 		draw_circle(Vector2(98,450),66,Color(0.025,0.07,0.09,0.7))
 		draw_arc(Vector2(98,450),56,0,TAU,40,Color(0.65,0.89,0.9,0.65),2)
 		draw_circle(Vector2(98,450)+touch_direction*40,20,Color(0.73,0.9,0.9,0.8))
-	if not running or paused or sent:
+	if (not running or sent) and not paused:
 		draw_rect(Rect2(255,171,450,201),Color(0.03,0.08,0.1,0.96))
 		if font:
-			draw_string(font,Vector2(279,215),"守住了！" if sent else ("已暂停" if paused else "别让纸条钻出食堂"),HORIZONTAL_ALIGNMENT_CENTER,402,27,Color("fff4c9"))
+			draw_string(font,Vector2(279,215),"守住了！" if sent else "别让纸条钻出食堂",HORIZONTAL_ALIGNMENT_CENTER,402,27,Color("fff4c9"))
 			draw_string(font,Vector2(270,263),"推车碰到纸条，它就会改换出口",HORIZONTAL_ALIGNMENT_CENTER,420,19,Color("94e0e3"))
 
 func _draw_board(canvas: CanvasItem,offset: Vector2,zoom: float,viewport: Vector2=Vector2(960,540)) -> void:
@@ -419,9 +447,8 @@ func _draw_paper(canvas: CanvasItem,board_transform: Transform2D) -> void:
 
 func _draw_pickup(canvas:CanvasItem,viewport:Rect2)->void:
 	if pickup_view!=null:pickup_view.draw(canvas,viewport,pickup_pose())
-	if paused:
-		canvas.draw_rect(Rect2(viewport.get_center()-Vector2(100,44),Vector2(200,88)),Color(.03,.08,.1,.92))
-		if font:canvas.draw_string(font,viewport.get_center()+Vector2(-90,-7),"已暂停",HORIZONTAL_ALIGNMENT_CENTER,180,22,Color("fff4c9"))
+	# SharedPauseOverlay owns the paused presentation.
+
 
 func _exit_tree() -> void:
 	defense_effects.reset()
@@ -517,11 +544,11 @@ func draw_board_view(view: Control,is_overview: bool) -> void:
 		view.draw_rect(Rect2(close_view.source.position*metrics.zoom+metrics.offset,close_view.source.size*metrics.zoom),Color(.8,.95,1,.85),false,1.5)
 		view.draw_circle(model.player*metrics.zoom+metrics.offset,5,Color(.4,.85,1,.9),false,1.5)
 		view.draw_circle(model.paper*metrics.zoom+metrics.offset,5,Color(1,.95,.75,.9),false,1.5)
-	elif not running or paused or sent:
+	elif (not running or sent) and not paused:
 		var area:=Rect2(6,maxf(0,view.size.y/2-66),view.size.x-12,164)
 		view.draw_rect(area,Color(.03,.08,.1,.96))
 		if font:
-			view.draw_string(font,Vector2(area.position.x+6,area.position.y+34),"守住了！" if sent else ("已暂停" if paused else "别让纸条钻出食堂"),HORIZONTAL_ALIGNMENT_CENTER,area.size.x-12,20,Color("fff4c9"))
+			view.draw_string(font,Vector2(area.position.x+6,area.position.y+34),"守住了！" if sent else "别让纸条钻出食堂",HORIZONTAL_ALIGNMENT_CENTER,area.size.x-12,20,Color("fff4c9"))
 			view.draw_string(font,Vector2(area.position.x+6,area.position.y+66),"推车碰到纸条，它就会改换出口",HORIZONTAL_ALIGNMENT_CENTER,area.size.x-12,16,Color("94e0e3"))
 
 func owns_pickup_subtitle(text: String) -> bool:
@@ -548,3 +575,26 @@ func _pickup_tick(milliseconds: float) -> void:
 		if compact_layout:configure_activity_layout(size,true)
 		begin()
 	refresh()
+
+func _sync_shared_pause() -> void:
+	if not is_instance_valid(shared_pause_overlay): return
+	var pause_actions: Array[Dictionary] = []
+	for button in [retry_button,exit_button]:
+		if is_instance_valid(button) and button.visible:
+			pause_actions.append({"text":button.text,"callback":_activate_pause_action.bind(button),"disabled":button.disabled})
+	shared_pause_overlay.set_actions(pause_actions)
+	shared_pause_overlay.present(is_visible_in_tree() and paused and supports_player_pause())
+	pause_button.visible = supports_player_pause() and not paused
+	if paused: start_button.hide()
+
+func _resume_shared_pause() -> void:
+	# A repeat activation must never toggle back to pause or restart a run.
+	if not (paused): return
+	toggle_pause()
+	_sync_shared_pause()
+
+func _activate_pause_action(button: Button) -> void:
+	# Reuse the authored signal, including its existing confirmation flow.
+	if not is_instance_valid(button) or button.disabled or not button.visible: return
+	button.pressed.emit()
+	if is_inside_tree(): _sync_shared_pause()

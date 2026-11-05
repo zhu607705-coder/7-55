@@ -1,4 +1,7 @@
 extends Control
+const SharedPauseOverlay = preload("res://scripts/ui/native_pause_overlay.gd")
+var shared_pause_overlay
+var _skip_lifecycle_frame:=false
 ## Optional, silent stage presentation. Closing it never emits a game intent.
 signal closed(reason:String)
 const Model=preload("res://scripts/presentation/liangzhu_performance_model.gd")
@@ -63,9 +66,11 @@ class StageCanvas extends Node2D:
 		if is_instance_valid(presenter):presenter.draw_stage(self)
 
 func _ready()->void:
+	shared_pause_overlay = SharedPauseOverlay.mount(self, resume)
 	name="LiangzhuPerformance";mouse_filter=Control.MOUSE_FILTER_STOP;focus_mode=Control.FOCUS_ALL
 	_build();resized.connect(_layout);visibility_changed.connect(_visibility_changed)
 	get_window().focus_exited.connect(_focus_out)
+	get_window().focus_entered.connect(_focus_in)
 	_layout();grab_focus.call_deferred()
 
 func setup(config:Dictionary)->bool:
@@ -234,6 +239,7 @@ func _layout()->void:
 	for button:Button in help_actions:
 		button.position=Vector2(14,action_y)/fit;button.size=Vector2(menu_width-28,44)/fit;action_y+=52
 	queue_redraw();_redraw_stage()
+	_sync_shared_pause()
 
 func _frame_rect(control:Control,screen:Rect2,fit:float)->void:
 	control.position=(screen.position-field.position)/fit;control.size=screen.size/fit
@@ -242,6 +248,7 @@ func _draw()->void:
 	draw_rect(Rect2(Vector2.ZERO,size),INK)
 
 func _process(delta:float)->void:
+	_sync_shared_pause()
 	tick(delta,get_window().has_focus())
 
 func tick(delta:float,focused:bool=true,host_blocked:bool=false)->void:
@@ -253,11 +260,16 @@ func tick(delta:float,focused:bool=true,host_blocked:bool=false)->void:
 	blocked_last=blocked
 	if not capture_pose.is_empty():return
 	model.reduced_motion=bool(bound_state.get("native",{}).get("settings",{}).get("reduced_motion",false))
+	if focused and model.focus_paused and not supports_player_pause() and not help_open:
+		model.focus_paused=false;_skip_lifecycle_frame=true
+	if focused and not blocked and not help_open and _skip_lifecycle_frame:
+		_skip_lifecycle_frame=false;delta=0.0
 	var completed:bool=model.tick(delta,focused,blocked or help_open)
 	_refresh()
 	if completed:_finish("finished")
 
 func _refresh()->void:
+	_sync_shared_pause()
 	if not built or model==null:return
 	var pose:Dictionary=capture_pose if not capture_pose.is_empty() else model.snapshot()
 	var qte:Dictionary=_qte()
@@ -266,12 +278,13 @@ func _refresh()->void:
 	caption.text=next_caption
 	title.text="梁祝 · 扇影"+(" · 观看" if model.playback_mode=="passive" else "")
 	pause_button.text="继续" if model.manually_paused or model.focus_paused else "暂停"
-	pause_button.visible=model.status!="failure";retry_button.visible=model.status=="failure"
+	pause_button.visible=supports_player_pause() and not (model.manually_paused or model.focus_paused);retry_button.visible=model.status=="failure"
 	retry_button.text=str(qte.get("retryLabel","再接这一拍"))
 	help_panel.visible=help_open;caption.visible=not help_open;caption_background.visible=not help_open
 	if qte_pointer!="" and model.status!="waiting":qte_pointer=""
 	if text_changed:_layout()
 	_redraw_stage()
+	_sync_shared_pause()
 
 func _redraw_stage()->void:
 	if not built:return
@@ -283,8 +296,11 @@ func _redraw_stage()->void:
 	_update_qte_target()
 	stage_canvas.queue_redraw();stage_viewport.render_target_update_mode=SubViewport.UPDATE_ONCE
 
+func supports_player_pause()->bool:
+	return model!=null and not disposed and model.playback_mode=="interactive" and model.status in ["playing","waiting"]
+
 func pause()->void:
-	if model==null or disposed:return
+	if not supports_player_pause():return
 	model.pause();_refresh()
 
 func resume()->void:
@@ -293,7 +309,7 @@ func resume()->void:
 	model.resume();_refresh();grab_focus()
 
 func _toggle_pause()->void:
-	if model==null or disposed or help_open:return
+	if not supports_player_pause() or help_open:return
 	var was_paused:bool=model.manually_paused or model.focus_paused
 	_clear_pointer();model.interrupt_input("pause")
 	if was_paused:resume()
@@ -302,10 +318,21 @@ func _toggle_pause()->void:
 func _focus_out()->void:
 	if model!=null and not disposed:_interrupt_qte("focus_lost");model.focus_paused=true;_refresh()
 
+func _focus_in()->void:
+	if model!=null and not disposed and not supports_player_pause():
+		if model.focus_paused:_skip_lifecycle_frame=true
+		model.focus_paused=false
+		_refresh()
+
+func _notification(what:int)->void:
+	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_WM_WINDOW_FOCUS_OUT]:_focus_out()
+	elif what in [NOTIFICATION_APPLICATION_FOCUS_IN,NOTIFICATION_WM_WINDOW_FOCUS_IN]:_focus_in()
+
 func _visibility_changed()->void:
 	if not is_visible_in_tree():_focus_out()
 
 func _gui_input(event:InputEvent)->void:
+	if is_instance_valid(shared_pause_overlay) and shared_pause_overlay.is_open(): return
 	if disposed:return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode in [KEY_SPACE,KEY_ENTER,KEY_KP_ENTER]:_toggle_pause();accept_event()
@@ -416,6 +443,7 @@ func _update_qte_target()->void:
 	_frame_rect(qte_label,Rect2(label_point,label_size),fit)
 
 func _input(event:InputEvent)->void:
+	if is_instance_valid(shared_pause_overlay) and shared_pause_overlay.is_open(): return
 	if disposed or model==null or not visible or not capture_pose.is_empty():return
 	if _host_blocks_input():
 		if qte_pointer!="":_interrupt_qte("overlay")
@@ -721,3 +749,19 @@ func _butterfly(canvas:Node2D,fan:Dictionary)->void:
 			canvas.draw_rect(Rect2(fleck,Vector2(.4,.2)),Color("385B79") if int(fan.side)==0 else Color("C77964"))
 	canvas.draw_rect(Rect2(p+Vector2(-.4,-3),Vector2(.8,7)),INK)
 	canvas.draw_line(p+Vector2(-.2,-3),p+Vector2(-1.4,-5),INK,.2,false);canvas.draw_line(p+Vector2(.2,-3),p+Vector2(1.4,-5),INK,.2,false)
+
+func _sync_shared_pause() -> void:
+	if not is_instance_valid(shared_pause_overlay): return
+	var pause_actions: Array[Dictionary] = []
+	for button in [retry_button,help_button,return_button]:
+		if is_instance_valid(button) and button.visible:
+			pause_actions.append({"text":button.text,"callback":_activate_pause_action.bind(button),"disabled":button.disabled})
+	shared_pause_overlay.set_actions(pause_actions)
+	shared_pause_overlay.present(is_visible_in_tree() and (supports_player_pause() and (model.manually_paused or model.focus_paused) and not help_open))
+	if is_instance_valid(pause_button) and model != null: pause_button.visible = supports_player_pause() and not (model.manually_paused or model.focus_paused)
+
+func _activate_pause_action(button: Button) -> void:
+	# Reuse the authored signal, including its existing confirmation flow.
+	if not is_instance_valid(button) or button.disabled or not button.visible: return
+	button.pressed.emit()
+	if is_inside_tree(): _sync_shared_pause()

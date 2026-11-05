@@ -37,11 +37,15 @@ func _run() -> void:
 	check(game.phase == "deploy","blackout leads to same error-window board")
 	for index in 3500:
 		game._process(.02)
-	check(not game.done and game.phase in ["deploy","intercept"] and game.misses>0 and game.blocks==0 and game.session.captures.is_empty(),"missing words continues the same native flow without an idle pass or failure panel")
+	check(not game.done and game.phase=="intercept" and game.session.phase=="hint" and game.misses>0 and game.blocks==0 and game.session.captures.is_empty(),"missing words waits for explicit retry without an idle pass")
 	var stage = game.session.stage
 	var previous_misses=game.misses
 	tick(game,.1)
-	check(game.session.stage==stage and game.misses>=previous_misses and game.session.captures.is_empty(),"automatic continuation preserves this stage and failure history without granting contacts")
+	check(game.session.stage==stage and game.session.phase=="hint" and game.misses==previous_misses and game.session.captures.is_empty(),"waiting cannot restart the failed round or grant contacts")
+	for down:bool in [true,false]:
+		var event=InputEventKey.new();event.keycode=KEY_ENTER;event.physical_keycode=KEY_ENTER;event.pressed=down;root.push_input(event,true)
+	game._process(0)
+	check(game.phase=="deploy" and game.session.phase=="clue" and game.session.stage==stage and game.blocks==0 and game.session.captures.is_empty(),"root Enter explicitly retries only the failed round without granting proof")
 	check(WordDriver.until(game,"lock"),"all six real word contacts complete the three semantic stages")
 	check(game.phase == "lock" and game.blocks == 3,"three semantic stages unlock the unchanged hold")
 	game._pointer(game.field.position+game._lock_center()*game.display_scale,true)

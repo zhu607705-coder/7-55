@@ -18,6 +18,14 @@ func finger_drag(point: Vector2,index: int) -> void:
 func tap(button: Button,index: int=1) -> void:
 	var point:=button.get_global_rect().get_center()
 	finger_event(point,index,true); finger_event(point,index,false); await frames(2)
+func pause_action(game: Control,legacy: Button) -> Button:
+	check(game.shared_pause_overlay.is_open(),"shared pause surface owns the action")
+	if legacy==game.start_button or legacy==game.pause_button:
+		return game.shared_pause_overlay.resume_button
+	for button: Button in game.shared_pause_overlay.action_buttons:
+		if button.text==legacy.text and button.is_visible_in_tree(): return button
+	check(false,"shared pause action exists: "+legacy.text)
+	return null
 func press(code: int,down: bool) -> void:
 	var e:=InputEventKey.new(); e.keycode=code; e.physical_keycode=code; e.pressed=down; event(e)
 func verify_layout(game: Control) -> void:
@@ -70,13 +78,14 @@ func run() -> void:
 		finger_event(stick+Vector2(45,0),0,true); game._process(1)
 		check(game.paused and game.model.tick==ticks and game.touch_direction==Vector2.ZERO,"pause freezes timer and rejects new steering")
 		finger_event(stick,0,false)
-		await tap(game.start_button)
+		await tap(pause_action(game,game.start_button))
 		check(not game.paused and game.touch_direction==Vector2.ZERO,"center resume has no stale gesture")
 		press(KEY_D,true); game._process(1.0/60)
 		game._notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_OUT)
 		game._process(1)
 		check(game.paused and game.held.is_empty() and game.touch_direction==Vector2.ZERO,"window focus loss freezes and releases all inputs")
-		press(KEY_D,false); await tap(game.pause_button)
+		game._notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_IN)
+		press(KEY_D,false); await tap(pause_action(game,game.pause_button))
 		# Resize while a finger is held; old-screen drag/release cannot resume it.
 		finger_event(stick,0,true); finger_drag(stick+Vector2(45,0),0)
 		root.size=Vector2i(view.y,view.x); shell.size=Vector2(view.y,view.x); shell._layout(); await frames(2)
@@ -116,13 +125,15 @@ func run() -> void:
 	var game: Control=await open_activity(Vector2i(430,860),true)
 	cues.clear(); game._pickup_elapsed=0; game._pickup_beat=0; game._pickup_tick(0)
 	for i in range(85): game._process(.01)
-	await tap(game.pause_button)
+	check(not game.pause_button.visible and not game.supports_player_pause(),"passive pickup has no manual Pause")
+	game._notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_OUT)
 	var elapsed: float=game._pickup_elapsed
 	root.size=Vector2i(860,430); shell.size=Vector2(860,430); shell._layout()
 	for i in range(100): game._process(.01)
-	check(game._pickup_elapsed==elapsed and game.paused,"source pickup clock frozen during pause and rotation")
-	await tap(game.start_button)
-	check(not game.paused and game._pickup_active,"central resume continues source prelude")
+	check(game._pickup_elapsed==elapsed and game._lifecycle_suspended and not game.paused,"source pickup clock frozen during pause and rotation")
+	game._notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_IN)
+	game._process(0) # Discard only the focus-return frame.
+	check(not game.paused and game._pickup_active,"focus return continues source prelude")
 	while game._pickup_active: game._process(.01)
 	for cue: Array in game.PICKUP_CUES:
 		var found:=false

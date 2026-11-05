@@ -41,6 +41,12 @@ func run() -> void:
 	var snapshot: Dictionary = bridge.read_snapshot()
 	check(snapshot.engine == "Godot" and not snapshot.web and not snapshot.version.is_empty(), "snapshot identifies the actual engine")
 	check(snapshot.state == before and not snapshot.visibleControls.is_empty(), "snapshot observes real state and rendered controls")
+	var cloud: Node = root.get_node("CloudSaves")
+	cloud._build_surface()
+	cloud._show("云存档快照检查", [["云存档确认", func() -> void: pass]])
+	var cloud_snapshot: Dictionary = bridge.read_snapshot()
+	check(cloud_snapshot.visibleControls.any(func(control: Dictionary) -> bool: return control.text == "云存档确认"), "snapshot includes visible controls owned by the separate cloud surface")
+	cloud._resume()
 	check(snapshot.saveDigest == primary.get_string_from_utf8().sha256_text(), "save digest describes actual autosave bytes")
 	check(snapshot.world.camera == bridge._json_value(shell.world.camera) and snapshot.world.size == bridge._json_value(shell.world.size) and snapshot.world.zoom == shell.world.zoom, "read-only world geometry matches the actual camera, viewport and uniform zoom")
 	var original_camera: Vector2 = shell.world.camera

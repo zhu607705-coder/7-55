@@ -63,12 +63,14 @@ func run() -> void:
 			panel.feedback.call(message);await frames()
 			check(panel.feedback_label.visible and not panel.prompt_label.visible,"feedback replaces the instruction instead of adding another line")
 			check(panel.feedback_label.get_minimum_size().y<=feedback_rect.size.y,"original feedback fits its reserved row without clipping: "+message)
-		# Ambient notices keep their unread FIFO time while this operation row is owned.
+		# Ambient notices remain hidden beneath the operation row but continue expiring.
 		shell._feedback("普通待阅通知");await frames()
 		var unread:float=shell.notice_queue.current.remaining
 		check(shell.notice_queue.current.text=="普通待阅通知" and shell.notice_surface.is_empty(),"ambient notification waits instead of replacing the mixer result")
 		shell.world.subtitle="";shell.world.subtitle_left=0;await frames()
-		check(is_equal_approx(shell.notice_queue.current.remaining,unread),"clearing a local result cannot consume an unread ambient notification")
+		check(shell.notice_queue.current.remaining<=unread and shell.notice_queue.current.remaining>0,"clearing a local result neither resets nor prematurely consumes the latest ordinary notice")
+		shell._process(8)
+		check(shell.notice_queue.current.is_empty() and shell.notice_queue.pending.is_empty(),"mixer-hidden ordinary feedback expires without a deferred backlog")
 		check(panel.prompt_label.visible and not panel.feedback_label.visible,"cleared feedback restores the same single operation row")
 		for label: Label in panel.labels:
 			check(not Rect2(label.position,label.size).intersects(prompt_rect),"ingredient caption does not collide with instruction text")

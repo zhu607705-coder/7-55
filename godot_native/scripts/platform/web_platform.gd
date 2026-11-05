@@ -2,6 +2,8 @@ extends Node
 ## Browser capabilities only. State remains the sole save/progression authority.
 signal import_finished(message: String)
 signal save_feedback(message: String)
+const TreePauseLease=preload("res://scripts/platform/tree_pause_lease.gd")
+const PauseOverlay=preload("res://scripts/ui/native_pause_overlay.gd")
 var IMPORT_PATH: String:
 	get: return state.ProfileStorage.file("web-save-import.json")
 var EXPORT_PATH: String:
@@ -19,6 +21,8 @@ var _visibility_callback: JavaScriptObject
 var _touch_cancel_callback: JavaScriptObject
 var _snapshot_left := 0.0
 var _document_hidden := false
+var _document_focused := true
+var _owns_tree_pause := false
 var _content_loading := false
 var _suspended := false
 var _hidden_audio: Array[Dictionary] = []
@@ -46,6 +50,7 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 	if not state.action_completed.is_connected(_observe_world_action): state.action_completed.connect(_observe_world_action)
 	if not state.action_completed.is_connected(_observe_theater_exit): state.action_completed.connect(_observe_theater_exit)
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	PauseOverlay.set_environment_blocked(get_tree(),false)
 	if not OS.has_feature("web"): return
 	# Keep the transport private; the public surface can only read a fresh copy.
 	# A callback cannot return a value across Godot's JS bridge, hence the cache.
@@ -54,6 +59,11 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 		let snapshot = '{}';
 		let input = null;
 		let visibilityHandler = null;
+		let focusHandler = null;
+		let blurHandler = null;
+		let canvasFocusHandler = null;
+		let canvasBlurHandler = null;
+		let inputFocusHandler = null;
 		let touchCancelHandler = null;
 		let saveWatch = null;
 		let saveUncommitted = false;
@@ -90,8 +100,28 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 			},
 			chooseFile: () => { input.value = ''; input.click(); },
 			observeVisibility: receive => {
-				visibilityHandler = () => receive(document.hidden);
+				const canvas = document.getElementById('canvas');
+				let windowFocused = document.hasFocus();
+				let canvasFocused = !canvas || document.activeElement === canvas;
+				visibilityHandler = () => receive(document.hidden, windowFocused && canvasFocused);
+				focusHandler = () => { windowFocused = true; canvasFocused = !canvas || document.activeElement === canvas; visibilityHandler(); };
+				blurHandler = () => { windowFocused = false; visibilityHandler(); };
+				canvasFocusHandler = () => { canvasFocused = true; windowFocused = document.hasFocus(); visibilityHandler(); };
+				canvasBlurHandler = () => { canvasFocused = false; visibilityHandler(); };
+				// Some mobile returns omit window focus while leaving canvas active.
+				// Reconcile on a real canvas input before the engine routes it. This
+				// restores input availability only; the native Continue still owns resume.
+				inputFocusHandler = () => {
+					if (document.hidden) return;
+					canvas?.focus(); windowFocused = document.hasFocus();
+					canvasFocused = !canvas || document.activeElement === canvas; visibilityHandler();
+				};
 				document.addEventListener('visibilitychange', visibilityHandler);
+				window.addEventListener('focus', focusHandler);
+				window.addEventListener('blur', blurHandler);
+				canvas?.addEventListener('focus', canvasFocusHandler);
+				canvas?.addEventListener('blur', canvasBlurHandler);
+				for (const name of ['pointerdown', 'touchstart', 'keydown']) canvas?.addEventListener(name, inputFocusHandler, true);
 				visibilityHandler();
 			},
 			observeTouchCancel: receive => {
@@ -164,6 +194,12 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 				window.removeEventListener('beforeunload', beforeUnload);
 				if (input) input.remove();
 				if (visibilityHandler) document.removeEventListener('visibilitychange', visibilityHandler);
+				if (focusHandler) window.removeEventListener('focus', focusHandler);
+				if (blurHandler) window.removeEventListener('blur', blurHandler);
+				const canvas = document.getElementById('canvas');
+				if (canvasFocusHandler) canvas?.removeEventListener('focus', canvasFocusHandler);
+				if (canvasBlurHandler) canvas?.removeEventListener('blur', canvasBlurHandler);
+				if (inputFocusHandler) for (const name of ['pointerdown', 'touchstart', 'keydown']) canvas?.removeEventListener(name, inputFocusHandler, true);
 				if (touchCancelHandler) window.removeEventListener('touchcancel', touchCancelHandler, true);
 				delete window.__GODOT_755__;
 			}
@@ -277,13 +313,15 @@ func read_save_persistence() -> Dictionary:
 	return {"pending": _save_pending, "token": _save_token, "digest": _save_digest, "observedDigest": _save_observed_digest, "acknowledgedDigest": _save_acknowledged_digest, "error": _save_error, "startedMs": _save_started_ms, "syncRequests": _save_sync_requests, "lastSyncMs": _save_last_sync_ms}
 
 func _on_browser_visibility(args: Array) -> void:
-	if args.size() == 1 and args[0] is bool: _apply_visibility(args[0])
+	if args.size()!=2 or not args[0] is bool or not args[1] is bool:return
+	_document_hidden=args[0];_document_focused=args[1]
+	_update_suspension()
 
 func _remember_audio(node: Node) -> void:
 	if node is AudioStreamPlayer and node.has_stream_playback():
 		var director: Node = shell.audio_director
 		var prefix_paused: bool = is_instance_valid(director) and director.is_ancestor_of(node) and director._id_paused(str(node.get_meta("cue_id", "")))
-		_hidden_audio.append({"player": weakref(node), "playback": weakref(node.get_stream_playback()), "manual_paused": node.stream_paused and not prefix_paused})
+		_hidden_audio.append({"player": weakref(node), "playback": weakref(node.get_stream_playback()), "manual_paused": TreePauseLease.original_pause(get_tree(),node) and not prefix_paused})
 		# Freeze this playback before later nodes and focus handlers can spend time.
 		# Its original pause ownership has already been captured above.
 		node.stream_paused = true
@@ -295,13 +333,38 @@ func _same_hidden_playback(record: Dictionary) -> AudioStreamPlayer:
 	if not is_instance_valid(player) or player.is_queued_for_deletion() or playback == null or not player.has_stream_playback(): return null
 	return player if player.get_stream_playback() == playback else null
 
+func _remember_unowned_audio(node: Node, records: Array[Dictionary]) -> void:
+	if node is AudioStreamPlayer and node.has_stream_playback():
+		var captured := false
+		for record: Dictionary in _hidden_audio:
+			if _same_hidden_playback(record) == node:
+				captured = true
+				break
+		if not captured:
+			records.append({"player": weakref(node), "playback": weakref(node.get_stream_playback()), "manual_paused": node.stream_paused})
+	for child: Node in node.get_children(): _remember_unowned_audio(child,records)
+
 func _apply_visibility(hidden: bool) -> void:
-	_document_hidden = hidden
-	_apply_suspension(hidden or _content_loading)
+	_document_hidden=hidden
+	_update_suspension()
+
+func _apply_focus(focused: bool) -> void:
+	_document_focused=focused
+	_update_suspension()
 
 func set_content_loading(loading: bool) -> void:
-	_content_loading = loading
-	_apply_suspension(_document_hidden or loading)
+	_content_loading=loading
+	_update_suspension()
+
+func _update_suspension() -> void:
+	# Ordinary phone/world/reading surfaces have no player pause latch. This
+	# transient platform owner only protects clocks, input and browser audio.
+	# Real-time activities retain their own explicit pause/Continue boundary.
+	var blocked:=_document_hidden or not _document_focused or _content_loading
+	PauseOverlay.set_environment_blocked(get_tree(),blocked)
+	if is_instance_valid(shell.active_game) and shell.active_game.has_method("set_platform_suspended"):
+		shell.active_game.set_platform_suspended(blocked)
+	_apply_suspension(blocked)
 
 func _apply_suspension(hidden: bool) -> void:
 	if hidden == _suspended:
@@ -315,6 +378,8 @@ func _apply_suspension(hidden: bool) -> void:
 		return
 	_suspended = hidden
 	if hidden:
+		TreePauseLease.begin(get_tree(),self)
+		_owns_tree_pause=true
 		_hidden_audio.clear()
 		_remember_audio(shell)
 		var director: Node = shell.audio_director
@@ -325,21 +390,31 @@ func _apply_suspension(hidden: bool) -> void:
 		# can enter an audition fallback, charge session, or active pointer hold.
 		shell.propagate_notification(NOTIFICATION_APPLICATION_FOCUS_OUT)
 		shell.propagate_notification(NOTIFICATION_WM_WINDOW_FOCUS_OUT)
-		if is_instance_valid(shell.active_game) and shell.active_game.get_script().resource_path == "res://scripts/games/prologue_interception.gd": shell.active_game._pause()
+		if is_instance_valid(shell.active_game) and shell.active_game.has_method("set_platform_suspended"):shell.active_game.set_platform_suspended(true)
 		_release_browser_input()
+		TreePauseLease.enforce(get_tree())
 		for record: Dictionary in _hidden_audio:
 			var player := _same_hidden_playback(record)
 			if player != null: player.stream_paused = true
 	else:
+		# SceneTree unpause itself changes AudioStreamPlayer pause flags. Preserve
+		# newer playbacks for which this boundary never acquired a resume lease.
+		var replacements: Array[Dictionary] = []
+		_remember_unowned_audio(shell,replacements)
+
 		var director: Node = _hidden_director.get_ref() if _hidden_director != null else null
 		if is_instance_valid(director) and _owns_director_pause: director.resume_from_platform()
 		shell.propagate_notification(NOTIFICATION_APPLICATION_FOCUS_IN)
 		shell.propagate_notification(NOTIFICATION_WM_WINDOW_FOCUS_IN)
+		var overrides: Array[Dictionary] = []
 		for record: Dictionary in _hidden_audio:
 			var player := _same_hidden_playback(record)
 			if player == null: continue
-			var owner_paused: bool = is_instance_valid(director) and director.is_ancestor_of(player) and (director._platform_pause_at >= 0 or director._id_paused(str(player.get_meta("cue_id", ""))))
-			player.stream_paused = bool(record.manual_paused) or owner_paused
+			var owner_paused: bool = is_instance_valid(director) and director.is_ancestor_of(player) and ((director._platform_pause_at >= 0 and not TreePauseLease.owns_clock(get_tree(),director)) or director._id_paused(str(player.get_meta("cue_id", ""))))
+			overrides.append({"player":weakref(player),"playback":weakref(player.get_stream_playback()),"manual_paused":bool(record.manual_paused) or owner_paused})
+		overrides.append_array(replacements)
+		if _owns_tree_pause:TreePauseLease.release(get_tree(),self,overrides)
+		_owns_tree_pause=false
 		_hidden_audio.clear()
 		_hidden_director = null
 		_owns_director_pause = false
@@ -452,7 +527,7 @@ func _properties(object: Object, names: Array) -> Dictionary:
 	return result
 
 func _control_rect(control: Control) -> Rect2:
-	if is_instance_valid(shell.active_game) and shell.active_game.has_method("activity_control_rect"):
+	if is_instance_valid(shell.active_game) and shell.active_game.is_ancestor_of(control) and shell.active_game.has_method("activity_control_rect"):
 		return shell.active_game.activity_control_rect(control)
 	var rect := control.get_global_rect()
 	if control.get_viewport() == shell.world_viewport:
@@ -510,10 +585,13 @@ func read_snapshot() -> Dictionary:
 	var video: Array = []
 	_visible_controls(shell, controls, audio, video)
 	_visible_controls(shell.get_node("/root/CloudSaves"), controls, audio, video)
+	for view: Node in get_tree().get_nodes_in_group(PauseOverlay.GROUP):
+		if view.is_open():
+			_visible_controls(view.surface, controls, audio, video)
 	var game: Dictionary = {}
 	if is_instance_valid(shell.active_game):
 		var active: Control = shell.active_game
-		game = _properties(active, ["phase", "elapsed", "blocks", "misses", "hold_ms", "paused", "dragging", "done", "dialogue_index", "display_scale", "field", "mode", "running", "chase_presentation_error"])
+		game = _properties(active, ["phase", "elapsed", "blocks", "misses", "hold_ms", "paused", "pause_reason", "platform_suspended", "dragging", "done", "dialogue_index", "display_scale", "field", "mode", "running", "chase_presentation_error"])
 		game["script"] = active.get_script().resource_path
 		game["rect"] = _rect(active.get_global_rect())
 		if active.has_method("activity_snapshot"):game["activity"]=active.activity_snapshot()
@@ -563,9 +641,12 @@ func read_snapshot() -> Dictionary:
 	var content: Dictionary = shell.get_node("/root/WebContent").read_snapshot()
 	var landscape_preferred: bool=(is_instance_valid(shell.world_frame) and shell.world_frame.is_visible_in_tree()) or (is_instance_valid(shell.active_game) and shell.game_viewport.x>shell.game_viewport.y)
 	if content.get("retryVisible", false): controls.append({"name": "RetryRequiredContent", "text": "重试", "type": "Button", "rect": content.retryRect, "disabled": false})
-	return {"sampleFrame": Engine.get_process_frames(), "engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "content": content, "savePersistence": read_save_persistence(), "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "activity":game.get("activity",{}), "world": world, "presentation":{"landscapePreferred":landscape_preferred}, "phoneRect": _rect(shell.phone.get_global_rect()) if is_instance_valid(shell.phone) else {}, "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
+	return {"sampleFrame": Engine.get_process_frames(), "engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "documentFocused": _document_focused, "platformPaused": _suspended, "awaitingResume": false, "content": content, "savePersistence": read_save_persistence(), "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "activity":game.get("activity",{}), "world": world, "presentation":{"landscapePreferred":landscape_preferred}, "phoneRect": _rect(shell.phone.get_global_rect()) if is_instance_valid(shell.phone) else {}, "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
 
 func _exit_tree() -> void:
+	if _owns_tree_pause and is_inside_tree():TreePauseLease.release(get_tree(),self)
+	_owns_tree_pause=false
+	if is_inside_tree():PauseOverlay.set_environment_blocked(get_tree(),false)
 	if _browser != null: _browser.dispose()
 	_browser = null
 	_file_callback = null

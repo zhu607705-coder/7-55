@@ -41,6 +41,7 @@ function fixture(options = {}) {
   };
   const document = { hidden: false, body: { appendChild() {} },
     addEventListener() {}, removeEventListener() {},
+    getElementById: () => null,
     createElement: () => ({ addEventListener() {}, remove() {}, click() {} }) };
   const forbidden = () => { throw new Error('Transport attempted a forbidden database write'); };
   const event = target => ({ target, preventDefault() {} });
@@ -116,6 +117,8 @@ function fixture(options = {}) {
     return prevented || event.returnValue !== undefined;
   }
   return { host, calls, watch, advance, guarded, transactions, opened, events, bytes,
+    get snapshot() { return window.__GODOT_755__; },
+    get unloadListeners() { return listeners.get('beforeunload')?.size ?? 0; },
     get closes() { return closes; }, get upgradeAborts() { return upgradeAborts; }, get pendingTimers() { return tasks.size; } };
 }
 
@@ -212,10 +215,18 @@ try {
   check('a successful retry can clear an earlier failed save guard', () => assert.equal(superseded.guarded(), false));
   superseded.host.dispose();
 
-  const disposed = fixture({ readDelay: 800 }); disposed.watch(40); await disposed.advance(0); disposed.host.dispose();
-  await disposed.advance(30000);
+  const disposed = fixture({ readDelay: 800 }); disposed.watch(40); await disposed.advance(0);
+  check('active transport exposes its snapshot and installs one unload listener', () => {
+    assert.equal(typeof disposed.snapshot?.snapshot, 'function'); assert.equal(disposed.unloadListeners, 1);
+  });
+  disposed.host.dispose(); disposed.host.dispose();
+  check('repeated dispose removes snapshot access and the actual unload listener', () => {
+    assert.equal(disposed.snapshot, undefined); assert.equal(disposed.unloadListeners, 0);
+  });
+  await disposed.advance(SAVE_DEADLINE_MS + 1000);
   check('dispose suppresses already in-flight callbacks and retires the unload listener', () => {
     assert.equal(disposed.calls.length, 0); assert.equal(disposed.guarded(), false); assert.equal(disposed.pendingTimers, 0);
+    assert.equal(disposed.closes, 1, 'in-flight read still closes its database');
   });
   report.passed = true;
 } catch (error) { report.error = error.stack; process.exitCode = 1; }

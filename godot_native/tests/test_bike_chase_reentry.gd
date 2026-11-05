@@ -23,7 +23,7 @@ func run() -> void:
 		var game: Control=shell.active_game;await tap(game.start_button);game._process(.1);await tap(game.pause_button)
 		root.size=Vector2i(430,860);shell.size=Vector2(430,860);shell._layout();shell._refresh();shell._resume_world_activity();await frames()
 		check(shell.active_game==game and game.paused and chase_starts==count+1,"resize refresh and Return cannot replace paused chase")
-		await tap(game.exit_button);count=chase_starts
+		await tap(pause_action(game,game.exit_button));count=chase_starts
 		for i in range(4):shell._process(.1);shell._refresh();await frames(1)
 		check(not is_instance_valid(shell.active_game) and chase_starts==count,"explicit Exit remains exited")
 		shell._show_journal();await frames();await click(shell.find_child("JournalResume",true,false));await frames(4)

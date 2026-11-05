@@ -250,7 +250,13 @@ func audit_buttons(node: Node) -> Dictionary:
 			var identity: String=str(child.get_path())
 			if exempt:audit.objects_or_surfaces.append(identity)
 			elif child.get_node_or_null("TactileMaterialState")!=null:
-				audit.styled.append({"path":identity,"variant":child.get_meta("tactile_variant"),"size":child.get_meta("tactile_size"),"disabled":child.disabled})
+				var material_state: Node=child.get_node("TactileMaterialState")
+				if bool(material_state.get("phone_flat")):
+					audit.styled.append({"path":identity,"material":"phone_flat","role":child.get_meta("phone_button_role","action"),"disabled":child.disabled})
+				elif child.has_meta("tactile_variant") and child.has_meta("tactile_size"):
+					audit.styled.append({"path":identity,"variant":child.get_meta("tactile_variant"),"size":child.get_meta("tactile_size"),"disabled":child.disabled})
+				else:
+					audit.missing.append(identity)
 				if child.name=="NativeModalClose":
 					var face: StyleBox=child.get_theme_stylebox("normal")
 					var text_width: float=child.get_theme_font("font").get_string_size(child.text,HORIZONTAL_ALIGNMENT_LEFT,-1,child.get_theme_font_size("font_size")).x

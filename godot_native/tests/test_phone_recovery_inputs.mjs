@@ -46,7 +46,7 @@ await test('phone recovery input construction (not browser acceptance)',async t=
     assert.deepEqual(JSON.parse(fs.readFileSync(path.join(directory,'phone-recovery-inputs.json'))),result);
     assert.match(result.scope,/not browser, rendering, charging, or navigation acceptance/);
     assert.deepEqual(result.variants.map(item=>item.percent),[0,1]);
-    const allowed=new Set(['sourceVersion','state.actOne.tiyiUpdateStage','state.ui.homeDeskReturnScene','state.phoneBattery.percent','state.phoneBattery.lowPowerMode','state.ui.brightness']);
+    const allowed=new Set(['sourceVersion','state.actOne.tiyiUpdateStage','state.ui.homeDeskReturnScene','state.phoneBattery.percent','state.phoneBattery.lowPowerMode','state.phoneBattery.rechargeCount','state.ui.brightness']);
     for(const [key,name] of Object.entries(files)) {
       assert.deepEqual(result.earned[key],{filename:name,bytes:original[name].length,sha256:sha(original[name])});
     }
@@ -65,12 +65,22 @@ await test('phone recovery input construction (not browser acceptance)',async t=
       assert.ok(pathsChanged(plant,value).every(key=>allowed.has(key)),'no progression, item, page, or other field changes');
       const expected=structuredClone(plant);
       expected.sourceVersion=35; expected.state.phoneBattery.percent=item.percent;
-      expected.state.phoneBattery.lowPowerMode=true; expected.state.ui.brightness=40;
+      expected.state.phoneBattery.lowPowerMode=true; expected.state.phoneBattery.rechargeCount=4; expected.state.ui.brightness=40;
       delete expected.state.actOne.tiyiUpdateStage; delete expected.state.ui.homeDeskReturnScene;
       assert.deepEqual(value,expected,'full structural equality outside the explicitly allowed compatibility construction');
     }
+    assert.deepEqual(result.deskVariants.map(item=>item.percent),[0,1]);
+    for (const item of result.deskVariants) {
+      const bytes=fs.readFileSync(path.join(directory,item.filename));
+      const value=JSON.parse(bytes);
+      const expected=JSON.parse(fs.readFileSync(path.join(directory,`compat-c1-battery-${item.percent}-v35.json`)));
+      expected.state.native.page='desktop'; expected.state.currentScene='desktop'; expected.state.ui.homeDeskReturnScene='bonsai';
+      assert.equal(item.filename,`compat-c1-desk-${item.percent}-v35.json`);
+      assert.equal(item.bytes,bytes.length); assert.equal(item.sha256,sha(bytes));
+      assert.deepEqual(value,expected,'legacy desk adds only its page and exact return destination');
+    }
     unchanged(directory);
-    const outputs=[...result.variants.map(item=>item.filename),'phone-recovery-inputs.json'];
+    const outputs=[...result.variants.map(item=>item.filename),...result.deskVariants.map(item=>item.filename),'phone-recovery-inputs.json'];
     const before=Object.fromEntries(outputs.map(name=>[name,fs.readFileSync(path.join(directory,name))]));
     assert.deepEqual(preparePhoneRecoveryInputs(directory),result,'rerun produces the same provenance');
     for(const name of outputs) assert.deepEqual(fs.readFileSync(path.join(directory,name)),before[name],`${name}: deterministic bytes`);

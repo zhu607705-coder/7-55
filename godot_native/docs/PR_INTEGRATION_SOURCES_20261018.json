@@ -66,8 +66,8 @@
           "path": "godot_native/scripts/presentation/chapter4_endless_stair_view.gd",
           "sha256": "09b83c3b3b80f35b2f4bfabbdb774fabb51e437df375699e61ba1d8290c56b41",
           "original_snapshot": "godot_native/docs/source_snapshots/pr143/chapter4_endless_stair_view.gd.source.txt",
-          "adapted_sha256": "5bf666830b3d8e2345ecd11fdc6b56ad5edd90f354371fe9d6f2e020bf09d8e2",
-          "reason": "2026-10-21 UI-only typography adaptation: use the shared bundled Campus UI body family for interface text; preserve authored content, drawing coordinates, timing, input and progression. The original stair_text.ttf remains exclusively on physical Label3D wall lettering; instruction, start/back actions, corner HUD and subtitle share the common UI font. 2026-10-22 PR #159 motion-only adaptation: reuse original front/back frames for takeoff/gather/descent and seven-tick landing recovery across facing changes; held-phone sockets follow the same original pixels. Verified against unchanged physics/model/sole contacts by 11 native stages and matched actual renders at a4b5a67 (run 39748220942). No camera, input, source texture, story or save changes."
+          "adapted_sha256": "cb52225fb6434b65214ea99a3a2dfbc7f2326e19f0e1282c093ca26459148aa2",
+          "reason": "2026-10-21 UI-only typography adaptation: use the shared bundled Campus UI body family for interface text; preserve authored content, drawing coordinates, timing, input and progression. The original stair_text.ttf remains exclusively on physical Label3D wall lettering; instruction, start/back actions, corner HUD and subtitle share the common UI font. 2026-10-22 PR #159 motion-only adaptation: reuse original front/back frames for takeoff/gather/descent and seven-tick landing recovery across facing changes; held-phone sockets follow the same original pixels. Verified against unchanged physics/model/sole contacts by 11 native stages and matched actual renders at a4b5a67 (run 39748220942). No camera, input, source texture, story or save changes. 2026-11-05 PR #217 pause-surface adaptation: mount the shared pause overlay, gate stair input while it is open, route explicit Continue through the existing resume path and mirror the authored exit callback. Preserve the stair model, physics, geometry and progression. test_endless_stair_route.gd verifies visible pointer-operated Start/Continue/Exit, focus and Escape pause, paused tick/input suppression, held-key release/rearm and unchanged route/proof checks (91 checks, official Godot 4.7.1; isolated headless scene harness, not full application or browser acceptance)."
         },
         {
           "path": "godot_native/scripts/presentation/chapter4_endless_stair_view.gd.uid",
@@ -177,7 +177,10 @@
         },
         {
           "path": "godot_native/tests/test_endless_stair_route.gd",
-          "sha256": "c36de29645b4072c01741a1cdf046002ef75bc305e41cb0c525eb3d2705be0dc"
+          "sha256": "c36de29645b4072c01741a1cdf046002ef75bc305e41cb0c525eb3d2705be0dc",
+          "original_snapshot": "godot_native/docs/source_snapshots/pr143/test_endless_stair_route.gd.source.txt",
+          "adapted_sha256": "898a916dc9391dfe88ee3e2cbb644f14a1712de0941fc97701df53e1f3fb3909",
+          "reason": "2026-11-05 PR #217 shared pause regression adaptation: replace the obsolete visible legacy-menu assertion with visible shared-pause coverage, preserving all original route, physics, proof and presentation assertions. Add reachable pointer-operated Start/Continue/Exit, explicit focus-return resume, paused tick/input suppression, held-key release/rearm, repeat Continue and original exit/no-completion checks. Verified 91 checks with official Godot 4.7.1 in an isolated headless scene harness; this is not full application, browser or visual acceptance."
         },
         {
           "path": "godot_native/tests/test_endless_stair_route.gd.uid",

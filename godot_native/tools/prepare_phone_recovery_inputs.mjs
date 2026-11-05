@@ -18,7 +18,7 @@ export function preparePhoneRecoveryInputs(directory) {
   const s = plant.value.state;
   if (plant.value.sourceVersion !== 36 || s.native.chapter !== 1 || s.native.page !== 'phone_home' ||
       !s.flags.plantWatered || !s.flags.plantFertilized || s.flags.plantLit || s.flags.flowerBloomed || s.flags.checkinDone)
-    throw Error('Charging variants require the earned, unfinished C1 plant boundary');
+    throw Error('Battery compatibility variants require the earned, unfinished C1 plant boundary');
   if (first.value.sourceVersion !== 36 || first.value.state.flags.tiyiCountTaken || first.value.state.digits.d2 !== null || first.value.state.native.chapter !== 1)
     throw Error('First network puzzle must not already have awarded the digit');
   if (update.value.sourceVersion !== 36 || update.value.state.native.chapter !== 2 || update.value.state.actOne.phase !== 'movement_required' || update.value.state.actOne.tiyiUpdateStage !== 'not_started' || update.value.state.actOne.exerciseStarted || update.value.state.actOne.weatherWaterTaken)
@@ -30,6 +30,7 @@ export function preparePhoneRecoveryInputs(directory) {
     value.sourceVersion = 35;
     value.state.phoneBattery.percent = percent;
     value.state.phoneBattery.lowPowerMode = true;
+    value.state.phoneBattery.rechargeCount = 4;
     value.state.ui.brightness = 40;
     delete value.state.actOne.tiyiUpdateStage;
     delete value.state.ui.homeDeskReturnScene;
@@ -37,10 +38,21 @@ export function preparePhoneRecoveryInputs(directory) {
     const bytes = Buffer.from(JSON.stringify(value, null, 2) + '\n');
     fs.writeFileSync(path.join(directory, filename), bytes);
     return { filename, percent, sourceVersion: 35, bytes: bytes.length, sha256: sha(bytes),
-      construction: 'Only legacy version/new-field omissions, battery percent/low-power and brightness differ from the controller-earned plant boundary.' };
+      construction: 'Only legacy version/new-field omissions, battery percent/retired low-power and recharge count, and brightness differ from the controller-earned plant boundary.' };
+  });
+  const deskVariants = variants.map(variant => {
+    const value = JSON.parse(fs.readFileSync(path.join(directory, variant.filename), 'utf8'));
+    value.state.native.page = 'desktop';
+    value.state.currentScene = 'desktop';
+    value.state.ui.homeDeskReturnScene = 'bonsai';
+    const filename = `compat-c1-desk-${variant.percent}-v35.json`;
+    const bytes = Buffer.from(JSON.stringify(value, null, 2) + '\n');
+    fs.writeFileSync(path.join(directory, filename), bytes);
+    return { filename, percent: variant.percent, sourceVersion: 35, bytes: bytes.length, sha256: sha(bytes),
+      construction: 'Legacy battery variant additionally remembers the retired desktop charging page and its original bonsai return page.' };
   });
   const receipt = { schema: '755-phone-recovery-inputs-v1',
-    earned: { plant: plant.receipt, firstTiyi: first.receipt, secondTiyi: update.receipt }, variants,
+    earned: { plant: plant.receipt, firstTiyi: first.receipt, secondTiyi: update.receipt }, variants, deskVariants,
     scope: 'Input provenance only. Generated files and controller fixtures are not browser, rendering, charging, or navigation acceptance.' };
   fs.writeFileSync(path.join(directory, 'phone-recovery-inputs.json'), JSON.stringify(receipt, null, 2) + '\n');
   return receipt;

@@ -1,7 +1,23 @@
 extends RefCounted
 ## Source CheckinScene form draft and CSS. Controller still owns every story result.
-const PaperInk=preload("res://scripts/ui/paper_ink_material.gd")
 const PIXEL_FONT=preload("res://ui_assets/fonts/MorningNote-Regular.ttf")
+const Notice=preload("res://scripts/ui/native_phone_notice.gd")
+const NativeUi=preload("res://scripts/ui/native_ui_theme.gd")
+
+class AbsenceDigit extends Button:
+	# Keep the collectible's visible/pickup rectangle exact. Only pointer/touch
+	# picking grows, so the minimum target never paints over the following word.
+	func _has_point(point: Vector2) -> bool:
+		return Rect2(Vector2.ZERO,size).grow(3.0).has_point(point)
+	func _draw() -> void:
+		# This is a movable digit, not a text-layout button. Native Button's font
+		# line-height would enlarge its 25px square even without a button skin.
+		var font=get_theme_font("font")
+		var font_size=get_theme_font_size("font_size")
+		var width=font.get_string_size("0",HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x
+		var baseline=Vector2((size.x-width)/2,(size.y-font.get_height(font_size))/2+font.get_ascent(font_size))
+		draw_string(font,baseline,"0",HORIZONTAL_ALIGNMENT_LEFT,-1,font_size,get_theme_color("font_color"))
+
 var code=""
 var error=false
 var submission_pending=false
@@ -13,18 +29,28 @@ func build(b) -> Control:
 		submission_pending=false
 		if not b.s.flags.checkinDone and b.s.networkMode=="campus_wifi": error=true; code=""
 	var reduced:bool=bool(b.s.native.get("settings",{}).get("reduced_motion",false))
-	var root: Control=b._base(PaperInk.PAPER,b.APP_HEIGHT); root.set_meta("handles_all_actions",true);root.name="NativeCheckinPage"
+	var root: Control=b._base(Color("eef2f7"),b.APP_HEIGHT); root.set_meta("handles_all_actions",true);root.name="NativeCheckinPage"
+	for x in range(0,424,12): b._panel(root,b._home_rect(x,40,2,814),Color(.09,.58,.72,.04))
+	for y in range(40,854,12): b._panel(root,b._home_rect(0,y,424,2),Color(.09,.58,.72,.05))
 	b._nav(root,"back","返回学在浙大",b._return_checkin,b._home_rect(18,52,44,44),Color.TRANSPARENT)
 	b._label(root,"学在浙大 · 课堂签到",b._home_rect(62,52,300,44),18,b.INK,HORIZONTAL_ALIGNMENT_CENTER)
-	b._paper_panel(root,b._home_rect(18,110,388,141),PaperInk.PAPER,PaperInk.EDGE,0,2)
+	b._panel(root,b._home_rect(18,110,388,141),Color("fff8e2"),b.INK,0,2)
 	b._label(root,"高等数学（早八特供版）",b._home_rect(34,125,335,24),18)
 	var live: Panel=b._panel(root,b._home_rect(378,130,12,12),Color("c85454"),Color("7c2929"),6,2)
 	b._label(root,"快快老师 · 紫金港西1-201 · 08:00",b._home_rect(34,155,356,18),14,Color("5b6472"))
 	b._label(root,"正在点名中……",b._home_rect(34,179,356,18),14,Color("c85454"))
-	b._paper_panel(root,b._home_rect(34,207,356,32),Color("e9e1d3"),PaperInk.EDGE,0,2)
+	b._panel(root,b._home_rect(34,207,356,32),Color("e7edf3"),Color("84909d"),0,2)
 	b._label(root,"本周缺勤",b._home_rect(274,213,64,22),12,Color("596572"))
 	if b.s.flags.codeScattered and not b.s.flags.cardZeroTaken:
-		var zero: Button=b._act(root,"0",b._home_rect(338,211,25,25),"c1_absence",null,Color("f0d54e"),Color("241f11"),0,Color("7d6611")); zero.name="CheckinAbsenceZero"; zero.add_theme_font_size_override("font_size",16)
+		var zero:=AbsenceDigit.new(); zero.name="CheckinAbsenceZero"
+		var digit_rect: Rect2=b._home_rect(338,211,25,25)
+		zero.set_meta("phone_button_role","object")
+		NativeUi.apply_button(zero,Color("f0d54e"),Color("241f11"),Color("7d6611"),0,2,16,Vector2.ZERO)
+		preload("res://scripts/ui/native_typography.gd").apply_body(zero)
+		zero.tooltip_text="本周缺勤 0 次"
+		zero.position=digit_rect.position; zero.size=digit_rect.size
+		zero.pressed.connect(func(): b.action_requested.emit("c1_absence",null))
+		root.add_child(zero)
 	else:
 		b._panel(root,b._home_rect(338,211,25,25),Color("d9e1e8") if b.s.flags.cardZeroTaken else Color("f0d54e"),Color("81909d") if b.s.flags.cardZeroTaken else Color("7d6611"),0,2)
 		b._label(root,"0",b._home_rect(338,211,25,25),16,Color("64717d") if b.s.flags.cardZeroTaken else Color("241f11"),HORIZONTAL_ALIGNMENT_CENTER)
@@ -33,16 +59,17 @@ func build(b) -> Control:
 	b._label(root,"次",b._home_rect(370,213,14,22),12,Color("596572"))
 	var frames: Array=[]; var labels: Array=[]
 	for i in range(4):
-		var frame: Panel=b._paper_panel(root,b._home_rect(90+i*64,271,52,62),PaperInk.PAPER,PaperInk.EDGE,0,3); frame.name="CheckinSlotFrame_"+str(i); frames.append(frame)
+		var frame: Panel=b._panel(root,b._home_rect(90+i*64,271,52,62),Color.WHITE,b.INK,0,3); frame.name="CheckinSlotFrame_"+str(i); frames.append(frame)
 		var label: Label=b._label(root,"",b._home_rect(90+i*64,271,52,62),24,b.INK,HORIZONTAL_ALIGNMENT_CENTER); label.name="CheckinSlot_"+str(i); labels.append(label)
-	var ready_frame: Panel=b._paper_panel(root,b._home_rect(84,258,256,82),Color.TRANSPARENT,PaperInk.FOCUS,0,3); ready_frame.name="CheckinReadyFrame"
-	var error_label: Label=b._label(root,"签到码错误，请重新输入",b._home_rect(18,348,388,25),14,Color("c85454"),HORIZONTAL_ALIGNMENT_CENTER); error_label.name="CheckinError"
+	var ready_frame: Panel=b._panel(root,b._home_rect(84,258,256,82),Color.TRANSPARENT,Color("1793b8"),0,3); ready_frame.name="CheckinReadyFrame"
+	var error_label: Label=b._label(root,"签到码错误，请重新输入",b._home_rect(18,348,388,58),14,Color("c85454"),HORIZONTAL_ALIGNMENT_CENTER); error_label.name="CheckinError"
+	Notice.style_inline(error_label,"error",14)
 	var submit_holder: Array=[]
 	var update_form=func():
 		for i in range(4):
 			labels[i].text=code.substr(i,1) if i<code.length() else ""
 			labels[i].add_theme_color_override("font_color",Color("c85454") if error else b.INK)
-			frames[i].add_theme_stylebox_override("panel",b._paper_style(Color("fff7df") if i<code.length() else PaperInk.PAPER,PaperInk.FOCUS if error else PaperInk.EDGE,0,3))
+			frames[i].add_theme_stylebox_override("panel",b._style(Color("fff9e2") if i<code.length() else Color.WHITE,Color("c85454") if error else b.INK,0,3))
 		ready_frame.visible=code.length()==4; error_label.visible=error
 		if not submit_holder.is_empty(): submit_holder[0].disabled=code.length()<4
 		pixelize(root)
@@ -83,7 +110,7 @@ func entry_pulse(b, root: Control, digit: String, index: int) -> void:
 	var tween=pulse.create_tween(); tween.tween_property(pulse,"position",target,.34).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT); tween.tween_property(pulse,"modulate:a",0.0,.18); tween.tween_callback(pulse.queue_free)
 
 static func pixelize(node:Node)->void:
-	# Typography and object edges stay authored; marked form panels use paper ink.
+	# This page restores its original authored pixel typography and hard edges.
 	# Other phone apps and the shared shell keep their own accepted theme.
 	if node is Label or node is Button:preload("res://scripts/ui/native_typography.gd").apply_body(node)
 	var roles:Array=["panel"] if node is Panel else ["normal","hover","pressed","hover_pressed","disabled","focus"] if node is Button else []
@@ -91,9 +118,6 @@ static func pixelize(node:Node)->void:
 		var original:StyleBox=node.get_theme_stylebox(role)
 		if original is StyleBoxFlat:
 			var style:StyleBoxFlat=original.duplicate()
-			if node.get_meta("paper_ink_surface",false):
-				style.set_corner_radius_all(2);style.anti_aliasing=true
-			else:
-				style.set_corner_radius_all(0);style.anti_aliasing=false
+			style.set_corner_radius_all(0);style.anti_aliasing=false
 			node.add_theme_stylebox_override(role,style)
 	for child:Node in node.get_children():pixelize(child)

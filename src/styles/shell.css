@@ -1858,7 +1858,6 @@
   padding: 10px;
 }
 
-.cc-power.is-saving { background: #d8eadb; }
 .cc-power.is-critical { background: #edd2cf; }
 
 .cc-power > header {
@@ -1900,65 +1899,6 @@
 }
 
 .cc-power.is-critical .cc-power-meter > i { background: var(--red); }
-
-.cc-low-power,
-.cc-charge {
-  background: var(--paper);
-  border: 2px solid var(--ink);
-  box-shadow: 2px 2px 0 var(--shadow-warm);
-  min-height: 38px;
-  padding: 7px 9px;
-  text-align: left;
-}
-
-.cc-low-power {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-}
-
-.cc-low-power.is-on { background: var(--yellow); }
-.cc-low-power strong { font-size: var(--fs-label); }
-.cc-low-power span { color: #4f5966; font-size: var(--fs-micro); max-width: 190px; text-align: right; }
-
-.cc-charge {
-  background: #1e5da8;
-  color: #fff;
-  font-size: var(--fs-label);
-  font-weight: 800;
-  overflow: hidden;
-  position: relative;
-  text-align: center;
-}
-
-.cc-charge:disabled { cursor: wait; opacity: 0.85; }
-.cc-charge.is-charging::after {
-  animation: cc-charge-progress 0.9s linear both;
-  background: rgba(240, 213, 78, 0.7);
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100%;
-}
-
-@keyframes cc-charge-progress {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
-}
-
-.cc-power-location,
-.cc-power-reserve {
-  font-size: var(--fs-caption);
-  line-height: 1.35;
-  margin: 0;
-}
-
-.cc-power-reserve {
-  color: #7a241f;
-  font-weight: 800;
-}
 
 .cc-save-manager {
   background: #cfd3d9;

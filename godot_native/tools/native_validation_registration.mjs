@@ -33,6 +33,9 @@ export function registerStage(spec) {
 // Each FLC reader uses one existing scheduler slot; no nested CI worker pool.
 const flc='godot_native/campuses/future_learning_center';
 export const NATIVE_STAGE_REGISTRATIONS = Object.freeze([
+ {id:'browser_pause_bridge',execution:'node',entry:'godot_native/tests/test_browser_pause_bridge.mjs',
+  inputs:['godot_native/tests/test_browser_pause_bridge.mjs','godot_native/scripts/platform/web_platform.gd'],
+  outputs:[],dependencies:[],durationHintMs:1000},
  {id:'paper_ink_web_source',execution:'node',entry:'godot_native/tools/test_paper_ink_web_source.mjs',
   inputs:['godot_native/tools/test_paper_ink_web_source.mjs','godot_native/tools/web_button_material.mjs',
    'godot_native/web/button.css','godot_native/web/index.html','godot_native/scripts/ui/paper_ink_material.gd'],

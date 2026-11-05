@@ -2,7 +2,10 @@ extends Control
 ## Source phone artwork in the 424×854 interior.
 ## Tower support geometry restores the previously captured straight-tower reference.
 ## Canvas-only decoration; all interaction and progression remain in PhonePages.
+const BONSAI_HOME_TEXTURE=preload("res://assets/native/phone_home/bonsai_stairs_20261104.png")
 const SCALE=424.0/378.0
+const BONSAI_SOURCE_RECT=Rect2(260,524,40,51)
+const BONSAI_HIT_SOURCE_RECT=Rect2(BONSAI_SOURCE_RECT.position+Vector2(-2,0),Vector2(50,58))
 # The historical phone-ui-v4 reference places the cap, shaft, portal and
 # frontal stairs on this axis. Keep the clock/key position unchanged.
 const TOWER_AXIS_X=325.0
@@ -12,6 +15,9 @@ const TOWER_BODY=Rect2(303,176,44,268)
 const TOWER_PORTAL=Rect2(301,400,48,78)
 const TOWER_LANDING=Rect2(295,476,60,10)
 const TOWER_PLINTH=Rect2(260,596,130,28)
+static func bonsai_hit_rect() -> Rect2:
+	return Rect2((BONSAI_HIT_SOURCE_RECT.position-Vector2(0,40))/SCALE,BONSAI_HIT_SOURCE_RECT.size/SCALE)
+
 static func tower_step(index: int) -> Rect2:
 	return Rect2(290-index*5,485+index*18,70+index*10,18)
 var tower_open=false
@@ -60,12 +66,10 @@ func _draw() -> void:
 	for y in range(664,764,4): box(Rect2(0,y,424,4),Color("a8d8cc",.45).lerp(Color("eee2bd",.35),(y-664)/100.0))
 	for i in range(3): box(Rect2(0,682+[0,12,28][i],424,1),Color("698b7e",[.24,.18,.1][i]))
 	# Source lake-side bonsai is a decorative app entry, not an invented label.
-	polygon(Vector2(354,558),Vector2(40,30),[[45,0],[60,12],[55,30],[85,22],[92,45],[65,48],[60,60],[40,60],[34,46],[8,50],[14,26],[42,32]],Color("6fae59"))
-	polygon(Vector2(358,585),Vector2(32,24),[[0,0],[100,0],[82,100],[18,100]],Color("7c4526"))
-	polygon(Vector2(360,587),Vector2(28,20),[[0,0],[100,0],[82,100],[18,100]],Color("b46a3c"))
+	draw_texture_rect(BONSAI_HOME_TEXTURE,BONSAI_SOURCE_RECT,false)
 	if flower_bloomed:
-		for petal in [[366,558,"e88a9f"],[380,558,"7fb0e8"],[366,572,"e8a05f"],[352,572,"8fce7c"]]: box(Rect2(petal[0],petal[1],8,8),Color(petal[2]))
-		box(Rect2(373,565,8,8),Color("f5c542"))
+		for petal in [[12,0,"e88a9f"],[26,0,"7fb0e8"],[12,14,"e8a05f"],[-2,14,"8fce7c"]]: box(Rect2(BONSAI_SOURCE_RECT.position+Vector2(petal[0],petal[1]),Vector2(8,8)),Color(petal[2]))
+		box(Rect2(BONSAI_SOURCE_RECT.position+Vector2(19,7),Vector2(8,8)),Color("f5c542"))
 
 func _draw_tower() -> void:
 	# Rendering only: source hit target and key animation remain in PhonePages.

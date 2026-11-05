@@ -296,7 +296,7 @@ func _set_blocking(value: bool) -> void:
 
 func _build_overlay() -> void:
 	if is_instance_valid(_overlay): return
-	_overlay = CanvasLayer.new(); _overlay.layer = 200; _overlay.name = "RequiredContentLoading"; add_child(_overlay)
+	_overlay = CanvasLayer.new(); _overlay.set_meta("paper_ink_scope",true); _overlay.layer = 200; _overlay.name = "RequiredContentLoading"; add_child(_overlay)
 	_cover = Control.new(); _cover.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); _cover.mouse_filter = Control.MOUSE_FILTER_STOP; _overlay.add_child(_cover)
 	var wash := ColorRect.new(); wash.color = Color("f3eddf"); wash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); wash.mouse_filter = Control.MOUSE_FILTER_IGNORE; _cover.add_child(wash)
 	var margin := MarginContainer.new(); margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)

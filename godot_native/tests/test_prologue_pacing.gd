@@ -39,9 +39,10 @@ func run()->void:
   for card:Dictionary in model.cards:
    if not card.resolved:model.set_target(card.position.x)
   model.advance(.01)
- check(model.phase=="hint" and model.released_words.is_empty(),"an early real decoy contact occurs before future coordinate targets have been introduced")
+ check(model.phase=="hint" and model.released_words.is_empty(),"an early real decoy contact occurs before future phrase targets have been introduced")
  model.continue_stage()
- for tick:int in 72:model.advance(.01)
+ check(model.phase=="clue" and model.cards.is_empty() and model.collected.is_empty(),"explicit retry replays clues and clears only the current round")
+ for tick:int in int(ceil((model.clue_duration()+.72)/.01)):model.advance(.01)
  check(not model.cards.is_empty() and model.cards.all(func(card):return not card.target),"an early mistake cannot skip the encounter deck by forcing a future answer into the next spawn")
  var idle=game_view()
  for tick:int in 7000:idle._process(.01)

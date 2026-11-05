@@ -2403,9 +2403,7 @@
           ]
         }
       ],
-      "targetIds": [
-        "theater_charging_station"
-      ],
+      "targetIds": [],
       "replacement": {
         "asset": "res://assets/native/theater_rebuild_20261020/poster_board.png",
         "destinationRect": [

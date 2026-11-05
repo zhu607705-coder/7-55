@@ -1,6 +1,7 @@
 extends CanvasLayer
 ## The native coordinator owns profile selection. JavaScript is fixed HTTP/disk transport only.
 signal status_changed
+const TreePauseLease=preload("res://scripts/platform/tree_pause_lease.gd")
 const Storage=preload("res://scripts/platform/profile_storage.gd")
 const NativeUi=preload("res://scripts/ui/native_ui_theme.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
@@ -53,6 +54,8 @@ func _ready() -> void:
 	_boot.call_deferred()
 
 func _build_surface() -> void:
+	# This autoload is outside Main, but its navigation belongs to the same UI.
+	set_meta("paper_ink_scope",true)
 	_cover=ColorRect.new();_cover.color=Color(0.03,0.07,0.09,0.9)
 	_cover.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);_cover.mouse_filter=Control.MOUSE_FILTER_STOP;add_child(_cover)
 	var center:=CenterContainer.new();center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);_cover.add_child(center)
@@ -81,7 +84,9 @@ func _show(message: String, choices: Array=[]) -> void:
 	_set_status(_dialog_status)
 
 func _pause() -> void:
-	if not get_tree().paused: _owns_pause=true;get_tree().paused=true
+	if not _owns_pause:
+		TreePauseLease.begin(get_tree(),self);_owns_pause=true
+	TreePauseLease.enforce(get_tree())
 
 func _set_status(value: String) -> void:
 	status_text=value;status_changed.emit()
@@ -90,7 +95,8 @@ func _set_status(value: String) -> void:
 
 func _resume() -> void:
 	ready_for_play=true;_cover.hide()
-	if _owns_pause: _owns_pause=false;get_tree().paused=false
+	if _owns_pause:
+		_owns_pause=false;TreePauseLease.release(get_tree(),self)
 	status_changed.emit()
 
 func can_enter() -> bool:
@@ -564,3 +570,7 @@ func _process(delta: float) -> void:
 	if _dirty:
 		_quiet+=delta;_dirty_age+=delta
 		if _quiet>=2 or _dirty_age>=10: flush()
+
+func _exit_tree() -> void:
+	if _owns_pause:
+		_owns_pause=false;TreePauseLease.release(get_tree(),self)

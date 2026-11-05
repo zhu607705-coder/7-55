@@ -9,7 +9,7 @@ func configure(dimensions:Vector2i)->void:
 	root.size=dimensions;shell.size=Vector2(dimensions)
 	state.begin_checkpoint("c3-canteen-drinks")
 	shell.mobile_world=true;shell.compact_inventory_open=false;shell._refresh();await frames(5)
-	shell.world.set_process(false);shell.c3_narrative_host.set_process(false);shell.c3_scene_host.set_process(false);shell.library_story_host.set_process(false)
+	shell.set_process(false);shell.world.set_process(false);shell.c3_narrative_host.set_process(false);shell.c3_scene_host.set_process(false);shell.library_story_host.set_process(false)
 	shell.library_story_host.view.text_scale=1.0
 func run()->void:
 	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated UI test profile")
@@ -58,7 +58,9 @@ func run()->void:
 		var feedback_rect:=Rect2(surface.position+hud.body_rect.position*world.hud_display_scale(),hud.body_rect.size*world.hud_display_scale())
 		world._sync_selected_overlay()
 		check(world._exploration_overlay_blocked() and not world.overflow_feedback.visible and not world.selected_overlay.visible,"native right-side dialogue suppresses exploration help rather than cropping the world")
-		check(shell.notice_queue.current.get("text","")==unread_text and is_equal_approx(float(shell.notice_queue.current.get("remaining",-1)),unread_seconds),"suppressed queued feedback retains its original text and unread lifetime in the queue owner")
+		check(shell.notice_queue.current.get("text","")==unread_text and is_equal_approx(float(shell.notice_queue.current.get("remaining",-1)),unread_seconds),"presentation handoff alone neither changes nor resets the latest notice deadline")
+		shell._process(8)
+		check(shell.notice_queue.current.is_empty() and shell.notice_queue.pending.is_empty(),"hidden latest feedback expires while the library caption retains ownership")
 		check(view.body.get_theme_font("font").get_multiline_string_size(view.body.text,HORIZONTAL_ALIGNMENT_LEFT,view.body.size.x,view.body.get_theme_font_size("font_size")).y<=view.body.size.y,"full library line is visible")
 		view.session=null;shell.library_story_host.current=null;view.tick();shell._layout();await frames(2)
 		world.subtitle="";world._update_camera()

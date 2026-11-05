@@ -547,9 +547,9 @@ export function App() {
           <Scene key={`${state.currentScene}:${developerCheckpointEpoch}`} state={state} router={router} events={eventBus} />
         </Suspense>
       </PhoneShell>
+      <PhoneBatteryPrankNotice notice={batteryPrank} state={state} surface="phone" />
       {chapterIntro}
       {!libraryStoryUsesPhone ? libraryStoryLayer : null}
-      <PhoneBatteryPrankNotice notice={batteryPrank} state={state} surface="phone" />
       {DeveloperChannel ? <Suspense fallback={null}><DeveloperChannel
           store={gameStore}
           open={developerChannelOpen}

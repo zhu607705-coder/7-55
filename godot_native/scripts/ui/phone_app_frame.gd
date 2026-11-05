@@ -12,6 +12,9 @@ const MUTED := Palette.MUTED
 const LINE := Palette.LINE
 const EXTENT := Vector2(424,814)
 class BackButton extends Button:
+	func _init() -> void:
+		set_meta("phone_button_role", "navigation")
+
 	func _draw() -> void:
 		var at := size / 2
 		draw_polyline(PackedVector2Array([at+Vector2(4,-8),at+Vector2(-4,0),at+Vector2(4,8)]),Palette.INK,2,false)

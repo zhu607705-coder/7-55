@@ -32,17 +32,18 @@ func _initialize()->void:
 		var aged: Dictionary=game.defense_effects.snapshot()
 		check(aged.points==contact.points and aged.alpha<contact.alpha and aged.alpha>0,"victory hold advances frozen-route fade")
 		check(proof(run)==accepted,"victory fade cannot mutate accepted proof or RNG")
-		# Focus loss enters the existing pause path even in the terminal hold.
+		# Focus loss suspends presentation without making a static result manually pausable.
 		game._notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_OUT)
 		var wait_before: float=game.finish_wait
 		var effects_before: Dictionary=game.defense_effects.snapshot()
 		var age_before: float=game.defense_effects.shake_age_ms
 		game._process(2)
-		check(game.paused and game.finish_wait==wait_before and game.sent,"focus pause freezes victory hold instead of completing offscreen")
+		check(not game.paused and game._lifecycle_suspended and game.finish_wait==wait_before and game.sent,"focus pause freezes victory hold instead of completing offscreen")
 		check(game.defense_effects.snapshot()==effects_before and game.defense_effects.shake_age_ms==age_before,"pause freezes terminal flash and shake")
 		check(proof(run)==accepted,"terminal pause leaves proof and RNG intact")
-		game.begin()
-		check(not game.paused and game.sent,"existing resume returns to terminal hold")
+		game._notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_IN)
+		game._process(0)
+		check(not game.paused and not game._lifecycle_suspended and game.sent,"existing resume returns to terminal hold")
 		game._process(.05)
 		check(game.defense_effects.camera_offset(Vector2(960,540),1)==Vector2.ZERO,"terminal shake expires at75ms or stays disabled in reduced motion")
 		while game.defense_effects.age_ms<game.defense_effects.duration_ms:

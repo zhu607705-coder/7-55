@@ -42,7 +42,7 @@ const INTEGER_RANGES := {
  "ui.libraryFinalsPuzzle.auditArrivalMinutes":[0,12], "ui.libraryFinalsPuzzle.auditPublicNoticeFloor":[0,63], "ui.libraryFinalsPuzzle.auditProofCount":[0,5], "ui.libraryFinalsPuzzle.bdCount":[0,3]
 }
 const NONNEGATIVE_INTEGERS := [
- "phoneBattery.rechargeCount", "flags.tiyiCrashCount", "flags.slashTapCount", "actOne.cc98Login.failureCount",
+ "flags.tiyiCrashCount", "flags.slashTapCount", "actOne.cc98Login.failureCount",
  "canteenHunt.drinkMixAttemptCount", "canteenHunt.orderAttemptCount", "canteenHunt.pickupAttemptCount", "canteenHunt.chaseAttemptCount", "canteenHunt.chaseBestDistance", "canteenHunt.chaseCollisions",
  "theaterHunt.ticketCodeAttempts", "theaterHunt.programWrongAttempts", "theaterHunt.spotlightMistakes",
  "qizhenLake.weatherControlAttempts", "qizhenLake.weatherControlBestMoves", "qizhenLake.boardingStrokeCount", "qizhenLake.capsizeCount", "qizhenLake.directPaperCastFailures", "qizhenLake.chaseAttempts", "qizhenLake.dockCollisionCount", "qizhenLake.swanAlertLevel", "qizhenLake.reflectionMistakes", "qizhenLake.decoyAttempts", "qizhenLake.mistAttempts",
@@ -102,6 +102,12 @@ func validate(value: Variant) -> bool:
   if not _allowed(_path_value(value,path),INLINE_ENUMS[path]): return _fail(path)
  for path in INTEGER_RANGES:
   if not _number(_path_value(value,path),INTEGER_RANGES[path][0],INTEGER_RANGES[path][1]): return _fail(path)
+ # Accept legacy native battery metadata only with its original scalar types;
+ # the load/import boundary discards it after validation.
+ var battery: Variant=value.get("phoneBattery")
+ if not battery is Dictionary: return _fail("phoneBattery")
+ if battery.has("lowPowerMode") and not battery.lowPowerMode is bool: return _fail("phoneBattery.lowPowerMode")
+ if battery.has("rechargeCount") and not _number(battery.rechargeCount,0): return _fail("phoneBattery.rechargeCount")
  for path in NONNEGATIVE_INTEGERS:
   if not _number(_path_value(value,path),0): return _fail(path)
  for path in ["wallet.campusCardCents","wallet.cashCents","chapter4.chaseAttempt","qizhenLake.journal.threadSeed"]:
@@ -109,6 +115,7 @@ func validate(value: Variant) -> bool:
  if not _number(_path_value(value,"actOne.cc98Login.lockUntilMs"),0,SAFE_INTEGER,true,true): return _fail("actOne.cc98Login.lockUntilMs")
  if not _number(_path_value(value,"clockCalibration.selectedTargetSeconds"),0,86399,true,true): return _fail("clockCalibration.selectedTargetSeconds")
  if not _number(_path_value(value,"ui.brightness"),0,100,false): return _fail("ui.brightness")
+ if not preload("res://scripts/ui/phone_brightness_policy.gd").valid_preference(value.ui): return _fail("ui.brightnessPreference")
  for path in ["qizhenLake.chaseDistance","qizhenLake.chaseBestDistance"]:
   if not _number(_path_value(value,path),0,1000,false): return _fail(path)
  var rotations: Variant=_path_value(value,"qizhenLake.signRotations")

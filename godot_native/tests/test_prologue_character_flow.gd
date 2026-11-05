@@ -10,8 +10,10 @@ func check(ok:bool,label:String)->void:
 func run()->void:
  check(Flow.FIELD_OCCUPANCY>=.9 and Flow.FLOW_CELL.x*Flow.FLOW_CELL.y/(Flow.STROKE_CELL.x*Flow.STROKE_CELL.y)>=2,"smaller continuous field is at least ninety percent occupied with denser stroke glyphs")
  check(Flow.FLOW_CELL==Vector2(4,6) and Flow.STROKE_CELL==Vector2(3,4),"field glyphs shrink while stroke glyphs retain legible native pixel cells")
- check(Flow.assembly_distance(0)==90 and Flow.assembly_distance(.14)>0 and Flow.assembly_distance(.14)<90 and Flow.assembly_distance(.28)==0 and Flow.ASSEMBLY_DURATION<.5,"four-sided glyph assembly settles before the earliest real word contact")
- var fragments=["字还在往外走。","窗口却留在原处。","这一次，","让一个‘等’留下。"]
+ check(Flow.assembly_distance(0)==110 and Flow.assembly_distance(.21)>0 and Flow.assembly_distance(.21)<110 and Flow.assembly_distance(.42)==0 and Flow.ASSEMBLY_DURATION<.5,"four-sided glyph assembly settles before the earliest real word contact")
+ var earliest_contact=(Game.WordModel.BOARD_Y-Game.WordModel.BOARD_SIZE.y/2-Game.WordModel.rotated_extent(Vector2(110,52)/2,PI/60).y-294)/420.0
+ check(Flow.ASSEMBLY_DURATION<earliest_contact,"assembly settles before the earliest tilted target can physically reach the board")
+ var fragments=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/prologue-interception.content.json")).stages[0].fragments
  var parts=Flow.cloud_parts(fragments)
  var authored=""
  for fragment:String in fragments:
@@ -21,12 +23,13 @@ func run()->void:
  var continuous=true;var seen:Array=[]
  for frame:int in 1200:
   var words=Flow.cloud_words(fragments,frame/60.0)
-  continuous=continuous and not words.is_empty() and words.size()<=6
+  # A short narrative fragment may leave a gap; do not add teaching filler.
+  continuous=continuous and words.size()<=mini(6,parts.size())
   for word:Dictionary in words:
    if not word.text in seen:seen.append(word.text)
    var ids=Flow.mask_letters(word.text)
    for index:int in word.text.length():continuous=continuous and ids[index]>=0
- check(continuous and seen.size()==parts.size(),"clue cloud continuously exposes all original parts using the same valid ASCII Hanzi masks")
+ check(continuous and seen.size()==parts.size(),"short clue cloud exposes every authored part with valid ASCII masks, without filler")
  var first=Flow.cloud_words(fragments,1.0)
  var next=Flow.cloud_words(fragments,1.01)
  check(first[0].text==next[0].text and is_equal_approx(next[0].position.y-first[0].position.y,Flow.CLUE_SPEED*.01),"word cloud descends continuously rather than flashing or holding a static page")
@@ -83,7 +86,7 @@ func run()->void:
  g._switch("intercept");g._process(.01)
  check(is_equal_approx(g.text_flow_clock,carried_clock+.01),"presentation clock survives the reading-to-interception handoff without a reset")
  g._pause();g._process(0)
- check(g.resume_button.name=="PrologueResume" and g.resume_button.text=="返回字流" and g.resume_button.position.y>g.field.position.y+g.field.size.y*.8,"explicit system pause remains recoverable")
+ check(g.resume_button.name=="PrologueResume" and g.resume_button.text=="继续" and g.pause_overlay.visible and not g.resume_button.disabled,"explicit system pause remains recoverable")
  g._resume();g._process(0)
  var normal_reading=g.session.clue_duration()
  g.start({"resume":true,"reduced_motion":true});g._process(0)
@@ -92,7 +95,7 @@ func run()->void:
  check(Array(bodies.slice(2)).all(func(body):return body.z==0),"reduced motion omits the extra clutter and animated clue layers")
  check(is_equal_approx(g.session.clue_duration(),normal_reading*2),"reduced motion keeps the full original static-clue reading interval despite faster ordinary pacing")
  var removed_text=["再试这段字流","重看完整线索","继续寻找","显示落点帮助"]
- check(g.get_children().all(func(child):return not child is Button or not child.text in removed_text),"retry and clue actions are removed from the scene rather than merely hidden")
+ check(g.get_children().all(func(child):return not child is Button or not child.text in removed_text),"retired auto-continue and clue-review actions remain absent")
  g._pause();g._process(0)
  var saved=g.session.clock;var field_clock=g.field_material.get_shader_parameter("flow_clock")
  for frame:int in 60:g._process(.016)

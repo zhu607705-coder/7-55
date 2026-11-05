@@ -15,7 +15,7 @@ var receipt: Control
 var seal: Control
 var headline: Label
 var detail: Control
-var pause_card: Panel
+var frozen := false
 var print_mask: Control
 var printer_slot: Panel
 var print_head: Panel
@@ -75,9 +75,6 @@ func _ready() -> void:
 	_label(detail,"签到",Rect2(30,151,100,28),15,MUTED).horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_label(detail,"07:55",Rect2(174,151,100,28),18,INK).horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_panel(detail,Rect2(30,187,244,1),Color("D8C7A0"))
-	_label(detail,"校园网",Rect2(30,199,100,28),15,MUTED).horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	_label(detail,"已接入",Rect2(174,199,100,28),15,INK).horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	_label(detail,"课程记录已提交",Rect2(20,367,264,26),14,MUTED)
 	ink_finish = InkFinish.new(); ink_finish.name = "CheckinPrintedInkFinish"
 	ink_finish.size = PAPER_SIZE; ink_finish.mouse_filter = Control.MOUSE_FILTER_IGNORE; receipt.add_child(ink_finish)
 	# The machine is in front of the moving paper. Its dark opening is exactly
@@ -92,12 +89,6 @@ func _ready() -> void:
 	print_head.name = "CheckinPrintHead"; print_head.z_index = 12
 	head_cursor = _panel(print_head,Rect2(0,0,32,2),Color("F4CD77"))
 	head_cursor.name = "CheckinPrintHeadReflection"
-	pause_card = _panel(self,Rect2(50,294,330,230),Color("F4EAD5"),Color("A1744E"),22)
-	pause_card.name = "CheckinSuccessPause"
-	var pause_style: StyleBoxFlat = pause_card.get_theme_stylebox("panel")
-	pause_style.shadow_color = Color("70503B",.2); pause_style.shadow_size = 2;pause_style.shadow_offset=Vector2(3,3)
-	_label(pause_card,"已暂停",Rect2(20,26,290,38),25,INK)
-	_label(pause_card,"继续后从这里播放",Rect2(20,83,290,26),14,MUTED)
 	pose(0.0,false,false)
 
 static func parchment_texture()->ImageTexture:
@@ -145,7 +136,7 @@ func _label(parent: Control,text: String,rect: Rect2,font_size: int,color: Color
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE;label.add_theme_font_override("font",PIXEL_FONT); label.add_theme_font_size_override("font_size",font_size); label.add_theme_color_override("font_color",color)
 	parent.add_child(label); return label
 
-func pose(seconds: float,reduced: bool,frozen: bool) -> void:
+func pose(seconds: float,reduced: bool,is_frozen: bool) -> void:
 	if not is_instance_valid(receipt): return
 	sample_time = maxf(0,seconds); reduced_motion = reduced
 	print_progress = 1.0 if reduced else clampf(sample_time/PRINT_DURATION,0,1)
@@ -163,7 +154,7 @@ func pose(seconds: float,reduced: bool,frozen: bool) -> void:
 	head_cursor.position.x = (print_head.size.x-head_cursor.size.x)*(.5-.5*cos(print_progress*TAU*5))
 	ink_finish.active = not reduced and sample_time>=FINISH_START and sample_time<FINISH_START+FINISH_DURATION
 	ink_finish.progress = clampf((sample_time-FINISH_START)/FINISH_DURATION,0,1); ink_finish.queue_redraw()
-	pause_card.visible = frozen
+	frozen = is_frozen # The owning activity supplies the single shared pause UI.
 	queue_redraw()
 
 func _draw() -> void:
@@ -178,4 +169,4 @@ func _shadow_box() -> StyleBoxFlat:
 	return style
 
 func read_presentation() -> Dictionary:
-	return {"seconds":sample_time,"reduced_motion":reduced_motion,"receipt_position":receipt.position,"seal_scale":seal.scale,"paused":pause_card.visible,"print_progress":print_progress,"visible_paper_height":visible_paper_height,"leading_edge_y":PAPER_ORIGIN.y+visible_paper_height,"print_complete":print_complete,"ink_progress":ink_progress,"printer_slot":Rect2(printer_slot.position,printer_slot.size),"print_mask":Rect2(print_mask.position,print_mask.size),"paper_axis_aligned":receipt.rotation==0.0 and receipt.scale==Vector2.ONE}
+	return {"seconds":sample_time,"reduced_motion":reduced_motion,"receipt_position":receipt.position,"seal_scale":seal.scale,"paused":frozen,"print_progress":print_progress,"visible_paper_height":visible_paper_height,"leading_edge_y":PAPER_ORIGIN.y+visible_paper_height,"print_complete":print_complete,"ink_progress":ink_progress,"printer_slot":Rect2(printer_slot.position,printer_slot.size),"print_mask":Rect2(print_mask.position,print_mask.size),"paper_axis_aligned":receipt.rotation==0.0 and receipt.scale==Vector2.ONE}

@@ -557,13 +557,6 @@ body [contenteditable]:not([contenteditable="false"]) * {
 .sb-right.is-low .sb-batt-num,
 .sb-right.is-critical .sb-batt-num { color: var(--red); }
 
-.sb-right.is-saving .sb-batt-num::after {
-  color: #2d7a52;
-  content: "省";
-  font-size: 9px;
-  margin-left: 2px;
-}
-
 .sb-battery {
   border: 2px solid var(--ink);
   height: 12px;

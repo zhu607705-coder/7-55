@@ -9,6 +9,10 @@ const BACKUP_KEY := "seven_fifty_five_state_backup"
 const POSTS_KEY := "seven-fifty-five.cc98-posts.v2"
 const QUEST_POSTS_KEY := "seven-fifty-five.cc98-quest-post-overrides.v1"
 const MAX_BYTES := 8 * 1024 * 1024
+# Exact predecessor before removing the phone charging fields. C4 source facts
+# still replay under the current normalizer before this legacy stamp is accepted.
+const PHONE_CHARGING_PREDECESSOR_SHA := "2ab5784fb7e876c44b0210710addc911706943be6a0756d3569d28bec52c4334"
+const PHONE_BRIGHTNESS_PREDECESSOR_SHA := "1276e9adc8bfa91534268d6d71f21e95c27dd3d4b2067c4a83ed828ee86edfa4"
 const ELEVATOR_FACTS := ["classroom_104_chalk_residual_observed", "classroom_105_terminal_replay_checked", "elevator_history_observed", "elevator_history_calibrated"]
 var _program: Dictionary = {}
 var _checked_bytes := 0
@@ -196,7 +200,7 @@ func validate_import_proof(state: Dictionary, kind: String = "stair") -> bool:
 	var result := _decode_one(source,defaults)
 	if not result.ok: return false
 	var expected: Dictionary = result.state.native.save_import
-	if origin.get("normalizer_sha256") != expected.normalizer_sha256 or origin.get("legacy_completed") != expected.legacy_completed: return false
+	if origin.get("normalizer_sha256") not in [expected.normalizer_sha256,PHONE_CHARGING_PREDECESSOR_SHA,PHONE_BRIGHTNESS_PREDECESSOR_SHA] or origin.get("legacy_completed") != expected.legacy_completed: return false
 	if origin.get("proof_facts") != expected.proof_facts: return false
 	var chapter = state.get("chapter4")
 	if not chapter is Dictionary or not chapter.get("factIds") is Array: return false
@@ -209,9 +213,30 @@ func validate_import_proof(state: Dictionary, kind: String = "stair") -> bool:
 	if kind not in ["closure","stair"] or not native.get(field) is Dictionary or not result.state.native.get(field) is Dictionary: return false
 	# JSON files reload integer-valued numbers as floats. Compare JSON values,
 	# not Godot's strict nested int/float identity; object key order is irrelevant.
-	if JSON.parse_string(JSON.stringify(native[field])) != JSON.parse_string(JSON.stringify(result.state.native[field])): return false
+	var proof: Dictionary=native[field].duplicate(true)
+	if proof.get("normalizer_sha256") != origin.normalizer_sha256: return false
+	proof.normalizer_sha256=expected.normalizer_sha256
+	if JSON.parse_string(JSON.stringify(proof)) != JSON.parse_string(JSON.stringify(result.state.native[field])): return false
 	if kind == "closure": return _same(chapter.get("completed"),true) and "exterior_closure_acknowledged" in chapter.factIds
 	return "misaligned_stair_solved" in chapter.factIds and "a3_reference_observed" in chapter.factIds
+
+func upgrade_phone_predecessor_provenance(state: Dictionary) -> void:
+	var native: Dictionary=state.get("native",{})
+	var origin: Variant=native.get("save_import")
+	if not origin is Dictionary or origin.get("normalizer_sha256") not in [PHONE_CHARGING_PREDECESSOR_SHA,PHONE_BRIGHTNESS_PREDECESSOR_SHA]: return
+	var fields: Array=[]
+	for kind: String in ["stair","closure"]:
+		var field: String="c4_stair_proof" if kind=="stair" else "c4_closure_proof"
+		if native.get(field) is Dictionary and native[field].get("source")=="browser_save":
+			if not validate_import_proof(state,kind): return
+			fields.append(field)
+	var has_elevator: bool=native.get("c4_elevator_transport",false)==true and not native.get("c4_native_elevator_completed",false)
+	if has_elevator and not validate_import_proof(state,"elevator"): return
+	if fields.is_empty() and not has_elevator: return
+	var current: String=str(_program.sourceHashes.get("src/core/SaveStore.ts",""))
+	if current.is_empty(): return
+	origin.normalizer_sha256=current
+	for field: String in fields: native[field].normalizer_sha256=current
 
 func _same(a: Variant, b: Variant) -> bool:
 	return typeof(a) == typeof(b) and a == b

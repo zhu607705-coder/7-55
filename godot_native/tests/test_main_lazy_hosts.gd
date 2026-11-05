@@ -28,7 +28,7 @@ func run() -> void:
 	check(shell.library_story_host==null and shell.c3_scene_host==null and shell.c3_narrative_host==null,"Chapter 1 creates none of the three later story hosts")
 	check(shell.later_phone_builder==null,"Chapter 1 does not construct later phone pages")
 	check(is_instance_valid(shell.audio_director) and shell.audio_director.is_processing(),"early chapter sound director remains live")
-	check(is_instance_valid(shell.home_charging_host),"early charging interaction remains available")
+	check(shell.get("home_charging_host")==null and is_instance_valid(shell.battery_prank),"early phone keeps its nonblocking battery story without a retired charging host")
 	state.open_page("photos"); await frames()
 	check(shell.later_phone_builder==null,"ordinary early photos do not load recovered-photo builder")
 	var library_state: Dictionary=state.initial()

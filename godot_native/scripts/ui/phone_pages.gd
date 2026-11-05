@@ -1,5 +1,6 @@
 extends RefCounted
 const PixelEdges = preload("res://scripts/ui/pixel_edges.gd")
+const PhoneOverlay = preload("res://scripts/ui/phone_overlay_shell.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
 const CommunityPortal=preload("res://scripts/platform/community_portal.gd")
 ## Native reconstructions of original phone app hierarchies. Source CSS colors and art.
@@ -9,8 +10,10 @@ signal page_requested(page: String)
 signal presentation_requested(cue: String)
 signal document_requested(config: Dictionary)
 signal brightness_preview_requested(value: float)
+signal local_notice_shown
 const OpeningPresentation = preload("res://scripts/ui/native_opening_presentation.gd")
 const PhoneNotice = preload("res://scripts/ui/native_phone_notice.gd")
+const LocalNotice = preload("res://scripts/ui/phone_local_notice.gd")
 const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
 const PaperInk = preload("res://scripts/ui/paper_ink_material.gd")
 const PhonePalette = preload("res://scripts/ui/phone_palette.gd")
@@ -78,7 +81,6 @@ var zjuding_detail = ""
 var zjuding_visitor = {"name":"","date":"","purpose":"校园参观"}
 var zjuding_feedback = {"category":"功能建议","content":""}
 var zjuding_feedback_status = ""
-const JumpNotice=preload("res://scripts/ui/phone_jump_notice.gd")
 const HomeButton = preload("res://scripts/ui/home_app_button.gd")
 const PhoneChrome = preload("res://scripts/ui/phone_chrome.gd")
 const Posts = preload("res://scripts/data/cc98_store.gd")
@@ -104,12 +106,9 @@ const MUTED = Color("637080")
 var handled: Array = []
 var s: Dictionary = {}
 var previous_page = ""
-var home_desk: RefCounted
 var displayed_balance_shifted = false
-var paper_ink_page := false
 
 func build(page: String, view: Dictionary, state: Dictionary) -> Control:
-	paper_ink_page = page in ["phone_home","checkin","zjuding","control_center"] or page.begins_with("library_")
 	s = state
 	bonsai_growth.route(page)
 	entry_session.route(s)
@@ -162,6 +161,7 @@ func build(page: String, view: Dictionary, state: Dictionary) -> Control:
 		root.custom_minimum_size.y = maxf(APP_HEIGHT,root.custom_minimum_size.y)
 		root.size.y = root.custom_minimum_size.y
 	root.set_meta("handled_action_ids",handled.duplicate())
+	if root.get_meta("source_overlay",false):return PhoneOverlay.wrap(self,root)
 	var outer = Control.new()
 	var factor = PHONE_SCALE
 	outer.custom_minimum_size = Vector2(424,854 if bare else root.custom_minimum_size.y*factor)
@@ -179,11 +179,12 @@ func build(page: String, view: Dictionary, state: Dictionary) -> Control:
 
 func _base(color: Color, height: float = 570) -> Control:
 	var root = Control.new()
+	root.set_meta("phone_ui_scope",true)
 	root.custom_minimum_size = Vector2(378,height)
 	root.size = root.custom_minimum_size
 	root.clip_contents = true
 	var background = ColorRect.new()
-	background.color = PaperInk.PAPER if paper_ink_page and color.a>.95 and color.get_luminance()>.65 else color
+	background.color = color
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.add_child(background)
@@ -320,11 +321,7 @@ func _return_zjuding(page: String = "hub") -> void:
 	page_requested.emit("zjuding")
 
 func _header(root: Control, title: String, color: Color = Color.WHITE, ink: Color = INK, back: Callable = Callable(), kind: String = "back", label: String = "返回手机主页") -> void:
-	if paper_ink_page:
-		ink=PaperInk.INK
-		_paper_panel(root,Rect2(0,0,378,54),PaperInk.PAPER,Color.TRANSPARENT,0,0)
-	else:
-		_panel(root,Rect2(0,0,378,54),color)
+	_panel(root,Rect2(0,0,378,54),color)
 	_nav(root,kind,label,back if back.is_valid() else func(): page_requested.emit("phone_home"),Rect2(7,5,40,44),color,ink)
 	var heading=_label(root,title,Rect2(50,5,278,44),16,ink,HORIZONTAL_ALIGNMENT_CENTER)
 	heading.autowrap_mode=TextServer.AUTOWRAP_OFF; heading.clip_text=true; heading.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
@@ -382,12 +379,6 @@ func _wake() -> Control:
 	root.set_meta("handles_app_grid",true)
 	_label(root,"07:55",Rect2(Vector2(20,16)/PHONE_SCALE,Vector2(180,36)/PHONE_SCALE),int(round(NativeUi.FONT_DISPLAY/PHONE_SCALE))).name="WakeTime"
 	_label(root,"ZJUWLAN · %s%%" % int(s.phoneBattery.percent),Rect2(Vector2(210,16)/PHONE_SCALE,Vector2(194,36)/PHONE_SCALE),NativeUi.font_size_for_scale(NativeUi.FONT_LABEL,PHONE_SCALE),INK,HORIZONTAL_ALIGNMENT_RIGHT).name="WakeNetwork"
-	var desk = load("res://scripts/ui/home_charging_dock.gd").new()
-	desk.name = "HomeChargingDock"; desk.position = Vector2(86, 555); root.add_child(desk)
-	desk.configure(home_desk, func(): action_requested.emit("c1_desk_charge", null), func(): action_requested.emit("c1_desk_cancel", null), func(): action_requested.emit("c1_desk_pickup", null), s)
-	if home_desk != null and home_desk.returning(s):
-		root.set_meta("handles_all_actions", true)
-		return root
 	if not s.native.get("wake_warned",false):
 		_opening_chip(root,"（我）",Vector2(189,303)).name="WakePlayerChip"
 		_opening_button(root,"……再睡5分钟……",Rect2(45,338,288,72),"c1_wake","paper")
@@ -400,11 +391,6 @@ func _wake() -> Control:
 	handled.append("c1_wake")
 	return root
 
-func _desk_return_icon(root: Control, y: float = 4.0) -> void:
-	if home_desk == null or not home_desk.available(s): return
-	var close = _nav(root, "close", "放下手机，回到桌面", func(): action_requested.emit("c1_desk_putdown", null), Rect2(330, y, 44, 44), Color("fff4d8", .85), INK)
-	close.name = "PutPhoneOnDesk"
-
 func _home_rect(x: float, y: float, w: float, h: float) -> Rect2:
 	return Rect2(Vector2(x,y-40)/PHONE_SCALE,Vector2(w,h)/PHONE_SCALE)
 
@@ -412,16 +398,13 @@ func _home() -> Control:
 	var root = _base(PAPER,643)
 	root.set_meta("handles_app_grid",true)
 	var artwork=HomeArt.new(); artwork.name="SourceHomeArtwork"; artwork.size=Vector2(378,APP_HEIGHT); artwork.tower_open=s.flags.towerOpened; artwork.flower_bloomed=s.flags.flowerBloomed; root.add_child(artwork)
-	# Keep the top friend-notification hit target untouched.
-	_desk_return_icon(root, 60)
 	if s.actOne.phase=="prologue":
 		var tower=_drop_action(root,_home_rect(288,116,66,330),"c1_tower"); tower.name="TowerDropTarget"; tower.disabled=s.native.get("tower_key_pending",false)
 		if s.native.get("tower_key_pending",false) and s.items.towerKey and not s.flags.towerOpened: _animate_tower_key(root)
-	var bonsai=_button(root,"",_home_rect(352,558,50,58),func(): page_requested.emit("bonsai"),Color.TRANSPARENT,INK,0,Color.TRANSPARENT); bonsai.name="HomeBonsaiOpen"; bonsai.tooltip_text="湖边盆栽，已开花" if s.flags.flowerBloomed else "湖边盆栽"
+	var bonsai=_button(root,"",HomeArt.bonsai_hit_rect(),func(): page_requested.emit("bonsai"),Color.TRANSPARENT,INK,0,Color.TRANSPARENT); bonsai.name="HomeBonsaiOpen"; bonsai.tooltip_text="湖边盆栽，已开花" if s.flags.flowerBloomed else "湖边盆栽"
 	for mode in ["normal","hover","pressed"]: bonsai.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 	# Exact source widget geometry. Whole-card click has no extra visible button.
 	var rain=not s.qizhenLake.rainSafetyCleared
-	_panel(root,_home_rect(18,59,212,182),Color("775c31",.25))
 	_panel(root,_home_rect(15,56,212,182),Color("fff8e2",.85),INK,0,2)
 	var cloud=Polygon2D.new(); cloud.color=Color("bfd1db")
 	var cloud_points=PackedVector2Array()
@@ -449,7 +432,7 @@ func _home() -> Control:
 	var notifications=_home_notifications()
 	var heights: Array=[]; var group_height=0
 	for notice in notifications:
-		var height=72 if str(notice.body).length()>26 else 56
+		var height=ceili(PhoneNotice.summary_height(392/PHONE_SCALE,str(notice.body))*PHONE_SCALE)
 		heights.append(height); group_height+=height
 	group_height+=maxi(0,notifications.size()-1)*7
 	var y=810-group_height
@@ -481,25 +464,21 @@ func _home() -> Control:
 			_:
 				if triangle_active: _label(icon,"▶",Rect2(1,1,30,30),21,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
 				else: _panel(icon,Rect2(6,5,19,21),Color.TRANSPARENT,Color.WHITE,0,2)
-		_label(card,"方向校准" if triangle_active else str(notice.title),Rect2(60,6,239,19),16)
-		_label(card,"头像方向正确，正文方向未知。" if triangle_active else str(notice.body),Rect2(60,27,239,(heights[n]-30)/PHONE_SCALE),10,Color("8d7f66"))
-		_label(card,str(notice.time),Rect2(299,6,41,18),10,Color("c85454"),HORIZONTAL_ALIGNMENT_RIGHT)
+		PhoneNotice.add_summary(card,"方向校准" if triangle_active else str(notice.title),"头像方向正确，正文方向未知。" if triangle_active else str(notice.body),str(notice.time))
 		y+=heights[n]+7
 	# Source page dots remain decorative and cannot route or advance progression.
 	for i in range(3): _panel(root,_home_rect(184+i*22,828,10,10),INK if i==0 else Color("c5c3b9"),INK,0,2)
 	if s.qizhenLake.phase=="complete" and not s.chapterThreeInterlude.completed:
-		var note=_button(root,"",_home_rect(12,48,400,62),func(): page_requested.emit("c35_recovery"),Color("fffdf4"),INK,0,INK); note.name="HomeInterludeTopNotice"; JumpNotice.routed_banner(note)
+		var note=_button(root,"",_home_rect(12,48,400,PhoneNotice.summary_height(400/PHONE_SCALE,"检测到 7 分 55 秒未同步记录")*PHONE_SCALE),func(): page_requested.emit("c35_recovery"),Color("fffdf4"),INK,0,INK); note.name="HomeInterludeTopNotice"; note.set_meta("phone_notice_lane","home_banner")
 		_panel(note,Rect2(10,10,34,34),Color("4d7ed9"),INK,0,2)
 		for i in range(3): _panel(note,Rect2(16,17+i*7,22-i*4,3),Color("d9f2e6"))
-		_label(note,"记录恢复",Rect2(54,7,230,21),16)
-		_label(note,"检测到 7 分 55 秒未同步记录",Rect2(54,30,268,19),10,JumpNotice.DETAIL)
-		_label(note,"现在",Rect2(317,7,32,20),10,JumpNotice.TIME)
+		PhoneNotice.add_summary(note,"记录恢复","检测到 7 分 55 秒未同步记录","现在")
 	elif (_friend_stage()=="prologue" and not s.flags.codeScattered) or (_friend_stage()=="followup" and s.actOne.phase=="friend_message_required"):
-		var note = _page(root,"",Rect2(12,4,352,50),"wechat",Color("f6f2e7"))
-		note.name="HomeFriendTopNotice"; JumpNotice.routed_banner(note)
+		var friend_body="签上了吗？？" if s.actOne.phase=="friend_message_required" else "速来！老师开始雷达签到！"
+		var note = _page(root,"",Rect2(12,4,352,PhoneNotice.summary_height(352,friend_body)),"wechat",PhoneNotice.PAPER)
+		note.name="HomeFriendNotice"; note.set_meta("phone_notice_lane","home_banner")
 		_app_icon(_panel(note,Rect2(10,8,34,34),Color("61b58c"),INK,4,1),"wechat",.7)
-		_label(note,"朋友",Rect2(54,4,232,22),16)
-		_label(note,"签上了吗？？" if s.actOne.phase=="friend_message_required" else "速来！老师开始雷达签到！",Rect2(54,26,275,19),12,JumpNotice.DETAIL)
+		PhoneNotice.add_summary(note,"朋友",friend_body)
 
 	return root
 
@@ -593,6 +572,7 @@ func _build_home_apps(root: Control) -> void:
 		layout.buttons[id]=button
 		layout.labels[id]=_label(root,Utilities.LABELS[id],Rect2(point+Vector2(-1,53.5),Vector2(50,16)),12,INK,HORIZONTAL_ALIGNMENT_CENTER)
 		layout.labels[id].name="OriginalAppName_"+id
+		preload("res://scripts/ui/phone_launcher_icons.gd").apply_feedback(button,colors[id],layout.labels[id])
 		button.pressed.connect(func():
 			if not button.can_activate(): return
 			if id=="settings" and s.actOne.phase=="prologue": action_requested.emit("c1_gear",null)
@@ -830,9 +810,7 @@ func _friend_chat() -> Control:
 		for i in range(4):
 			var digit=_label(glyphs,"▢" if s.flags.codeScattered else "▓",Rect2(i*34,0,28,42),wechat_social.font_size(self,22),Color("bbbbbb") if s.flags.codeScattered else INK,HORIZONTAL_ALIGNMENT_CENTER)
 			digit.set_meta("flight_origin",Vector2(i*34,0));digits.append(digit)
-		if s.flags.codeScattered:
-			wechat_social.copy(column,"任务：找回四位签到码",wechat_social.font_size(self,17),MUTED)
-		else:
+		if not s.flags.codeScattered:
 			message.visible=false
 			var burst:=PanelContainer.new();burst.name="FriendAttackBurst";burst.position=Vector2(13,280);burst.size.x=352
 			var skin=_style(Color("100d13"),Color("74232c"),0,2)
@@ -906,40 +884,35 @@ func _conversation(_view: Dictionary) -> Control:
 	return root
 
 func _controls() -> Control:
-	# Source ControlCenter is an overlay over the entire 424×854 phone interior.
-	var height=854.0/PHONE_SCALE
-	var root=_base(Color(20/255.0,18/255.0,14/255.0,.45),height)
-	root.set_meta("source_overlay",true)
 	var close=func():
 		control_reset_confirm=false
 		action_requested.emit("native_control_center_close",null)
-	var backdrop=_button(root,"",Rect2(0,0,378,height),close,Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
-	backdrop.set_meta("tactile_exempt",true)
-	backdrop.name="ControlCenterBackdrop"
-	for mode in ["normal","hover","pressed","focus"]: backdrop.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
-	var panel_height=580.0+(53 if control_reset_confirm else 0)+(21 if int(s.phoneBattery.percent)==1 else 0)
+	var panel_height=514.0+(71 if control_reset_confirm else 0)
 	var community_y=panel_height-8
 	if CommunityPortal.available(): panel_height+=64
-	var panel=_paper_panel(root,Rect2(0,0,378,panel_height),PaperInk.PAPER,PaperInk.EDGE,0,2)
-	panel.mouse_filter=Control.MOUSE_FILTER_STOP; panel.name="ControlCenterPanel"
-	_label(panel,"7月9日 周四",Rect2(14,13,260,27),16)
-	var close_button=_nav(panel,"close","收起控制中心",close,Rect2(337,12,27,27),PAPER)
-	close_button.add_theme_font_size_override("font_size",16)
+	var chrome: Dictionary=PhoneOverlay.create(self,"7月9日 周四",close,panel_height,"ControlCenter")
+	var root: Control=chrome.root
+	var panel: Panel=chrome.panel
+
 	var network=str(s.networkMode)
 	for i in range(2):
 		var active=(network=="campus_wifi" if i==0 else network=="cellular")
-		var button=_act(panel,"",Rect2(14+i*180,51,170,56),"c1_network","校园网" if i==0 else "移动数据",Color("4d7ed9") if active else Color("cfd3d9"),Color.WHITE if active else INK,0,INK)
+		var network_fill=Color("d8e8e1") if active else Color("f3eddf")
+		var button=_act(panel,"",Rect2(14+i*180,51,170,56),"c1_network","校园网" if i==0 else "移动数据",network_fill,INK,0,INK)
+		button.set_meta("phone_button_role","composite")
+		button.set_meta("phone_button_selected",active)
+		button.set_meta("phone_button_fill",network_fill)
+		button.set_meta("phone_button_ink",INK)
+		button.set_meta("phone_button_border",INK)
 		button.name="ControlNetwork_"+("wifi" if i==0 else "cellular")
-		# Nested labels keep their selected white ink on an explicit dark face.
-		button.set_meta("tactile_variant","primary" if active else "secondary")
 		_panel(button,Rect2(9,10,34,34),Color.WHITE,INK,0,2)
 		if i==0:
 			Symbols.add_wifi(button,Rect2(9,10,34,34))
 		else:
 			for bar in range(4): _panel(button,Rect2(15+bar*5,34-bar*4,3,5+bar*4),INK)
-		_label(button,"ZJUWLAN" if i==0 else "移动数据",Rect2(50,12,115,19),12,Color.WHITE if active else INK)
-		_label(button,("已连接" if active else "未连接") if i==0 else ("使用中" if active else "已关闭"),Rect2(50,33,115,14),10,Color.WHITE if active else MUTED)
-	var music=_paper_panel(panel,Rect2(14,117,284,104),PaperInk.PAPER,PaperInk.EDGE,0,2)
+		_label(button,"ZJUWLAN" if i==0 else "移动数据",Rect2(50,9,115,22),13,INK).name="NetworkTitle"
+		_label(button,("已连接" if active else "未连接") if i==0 else ("使用中" if active else "已关闭"),Rect2(50,32,115,18),11,Color("365b42") if active else PhoneNotice.MUTED).name="NetworkStatus"
+	var music=_panel(panel,Rect2(14,117,284,104),Color("cfd3d9"),INK,0,2)
 	_source_icon(music,"music",Rect2(11,9,27,27))
 	_label(music,"正在播放：早八进行曲" if s.ui.musicPlaying else "未在播放",Rect2(47,12,225,25),12)
 	_act(music,"❚❚" if s.ui.musicPlaying else "▶",Rect2(12,51,49,40),"c1_music",null,INK,PAPER,0,INK).name="ControlMusicPlay"
@@ -967,7 +940,7 @@ func _controls() -> Control:
 	_source_icon(slider,"sun",Rect2(17,72,23,23))
 	var brightness={"held":false,"value":float(s.ui.brightness)}
 	var update=func(y: float):
-		brightness.value=clampf(round(100*(1-y/104.0)),0,45 if s.phoneBattery.lowPowerMode else 100)
+		brightness.value=clampf(round(100*(1-y/104.0)),0,100)
 		fill.position.y=102-brightness.value; fill.size.y=brightness.value
 		slider.tooltip_text="亮度 %d%%" % int(brightness.value)
 		brightness_preview_requested.emit(brightness.value)
@@ -978,7 +951,7 @@ func _controls() -> Control:
 			slider.accept_event()
 		elif event is InputEventMouseMotion and brightness.held: update.call(event.position.y); slider.accept_event()
 		elif event is InputEventKey and event.pressed and event.keycode in [KEY_UP,KEY_DOWN]:
-			var value=clampf(brightness.value+(10 if event.keycode==KEY_UP else -10),0,45 if s.phoneBattery.lowPowerMode else 100)
+			var value=clampf(brightness.value+(10 if event.keycode==KEY_UP else -10),0,100)
 			brightness.value=value; update.call(104*(1-value/100)); action_requested.emit("c1_brightness",value); slider.accept_event())
 	handled.append("c1_brightness")
 	root.tree_exiting.connect(func(): brightness_preview_requested.emit(-1))
@@ -994,28 +967,25 @@ func _controls() -> Control:
 		_label(button,data[1],Rect2(0,48,80,18),12,INK,HORIZONTAL_ALIGNMENT_CENTER)
 	handled.append("c1_auto_rotate")
 	var critical=int(s.phoneBattery.percent)<=5
-	var power=_paper_panel(panel,Rect2(14,313,350,141+(21 if int(s.phoneBattery.percent)==1 else 0)),Color("edd2cf") if critical else Color("d8eadb") if s.phoneBattery.lowPowerMode else PaperInk.PAPER,PaperInk.EDGE,0,2)
+	var power=_panel(panel,Rect2(14,313,350,55),Color("edd2cf") if critical else Color("d9dde2"),INK,0,2)
+	power.name="ControlBattery"
 	_label(power,"电池 %d%%" % int(s.phoneBattery.percent),Rect2(9,8,267,20),13)
-	_label(power,"打开应用不额外扣电",Rect2(9,30,267,17),10,MUTED)
 	_panel(power,Rect2(305,10,35,28),Color("c85454") if critical else Color("2d7a52"),INK,0,2)
 	_label(power,"BAT",Rect2(305,10,35,28),9,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
-	_panel(power,Rect2(9,55,332,12),Color("f4f0e7"),INK,0,2)
-	_panel(power,Rect2(11,57,maxf(2,328*float(s.phoneBattery.percent)/100),8),Color("c85454") if critical else Color("2d7a52"))
-	var low_power=_act(power,"",Rect2(9,76,332,35),"phone_low_power",null,Color("f5c542") if s.phoneBattery.lowPowerMode else PAPER,INK,0,INK); low_power.name="LowPowerToggle"
-	_label(low_power,"关闭低电量模式" if s.phoneBattery.lowPowerMode else "开启低电量模式",Rect2(8,6,167,25),12)
-	_label(low_power,"解除亮度上限，可手动调高" if s.phoneBattery.lowPowerMode else "亮度限至 45%，暂停音乐",Rect2(169,3,155,29),8,MUTED,HORIZONTAL_ALIGNMENT_RIGHT)
-	_label(power,"剧场入口左侧设有充电服务站，需走到设备旁接线。" if s.get("rpgScene","")=="theater_interior" else "可从主页或盆栽放下手机，点桌面充电座接线。" if s.actOne.phase=="prologue" else "充电需要在现场与充电服务站交互。",Rect2(9,118,332,18),10)
-	if int(s.phoneBattery.percent)==1: _label(power,"电量仅剩 1%，请寻找现场充电服务站。",Rect2(9,139,332,18),10,Color("7a241f"))
-	var save_y=467+(21 if int(s.phoneBattery.percent)==1 else 0)
-	var saves=_paper_panel(panel,Rect2(14,save_y,350,95+(53 if control_reset_confirm else 0)),PaperInk.PAPER,PaperInk.EDGE,0,2)
+	_panel(power,Rect2(9,35,332,12),Color("f4f0e7"),INK,0,2)
+	_panel(power,Rect2(11,37,328*clampf(float(s.phoneBattery.percent),0,100)/100,8),Color("c85454") if critical else Color("2d7a52"))
+	var save_y=381
+	var saves=_panel(panel,Rect2(14,save_y,350,95+(71 if control_reset_confirm else 0)),PhoneNotice.PAPER,INK,0,2)
+	saves.name="ControlSaveActions"
 	_label(saves,"游戏进度",Rect2(9,8,267,20),13)
 	_label(saves,"自动保存已开启",Rect2(9,30,267,17),10,MUTED)
 	_panel(saves,Rect2(299,10,41,28),Color("1e5da8"),INK,0,2)
 	_label(saves,"SAVE",Rect2(299,10,41,28),9,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
 	if control_reset_confirm:
-		_label(saves,"将重新开始主线，旧账号进度保留为备份。个人编辑内容保留。" if OS.has_feature("web") else "将清除章节、道具和谜题进度。编辑过的 CC98 帖子会保留。",Rect2(9,55,332,44),12,Color("5d2424"))
-		_button(saves,"取消",Rect2(9,107,162,31),func(): control_reset_confirm=false; action_requested.emit("phone_refresh",{}),PAPER).name="ControlResetCancel"
-		_act(saves,"确认重置",Rect2(179,107,162,31),"native_reset_progress",null,Color("b64b4b"),Color.WHITE,0).name="ControlResetConfirm"
+		var confirmation=_label(saves,"将重新开始主线，旧账号进度保留为备份。个人编辑内容保留。" if OS.has_feature("web") else "将清除章节、道具和谜题进度。编辑过的 CC98 帖子会保留。",Rect2(9,55,332,58),12,PhoneNotice.accent_for("提示"))
+		confirmation.name="ControlResetWarning";PhoneNotice.style_inline(confirmation,"warning",12)
+		_button(saves,"取消",Rect2(9,121,162,35),func(): control_reset_confirm=false; action_requested.emit("phone_refresh",{}),PAPER).name="ControlResetCancel"
+		_act(saves,"确认重置",Rect2(179,121,162,35),"native_reset_progress",null,Color("b64b4b"),Color.WHITE,0).name="ControlResetConfirm"
 	else:
 		_act(saves,"立即保存",Rect2(9,56,162,31),"native_save_now",null,PAPER).name="ControlSaveNow"
 		_button(saves,"重置剧情进度",Rect2(179,56,162,31),func(): control_reset_confirm=true; action_requested.emit("phone_refresh",{}),Color("b64b4b"),Color.WHITE,0).name="ControlResetOpen"
@@ -1038,11 +1008,15 @@ func _source_icon(root: Control, id: String, rect: Rect2) -> Control:
 
 func _toast(root: Control, text: String) -> void:
 	var previous=root.get_node_or_null("SourceToast")
-	if previous: previous.free()
-	var toast=_panel(root,Rect2(24,55,330,66),Color(.10,.12,.14,.95),Color("d2c89c"),1,2)
-	toast.name="SourceToast"; toast.z_index=30
-	_label(toast,text,Rect2(10,8,310,50),14,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
-	var tween=root.create_tween(); tween.tween_interval(2.2); tween.tween_callback(toast.queue_free)
+	if previous:
+		# Retire immediately, but free after input dispatch; its own timer dies
+		# with the notice and can never remove a replacement with the same name.
+		root.remove_child(previous); previous.queue_free()
+	var toast=LocalNotice.new()
+	toast.name="SourceToast"; toast.position=Vector2(14,55); toast.z_index=30
+	root.add_child(toast)
+	toast.show_message(text,350,"提示" if text.begins_with("当前网络") else "系统")
+	local_notice_shown.emit()
 
 func _checkin() -> Control:
 	return checkin_page.build(self)
@@ -1140,7 +1114,6 @@ func _bonsai() -> Control:
 	plant.configure(s,bonsai_growth)
 	root.add_child(plant)
 	plant.name="BonsaiArtwork"
-	_desk_return_icon(root)
 	var stage = int(s.flags.plantWatered)+int(s.flags.plantLit)+int(s.flags.plantFertilized)
 	# Invisible semantic plant silhouette measured on the two 941x1672 assets.
 	# Inversion follows the actual cropped/scaled artwork, including growth.
@@ -1188,7 +1161,9 @@ func _apply_bonsai_light(root: Control) -> void:
 	# Match the mounted source effect. Rebuilds and Control Center overlays cannot
 	# duplicate the effect, and a departed page cannot claim the light condition.
 	if not is_instance_valid(root) or root.is_queued_for_deletion() or not root.is_inside_tree(): return
-	if str(s.native.page)!="bonsai" or s.flags.plantLit or float(s.ui.brightness)<80: return
+	# A completed chapter may revisit the plant, but its controller no longer
+	# accepts this prologue intent. Do not rebuild forever after that rejection.
+	if s.actOne.phase!="prologue" or str(s.native.page)!="bonsai" or s.flags.plantLit or float(s.ui.brightness)<80: return
 	action_requested.emit("c1_plant_light",null)
 
 func _cc98(view: Dictionary) -> Control:
@@ -1196,13 +1171,15 @@ func _cc98(view: Dictionary) -> Control:
 	if s.networkMode!="campus_wifi" and not ticket_cellular:
 		var denied=_base(Color("e8eef2"),620)
 		_label(denied,"CC98",Rect2(40,157,298,69),46,Color("1e6f9b"),HORIZONTAL_ALIGNMENT_CENTER)
-		var status=_label(denied,"校内访问验证",Rect2(30,246,318,45),26,INK,HORIZONTAL_ALIGNMENT_CENTER)
-		_label(denied,"正在检查 ZJUWLAN",Rect2(30,298,318,41),18,MUTED,HORIZONTAL_ALIGNMENT_CENTER)
-		_label(denied,"·　·　·",Rect2(30,352,318,41),30,MUTED,HORIZONTAL_ALIGNMENT_CENTER)
+		var status=PhoneNotice.create("正在检查 ZJUWLAN\n·　·　·","校内访问验证")
+		status.name="Cc98NetworkStatus";status.position=Vector2(18,246);denied.add_child(status);PhoneNotice.layout(status,342)
 		_nav(denied,"exit","退出 CC98，返回手机主页",func(): page_requested.emit("phone_home"),Rect2(7,5,40,44),Color("e8eef2"))
 		denied.ready.connect(func():
 			var tween=denied.create_tween(); tween.tween_interval(1.6)
-			tween.tween_callback(func(): status.text="网络验证失败")
+			tween.tween_callback(func():
+				PhoneNotice.set_message(status,"正在检查 ZJUWLAN\n·　·　·","网络验证失败")
+				var warning:StyleBoxFlat=status.get_theme_stylebox("normal").duplicate();warning.bg_color=PhoneNotice.WARNING_PAPER;status.add_theme_stylebox_override("normal",warning)
+				status.get_node("NoticeSpeaker").add_theme_color_override("font_color",PhoneNotice.accent_for("提示")))
 			tween.tween_property(denied,"modulate",Color("c98c93"),.31)
 			tween.tween_property(denied,"modulate",Color.WHITE,.31)
 			tween.tween_callback(func(): action_requested.emit("phone_cc98_network_rejected",{})))
@@ -1641,13 +1618,13 @@ func _zju_utility(root: Control) -> void:
 	match zjuding_panel:
 		"smart_classroom","network_account","campus_map","language_cards": campus_services.build(self,body,zjuding_panel)
 		"contacts":
-			_zju_summary(body,"校园公开联络表","3 个服务联络点","号码来自当前游戏内容，页面不会直接拨号。")
+			_zju_summary(body,"校园公开联络表","3 个服务联络点","")
 			var contacts=[["校园服务台","87950000"],["游戏联络台","3250100755"],["体艺值班台","87951234"]]
 			for i in range(3): _zju_row(body,137+i*92,"☎　"+contacts[i][0],contacts[i][1])
 			if s.actOne.phase!="prologue": _button(body,"打开部门黄页",Rect2(13,424,352,43),func(): _zju_open("directory"),Color("edf3ff"),BLUE).name="ZjudingOpenDirectory"
 		"profile","logistics":
 			if zjuding_panel=="profile": _zju_summary(body,"校园身份","林星宇" if _zju_identity() else "身份未读取","3250100755" if _zju_identity() else "取得电子校园卡后显示")
-			else: _zju_summary(body,"校园服务聚合","后勤状态台","所有条目只读取已开放的本地功能，未提交任何报修工单。")
+			else: _zju_summary(body,"校园服务聚合","后勤状态台","网络、预约与校园导航")
 			_zju_row(body,137,"当前网络",network,"详情",func(): _zju_open("network_account"))
 			_zju_row(body,229,"图书馆预约" if zjuding_panel=="profile" else "图书馆服务","座位 "+str(s.ui.librarySelectedSeat) if s.ui.librarySeatReserved else "当前无预约","查看",func(): _zju_open("library"))
 			if zjuding_panel=="profile":
@@ -1659,13 +1636,13 @@ func _zju_utility(root: Control) -> void:
 		"messages":
 			var messages=[["校园网状态",network,""]]
 			if _zju_identity(): messages.append(["校园身份已读取","林星宇·3250100755","campus_card"])
-			if _zju_library_access(): messages.append(["图书馆座位预约" if s.ui.librarySeatReserved else "图书馆服务已开放","已预约 "+str(s.ui.librarySelectedSeat)+" 号座位" if s.ui.librarySeatReserved else "当前可用功能以图书馆首页实际状态为准。","library"])
-			_zju_summary(body,"当前已公开状态",str(messages.size())+" 条消息","只聚合已发生的网络、身份、预约和记录状态。")
+			if _zju_library_access(): messages.append(["图书馆座位预约" if s.ui.librarySeatReserved else "图书馆服务已开放","已预约 "+str(s.ui.librarySelectedSeat)+" 号座位" if s.ui.librarySeatReserved else "可查看开放时间与座位预约。","library"])
+			_zju_summary(body,"校园通知",str(messages.size())+" 条消息","")
 			for i in range(messages.size()):
 				var entry: Array=messages[i]
 				_zju_row(body,137+i*92,entry[0],entry[1],"查看",Callable() if entry[2].is_empty() else func(): _zju_open(entry[2]))
 		"all_apps":
-			_zju_summary(body,"统一应用目录","工作台","所有校园服务都可打开，办理条件在各自页面查看。")
+			_zju_summary(body,"统一应用目录","工作台","查找校园应用与服务。")
 			var y=137.0
 			for category in [["learning","学习"],["campus","校园"],["service","服务"],["library","图书馆"]]:
 				_label(body,category[1],Rect2(13,y,350,32),20,BLUE); y+=36
@@ -1678,8 +1655,8 @@ func _zju_utility(root: Control) -> void:
 			var owned=[]
 			for item in [["itemRecognitionReport","书包物品识别报告","照片·本机识别"],["bagNonPersonProof","书包非本人证明","图书馆前台"],["seat022Receipt","022 座位小票","基础馆一层书库"],["libraryPresenceProof","本人到馆证明","浙大体艺·到馆记录"]]:
 				if s.items.get(item[0],false): owned.append(item)
-			_zju_summary(body,"仅显示已公开记录",str(owned.size())+" 份本机档案","查看档案不会生成证明、改变物品或推进图书馆进度。")
-			if owned.is_empty(): _zju_row(body,137,"暂无已公开档案","后续只会在相关记录真正取得后显示。")
+			_zju_summary(body,"物品档案",str(owned.size())+" 份","")
+			if owned.is_empty(): _zju_row(body,137,"暂无档案","")
 			for i in range(owned.size()):
 				var item: Array=owned[i]
 				_zju_row(body,137+i*92,item[1],item[2],"查看",func(): zjuding_detail=item[0]; action_requested.emit("phone_refresh",{}))
@@ -1724,7 +1701,10 @@ func _zju_draft_form(body: Control) -> void:
 		if visitor: zjuding_feedback_status="请填写访客姓名和到访日期，再生成本机预览。" if str(zjuding_visitor.name).strip_edges().is_empty() or str(zjuding_visitor.date).strip_edges().is_empty() else "未提交·本机预览\n"+str(zjuding_visitor.name)+"　"+str(zjuding_visitor.date)+"·"+str(zjuding_visitor.purpose)
 		else: zjuding_feedback_status="请先填写意见内容。" if str(zjuding_feedback.content).strip_edges().is_empty() else "反馈草稿已保存。"
 		action_requested.emit("phone_refresh",{}),Color("245db8"),Color.WHITE).name="ZjudingDraftSave"
-	_label(body,zjuding_feedback_status,Rect2(20,y+59,338,82),14,MUTED)
+	var draft_status=_label(body,zjuding_feedback_status,Rect2(20,y+59,338,82),14,MUTED)
+	draft_status.name="ZjudingDraftStatus";draft_status.visible=not zjuding_feedback_status.is_empty()
+	PhoneNotice.style_inline(draft_status,"warning" if zjuding_feedback_status.begins_with("请") else "success" if zjuding_feedback_status.contains("已保存") else "system",14)
+	if draft_status.visible:draft_status.ready.connect(func():campus_services.reveal_result(draft_status))
 
 func _zju_sheet(root: Control) -> void:
 	var overlay=Control.new(); overlay.name="ZjudingActionSheet"; overlay.size=Vector2(378,APP_HEIGHT); overlay.z_index=10; root.add_child(overlay)
@@ -1997,10 +1977,9 @@ func _settings(view: Dictionary) -> Control:
 			_label(root,"微信、照片、CC98、浙大钉、设置等剧情应用只能移动。",Rect2(13,y+70,352,65),15,MUTED)
 		"privacy": _settings_pairs(root,[["相机","取证时使用"],["照片","保存剧情照片"],["校园网络","CC98 与校内服务"]],125)
 		"activity":
-			_label(root,"当前没有需要核验的剧情记录。",Rect2(13,117,352,43),14,MUTED)
 			var records=[["07:48","天气","天气卡片刷新","1%"],["07:55","照片","重新建立 IMG_0755 索引","7%"],["07:52","微信","同步两条新消息","1%"],["07:55","时钟","系统时间被后台唤醒","5%"],["07:55","浙大钉","恢复 A2 室内定位","6%"],["08:02","CC98","读取热门话题缓存","1%"]]
 			for i in range(records.size()):
-				var r: Array=records[i]; var y=174+i*60
+				var r: Array=records[i]; var y=125+i*60
 				_panel(root,Rect2(13,y,352,60),Color.WHITE,Color("e5e5ea"),0,1)
 				_label(root,r[0],Rect2(22,y+14,50,30),12)
 				_label(root,r[1],Rect2(79,y+5,231,25),16)
@@ -2009,7 +1988,6 @@ func _settings(view: Dictionary) -> Control:
 		"about":
 			_settings_pairs(root,[["游戏时间","07:55"],["存档","自动保存与上一版本恢复"],["桌面应用",str(_home_visible_app_ids().size())+" 个可见"]],125)
 			_act(root,"存档管理",Rect2(13,289,352,44),"native_save_tools",null,Color.WHITE).name="NativeSaveTools"
-			_label(root,"原生版工具 · 导入、导出与开发调试",Rect2(13,345,352,30),12,MUTED)
 	return root
 
 func _settings_pairs(root: Control, entries: Array, start: float) -> void:
@@ -2031,7 +2009,7 @@ func _brightness_slider(root: Control, rect: Rect2, maximum: float, id: String, 
 	slider.position=rect.position; slider.size=rect.size
 	slider.min_value=0; slider.max_value=maximum; slider.value=s.ui.brightness
 	slider.value_changed.connect(func(v):
-		var accepted=clampf(v,0,45 if s.phoneBattery.lowPowerMode else maximum)
+		var accepted=clampf(v,0,maximum)
 		slider.set_value_no_signal(accepted)
 		output.text=str(int(accepted))+"%"
 		brightness_preview_requested.emit(accepted))
