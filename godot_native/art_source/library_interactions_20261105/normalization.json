@@ -1,0 +1,285 @@
+{
+	"backpack": {
+		"anchor": [
+			128,
+			248
+		],
+		"cell": [
+			256,
+			256
+		],
+		"frames": [
+			{
+				"frame": 0,
+				"ink": "Rect2i(41, 27, 170, 221)",
+				"sourceBounds": "Rect2i(59, 28, 200, 260)"
+			},
+			{
+				"frame": 1,
+				"ink": "Rect2i(41, 27, 172, 221)",
+				"sourceBounds": "Rect2i(58, 28, 202, 260)"
+			},
+			{
+				"frame": 2,
+				"ink": "Rect2i(41, 27, 172, 221)",
+				"sourceBounds": "Rect2i(58, 28, 203, 260)"
+			},
+			{
+				"frame": 3,
+				"ink": "Rect2i(41, 27, 172, 221)",
+				"sourceBounds": "Rect2i(58, 28, 203, 260)"
+			},
+			{
+				"frame": 4,
+				"ink": "Rect2i(41, 28, 173, 220)",
+				"sourceBounds": "Rect2i(59, 28, 204, 259)"
+			},
+			{
+				"frame": 5,
+				"ink": "Rect2i(41, 28, 176, 220)",
+				"sourceBounds": "Rect2i(58, 28, 207, 259)"
+			},
+			{
+				"frame": 6,
+				"ink": "Rect2i(41, 28, 178, 220)",
+				"sourceBounds": "Rect2i(59, 28, 210, 259)"
+			},
+			{
+				"frame": 7,
+				"ink": "Rect2i(41, 28, 181, 220)",
+				"sourceBounds": "Rect2i(58, 28, 213, 259)"
+			},
+			{
+				"frame": 8,
+				"ink": "Rect2i(41, 28, 182, 220)",
+				"sourceBounds": "Rect2i(59, 29, 214, 259)"
+			},
+			{
+				"frame": 9,
+				"ink": "Rect2i(40, 28, 183, 220)",
+				"sourceBounds": "Rect2i(58, 29, 216, 259)"
+			},
+			{
+				"frame": 10,
+				"ink": "Rect2i(41, 28, 183, 220)",
+				"sourceBounds": "Rect2i(59, 29, 215, 259)"
+			},
+			{
+				"frame": 11,
+				"ink": "Rect2i(41, 28, 183, 220)",
+				"sourceBounds": "Rect2i(58, 29, 215, 259)"
+			},
+			{
+				"frame": 12,
+				"ink": "Rect2i(41, 28, 183, 220)",
+				"sourceBounds": "Rect2i(58, 28, 216, 259)"
+			},
+			{
+				"frame": 13,
+				"ink": "Rect2i(41, 28, 183, 220)",
+				"sourceBounds": "Rect2i(58, 28, 216, 259)"
+			},
+			{
+				"frame": 14,
+				"ink": "Rect2i(41, 28, 183, 220)",
+				"sourceBounds": "Rect2i(59, 28, 215, 259)"
+			},
+			{
+				"frame": 15,
+				"ink": "Rect2i(41, 28, 183, 220)",
+				"sourceBounds": "Rect2i(58, 28, 216, 259)"
+			}
+		],
+		"sharedScale": 0.849420849420849,
+		"uniqueFrames": 16
+	},
+	"paper": {
+		"anchor": [
+			96,
+			72
+		],
+		"cell": [
+			192,
+			144
+		],
+		"frames": [
+			{
+				"frame": 0,
+				"ink": "Rect2i(44, 47, 105, 51)",
+				"sourceBounds": "Rect2i(96, 157, 132, 64)"
+			},
+			{
+				"frame": 1,
+				"ink": "Rect2i(41, 44, 110, 56)",
+				"sourceBounds": "Rect2i(94, 150, 138, 71)"
+			},
+			{
+				"frame": 2,
+				"ink": "Rect2i(44, 41, 105, 63)",
+				"sourceBounds": "Rect2i(95, 142, 132, 79)"
+			},
+			{
+				"frame": 3,
+				"ink": "Rect2i(41, 37, 110, 71)",
+				"sourceBounds": "Rect2i(90, 132, 138, 90)"
+			},
+			{
+				"frame": 4,
+				"ink": "Rect2i(40, 29, 113, 87)",
+				"sourceBounds": "Rect2i(89, 124, 143, 109)"
+			},
+			{
+				"frame": 5,
+				"ink": "Rect2i(39, 24, 114, 96)",
+				"sourceBounds": "Rect2i(88, 114, 144, 121)"
+			},
+			{
+				"frame": 6,
+				"ink": "Rect2i(36, 20, 119, 105)",
+				"sourceBounds": "Rect2i(89, 105, 150, 132)"
+			},
+			{
+				"frame": 7,
+				"ink": "Rect2i(29, 21, 135, 104)",
+				"sourceBounds": "Rect2i(71, 103, 171, 134)"
+			},
+			{
+				"frame": 8,
+				"ink": "Rect2i(21, 25, 149, 95)",
+				"sourceBounds": "Rect2i(60, 123, 189, 120)"
+			},
+			{
+				"frame": 9,
+				"ink": "Rect2i(17, 28, 157, 88)",
+				"sourceBounds": "Rect2i(51, 131, 198, 111)"
+			},
+			{
+				"frame": 10,
+				"ink": "Rect2i(13, 31, 167, 83)",
+				"sourceBounds": "Rect2i(43, 137, 210, 104)"
+			},
+			{
+				"frame": 11,
+				"ink": "Rect2i(9, 35, 173, 75)",
+				"sourceBounds": "Rect2i(39, 147, 218, 95)"
+			},
+			{
+				"frame": 12,
+				"ink": "Rect2i(10, 36, 171, 73)",
+				"sourceBounds": "Rect2i(42, 146, 216, 92)"
+			},
+			{
+				"frame": 13,
+				"ink": "Rect2i(9, 37, 173, 70)",
+				"sourceBounds": "Rect2i(41, 150, 218, 88)"
+			},
+			{
+				"frame": 14,
+				"ink": "Rect2i(9, 39, 174, 67)",
+				"sourceBounds": "Rect2i(42, 152, 219, 85)"
+			},
+			{
+				"frame": 15,
+				"ink": "Rect2i(8, 39, 176, 67)",
+				"sourceBounds": "Rect2i(41, 152, 222, 85)"
+			}
+		],
+		"sharedScale": 0.793650793650794,
+		"uniqueFrames": 16
+	},
+	"schema": "library-interaction-import-v1",
+	"staff": {
+		"anchor": [
+			48,
+			128
+		],
+		"cell": [
+			96,
+			128
+		],
+		"frames": [
+			{
+				"frame": 0,
+				"ink": "Rect2i(25, 12, 46, 116)",
+				"sourceBounds": "Rect2i(104, 28, 108, 275)"
+			},
+			{
+				"frame": 1,
+				"ink": "Rect2i(25, 12, 46, 116)",
+				"sourceBounds": "Rect2i(103, 28, 109, 274)"
+			},
+			{
+				"frame": 2,
+				"ink": "Rect2i(25, 12, 46, 116)",
+				"sourceBounds": "Rect2i(104, 28, 108, 274)"
+			},
+			{
+				"frame": 3,
+				"ink": "Rect2i(25, 12, 46, 116)",
+				"sourceBounds": "Rect2i(103, 28, 109, 275)"
+			},
+			{
+				"frame": 4,
+				"ink": "Rect2i(25, 12, 46, 116)",
+				"sourceBounds": "Rect2i(104, 28, 109, 274)"
+			},
+			{
+				"frame": 5,
+				"ink": "Rect2i(24, 12, 47, 116)",
+				"sourceBounds": "Rect2i(100, 28, 112, 274)"
+			},
+			{
+				"frame": 6,
+				"ink": "Rect2i(22, 12, 49, 116)",
+				"sourceBounds": "Rect2i(98, 28, 115, 274)"
+			},
+			{
+				"frame": 7,
+				"ink": "Rect2i(22, 12, 49, 116)",
+				"sourceBounds": "Rect2i(96, 28, 116, 274)"
+			},
+			{
+				"frame": 8,
+				"ink": "Rect2i(24, 12, 47, 116)",
+				"sourceBounds": "Rect2i(102, 28, 111, 275)"
+			},
+			{
+				"frame": 9,
+				"ink": "Rect2i(24, 12, 46, 116)",
+				"sourceBounds": "Rect2i(102, 28, 110, 275)"
+			},
+			{
+				"frame": 10,
+				"ink": "Rect2i(24, 12, 46, 116)",
+				"sourceBounds": "Rect2i(103, 28, 109, 275)"
+			},
+			{
+				"frame": 11,
+				"ink": "Rect2i(24, 12, 46, 116)",
+				"sourceBounds": "Rect2i(102, 28, 110, 275)"
+			},
+			{
+				"frame": 12,
+				"ink": "Rect2i(24, 12, 47, 116)",
+				"sourceBounds": "Rect2i(102, 27, 111, 275)"
+			},
+			{
+				"frame": 13,
+				"ink": "Rect2i(23, 12, 48, 116)",
+				"sourceBounds": "Rect2i(99, 28, 113, 274)"
+			},
+			{
+				"frame": 14,
+				"ink": "Rect2i(24, 12, 46, 116)",
+				"sourceBounds": "Rect2i(103, 27, 110, 275)"
+			},
+			{
+				"frame": 15,
+				"ink": "Rect2i(24, 12, 46, 116)",
+				"sourceBounds": "Rect2i(103, 28, 109, 274)"
+			}
+		],
+		"sharedScale": 0.421818181818182,
+		"uniqueFrames": 16
+	}
+}

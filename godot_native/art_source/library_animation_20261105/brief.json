@@ -1,0 +1,58 @@
+{
+  "requested_model": "image2.6",
+  "tool": "built-in image_gen",
+  "model_verification": "tool does not expose model selection",
+  "frame_cycle_ms": 880,
+  "walk_frames": 16,
+  "walk_cells": [
+    5,
+    4
+  ],
+  "book_cells": [
+    4,
+    4
+  ],
+  "master": [
+    120,
+    160
+  ],
+  "runtime": [
+    96,
+    128
+  ],
+  "jobs": [
+    {
+      "id": "walk_side",
+      "prompt": "Use case: identity-preserve / precise-object-edit. Production 2D sprite animation for existing Godot campus game 7:55.\nReference images are identity and style references, not backgrounds to reproduce. Preserve the exact same young East Asian male college student: short tousled black hair, dark blue zip jacket worn open over light grey t-shirt, charcoal trousers, grey white sneakers, small charcoal backpack. Match reference face, body/head proportions, side silhouette and costume. No redesign, new accessories or changing garments.\nART: precise fine-pixel art, sharp well-organized pixel clusters, restrained warm campus 32-color family: ink #202B35, blue #243F5A #385B79 #547F9D, warm skin #D89C6A #F0C895, paper #E8E0C8. Broad stable structural color clusters, very little isolated noise. Same warm upper-left light every frame.\nTECHNICAL: one square transparent sprite atlas with EXACTLY FIVE COLUMNS and FOUR ROWS of equal square cells, 20 separate full-body figures total. Uniform empty gutters. No grid lines, labels, numbers, text, scene, cast shadows, gradients or checkerboard. Real transparent alpha background. All figures identical height, volume and scale. Head never grows/shrinks. Stable shared body center and ground baseline within each cell. Leave generous margins around each full figure.\nANIMATION ORDER: first 16 cells in row-major reading order are 16 consecutive phases of ONE complete calm natural two-step walk cycle, left and right steps, seamless phase 16 back to phase 1. Show contact, down, passing, up intermediate phases with anatomically consistent alternating feet, opposite arms, slight stable backpack secondary motion, tiny vertical pelvis bob and no head wobble. Do not repeat the same walk pose; show genuine in-betweens. Cells 17,18,19,20 are all the SAME neutral standing idle pose, feet planted symmetrically and arms relaxed.\nCAMERA: same orthographic oblique top-down actor view as the reference; full-body, never perspective-zooming, never switching to a flat overhead view.\nDIRECTION LOCK: EVERY figure faces RIGHT, exactly the side-facing direction in the small second reference image. No front or back poses anywhere in this sheet.",
+      "refs": [
+        "workspace:src/assets/rpg/player/source/player_walk_24pose_transparent_v2.png",
+        "workspace:src/assets/rpg/player/player_side_idle.png"
+      ]
+    },
+    {
+      "id": "walk_down",
+      "prompt": "Use case: identity-preserve / precise-object-edit. Production 2D sprite animation for existing Godot campus game 7:55.\nReference images are identity and style references, not backgrounds to reproduce. Preserve the exact same young East Asian male college student: short tousled black hair, dark blue zip jacket worn open over light grey t-shirt, charcoal trousers, grey white sneakers, small charcoal backpack. Match reference face, body/head proportions, side silhouette and costume. No redesign, new accessories or changing garments.\nART: precise fine-pixel art, sharp well-organized pixel clusters, restrained warm campus 32-color family: ink #202B35, blue #243F5A #385B79 #547F9D, warm skin #D89C6A #F0C895, paper #E8E0C8. Broad stable structural color clusters, very little isolated noise. Same warm upper-left light every frame.\nTECHNICAL: one square transparent sprite atlas with EXACTLY FIVE COLUMNS and FOUR ROWS of equal square cells, 20 separate full-body figures total. Uniform empty gutters. No grid lines, labels, numbers, text, scene, cast shadows, gradients or checkerboard. Real transparent alpha background. All figures identical height, volume and scale. Head never grows/shrinks. Stable shared body center and ground baseline within each cell. Leave generous margins around each full figure.\nANIMATION ORDER: first 16 cells in row-major reading order are 16 consecutive phases of ONE complete calm natural two-step walk cycle, left and right steps, seamless phase 16 back to phase 1. Show contact, down, passing, up intermediate phases with anatomically consistent alternating feet, opposite arms, slight stable backpack secondary motion, tiny vertical pelvis bob and no head wobble. Do not repeat the same walk pose; show genuine in-betweens. Cells 17,18,19,20 are all the SAME neutral standing idle pose, feet planted symmetrically and arms relaxed.\nCAMERA: same orthographic oblique top-down actor view as the reference; full-body, never perspective-zooming, never switching to a flat overhead view.\nDIRECTION LOCK: EVERY figure faces DOWN toward viewer, exactly as the small second reference. Always front view, both eyes visible, backpack mostly occluded behind shoulders. No side or back poses anywhere.",
+      "refs": [
+        "workspace:src/assets/rpg/player/source/player_walk_24pose_transparent_v2.png",
+        "workspace:src/assets/rpg/player/player_down_0.png"
+      ]
+    },
+    {
+      "id": "walk_up",
+      "prompt": "Use case: identity-preserve / precise-object-edit. Production 2D sprite animation for existing Godot campus game 7:55.\nReference images are identity and style references, not backgrounds to reproduce. Preserve the exact same young East Asian male college student: short tousled black hair, dark blue zip jacket worn open over light grey t-shirt, charcoal trousers, grey white sneakers, small charcoal backpack. Match reference face, body/head proportions, side silhouette and costume. No redesign, new accessories or changing garments.\nART: precise fine-pixel art, sharp well-organized pixel clusters, restrained warm campus 32-color family: ink #202B35, blue #243F5A #385B79 #547F9D, warm skin #D89C6A #F0C895, paper #E8E0C8. Broad stable structural color clusters, very little isolated noise. Same warm upper-left light every frame.\nTECHNICAL: one square transparent sprite atlas with EXACTLY FIVE COLUMNS and FOUR ROWS of equal square cells, 20 separate full-body figures total. Uniform empty gutters. No grid lines, labels, numbers, text, scene, cast shadows, gradients or checkerboard. Real transparent alpha background. All figures identical height, volume and scale. Head never grows/shrinks. Stable shared body center and ground baseline within each cell. Leave generous margins around each full figure.\nANIMATION ORDER: first 16 cells in row-major reading order are 16 consecutive phases of ONE complete calm natural two-step walk cycle, left and right steps, seamless phase 16 back to phase 1. Show contact, down, passing, up intermediate phases with anatomically consistent alternating feet, opposite arms, slight stable backpack secondary motion, tiny vertical pelvis bob and no head wobble. Do not repeat the same walk pose; show genuine in-betweens. Cells 17,18,19,20 are all the SAME neutral standing idle pose, feet planted symmetrically and arms relaxed.\nCAMERA: same orthographic oblique top-down actor view as the reference; full-body, never perspective-zooming, never switching to a flat overhead view.\nDIRECTION LOCK: EVERY figure faces UP away from viewer, exactly as the small second reference. Always back view, back of hair and charcoal backpack visible, no face visible. No side/front poses anywhere.",
+      "refs": [
+        "workspace:src/assets/rpg/player/source/player_walk_24pose_transparent_v2.png",
+        "workspace:src/assets/rpg/player/player_up_0.png"
+      ]
+    },
+    {
+      "id": "library_book",
+      "prompt": "Use case: precise-object-edit / game animation atlas. Reference 1 establishes the existing pixel library shelf's projection, pixel density and warm light. Reference 2 shows the exact book cover colors/material and cream pages. Generate ONE 4-column by 4-row transparent sprite atlas, precisely 16 equal square cells. Each cell contains the SAME single small hardback library book, no hands or person, no shelf, no room, no labels or numbering or text. Real transparent alpha, no checkerboard.\nBook identity: restrained navy/forest teal cloth hardback (#243F5A / #2D443E), thin muted ochre gold inset rule, ordinary tan catalogue slip on lower spine, warm cream paper edges (#E8E0C8), ink #202B35. Fine pixel art matching references, crisp structural clusters, no random pixel noise, same orthographic oblique camera and warm upper-left light in all 16 frames. No silhouette/scale drift.\nFrame order row-major: frames1-8 show one gradual book extraction/reorientation from a narrow upright spine facing viewer to an increasingly exposed closed cover at about55-degree yaw. This is an object pulled out of its shelf, not a whole shelf moving. First frame has a narrow long spine; later frames reveal front cloth cover and page thickness. Frames9-16 continue the SAME book from closed to opening the cover, a single leaf curling over, to resting fully open on its own pages. Keep perspective coherent through the motion, book dimensions constant, render hinge/spine and attached pages plausibly; no detached floating paper. No rasterized words; interior pages may have subtle short ink rules with no legible letters.\nAnchor the bottom of the book's spine at the identical position in each cell. Do not translate the atlas subject around within cells; runtime owns travel. Fit full open wings and page curls within each cell with generous alpha margins. No cast ground shadow, no UI or decorative background.",
+      "refs": [
+        "workspace:godot_native/assets/native/library_object_depth_20261104/shelf_row.png",
+        "local-review:world-book-reader-desktop.png"
+      ]
+    }
+  ],
+  "seated_prompt": "Edit the provided 7:55 game player sprite into a single transparent seated pose, same male character with exactly same dark navy hair, blue jacket, gray trousers, white-soled shoes and blue backpack. Preserve rear facing view, shallow oblique top down orthographic perspective, body proportions, fine pixel art clusters and original colors. Show character seated facing away from viewer: hips lowered, torso gently leaning towards unseen tabletop, elbows bent and hands held forward near keyboard height. Thighs foreshortened towards desk, knees bent and shoes below, natural sitting posture clearly distinct from upright standing. Center sprite with generous transparent margin. One full figure only, NO desk, NO chair, NO props except original worn backpack, NO shadow, NO text or sheet divisions. True transparent alpha."
+}

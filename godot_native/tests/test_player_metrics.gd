@@ -11,6 +11,7 @@ func _initialize() -> void:
 	var foot: Rect2=Metrics.foot_rect(Vector2(800,500))
 	if foot.size!=Vector2(19.5,14.625) or foot.get_center()!=Vector2(800,531.6875): failures+=1
 	if Metrics.scale_at("campus_bootstrap",500)!=.325: failures+=1
-	if Metrics.scale_at("library_interior",500)!=.65: failures+=1
+	if not is_equal_approx(Metrics.scale_at("library_interior",500),.52): failures+=1
+	if Metrics.scale_at("canteen_interior",500)!=.65: failures+=1
 	print("Source player metrics: ","PASS" if failures==0 else "FAIL")
 	quit(0 if failures==0 else 1)

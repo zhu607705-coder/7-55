@@ -11,7 +11,7 @@
   background: #f3f0e5;
   font-synthesis: none;
   --ink: #273c35;
-  --muted: #7b8174;
+  --muted: #626e5a;
   --paper: #fffdf4;
   --green: #355c49;
   --light-green: #e2eadb;
@@ -347,7 +347,7 @@ button {
   background: var(--light-green);
 }
 .hero {
-  height: 420px;
+  min-height: 320px;
   position: relative;
   overflow: hidden;
   background: #1c3541;
@@ -399,22 +399,6 @@ button {
   padding: 45px 0;
   color: #f5efd6;
 }
-.hero-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--pixel);
-  font-size: 12px;
-  color: #b6cabb;
-  letter-spacing: 2px;
-  margin-bottom: 20px;
-}
-.signal-dot {
-  height: 6px;
-  width: 6px;
-  background: var(--yellow);
-  box-shadow: 0 0 0 3px #d0b85020;
-}
 .hero h1 {
   font-size: 42px;
   line-height: 1.45;
@@ -436,12 +420,15 @@ button {
   font-size: 15px;
   gap: 12px;
 }
-.hero-hint {
+.hero-game-link {
   display: inline-block;
-  margin-left: 20px;
-  font-size: 11px;
-  color: #9cafaa;
+  margin-left: 24px;
+  padding: 12px 0;
+  color: #f5efd6;
+  text-decoration: underline;
+  text-underline-offset: 5px;
 }
+.hero-game-link:hover { color: var(--yellow); }
 .scene-caption {
   position: absolute;
   right: max(36px, calc((100vw - 1256px) / 2));
@@ -1088,8 +1075,8 @@ button {
 .rank-footnote {
   border-top: 1px dashed #d4dac5;
   text-align: center;
-  font-size: 9px;
-  color: #9b9f8a;
+  font-size: 11px;
+  color: var(--muted);
   padding: 10px;
 }
 .rank-list {
@@ -1244,8 +1231,8 @@ button {
   display: flex;
   align-items: center;
   gap: 20px;
-  color: #8d987e;
-  font-size: 10px;
+  color: #526449;
+  font-size: 12px;
 }
 .site-footer > span {
   font-family: var(--pixel);
@@ -1653,9 +1640,7 @@ button {
   .hero-landscape {
     object-position: center 48%;
   }
-  .hero {
-    height: 450px;
-  }
+
   .hero-content {
     padding-top: 59px;
   }
@@ -1766,14 +1751,7 @@ button {
   .section-subtitle {
     display: none;
   }
-  .hero-hint {
-    display: block;
-    margin-left: 0;
-    margin-top: 15px;
-  }
-  .hero {
-    height: 420px;
-  }
+
   .hero h1 {
     font-size: 39px;
   }
@@ -1832,17 +1810,11 @@ button {
   .login-button svg {
     width: 11px;
   }
-  .hero {
-    height: 390px;
-  }
+
   .hero-content {
     margin-left: 24px;
     margin-right: 24px;
     padding-top: 36px;
-  }
-  .hero-kicker {
-    font-size: 10px;
-    margin-bottom: 18px;
   }
   .hero h1 {
     font-size: 34px;
@@ -1858,10 +1830,6 @@ button {
     margin-top: 22px;
     min-height: 40px;
     font-size: 14px;
-  }
-  .hero-hint {
-    font-size: 10px;
-    margin-top: 16px;
   }
   .hero-landscape {
     object-position: 67% center;
@@ -2065,7 +2033,7 @@ button {
     font-size: 10px;
   }
   .rank-footnote {
-    font-size: 8px;
+    font-size: 11px;
   }
   .bottom-note {
     margin: 0 24px 30px;
@@ -2085,14 +2053,14 @@ button {
     padding: 22px 24px;
     flex-wrap: wrap;
     gap: 12px;
-    font-size: 9px;
+    font-size: 11px;
   }
   .site-footer p {
     order: 3;
     width: 100%;
     max-width: none;
     margin: 0;
-    font-size: 9px;
+    font-size: 11px;
   }
   .site-footer > a {
     margin-left: auto;
@@ -2177,19 +2145,11 @@ button {
   .hero h1 {
     font-size: 30px;
   }
-  .hero {
-    height: 370px;
-  }
-  .hero-kicker {
-    margin-bottom: 18px;
-  }
+
   .hero-cta {
     font-size: 13px;
     gap: 10px;
     min-height: 40px;
-  }
-  .hero-hint {
-    margin-top: 15px;
   }
   .hero-landscape {
     object-position: 62% center;
@@ -2522,7 +2482,7 @@ button {
 /* Participation paths use the same pixel-paper vocabulary as the game board. */
 .entry-strip {
   max-width: 1280px;
-  margin: 30px auto 0;
+  margin: 20px auto 0;
   padding: 0 32px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2533,14 +2493,14 @@ button {
   align-items: center;
   gap: 15px;
   border: 2px solid var(--green);
-  padding: 20px 18px;
+  padding: 14px 18px;
   background: var(--paper);
-  box-shadow: 4px 4px 0 #d6d9c8;
+  box-shadow: 2px 2px 0 #d6d9c8;
   text-align: left;
   transition: transform 0.15s;
 }
 .entry-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-1px);
   background: #f7f8e9;
 }
 .entry-card > span:last-child {
@@ -2767,7 +2727,12 @@ button {
     margin-top: 22px;
   }
   .entry-card {
-    padding: 13px 16px;
+    padding: 12px 16px;
+  }
+  .entry-card > span:first-child {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
   }
   .entry-number {
     font-size: 24px;

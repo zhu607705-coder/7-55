@@ -3,6 +3,7 @@ extends RefCounted
 ## only the existing controller-owned entrance record grants access.
 const Metrics=preload("res://scripts/player_metrics.gd")
 const SpatialRules=preload("res://scripts/space/spatial_rules.gd")
+const Picker=preload("res://scripts/world_object_picker.gd")
 const CENTER=Vector2(750,724)
 const CLOSED_CENTERS=[697.0,803.0]
 const LEAF_SIZE=Vector2(106,86)
@@ -82,6 +83,9 @@ func draw(canvas:CanvasItem,context:Dictionary,front:bool)->void:
 	canvas.draw_rect(Rect2(742,672,16,8),Color("72b6aa") if access_granted else Color("c75d55"))
 	for index:int in range(2):
 		var leaf:Rect2=leaf_rects()[index]
+		# A closed entrance must expose the same admission check from outside.
+		# The reader sits behind the glass; clicking the door must not dead-end.
+		if not access_granted:Picker.record(canvas,["entrance_record"],leaf)
 		canvas.draw_rect(leaf,Color("7fb1bd",.34))
 		canvas.draw_rect(leaf,Color("263c43"),false,4)
 		canvas.draw_rect(leaf.grow(-7),Color("b8dfe4",.4),false,2)

@@ -722,7 +722,7 @@ func _source_payload(id: String) -> Dictionary:
 		"act2_exit_ready":{"destination":"foundation_library","seat":"022"},"act2_movement_quest_completed":{"destination":"library"},
 		"library_route_unlocked":{"destination":"foundation_library"},"library_entered":{"seat":"022","firstEntry":true},
 		"library_entrance_record_read":{"arrivalMinutes":7},"library_occupied_seat_found":{"seat":"022"},"library_occupancy_note_collected":{"seat":"022"},
-		"cc98_occupation_post_opened":{"floors":23,"optionalAc01":5},"library_catalog_results_shown":{"resultCount":5},
+		"cc98_occupation_post_opened":{"floors":23,"optionalAc01":5},"library_catalog_results_shown":{"resultCount":next.get("native",{}).get("lib_catalog_result_ids",[]).size()},
 		"library_catalog_match_found":{"callNumber":"I247.55 / 755"},"library_archived_rule_opened":{"itemId":"archivedLeaveRule"},"library_archived_rule_recovered":{"proofCount":3},
 		"photo_bag_report_generated":{"file":"IMG_0755.JPG"},"library_seat_receipt_recovered":{"seat":"022"},
 		"library_recovery_application_opened":{"seat":"022"},"library_seat_release_pass_issued":{"seat":"022"},"library_seat_release_pass_applied":{"seat":"022"},

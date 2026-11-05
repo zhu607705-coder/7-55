@@ -147,6 +147,14 @@ func run() -> void:
 	check(fresh.bundle.stores.posts.contains(post.body) and JSON.stringify(state.d)==before,"preparing restart keeps edits and old active state")
 	var fixture:=OS.get_environment("GODOT_CLOUD_FIXTURE")
 	if not fixture.is_empty(): check(state.export_save(fixture)==OK,"explicit isolated browser fixture exported")
+	var formal_bytes:=FileAccess.get_file_as_bytes(state.SAVE_PATH)
+	var backup_bytes:=FileAccess.get_file_as_bytes(state.BACKUP_PATH)
+	state.developer_mode=true
+	check(not state.capture_cloud_bundle().ok and not state.save_game(),"developer preview cannot autosave or upload")
+	check(state.export_save("user://portable-preview.json")==OK,"validated preview can export an independent portable file")
+	check(state.export_save(state.SAVE_PATH)==ERR_UNAUTHORIZED and state.export_save(ProjectSettings.globalize_path(state.BACKUP_PATH))==ERR_UNAUTHORIZED,"portable export cannot target formal progress or its backup")
+	check(FileAccess.get_file_as_bytes(state.SAVE_PATH)==formal_bytes and FileAccess.get_file_as_bytes(state.BACKUP_PATH)==backup_bytes,"preview export leaves formal files unchanged")
+	state.developer_mode=false
 	var disk_path: String=state.SAVE_PATH
 	var valid_disk:=FileAccess.get_file_as_string(disk_path)
 	var future_disk: Dictionary=JSON.parse_string(valid_disk);future_disk.sourceVersion=999

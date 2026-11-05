@@ -26,7 +26,7 @@ export function CreditFields({
 }) {
   return (
     <label>
-      游戏署名意愿（与投稿是否匿名分开）
+      游戏署名
       <select
         value={value.mode}
         disabled={disabled}
@@ -81,13 +81,13 @@ export function ComposeForm({
   return (
     <>
       <div className="compose-heading">
-        <h2>{CHANNELS[draft.channel]}，一句话也可以。</h2>
+        <h2>{CHANNELS[draft.channel]}</h2>
         <p>
           {draft.channel === "feedback"
             ? "还没通关也能反馈。描述卡在哪里、用了什么设备，会更容易定位问题。"
             : draft.channel === "chapter"
-              ? "聊聊这一章里让你记住的一个瞬间。涉及谜底或结局请勾选剧透。"
-              : "早八、图书馆、社团排练……讲讲你经历过的小事，或一个玩法点子。"}
+              ? "讨论本章。涉及谜底或结局请标记剧透。"
+              : "写一段经历，或一个玩法点子。"}
         </p>
       </div>
       <form

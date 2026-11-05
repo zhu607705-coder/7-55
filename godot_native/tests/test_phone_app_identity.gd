@@ -113,7 +113,7 @@ func check_presence_identity(form:Control):
 		var fill: Color=submit.get_theme_stylebox(mode).bg_color
 		var ink: Color=submit.get_theme_color("font_disabled_color" if mode=="disabled" else "font_color")
 		check((maxf(lum(ink),lum(fill))+.05)/(minf(lum(ink),lum(fill))+.05)>=4.5,"presence submit actual neutral label contrast "+mode)
-	for source in [[0,"07:55 基础馆入口 → 08:02 一层书库 022\n填写两次记录的分钟差"],[1,"楼主编辑原文：旧申请统一挂在公示编号 47\n23 是回复楼层；填写原文中的公示编号"],[2,"本人确实到馆；目标座位与凭据一致；当前占用物不具备本人身份。\n填写规则列出的证明类别数量"]]:
+	for source in [[0,"07:55 基础馆入口 → 08:02 一层书库 022\n填写分钟差，用于核对同一次到馆会话"],[1,"23 楼编辑：本次 022 公示记录编号 47\n用来关联公示，不填楼层、排名或 BD 口令"],[2,"本人确实到馆；目标座位与凭据一致；当前占用物不具备本人身份。\n填写要求的类别数，不是背包中的道具总数"]]:
 		check(form.find_child("TiyiEvidence_"+str(source[0]),true,false).text==source[1],"source evidence text stays exact: "+str(source[0]))
 func run():
 	expected_cases=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/phone-app-identity-contract.json")).cases

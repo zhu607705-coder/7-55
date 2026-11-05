@@ -301,6 +301,8 @@ func library() -> void:
 	if game==null: return
 	for i in range(38): game._process(.02)
 	game.stamp.pressed.emit()
+	check(game_results.is_empty(),"stamp holds its visible confirmation before issuing proof")
+	for i in range(50): game._process(.02)
 	check(game_results.size()==1,"actual identity scanner and stamp")
 	game.free(); game=null
 	for i in range(10): state.get_library_story_session(100)

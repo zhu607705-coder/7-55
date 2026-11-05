@@ -44,7 +44,7 @@ func fixture() -> void:
 func walk_to_record() -> void:
 	var before:Vector2=shell.world.player
 	await key(KEY_W,true)
-	for i in 8: shell.world._process(.05)
+	for i in 14: shell.world._process(.05)
 	await key(KEY_W,false); shell.world._process(0)
 	check(shell.world.player.distance_to(before)>1,"real W input moves the actor after releasing item focus",[before,shell.world.player])
 	check(shell.world.nearby.get("id","")=="entrance_record","real nearby lookup resolves entrance record",shell.world.nearby.get("id",""))

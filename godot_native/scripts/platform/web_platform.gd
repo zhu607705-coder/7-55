@@ -566,7 +566,7 @@ func _world_input_observation() -> Dictionary:
 	return {"dormPropActions": _observed_dorm_prop_actions, "geometryAvailable": geometry_available, "geometryFrame": observed.get("frame", -1) if geometry_available else -1, "scheme": metrics.get("scheme", ""), "gestureArea": _rect(metrics.get("gestureArea", Rect2())), "stick": _json_value(_world_root_point(metrics.stick)) if geometry_available and metrics.has("stick") else null, "stickRect": _rect(Rect2(_world_root_point(stick.position), _world_root_point(stick.end) - _world_root_point(stick.position))) if geometry_available and stick.has_area() else {}, "confirmRect": _rect(metrics.get("interact", Rect2())), "targets": target_rows, "owners": owners, "mouseOwned": view.direct_gestures.pointers.has(-999), "routeWaypointCount":view._floor_route.size(), "inventoryOwned": view._inventory_owns_pointer(), "modalVisible": is_instance_valid(shell.modal), "plaque": plaque}
 
 func _visible_controls(node: Node, controls: Array, audio: Array, video: Array) -> void:
-	if node is Control and node.is_visible_in_tree() and (node.get_viewport() != shell.world_viewport or shell.world_frame.is_visible_in_tree()) and (node is BaseButton or node is LineEdit or node is Label or node.name == "ControlBrightness"):
+	if node is Control and node.is_visible_in_tree() and (node.get_viewport() != shell.world_viewport or shell.world_frame.is_visible_in_tree()) and (node is BaseButton or node is LineEdit or node is Label or node.name in ["ControlBrightness", "LibraryWorldDocumentScroll"]):
 		var text := str(node.text) if node is Button or node is Label or node is LineEdit else ""
 		controls.append({"name": str(node.name), "text": text, "type": node.get_class(), "rect": _rect(_control_rect(node)), "disabled": node.disabled if node is BaseButton else false, "itemId": str(node.get("item_id")) if node.get_script() == preload("res://scripts/ui/inventory_item.gd") else ""})
 	if node is AudioStreamPlayer:
@@ -584,8 +584,10 @@ func read_snapshot() -> Dictionary:
 	var audio: Array = []
 	var video: Array = []
 	_visible_controls(shell, controls, audio, video)
-	for view:Node in get_tree().get_nodes_in_group(PauseOverlay.GROUP):
-		if view.is_open():_visible_controls(view.surface,controls,audio,video)
+	_visible_controls(shell.get_node("/root/CloudSaves"), controls, audio, video)
+	for view: Node in get_tree().get_nodes_in_group(PauseOverlay.GROUP):
+		if view.is_open():
+			_visible_controls(view.surface, controls, audio, video)
 	var game: Dictionary = {}
 	if is_instance_valid(shell.active_game):
 		var active: Control = shell.active_game
@@ -614,6 +616,12 @@ func read_snapshot() -> Dictionary:
 		world = _properties(shell.world, ["scene_id", "player", "camera", "zoom", "size", "mobile_exploration", "last_zone", "last_vehicle", "subtitle", "subtitle_left", "nearby", "touch_axis", "facing", "player_flip", "mobile_confirmed_target_id"])
 		world["visible"] = shell.world_frame.is_visible_in_tree()
 		world["rect"] = _rect(shell.world_view.get_global_rect())
+		if world.scene_id == "library_interior" and shell.world.library_layers != null:
+			var layers: RefCounted = shell.world.library_layers
+			world["librarySeat"] = {"id":layers.local_chair, "settled":layers.chair_age >= layers.SIT_SECONDS}
+		var actor:Dictionary=shell.world.player_visual()
+		if actor.get("animation","")=="library_generated_16":
+			world["actorAnimation"]={"family":actor.animation,"frame":actor.motion_frame,"direction":actor.direction,"mirrored":actor.flip_h,"cycleMs":880,"frames":16}
 		if is_instance_valid(shell.world.selected_overlay):
 			var overlay:Control=shell.world.selected_overlay
 			world["chrome"]={"taskColumnVisible":overlay.task.is_visible_in_tree(),"modeLabelVisible":overlay.mode.is_visible_in_tree(),"interactionRect":_rect(overlay.plaque.get_global_rect())}
@@ -631,9 +639,12 @@ func read_snapshot() -> Dictionary:
 	world["worldEffect"]=effect
 	var save := FileAccess.get_file_as_string(state.SAVE_PATH) if FileAccess.file_exists(state.SAVE_PATH) else ""
 	var content: Dictionary = shell.get_node("/root/WebContent").read_snapshot()
+	var library_story: Dictionary = {}
+	if is_instance_valid(shell.library_story_host) and shell.library_story_host.current!=null:
+		library_story=shell.library_story_host.current.snapshot()
 	var landscape_preferred: bool=(is_instance_valid(shell.world_frame) and shell.world_frame.is_visible_in_tree()) or (is_instance_valid(shell.active_game) and shell.game_viewport.x>shell.game_viewport.y)
 	if content.get("retryVisible", false): controls.append({"name": "RetryRequiredContent", "text": "重试", "type": "Button", "rect": content.retryRect, "disabled": false})
-	return {"sampleFrame": Engine.get_process_frames(), "engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "documentFocused": _document_focused, "platformPaused": _suspended, "awaitingResume": false, "content": content, "savePersistence": read_save_persistence(), "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "activity":game.get("activity",{}), "world": world, "presentation":{"landscapePreferred":landscape_preferred}, "phoneRect": _rect(shell.phone.get_global_rect()) if is_instance_valid(shell.phone) else {}, "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
+	return {"sampleFrame": Engine.get_process_frames(), "engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "documentFocused": _document_focused, "platformPaused": _suspended, "awaitingResume": false, "content": content, "savePersistence": read_save_persistence(), "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "activity":game.get("activity",{}), "world": world, "libraryStory": library_story, "presentation":{"landscapePreferred":landscape_preferred}, "phoneRect": _rect(shell.phone.get_global_rect()) if is_instance_valid(shell.phone) else {}, "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
 
 func _exit_tree() -> void:
 	if _owns_tree_pause and is_inside_tree():TreePauseLease.release(get_tree(),self)

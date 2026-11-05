@@ -34,6 +34,10 @@ func run() -> void:
 		if child is Label:check(child.get_minimum_size().x<=child.size.x and child.get_minimum_size().y<=child.size.y,"paper text fits without clipping")
 	check(scan.stamp.size.y>=64,"clear pointer/touch target")
 	scan._stamp();scan._stamp()
+	check(results.is_empty() and scan.stamp.disabled,"stamp locks input while the imprint plays")
+	for i in range(5):scan._process(.1)
+	check(results.is_empty() and scan.scan_hint.text=="盖章完成","imprint is visible before handoff")
+	for i in range(6):scan._process(.1)
 	check(results.size()==1 and results[0].identityChecks==[false,false,false] and results[0].stamped,"unchanged one-shot authority payload")
 	check(results[0].scanMs>=720,"unchanged minimum scan duration")
 	scan.queue_free();await process_frame

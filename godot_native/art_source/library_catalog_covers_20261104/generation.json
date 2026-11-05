@@ -1,0 +1,29 @@
+{
+  "tool": "built-in image_gen",
+  "reference": "src/assets/phone/library-search/runtime/three_minute_pause_application.webp",
+  "transparentBackground": false,
+  "note": "Original game cover renditions. Referenced titles and author are real. Generated illustrations are project-specific artwork.",
+  "calls": [
+    {
+      "id": "three_body",
+      "prompt": "Create ONE original illustrated front cover for the 7:55 campus-library game catalogue. The supplied cover is only a reference for the cohesive pixel-art language, cream aged paper, thin navy and muted gold framing, readable Chinese typography, detailed quiet pixel clusters and restrained warm/cool palette. Flat rectangular front cover, portrait aspect 3:4, straight-on, no book spine, no 3D mockup, no background outside the cover. Fine native pixels rather than huge block pixels, large coherent tonal clusters, avoid scattered dithering and speckle noise. Make the large Chinese title legible at a small 78x101 game thumbnail, author line small but clear. Original composition for a game rendition, not a reproduction of a published edition or film poster. Include exactly the requested Chinese title and author; no other writing, publisher logo, ISBN, badges or marketing copy. Title “三体”. Author “刘慈欣”. Navy and faded antique gold palette over warm cream. Broad composition of THREE distinct suns above a barren rust-gold alien plateau, delicate concentric orbital paths, a very small radio telescope silhouette below. Spacious cream upper title panel, rich illustrated central and lower sections, understated thin double frame. A quiet and mysterious astronomical science-fiction book.",
+      "generatedSource": "generated-image:exec-f4879805-60a9-4bb8-bad9-dbf120c72d1a.png",
+      "savedSource": "godot_native/art_source/library_catalog_covers_20261104/originals/three_body.png",
+      "runtime": "src/assets/phone/library-search/runtime/three_body.webp"
+    },
+    {
+      "id": "ball_lightning",
+      "prompt": "Create ONE original illustrated front cover for the 7:55 campus-library game catalogue. The supplied cover is only a reference for the cohesive pixel-art language, cream aged paper, thin navy and muted gold framing, readable Chinese typography, detailed quiet pixel clusters and restrained warm/cool palette. Flat rectangular front cover, portrait aspect 3:4, straight-on, no book spine, no 3D mockup, no background outside the cover. Fine native pixels rather than huge block pixels, large coherent tonal clusters, avoid scattered dithering and speckle noise. Make the large Chinese title legible at a small 78x101 game thumbnail, author line small but clear. Original composition for a game rendition, not a reproduction of a published edition or film poster. Include exactly the requested Chinese title and author; no other writing, publisher logo, ISBN, badges or marketing copy. Title “球状闪电”. Author “刘慈欣”. Dark forest teal and muted amber palette over warm cream. One luminous amber spherical electrical phenomenon hovering over a lonely low field observatory, restrained branching electric filaments, silhouetted instrument mast, drifting low mist. Large cream upper title panel matching the reference family and a slender double frame. Concentrate the bright sphere into a strong central focal shape; quiet surroundings.",
+      "generatedSource": "generated-image:exec-c44a9b4d-1cdf-4745-95f2-14b53ff8a22e.png",
+      "savedSource": "godot_native/art_source/library_catalog_covers_20261104/originals/ball_lightning.png",
+      "runtime": "src/assets/phone/library-search/runtime/ball_lightning.webp"
+    },
+    {
+      "id": "wandering_earth",
+      "prompt": "Create ONE original illustrated front cover for the 7:55 campus-library game catalogue. The supplied cover is only a reference for the cohesive pixel-art language, cream aged paper, thin navy and muted gold framing, readable Chinese typography, detailed quiet pixel clusters and restrained warm/cool palette. Flat rectangular front cover, portrait aspect 3:4, straight-on, no book spine, no 3D mockup, no background outside the cover. Fine native pixels rather than huge block pixels, large coherent tonal clusters, avoid scattered dithering and speckle noise. Make the large Chinese title legible at a small 78x101 game thumbnail, author line small but clear. Original composition for a game rendition, not a reproduction of a published edition or film poster. Include exactly the requested Chinese title and author; no other writing, publisher logo, ISBN, badges or marketing copy. Title “流浪地球”. Author “刘慈欣”. Deep midnight navy and glacial blue palette over warm cream. An immense ice-bound Earth against the dark of space, a sparse cluster of tiny warm amber engine plumes along its lower edge suggesting propulsion, far-away simple stars and an understated curved flight trajectory. Large cream upper title panel matching the other catalogue covers, slender double frame. Original cosmic composition, broad color masses and disciplined small star count.",
+      "generatedSource": "generated-image:exec-7a91af64-7a58-46dc-b25d-7218b0719b60.png",
+      "savedSource": "godot_native/art_source/library_catalog_covers_20261104/originals/wandering_earth.png",
+      "runtime": "src/assets/phone/library-search/runtime/wandering_earth.webp"
+    }
+  ]
+}

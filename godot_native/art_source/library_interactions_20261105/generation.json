@@ -1,0 +1,18 @@
+{
+  "tool": "built-in image_gen",
+  "modelExposed": false,
+  "originals": {
+    "paper.png": {
+      "sha256": "4d4d213b9b7c3c713df6bcf309d1bedce6aa563fbebda80ef10371a3d91e4e46"
+    },
+    "paper_v1_rejected.png": {
+      "sha256": "f155d4dd3bb5129d889b3973370f3e5d30cda2900213d84a6cc70d8131422f14"
+    },
+    "backpack.png": {
+      "sha256": "dba20be9fa3db59da4388bac69ff0c989891f3817669cd8360e9a8c91fd34bac"
+    },
+    "staff.png": {
+      "sha256": "143f693bc4d0dfb05a9c04c3c1dcec90ce2d7eea6cfb33f43063854d90848e13"
+    }
+  }
+}

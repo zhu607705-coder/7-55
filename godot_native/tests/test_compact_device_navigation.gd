@@ -3,6 +3,7 @@ extends SceneTree
 ## Source-phase fixtures isolate routing; they are not a campaign completion proof.
 ## Source-authentic C3/C4 devices are live world modals, not generic phone forms.
 const WORLD_DEVICES := ["mixer","menu","bike","kiosk","console","c4_duty","c4_numeric","c4_power"]
+const PlayerMetrics=preload("res://scripts/player_metrics.gd")
 var checks: int=0
 var failures: int=0
 var state: Node
@@ -80,6 +81,9 @@ func interact(action: String) -> Dictionary:
 	if selected.is_empty(): return {}
 	var point:=Vector2(selected.position[0],selected.position[1])
 	if selected.get("stand") is Dictionary: point=Vector2(selected.stand.x,selected.stand.y)
+	if action=="lib_catalog_terminal" and main.world.library_layers.objects.ready:
+		var chair: Rect2=main.world.library_layers.objects.areas.catalog_terminal_chair
+		point=Vector2(chair.get_center().x,chair.end.y-PlayerMetrics.FOOT_CENTER_OFFSET.y)
 	main.world.player=main.world._find_safe(point); main.world._sync_player()
 	check(main.world._distance(selected)<=float(selected.get("radius",100)),"collision-safe source target within interaction radius")
 	main.world._try_interact(selected)
@@ -115,11 +119,26 @@ func run() -> void:
 			await prepare(id,width)
 			var scene: String=state.d.native.scene
 			var original_page: String=state.d.native.page
-			await interact(actions[id]); var position: Vector2=main.world.player
+			var selected: Dictionary=await interact(actions[id])
+			if id=="library_catalog":
+				check(main.world.library_layers.local_chair=="catalog_terminal","catalog interaction starts the physical chair")
+				for tick in range(30): main.world._process(.02)
+				main.world._try_interact(selected); await process_frame; await process_frame
+			var position: Vector2=main.world.player
 			if id in WORLD_DEVICES:
 				await exercise_world_device(id,actions[id],width,scene,position,original_page)
 				continue
-			if id.begins_with("library"):
+			if id=="library_record":
+				var document: Control=main.modal
+				check(is_instance_valid(document) and document.name=="LibraryWorldDocument","record opens the actual world document")
+				check(main.world_frame.is_visible_in_tree() and not main.phone.is_visible_in_tree(),"record retains the Library world surface")
+				check(state.d.native.scene==scene and main.world.player==position and not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"opening preserves scene, position and unread evidence")
+				state.act("phone_refresh",{}); await process_frame; await process_frame
+				check(is_instance_valid(document) and document.is_visible_in_tree(),"ordinary refresh retains the open record")
+				if is_instance_valid(document): await click(find_button(document,"记下入馆记录"),"library record")
+				check(state.d.ui.libraryFinalsPuzzle.entranceRecordRead and main.world_frame.is_visible_in_tree(),"record confirmation accepts original evidence and returns to the world")
+				continue
+			if id=="library_catalog":
 				check(state.get_phone_entry_session().phase=="loading","new Library mount observes source Zjuding entry delay")
 				await create_timer(1.6).timeout
 			check(state.d.native.page==pages.get(id,"c4_device"),id+" routed required page at "+str(width))
@@ -130,7 +149,6 @@ func run() -> void:
 			state.act("phone_refresh",{}); await process_frame; await process_frame
 			check(main.phone.is_visible_in_tree(),"ordinary refresh leaves selected device visible")
 			match id:
-				"library_record": await click(find_button(main.page_body,"记下入馆记录"),"library record"); check(state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"library record action accepted")
 				"library_catalog":
 					var query: LineEdit=main.page_body.find_child("LibraryCatalogQuery",true,false)
 					check(query!=null and query.is_visible_in_tree(),"native Library catalog field visible")
@@ -147,7 +165,7 @@ func run() -> void:
 			check(main.world_frame.is_visible_in_tree() and main.world.player==position and state.d.native.scene==scene,"return retains source world position")
 			state.act("phone_refresh",{}); await process_frame
 			check(main.world_frame.is_visible_in_tree(),"refresh does not yank return view back to phone")
-			if id in ["library_record","library_catalog","c4_elevator","c4_power"]:
+			if id in ["library_catalog","c4_elevator","c4_power"]:
 				await interact(actions[id]); check(main.phone.is_visible_in_tree(),"same world device reopens its controls")
 	await rain_return()
 	await closure_return()

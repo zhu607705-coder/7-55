@@ -478,13 +478,22 @@ func _show_phone_surface() -> void:
 	_layout()
 	phone_world_return.grab_focus()
 
+func _library_reading_locked()->bool:
+	# A hidden retained phone page must not own input while a world reveal runs.
+	if not phone.is_visible_in_tree():return false
+	if str(State.d.native.page)!="library_rule" or not State.d.ui.libraryFinalsPuzzle.archivedRuleCollected or State.d.ui.libraryFinalsPuzzle.archivedRuleRead:return false
+	var reader:Node=page_body.find_child("LibraryRuleReader",true,false) if is_instance_valid(page_body) else null
+	return reader!=null and not bool(reader.get_meta("end_seen",false))
+
 func _return_from_phone() -> void:
+	if _library_reading_locked():return
 	if not _has_world_scene() or _surface_navigation_blocked(): return
 	State.d.runtimeMode = "rpg"
 	State.save_game()
 	_show_world_mobile()
 
 func _back_from_phone() -> void:
+	if _library_reading_locked():return
 	# Escape follows the same visible navigation callbacks as pointer/touch.
 	# Only the phone homepage hands control back to the world.
 	if is_instance_valid(phone_document):
@@ -512,6 +521,8 @@ func _on_controller_page_intent(_action: String,_previous: Dictionary,current: D
 		_refresh_inventory_dock()
 		_layout()
 	if _action=="lib_shelf" and _begin_library_reveal(_previous,current,result): return
+	if result.get("page","") in ["library_rule","library_record"] and current.native.scene=="library_interior":
+		_open_library_world_document.call_deferred(str(result.page));return
 	if result.has("open_c4_floor_selection"):
 		_open_chapter4_floor_selection(result.open_c4_floor_selection)
 		return
@@ -622,6 +633,17 @@ func _cancel_library_reveal() -> void:
 func _validate_library_reveal() -> void:
 	if not pending_library_reveal.is_empty() and not _library_reveal_current(): _cancel_library_reveal()
 
+func _open_library_world_document(page:String)->void:
+	if State.d.native.page!=page or State.d.native.scene!="library_interior" or not pending_library_reveal.is_empty():return
+	if is_instance_valid(modal):return
+	if world.library_layers!=null and world.library_layers.shelf_animating:return
+	_show_world_mobile()
+	phone_builder.s=State.d
+	modal=preload("res://scripts/ui/library_world_document.gd").new()
+	modal.configure(self,phone_builder,page,State.get_view(page))
+	add_child(modal);_layout_modal()
+	phone_chrome.set_input_blocked(true)
+
 func _library_world_presentation(cue: String,payload: Dictionary,layer: RefCounted) -> void:
 	if cue!="library_archived_rule_reveal_completed":
 		_game_presentation(cue,payload)
@@ -635,10 +657,7 @@ func _library_world_presentation(cue: String,payload: Dictionary,layer: RefCount
 	pending_library_reveal={}
 	_game_presentation(cue,payload)
 	world_page_origin_scene="library_interior"
-	_cancel_surface_gestures()
-	mobile_world=false
-	_layout()
-	phone_world_return.grab_focus()
+	_open_library_world_document("library_rule")
 
 func _layout() -> void:
 	if flc_entry_mode:
@@ -1057,6 +1076,10 @@ func _refresh() -> void:
 		n.page="phone_home"
 		State.d.ui.controlCenterOpen=true
 	var page: String = n.page
+	# A shelf reveal owns the rule handoff. Restoring/cancelling its saved page
+	# must not silently reopen that reader on every ordinary refresh.
+	if page=="library_record" and n.scene=="library_interior" and not is_instance_valid(modal):
+		_open_library_world_document.call_deferred(page)
 	# Preserve the source Photos mount baseline behind Control Center overlays.
 	var photos_mounted := not mobile_world
 	if photo_brightness_session.observe(page if photos_mounted else "",State.d.ui):
@@ -2045,7 +2068,8 @@ func _show_settings() -> void:
 		if action_button is Button and modal_panel.get_meta("phone_prompt",false):
 			NativeUi.apply_button(action_button,PhoneNotice.WARNING_PAPER if action_button.text=="重新开始" else PhoneNotice.PAPER,PhoneNotice.accent_for("提示") if action_button.text=="重新开始" else PhoneNotice.INK,PhoneNotice.INK,0,2,16,Vector2(12,8))
 	var note_text:="原生 Godot 迁移进行中\n支持原生存档与原版浏览器 v2–35 存档。" if State.developer_tools_available() else "支持保存当前进度，也可导入原浏览器版存档。"
-	if is_instance_valid(web_platform): note_text += "\n" + web_platform.storage_note()
+	if OS.has_feature("web") and not CloudSaves.member_id.is_empty(): note_text="账号进度同步到云端，可导出个人备份。"
+	elif is_instance_valid(web_platform): note_text += "\n" + web_platform.storage_note()
 	var note := _label(note_text,15,Color("6b756c"))
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(note)
@@ -2057,7 +2081,10 @@ func _capture_after_menu() -> void:
 	_capture.call_deferred()
 
 func _save_progress() -> void:
-	if OS.has_feature("web") and not CloudSaves.member_id.is_empty(): CloudSaves.save_now()
+	if OS.has_feature("web") and not CloudSaves.member_id.is_empty():
+		_on_web_save_feedback("正在保存…")
+		await CloudSaves.save_now()
+		_on_web_save_feedback("已保存" if CloudSaves.status_text.begins_with("云端已保存") else CloudSaves.status_text)
 	elif is_instance_valid(web_platform): web_platform.request_save()
 	else: _feedback("已保存" if State.save_game() else "测试会话不覆盖正式存档")
 
@@ -2912,6 +2939,7 @@ func _combine_inventory_items(a: String,b: String) -> void:
 	State.act("c1_combine",{"a":a,"b":b})
 
 func _on_phone_page(page: String) -> void:
+	if _library_reading_locked():return
 	_cancel_library_reveal()
 	if page=="control_center":
 		if not _theater_departure_active():

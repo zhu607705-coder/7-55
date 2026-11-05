@@ -1,5 +1,50 @@
 import path from 'node:path';
+import {appendFileSync, writeFileSync} from 'node:fs';
 import {phoneGroups, runPhoneRecoveryGroups} from './web_phone_shards.mjs';
+
+// Diagnostic-only, bounded Node-side records. Never feed these into acceptance.
+// Synchronous small writes survive a killed Node process without a buffered queue.
+// No timer, browser read, input, retry or full event array is added here.
+export function createPhoneProgress({filename, id, group, touch, dpr, cdpProgress = () => null}) {
+  const maxRecords = 128, maxRecordBytes = 4096;
+  let sequence = 0, failed;
+  const fail = error => {
+    failed ||= new Error(`Phone progress diagnostic write failed: ${error.message}`, {cause: error});
+    console.error(failed.message);
+    throw failed;
+  };
+  try {writeFileSync(filename, '');} catch (error) {fail(error);}
+  return (event, timing) => {
+    if (failed) throw failed;
+    try {
+      if (sequence >= maxRecords) throw Error(`record limit ${maxRecords} exceeded`);
+      const row = {schema: '755-phone-progress-v1', diagnosticOnly: true, complete: false,
+        sequence: sequence + 1, at: Date.now(), id, group, touch, dpr, event,
+        cdp: cdpProgress()};
+      if (timing) row.exercise = {
+        segment: timing.segment, startedAt: timing.startedAt, finishedAt: timing.finishedAt ?? null,
+        elapsedMs: timing.elapsedMs ?? Date.now() - timing.startedAt,
+        geometryCalls: timing.geometryCalls, geometryMs: timing.geometryMs,
+        pointerMoves: timing.pointerMoves, inputWaitMs: timing.inputWaitMs,
+        pointerAck: Object.fromEntries(['start', 'move', 'end'].map(phase => {
+          const stats = timing.pointerAck[phase];
+          return [phase, {calls: stats.calls, acknowledged: stats.acknowledged, failed: stats.failed,
+            totalMs: stats.totalMs, maxMs: stats.maxMs}];
+        })),
+        snapshots: {calls: timing.snapshots.calls, failed: timing.snapshots.failed,
+          totalMs: timing.snapshots.totalMs, maxMs: timing.snapshots.maxMs},
+        sentCount: timing.sent.length, observedCount: timing.observed?.events?.length ?? null,
+        maxInFlight: timing.maxInFlight,
+        releaseError: timing.releaseError?.slice(0, 256) ?? null,
+        observationError: timing.observationError?.slice(0, 256) ?? null
+      };
+      const line = JSON.stringify(row) + '\n';
+      if (Buffer.byteLength(line) > maxRecordBytes) throw Error(`record byte limit ${maxRecordBytes} exceeded`);
+      appendFileSync(filename, line);
+      sequence++;
+    } catch (error) {fail(error);}
+  };
+}
 
 // Save acceptance is not content readiness. In the cold C2-only shard, the
 // required chapter packs can still occlude the world after the save is accepted.
@@ -167,7 +212,9 @@ export async function continuousExercise(h, evidence) {
       catch (error) { stats.failed++; throw error; }
       finally { const elapsed = Date.now() - began; stats.totalMs += elapsed; stats.maxMs = Math.max(stats.maxMs, elapsed); }
     };
+    let segmentFailure;
     try {
+      h.progress?.('exercise-segment-start', timing);
       let s = await readSnapshot();
       // renderPoint is an axis-aligned canvas/viewport mapping. Measure it once
       // per segment instead of making a browser Runtime.evaluate round trip for
@@ -206,6 +253,7 @@ export async function continuousExercise(h, evidence) {
           last = transform(screenPoint(sourcePoint, s));
           await queue.move(last);
           if (step % 8 === 0) {
+            h.progress?.('exercise-input-boundary', timing);
             await queue.drain(); await observe('read');
             s = await readSnapshot();
             if (count(s) === segment + 1) break;
@@ -230,7 +278,17 @@ export async function continuousExercise(h, evidence) {
         try {await observe('end');} catch (error) {if (!failure) failure = error; timing.observationError = error.message;}
         if (failure) throw failure;
       }
-    } finally { timing.finishedAt = Date.now(); timing.elapsedMs = timing.finishedAt - timing.startedAt; }
+    } catch (error) {segmentFailure = error; throw error;}
+    finally {
+      timing.finishedAt = Date.now(); timing.elapsedMs = timing.finishedAt - timing.startedAt;
+      try {h.progress?.(segmentFailure ? 'exercise-segment-failed' : 'exercise-segment-finished', timing);}
+      catch (error) {
+        if (!segmentFailure) throw error;
+        // Retain the original transport/assertion failure, but never hide a
+        // secondary diagnostic failure. The original run still fails closed.
+        console.error(`Phone progress also failed: ${error.message}`);
+      }
+    }
   }
   const accepted = await h.poll(async () => {
     const s = await h.snapshot();
@@ -383,33 +441,48 @@ export async function phoneRecoveryCase(h) {
       evidence.coverage.push('C1 WiFi refusal then cellular earns 7', 'app navigation has no fixed battery cost');
     },
     'c2-tiyi': async () => {
+      h.progress?.('c2-import-start');
       await h.importSave(path.join(h.fixtureDir, 'before_c2_tiyi_update.json'));
+      h.progress?.('c2-imported');
       await ensurePhoneSurface();
+      h.progress?.('c2-phone-ready');
       await closeInventory();
       await home(); await network('campus_wifi'); await network('cellular');
       await click('HomeApp_tiyi'); await page('tiyi'); await shot('tiyi-old-client'); await page('phone_home');
       let value = await read('C2 repeated network trick refused');
       h.check(value.state.actOne.tiyiUpdateStage === 'not_started' && !value.state.actOne.exerciseStarted && !value.state.actOne.weatherWaterTaken,
         `${h.id}: switching cellular again cannot update the second-stage client or earn rain`);
+      h.progress?.('c2-old-client-refused');
       await click('HomeApp_wechat'); await click('TiyiOfficialAccount'); await shot('tiyi-official-account');
       await click('TiyiContact');
       await h.poll(async () => (await read()).state.actOne.tiyiUpdateStage === 'official_entry_found', 'ordinary Contact action reveals the official update entry');
       h.check((await read()).state.actOne.tiyiUpdateStage === 'official_entry_found', `${h.id}: real Contact menu discovers the official download card`);
+      h.progress?.('c2-official-entry-found');
       await click('TiyiAcquireUpdate');
       await h.poll(async () => (await read()).state.actOne.tiyiUpdateStage === 'package_ready', 'ordinary update acquisition produces the package');
       h.check((await read()).state.actOne.tiyiUpdateStage === 'package_ready', `${h.id}: ordinary simulated acquisition does not install automatically`);
+      h.progress?.('c2-package-ready');
       await shot('tiyi-package-ready'); await click('TiyiInstallUpdate');
       await h.poll(async () => (await read()).state.actOne.tiyiUpdateStage === 'installed', 'ordinary explicit installation completes');
       value = await read('C2 installed through ordinary official-account buttons');
       h.check(value.state.actOne.tiyiUpdateStage === 'installed' && !value.state.actOne.exerciseStarted && !value.state.actOne.weatherWaterTaken,
         `${h.id}: explicit installation grants neither exercise nor rain`);
+      h.progress?.('c2-installed');
       await click('TiyiUpdateReturnHome'); await page('phone_home');
-      await h.settings(); await h.saveProgressAndWait('installed Tiyi before reload'); await h.startStory(true);
+      h.progress?.('c2-save-start');
+      await h.settings(); await h.saveProgressAndWait('installed Tiyi before reload');
+      h.progress?.('c2-reload-start');
+      await h.startStory(true);
       h.check((await read()).state.actOne.tiyiUpdateStage === 'installed', `${h.id}: real browser reload retains installation`);
+      h.progress?.('c2-reloaded');
       await click('HomeApp_tiyi'); await click('TiyiExercise');
+      h.progress?.('c2-exercise-start');
       await continuousExercise(h, evidence);
+      h.progress?.('c2-exercise-accepted');
       await shot('tiyi-real-exercise'); await click('ReturnToTiyi'); await home();
-      await click('HomeWeatherOpen'); await click('WeatherWaterCard');
+      await click('HomeWeatherOpen');
+      h.progress?.('c2-weather-claim-start');
+      await click('WeatherWaterCard');
       // CDP delivery plus a fixed delay does not acknowledge the engine's cached
       // snapshot. Observe this one real claim completing; never repeat the input.
       await h.poll(async () => {
@@ -418,8 +491,10 @@ export async function phoneRecoveryCase(h) {
       }, 'actual weather card claim after exercise completes');
       value = await read('C2 original weather rain earned after exercise');
       h.check(value.state.actOne.weatherWaterTaken && value.state.items.weatherWater, `${h.id}: original weather drop remains gated behind actual exercise`);
+      h.progress?.('c2-weather-claimed');
       await shot('tiyi-weather-rain'); await h.assertLayout('Tiyi two-stage recovery');
       evidence.coverage.push('C2 repeated cellular trick refused', 'official account Contact acquisition and explicit installation', 'ordinary installation save/reload', 'ten continuous exercise traces then weather rain');
+      h.progress?.('c2-finished');
     }
   });
   evidence.completed = true;

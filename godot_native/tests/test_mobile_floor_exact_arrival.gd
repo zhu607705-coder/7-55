@@ -1,7 +1,7 @@
 extends "res://tests/test_mobile_floor_route.gd"
 ## Deterministic frame-boundary regression; fixture, not manual-play evidence.
 func run() -> void:
-	await setup_main();await route_fixture(Vector2i(390,844));await tap_ground(GOAL)
+	await setup_main();await route_fixture(Vector2i(390,844));await tap_ground(goal)
 	var w=shell.world
 	var before:=story();var action_count:=actions.size();var geometry: Array=w.collisions.duplicate(true)
 	var planned: Array[Vector2]=w._floor_route.duplicate()
@@ -25,7 +25,7 @@ func run() -> void:
 		check(w.player==waypoint,"next legal frame reaches the exact endpoint")
 		check(w._floor_route.size()==route_before.size()-1,"exact endpoint retires exactly one waypoint")
 		check(w.can_stand(w.player) and previous.distance_to(w.player)<=.008+.001,"final sub-pixel step remains legal and bounded")
-	check(w._floor_status=="arrived" and Metrics.foot_rect(w.player).get_center().distance_to(GOAL)<.001,"deterministic route preserves the strict full-foot destination")
+	check(w._floor_status=="arrived" and Metrics.foot_rect(w.player).get_center().distance_to(goal)<.001,"deterministic route preserves the strict full-foot destination")
 	check(w.collisions==geometry and story()==before and actions.size()==action_count,"exact arrival changes no geometry or progression")
 	# The planner can legitimately return the current anchor for a zero-length
 	# request. Exercise its real result without pretending this is pointer input.

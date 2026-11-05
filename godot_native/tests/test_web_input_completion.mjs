@@ -21,7 +21,7 @@ const stoppedSource = between(runner, 'async function assertWorldStopped(', 'asy
 const rotateSource = between(runner, 'async function rotateMobileWorld(', 'async function directWorldCase(');
 const factsSource = runner.split('\n').find(line => line.startsWith('const mobileFacts ='));
 assert(factsSource);
-const claimSource = between(phone, "  await click('HomeWeatherOpen'); await click('WeatherWaterCard');", "  await shot('tiyi-weather-rain');");
+const claimSource = between(phone, "  await click('HomeWeatherOpen');", "  await shot('tiyi-weather-rain');");
 
 const copy = value => structuredClone(value);
 function brightnessSample(frame, edit = () => {}) {

@@ -695,6 +695,10 @@ func load_game() -> bool:
 	return false
 
 func export_save(path: String) -> Error:
+	# Portable exports must never bypass the ordinary save/backup writer.
+	var destination:=ProjectSettings.globalize_path(path).simplify_path()
+	for reserved: String in [SAVE_PATH,BACKUP_PATH]:
+		if destination==ProjectSettings.globalize_path(reserved).simplify_path(): return ERR_UNAUTHORIZED
 	if not validate_snapshot(d): return ERR_INVALID_DATA
 	var captured:=_capture_portable_bundle()
 	if not captured.get("ok",false): return ERR_INVALID_DATA

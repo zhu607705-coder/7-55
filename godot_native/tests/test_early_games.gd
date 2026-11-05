@@ -89,6 +89,7 @@ func _run() -> void:
 	check(stamps.is_empty(),"stamp waits for scan")
 	tick(stamp,.74)
 	stamp._stamp()
+	tick(stamp,1.1)
 	check(stamps.size()==1 and stamps[0].identityChecks==[false,false,false],"stamp supplies evidence result")
 	stamp.queue_free()
 	print("EARLY_GAMES_TESTS: %d passed; %d failed" % [passed,failed])

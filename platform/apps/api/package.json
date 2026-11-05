@@ -10,7 +10,7 @@
   "dependencies": {
     "@755/contracts": "0.1.0",
     "@755/database": "0.1.0",
-    "@fastify/static": "10.1.7",
+    "@fastify/static": "10.1.10",
     "fastify": "5.12.7",
     "openid-client": "^6.8.8",
     "zod": "4.6.7"

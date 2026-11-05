@@ -7,7 +7,7 @@ import { createReadStream, existsSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, readdir, writeFile, rm, open } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { phoneRecoveryCase, exerciseInputObserver } from './web_phone_recovery.mjs';
+import { phoneRecoveryCase, exerciseInputObserver, createPhoneProgress } from './web_phone_recovery.mjs';
 import { phoneGroups, assertPhoneCoverage } from './web_phone_shards.mjs';
 import { phoneNavigationCase } from './web_phone_navigation.mjs';
 import { startTransportAudit } from './web_transport_audit.mjs';
@@ -98,9 +98,11 @@ async function shaFile(filename) { const h = createHash('sha256'); for await (co
 async function connect(wsUrl, onEvent) {
   const ws = new WebSocket(wsUrl); await new Promise((resolve, reject) => { ws.addEventListener('open', resolve, { once: true }); ws.addEventListener('error', reject, { once: true }); });
   let sequence = 0; const pending = new Map();
-  ws.addEventListener('message', event => { const message = JSON.parse(String(event.data)); if (message.method) { onEvent(message); return; } const item = pending.get(message.id); if (!item) return; pending.delete(message.id); clearTimeout(item.timer); message.error ? item.reject(new Error(message.error.message)) : item.resolve(message.result); });
-  ws.addEventListener('close', () => { for (const item of pending.values()) { clearTimeout(item.timer); item.reject(new Error('CDP connection closed')); } pending.clear(); });
-  return { send(method, params = {}, timeoutMs = 30000) { return new Promise((resolve, reject) => { const id = ++sequence; const timer = setTimeout(() => { pending.delete(id); reject(new Error(`CDP timeout ${method}`)); }, timeoutMs); pending.set(id, { resolve, reject, timer }); ws.send(JSON.stringify({ id, method, params })); }); }, close() { for (const item of pending.values()) { clearTimeout(item.timer); item.reject(new Error('CDP closed')); } pending.clear(); ws.close(); } };
+  // Only summarize existing CDP activity; no additional commands or timers.
+  const progress = {lastInitiated: null, lastCompleted: null};
+  ws.addEventListener('message', event => { const message = JSON.parse(String(event.data)); if (message.method) { onEvent(message); return; } const item = pending.get(message.id); if (!item) return; pending.delete(message.id); clearTimeout(item.timer); progress.lastCompleted = {id: message.id, method: item.method, at: Date.now(), status: message.error ? 'failed' : 'acknowledged'}; message.error ? item.reject(new Error(message.error.message)) : item.resolve(message.result); });
+  ws.addEventListener('close', () => { for (const [id, item] of pending) { clearTimeout(item.timer); progress.lastCompleted = {id, method: item.method, at: Date.now(), status: 'closed'}; item.reject(new Error('CDP connection closed')); } pending.clear(); });
+  return { send(method, params = {}, timeoutMs = 30000) { return new Promise((resolve, reject) => { const id = ++sequence; progress.lastInitiated = {id, method, at: Date.now()}; const timer = setTimeout(() => { pending.delete(id); progress.lastCompleted = {id, method, at: Date.now(), status: 'timeout'}; reject(new Error(`CDP timeout ${method}`)); }, timeoutMs); pending.set(id, { resolve, reject, timer, method }); ws.send(JSON.stringify({ id, method, params })); }); }, progress() { return {...progress, pending: pending.size}; }, close() { for (const [id, item] of pending) { clearTimeout(item.timer); progress.lastCompleted = {id, method: item.method, at: Date.now(), status: 'closed'}; item.reject(new Error('CDP closed')); } pending.clear(); ws.close(); } };
 }
 async function enableNetworkObservation(session) {
   // CI Chrome 155 exposes this dedicated command. Keep the original caps;
@@ -938,14 +940,16 @@ async function reopenLibraryRuleThroughApp() {
   // mounted. Wait for the actual target surface before the first user input.
   const initial = await poll(async () => {
     const value = await snapshot();
-    if (value?.content?.blocking) return null;
+    if (value?.content?.blocking !== false || !(value.content.monolithic === true || value.content.enabled === true && value.content.readyFamilies?.includes('chapter2'))) return null;
+    if (controls(value).some(c => c.name === 'LibraryWorldDocumentClose')) return value;
     if (value?.world?.visible) {
       if (value.world.scene_id !== state(value)?.native.scene || !controls(value).some(c => c.name === 'WorldPhoneButton' && !c.disabled)) return null;
-    } else if (!controls(value).some(c => c.name === 'LibraryRuleAction')) return null;
+    } else if (!controls(value).some(c => c.name === 'HomeApp_zjuding')) return null;
     return value;
   }, 'imported Library surface has actually mounted', 60000);
-  if (controls(initial).some(c => c.name === 'LibraryRuleAction')) return;
+  if (controls(initial).some(c => c.name === 'LibraryWorldDocumentClose')) { await acceptPortraitFallback(); return; }
   if (initial.world?.visible) {
+    await acceptPortraitFallback();
     active.library ||= { navigation: [] };
     active.library.navigation ||= [];
     const button = controls(initial).find(c => c.name === 'WorldPhoneButton');
@@ -958,6 +962,33 @@ async function reopenLibraryRuleThroughApp() {
   await clickControl('HomeApp_zjuding', 'name');
   await clickControl('ZjudingApp_library', 'name');
   await clickControl('LibraryApp_rule', 'name');
+  await acceptPortraitFallback();
+}
+async function scrollLibraryRuleToClose() {
+  // Use the real scroll surface and actual browser input on both profiles.
+  // Control geometry is read-only debug information, never a progress write.
+  for (let attempt = 0; attempt < 12; attempt++) {
+    const value = await snapshot();
+    const scroll = controls(value).find(c => c.name === 'LibraryWorldDocumentScroll');
+    const close = controls(value).find(c => c.name === 'LibraryWorldDocumentClose');
+    if (!scroll || !close) throw new Error('The world rule document has no live scroll surface or close control');
+    const s = scroll.rect, c = close.rect;
+    if (!close.disabled && c.y >= s.y && c.y + c.height <= s.y + s.height) return value;
+    const from = await renderPoint({x: s.x + s.width * .8, y: s.y + s.height * .8}, value);
+    const to = await renderPoint({x: s.x + s.width * .8, y: s.y + s.height * .25}, value);
+    if (active.touch) {
+      await active.cdp.send('Input.dispatchTouchEvent', {type: 'touchStart', touchPoints: [{...from, id: 1}]});
+      for (let step = 1; step <= 12; step++) {
+        await active.cdp.send('Input.dispatchTouchEvent', {type: 'touchMove', touchPoints: [{x: from.x + (to.x - from.x) * step / 12, y: from.y + (to.y - from.y) * step / 12, id: 1}]});
+        await interval(20);
+      }
+      await active.cdp.send('Input.dispatchTouchEvent', {type: 'touchEnd', touchPoints: []});
+    } else {
+      await active.cdp.send('Input.dispatchMouseEvent', {type: 'mouseWheel', x: from.x, y: from.y, deltaX: 0, deltaY: 260});
+    }
+    await interval(350);
+  }
+  throw new Error('The rule close control did not become reachable after real scrolling');
 }
 function libraryContentReady(value) {
   return value?.content?.blocking === false && (value.content.monolithic === true
@@ -973,44 +1004,52 @@ function libraryHandoffReady(value) {
 async function libraryCase() {
   if (!fixtureDir) throw new Error('Library continuity requires controller-earned portable boundaries');
   await importSave(path.join(fixtureDir, 'before_library_rule_read.json'));
-  await reopenLibraryRuleThroughApp();
-  let value = await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'library_rule' && controls(s).some(c => c.name === 'LibraryRuleAction') ? s : null; }, 'earned unread rule opens its original reader');
+  let value = await snapshot();
   const originalItems = JSON.stringify(state(value).items);
   check(state(value).ui.libraryFinalsPuzzle.archivedRuleCollected && !state(value).ui.libraryFinalsPuzzle.archivedRuleRead, `${active.id}: acquired rule is still unread`);
-  await clickControl('PhoneNav_back', 'name');
-  value = await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'library_app' ? s : null; }, 'ordinary rule header returns to Library home');
-  check(controls(value).some(c => c.name === 'LibraryApp_rule'), `${active.id}: acquired rule has a visible ordinary app entry`);
-  active.screenshots.push(await screenshot(`${active.id}-library-rule-entry`));
-  await clickControl('LibraryApp_rule', 'name');
-  value = await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'library_rule' && controls(s).some(c => c.name === 'LibraryRuleAction') ? s : null; }, 'app entry reopens original rule reader');
-  check(!state(value).ui.libraryFinalsPuzzle.archivedRuleRead && JSON.stringify(state(value).items) === originalItems, `${active.id}: reopening alone neither reads nor changes inventory`);
+  // The imported route is committed before its deferred C2 content finishes.
+  // Wait for the real world and complete content family before sending input;
+  // then use its ordinary phone control before the explicit save.
+  await poll(async () => { const s = await snapshot(); return s?.content?.blocking === false && (s.content.monolithic === true || s.content.enabled === true && s.content.readyFamilies?.includes('chapter2')) && s.world?.visible && controls(s).some(c => c.name === 'WorldPhoneButton' && !c.disabled) ? s : null; }, 'imported unread rule restores its ready Library world', bootTimeout);
+  await clickControl('WorldPhoneButton', 'name');
+  await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'phone_home' && !s.world?.visible ? s : null; }, 'ordinary phone return before saving unread rule');
+  value = await snapshot();
+  check(!state(value).ui.libraryFinalsPuzzle.archivedRuleRead && JSON.stringify(state(value).items) === originalItems, `${active.id}: returning to the phone keeps the acquired rule unread`);
   await settings(); await saveProgressAndWait(`${active.id} unread library rule`);
   await startStory(true);
   await reopenLibraryRuleThroughApp();
-  value = await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'library_rule' && controls(s).some(c => c.name === 'LibraryRuleAction') ? s : null; }, 'ordinary reload restores unread rule reader');
-  check(!state(value).ui.libraryFinalsPuzzle.archivedRuleRead, `${active.id}: reload never supplies the missing reading fact`);
-  await clickControl('LibraryRuleAction', 'name');
+  value = await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'library_rule' && controls(s).some(c => c.name === 'LibraryWorldDocumentClose') ? s : null; }, 'ordinary reload and app entry open the unread rule in the Library world');
+  check(value.world?.visible && !state(value).ui.libraryFinalsPuzzle.archivedRuleRead && JSON.stringify(state(value).items) === originalItems, `${active.id}: reopening alone neither reads nor changes inventory`);
+  check(controls(value).find(c => c.name === 'LibraryWorldDocumentClose')?.disabled, `${active.id}: the unread rule cannot close before scrolling`);
+  active.screenshots.push(await screenshot(`${active.id}-library-rule-entry`));
+  await press('Escape');
+  value = await snapshot();
+  check(controls(value).some(c => c.name === 'LibraryWorldDocumentClose' && c.disabled) && !state(value).ui.libraryFinalsPuzzle.archivedRuleRead, `${active.id}: Escape cannot bypass the reading gate`);
+  await scrollLibraryRuleToClose();
+  await clickControl('LibraryWorldDocumentClose', 'name');
   active.library ||= {};
   active.library.dialogueSamples = [];
   // The earned portable boundary may also restore earlier unacknowledged
   // source dialogue. Advance the actual queue through normal input, observing
   // each publication rather than assuming a fixed count of key presses.
   for (let index = 0; index < 106; index++) {
-    const before = await snapshot();
+    const before = await poll(async () => { const s = await snapshot(); return s?.libraryStory?.sequenceId || state(s)?.ui.libraryFinalsPuzzle.archivedRuleBriefingSeen ? s : null; }, 'actual Library dialogue is ready');
     if (state(before).ui.libraryFinalsPuzzle.archivedRuleBriefingSeen) break;
-    active.library.dialogueSamples.push({ at: Date.now(), frame: before.sampleFrame, text: controls(before).filter(c => c.type === 'Label').map(c => c.text) });
+    const line = `${before.libraryStory.sequenceId}:${before.libraryStory.lineIndex}`;
+    active.library.dialogueSamples.push({ at: Date.now(), frame: before.sampleFrame, line, text: controls(before).filter(c => c.type === 'Label').map(c => c.text) });
     if (active.touch) {
       const prompt = controls(before).find(c => /^点击 \/ 空格 \/ 回车(?:继续|确认)$/.test(c.text));
       if (prompt) await clickPoint(await renderPoint({ x: prompt.rect.x + prompt.rect.width / 2, y: prompt.rect.y + prompt.rect.height / 2 }, before));
     } else await press(' ', 'Space');
-    await poll(async () => (await snapshot())?.sampleFrame > before.sampleFrame, 'Library dialogue advances its real frame publication');
+    await poll(async () => { const next = await snapshot(); const story = next?.libraryStory; return state(next)?.ui.libraryFinalsPuzzle.archivedRuleBriefingSeen || story?.sequenceId && `${story.sequenceId}:${story.lineIndex}` !== line ? next : null; }, 'Library dialogue advances to a new authored line or completes');
   }
   value = await poll(async () => { const s = await snapshot(); return state(s)?.ui.libraryFinalsPuzzle.archivedRuleRead && state(s).ui.libraryFinalsPuzzle.archivedRuleBriefingSeen ? s : null; }, 'explicit reading and original briefing complete');
   check(JSON.stringify(state(value).items) === originalItems, `${active.id}: reading preserves the acquired original and other inventory`);
-  await clickControl('PhoneNav_back', 'name'); await clickControl('LibraryApp_rule', 'name');
-  value = await snapshot();
-  check(state(value).native.page === 'library_rule' && !controls(value).some(c => c.name === 'LibraryRuleAction'), `${active.id}: read rule remains reviewable without a second acknowledgement`);
+  await reopenLibraryRuleThroughApp();
+  value = await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'library_rule' && controls(s).some(c => c.name === 'LibraryWorldDocumentClose' && !c.disabled) ? s : null; }, 'read rule remains reviewable');
+  check(state(value).ui.libraryFinalsPuzzle.archivedRuleRead, `${active.id}: review retains the single completed acknowledgement`);
   active.screenshots.push(await screenshot(`${active.id}-library-rule-reviewed`));
+  await scrollLibraryRuleToClose(); await clickControl('LibraryWorldDocumentClose', 'name');
   await importSave(path.join(fixtureDir, 'before_library_022_opening.json'));
   await poll(async () => controls(await snapshot()).some(c => c.text === '跳过演出'), 'earned022 seat starts its original transition');
   await clickControl('跳过演出', 'text');
@@ -1895,6 +1934,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
     if (scenarios === 'mobile-world') await mobileWorldCase();
     else if (scenarios === 'phone-recovery') active.phoneRecovery = await phoneRecoveryCase({ id, touch, fixtureDir, bootTimeout, group: active.phoneGroup,
       snapshot, clickControl, clickPoint, renderPoint, poll, check, interval, screenshot, importSave,
+      progress: phoneGroups(active.phoneGroup).includes('c2-tiyi') ? createPhoneProgress({filename: path.join(output, `${id}-phone-progress.jsonl`), id, group: active.phoneGroup, touch, dpr, cdpProgress: () => active.cdp.progress()}) : undefined,
       observeExercise: action => evaluate(`(${exerciseInputObserver.toString()})(${JSON.stringify(action)},${touch})`),
       pointer: async (phase, point) => {
         if (touch) await active.cdp.send('Input.dispatchTouchEvent', {type: phase === 'start' ? 'touchStart' : phase === 'move' ? 'touchMove' : 'touchEnd', touchPoints: phase === 'end' ? [] : [{...point, id: 4}]});

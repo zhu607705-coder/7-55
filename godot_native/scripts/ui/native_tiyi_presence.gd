@@ -2,9 +2,9 @@ extends RefCounted
 const Identity=preload("res://scripts/ui/native_tiyi_identity.gd")
 ## Source RouteAuditPanel fields and evidence. All saved facts stay controller-owned.
 const FIELDS=[
-	{"id":"arrival","key":"auditArrivalMinutes","label":"到座耗时","unit":"分钟","min":0,"max":12,"default":5,"hint":"入口小屏 · 计算时间差"},
-	{"id":"notice","key":"auditPublicNoticeFloor","label":"公示编号","unit":"号","min":1,"max":63,"default":45,"hint":"CC98 楼主编辑 · 读取编号"},
-	{"id":"proofs","key":"auditProofCount","label":"证明数量","unit":"项","min":1,"max":5,"default":1,"hint":"旧版规则 · 统计类别"}
+	{"id":"arrival","key":"auditArrivalMinutes","label":"到座耗时","unit":"分钟","min":0,"max":12,"default":5,"hint":"门禁记录 · 两次时间差"},
+	{"id":"notice","key":"auditPublicNoticeFloor","label":"公示编号","unit":"号","min":1,"max":63,"default":45,"hint":"论坛公示 · 关联记录号"},
+	{"id":"proofs","key":"auditProofCount","label":"证明数量","unit":"项","min":1,"max":5,"default":1,"hint":"旧版规则 · 材料类别"}
 ]
 const LOCATIONS={"entrance":"图书馆入口","seat_022":"022","front_desk":"前台","lost_found":"失物招领","catalog_terminal":"馆藏检索","printer":"打印机","shelf_755":"书架背面"}
 const INK=Color("23344b")
@@ -71,19 +71,19 @@ func build(b) -> Control:
 	var p: Dictionary=b.s.ui.libraryFinalsPuzzle
 	_sync(p)
 	var passed=bool(p.presenceProofCollected)
-	var root: Control=b._base(Identity.BACKGROUND,1084)
+	var root: Control=b._base(Identity.BACKGROUND,1190)
 	root.name="TiyiPresenceForm"
 	if not b.handled.has("lib_audit"): b.handled.append("lib_audit")
 	b._header(root,"浙大体艺",Color.WHITE,Identity.INK,func(): b.page_requested.emit("phone_home"),"exit","退出浙大体艺，返回手机主页")
-	b._panel(root,Rect2(38,67,326,125),Color.WHITE,Color("b8c9db"),8,1)
+	b._panel(root,Rect2(14,67,350,125),Color.WHITE,Color("b8c9db"),8,1)
 	_text(b,root,"补录成功" if passed else "本人来过证明补录单",Rect2(50,80,302,30),20,BLUE).name="TiyiPresenceTitle"
-	_text(b,root,"系统已承认你确实来过图书馆" if passed else "待补录 · 先核对三项调查材料",Rect2(50,114,302,24),14,MUTED)
-	_text(b,root,"已认证" if passed else "表单 022",Rect2(50,148,302,24),14,BLUE)
+	_text(b,root,"系统已承认你确实来过图书馆" if passed else "核对同一次 022 会话的三份记录",Rect2(50,114,302,24),14,MUTED)
+	_text(b,root,"已认证 · 022 会话" if passed else "时间差 · 公示记录号 · 材料类别数",Rect2(50,148,302,32),12,BLUE)
 	var route: Array=["寝室"]
 	for point in p.get("libraryVisitedPoints",[]):
 		if LOCATIONS.has(point): route.append(LOCATIONS[point])
-	b._panel(root,Rect2(38,203,326,77),Color("e3edf8"),Color("b8c9db"),8,1)
-	_text(b,root,"检测到室内异常锻炼路线",Rect2(50,211,302,24),14,BLUE)
+	b._panel(root,Rect2(14,203,350,77),Color("e3edf8"),Color("b8c9db"),8,1)
+	_text(b,root,"本次会话的已调查地点",Rect2(50,211,302,24),14,BLUE)
 	_text(b,root," → ".join(route),Rect2(50,237,302,36),13,MUTED).name="TiyiRecordedRoute"
 	var source_ready=bool(p.entranceRecordRead and p.investigationOpened and p.archivedRuleRead)
 	var editable=str(b.s.ui.libraryFinalsPhase)=="evidence_gathering"
@@ -94,7 +94,7 @@ func build(b) -> Control:
 		for i in range(FIELDS.size()):
 			var field: Dictionary=FIELDS[i]
 			var y=292+i*83
-			b._panel(root,Rect2(38,y,326,75),Color.WHITE,Color("b8c9db"),8,1)
+			b._panel(root,Rect2(14,y,350,75),Color.WHITE,Color("b8c9db"),8,1)
 			_text(b,root,field.label,Rect2(50,y+7,121,25),16)
 			_text(b,root,"来源 %02d · %s" % [i+1,field.hint],Rect2(50,y+39,302,25),12,MUTED)
 			var minus_name="TiyiMinus_"+field.id
@@ -123,7 +123,7 @@ func build(b) -> Control:
 				var next: Control=controls[i+1]
 				controls[i].text_submitted.connect(func(_value): next.grab_focus())
 		var attempts=int(p.auditAttemptCount)
-		var hint="三项字段分别对应三份已保存的证据。" if source_ready else "先取得门禁记录、论坛公示与旧版规则。"
+		var hint="时间差核对到座记录，编号关联公示，类别数核对材料。" if source_ready else "先取得门禁记录、论坛公示与旧版规则。"
 		if attempts>0:
 			hint="补录参数与原始记录不一致。" if attempts==1 else "三项分别对应到座耗时、公示编号和旧规的证明数量。" if attempts==2 else "仍有字段与来源不一致。请重新核对三份原件。"
 		_text(b,root,hint,Rect2(50,601,308,48),13,Color("8b352e") if attempts>0 else MUTED).name="TiyiPresenceFeedback"
@@ -132,7 +132,7 @@ func build(b) -> Control:
 	return root
 
 func _result(b,root: Control,p: Dictionary) -> void:
-	b._panel(root,Rect2(38,294,326,344),Color("f4fbf5"),Color("55986a"),8,2)
+	b._panel(root,Rect2(14,294,350,344),Color("f4fbf5"),Color("55986a"),8,2)
 	_text(b,root,"本人来过证明",Rect2(50,312,300,32),21,Color("236239")).name="TiyiPresenceResult"
 	_text(b,root,"一张证明你来过的证明。它没有证明你为什么要来。",Rect2(50,355,300,56),14)
 	for i in range(FIELDS.size()):
@@ -141,17 +141,17 @@ func _result(b,root: Control,p: Dictionary) -> void:
 	b._button(root,"返回手机主页",Rect2(28,563,322,44),func(): b.page_requested.emit("phone_home"),BLUE,Color.WHITE,6,Color("194f86")).name="TiyiPresenceReturn"
 
 func _sources(b,root: Control,p: Dictionary) -> void:
-	_text(b,root,"三项材料从哪里取得",Rect2(50,668,308,28),17,BLUE)
+	_text(b,root,"填写依据与核对用途",Rect2(50,668,308,28),17,BLUE)
 	var entries=[
-		["01 图书馆入口小屏 · 填写到座耗时","07:55 基础馆入口 → 08:02 一层书库 022\n填写两次记录的分钟差" if p.entranceRecordRead else "未取得 · 回到基础图书馆入口，查看门禁记录小屏"],
-		["02 CC98 调查帖楼主编辑 · 填写公示编号","楼主编辑原文：旧申请统一挂在公示编号 %s\n23 是回复楼层；填写原文中的公示编号" % _notice_number() if p.investigationOpened else "未取得 · 在 022 座位拿到占座纸条，用它打开 CC98 调查帖"],
-		["03 旧版规则 · 填写证明数量","本人确实到馆；目标座位与凭据一致；当前占用物不具备本人身份。\n填写规则列出的证明类别数量" if p.archivedRuleRead else "未取得 · 在一层书库 755 书架使用“索书号 755”，取得并阅读规则"]
+		["01 门禁记录 · 核对到座时间","07:55 基础馆入口 → 08:02 一层书库 022\n填写分钟差，用于核对同一次到馆会话" if p.entranceRecordRead else "未取得 · 回到基础图书馆入口，查看门禁记录小屏"],
+		["02 论坛公示 · 关联原始记录","23 楼编辑：本次 022 公示记录编号 %s\n用来关联公示，不填楼层、排名或 BD 口令" % _notice_number() if p.investigationOpened else "未取得 · 在 022 座位拿到占座纸条，用它打开 CC98 调查帖"],
+		["03 旧版规则 · 核对材料完整性","本人确实到馆；目标座位与凭据一致；当前占用物不具备本人身份。\n填写要求的类别数，不是背包中的道具总数" if p.archivedRuleRead else "未取得 · 按索书号找到 06 架南端上层的 755 号书，抽出并读完规则"]
 	]
 	for i in range(entries.size()):
-		var y=706+i*117
-		b._panel(root,Rect2(38,y,326,105),Color.WHITE,Color("b8c9db"),8,1)
+		var y=706+i*150
+		b._panel(root,Rect2(14,y,350,138),Color.WHITE,Color("b8c9db"),8,1)
 		_text(b,root,entries[i][0],Rect2(50,y+8,302,30),14,BLUE)
-		_text(b,root,entries[i][1],Rect2(50,y+40,302,58),13,MUTED).name="TiyiEvidence_"+str(i)
+		_text(b,root,entries[i][1],Rect2(50,y+40,302,90),13,MUTED).name="TiyiEvidence_"+str(i)
 
 func _notice_number() -> String:
 	var data=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/library-finals.content.json"))

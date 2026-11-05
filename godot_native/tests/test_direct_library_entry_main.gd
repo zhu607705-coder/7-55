@@ -16,10 +16,9 @@ func approach()->void:
 	check(not shell.world._floor_pending_interaction.is_empty() and not shell.world._floor_route.is_empty(),"far entity tap owns actual source navigation")
 	check(state.d.native.page!="library_record","approach does not submit the record action before reaching its source radius")
 func record_action()->Button:
-	# The original Zjuding app entry owns its loading interval. Let that real
-	# session finish before expecting a newly opened record page's controls.
+	# The entrance record opens as a document in the current Library scene.
 	for i:int in range(40):
-		var button:Button=shell.find_child("LibraryRecordAction",true,false)
+		var button:Button=shell.modal.find_child("LibraryWorldDocumentClose",true,false) if is_instance_valid(shell.modal) else null
 		if is_instance_valid(button) and button.is_visible_in_tree():return button
 		await create_timer(.05).timeout
 	return null
@@ -41,9 +40,11 @@ func run()->void:
 		var record:Button=await record_action()
 		if not is_instance_valid(record) or not record.is_visible_in_tree():print("DIRECT_RECORD_UI_DIAGNOSTIC ",JSON.stringify({"view":extent,"page":state.d.native.page,"phase":state.d.ui.libraryFinalsPhase,"phoneVisible":shell.phone.visible,"worldVisible":shell.world_frame.visible,"mobileWorld":shell.mobile_world,"recordExists":is_instance_valid(record),"recordVisible":record.is_visible_in_tree() if is_instance_valid(record) else false,"actions":state.get_actions("library_record"),"last":state.last_result,"pending":w._floor_pending_interaction}))
 		check(is_instance_valid(record) and record.is_visible_in_tree(),"original record confirmation is visible")
+		check(shell.world_frame.visible and not shell.phone.visible,"record remains in the Library world")
 		if is_instance_valid(record):await tap(record.get_global_rect().get_center())
 		check(state.d.ui.libraryFinalsPuzzle.entranceRecordRead and state.d.ui.libraryFinalsPuzzle.clueIds.count("arrival_7_minutes")==1,"real touch confirmation earns original evidence exactly once")
-		await tap(shell.phone_world_return.get_global_rect().get_center());shell.world.set_process(false)
+		check(not is_instance_valid(shell.modal) and shell.world_frame.visible,"confirming the record returns to the same world")
+		shell.world.set_process(false)
 		for i:int in range(12):w._process(.05)
 		check(w.library_door.progress==1 and w.can_stand(Vector2(715,710)),"original record fact opens the actual glass passage")
 		await tap(source_screen(Vector2(715,673.1875)))

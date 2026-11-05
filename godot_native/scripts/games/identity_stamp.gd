@@ -6,11 +6,18 @@ const PAPER:=Color("eee7d5")
 const INK:=Color("29251e")
 const MUTED:=Color("766b58")
 const RED:=Color("8b3f35")
+const StampMotion=preload("res://scripts/presentation/library_stamp_motion.gd")
+const SEAL:=Rect2(270,304,52,29)
+const STAMP_REST:=Vector2(197,324)
+const SUCCESS_HOLD_MS:=960.0
 const SHEET:=Rect2(14,80,402,616)
 var elapsed: float=0
 var label: Label
 var stamp: Button
 var issued: bool=false
+var stamp_ms: float=-1.0
+var accepted_scan_ms: float=0.0
+var reduced_motion: bool=false
 var result_labels: Array[Label]=[]
 var status: Label
 var scan_hint: Label
@@ -27,6 +34,8 @@ func _button_style(fill: Color,border: Color) -> StyleBoxFlat:
 	var style:=StyleBoxFlat.new();style.bg_color=fill;style.border_color=border;style.set_border_width_all(2)
 	style.content_margin_left=12;style.content_margin_right=12;return style
 func _ready() -> void:
+	var state:=get_node_or_null("/root/State")
+	if state!=null:reduced_motion=bool(state.d.native.settings.get("reduced_motion",false))
 	_label("基础馆 · 身份核验",Rect2(40,105,330,22),14,MUTED)
 	label=_label("物品身份盖章机",Rect2(40,138,345,32),24)
 	_label("核验对象",Rect2(181,212,178,24),16,MUTED)
@@ -51,16 +60,59 @@ func _ready() -> void:
 	_label("基础馆失物身份登记",Rect2(42,650,348,24),14,MUTED)
 func start(_config: Dictionary) -> void: pass
 func _process(delta: float) -> void:
-	elapsed+=minf(delta,.1)
+	if not is_visible_in_tree() or issued:return
+	var step:=clampf(delta,0.0,.1)
+	if stamp_ms>=0:
+		stamp_ms+=step*1000.0
+		var contact:bool=stamp_ms>=StampMotion.CONTACT_MS or reduced_motion
+		scan_hint.text="盖章完成" if contact else "正在盖章……"
+		queue_redraw()
+		if stamp_ms>=(350.0 if reduced_motion else SUCCESS_HOLD_MS):
+			issued=true
+			finished.emit({"scanMs":accepted_scan_ms,"identityChecks":[false,false,false],"stamped":true})
+		return
+	elapsed+=step
 	if not ready_shown and elapsed>=.72:
 		ready_shown=true
 		for row: Label in result_labels:row.text="未通过";row.add_theme_color_override("font_color",RED)
 		status.text="待盖章";status.add_theme_color_override("font_color",RED)
 		scan_hint.text="核验完成 · 等待盖章";stamp.disabled=false;queue_redraw()
 func _stamp() -> void:
-	if elapsed<.72 or issued:return
-	issued=true
-	finished.emit({"scanMs":elapsed*1000,"identityChecks":[false,false,false],"stamped":true})
+	if not ready_shown or issued or stamp_ms>=0:return
+	accepted_scan_ms=elapsed*1000.0
+	stamp_ms=0.0
+	stamp.disabled=true
+	status.hide()
+	scan_hint.text="盖章完成" if reduced_motion else "正在盖章……"
+	queue_redraw()
+
+func _draw_stamp_result() -> void:
+	if stamp_ms<0:
+		draw_rect(Rect2(235,287,122,40),RED if ready_shown else MUTED,false,2)
+		draw_rect(Rect2(239,291,114,32),Color(RED,.35) if ready_shown else Color(MUTED,.35),false,1)
+		_draw_stamp_head(STAMP_REST)
+		return
+
+	var pose:=StampMotion.sample(stamp_ms,-1.0)
+	var ink:float=1.0 if reduced_motion else pose.ink
+	if ink>0:
+		var color:=Color(RED,ink)
+		draw_rect(SEAL,color,false,2)
+		draw_rect(SEAL.grow(-3),Color(RED,ink*.4),false,1)
+		draw_string(font,SEAL.position+Vector2(0,20),"非本人",HORIZONTAL_ALIGNMENT_CENTER,SEAL.size.x,15,color)
+	if reduced_motion:
+		_draw_stamp_head(STAMP_REST)
+		return
+	var descent:=StampMotion.smooth(stamp_ms/StampMotion.CONTACT_MS)
+	var retreat:=StampMotion.smooth((stamp_ms-StampMotion.RELEASE_MS)/(StampMotion.CLEAR_MS-StampMotion.RELEASE_MS))
+	var head:=STAMP_REST.lerp(Vector2(SEAL.get_center().x,STAMP_REST.y),descent*(1.0-retreat))
+	head.y+=float(pose.stampBottom.y-StampMotion.STAMP_REST_Y)*.45
+	_draw_stamp_head(head)
+
+func _draw_stamp_head(bottom:Vector2) -> void:
+	const SCALE:=.62
+	var top_left:=bottom-Vector2(32.0,StampMotion.STAMP_SOURCE_CONTACT_Y)*SCALE
+	draw_texture_rect(stamp_art,Rect2(top_left,Vector2(64,88)*SCALE),false)
 func _draw() -> void:
 	draw_rect(Rect2(SHEET.position+Vector2(5,6),SHEET.size),Color(.17,.13,.08,.23))
 	draw_rect(SHEET,PAPER);draw_rect(SHEET,Color("b7aa92"),false,2)
@@ -72,9 +124,7 @@ func _draw() -> void:
 	draw_line(Vector2(40,186),Vector2(389,186),Color("736a5a"),2)
 	for y: int in [343,397,446,495]:
 		for x: int in range(42,388,8):draw_line(Vector2(x,y),Vector2(x+4,y),Color("b7aa92"),1)
-	draw_rect(Rect2(235,287,122,40),RED if ready_shown else MUTED,false,2)
-	draw_rect(Rect2(239,291,114,32),Color(RED,.35) if ready_shown else Color(MUTED,.35),false,1)
-	draw_texture_rect(stamp_art,Rect2(179,279,36,49.5),false)
+	_draw_stamp_result()
 	if ready_shown:
 		for i: int in range(3):
 			var at:=Vector2(194,374+i*49)

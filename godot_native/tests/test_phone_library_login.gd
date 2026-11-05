@@ -169,7 +169,7 @@ func run() -> void:
 	# Functional searches and deliberate selection keep the terminal evidence gate.
 	s.actOne.phase="complete"; s.ui.libraryFinalsPhase="evidence_gathering"; s.ui.libraryFinalsPuzzle.investigationOpened=true; s.ui.libraryFinalsPuzzle.catalogUnlocked=false
 	await show("library_catalog"); set_input("LibraryCatalogQuery","三分钟离座法"); await click(node("LibraryCatalogSearch")); await show("library_catalog")
-	expect(s.native.lib_catalog_result_ids.size()==5,"Source catalog shows all five original similar books")
+	expect(s.native.lib_catalog_result_ids.size()==controller.library._data().library.catalogResults.size(),"Source catalog shows every authored and real-book record")
 	expect(not s.ui.libraryFinalsPuzzle.catalogSearchCompleted,"Functional search cannot bypass terminal clue gate")
 	await capture("library-catalog")
 	await click(node("LibraryCatalogResult_three-minute-leave-method")); expect(not s.items.callNumber755,"Selecting before terminal cannot grant evidence")

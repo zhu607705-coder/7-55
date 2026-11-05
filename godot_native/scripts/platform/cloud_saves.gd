@@ -394,11 +394,15 @@ func flush() -> void:
 	var captured: Dictionary=State.capture_cloud_bundle()
 	if not captured.get("ok",false): _busy=false;_failure(captured);return
 	var captured_digest:=_digest(captured.bundle)
-	if _pending.is_empty() and captured_digest==_last_local_digest:
-		_dirty=false;_busy=false;_transport.pending(false);return
 	var persisted: bool=await _persist(captured)
 	if generation!=_epoch: return
 	if not persisted: _busy=false;_failure({"error":"本机存档尚未确认写入，暂时不要刷新，请重试。"});return
+	if _pending.is_empty() and captured_digest==_last_local_digest:
+		# The server already acknowledged these exact game bytes, but the local
+		# write above still needs its own durability confirmation.
+		_dirty=false;_busy=false;_transport.pending(false)
+		_set_status("云端已保存 · "+_saved_time(str(head.get("current",{}).get("savedAt",""))))
+		return
 	_set_status("正在上传账号进度…")
 	var result: Dictionary=await _upload(captured)
 	if generation!=_epoch: return
@@ -422,6 +426,14 @@ func save_now() -> void:
 		if scene!=null and scene.get("web_platform")!=null: scene.web_platform.request_save()
 		return
 	if not State.save_game(): _failure({"error":"当前进度不能保存。"});return
+	var generation:=_epoch
+	var started:=Time.get_ticks_msec()
+	# Join an automatic upload before flushing the newest local bytes.
+	while _busy and generation==_epoch:
+		if Time.get_ticks_msec()-started>180000:
+			_failure({"error":"保存仍未完成，请重试；本机进度已保留。"});return
+		await get_tree().process_frame
+	if generation!=_epoch: return
 	await flush()
 	status_changed.emit()
 
@@ -436,7 +448,9 @@ func show_manager() -> void:
 	choices.append(["重新开始",request_restart])
 	choices.append(["导出个人备份",_export])
 	choices.append(["重新连接 / 检查账号",_boot])
-	_show(status_text+"\n"+_summary(head.get("current"),"账号云存档"),choices)
+	var current_status:=status_text
+	_show(_summary(head.get("current"),"账号云存档"),choices)
+	_set_status(current_status)
 
 func _continue_current() -> void:
 	if member_id.is_empty(): _resume();return

@@ -57,7 +57,17 @@ func run()->void:
 			fixture("library_interior",Vector2(715,spawn_y));world.size=dimensions;world.mobile_exploration=true;world.touch_controls=true;world._update_camera();world.queue_redraw();await process_frame
 			check(not world.can_stand(Vector2(452,817.875)) and not world.can_stand(Vector2(1084,817.875)),"painted west/east south-wall bases stop the real foot body "+str(dimensions))
 			check(world.can_stand(Vector2(452,760)) and world.can_stand(Vector2(1084,760)) and world.can_stand(Vector2(715,842)),"adjacent clear interior floor and authored central spawn stay open")
-			var point:Vector2=(Vector2(715,673.1875)-world.camera)*world.zoom+world.size/2
+			# The former point now hits the visible entrance reader. Aim at clear
+			# floor farther inside, so this still exercises routing across the gate.
+			var goal:=Vector2.INF
+			for y:int in range(650,701,5):
+				for x:int in [715,700,730,680,750,660,770,640,790,620,810,600,830,580,850,560,870,540,890,520,910,500,930,950,970,990]:
+					var candidate:=Vector2(x,y)
+					if world._floor_empty_destination(candidate) and world.can_stand(candidate-Metrics.FOOT_CENTER_OFFSET):goal=candidate;break
+				if goal.is_finite():break
+			check(goal.is_finite(),"closed-gate floor tap has a visible empty destination on the interior side")
+			if not goal.is_finite():continue
+			var point:Vector2=(goal-world.camera)*world.zoom+world.size/2
 			finger(point,true);finger(point,false)
 			check(world._floor_status=="blocked" and world._floor_route.is_empty(),"wide real floor tap cannot route around closed leaves via either outer wall from "+str(spawn_y))
 			var fixed:Vector2=world.player
@@ -73,19 +83,18 @@ func run()->void:
 	for id:String in ["library_entrance","library_front_desk","library_shelf_755"]:
 		var spawn:Dictionary=world.spec.spawns[id]
 		check(world.can_stand(Vector2(spawn.x,spawn.y)),"original source checkpoint remains physically open "+id)
-	# The retained seat checkpoint (1180,500) already intersects the authored
-	# south reading rail. This entrance repair must not silently move that rail
-	# or declare the old occupied point walkable; the validated nearby fixture
-	# uses (1180,480). Track the independent source mismatch explicitly.
 	check(world.can_stand(Vector2(1180,480)),"existing validated reading-area arrival stays physically open")
-	var old_seat:=Vector2(1180,500)
-	check(not world.can_stand(old_seat) and world.collisions.any(func(r:Dictionary)->bool:return r.id=="reading_south_rail" and Metrics.foot_rect(old_seat).intersects(world._rect(r))),"retained seat spawn mismatch remains attributable to its original rail, not the new wall bases")
+	check(world.can_stand(Vector2(1180,500)),"seat checkpoint clears the separately rendered reading rail")
+	# A saved position in the former horizontal-stack aisle now intersects a
+	# north-south stack. Exercise actual Continue recovery against that footprint.
+	var old_aisle:=Vector2(642,277)
+	check(not world.can_stand(old_aisle),"former horizontal aisle is occupied by the restored vertical stack")
 	for stand:Vector2 in [Vector2(548,355),Vector2(1255,480),Vector2(700,623),Vector2(827,591)]:
 		check(world.can_stand(stand),"measured shelf, bag, catalog and printer operating stands remain open "+str(stand))
 	check(state.begin_checkpoint("c2-seat-arrival"),"retained ordinary seat-arrival checkpoint prerequisites")
-	state.d.native.player={"scene":"library_interior","x":1180.,"y":500.};state.d.native.positions={"library_interior:":{"x":1180.,"y":500.}}
+	state.d.native.player={"scene":"library_interior","x":642.,"y":277.};state.d.native.positions={"library_interior:":{"x":642.,"y":277.}}
 	world.world_key="";world.scene_id="";world.refresh_world();world._process(0)
-	check(world.player!=old_seat and world.can_stand(world.player),"ordinary scene entry resolves occupied source seat point through existing safe-spawn recovery")
+	check(world.player!=old_aisle and world.can_stand(world.player),"ordinary scene entry resolves the former aisle through existing safe-spawn recovery")
 	state.developer_mode=false;check(state.save_game(),"ordinary recovered seat position validates for durable save")
 	state.d=state.initial();check(state.load_game(),"ordinary recovered seat save restores through production importer")
 	world.world_key="";world.refresh_world();world._process(0)

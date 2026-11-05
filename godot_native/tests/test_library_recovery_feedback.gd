@@ -136,7 +136,7 @@ func run() -> void:
 		root.size=size; shell.size=Vector2(size); await frames(); await restore_followup(bd_earned)
 		check_bd_order([]); await check_bd_geometry()
 		await tap("Cc98BdRepliesJump")
-		check(rect(shell.phone_scroll).grow(1).encloses(rect(node("Cc98ReplyPanel_24"))),"manual reply jump lands at first numeric reply")
+		check(rect(shell.phone_scroll).grow(1).encloses(rect(node("Cc98ReplyPanel_18"))),"manual reply jump lands at the clue introducing the numeric replies")
 		await tap("Cc98BdSelect_24"); check_bd_order([24])
 		var before=story_snapshot(); var scroll_before=shell.phone_scroll.scroll_vertical
 		await click(node("Cc98BdSelect_24"))
