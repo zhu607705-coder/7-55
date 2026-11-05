@@ -9,6 +9,7 @@ const UiMaterial = preload("res://scripts/ui/campus_ui_material.gd")
 const PaperPanel = preload("res://scripts/ui/campus_paper_panel.gd")
 const PaperInk = preload("res://scripts/ui/paper_ink_material.gd")
 const CommunityPortal = preload("res://scripts/platform/community_portal.gd")
+const DisplayGrade = preload("res://scripts/ui/phone_display_grade.gd")
 const BUCT_SCENE := "res://campuses/buct/scenes/playable.tscn"
 const HAIDIAN_SCENE := "res://campuses/buct_haidian/scenes/playable.tscn"
 const CHANGPING_SCENE := "res://campuses/buct_changping/scenes/playable.tscn"
@@ -47,6 +48,7 @@ var detail: Label
 var story_heading: Label
 var campus_heading: Label
 var title_rule: ColorRect
+var brightness_grade: Control
 
 func _ready() -> void:
 	set_meta("paper_ink_scope",true)
@@ -74,9 +76,8 @@ func _ready() -> void:
 		var crop:=AtlasTexture.new();crop.atlas=dorm;crop.region=Rect2(0,0,941,941)
 		background.texture=crop
 	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);add_child(background)
-	var shade:=ColorRect.new();shade.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	shade.color=Color(0.055,0.085,0.10,0.42)
-	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);add_child(shade)
+	# The entrance uses the source room's natural colors. The opaque paper
+	# card supplies text contrast without darkening the entire first screen.
 	card=PaperPanel.new();add_child(card)
 	var style:=UiMaterial.panel_style("paper",{},Vector2(28,24))
 	card.set_meta("tactile_paper_ink",true)
@@ -127,6 +128,11 @@ func _ready() -> void:
 	Typography.apply_display(title)
 	resized.connect(_layout);card.minimum_size_changed.connect(_layout.call_deferred)
 	_layout.call_deferred();story_button.grab_focus()
+	# The independent entrance uses the same neutral anchor as a fresh phone:
+	# authored composition unchanged, rather than an always-on maximum lift.
+	brightness_grade=DisplayGrade.new();brightness_grade.name="EntryDisplayGrade";brightness_grade.z_index=201
+	add_child(brightness_grade);brightness_grade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	brightness_grade.set_strength(0.0)
 	if OS.has_feature("web"):
 		JavaScriptBridge.eval("""(()=>{let data={};Object.defineProperty(window,'__GODOT_755__',{configurable:true,value:Object.freeze({snapshot:()=>JSON.parse(JSON.stringify(data))})});window.__FLC_ENTRY_READONLY__={publish:raw=>{data=JSON.parse(raw)}};})()""",true)
 		_entry_bridge=JavaScriptBridge.get_interface("__FLC_ENTRY_READONLY__")

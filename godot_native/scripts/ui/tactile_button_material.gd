@@ -19,6 +19,9 @@ const HOVER_PALETTES := {
 }
 var variant := "secondary"
 var paper_ink := false
+# Story navigation is flat; dropdown faces and independent prototypes retain
+# their prior material until separately reviewed.
+var paper_flat := false
 var unit := 1.0
 var hover_amount := 0.0
 var press_amount := 0.0
@@ -74,7 +77,7 @@ func configure(kind: String, u: float) -> void:
  content_margin_top=unit;content_margin_bottom=unit
 
 func _get_draw_rect(rect: Rect2) -> Rect2:
- return rect.grow(12.0*unit)
+ return rect if paper_flat else rect.grow(12.0*unit)
 
 func _points(rect: Rect2, radius: float) -> PackedVector2Array:
  var result:=PackedVector2Array()
@@ -123,7 +126,7 @@ func _shadow(canvas: RID,rect: Rect2,radius: float,offset: float,blur: float,spr
 
 func _draw(canvas: RID,rect: Rect2) -> void:
  if paper_ink:
-  PaperInk.draw_button(canvas,rect,variant,unit,hover_amount,press_amount,disabled_amount)
+  PaperInk.draw_button(canvas,rect,variant,unit,hover_amount,press_amount,disabled_amount,paper_flat)
   return
  var p: Array=PALETTES[variant]
  var opacity: float=1.0 # Disabled values remain readable; native input owns gating.

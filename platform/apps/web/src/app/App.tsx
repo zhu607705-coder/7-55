@@ -459,7 +459,7 @@ export function App() {
   }
   async function publish() {
     if (!draft.accepted) throw new Error("请先确认投稿的公开范围。");
-    if (!draft.body.trim()) throw new Error("先写下一句话吧。");
+    if (!draft.body.trim()) throw new Error("先写投稿吧。");
     if (!user) {
       authenticate({ kind: "compose" });
       return;
@@ -591,7 +591,7 @@ export function App() {
             </span>
             <span className="brand-divider" />
             <span className="brand-title">
-              共创平台<small>CAMPUS STORIES, TOGETHER</small>
+              共创平台<small>7:55 COMMUNITY</small>
             </span>
           </a>
           <nav className="main-nav" aria-label="主导航">
@@ -599,7 +599,7 @@ export function App() {
               <Icon name="note" size={14} /> 共创广场
             </a>
             <a href="#ranking">
-              <Icon name="flag" size={14} /> 灵感榜
+              <Icon name="flag" size={14} /> 人气榜
             </a>
             {config?.gameUrl && (
               <a
@@ -637,7 +637,7 @@ export function App() {
                 {accountOpen && (
                   <div className="account-menu pixel-panel" id="account-menu">
                     <strong>{user.nickname}</strong>
-                    <small>共创者名片</small>
+                    <small>我的账号</small>
                     <button
                       onClick={() => {
                         clearFilters();
@@ -698,31 +698,30 @@ export function App() {
           />
           <div className="hero-shade" />
           <div className="hero-content">
-            <div className="hero-kicker">
-              <span className="signal-dot" /> 浙大校园故事 · 玩家共创计划
-            </div>
             <h1 id="hero-title">
-              校园里的小事，
+              把校园小事，
               <br />
-              <span>也值得成为故事。</span>
+              <span>做进游戏。</span>
             </h1>
             <p>
-              一句吐槽、一次卡关、一个荒诞的念头。
+              分享经历，反馈卡点。
               <br />
-              留下它，再一起看它如何走进游戏。
+              在原帖查看回复和制作进度。
             </p>
             <button
               className="button button-yellow hero-cta"
               onClick={() => compose("story")}
             >
-              <Icon name="plus" size={16} /> 分享我的经历{" "}
+              <Icon name="plus" size={16} /> 写投稿{" "}
               <Icon name="arrow" size={16} />
             </button>
-            <span className="hero-hint">不需要写策划案，一句话就可以。</span>
+            {config?.gameUrl && (
+              <a className="hero-game-link" href={config.gameUrl}>试玩游戏 ↗</a>
+            )}
           </div>
           <div className="scene-caption">
             <span>
-              <span className="scene-dot" /> 紫 金 港 · 故 事 仍 在 继 续
+              <span className="scene-dot" /> 浙大校园 · 7:55
             </span>
             <span>19:55</span>
           </div>
@@ -731,19 +730,19 @@ export function App() {
           <div className="world-status-inner">
             <span className="world-intro">
               <Icon name="spark" size={16} />{" "}
-              普通人的校园生活，也有好玩的下一章。
+              校园公告栏
             </span>
             <div className="stats">
               <span>
                 <strong>{stats ? count(stats.ideaCount) : "—"}</strong>{" "}
-                份可见投稿
+                篇投稿
               </span>
               <span>
                 <strong>{stats ? count(stats.memberCount) : "—"}</strong>{" "}
-                位共创者
+                位玩家
               </span>
               <span>
-                <strong>{stats ? count(stats.likeCount) : "—"}</strong> 次支持
+                <strong>{stats ? count(stats.likeCount) : "—"}</strong> 个赞
               </span>
             </div>
           </div>
@@ -751,17 +750,16 @@ export function App() {
         <section className="entry-strip" aria-label="参与方式">
           {(
             [
-              ["chapter", "01", "本章说", "聊聊这一章的故事与细节"],
-              ["feedback", "02", "反馈卡点", "还没通关，也能帮我们改好"],
-              ["story", "03", "分享经历", "让校园小事成为支线的起点"],
+              ["chapter", "本章说", "聊剧情，注意剧透"],
+              ["feedback", "反馈卡点", "描述问题和设备"],
+              ["story", "分享经历", "经历或玩法点子"],
             ] as const
-          ).map(([key, n, title, copy]) => (
+          ).map(([key, title, copy]) => (
             <button
               key={key}
               className={`entry-card entry-${key}`}
               onClick={() => compose(key)}
             >
-              <span className="entry-number">{n}</span>
               <span>
                 <strong>{title}</strong>
                 <small>{copy}</small>
@@ -777,24 +775,23 @@ export function App() {
         >
           <div className="section-heading">
             <div>
-              <p className="eyebrow">THE CAMPUS NOTICEBOARD</p>
               <h2 id="board-title">
                 {mode === "operator"
                   ? "运营工作台"
                   : mode === "mine"
                     ? "我的投稿"
-                    : "校园共创广场"}
+                    : "投稿广场"}
                 <span className="heading-square" />
               </h2>
             </div>
             <p className="section-subtitle">
-              收到、讨论、制作，每一步都留在原投稿下。
+              查看回复与制作进度。
             </p>
             <button
               className="button button-green board-compose"
               onClick={() => compose()}
             >
-              <Icon name="plus" size={14} /> 写下一句话
+              <Icon name="plus" size={14} /> 写投稿
             </button>
           </div>
           <div className="board-layout">
@@ -938,7 +935,7 @@ export function App() {
                     maxLength={100}
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
-                    placeholder="找一个校园故事…"
+                    placeholder="搜索投稿"
                   />
                 </label>
               </div>
@@ -1026,7 +1023,7 @@ export function App() {
                       <Icon name="note" size={38} />
                       <span>+</span>
                     </div>
-                    <span className="tiny-label">留给一个真实的校园瞬间</span>
+
                     <h3>
                       {channel === "chapter" && !user?.progressOrder
                         ? "先设置阅读进度，再看本章说"
@@ -1035,13 +1032,13 @@ export function App() {
                     <p>
                       {query
                         ? "换个关键词，或看看其他章节。"
-                        : "不用想一个宏大的故事。\n一次赶课、一个卡点，也值得认真听。"}
+                        : "分享一段经历，或反馈一个问题。"}
                     </p>
                     <button
                       className="button button-green"
                       onClick={() => compose()}
                     >
-                      写下一句话
+                      写投稿
                     </button>
                   </div>
                 )}
@@ -1102,7 +1099,7 @@ export function App() {
                           <strong>{idea.title}</strong>
                           <small>
                             {rankSort === "likes"
-                              ? `${idea.likeCount} 次支持`
+                              ? `${idea.likeCount} 个赞`
                               : `${idea.ratingAverage?.toFixed(1) ?? "—"} 分 · ${idea.ratingCount} 人评分`}
                           </small>
                         </button>
@@ -1114,7 +1111,7 @@ export function App() {
                     <Icon name="star" size={24} />
                     <p>
                       {rankings
-                        ? "好故事的第一张便签，\n可能就来自你。"
+                        ? "还没有故事投稿。"
                         : "榜单暂时无法读取。"}
                     </p>
                     {!rankings && (
@@ -1125,55 +1122,14 @@ export function App() {
                   </div>
                 )}
                 <p className="rank-footnote">
-                  只统计故事投稿。人气是参考，采用还看叙事契合与制作成本。
+                  点赞供选题参考，不代表一定采用。
                 </p>
               </section>
-              <section className="guide-panel">
-                <div className="guide-pin" />
-                <span className="tiny-label">件件有回音</span>
-                <h3>让故事一步步长大。</h3>
-                <ol>
-                  {[
-                    [
-                      "01",
-                      "一句话投稿",
-                      "分享经历、聊本章，或告诉我们哪里卡住了。",
-                    ],
-                    [
-                      "02",
-                      "回来看处理进展",
-                      "收录、讨论、制作、试玩，进度挂在原投稿下。",
-                    ],
-                    [
-                      "03",
-                      "看自己的故事进游戏",
-                      "采用前确认改编授权和署名，再挂回试玩入口。",
-                    ],
-                  ].map(([n, title, copy]) => (
-                    <li key={n}>
-                      <span>{n}</span>
-                      <div>
-                        <strong>{title}</strong>
-                        <p>{copy}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-                <p className="guide-note">
-                  平台正在建设首期功能。具体采用与回复时间由运营团队安排。
-                </p>
-              </section>
+
             </aside>
           </div>
         </section>
-        <section className="bottom-note">
-          <Icon name="spark" size={20} />
-          <p>
-            每个谜题背后，都有一个具体的人。
-            <span>谢谢你，把自己的校园故事留在这里。</span>
-          </p>
-          <span className="bottom-clock">7:55</span>
-        </section>
+
       </main>
       <footer className="site-footer">
         <span>
@@ -1195,15 +1151,15 @@ export function App() {
         </div>
       )}
       {modal === "auth" && (
-        <Dialog title="PLAYER ID / 共创者通行证" onClose={closeModal}>
+        <Dialog title="玩家账号" onClose={closeModal}>
           {inlineNotice}
           <div className="auth-heading">
             <span className="auth-pixel-avatar">
               <Icon name="user" size={30} />
             </span>
-            <h2>登录，再把故事接上。</h2>
+            <h2>登录 / 注册</h2>
             <p>
-              注册、登录、邮箱验证和找回密码由 Authing 提供。验证后会回到这里。
+              与游戏共用一个账号，登录后自动返回。
             </p>
           </div>
           {authState === "ready" && config?.configured ? (
@@ -1212,7 +1168,7 @@ export function App() {
               disabled={Boolean(pending)}
               onClick={() => void startLogin()}
             >
-              {pending === "login" ? "正在前往登录页…" : "前往登录 / 注册 →"}
+              {pending === "login" ? "正在前往登录页…" : "继续登录"}
             </button>
           ) : (
             <div className="inline-notice">
@@ -1232,13 +1188,12 @@ export function App() {
             </div>
           )}
           <p className="form-note">
-            平台不收集学号，不要求校园统一身份认证。未提交的内容不会上传给
-            Authing。
+            无需手机号或学号。登录由 Authing 提供，投稿草稿仅留在当前标签页。
           </p>
         </Dialog>
       )}
       {modal === "compose" && (
-        <Dialog title="NEW NOTE / 留下一张校园便签" wide onClose={closeModal}>
+        <Dialog title="写投稿" wide onClose={closeModal}>
           {inlineNotice}
           <ComposeForm
             draft={draft}
@@ -1254,7 +1209,7 @@ export function App() {
         </Dialog>
       )}
       {modal === "profile" && user && (
-        <Dialog title="PLAYER CARD / 昵称与阅读进度" onClose={closeModal}>
+        <Dialog title="昵称与阅读进度" onClose={closeModal}>
           {inlineNotice}
           {!chapterItems.length ? (
             <p>
@@ -1279,7 +1234,7 @@ export function App() {
         </Dialog>
       )}
       {modal === "detail" && (
-        <Dialog title="STORY FILE / 投稿与处理进展" wide onClose={closeModal}>
+        <Dialog title="投稿详情" wide onClose={closeModal}>
           {inlineNotice}
           {detailLoading ? (
             <div className="loading-panel" role="status">
@@ -1343,13 +1298,13 @@ export function App() {
                       className="progress-timeline"
                       aria-label="投稿处理进展"
                     >
-                      <h3>这份投稿，走到哪一步了？</h3>
+                      <h3>处理进度</h3>
                       <ol>
                         <li>
                           <span className="timeline-dot" />
                           <time>{date(detail.createdAt)}</time>
                           <strong>已收录</strong>
-                          <p>平台已收到，等待团队查看。收录不代表已经采用。</p>
+                          <p>等待团队查看，尚未采用。</p>
                         </li>
                         {updates?.map((update) => (
                           <li key={update.id}>

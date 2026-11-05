@@ -1,9 +1,11 @@
 extends Node
-## Applies the existing shared NativeUi material to late-created UI controls.
-## Physical paper/item/artwork hit regions are expressly excluded below.
+## Routes phone controls to their flat authored surfaces; other UI keeps its
+## existing tactile material. The phone scope is ownership, never a name guess.
 const ButtonState=preload("res://scripts/ui/tactile_button_state.gd")
 const EXEMPT_SCRIPTS := ["phone_drop_button.gd","inventory_item.gd","clock_visual_card.gd"]
 const GHOST_SCRIPTS := ["home_app_button.gd","world_phone_launcher.gd"]
+const PHONE_ROOT_SCRIPTS := ["res://scripts/ui/phone_chrome.gd","res://scripts/ui/phone_app_frame.gd"]
+const PHONE_EXEMPT_ROLES := ["object","hit_region","mask"]
 
 func _ready() -> void:
  process_mode=Node.PROCESS_MODE_ALWAYS
@@ -25,6 +27,9 @@ func _adopt(instance_id: int) -> void:
  var path: String=script.resource_path if script!=null else ""
  for suffix: String in EXEMPT_SCRIPTS:
   if path.ends_with(suffix):return
+ if _is_phone_control(node):
+  _adopt_phone(node)
+  return
  # Custom puzzle hotspots deliberately have no standard button caption; their
  # own draw() is the object, not a UI key. Explicit marking wins over heuristics.
  var compact: bool=bool(node.get_meta("tactile_keep_layout",false))
@@ -66,3 +71,31 @@ func _adopt(instance_id: int) -> void:
  var size_name: String=str(node.get_meta("tactile_size","lg" if node.get_theme_font_size("font_size")>=16 else "md"))
  var controller:=ButtonState.new();controller.name="TactileMaterialState"
  node.add_child(controller);controller.setup(node,kind,size_name,compact)
+
+func _is_phone_control(node: Node) -> bool:
+ # Pages built outside the main shell (including tests) declare their owner.
+ # In the actual game the shell is an unnamed PanelContainer, not PhoneView.
+ var ancestor: Node=node
+ while ancestor!=null:
+  if ancestor.has_meta("phone_ui_scope"):
+   return bool(ancestor.get_meta("phone_ui_scope"))
+  var script: Script=ancestor.get_script()
+  var path: String=script.resource_path if script!=null else ""
+  if path in PHONE_ROOT_SCRIPTS:return true
+  if path=="res://scripts/main.gd":
+   var phone: Node=ancestor.get("phone")
+   return is_instance_valid(phone) and (phone==node or phone.is_ancestor_of(node))
+  ancestor=ancestor.get_parent()
+ return false
+
+func _adopt_phone(button: Button) -> void:
+ var role: String=str(button.get_meta("phone_button_role","action"))
+ if role in PHONE_EXEMPT_ROLES:return
+ # Custom Button scripts may draw puzzle objects, irregular masks or artwork.
+ # They retain that ownership unless the author explicitly declares a UI role.
+ # Empty captions are deliberately NOT used to distinguish rows from hotspots.
+ var script: Script=button.get_script()
+ if script!=null and not button.has_meta("phone_button_role"):
+  if script.resource_path!="res://scripts/ui/home_app_button.gd":return
+ var controller:=ButtonState.new();controller.name="TactileMaterialState"
+ button.add_child(controller);controller.setup_phone(button,role)

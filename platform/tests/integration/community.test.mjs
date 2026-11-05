@@ -1,4 +1,5 @@
 import test from "node:test";
+import { randomBytes } from "node:crypto";
 import assert from "node:assert/strict";
 import { createPool, createCommunityStore } from "@755/database";
 import { buildApp } from "../../apps/api/dist/app.js";
@@ -825,4 +826,31 @@ test("concurrent likes/ratings, durable search, pagination, filtered rankings an
       /^[a-f0-9]{64}$/.test(row.key),
     ),
   );
+});
+
+
+test("concurrent login callbacks cap sessions per account and failed inserts preserve existing sessions", async (t) => {
+  const { pool, login } = await fixture(t);
+  const a = await login("session-cap-a");
+  const b = await login("session-cap-b");
+  const identities = (await pool.query("SELECT id,member_id FROM external_identities")).rows;
+  const identityA = identities.find(row => row.member_id === a.user.id).id;
+  const identityB = identities.find(row => row.member_id === b.user.id).id;
+  const store = createCommunityStore(pool);
+  const expiry = new Date(Date.now() + 60_000);
+  await Promise.all(Array.from({length: 25}, () => store.createSession(
+    a.user.id, identityA, randomBytes(32).toString("hex"), expiry,
+  )));
+  const sessions = async (id) => (await pool.query(
+    "SELECT token_hash FROM sessions WHERE member_id=$1 ORDER BY token_hash", [id],
+  )).rows;
+  const before = await sessions(a.user.id);
+  assert.equal(before.length, 10);
+  assert.equal((await sessions(b.user.id)).length, 1);
+  await assert.rejects(store.createSession(a.user.id, identityB, randomBytes(32).toString("hex"), expiry));
+  assert.deepEqual(await sessions(a.user.id), before);
+  // A duplicate insert must roll back the preceding session pruning.
+  const newest = (await pool.query("SELECT token_hash FROM sessions WHERE member_id=$1 ORDER BY created_at DESC,token_hash DESC LIMIT 1", [a.user.id])).rows[0].token_hash;
+  await assert.rejects(store.createSession(a.user.id, identityA, newest, expiry));
+  assert.deepEqual(await sessions(a.user.id), before);
 });

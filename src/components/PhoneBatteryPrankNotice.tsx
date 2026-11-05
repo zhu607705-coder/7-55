@@ -18,8 +18,8 @@ export function usePhoneBatteryPrank(events: EventBus, state: GameState) {
     const stop = () => { clearInterval(timer); timer = undefined; sound?.stop(); sound = null; };
     const reset = () => { stop(); model.current.reset(); setNotice(null); };
     const unsubscribe = events.subscribe(event => {
-      if (event.name === "phone_battery_recharged" || event.name === "developer_checkpoint_applied") { reset(); return; }
-      if (event.name !== "phone_battery_reserve_used" || !model.current.consumeReserve(performance.now(), percent.current)) return;
+      if (event.name === "developer_checkpoint_applied") { reset(); return; }
+      if (event.name !== "phone_battery_reserve_used" || !model.current.consumeReserve(performance.now(), Number(event.payload?.percent))) return;
       sound = playSfx("07_p14_chat_message_notification_ping.mp3", { volume: 0.8 });
       const tick = () => {
         if (percent.current > 1) { reset(); return; }

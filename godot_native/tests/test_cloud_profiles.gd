@@ -8,6 +8,77 @@ func _initialize() -> void: run.call_deferred()
 func check(value: bool,message: String) -> void:
 	checks+=1
 	if not value: failures+=1;push_error("CLOUD PROFILE: "+message)
+func phone_legacy(state: Node, brightness: float, percent: int) -> Dictionary:
+	var snapshot: Dictionary=state.initial()
+	snapshot.ui.brightness=brightness;snapshot.phoneBattery.percent=percent
+	for field: String in ["brightnessRevision","brightnessUserAdjusted","brightnessLegacy100Repaired"]: snapshot.ui.erase(field)
+	snapshot.phoneBattery.lowPowerMode=true;snapshot.phoneBattery.rechargeCount=7
+	snapshot.ui.homeDeskReturnScene="bonsai";snapshot.native.page="desktop";snapshot.currentScene="desktop"
+	return snapshot
+func phone_bundle(template: Dictionary, snapshot: Dictionary) -> Dictionary:
+	var bundle: Dictionary=template.duplicate(true)
+	var envelope: Dictionary=JSON.parse_string(bundle.stateText)
+	envelope.state=snapshot.duplicate(true);bundle.stateText=JSON.stringify(envelope)
+	return bundle
+func check_phone_copy(copy: Dictionary, original: Dictionary, expected: float, repaired: bool, label: String) -> void:
+	check(copy.phoneBattery.keys()==["percent"] and copy.phoneBattery.percent==original.phoneBattery.percent,label+" keeps actual battery while retiring charging metadata")
+	check(not copy.ui.has("homeDeskReturnScene") and copy.native.page=="bonsai" and copy.currentScene=="bonsai",label+" recovers retired desk return without retaining the charging route")
+	check(copy.ui.brightness==expected and copy.ui.brightnessRevision==1 and copy.ui.brightnessLegacy100Repaired==repaired,label+" preserves the bounded brightness migration")
+	check(copy.flags==original.flags,label+" grants or erases no puzzle facts")
+func check_phone_cloud_boundaries(state: Node) -> void:
+	var original: Dictionary=state.d.duplicate(true)
+	var seed: Dictionary=state.capture_cloud_bundle(true)
+	check(seed.get("ok",false),"phone cloud matrix has a valid fresh portable template")
+	if not seed.get("ok",false): return
+	var cases: Array=[
+		{"label":"untouched legacy100","brightness":100.0,"percent":0,"expected":65.0,"repaired":true},
+		{"label":"explicit manual100","brightness":100.0,"percent":1,"expected":100.0,"repaired":false,"manual":true},
+		{"label":"legacy45","brightness":45.0,"percent":7,"expected":45.0,"repaired":false},
+		{"label":"legacy20","brightness":20.0,"percent":0,"expected":20.0,"repaired":false},
+		{"label":"historical manual100","brightness":100.0,"percent":7,"expected":100.0,"repaired":false,"manual_log":true},
+		{"label":"earned plant100","brightness":100.0,"percent":100,"expected":100.0,"repaired":false,"plant_lit":true}
+	]
+	for item: Dictionary in cases:
+		var snapshot:=phone_legacy(state,float(item.brightness),int(item.percent))
+		if item.get("manual",false):
+			snapshot.ui.brightnessRevision=1;snapshot.ui.brightnessUserAdjusted=true;snapshot.ui.brightnessLegacy100Repaired=false
+		if item.get("manual_log",false): snapshot.native.log.append({"text":"屏幕亮度已调整。","time":"2026-11-04T00:00:00"})
+		if item.get("plant_lit",false): snapshot.flags.plantLit=true
+		var incoming:=phone_bundle(seed.bundle,snapshot)
+		var incoming_bytes: String=incoming.stateText
+		var active_before:=JSON.stringify(state.d)
+		var prepared: Dictionary=state.prepare_cloud_bundle(incoming,{})
+		check(prepared.get("ok",false),str(item.label)+" cloud import validates")
+		check(incoming.stateText==incoming_bytes and JSON.stringify(state.d)==active_before,"cloud preparation does not mutate input or active profile")
+		if prepared.get("ok",false):
+			check_phone_copy(prepared.state,snapshot,float(item.expected),bool(item.repaired),str(item.label)+" input")
+			check(prepared.state.ui.brightnessUserAdjusted==bool(item.get("manual",false) or item.get("manual_log",false)),str(item.label)+" input retains manual evidence")
+		state.d=snapshot.duplicate(true)
+		active_before=JSON.stringify(state.d)
+		var captured: Dictionary=state.capture_cloud_bundle()
+		check(captured.get("ok",false),str(item.label)+" cloud output validates")
+		check(JSON.stringify(state.d)==active_before,"cloud capture retires metadata only in its copy")
+		if captured.get("ok",false):
+			var exported: Dictionary=JSON.parse_string(captured.bundle.stateText).state
+			check_phone_copy(exported,snapshot,float(item.expected),bool(item.repaired),str(item.label)+" output")
+			check(exported.ui.brightnessUserAdjusted==bool(item.get("manual",false) or item.get("manual_log",false)),str(item.label)+" output retains manual evidence")
+			var roundtrip: Dictionary=state.prepare_cloud_bundle(captured.bundle,captured.images)
+			check(roundtrip.get("ok",false) and roundtrip.state==exported,str(item.label)+" cloud round trip is idempotent")
+	for invalid_field: String in ["lowPowerMode","rechargeCount","homeDeskReturnScene","partialBrightness"]:
+		var invalid:=phone_legacy(state,100,0)
+		match invalid_field:
+			"lowPowerMode": invalid.phoneBattery.lowPowerMode="true"
+			"rechargeCount": invalid.phoneBattery.rechargeCount=-1
+			"homeDeskReturnScene": invalid.ui.homeDeskReturnScene="settings"
+			"partialBrightness": invalid.ui.brightnessRevision=1
+		state.d=invalid.duplicate(true)
+		var active_before:=JSON.stringify(state.d)
+		check(not state.prepare_cloud_bundle(phone_bundle(seed.bundle,invalid),{}).get("ok",false),"cloud input rejects malformed "+invalid_field+" before migration")
+		check(not state.capture_cloud_bundle().get("ok",false),"cloud output rejects malformed "+invalid_field+" before migration")
+		check(JSON.stringify(state.d)==active_before,"rejected phone cloud operation preserves active state")
+	state.d=original
+	var fresh: Dictionary=state.capture_cloud_bundle(true)
+	check(fresh.get("ok",false) and JSON.parse_string(fresh.bundle.stateText).state.ui.brightness==65,"fresh cloud restart uses corrected65 default")
 func run() -> void:
 	if not load("res://tests/native_test_isolation.gd").is_isolated_save(): push_error("Refusing non-test save directory");quit(1);return
 	var state=root.get_node("State")
@@ -15,6 +86,7 @@ func run() -> void:
 	var b:="22222222-2222-4222-8222-222222222222"
 	check(state.activate_profile(a,false).ok,"profile A initialized")
 	check(state.SAVE_PATH.contains(a),"save path uses stable member identifier")
+	check_phone_cloud_boundaries(state)
 	var post: Dictionary={"id":"cloud-personal-note","avatar":"anonymous"}
 	for field in Posts.POST_FIELDS: post[field]="来自 A 的个人编辑"
 	check(Posts.import_bundle({"posts":[post],"questPostOverrides":{}})==OK,"personal documents saved in A namespace")
@@ -75,6 +147,14 @@ func run() -> void:
 	check(fresh.bundle.stores.posts.contains(post.body) and JSON.stringify(state.d)==before,"preparing restart keeps edits and old active state")
 	var fixture:=OS.get_environment("GODOT_CLOUD_FIXTURE")
 	if not fixture.is_empty(): check(state.export_save(fixture)==OK,"explicit isolated browser fixture exported")
+	var formal_bytes:=FileAccess.get_file_as_bytes(state.SAVE_PATH)
+	var backup_bytes:=FileAccess.get_file_as_bytes(state.BACKUP_PATH)
+	state.developer_mode=true
+	check(not state.capture_cloud_bundle().ok and not state.save_game(),"developer preview cannot autosave or upload")
+	check(state.export_save("user://portable-preview.json")==OK,"validated preview can export an independent portable file")
+	check(state.export_save(state.SAVE_PATH)==ERR_UNAUTHORIZED and state.export_save(ProjectSettings.globalize_path(state.BACKUP_PATH))==ERR_UNAUTHORIZED,"portable export cannot target formal progress or its backup")
+	check(FileAccess.get_file_as_bytes(state.SAVE_PATH)==formal_bytes and FileAccess.get_file_as_bytes(state.BACKUP_PATH)==backup_bytes,"preview export leaves formal files unchanged")
+	state.developer_mode=false
 	var disk_path: String=state.SAVE_PATH
 	var valid_disk:=FileAccess.get_file_as_string(disk_path)
 	var future_disk: Dictionary=JSON.parse_string(valid_disk);future_disk.sourceVersion=999

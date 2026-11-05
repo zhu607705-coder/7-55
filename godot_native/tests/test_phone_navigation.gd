@@ -129,8 +129,9 @@ func _run() -> void:
 	brightness.grab_focus()
 	var up_key=InputEventKey.new(); up_key.keycode=KEY_UP; up_key.pressed=true; root.push_input(up_key,true); await process_frame
 	expect(s.ui.brightness==60,"Vertical slider ArrowUp uses source ten-point step")
-	await click(node("LowPowerToggle")); await show("control_center")
-	await click(node("ControlBrightness")); expect(s.ui.brightness==45,"Vertical slider caps low-power value at 45 percent of full range")
+	expect(node("LowPowerToggle")==null,"Retired low-power mode has no control")
+	s.phoneBattery.percent=0; await show("control_center")
+	await click(node("ControlBrightness")); expect(s.ui.brightness==50,"Vertical slider remains uncapped at zero battery")
 	actions.clear(); await click(node("ControlSaveNow")); expect(actions[0][0]=="native_save_now","Source Save button routes native persistence intent")
 	await click(node("ControlResetOpen")); await show("control_center"); expect(node("ControlResetConfirm")!=null,"Reset requires source inline confirmation")
 	await click(node("ControlResetCancel")); await show("control_center"); expect(node("ControlResetConfirm")==null,"Cancel leaves story intact")

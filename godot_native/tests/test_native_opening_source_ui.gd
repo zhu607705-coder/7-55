@@ -1,8 +1,6 @@
 extends SceneTree
 const Opening=preload("res://scripts/ui/native_opening_presentation.gd")
 const Notice=preload("res://scripts/ui/native_phone_notice.gd")
-const PaperInk=preload("res://scripts/ui/paper_ink_material.gd")
-const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 var shell: Control
 var state: Node
 var checks:=0
@@ -35,7 +33,7 @@ func press_without_action(button: Button) -> void:
 	var event:=InputEventMouseButton.new(); event.button_index=MOUSE_BUTTON_LEFT; event.pressed=true; event.position=point; root.push_input(event)
 	button.get_node("TactileMaterialState")._process(.160)
 	check(button.position.is_equal_approx(rest),"press leaves native hit region stable")
-	check(is_equal_approx(button.get_theme_stylebox("pressed").press_amount,1.0),"pressed face translates exactly1u")
+	check(button.get_node("TactileMaterialState").phone_flat and button.get_theme_stylebox("pressed").shadow_size==0,"pressed phone face stays flat without content translation")
 	move=InputEventMouseMotion.new(); move.position=Vector2.ZERO; root.push_input(move)
 	event=InputEventMouseButton.new(); event.button_index=MOUSE_BUTTON_LEFT; event.position=Vector2.ZERO; event.pressed=false; root.push_input(event)
 	check(button.position.is_equal_approx(rest),"canceled release restores source button position")
@@ -64,16 +62,13 @@ func check_button(name: String,_fill: Color,_ink: Color) -> Button:
 	check(absf(16*424.0/378.0-18)<0.06,"18px role retains source scale "+name)
 	var expected: String="secondary" if name=="c1_wake" else "primary"
 	check(button.get_meta("tactile_variant")==expected,"semantic neutral variant "+name)
-	check(button.get_theme_stylebox("pressed")==button.get_theme_stylebox("normal"),"same animated state layer stack "+name)
-	check(button.get_theme_stylebox("normal").paper_ink,"opening uses the reviewed paper material "+name)
+	check(button.get_theme_stylebox("pressed")!=button.get_theme_stylebox("normal") and button.get_node("TactileMaterialState").phone_flat,"independent flat native state styles "+name)
 	for mode: String in ["normal","hover","pressed","hover_pressed","disabled","focus"]:
 		check(button.has_theme_stylebox_override(mode),"complete local state "+name+" "+mode)
 		if mode=="focus":
-			var focus:StyleBoxFlat=button.get_theme_stylebox(mode)
-			check(focus.corner_radius_top_left==2 and focus.border_color==PaperInk.FOCUS and focus.get_border_width_min()==2 and focus.bg_color.a==0 and Ui._contrast(focus.border_color,PaperInk.PAPER)>=3,"paper focus is a readable two-pixel outline")
+			check(button.get_theme_stylebox(mode).corner_radius_top_left==4,"existing focus convention retained")
 		else:
-			var material:StyleBox=button.get_theme_stylebox(mode)
-			check(material.corner_radius_top_left==roundi(2.5*float(button.get_meta("tactile_unit"))) and material.anti_aliasing,"paper pen corner stays proportional to the unchanged type scale "+mode)
+			check(button.get_theme_stylebox(mode).corner_radius_top_left<=4 and not button.get_theme_stylebox(mode).anti_aliasing and button.get_theme_stylebox(mode).shadow_size==0,"flat phone material keeps bounded radius and no shadow "+mode)
 	check(rect(button).size.x>=44 and rect(button).size.y>=44,"big button keeps readable pointer target "+name)
 	check(16*scale>=14,"big button readable at tested physical scale "+name)
 	return button
@@ -141,15 +136,13 @@ func run() -> void:
 		check(shell.toast.mouse_filter==Control.MOUSE_FILTER_IGNORE,"toast never blocks taps")
 		check(rect(shell.phone).encloses(rect(shell.toast)),"toast contained by phone")
 		shell._feedback("这是一条完整的提示。".repeat(9),"task"); await frames(2)
-		check(shell.toast.text=="进度已保存。","later long feedback waits for the current notice")
-		shell._process(10);await frames(2)
+		check(shell.toast.text=="这是一条完整的提示。".repeat(9) and shell.notice_queue.pending.is_empty(),"latest long feedback immediately replaces the old receipt")
 		check(shell.toast.get_node("NoticeSpeaker").text=="任务","authored tone retains source speaker")
 		check(shell.toast.get_line_count()>1 and shell.toast.size.y>69,"long feedback grows a wrapping card")
 		check(shell.toast.get_line_count()*Notice.FONT.get_height(16)+45<=shell.toast.size.y+0.1,"long feedback is not vertically clipped")
 		check(rect(shell.phone).encloses(rect(shell.toast)),"long feedback stays inside phone bounds")
 		shell.audio_director.subtitle_timed.emit("带音频时长的提示","toast",4200.0,"xiaoying")
-		check(shell.toast.get_node("NoticeSpeaker").text=="任务","notification metadata does not retime or relabel the current item")
-		shell._process(10)
+		check(shell.toast.text=="带音频时长的提示" and shell.notice_queue.pending.is_empty(),"new audio notification replaces text and metadata immediately")
 		check(is_equal_approx(shell.toast_time,4.2) and shell.toast.get_node("NoticeSpeaker").text=="小影","audio duration and tone remain source-owned")
 		shell._process(4.3)
 		check(shell.toast.text.is_empty() and not shell.toast.visible,"expired toast clears card and text")

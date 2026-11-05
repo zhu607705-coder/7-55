@@ -7,7 +7,7 @@ import { createReadStream, existsSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, readdir, writeFile, rm, open } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { phoneRecoveryCase, exerciseInputObserver } from './web_phone_recovery.mjs';
+import { phoneRecoveryCase, exerciseInputObserver, createPhoneProgress } from './web_phone_recovery.mjs';
 import { phoneGroups, assertPhoneCoverage } from './web_phone_shards.mjs';
 import { phoneNavigationCase } from './web_phone_navigation.mjs';
 import { startTransportAudit } from './web_transport_audit.mjs';
@@ -98,9 +98,11 @@ async function shaFile(filename) { const h = createHash('sha256'); for await (co
 async function connect(wsUrl, onEvent) {
   const ws = new WebSocket(wsUrl); await new Promise((resolve, reject) => { ws.addEventListener('open', resolve, { once: true }); ws.addEventListener('error', reject, { once: true }); });
   let sequence = 0; const pending = new Map();
-  ws.addEventListener('message', event => { const message = JSON.parse(String(event.data)); if (message.method) { onEvent(message); return; } const item = pending.get(message.id); if (!item) return; pending.delete(message.id); clearTimeout(item.timer); message.error ? item.reject(new Error(message.error.message)) : item.resolve(message.result); });
-  ws.addEventListener('close', () => { for (const item of pending.values()) { clearTimeout(item.timer); item.reject(new Error('CDP connection closed')); } pending.clear(); });
-  return { send(method, params = {}, timeoutMs = 30000) { return new Promise((resolve, reject) => { const id = ++sequence; const timer = setTimeout(() => { pending.delete(id); reject(new Error(`CDP timeout ${method}`)); }, timeoutMs); pending.set(id, { resolve, reject, timer }); ws.send(JSON.stringify({ id, method, params })); }); }, close() { for (const item of pending.values()) { clearTimeout(item.timer); item.reject(new Error('CDP closed')); } pending.clear(); ws.close(); } };
+  // Only summarize existing CDP activity; no additional commands or timers.
+  const progress = {lastInitiated: null, lastCompleted: null};
+  ws.addEventListener('message', event => { const message = JSON.parse(String(event.data)); if (message.method) { onEvent(message); return; } const item = pending.get(message.id); if (!item) return; pending.delete(message.id); clearTimeout(item.timer); progress.lastCompleted = {id: message.id, method: item.method, at: Date.now(), status: message.error ? 'failed' : 'acknowledged'}; message.error ? item.reject(new Error(message.error.message)) : item.resolve(message.result); });
+  ws.addEventListener('close', () => { for (const [id, item] of pending) { clearTimeout(item.timer); progress.lastCompleted = {id, method: item.method, at: Date.now(), status: 'closed'}; item.reject(new Error('CDP connection closed')); } pending.clear(); });
+  return { send(method, params = {}, timeoutMs = 30000) { return new Promise((resolve, reject) => { const id = ++sequence; progress.lastInitiated = {id, method, at: Date.now()}; const timer = setTimeout(() => { pending.delete(id); progress.lastCompleted = {id, method, at: Date.now(), status: 'timeout'}; reject(new Error(`CDP timeout ${method}`)); }, timeoutMs); pending.set(id, { resolve, reject, timer, method }); ws.send(JSON.stringify({ id, method, params })); }); }, progress() { return {...progress, pending: pending.size}; }, close() { for (const [id, item] of pending) { clearTimeout(item.timer); progress.lastCompleted = {id, method: item.method, at: Date.now(), status: 'closed'}; item.reject(new Error('CDP closed')); } pending.clear(); ws.close(); } };
 }
 async function enableNetworkObservation(session) {
   // CI Chrome 155 exposes this dedicated command. Keep the original caps;
@@ -575,13 +577,15 @@ async function assertLayout(label) {
   return geometry;
 }
 async function settings() { await press('F10'); await poll(async () => controls(await snapshot()).some(c => c.text === '导入存档'), 'settings opened'); }
-async function importSave(filename) {
+async function importSave(filename, { expectedPage } = {}) {
   const bytes = await readFile(filename); const envelope = JSON.parse(bytes); check(envelope.format === '7-55-godot-native' && envelope.version === 1 && envelope.state, `ordinary native portable envelope: ${path.basename(filename)}`);
   const beforeImport = await snapshot();
   await settings(); await clickControl('导入存档');
   const document = await active.cdp.send('DOM.getDocument', { depth: 0 }); const input = await active.cdp.send('DOM.querySelector', { nodeId: document.root.nodeId, selector: '#godot-save-import' }); check(input.nodeId > 0, 'shipped save file picker input exists');
   await active.cdp.send('DOM.setFileInputFiles', { nodeId: input.nodeId, files: [path.resolve(filename)] });
-  const expected = envelope.state.native;
+  // Legacy routes may migrate. The scenario must explicitly name the expected
+  // destination; every other import retains the portable file route contract.
+  const expected = { ...envelope.state.native, page: expectedPage ?? envelope.state.native.page };
   const changedRoute = expected.chapter !== state(beforeImport).native.chapter || expected.page !== state(beforeImport).native.page || expected.scene !== state(beforeImport).native.scene;
   const s = await poll(async () => {
     const s = await snapshot(); const complete = changedRoute || s?.saveDigest !== beforeImport.saveDigest || controls(s).some(c => /存档已导入/.test(c.text)) || /存档已导入/.test(s?.world?.subtitle || '');
@@ -1893,6 +1897,7 @@ async function browserCase(id, width, height, touch, dpr = 1) {
     if (scenarios === 'mobile-world') await mobileWorldCase();
     else if (scenarios === 'phone-recovery') active.phoneRecovery = await phoneRecoveryCase({ id, touch, fixtureDir, bootTimeout, group: active.phoneGroup,
       snapshot, clickControl, clickPoint, renderPoint, poll, check, interval, screenshot, importSave,
+      progress: phoneGroups(active.phoneGroup).includes('c2-tiyi') ? createPhoneProgress({filename: path.join(output, `${id}-phone-progress.jsonl`), id, group: active.phoneGroup, touch, dpr, cdpProgress: () => active.cdp.progress()}) : undefined,
       observeExercise: action => evaluate(`(${exerciseInputObserver.toString()})(${JSON.stringify(action)},${touch})`),
       pointer: async (phase, point) => {
         if (touch) await active.cdp.send('Input.dispatchTouchEvent', {type: phase === 'start' ? 'touchStart' : phase === 'move' ? 'touchMove' : 'touchEnd', touchPoints: phase === 'end' ? [] : [{...point, id: 4}]});

@@ -2,7 +2,7 @@
   "sources": [
     {
       "path": "src/App.tsx",
-      "sha256": "4ebf2f7cf33460fd4aa3abb9dc2ba8122ff451cf60b7a1e1041167cbd8aca407"
+      "sha256": "4f144807b3d981f6476cc70fa037d9829fdd430114ab46362afc0c0e85037bdc"
     },
     {
       "path": "src/components/LibraryStoryOverlay.tsx",

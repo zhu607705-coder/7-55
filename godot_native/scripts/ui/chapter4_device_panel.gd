@@ -65,7 +65,9 @@ func configure(id: String, state: Dictionary, font: Font = null) -> bool:
 	header.add_child(title_box)
 	title_box.add_child(label(session.definition.locationLabel+" · "+("深色观察" if session.mode == "dark" else "浅色操作"),13,muted))
 	title_box.add_child(label(session.definition.title,20,text_ink))
-	close_button = button("×","close",request_close)
+	close_button = button("关闭","close",request_close)
+	# Reserve the real caption width instead of wrapping an icon into the padding.
+	close_button.autowrap_mode = TextServer.AUTOWRAP_OFF
 	close_button.tooltip_text = "返回现场"
 	close_button.custom_minimum_size = Vector2(44,44)
 	header.add_child(close_button)

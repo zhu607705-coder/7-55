@@ -1,18 +1,34 @@
 extends RefCounted
 ## Native learning dashboard. Only the original check-in route changes pages;
 ## course and notice readers are local presentation, with no story writes.
+const Notice=preload("res://scripts/ui/native_phone_notice.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
 const ART="res://assets/ui/zjuding_home.png"
-const INK=Color("1d1a1e")
-const MUTED=Color("4a4038")
+const INK=Color("203944")
+const MUTED=Color("586f7b")
 const TEAL=Color("147b91")
-const SURFACE=Color("f6efe2")
-const ICON_SURFACE=Color("eee5d5")
-const EDGE=Color("6f655a")
+const SURFACE=Color("f6f9fb")
+const ICON_SURFACE=Color("e5f1f5")
+const EDGE=Color("b9ccd5")
 const COURSES=[
 	["高等数学","快快老师 · 08:00","高等数学（早八特供版）\n快快老师\n紫金港西1-201 · 08:00",Rect2(52,820,350,176)],
 	["化学工程基础","周一 · 08:00","化学工程基础\n周一 08:00 · 北教学区 A-204\n课程资料已缓存在本机。",Rect2(446,820,344,176)]
 ]
+
+class ReaderLayer extends Control:
+	signal close_requested
+	func _input(event:InputEvent)->void:
+		if not visible or not event is InputEventKey or not event.pressed or event.echo:return
+		if event.keycode==KEY_ESCAPE:
+			close_requested.emit();get_viewport().set_input_as_handled()
+		elif event.keycode==KEY_TAB:
+			var targets:Array[Button]=[]
+			for button:Button in find_children("*","Button",true,false):
+				if button.is_visible_in_tree() and not button.disabled:targets.append(button)
+			if not targets.is_empty():
+				var index:int=targets.find(get_viewport().gui_get_focus_owner())
+				targets[posmod(index+(-1 if event.shift_pressed else 1),targets.size())].grab_focus()
+			get_viewport().set_input_as_handled()
 
 class PixelIcon extends Control:
 	var kind: String="book"
@@ -60,19 +76,25 @@ func _art(parent: Control,region: Rect2,rect: Rect2,name: String) -> void:
 
 func _reader(b,root: Control,title: String,body: String,course: bool=false) -> void:
 	if root.get_node_or_null("LearnReader")!=null:return
-	var cover:=Control.new();cover.name="LearnReader";cover.position=Vector2.ZERO;cover.size=root.size
+	var previous_focus:Control=root.get_viewport().gui_get_focus_owner()
+	var focus_ref:WeakRef=weakref(previous_focus) if is_instance_valid(previous_focus) else null
+	var cover:=ReaderLayer.new();cover.name="LearnReader";cover.position=Vector2.ZERO;cover.size=root.size
 	cover.mouse_filter=Control.MOUSE_FILTER_STOP;cover.z_index=20;root.add_child(cover)
 	b._panel(cover,Rect2(Vector2.ZERO,root.size),Color("203944",.28))
-	b._paper_panel(cover,Rect2(18,132,342,386),SURFACE,EDGE,0,2)
-	var close: Button=b._nav(cover,"back","返回学在浙大",func():cover.queue_free(),Rect2(25,140,40,44),SURFACE,INK)
+	var paper:Panel=b._panel(cover,Rect2(18,132,342,386),Notice.PAPER,Notice.INK,0,2);paper.name="LearnReaderPaper"
+	paper.add_theme_stylebox_override("panel",Notice.card_style())
+	var dismiss=func():
+		cover.hide();cover.queue_free()
+		var focused=focus_ref.get_ref() if focus_ref!=null else null
+		if is_instance_valid(focused) and focused.is_visible_in_tree():focused.grab_focus.call_deferred()
+	cover.close_requested.connect(dismiss)
+	var close: Button=b._nav(cover,"back","返回学在浙大",dismiss,Rect2(25,140,40,44),Notice.PAPER,Notice.INK)
 	close.name="LearnReaderBack";close.set_meta("phone_nav_kind","close")
-	b._label(cover,title,Rect2(71,141,263,42),19,INK).name="LearnReaderTitle"
-	b._panel(cover,Rect2(37,192,304,2),EDGE)
-	var text: Label=b._label(cover,body,Rect2(37,207,304,115),16,INK)
+	b._label(cover,title,Rect2(71,141,263,42),19,Notice.INK).name="LearnReaderTitle"
+	b._panel(cover,Rect2(37,192,304,2),Notice.INK)
+	var text: Label=b._label(cover,body,Rect2(37,207,304,115),16,Notice.INK)
 	text.name="LearnReaderBody"
 	text.vertical_alignment=VERTICAL_ALIGNMENT_TOP
-	var done: Button=b._button(cover,"返回课程",Rect2(37,461,304,40),func():cover.queue_free(),ICON_SURFACE,TEAL,0,EDGE)
-	done.name="LearnReaderDone";done.add_theme_font_size_override("font_size",14)
 	if course:
 		var record: Button=b._button(cover,"点名记录",Rect2(37,335,304,44),func():
 			var c: Dictionary=b.campus_services.copy.classroom
@@ -89,7 +111,7 @@ func _shortcut(b,root: Control,title: String,detail: String,kind: String,rect: R
 		card=b._button(root,"",rect,callback,ICON_SURFACE,TEAL,0,EDGE)
 		card.tooltip_text=title
 		card.accessibility_name=title
-	else:card=b._paper_panel(root,rect,ICON_SURFACE,EDGE,0,2)
+	else:card=b._panel(root,rect,ICON_SURFACE,EDGE,0,2)
 	_icon(card,kind,Rect2(10,14,58,58))
 	b._label(card,title,Rect2(76,19,rect.size.x-84,29),18,INK)
 	b._label(card,detail,Rect2(76,52,rect.size.x-84,39),13,MUTED)
@@ -103,12 +125,12 @@ func build(b) -> Control:
 	b._label(root,"浙江大学",Rect2(278,15,85,28),13,MUTED,HORIZONTAL_ALIGNMENT_RIGHT)
 	# Only the campus and course illustrations are cropped from the old art.
 	# No photographed text, icons, navigation or transparent hotspots survive.
-	b._paper_panel(root,Rect2(14,61,350,76),Color("e9f1f6"),EDGE,0,1)
+	b._panel(root,Rect2(14,61,350,76),Color("e9f1f6"),EDGE,0,1)
 	_art(root,Rect2(181,58,470,167),Rect2(196,63,165,72),"LearnCampusIllustration")
 	b._label(root,"早上好，同学",Rect2(28,73,186,27),19,INK)
 	b._label(root,"从这一节课开始。",Rect2(28,106,183,21),13,MUTED)
-	b._paper_panel(root,Rect2(14,151,350,43),Color.WHITE,EDGE,0,1)
-	b._panel(root,Rect2(14,151,1,43),TEAL)
+	b._panel(root,Rect2(14,151,350,43),Color.WHITE,EDGE,0,1)
+	b._panel(root,Rect2(14,151,4,43),TEAL)
 	b._label(root,"08:00",Rect2(27,157,62,28),18,TEAL)
 	b._label(root,"高等数学 · 快快老师",Rect2(100,157,250,28),15,INK)
 	var schedule: Control=_shortcut(b,root,"课表","查看课程\n与上课地点","calendar",Rect2(14,209,169,112),func():_reader(b,root,"今日课程",COURSES[0][2]))
@@ -128,11 +150,12 @@ func build(b) -> Control:
 		b._label(card,course[1],Rect2(136,46,202,27),13,MUTED)
 	b._label(root,"课程通知",Rect2(14,570,300,27),19,INK).name="LearnNoticeTitle"
 	var notice: Button=b._button(root,"",Rect2(14,604,350,60),func():_reader(b,root,"课堂提醒",COURSES[0][2]+"\n"+(b.campus_services.copy.classroom.status_not_signed if b.s.actOne.phase=="prologue" and not b.s.flags.checkinDone else b.campus_services.copy.classroom.status_signed if b.s.flags.checkinDone else b.campus_services.copy.classroom.status_finished)),Color.WHITE,INK,0,EDGE)
+	Notice.style_summary(notice)
 	notice.name="LearnNotice";notice.tooltip_text="课堂提醒";notice.accessibility_name="课堂提醒"
 	b._panel(notice,Rect2(10,7,44,44),ICON_SURFACE,EDGE,0,1);_icon(notice,"bell",Rect2(12,9,40,40))
 	b._label(notice,"课堂提醒",Rect2(68,7,270,24),16,INK)
 	b._label(notice,b.campus_services.copy.classroom.status_not_signed if b.s.actOne.phase=="prologue" and not b.s.flags.checkinDone else b.campus_services.copy.classroom.status_signed if b.s.flags.checkinDone else b.campus_services.copy.classroom.status_finished,Rect2(68,32,270,21),13,MUTED)
-	b._paper_panel(root,Rect2(0,b.APP_HEIGHT-60,378,60),Color.WHITE,EDGE,0,1)
+	b._panel(root,Rect2(0,b.APP_HEIGHT-60,378,60),Color.WHITE,EDGE,0,1)
 	_icon(root,"book",Rect2(83,b.APP_HEIGHT-55,29,29))
 	b._label(root,"学在浙大",Rect2(41,b.APP_HEIGHT-27,114,21),13,TEAL,HORIZONTAL_ALIGNMENT_CENTER)
 	b._panel(root,Rect2(77,b.APP_HEIGHT-5,44,3),TEAL)

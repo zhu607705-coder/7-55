@@ -1,0 +1,1700 @@
+{
+  "schema": "native-library-object-scene-v2",
+  "worldSize": [
+    1500,
+    900
+  ],
+  "cleanPlate": "res://assets/native/library_object_depth_20261104/clean_plate.png",
+  "families": {
+    "shelf_row": "res://assets/native/library_object_depth_20261104/shelf_row.png",
+    "shelf_divider": "res://assets/native/library_object_depth_20261104/shelf_divider.png",
+    "table_oblique": "res://assets/native/library_object_depth_20261104/table_oblique.png",
+    "chair_south": "res://assets/native/library_object_depth_20261104/chair_south.png",
+    "chair_north": "res://assets/native/library_object_depth_20261104/chair_north.png",
+    "chair_east": "res://assets/native/library_object_depth_20261104/chair_east.png",
+    "chair_west": "res://assets/native/library_object_depth_20261104/chair_west.png",
+    "lamp": "res://assets/native/library_object_depth_20261104/lamp.png",
+    "open_book": "res://assets/native/library_object_depth_20261104/open_book.png",
+    "counter": "res://assets/native/library_object_depth_20261104/counter.png",
+    "terminal": "res://assets/native/library_object_depth_20261104/terminal.png",
+    "low_bookcase": "res://assets/native/library_object_depth_20261104/low_bookcase.png",
+    "table": "res://assets/native/library_object_depth_20261104/table.png",
+    "printer": "res://assets/native/library_object_depth_20261104/printer.png",
+    "backpack": "res://assets/native/library_object_depth_20261104/backpack.png",
+    "turnstile": "res://assets/native/library_object_depth_20261104/turnstile.png",
+    "plant": "res://assets/native/library_object_depth_20261104/plant.png",
+    "rail": "res://assets/native/library_object_depth_20261104/rail.png",
+    "diagonal_rail": "res://assets/native/library_object_depth_20261104/diagonal_rail.png",
+    "water_dispenser": "res://assets/native/library_object_depth_20261104/water_dispenser.png",
+    "notice_board": "res://assets/native/library_object_depth_20261104/notice_board.png",
+    "glass_panel": "res://assets/native/library_object_depth_20261104/glass_panel.png"
+  },
+  "instances": [
+    {
+      "id": "row_shelf_0",
+      "asset": "shelf_row",
+      "bounds": [
+        124,
+        85,
+        45,
+        231
+      ],
+      "footprints": [
+        [
+          0.022222222222222223,
+          0.3064935064935065,
+          0.9555555555555556,
+          0.6935064935064935
+        ]
+      ],
+      "targets": [],
+      "movable": false,
+      "shelfNumber": 1
+    },
+    {
+      "id": "row_shelf_1",
+      "asset": "shelf_row",
+      "bounds": [
+        207,
+        85,
+        45,
+        231
+      ],
+      "footprints": [
+        [
+          0.022222222222222223,
+          0.3064935064935065,
+          0.9555555555555556,
+          0.6935064935064935
+        ]
+      ],
+      "targets": [],
+      "movable": false,
+      "shelfNumber": 2
+    },
+    {
+      "id": "row_shelf_2",
+      "asset": "shelf_row",
+      "bounds": [
+        289,
+        85,
+        45,
+        231
+      ],
+      "footprints": [
+        [
+          0.022222222222222223,
+          0.3064935064935065,
+          0.9555555555555556,
+          0.6935064935064935
+        ]
+      ],
+      "targets": [],
+      "movable": false,
+      "shelfNumber": 3
+    },
+    {
+      "id": "row_shelf_3",
+      "asset": "shelf_row",
+      "bounds": [
+        372,
+        85,
+        45,
+        231
+      ],
+      "footprints": [
+        [
+          0.022222222222222223,
+          0.3064935064935065,
+          0.9555555555555556,
+          0.6935064935064935
+        ]
+      ],
+      "targets": [],
+      "movable": false,
+      "shelfNumber": 4
+    },
+    {
+      "id": "row_shelf_4",
+      "asset": "shelf_row",
+      "bounds": [
+        455,
+        85,
+        45,
+        231
+      ],
+      "footprints": [
+        [
+          0.022222222222222223,
+          0.3064935064935065,
+          0.9555555555555556,
+          0.6935064935064935
+        ]
+      ],
+      "targets": [],
+      "movable": false,
+      "shelfNumber": 5
+    },
+    {
+      "id": "north_display_shelf",
+      "asset": "shelf_row",
+      "bounds": [
+        537,
+        85,
+        45,
+        231
+      ],
+      "footprints": [
+        [
+          0.022222222222222223,
+          0.3064935064935065,
+          0.9555555555555556,
+          0.6935064935064935
+        ]
+      ],
+      "targets": [
+        "library_shelf_755"
+      ],
+      "movable": true,
+      "shelfNumber": 6
+    },
+    {
+      "id": "row_shelf_6",
+      "asset": "shelf_row",
+      "bounds": [
+        620,
+        85,
+        45,
+        231
+      ],
+      "footprints": [
+        [
+          0.022222222222222223,
+          0.3064935064935065,
+          0.9555555555555556,
+          0.6935064935064935
+        ]
+      ],
+      "targets": [],
+      "movable": false,
+      "shelfNumber": 7
+    },
+    {
+      "id": "row_shelf_7",
+      "asset": "shelf_row",
+      "bounds": [
+        702,
+        85,
+        45,
+        231
+      ],
+      "footprints": [
+        [
+          0.022222222222222223,
+          0.3064935064935065,
+          0.9555555555555556,
+          0.6935064935064935
+        ]
+      ],
+      "targets": [],
+      "movable": false,
+      "shelfNumber": 8
+    },
+    {
+      "id": "row_shelf_8",
+      "asset": "shelf_row",
+      "bounds": [
+        785,
+        85,
+        45,
+        231
+      ],
+      "footprints": [
+        [
+          0.022222222222222223,
+          0.3064935064935065,
+          0.9555555555555556,
+          0.6935064935064935
+        ]
+      ],
+      "targets": [],
+      "movable": false,
+      "shelfNumber": 9
+    },
+    {
+      "id": "reading_divider_shelf",
+      "asset": "shelf_divider",
+      "bounds": [
+        903,
+        68,
+        40,
+        274
+      ],
+      "footprints": [
+        [
+          0.025,
+          0.22992700729927007,
+          0.95,
+          0.7700729927007299
+        ]
+      ],
+      "targets": [],
+      "movable": false
+    },
+    {
+      "id": "reading_table_1",
+      "asset": "table_oblique",
+      "bounds": [
+        1000,
+        189.66320000000002,
+        126,
+        70.38
+      ],
+      "footprints": [
+        [
+          0.06,
+          0.65,
+          0.88,
+          0.35
+        ]
+      ],
+      "targets": [],
+      "chamfer": 4
+    },
+    {
+      "id": "reading_table_1_north_left",
+      "asset": "chair_south",
+      "bounds": [
+        1029,
+        160.66320000000002,
+        27,
+        49
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_1_south_left",
+      "asset": "chair_north",
+      "bounds": [
+        1029,
+        223.0432,
+        27,
+        41
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": [
+        "library_study_chair"
+      ]
+    },
+    {
+      "id": "reading_table_1_north_right",
+      "asset": "chair_south",
+      "bounds": [
+        1071,
+        160.66320000000002,
+        27,
+        49
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_1_south_right",
+      "asset": "chair_north",
+      "bounds": [
+        1071,
+        223.0432,
+        27,
+        41
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_1_west",
+      "asset": "chair_east",
+      "bounds": [
+        983.1257142857143,
+        192.66320000000002,
+        21.874285714285715,
+        48
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_1_east",
+      "asset": "chair_west",
+      "bounds": [
+        1121,
+        192.66320000000002,
+        23.13157894736842,
+        48
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_1_lamp",
+      "asset": "lamp",
+      "bounds": [
+        1050,
+        177.66320000000002,
+        20,
+        32
+      ],
+      "footprints": [],
+      "targets": [],
+      "depthOwner": "reading_table_1"
+    },
+    {
+      "id": "reading_table_1_book",
+      "asset": "open_book",
+      "bounds": [
+        1085,
+        194.66320000000002,
+        27,
+        18
+      ],
+      "footprints": [],
+      "targets": [],
+      "depthOwner": "reading_table_1"
+    },
+    {
+      "id": "reading_table_2",
+      "asset": "table_oblique",
+      "bounds": [
+        1216,
+        183.63062857142856,
+        156,
+        87.13714285714286
+      ],
+      "footprints": [
+        [
+          0.06,
+          0.65,
+          0.88,
+          0.35
+        ]
+      ],
+      "targets": [],
+      "chamfer": 4
+    },
+    {
+      "id": "reading_table_2_north_left",
+      "asset": "chair_south",
+      "bounds": [
+        1255,
+        154.63062857142856,
+        27,
+        49
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_2_south_left",
+      "asset": "chair_north",
+      "bounds": [
+        1255,
+        233.76777142857145,
+        27,
+        41
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_2_north_right",
+      "asset": "chair_south",
+      "bounds": [
+        1307,
+        154.63062857142856,
+        27,
+        49
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_2_south_right",
+      "asset": "chair_north",
+      "bounds": [
+        1307,
+        233.76777142857145,
+        27,
+        41
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_2_west",
+      "asset": "chair_east",
+      "bounds": [
+        1199.1257142857144,
+        186.63062857142856,
+        21.874285714285715,
+        48
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_2_east",
+      "asset": "chair_west",
+      "bounds": [
+        1367,
+        186.63062857142856,
+        23.13157894736842,
+        48
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_2_lamp",
+      "asset": "lamp",
+      "bounds": [
+        1266,
+        171.63062857142856,
+        20,
+        32
+      ],
+      "footprints": [],
+      "targets": [],
+      "depthOwner": "reading_table_2"
+    },
+    {
+      "id": "reading_table_2_book",
+      "asset": "open_book",
+      "bounds": [
+        1301,
+        188.63062857142856,
+        27,
+        18
+      ],
+      "footprints": [],
+      "targets": [],
+      "depthOwner": "reading_table_2"
+    },
+    {
+      "id": "reading_table_3",
+      "asset": "table_oblique",
+      "bounds": [
+        1002,
+        395.6632,
+        126,
+        70.38
+      ],
+      "footprints": [
+        [
+          0.06,
+          0.65,
+          0.88,
+          0.35
+        ]
+      ],
+      "targets": [],
+      "chamfer": 4
+    },
+    {
+      "id": "reading_table_3_north_left",
+      "asset": "chair_south",
+      "bounds": [
+        1031,
+        366.6632,
+        27,
+        49
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_3_south_left",
+      "asset": "chair_north",
+      "bounds": [
+        1031,
+        429.0432,
+        27,
+        41
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_3_north_right",
+      "asset": "chair_south",
+      "bounds": [
+        1073,
+        366.6632,
+        27,
+        49
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_3_south_right",
+      "asset": "chair_north",
+      "bounds": [
+        1073,
+        429.0432,
+        27,
+        41
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_3_west",
+      "asset": "chair_east",
+      "bounds": [
+        985.1257142857143,
+        398.6632,
+        21.874285714285715,
+        48
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_3_east",
+      "asset": "chair_west",
+      "bounds": [
+        1123,
+        398.6632,
+        23.13157894736842,
+        48
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_3_lamp",
+      "asset": "lamp",
+      "bounds": [
+        1052,
+        383.6632,
+        20,
+        32
+      ],
+      "footprints": [],
+      "targets": [],
+      "depthOwner": "reading_table_3"
+    },
+    {
+      "id": "reading_table_3_book",
+      "asset": "open_book",
+      "bounds": [
+        1087,
+        400.6632,
+        27,
+        18
+      ],
+      "footprints": [],
+      "targets": [],
+      "depthOwner": "reading_table_3"
+    },
+    {
+      "id": "reading_table_4",
+      "asset": "table_oblique",
+      "bounds": [
+        1215,
+        389.6306285714286,
+        156,
+        87.13714285714286
+      ],
+      "footprints": [
+        [
+          0.06,
+          0.65,
+          0.88,
+          0.35
+        ]
+      ],
+      "targets": [],
+      "chamfer": 4
+    },
+    {
+      "id": "reading_table_4_north_left",
+      "asset": "chair_south",
+      "bounds": [
+        1254,
+        360.6306285714286,
+        27,
+        49
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_4_south_left",
+      "asset": "chair_north",
+      "bounds": [
+        1254,
+        439.76777142857145,
+        27,
+        41
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_4_north_right",
+      "asset": "chair_south",
+      "bounds": [
+        1306,
+        360.6306285714286,
+        27,
+        49
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_4_south_right",
+      "asset": "chair_north",
+      "bounds": [
+        1306,
+        439.76777142857145,
+        27,
+        41
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": [
+        "seat_022_chair"
+      ]
+    },
+    {
+      "id": "reading_table_4_west",
+      "asset": "chair_east",
+      "bounds": [
+        1198.1257142857144,
+        392.6306285714286,
+        21.874285714285715,
+        48
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_4_east",
+      "asset": "chair_west",
+      "bounds": [
+        1366,
+        392.6306285714286,
+        23.13157894736842,
+        48
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "reading_table_4_lamp",
+      "asset": "lamp",
+      "bounds": [
+        1265,
+        377.6306285714286,
+        20,
+        32
+      ],
+      "footprints": [],
+      "targets": [],
+      "depthOwner": "reading_table_4"
+    },
+    {
+      "id": "reading_table_4_book",
+      "asset": "open_book",
+      "bounds": [
+        1300,
+        394.6306285714286,
+        27,
+        18
+      ],
+      "footprints": [],
+      "targets": [],
+      "depthOwner": "reading_table_4"
+    },
+    {
+      "id": "front_desk_counter",
+      "asset": "counter",
+      "bounds": [
+        153,
+        497,
+        334,
+        169
+      ],
+      "footprints": [
+        [
+          0,
+          0.2,
+          0.115,
+          0.67
+        ],
+        [
+          0.885,
+          0.2,
+          0.115,
+          0.67
+        ],
+        [
+          0.075,
+          0.82,
+          0.85,
+          0.18
+        ],
+        [
+          0.015,
+          0.87,
+          0.105,
+          0.06
+        ],
+        [
+          0.88,
+          0.87,
+          0.105,
+          0.06
+        ],
+        [
+          0.04,
+          0.93,
+          0.08,
+          0.04
+        ],
+        [
+          0.88,
+          0.93,
+          0.08,
+          0.04
+        ],
+        [
+          0.065,
+          0.97,
+          0.055,
+          0.03
+        ],
+        [
+          0.88,
+          0.97,
+          0.055,
+          0.03
+        ]
+      ],
+      "targets": [
+        "front_desk",
+        "identity_machine"
+      ]
+    },
+    {
+      "id": "desk_terminal",
+      "asset": "terminal",
+      "bounds": [
+        190,
+        565,
+        55,
+        54
+      ],
+      "footprints": [],
+      "targets": [
+        "front_desk"
+      ],
+      "depthOwner": "front_desk_counter"
+    },
+    {
+      "id": "desk_back_1",
+      "asset": "low_bookcase",
+      "bounds": [
+        270,
+        435,
+        219,
+        112.31571428571428
+      ],
+      "footprints": [
+        [
+          0.02,
+          0.5,
+          0.96,
+          0.5
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "catalog_back_1",
+      "asset": "low_bookcase",
+      "bounds": [
+        597,
+        424,
+        124,
+        82
+      ],
+      "footprints": [
+        [
+          0.02,
+          0.5,
+          0.96,
+          0.5
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "catalog_back_2",
+      "asset": "low_bookcase",
+      "bounds": [
+        720,
+        424,
+        124,
+        82
+      ],
+      "footprints": [
+        [
+          0.02,
+          0.5,
+          0.96,
+          0.5
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "catalog_desk",
+      "asset": "table",
+      "bounds": [
+        613,
+        516,
+        133,
+        97
+      ],
+      "footprints": [
+        [
+          0.06,
+          0.6,
+          0.88,
+          0.4
+        ]
+      ],
+      "targets": [
+        "catalog_terminal"
+      ],
+      "chamfer": 4
+    },
+    {
+      "id": "catalog_terminal",
+      "asset": "terminal",
+      "bounds": [
+        625,
+        510,
+        71,
+        65
+      ],
+      "footprints": [],
+      "targets": [
+        "catalog_terminal"
+      ],
+      "depthOwner": "catalog_desk"
+    },
+    {
+      "id": "catalog_terminal_chair",
+      "asset": "chair_north",
+      "bounds": [
+        646,
+        594,
+        35,
+        52
+      ],
+      "footprints": [
+        [
+          0.12,
+          0.75,
+          0.76,
+          0.25
+        ]
+      ],
+      "targets": [
+        "catalog_terminal"
+      ]
+    },
+    {
+      "id": "printer",
+      "asset": "printer",
+      "bounds": [
+        788,
+        510,
+        77,
+        104
+      ],
+      "footprints": [
+        [
+          0.08,
+          0.64,
+          0.84,
+          0.36
+        ]
+      ],
+      "targets": [
+        "printer"
+      ],
+      "chamfer": 3
+    },
+    {
+      "id": "backpack",
+      "asset": "backpack",
+      "bounds": [
+        1238,
+        383,
+        34,
+        49
+      ],
+      "footprints": [],
+      "targets": [
+        "backpack",
+        "bag_photo",
+        "backpack_pass"
+      ],
+      "dynamic": "backpack",
+      "depthOwner": "reading_table_4"
+    },
+    {
+      "id": "entrance_turnstile_0",
+      "asset": "turnstile",
+      "bounds": [
+        667,
+        762,
+        28,
+        110
+      ],
+      "footprints": [
+        [
+          0.05,
+          0.05,
+          0.9,
+          0.95
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "entrance_turnstile_1",
+      "asset": "turnstile",
+      "bounds": [
+        737,
+        762,
+        28,
+        110
+      ],
+      "footprints": [
+        [
+          0.05,
+          0.05,
+          0.9,
+          0.95
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "entrance_turnstile_2",
+      "asset": "turnstile",
+      "bounds": [
+        807,
+        762,
+        28,
+        110
+      ],
+      "footprints": [
+        [
+          0.05,
+          0.05,
+          0.9,
+          0.95
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "plant_0",
+      "asset": "plant",
+      "bounds": [
+        71,
+        713,
+        53,
+        77
+      ],
+      "footprints": [
+        [
+          0.29,
+          0.81,
+          0.42,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "plant_1",
+      "asset": "plant",
+      "bounds": [
+        83,
+        423,
+        50,
+        90
+      ],
+      "footprints": [
+        [
+          0.29,
+          0.81,
+          0.42,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "plant_2",
+      "asset": "plant",
+      "bounds": [
+        28,
+        151,
+        57,
+        82
+      ],
+      "footprints": [
+        [
+          0.29,
+          0.81,
+          0.42,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "plant_3",
+      "asset": "plant",
+      "bounds": [
+        920,
+        401,
+        59,
+        99
+      ],
+      "footprints": [
+        [
+          0.29,
+          0.81,
+          0.42,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "plant_4",
+      "asset": "plant",
+      "bounds": [
+        1386,
+        434,
+        59,
+        94
+      ],
+      "footprints": [
+        [
+          0.29,
+          0.81,
+          0.42,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "plant_5",
+      "asset": "plant",
+      "bounds": [
+        462,
+        704,
+        58,
+        138
+      ],
+      "footprints": [
+        [
+          0.29,
+          0.81,
+          0.42,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "plant_6",
+      "asset": "plant",
+      "bounds": [
+        982,
+        706,
+        59,
+        136
+      ],
+      "footprints": [
+        [
+          0.29,
+          0.81,
+          0.42,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "plant_7",
+      "asset": "plant",
+      "bounds": [
+        1095,
+        522,
+        47,
+        57
+      ],
+      "footprints": [
+        [
+          0.29,
+          0.81,
+          0.42,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "plant_8",
+      "asset": "plant",
+      "bounds": [
+        1235,
+        520,
+        47,
+        59
+      ],
+      "footprints": [
+        [
+          0.29,
+          0.81,
+          0.42,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "plant_9",
+      "asset": "plant",
+      "bounds": [
+        1370,
+        648,
+        58,
+        104
+      ],
+      "footprints": [
+        [
+          0.29,
+          0.81,
+          0.42,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "plant_10",
+      "asset": "plant",
+      "bounds": [
+        945,
+        20,
+        52,
+        76
+      ],
+      "footprints": [
+        [
+          0.29,
+          0.81,
+          0.42,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "plant_11",
+      "asset": "plant",
+      "bounds": [
+        1365,
+        23,
+        45,
+        65
+      ],
+      "footprints": [
+        [
+          0.29,
+          0.81,
+          0.42,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "plant_12",
+      "asset": "plant",
+      "bounds": [
+        99,
+        23,
+        35,
+        59
+      ],
+      "footprints": [
+        [
+          0.29,
+          0.81,
+          0.42,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "plant_13",
+      "asset": "plant",
+      "bounds": [
+        333,
+        28,
+        31,
+        50
+      ],
+      "footprints": [
+        [
+          0.29,
+          0.81,
+          0.42,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "plant_14",
+      "asset": "plant",
+      "bounds": [
+        607,
+        28,
+        31,
+        50
+      ],
+      "footprints": [
+        [
+          0.29,
+          0.81,
+          0.42,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "plant_15",
+      "asset": "plant",
+      "bounds": [
+        867,
+        28,
+        31,
+        50
+      ],
+      "footprints": [
+        [
+          0.29,
+          0.81,
+          0.42,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "south_rail_0",
+      "asset": "rail",
+      "bounds": [
+        1090,
+        534,
+        114,
+        28
+      ],
+      "footprints": [
+        [
+          0,
+          0.68,
+          1,
+          0.32
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "south_rail_1",
+      "asset": "rail",
+      "bounds": [
+        1202,
+        534,
+        114,
+        28
+      ],
+      "footprints": [
+        [
+          0,
+          0.68,
+          1,
+          0.32
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "south_rail_2",
+      "asset": "rail",
+      "bounds": [
+        1314,
+        534,
+        114,
+        28
+      ],
+      "footprints": [
+        [
+          0,
+          0.68,
+          1,
+          0.32
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "diagonal_rail",
+      "asset": "diagonal_rail",
+      "bounds": [
+        925,
+        480,
+        64,
+        65
+      ],
+      "footprints": [],
+      "targets": [],
+      "diagonalSolid": true
+    },
+    {
+      "id": "water_dispenser",
+      "asset": "water_dispenser",
+      "bounds": [
+        111,
+        696,
+        48,
+        92
+      ],
+      "footprints": [
+        [
+          0.08,
+          0.81,
+          0.84,
+          0.19
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "notice_board",
+      "asset": "notice_board",
+      "bounds": [
+        184,
+        403,
+        85,
+        104
+      ],
+      "footprints": [
+        [
+          0.08,
+          0.85,
+          0.84,
+          0.15
+        ]
+      ],
+      "targets": []
+    },
+    {
+      "id": "fixed_glass_515_0",
+      "asset": "glass_panel",
+      "bounds": [
+        515,
+        682,
+        38.81428571428572,
+        143
+      ],
+      "footprints": [],
+      "targets": []
+    },
+    {
+      "id": "fixed_glass_515_1",
+      "asset": "glass_panel",
+      "bounds": [
+        548.7285714285714,
+        682,
+        38.81428571428572,
+        143
+      ],
+      "footprints": [],
+      "targets": []
+    },
+    {
+      "id": "fixed_glass_515_2",
+      "asset": "glass_panel",
+      "bounds": [
+        582.4571428571428,
+        682,
+        38.81428571428572,
+        143
+      ],
+      "footprints": [],
+      "targets": []
+    },
+    {
+      "id": "fixed_glass_515_3",
+      "asset": "glass_panel",
+      "bounds": [
+        616.1857142857143,
+        682,
+        38.81428571428572,
+        143
+      ],
+      "footprints": [],
+      "targets": []
+    },
+    {
+      "id": "fixed_glass_845_0",
+      "asset": "glass_panel",
+      "bounds": [
+        845,
+        682,
+        38.81428571428572,
+        143
+      ],
+      "footprints": [],
+      "targets": []
+    },
+    {
+      "id": "fixed_glass_845_1",
+      "asset": "glass_panel",
+      "bounds": [
+        879.0619047619048,
+        682,
+        38.81428571428572,
+        143
+      ],
+      "footprints": [],
+      "targets": []
+    },
+    {
+      "id": "fixed_glass_845_2",
+      "asset": "glass_panel",
+      "bounds": [
+        913.1238095238095,
+        682,
+        38.81428571428572,
+        143
+      ],
+      "footprints": [],
+      "targets": []
+    },
+    {
+      "id": "fixed_glass_845_3",
+      "asset": "glass_panel",
+      "bounds": [
+        947.1857142857143,
+        682,
+        38.81428571428572,
+        143
+      ],
+      "footprints": [],
+      "targets": []
+    }
+  ],
+  "contract": {
+    "projection": "orthographic oblique top-down; uniform scale only",
+    "ground": "shared fixed player foot rectangle; source-pixel furniture footprints",
+    "depth": "each physical object baseline is its own ground-contact edge; desk items inherit desk depth",
+    "story": "controller and saves unchanged; shelf sprite is shared with every ordinary row shelf"
+  }
+}

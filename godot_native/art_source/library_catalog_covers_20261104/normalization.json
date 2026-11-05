@@ -1,0 +1,46 @@
+{
+	"assets": {
+		"ball_lightning": {
+			"masterSize": [
+				1086,
+				1448
+			],
+			"opaque": true,
+			"runtime": "src/assets/phone/library-search/runtime/ball_lightning.webp",
+			"runtimeSha256": "e51d8bae842de954cf637a70a726ee0e88a3804d24b0708453fb8843d2cf3b0b",
+			"source": "originals/ball_lightning.png",
+			"sourceSha256": "1c83ffe597d1ffa81e14e38188d491d1409b611125d08fa6f271ab1a7fc72b88",
+			"uniformScale": true
+		},
+		"three_body": {
+			"masterSize": [
+				1086,
+				1448
+			],
+			"opaque": true,
+			"runtime": "src/assets/phone/library-search/runtime/three_body.webp",
+			"runtimeSha256": "695dce10fd365efa721d6795876d084bca67f1a6c0f047cdb697685045cc3c8d",
+			"source": "originals/three_body.png",
+			"sourceSha256": "a7fa35c57c1d864daff1b4964ec96a7e53fe53c6fda58d22f4e3985d397c1a4b",
+			"uniformScale": true
+		},
+		"wandering_earth": {
+			"masterSize": [
+				1086,
+				1448
+			],
+			"opaque": true,
+			"runtime": "src/assets/phone/library-search/runtime/wandering_earth.webp",
+			"runtimeSha256": "fe97c5989e29db42d710e21a1fa75aa6314a5962c84ede781d296e6bee5de945",
+			"source": "originals/wandering_earth.png",
+			"sourceSha256": "8302b0f9ca77999b33fd36e76c1fe68ca58d70438bfa2794a035332b7c39fb66",
+			"uniformScale": true
+		}
+	},
+	"engine": "4.7.1-stable (official)",
+	"palette": "755-campus-morning-32",
+	"size": [
+		420,
+		560
+	]
+}

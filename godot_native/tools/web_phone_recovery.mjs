@@ -1,5 +1,50 @@
 import path from 'node:path';
+import {appendFileSync, writeFileSync} from 'node:fs';
 import {phoneGroups, runPhoneRecoveryGroups} from './web_phone_shards.mjs';
+
+// Diagnostic-only, bounded Node-side records. Never feed these into acceptance.
+// Synchronous small writes survive a killed Node process without a buffered queue.
+// No timer, browser read, input, retry or full event array is added here.
+export function createPhoneProgress({filename, id, group, touch, dpr, cdpProgress = () => null}) {
+  const maxRecords = 128, maxRecordBytes = 4096;
+  let sequence = 0, failed;
+  const fail = error => {
+    failed ||= new Error(`Phone progress diagnostic write failed: ${error.message}`, {cause: error});
+    console.error(failed.message);
+    throw failed;
+  };
+  try {writeFileSync(filename, '');} catch (error) {fail(error);}
+  return (event, timing) => {
+    if (failed) throw failed;
+    try {
+      if (sequence >= maxRecords) throw Error(`record limit ${maxRecords} exceeded`);
+      const row = {schema: '755-phone-progress-v1', diagnosticOnly: true, complete: false,
+        sequence: sequence + 1, at: Date.now(), id, group, touch, dpr, event,
+        cdp: cdpProgress()};
+      if (timing) row.exercise = {
+        segment: timing.segment, startedAt: timing.startedAt, finishedAt: timing.finishedAt ?? null,
+        elapsedMs: timing.elapsedMs ?? Date.now() - timing.startedAt,
+        geometryCalls: timing.geometryCalls, geometryMs: timing.geometryMs,
+        pointerMoves: timing.pointerMoves, inputWaitMs: timing.inputWaitMs,
+        pointerAck: Object.fromEntries(['start', 'move', 'end'].map(phase => {
+          const stats = timing.pointerAck[phase];
+          return [phase, {calls: stats.calls, acknowledged: stats.acknowledged, failed: stats.failed,
+            totalMs: stats.totalMs, maxMs: stats.maxMs}];
+        })),
+        snapshots: {calls: timing.snapshots.calls, failed: timing.snapshots.failed,
+          totalMs: timing.snapshots.totalMs, maxMs: timing.snapshots.maxMs},
+        sentCount: timing.sent.length, observedCount: timing.observed?.events?.length ?? null,
+        maxInFlight: timing.maxInFlight,
+        releaseError: timing.releaseError?.slice(0, 256) ?? null,
+        observationError: timing.observationError?.slice(0, 256) ?? null
+      };
+      const line = JSON.stringify(row) + '\n';
+      if (Buffer.byteLength(line) > maxRecordBytes) throw Error(`record byte limit ${maxRecordBytes} exceeded`);
+      appendFileSync(filename, line);
+      sequence++;
+    } catch (error) {fail(error);}
+  };
+}
 
 // Save acceptance is not content readiness. In the cold C2-only shard, the
 // required chapter packs can still occlude the world after the save is accepted.
@@ -167,7 +212,9 @@ export async function continuousExercise(h, evidence) {
       catch (error) { stats.failed++; throw error; }
       finally { const elapsed = Date.now() - began; stats.totalMs += elapsed; stats.maxMs = Math.max(stats.maxMs, elapsed); }
     };
+    let segmentFailure;
     try {
+      h.progress?.('exercise-segment-start', timing);
       let s = await readSnapshot();
       // renderPoint is an axis-aligned canvas/viewport mapping. Measure it once
       // per segment instead of making a browser Runtime.evaluate round trip for
@@ -206,6 +253,7 @@ export async function continuousExercise(h, evidence) {
           last = transform(screenPoint(sourcePoint, s));
           await queue.move(last);
           if (step % 8 === 0) {
+            h.progress?.('exercise-input-boundary', timing);
             await queue.drain(); await observe('read');
             s = await readSnapshot();
             if (count(s) === segment + 1) break;
@@ -230,7 +278,17 @@ export async function continuousExercise(h, evidence) {
         try {await observe('end');} catch (error) {if (!failure) failure = error; timing.observationError = error.message;}
         if (failure) throw failure;
       }
-    } finally { timing.finishedAt = Date.now(); timing.elapsedMs = timing.finishedAt - timing.startedAt; }
+    } catch (error) {segmentFailure = error; throw error;}
+    finally {
+      timing.finishedAt = Date.now(); timing.elapsedMs = timing.finishedAt - timing.startedAt;
+      try {h.progress?.(segmentFailure ? 'exercise-segment-failed' : 'exercise-segment-finished', timing);}
+      catch (error) {
+        if (!segmentFailure) throw error;
+        // Retain the original transport/assertion failure, but never hide a
+        // secondary diagnostic failure. The original run still fails closed.
+        console.error(`Phone progress also failed: ${error.message}`);
+      }
+    }
   }
   const accepted = await h.poll(async () => {
     const s = await h.snapshot();
@@ -318,31 +376,31 @@ export async function phoneRecoveryCase(h) {
         await h.importSave(path.join(h.fixtureDir, filename));
         await closeInventory();
         let value = await read(`legacy ${percent}% accepted`);
-        h.check(value.state.phoneBattery.percent === percent && value.state.phoneBattery.lowPowerMode && value.state.ui.brightness === 40,
-          `${h.id}: ordinary legacy ${percent}% import preserves the low-battery input`);
+        const consumptionOnly = state => Object.keys(state.phoneBattery).length === 1 && Object.hasOwn(state.phoneBattery, 'percent') && !Object.hasOwn(state.ui, 'homeDeskReturnScene');
+        const noRetiredControls = value => !(value.visibleControls || []).some(c => ['PutPhoneOnDesk', 'HomeChargingDock', 'DeskDockContact', 'DeskUnplug', 'LowPowerToggle'].includes(c.name));
+        h.check(value.state.phoneBattery.percent === percent && consumptionOnly(value.state) && value.state.ui.brightness === 40,
+          `${h.id}: ordinary legacy ${percent}% import preserves charge and brightness while removing retired power fields`);
+        h.check(noRetiredControls(value), `${h.id}: imported home exposes no charging return control`);
         await click('HomeBonsaiOpen'); await page('bonsai');
-        await click('PutPhoneOnDesk'); await page('desktop');
-        await click('DeskDockContact');
-        await h.poll(async () => (await read()).visibleControls.some(c => c.name === 'DeskChargingStatus' && /^连接 [1-9][0-9]*%/.test(c.text)), 'actual incomplete charging session is visible');
-        value = await read('real partial charge before cancellation');
-        h.check(value.state.phoneBattery.percent === percent, `${h.id}: visible charging progress does not grant energy early`);
-        await click('DeskPhonePickup'); await page('bonsai');
+        value = await read(`ordinary bonsai entry at ${percent}%`);
+        h.check(noRetiredControls(value) && !value.state.flags.plantLit,
+          `${h.id}: bonsai remains reachable without charging and dim light cannot satisfy the plant`);
+        await home(); await click('HomeBonsaiOpen'); await page('bonsai');
         await h.interval(2400);
-        value = await read(`cancelled ${percent}% charge`);
-        h.check(value.state.phoneBattery.percent === percent && !value.state.flags.plantLit,
-          `${h.id}: early pickup cancels actual charging without granting energy or light`);
-        await click('PutPhoneOnDesk'); await page('desktop');
-        await shot(`dock-${percent}-before`);
-        const began = Date.now(), rechargeCount = value.state.phoneBattery.rechargeCount;
-        await click('DeskDockContact'); await click('DeskDockContact');
-        await h.poll(async () => (await read()).state.phoneBattery.percent >= 45, 'real desktop charge completes', 12000);
-        value = await read(`charged ${percent}% through actual dock`);
-        h.check(Date.now() - began >= 2200 && value.state.phoneBattery.rechargeCount === rechargeCount + 1 && !value.state.phoneBattery.lowPowerMode,
-          `${h.id}: duplicate start grants exactly one real 2200ms charge and exits low-power mode`);
-        h.check(value.state.ui.brightness === 40 && !value.state.flags.plantLit && !value.state.flags.flowerBloomed,
-          `${h.id}: charging does not change brightness or award plant progression`);
-        await shot(`dock-${percent}-charged`);
-        await click('DeskPhonePickup'); await page('bonsai');
+        value = await read(`navigation and elapsed time at ${percent}%`);
+        h.check(value.state.phoneBattery.percent === percent && !value.state.flags.plantLit && consumptionOnly(value.state),
+          `${h.id}: repeated return and elapsed time neither recharge nor award plant light`);
+        await shot(`battery-${percent}-unchanged`);
+        await h.importSave(path.join(h.fixtureDir, `compat-c1-desk-${percent}-v35.json`), { expectedPage: 'bonsai' });
+        await closeInventory(); await page('bonsai');
+        value = await read(`legacy desk ${percent}% restored to bonsai`);
+        h.check(value.state.currentScene === 'bonsai' && value.state.phoneBattery.percent === percent && consumptionOnly(value.state) && noRetiredControls(value),
+          `${h.id}: ordinary legacy desktop import returns to its original app without an unavailable pickup control`);
+        await h.settings(); await h.saveProgressAndWait(`consumption-only ${percent}% before reload`); await h.startStory(true);
+        await page('bonsai');
+        value = await read(`legacy ${percent}% migration survives reload`);
+        h.check(value.state.phoneBattery.percent === percent && consumptionOnly(value.state) && value.state.ui.brightness === 40 && !value.state.flags.plantLit,
+          `${h.id}: normal save and reload preserve zero/one battery and unfinished plant without retired charging state`);
         const brightnessOpening = await read();
         await click('ControlCenterTrigger');
         const { value: before, slider } = await waitForBrightnessControl(h, brightnessOpening.sampleFrame);
@@ -350,15 +408,21 @@ export async function phoneRecoveryCase(h) {
         evidence.inputs.push({ name: 'ControlBrightness', method: h.touch ? 'ordinaryTouchTap' : 'ordinaryMouseClick', at: Date.now(), sampleFrame: before.sampleFrame, rect: slider.rect });
         await h.clickPoint(await h.renderPoint({ x: slider.rect.x + slider.rect.width / 2, y: slider.rect.y + slider.rect.height * .05 }, before));
         await h.poll(async () => (await read()).state.ui.brightness >= 80, 'manual brightness reaches original plant threshold');
+        value = await read(`manual brightness at ${percent}%`);
+        h.check(value.state.phoneBattery.percent === percent && value.state.ui.brightnessUserAdjusted && noRetiredControls(value),
+          `${h.id}: manual brightness remains uncapped and recorded at zero/one battery`);
+        const wasPlaying = value.state.ui.musicPlaying;
+        await click('ControlMusicPlay');
+        await h.poll(async () => (await read()).state.ui.musicPlaying !== wasPlaying, 'music remains usable at zero/one battery');
         await shot(`control-center-${percent}`);
         await click('PhoneNav_close');
         await h.poll(async () => (await read()).state.flags.flowerBloomed, 'original watered/fertilized/light conditions bloom');
         value = await read(`recovered original plant path from ${percent}%`);
         h.check(value.state.flags.plantWatered && value.state.flags.plantFertilized && value.state.flags.plantLit && !value.state.flags.flowerEightTaken,
-          `${h.id}: original three plant conditions still apply; charging never collects the digit`);
-        await shot(`plant-${percent}-recovered`); await h.assertLayout(`charging recovery ${percent}%`);
+          `${h.id}: original three plant conditions still apply; migration and manual brightness never collect the digit`);
+        await shot(`plant-${percent}-recovered`); await h.assertLayout(`battery migration recovery ${percent}%`);
       }
-      evidence.coverage.push('legacy 0% and 1% ordinary imports', 'real dock cancel and duplicate-safe 2200ms recharge', 'manual brightness and original plant gates');
+      evidence.coverage.push('legacy 0% and 1% ordinary imports', 'retired desk returns to original app', 'consumption-only save/reload and repeated app navigation', 'uncapped manual brightness and music at zero/one battery', 'original plant gates');
     },
     'c1-tiyi': async () => {
       await h.importSave(path.join(h.fixtureDir, 'before_c1_tiyi_digit.json'));
@@ -377,33 +441,48 @@ export async function phoneRecoveryCase(h) {
       evidence.coverage.push('C1 WiFi refusal then cellular earns 7', 'app navigation has no fixed battery cost');
     },
     'c2-tiyi': async () => {
+      h.progress?.('c2-import-start');
       await h.importSave(path.join(h.fixtureDir, 'before_c2_tiyi_update.json'));
+      h.progress?.('c2-imported');
       await ensurePhoneSurface();
+      h.progress?.('c2-phone-ready');
       await closeInventory();
       await home(); await network('campus_wifi'); await network('cellular');
       await click('HomeApp_tiyi'); await page('tiyi'); await shot('tiyi-old-client'); await page('phone_home');
       let value = await read('C2 repeated network trick refused');
       h.check(value.state.actOne.tiyiUpdateStage === 'not_started' && !value.state.actOne.exerciseStarted && !value.state.actOne.weatherWaterTaken,
         `${h.id}: switching cellular again cannot update the second-stage client or earn rain`);
+      h.progress?.('c2-old-client-refused');
       await click('HomeApp_wechat'); await click('TiyiOfficialAccount'); await shot('tiyi-official-account');
       await click('TiyiContact');
       await h.poll(async () => (await read()).state.actOne.tiyiUpdateStage === 'official_entry_found', 'ordinary Contact action reveals the official update entry');
       h.check((await read()).state.actOne.tiyiUpdateStage === 'official_entry_found', `${h.id}: real Contact menu discovers the official download card`);
+      h.progress?.('c2-official-entry-found');
       await click('TiyiAcquireUpdate');
       await h.poll(async () => (await read()).state.actOne.tiyiUpdateStage === 'package_ready', 'ordinary update acquisition produces the package');
       h.check((await read()).state.actOne.tiyiUpdateStage === 'package_ready', `${h.id}: ordinary simulated acquisition does not install automatically`);
+      h.progress?.('c2-package-ready');
       await shot('tiyi-package-ready'); await click('TiyiInstallUpdate');
       await h.poll(async () => (await read()).state.actOne.tiyiUpdateStage === 'installed', 'ordinary explicit installation completes');
       value = await read('C2 installed through ordinary official-account buttons');
       h.check(value.state.actOne.tiyiUpdateStage === 'installed' && !value.state.actOne.exerciseStarted && !value.state.actOne.weatherWaterTaken,
         `${h.id}: explicit installation grants neither exercise nor rain`);
+      h.progress?.('c2-installed');
       await click('TiyiUpdateReturnHome'); await page('phone_home');
-      await h.settings(); await h.saveProgressAndWait('installed Tiyi before reload'); await h.startStory(true);
+      h.progress?.('c2-save-start');
+      await h.settings(); await h.saveProgressAndWait('installed Tiyi before reload');
+      h.progress?.('c2-reload-start');
+      await h.startStory(true);
       h.check((await read()).state.actOne.tiyiUpdateStage === 'installed', `${h.id}: real browser reload retains installation`);
+      h.progress?.('c2-reloaded');
       await click('HomeApp_tiyi'); await click('TiyiExercise');
+      h.progress?.('c2-exercise-start');
       await continuousExercise(h, evidence);
+      h.progress?.('c2-exercise-accepted');
       await shot('tiyi-real-exercise'); await click('ReturnToTiyi'); await home();
-      await click('HomeWeatherOpen'); await click('WeatherWaterCard');
+      await click('HomeWeatherOpen');
+      h.progress?.('c2-weather-claim-start');
+      await click('WeatherWaterCard');
       // CDP delivery plus a fixed delay does not acknowledge the engine's cached
       // snapshot. Observe this one real claim completing; never repeat the input.
       await h.poll(async () => {
@@ -412,8 +491,10 @@ export async function phoneRecoveryCase(h) {
       }, 'actual weather card claim after exercise completes');
       value = await read('C2 original weather rain earned after exercise');
       h.check(value.state.actOne.weatherWaterTaken && value.state.items.weatherWater, `${h.id}: original weather drop remains gated behind actual exercise`);
+      h.progress?.('c2-weather-claimed');
       await shot('tiyi-weather-rain'); await h.assertLayout('Tiyi two-stage recovery');
       evidence.coverage.push('C2 repeated cellular trick refused', 'official account Contact acquisition and explicit installation', 'ordinary installation save/reload', 'ten continuous exercise traces then weather rain');
+      h.progress?.('c2-finished');
     }
   });
   evidence.completed = true;

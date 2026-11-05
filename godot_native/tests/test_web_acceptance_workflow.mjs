@@ -307,8 +307,8 @@ await test('producer artifact and consumer checkout bind one run and explicit pr
 function sample(profile, scenario) {
   const [width, height, touch, dpr] = dimensions[profile];
   const fixture = { fixture: 'before_c2_dorm_exit.json', sha256: fixtureHash };
-  const inputs = ['low0', 'low1', 'first', 'second'].map(filename => ({ filename, sha256: fixtureHash }));
-  const fixtures = { variants: inputs.slice(0, 2), earned: { firstTiyi: inputs[2], secondTiyi: inputs[3] } };
+  const inputs = ['low0', 'low1', 'desk0', 'desk1', 'first', 'second'].map(filename => ({ filename, sha256: fixtureHash }));
+  const fixtures = { variants: inputs.slice(0, 2), deskVariants: inputs.slice(2, 4), earned: { firstTiyi: inputs[4], secondTiyi: inputs[5] } };
   const coverage = touch ? ['bottom plaque', ...(profile === 'touch-390' ? ['landscape resize'] : [])] : ['PC direction + Space'];
   const item = { id: profile, width, height, touch, dpr, passed: true, screenshots: ['actual.png'],
     imports: [{ filename: fixture.fixture, sha256: fixtureHash }, ...structuredClone(inputs)],

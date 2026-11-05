@@ -15,6 +15,11 @@ func check(ok: bool,label: String) -> void:
 	if not ok: failures+=1;push_error("FISHING AUDIO: "+label)
 func frames(count: int=3) -> void:
 	for i in range(count):await process_frame
+func key(code: Key, down: bool) -> void:
+	var event:=InputEventKey.new();event.keycode=code;event.physical_keycode=code;event.pressed=down;root.push_input(event,true)
+func enter_active_play() -> void:
+	key(KEY_D,true);game._process(.02);key(KEY_D,false);await frames()
+	check(game.model.phase=="running" and game.supports_player_pause(),"actual root steering input enters the real-time fishing phase")
 func fresh_game() -> void:
 	game=Host.new();root.add_child(game);game.set_process(false)
 	game.presentation_requested.connect(audio.cue)
@@ -28,16 +33,19 @@ func run() -> void:
 	await fresh_game()
 	for cycle in range(2):
 		game.begin();await frames()
+		game.toggle_pause();check(not game.paused and game.model.phase=="idle","Start admission remains idle until an actual fishing input and has no player pause")
+		await enter_active_play()
 		game.presentation_requested.emit("native_fishing_beat",{"beat":0,"offsetMs":500,"beatDurationSec":.5})
 		game.presentation_requested.emit("qizhen_fishing_warning",{"sessionId":"77","kind":"tension_high"})
 		await frames()
-		game.toggle_pause();await frames()
+		key(KEY_ESCAPE,true);key(KEY_ESCAPE,false);await frames()
 		check(audio._paused_prefixes.has("native_fishing_") and audio._paused_prefixes.has("qizhen_fishing_"),"Pause owns both source and native fishing clocks")
 		game.restart();await frames()
 		check(not audio._paused_prefixes.has("native_fishing_") and not audio._paused_prefixes.has("qizhen_fishing_"),"Retry retires both pause keys")
 		check(not audio.scheduled.any(func(e):return str(e.id).begins_with("native_fishing_") or str(e.id).begins_with("qizhen_fishing_")),"Retry leaves no old scheduled fishing cue")
 		check(not audio.effects.any(func(e):return str(e.id).begins_with("native_fishing_") or str(e.id).begins_with("qizhen_fishing_")),"Retry retires old warning and beat effects")
-		game.begin();await frames();game.toggle_pause();await frames()
+		game.begin();await frames();await enter_active_play();key(KEY_ESCAPE,true);key(KEY_ESCAPE,false);await frames()
+		check(game.paused and audio._paused_prefixes.has("native_fishing_") and audio._paused_prefixes.has("qizhen_fishing_"),"second pause after Retry reacquires both fishing audio owners")
 		game.cancel_game();game.queue_free();await frames()
 		var deadline:=Time.get_ticks_msec()+1500
 		while Time.get_ticks_msec()<deadline and audio.music_asset!="music_qizhen_lakeside":await process_frame

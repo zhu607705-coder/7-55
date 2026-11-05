@@ -1,20 +1,26 @@
 extends "res://tests/test_portrait_exploration.gd"
 ## Reconstructed portable fixture after executor loss; no manual-play evidence.
 const Metrics=preload("res://scripts/player_metrics.gd")
-const DOGLEG=Vector2(897.882568,550.701111)
-const GOAL=Vector2(1040,630)
+var dogleg:=Vector2.ZERO
+var goal:=Vector2.ZERO
 var route_cases: Array=[]
 
-func route_fixture(dimensions: Vector2i,anchor: Vector2=DOGLEG,bag: bool=false) -> void:
+func route_fixture(dimensions: Vector2i,anchor: Vector2=Vector2.INF,bag: bool=false) -> void:
 	state.story_reset.emit(); state.d=state.initial()
 	state.d.native.chapter=2;state.d.native.page="library_app";state.d.native.scene="library_interior"
 	state.d.actOne.phase="complete";state.d.actOne.inventoryRecovered=true
 	state.d.actOne.controlsInstalled=true;state.d.actOne.manualControlTested=true
 	state.d.ui.libraryFinalsPhase="evidence_gathering";state.d.items.rightArrow=true
-	state.d.native.positions={"library_interior:":{"x":anchor.x,"y":anchor.y}}
+	state.d.native.positions={"library_interior:":{"x":anchor.x,"y":anchor.y}} if anchor.is_finite() else {}
 	root.size=dimensions;shell.size=Vector2(dimensions)
 	shell.compact_inventory_open=bag;shell.mobile_world=true;shell.world.world_key=""
 	shell._refresh();await frames(6);shell.world.set_process(false)
+	# The old diagonal shelf envelope is now genuinely walkable floor. Build
+	# the dogleg around the current visible reading-area rail instead.
+	var rail:Rect2=shell.world.library_layers.objects.areas.south_rail_0
+	dogleg=Vector2(rail.position.x-50,rail.end.y-30)-Metrics.FOOT_CENTER_OFFSET
+	goal=Vector2(rail.position.x+90,rail.end.y+58)
+	if not anchor.is_finite():anchor=dogleg
 	shell.world.player=anchor;shell.world._sync_player();shell.world._update_camera()
 	shell.world.transition_alpha=0;shell.world.queue_redraw();await frames(2)
 	check(shell.world.mobile_exploration,"actual Main compact surface")
@@ -63,41 +69,47 @@ func run() -> void:
 	await setup_main();await route_fixture(Vector2i(390,844))
 	var w=shell.world
 	var before:=story();var action_count:=actions.size()
-	var started:=Time.get_ticks_usec();await tap_ground(GOAL)
+	var started:=Time.get_ticks_usec();await tap_ground(goal)
 	check(w._floor_route.size()>1,"dogleg routes around visible authored furniture")
 	check(w._floor_planner.edge_checks<=4096 and w._floor_planner.corner_count<=192,"planner has bounded graph cost")
-	print("DOGLEG plan plus routed frames usec=",Time.get_ticks_usec()-started," path=",w._floor_route)
-	await walk_route(GOAL)
+	print("dogleg plan plus routed frames usec=",Time.get_ticks_usec()-started," path=",w._floor_route)
+	await walk_route(goal)
 	check(story()==before and actions.size()==action_count,"dogleg does not auto-interact")
 	await route_fixture(Vector2i(390,844))
-	await tap_ground(Vector2(920,590))
-	check(w._floor_route.is_empty() and w._floor_status=="blocked","unreachable shelf floor shows stop feedback")
-	check(w.player==DOGLEG,"unreachable tap never teleports")
-	await tap_ground(GOAL);var position: Vector2=w.player
+	var blocked_floor:=Vector2.ZERO
+	for obstacle:Dictionary in w.collisions:
+		if obstacle.id=="south_rail_0":
+			var base:Rect2=w._rect(obstacle)
+			blocked_floor=Vector2(base.position.x-Metrics.FOOT_SIZE.x*.25,base.get_center().y);break
+	check(blocked_floor!=Vector2.ZERO and w._floor_empty_destination(blocked_floor) and not w.can_stand(blocked_floor-Metrics.FOOT_CENTER_OFFSET),"empty floor beside the current rail lacks clearance for the shared feet")
+	await tap_ground(blocked_floor)
+	check(w._floor_route.is_empty() and w._floor_status=="blocked","physical rail clearance shows stop feedback")
+	check(w.player==dogleg,"unreachable tap never teleports")
+	await tap_ground(goal);var position: Vector2=w.player
 	var key:=InputEventKey.new();key.keycode=KEY_A;key.physical_keycode=KEY_A;key.pressed=true;event(key);w._process(.016)
 	key=key.duplicate();key.pressed=false;event(key)
 	check(w._floor_route.is_empty() and w._floor_goal==Vector2.INF,"manual keyboard cancels route and marker")
-	await route_fixture(Vector2i(390,844));await tap_ground(GOAL)
-	var newer:=Vector2(1025,628);await tap_ground(newer)
+	await route_fixture(Vector2i(390,844));await tap_ground(goal)
+	var newer:=goal-Vector2(155,2);await tap_ground(newer)
 	check(w._floor_goal.distance_to(newer)<.001,"new explicit tap replaces older goal within source-pixel transform precision")
 	await walk_route(newer)
-	await route_fixture(Vector2i(390,844));await tap_ground(GOAL)
+	await route_fixture(Vector2i(390,844));await tap_ground(goal)
 	position=w.player;w.camera+=Vector2(1,0);w._process(.016)
 	check(w._floor_route.is_empty() and w.player==position,"unexpected camera change cancels before movement")
-	await route_fixture(Vector2i(390,844));await tap_ground(GOAL)
+	await route_fixture(Vector2i(390,844));await tap_ground(goal)
 	w.zoom+=.1;w._process(.016);check(w._floor_route.is_empty(),"zoom change cancels")
-	await route_fixture(Vector2i(390,844));await tap_ground(GOAL)
+	await route_fixture(Vector2i(390,844));await tap_ground(goal)
 	w.capture_mode=true;w._process(.016);check(w._floor_route.is_empty(),"capture owns movement and clears route");w.capture_mode=false
-	await route_fixture(Vector2i(390,844));await tap_ground(GOAL)
+	await route_fixture(Vector2i(390,844));await tap_ground(goal)
 	w._notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_OUT);check(w._floor_route.is_empty(),"focus loss cancels")
-	await route_fixture(Vector2i(390,844));await tap_ground(GOAL)
+	await route_fixture(Vector2i(390,844));await tap_ground(goal)
 	var at:=source_screen(Vector2(1060,630));touch(at,true);touch(at,false,true);await frames()
 	check(w._floor_route.is_empty(),"canceled new gesture cannot resume route")
-	await route_fixture(Vector2i(390,844));await tap_ground(GOAL)
+	await route_fixture(Vector2i(390,844));await tap_ground(goal)
 	var play_rect:Rect2=shell.world_view.get_global_rect()
 	await click(await reveal("rightArrow"))
 	check(shell.world_view.get_global_rect()==play_rect,"inline item selection never resizes the game")
-	await cancel_floor_touch(source_screen(GOAL))
+	await cancel_floor_touch(source_screen(goal))
 	before=story();position=w.player;action_count=actions.size()
 	var footer_at:Vector2=shell.world_mode.get_global_rect().get_center();touch(footer_at,true);touch(footer_at,false,true);await frames()
 	check(w._floor_route.is_empty() and w.player==position and story()==before and actions.size()==action_count,"cancelled system-icon touch cannot walk or choose a hidden target")
@@ -112,22 +124,24 @@ func run() -> void:
 	check(w._floor_route.is_empty() and w.player==position,"native inventory drag cancels active floor movement")
 	var drop_at:=source_screen(Vector2(1130,630));motion(drop_at,Vector2.ZERO,MOUSE_BUTTON_MASK_LEFT);mouse(drop_at,false);await frames()
 	check(state.d.items==inventory_before and w._floor_route.is_empty() and w.player==position,"floor item drop preserves inventory and never starts route")
-	await route_fixture(Vector2i(390,844));await tap_ground(GOAL)
+	await route_fixture(Vector2i(390,844));await tap_ground(goal)
 	position=w.player
 	var foot:=Metrics.foot_rect(w._floor_route[0])
 	w.collisions.append({"x":foot.position.x,"y":foot.position.y,"width":foot.size.x,"height":foot.size.y})
-	for step in range(20): w._process(.016)
+	for step in range(800):
+		if w._floor_route.is_empty():break
+		w._process(.016)
 	check(w._floor_route.is_empty() and w._floor_status=="blocked","new collision stops without automatic replan")
 	check(w.can_stand(w.player),"dynamic stop keeps exact current foot legality")
-	await route_fixture(Vector2i(390,844));await tap_ground(GOAL)
+	await route_fixture(Vector2i(390,844));await tap_ground(goal)
 	position=w.player
 	var drag_at:=source_screen(Vector2(1040,630));touch(drag_at,true);finger(drag_at+Vector2(20,0),Vector2(20,0));touch(drag_at+Vector2(20,0),false);await frames()
 	check(w._floor_route.is_empty() and w.player==position,"camera pan cannot walk or resume older goal")
-	await route_fixture(Vector2i(390,844));await tap_ground(GOAL)
+	await route_fixture(Vector2i(390,844));await tap_ground(goal)
 	position=w.player;shell._show_settings();await frames();w._process(.016)
 	check(w._floor_route.is_empty() and w.player==position,"modal ownership cancels before movement")
 	shell._close_modal();await frames()
-	await route_fixture(Vector2i(390,844));await tap_ground(GOAL)
+	await route_fixture(Vector2i(390,844));await tap_ground(goal)
 	state.d.native.scene="campus_bootstrap";shell._refresh();await frames()
 	check(w._floor_route.is_empty() and w._floor_goal==Vector2.INF,"scene change clears route and marker")
 	# Pure swept checks prove sub-pixel barriers and exact tangency semantics.
@@ -144,12 +158,12 @@ func run() -> void:
 	check(w.can_stand(Vector2(100,200)) and w.can_stand(Vector2(300,200)),"mask sweep endpoints are both legal")
 	check(not w._floor_segment_clear(Vector2(100,200),Vector2(300,200)),"mask-cell crossing catches blocked interval between legal endpoints")
 	check(w._floor_segment_clear(Vector2(100,200),Vector2(150,200)),"mask sweep permits wholly legal segment")
-	await route_fixture(Vector2i(390,844));await tap_ground(GOAL)
+	await route_fixture(Vector2i(390,844));await tap_ground(goal)
 	var tick:=Time.get_ticks_usec()
 	var obstacles: Array=w._floor_obstacles()
 	var proof: Array=w._floor_planner.plan(w.player,w._floor_goal-Metrics.FOOT_CENTER_OFFSET,obstacles,w._floor_bounds,w._floor_stand,func(a: Vector2,b: Vector2): return w._floor_segment_clear(a,b,obstacles,true))
 	var micros:=Time.get_ticks_usec()-tick
 	check(proof==w._floor_route,"planner is deterministic for same source world")
 	check(micros<200000,"bounded visible planner stays below200ms on test host")
-	print("DOGLEG algorithm usec=",micros," edges=",w._floor_planner.edge_checks," corners=",w._floor_planner.corner_count)
+	print("dogleg algorithm usec=",micros," edges=",w._floor_planner.edge_checks," corners=",w._floor_planner.corner_count)
 	await finish("MOBILE_FLOOR_ROUTE")

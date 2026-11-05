@@ -43,7 +43,7 @@ const CONTROLS: Array<{
     max: 12,
     stateKey: "auditArrivalMinutes",
     sourceIndex: "01",
-    sourceHint: "入口小屏 · 计算时间差"
+    sourceHint: "门禁记录 · 两次时间差"
   },
   {
     field: "publicNoticeFloor",
@@ -53,7 +53,7 @@ const CONTROLS: Array<{
     max: 63,
     stateKey: "auditPublicNoticeFloor",
     sourceIndex: "02",
-    sourceHint: "CC98 楼主编辑 · 读取编号"
+    sourceHint: "论坛公示 · 关联记录号"
   },
   {
     field: "proofCount",
@@ -63,7 +63,7 @@ const CONTROLS: Array<{
     max: 5,
     stateKey: "auditProofCount",
     sourceIndex: "03",
-    sourceHint: "旧版规则 · 统计类别"
+    sourceHint: "旧版规则 · 材料类别"
   }
 ];
 
@@ -109,7 +109,7 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
     : attempt > 0
       ? rejectionHint(attempt)
       : puzzle.archivedRuleRead
-        ? "三项字段分别对应三份已保存的证据。"
+        ? "时间差核对到座记录，编号关联公示，类别数核对材料。"
         : null;
 
   function step(field: AuditField, value: number) {
@@ -156,13 +156,13 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
       <header>
         <div className="tiyi-audit-heading">
           <strong className="tiyi-audit-title">{passed ? "补录成功" : "本人来过证明补录单"}</strong>
-          <span className="tiyi-audit-status">{passed ? "系统已承认你确实来过图书馆" : "待补录 · 先核对下方三项调查材料"}</span>
+          <span className="tiyi-audit-status">{passed ? "系统已承认你确实来过图书馆" : "核对同一次 022 会话的三份记录"}</span>
         </div>
         <span className="tiyi-audit-form-code">{passed ? "已认证" : "表单 022"}</span>
       </header>
 
       <section className="tiyi-recorded-route" aria-label="已记录的图书馆路线">
-        <strong>检测到室内异常锻炼路线</strong>
+        <strong>本次会话的已调查地点</strong>
         <div>
           <span>寝室</span>
           {recordedRoute.map((label, index) => (
@@ -172,11 +172,11 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
       </section>
 
       <section className="tiyi-audit-guide" aria-label="补录方法">
-        <strong>三项材料从哪里取得</strong>
+        <strong>填写依据与核对用途</strong>
         <ul>
           <li><span>01 图书馆入口小屏</span><em>填写到座耗时</em></li>
           <li><span>02 CC98 调查帖楼主编辑</span><em>填写公示编号</em></li>
-          <li><span>03 一层书库 755 书架旧版规则</span><em>填写证明数量</em></li>
+          <li><span>03 一层书库 06 架旧版规则</span><em>填写证明数量</em></li>
         </ul>
         <small>三项材料可按任意顺序收集；取得后，下方会显示可核对的原文。</small>
       </section>
@@ -189,7 +189,7 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
             {puzzle.entranceRecordRead ? (
               <>
                 <small className="tiyi-audit-source-evidence"><b>07:55</b> 基础馆入口 <i>→</i> <b>08:02</b> 一层书库 022</small>
-                <small>填写两次记录的分钟差</small>
+                <small>填写分钟差，用于核对同一次到馆会话</small>
               </>
             ) : <small>未取得 · 回到基础图书馆入口，查看门禁记录小屏</small>}
           </div>
@@ -200,8 +200,8 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
             <strong>CC98 调查帖 · 23 楼楼主编辑 <em>填：公示编号</em></strong>
             {puzzle.investigationOpened ? (
               <>
-                <small className="tiyi-audit-source-evidence">楼主编辑原文：旧申请统一挂在 <b>公示编号 {PUBLIC_NOTICE_NUMBER}</b></small>
-                <small>23 是回复楼层；填写原文中的公示编号</small>
+                <small className="tiyi-audit-source-evidence">23 楼编辑：本次 022 公示使用 <b>公示编号 {PUBLIC_NOTICE_NUMBER}</b></small>
+                <small>用来关联同一份公示，不填回复楼层、帖子排名或 BD 口令</small>
               </>
             ) : <small>未取得 · 在 022 座位拿到占座纸条，用它打开 CC98 调查帖</small>}
           </div>
@@ -215,9 +215,9 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
                 <small className="tiyi-audit-rule-evidence">
                   {RULE_REQUIREMENTS.map((requirement) => <span key={requirement}>{requirement.replace(/^[一二三]、/, "").replace(/；$/, "")}</span>)}
                 </small>
-                <small>填写规则列出的证明类别数量</small>
+                <small>填写旧规要求的类别数，不是背包中的道具总数</small>
               </>
-            ) : <small>未取得 · 在一层书库 755 书架使用“索书号 755”，取得并阅读规则</small>}
+            ) : <small>未取得 · 按索书号找到 06 架南端上层的 755 号书，抽出并读完规则</small>}
           </div>
         </article>
       </section>

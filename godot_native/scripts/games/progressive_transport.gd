@@ -32,7 +32,6 @@ var reading_close: Button
 var field := Rect2()
 var board := Rect2()
 var cell_size := 48.0
-var paused := false
 var help_open := false
 var help_tier := 0
 var done := false
@@ -56,7 +55,6 @@ func setup(value: Dictionary) -> void:
 	state = model.snapshot()
 	done = false
 	disposed = false
-	paused = false
 	help_open = false
 	help_tier = 0
 	if is_inside_tree():
@@ -126,7 +124,6 @@ func _build() -> void:
 	circuit_card.hide()
 	_button("TransportExit","返回现场",_cancel)
 	_button("TransportHelp","观察提示",_help)
-	_button("TransportPause","暂停",_pause)
 	_button("TransportUndo","撤回 · Z",func(): _apply("undo"))
 	_button("TransportRestart","重来 · R",func(): _apply("restart"))
 	_button("TransportContinue","下一拍",_continue)
@@ -205,13 +202,11 @@ func _layout() -> void:
 		_place("TransportUndo",Rect2(12,tools_y,w,44))
 		_place("TransportRestart",Rect2(24+w,tools_y,w,44))
 		_place("TransportHelp",Rect2(36+w*2,tools_y,w,44))
-		_place("TransportPause",Rect2(size.x-108,field.end.y+60,96,44))
-		_place("TransportContinue",Rect2(12,field.end.y+60,size.x-132,44))
+		_place("TransportContinue",Rect2(12,field.end.y+60,size.x-24,44))
 	else:
 		_place("TransportUndo",Rect2(18,tools_y,124,44))
 		_place("TransportRestart",Rect2(152,tools_y,124,44))
 		_place("TransportHelp",Rect2(286,tools_y,124,44))
-		_place("TransportPause",Rect2(420,tools_y,96,44))
 		_place("TransportContinue",Rect2(size.x-202,tools_y,184,44))
 	var pad := Vector2(83,size.y-145) if portrait else Vector2(size.x-304,size.y-83)
 	for spec: Array in [["TransportUp",Vector2(0,-48)],["TransportDown",Vector2(0,0)],["TransportLeft",Vector2(-48,0)],["TransportRight",Vector2(48,0)]]:
@@ -238,8 +233,8 @@ func _layout() -> void:
 		feedback_label.position = Vector2(side_x,156)
 		feedback_label.size = Vector2(size.x-side_x-12,62)
 		feedback_label.add_theme_font_size_override("font_size",14)
-		var toolbar_width := (size.x-84)/6
-		var toolbar_ids := ["TransportUndo","TransportRestart","TransportHelp","TransportPause","TransportContinue","TransportExit"]
+		var toolbar_width := (size.x-72)/5
+		var toolbar_ids := ["TransportUndo","TransportRestart","TransportHelp","TransportContinue","TransportExit"]
 		for i: int in toolbar_ids.size():
 			_place(toolbar_ids[i],Rect2(12+i*(toolbar_width+12),tools_y,toolbar_width,44))
 			controls[toolbar_ids[i]].add_theme_font_size_override("font_size",14)
@@ -297,19 +292,18 @@ func _refresh() -> void:
 	var stage_complete: bool = bool(state.get("stageComplete",false))
 	controls.TransportContinue.visible = complete or stage_complete
 	controls.TransportContinue.text = ("结束复盘" if bool(config.get("replay",false)) else "提交记录") if complete else "下一拍"
-	controls.TransportContinue.disabled = done or paused or help_open
-	controls.TransportUndo.disabled = not bool(state.get("canUndo",false)) or done or paused or help_open
-	controls.TransportRestart.disabled = done or paused or help_open
+	controls.TransportContinue.disabled = done or help_open
+	controls.TransportUndo.disabled = not bool(state.get("canUndo",false)) or done or help_open
+	controls.TransportRestart.disabled = done or help_open
 	for key: String in ["TransportUp","TransportDown","TransportLeft","TransportRight"]:
-		controls[key].disabled = done or paused or help_open or stage_complete or complete
-	controls.TransportPause.text = "继续" if paused else "暂停"
+		controls[key].disabled = done or help_open or stage_complete or complete
 	_update_board()
 	_layout_circuit_card()
 	_place_chip()
 	queue_redraw()
 
 func _apply(action: String) -> void:
-	if done or disposed or paused or help_open or model == null: return
+	if done or disposed or help_open or model == null: return
 	var previous: Dictionary = state.duplicate(true)
 	model.apply(action)
 	_refresh()
@@ -332,7 +326,7 @@ func _observe_action(previous: Dictionary) -> void:
 	chip_left = 2.0 if not chip_cell.is_empty() else 0.0
 
 func _continue() -> void:
-	if done or disposed or paused or help_open or model == null: return
+	if done or disposed or help_open or model == null: return
 	if bool(state.get("complete",false)):
 		done = true
 		_clear_input()
@@ -358,43 +352,30 @@ func _next_hint() -> void:
 	_update_reading()
 
 func _update_reading() -> void:
-	reading_panel.show()
-	reading_title.text = "停下来观察" if help_open else "演练已暂停"
+	reading_panel.visible = help_open
+	reading_title.text = "停下来观察"
 	var hints: Array = state.get("hints",[])
 	reading_body.text = str(hints[clampi(help_tier-1,0,hints.size()-1)]) if help_open and not hints.is_empty() else "棋盘保留在原处。准备好后再继续。"
 	reading_next.visible = help_open and help_tier < hints.size()
 	reading_close.text = "回到棋盘"
 	reading_panel.move_to_front()
-	reading_close.grab_focus.call_deferred()
+	if help_open: reading_close.grab_focus.call_deferred()
 
 func _close_reading() -> void:
 	if disposed: return
 	_clear_input()
 	help_open = false
-	paused = false
 	reading_panel.hide()
 	_refresh()
 	grab_focus()
-
-func _pause() -> void:
-	if done or disposed or not _built: return
-	if paused or help_open:
-		_close_reading()
-		return
-	_clear_input()
-	paused = true
-	_update_reading()
-	_refresh()
 
 func _visibility_changed() -> void:
 	if not is_visible_in_tree(): _focus_out()
 
 func _focus_out() -> void:
-	if paused or done or disposed or not _built: return
+	# The board changes only on discrete commands. Cancel held gestures but
+	# keep the authored help/menu state; no player pause is needed here.
 	_clear_input()
-	paused = true
-	_update_reading()
-	_refresh()
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT: _focus_out()
@@ -431,10 +412,10 @@ func _input(event: InputEvent) -> void:
 		if event.echo or held_keys.has(key): return
 		held_keys[key] = true
 		if key == KEY_ESCAPE:
-			_pause()
+			if help_open:_close_reading()
 			get_viewport().set_input_as_handled()
 			return
-		if paused or help_open: return
+		if help_open: return
 		var action: String = {KEY_W:"up",KEY_UP:"up",KEY_S:"down",KEY_DOWN:"down",KEY_A:"left",KEY_LEFT:"left",KEY_D:"right",KEY_RIGHT:"right",KEY_Z:"undo",KEY_R:"restart"}.get(key,"")
 		if not action.is_empty():
 			_apply(action)
@@ -457,13 +438,13 @@ func _input(event: InputEvent) -> void:
 			_clear_input()
 			if not event.canceled:
 				if is_instance_valid(button) and button.is_visible_in_tree() and not button.disabled and Rect2(Vector2.ZERO,button.size).has_point(button.get_global_transform_with_canvas().affine_inverse()*event.position): button.pressed.emit()
-				elif button == null and not paused and not help_open: _point_action(origin,point)
+				elif button == null and not help_open: _point_action(origin,point)
 		get_viewport().set_input_as_handled()
 	elif event is InputEventMouse and Time.get_ticks_msec()-last_touch_ms < 400:
 		get_viewport().set_input_as_handled()
 
 func _button_at(point: Vector2) -> Button:
-	if paused or help_open:
+	if help_open:
 		for button: Button in [reading_close,reading_next]:
 			if button.is_visible_in_tree() and not button.disabled and button.get_global_rect().has_point(global_position+point): return button
 		return null
@@ -473,7 +454,7 @@ func _button_at(point: Vector2) -> Button:
 	return null
 
 func _gui_input(event: InputEvent) -> void:
-	if paused or help_open or done or disposed: return
+	if help_open or done or disposed: return
 	# GUI-generated touch emulation may bypass the raw input callback.
 	if event is InputEventMouse and Time.get_ticks_msec()-last_touch_ms < 400: return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -500,7 +481,7 @@ func _point_action(origin: Vector2, target: Vector2) -> void:
 	_apply(("right" if direction.x>0 else "left") if absf(direction.x)>absf(direction.y) else ("down" if direction.y>0 else "up"))
 
 func _process(delta: float) -> void:
-	if disposed or done or paused or help_open: return
+	if disposed or done or help_open: return
 	animation_time += minf(delta,.1)
 	chip_left = maxf(0,chip_left-delta)
 	_place_chip()
@@ -511,7 +492,7 @@ func _cell_center(value: Dictionary) -> Vector2:
 
 func _place_chip() -> void:
 	if not _built: return
-	feedback_chip.visible = chip_left>0 and not chip_cell.is_empty() and not paused and not help_open
+	feedback_chip.visible = chip_left>0 and not chip_cell.is_empty() and not help_open
 	if not feedback_chip.visible: return
 	feedback_chip.text = chip_text
 	feedback_chip.size = Vector2(minf(252,size.x-32),58)
@@ -649,4 +630,4 @@ func _draw() -> void:
 		_text("点相邻方向 / 滑动一步",Vector2(710,431),15,MUTED)
 		_text("WASD · 方向键",Vector2(710,459),15,MUTED)
 	draw_set_transform(Vector2.ZERO)
-	if paused or help_open: draw_rect(Rect2(Vector2.ZERO,size),Color(0.08,.12,.12,.38))
+	if help_open: draw_rect(Rect2(Vector2.ZERO,size),Color(0.08,.12,.12,.38))

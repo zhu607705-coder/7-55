@@ -401,10 +401,21 @@ export class SaveStore {
         || !VALID_TIYI_UPDATE_STAGES.has(savedActOne.tiyiUpdateStage as GameState["actOne"]["tiyiUpdateStage"]))) return null;
       if (!hasTiyiUpdateStage && envelopeVersion >= TIYI_UPDATE_SAVE_VERSION) return null;
       const savedUi = asRecord(saved.ui);
+      const brightnessMarkerCount = ["brightnessRevision", "brightnessUserAdjusted", "brightnessLegacy100Repaired"]
+        .filter(key => Object.prototype.hasOwnProperty.call(savedUi, key)).length;
+      if (brightnessMarkerCount !== 0 && (brightnessMarkerCount !== 3
+        || savedUi.brightnessRevision !== 1 || typeof savedUi.brightnessUserAdjusted !== "boolean"
+        || typeof savedUi.brightnessLegacy100Repaired !== "boolean")) return null;
+      const savedNative = asRecord(saved.native);
+      let brightnessWasManual = false;
+      if (Array.isArray(savedNative.log)) {
+        for (const entry of savedNative.log) {
+          if (asRecord(entry).text === "屏幕亮度已调整。") brightnessWasManual = true;
+        }
+      }
       const hasHomeDeskReturnScene = Object.prototype.hasOwnProperty.call(savedUi, "homeDeskReturnScene");
       if (hasHomeDeskReturnScene && savedUi.homeDeskReturnScene !== null
         && savedUi.homeDeskReturnScene !== "phone_home" && savedUi.homeDeskReturnScene !== "bonsai") return null;
-      if (!hasHomeDeskReturnScene && envelopeVersion >= TIYI_UPDATE_SAVE_VERSION) return null;
       let actOne = normalizeActOne(saved.actOne, initial.actOne, legacySave, envelopeVersion < TIYI_UPDATE_SAVE_VERSION);
       const items = normalizeItems(saved.items, initial.items);
       const digits = normalizeDigits(saved.digits, initial.digits);
@@ -442,7 +453,6 @@ export class SaveStore {
         dormHubUnlocked: !["prologue", "friend_message_required", "system_required"].includes(actOne.phase)
       };
       const ui = normalizeUi(saved.ui, initial.ui, !isVersionedEnvelope, actOne);
-      if (flags.checkinDone || saved.runtimeMode !== "phone" || saved.currentScene !== "desktop") ui.homeDeskReturnScene = null;
       if (legacySave) {
         const puzzle = ui.libraryFinalsPuzzle;
         const catalogWasAlreadyPassed = puzzle.catalogSearchCompleted
@@ -712,20 +722,21 @@ export class SaveStore {
         envelopeVersion >= WALLET_SAVE_VERSION
       );
       const savedPhoneBattery = asRecord(saved.phoneBattery);
+      // Validate obsolete fields before discarding them. They no longer carry
+      // runtime authority. The separate versioned opening repair below is
+      // bounded and never derives brightness from remaining battery energy.
+      if (Object.prototype.hasOwnProperty.call(savedPhoneBattery, "lowPowerMode")
+        && typeof savedPhoneBattery.lowPowerMode !== "boolean") return null;
+      if (Object.prototype.hasOwnProperty.call(savedPhoneBattery, "rechargeCount")
+        && (typeof savedPhoneBattery.rechargeCount !== "number"
+          || !Number.isInteger(savedPhoneBattery.rechargeCount)
+          || savedPhoneBattery.rechargeCount < 0)) return null;
       const phoneBattery: GameState["phoneBattery"] = {
         percent: rangedIntegerOr(
           savedPhoneBattery.percent,
           0,
           100,
           initial.phoneBattery.percent
-        ),
-        lowPowerMode: booleanOr(
-          savedPhoneBattery.lowPowerMode,
-          initial.phoneBattery.lowPowerMode
-        ),
-        rechargeCount: nonNegativeIntegerOr(
-          savedPhoneBattery.rechargeCount,
-          initial.phoneBattery.rechargeCount
         )
       };
       if (ui.selectedItem && !items[ui.selectedItem]) {
@@ -752,6 +763,32 @@ export class SaveStore {
         chapter4,
         ui
       };
+      if (brightnessMarkerCount === 0) {
+        // Repair only the former100 opening default before any plant progress.
+        // Old Settings writes were silent, so this bounded repair retains a
+        // receipt and never pretends that absence proves historical intent.
+        const repairOpening = savedUi.brightness === 100 && !brightnessWasManual
+          && hydrated.runtimeMode === "phone" && actOne.phase === "prologue"
+          && (!Object.prototype.hasOwnProperty.call(savedNative, "chapter") || savedNative.chapter === 1)
+          && (!Object.prototype.hasOwnProperty.call(savedNative, "scene") || savedNative.scene === "")
+          && !flags.plantLit && !flags.plantWatered && !flags.plantFertilized
+          && !flags.flowerBloomed && !flags.flowerEightTaken && !flags.checkinDone
+          && ui.libraryFinalsPhase === "idle" && hydrated.currentScene !== "photos"
+          && !ui.libraryFinalsPuzzle.photoCaptured && !ui.libraryFinalsPuzzle.photoDimmed
+          && !ui.libraryFinalsPuzzle.itemReportGenerated
+          && !canteenHunt.active && !theaterHunt.active && !qizhenLake.active
+          && !chapter4.prologueSeen && !chapter4.completed;
+        if (repairOpening) ui.brightness = initial.ui.brightness;
+        ui.brightnessUserAdjusted = brightnessWasManual;
+        ui.brightnessLegacy100Repaired = repairOpening;
+      }
+      // Old saves may be paused on the retired charging desk. Resume their
+      // validated phone page rather than replaying the opening wake sequence.
+      if (hydrated.runtimeMode === "phone" && hydrated.currentScene === "desktop"
+        && actOne.phase === "prologue" && !flags.checkinDone
+        && (savedUi.homeDeskReturnScene === "phone_home" || savedUi.homeDeskReturnScene === "bonsai")) {
+        hydrated.currentScene = savedUi.homeDeskReturnScene;
+      }
       if (
         hydrated.rpgScene === "campus_bootstrap"
         && ["campus_qizhen_transition_stop", "campus_qizhen_gate"].includes(hydrated.rpgCheckpoint)
@@ -2726,13 +2763,14 @@ function normalizeUi(
   const normalizedStateForRemoval = { actOne, ui: { libraryFinalsPuzzle: puzzle } };
 
   return {
-    homeDeskReturnScene: actOne.phase === "prologue" && (saved.homeDeskReturnScene === "phone_home" || saved.homeDeskReturnScene === "bonsai")
-      ? saved.homeDeskReturnScene : null,
     controlCenterOpen: booleanOr(saved.controlCenterOpen, initial.controlCenterOpen),
     autoRotate: booleanOr(saved.autoRotate, initial.autoRotate),
     musicPlaying: booleanOr(saved.musicPlaying, initial.musicPlaying),
     musicMuted: booleanOr(saved.musicMuted, initial.musicMuted),
     brightness: rangedNumberOr(saved.brightness, 0, 100, initial.brightness),
+    brightnessRevision: initial.brightnessRevision,
+    brightnessUserAdjusted: booleanOr(saved.brightnessUserAdjusted, initial.brightnessUserAdjusted),
+    brightnessLegacy100Repaired: booleanOr(saved.brightnessLegacy100Repaired, initial.brightnessLegacy100Repaired),
     homeAppOrder: normalizePhoneHomeAppOrder(saved.homeAppOrder),
     hiddenHomeAppIds: normalizeHiddenPhoneHomeAppIds(saved.hiddenHomeAppIds, normalizedStateForRemoval),
     inventoryOpen: booleanOr(saved.inventoryOpen, initial.inventoryOpen),

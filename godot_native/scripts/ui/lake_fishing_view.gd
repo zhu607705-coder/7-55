@@ -194,7 +194,7 @@ func _layout_labels() -> void:
 	var h: float = size.y
 	var short := h<420
 	var ending: bool = host.sent or m.phase in ["failed","completed"]
-	var modal: bool = not host.running or host.paused
+	var modal: bool = not host.running and not host.paused
 	var header := header_rect()
 	var stage_text: String = {"casting":"01 · 瞄准抛竿","count_in":"02 · 四拍预备","fighting":"03 · 跟拍遛鱼"}.get(m.stage,"")
 	_label("title","启真湖拒绝被钓",Rect2(header.position+Vector2(16,6),Vector2(header.size.x-32,26)),18)
@@ -227,9 +227,9 @@ func _layout_labels() -> void:
 	var panel := modal_rect()
 	_label("result",result_text,Rect2(panel.position+Vector2(16,12),Vector2(panel.size.x-32,32)),20,GOLD,ending)
 	_label("result_body",result_body,Rect2(panel.position+Vector2(20,48),Vector2(panel.size.x-40,64)),15,PALE,ending)
-	_label("modal","已暂停" if host.paused else "准备好了吗？",Rect2(panel.position+Vector2(16,12),Vector2(panel.size.x-32,32)),20,PALE,modal and not ending)
+	_label("modal","准备好了吗？",Rect2(panel.position+Vector2(16,12),Vector2(panel.size.x-32,32)),20,PALE,modal and not ending)
 	var instructions := "先对准鱼影，按住水面蓄力\n拖动控线 · 松手抛竿" if host.fishing_controls_enabled else "A / D 控线，空格蓄力再松开\n也可直接按住水面拖动"
-	_label("modal_body","继续后从同一时刻恢复" if host.paused else instructions,Rect2(panel.position+Vector2(20,48),Vector2(panel.size.x-40,58)),15,MINT,modal and not ending)
+	_label("modal_body",instructions,Rect2(panel.position+Vector2(20,48),Vector2(panel.size.x-40,58)),15,MINT,modal and not ending)
 
 func header_rect() -> Rect2:
 	var width := minf(size.x-28,480)
@@ -322,7 +322,7 @@ func _draw() -> void:
 		if m.stage=="casting": _hud_plate(instruction_rect(),.87)
 		else: _draw_rhythm(m)
 		_draw_meter(m)
-	if ending or not host.running or host.paused:
+	if (ending or not host.running) and not host.paused:
 		# Keep the lake visible around a bounded, readable dialog.
 		draw_rect(Rect2(Vector2.ZERO,size),Color(INK,.24))
 		_hud_plate(modal_rect(),.96)

@@ -37,7 +37,7 @@ func run() -> void:
 		var game: Control=Host.new();game.setup({"type":"rhythm","chartId":id,"spotId":id,"session_id":73,"chart":Fishing.load_chart(id),"instructions":"原始准备说明"});root.add_child(game);game.set_process(false)
 		game.finished.connect(func(_result: Dictionary):delivered+=1);game.cancelled.connect(func():cancelled+=1)
 		game._refresh();check(game.hint.text=="原始准备说明",id+" ready instructions preserved")
-		game.begin();game.toggle_pause();check(game.hint.text=="已暂停。继续后从同一时刻恢复",id+" pause feedback preserved");game.begin()
+		game.begin();game.model.press("left");game.model.release("left");game.toggle_pause();check(game.paused and game.hint.text.is_empty() and game.shared_pause_overlay.is_open() and not game.shared_pause_overlay.body.visible,id+" pause feedback preserved");game.begin()
 		game.model=missed_chart(id)
 		check(game.model.phase=="completed" and not game.model.final_result.passed,id+" original input rules produce failed completed chart")
 		check(game.model.cue=="收近了！留意下一次猛拽",id+" last successful hook leaves historical misleading cue")

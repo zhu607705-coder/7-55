@@ -3,6 +3,32 @@ const Model = preload("res://scripts/games/chapter4_endless_stair_model.gd")
 const View = preload("res://scripts/presentation/chapter4_endless_stair_view.gd")
 var checks := 0
 var failures := 0
+var exit_count := 0
+var finish_count := 0
+
+func key(code: Key, pressed: bool) -> void:
+	var event := InputEventKey.new()
+	event.keycode = code
+	event.physical_keycode = code
+	event.pressed = pressed
+	Input.parse_input_event(event)
+	Input.flush_buffered_events()
+
+func click(button: Button) -> void:
+	check(button.is_visible_in_tree() and not button.disabled, "pause action is visibly reachable")
+	var point := button.get_global_rect().get_center()
+	var motion := InputEventMouseMotion.new()
+	motion.position = point
+	motion.global_position = point
+	root.push_input(motion, true)
+	for pressed in [true, false]:
+		var event := InputEventMouseButton.new()
+		event.button_index = MOUSE_BUTTON_LEFT
+		event.position = point
+		event.global_position = point
+		event.pressed = pressed
+		root.push_input(event, true)
+
 func _initialize() -> void: run.call_deferred()
 func check(ok: bool, note: String) -> void:
 	checks += 1
@@ -10,6 +36,7 @@ func check(ok: bool, note: String) -> void:
 		failures += 1
 		push_error("B: " + note)
 func run() -> void:
+	root.size = Vector2i(1440, 900)
 	DirAccess.make_dir_recursive_absolute("user://endless_stair_b3")
 	var m = Model.new()
 	var d: Dictionary = Model.data()
@@ -85,12 +112,48 @@ func run() -> void:
 	root.add_child(v)
 	await process_frame
 	check(v.groups.size()==25 and not v.active and v.menu.visible, "standalone begins in explicit start menu")
-	v._start()
-	check(v.active and not v.menu.visible and v.model.tick==0, "start resets and enters play")
+	v.set_process(false)
+	v.set_physics_process(false)
+	v.exited.connect(func(): exit_count += 1)
+	v.finished.connect(func(_proof): finish_count += 1)
+	click(v.start_button)
+	check(v.active and not v.menu.visible and v.model.tick==0, "visible start resets and enters play")
+	key(KEY_D, true)
+	v._physics_process(1.0/60.0)
+	check(v.model.tick>0 and v.model.player.x>1, "pause preserves an already advanced run")
+	key(KEY_SPACE, true)
+	v.primary_touch=3; v.touch_axis=1; v.queued_jump=true; v.jump_buffer_ticks=7
+	v.held_screen_axis=1; v.held_route_direction=1
 	v._lose_focus()
-	check(not v.active and v.focus_paused and v.menu.visible, "focus loss pauses and clears held input")
-	v._menu_action()
-	check(v.active and not v.focus_paused, "resume restores running state")
+	check(not v.active and v.focus_paused and not v.menu.visible and v.shared_pause_overlay.is_open(), "focus loss replaces legacy menu with visible shared pause")
+	check(v.primary_touch==-99 and v.touch_axis==0 and not v.queued_jump and v.jump_buffer_ticks==0 and v.held_screen_axis==0 and v.held_route_direction==0, "focus loss clears held touch, direction and buffered jump")
+	check(v.input_rearm_keys.has(KEY_D) and v.input_rearm_keys.has(KEY_SPACE), "held keyboard movement and jump require release")
+	var paused_tick: int=v.model.tick
+	var paused_player: Vector2=v.model.player
+	v._physics_process(1.0)
+	key(KEY_D, true)
+	check(v.model.tick==paused_tick and v.model.player==paused_player and not v.queued_jump, "paused physics and key input cannot advance or queue a jump")
+	root.focus_entered.emit()
+	check(v.focus_paused and not v.active and v.shared_pause_overlay.is_open(), "focus return still requires explicit Continue")
+	click(v.shared_pause_overlay.resume_button)
+	check(v.active and not v.focus_paused and not v.shared_pause_overlay.is_open(), "reachable shared Continue resumes the same run")
+	check(v.model.tick==paused_tick and v.model.player==paused_player, "Continue does not reset model state")
+	v._physics_process(1.0/60.0)
+	check(v.model.last_input==0 and not v.queued_jump, "keys held through Continue cannot move or jump")
+	var resumed_tick: int=v.model.tick
+	v.shared_pause_overlay.resume_button.pressed.emit()
+	check(v.active and v.model.tick==resumed_tick, "repeat Continue cannot restart or pause")
+	key(KEY_D, false); key(KEY_SPACE, false)
+	key(KEY_D, true); key(KEY_SPACE, true)
+	v._physics_process(1.0/60.0)
+	check((v.model.last_input & Model.RIGHT)!=0 and (v.model.last_input & Model.JUMP)!=0, "release and fresh press restore movement and jump")
+	key(KEY_D, false); key(KEY_SPACE, false)
+	key(KEY_ESCAPE, true); key(KEY_ESCAPE, false)
+	check(v.focus_paused and v.shared_pause_overlay.is_open(), "Escape opens shared stair pause")
+	check(v.shared_pause_overlay.action_buttons.size()==1 and v.shared_pause_overlay.action_buttons[0].text==v.pause_exit_button.text, "shared pause retains only the authored exit")
+	click(v.shared_pause_overlay.action_buttons[0])
+	check(exit_count==1 and finish_count==0 and not v.active and not v.focus_paused and not v.shared_pause_overlay.is_open(), "reachable exit follows original exit signal without completion")
+	check(v.viewport.render_target_update_mode==SubViewport.UPDATE_DISABLED, "exit retains original viewport shutdown")
 	v.active=false
 	var positions: Array=[]
 	for route in d.routes:

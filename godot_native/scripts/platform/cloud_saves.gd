@@ -1,6 +1,7 @@
 extends CanvasLayer
 ## The native coordinator owns profile selection. JavaScript is fixed HTTP/disk transport only.
 signal status_changed
+const TreePauseLease=preload("res://scripts/platform/tree_pause_lease.gd")
 const Storage=preload("res://scripts/platform/profile_storage.gd")
 const NativeUi=preload("res://scripts/ui/native_ui_theme.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
@@ -53,6 +54,8 @@ func _ready() -> void:
 	_boot.call_deferred()
 
 func _build_surface() -> void:
+	# This autoload is outside Main, but its navigation belongs to the same UI.
+	set_meta("paper_ink_scope",true)
 	_cover=ColorRect.new();_cover.color=Color(0.03,0.07,0.09,0.9)
 	_cover.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);_cover.mouse_filter=Control.MOUSE_FILTER_STOP;add_child(_cover)
 	var center:=CenterContainer.new();center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);_cover.add_child(center)
@@ -81,7 +84,9 @@ func _show(message: String, choices: Array=[]) -> void:
 	_set_status(_dialog_status)
 
 func _pause() -> void:
-	if not get_tree().paused: _owns_pause=true;get_tree().paused=true
+	if not _owns_pause:
+		TreePauseLease.begin(get_tree(),self);_owns_pause=true
+	TreePauseLease.enforce(get_tree())
 
 func _set_status(value: String) -> void:
 	status_text=value;status_changed.emit()
@@ -90,7 +95,8 @@ func _set_status(value: String) -> void:
 
 func _resume() -> void:
 	ready_for_play=true;_cover.hide()
-	if _owns_pause: _owns_pause=false;get_tree().paused=false
+	if _owns_pause:
+		_owns_pause=false;TreePauseLease.release(get_tree(),self)
 	status_changed.emit()
 
 func can_enter() -> bool:
@@ -388,11 +394,15 @@ func flush() -> void:
 	var captured: Dictionary=State.capture_cloud_bundle()
 	if not captured.get("ok",false): _busy=false;_failure(captured);return
 	var captured_digest:=_digest(captured.bundle)
-	if _pending.is_empty() and captured_digest==_last_local_digest:
-		_dirty=false;_busy=false;_transport.pending(false);return
 	var persisted: bool=await _persist(captured)
 	if generation!=_epoch: return
 	if not persisted: _busy=false;_failure({"error":"本机存档尚未确认写入，暂时不要刷新，请重试。"});return
+	if _pending.is_empty() and captured_digest==_last_local_digest:
+		# The server already acknowledged these exact game bytes, but the local
+		# write above still needs its own durability confirmation.
+		_dirty=false;_busy=false;_transport.pending(false)
+		_set_status("云端已保存 · "+_saved_time(str(head.get("current",{}).get("savedAt",""))))
+		return
 	_set_status("正在上传账号进度…")
 	var result: Dictionary=await _upload(captured)
 	if generation!=_epoch: return
@@ -416,6 +426,14 @@ func save_now() -> void:
 		if scene!=null and scene.get("web_platform")!=null: scene.web_platform.request_save()
 		return
 	if not State.save_game(): _failure({"error":"当前进度不能保存。"});return
+	var generation:=_epoch
+	var started:=Time.get_ticks_msec()
+	# Join an automatic upload before flushing the newest local bytes.
+	while _busy and generation==_epoch:
+		if Time.get_ticks_msec()-started>180000:
+			_failure({"error":"保存仍未完成，请重试；本机进度已保留。"});return
+		await get_tree().process_frame
+	if generation!=_epoch: return
 	await flush()
 	status_changed.emit()
 
@@ -430,7 +448,9 @@ func show_manager() -> void:
 	choices.append(["重新开始",request_restart])
 	choices.append(["导出个人备份",_export])
 	choices.append(["重新连接 / 检查账号",_boot])
-	_show(status_text+"\n"+_summary(head.get("current"),"账号云存档"),choices)
+	var current_status:=status_text
+	_show(_summary(head.get("current"),"账号云存档"),choices)
+	_set_status(current_status)
 
 func _continue_current() -> void:
 	if member_id.is_empty(): _resume();return
@@ -550,3 +570,7 @@ func _process(delta: float) -> void:
 	if _dirty:
 		_quiet+=delta;_dirty_age+=delta
 		if _quiet>=2 or _dirty_age>=10: flush()
+
+func _exit_tree() -> void:
+	if _owns_pause:
+		_owns_pause=false;TreePauseLease.release(get_tree(),self)

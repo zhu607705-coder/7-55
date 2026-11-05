@@ -36,7 +36,7 @@ func run()->void:
  check(unattended_contacts.any(func(c):return c.get("demonstration",false)),"the untouched window visibly rebounds a background word before the target miss")
  var clock=m.clock;var positions=m.cards.duplicate(true);advance(m,10)
  check(m.clock==clock and m.cards==positions,"hint reading freezes word positions and never charges a second failure")
- m.continue_stage();check(m.phase=="search" and m.completed_stages==0,"continuation resumes this stage without granting progress")
+ m.continue_stage();check(m.phase=="clue" and m.clue_elapsed==0 and m.completed_stages==0,"explicit retry replays this round clue without granting progress")
  # Complete stages using only target movement and the model's real collision clock.
  for tries in range(20):
   drive(m)
@@ -46,7 +46,7 @@ func run()->void:
  check(m.contacts.size()>=6,"successful play has at least six actual word/window contacts")
  check(m.captures.size()==6 and m.captures.map(func(c):return c.stage)==[0,1,1,2,2,2],"only the six authored targets produce captures in three stages")
  check(m.captures.all(func(c):return c.age>=.5 and c.age<1.1),"key targets retain the original 0.5 to 1.1 second reaction interval despite faster paragraph transitions")
- check(m.captures.filter(func(c):return c.stage==2).map(func(c):return c.word)==["旁白","还没","说完"],"the final three captures reconstruct the authored sentence in order")
+ check(m.captures.filter(func(c):return c.stage==2).map(func(c):return c.word)==content.stages[2].targets,"the final three captures reconstruct the authored sentence in order")
  var author=ProjectSettings.globalize_path("res://../src/data/prologue-interception.content.json")
  check(FileAccess.get_file_as_string(author)==FileAccess.get_file_as_string("res://data/native/prologue-interception.content.json"),"native clue JSON exactly matches its sole authored Web source")
  var happy=fresh();drive(happy)
@@ -57,19 +57,21 @@ func run()->void:
  n.set_review(false);n.continue_stage()
  # Fixture local physics only: inject cards to exercise semantic rejection at a real contact.
  var p=fresh();p.stage=2;p.completed_stages=2;p.phase="search";p.moved_distance=10
- var card={"id":90,"text":"还没","target":true,"position":Vector2(215,580),"size":Vector2(80,48),"angle":0.0,"velocity":Vector2(0,5000),"resolved":false,"life":.55,"age":0.0}
+ var card={"id":90,"text":content.stages[2].targets[1],"target":true,"position":Vector2(215,580),"size":Vector2(80,48),"angle":0.0,"velocity":Vector2(0,5000),"resolved":false,"life":.55,"age":0.0}
  p.cards=[card];p.spawn_clock=0;p.advance(.02)
  check(p.phase=="hint" and p.hint.reason=="order" and p.collected.is_empty(),"blocking a future sentence fragment cannot replace the next required fragment")
- p.collected=["旁白"];p.continue_stage()
- check(p.stage==2 and p.completed_stages==2 and p.collected==["旁白"],"failure continuation keeps both earlier stages and current-stage collected words")
- check(p.missing()==["还没","说完"],"only missing words remain after continuation")
+ p.collected=[content.stages[2].targets[0]];p.continue_stage()
+ check(p.stage==2 and p.completed_stages==2 and p.collected.is_empty() and p.phase=="clue","explicit retry keeps earlier stages but clears the failed round")
+ check(p.missing()==content.stages[2].targets,"all failed-round fragments must be earned again")
  advance(p,.72)
- check(p.cards.size()==1 and p.cards[0].text=="还没","continuation emits a missing next fragment rather than an already retained word")
+ check(p.cards.is_empty() and p.phase=="clue","retry replays the clue before emitting a fresh round")
+ advance(p,p.clue_duration())
+ check(p.cards.all(func(c):return not c.target) and p.released_words.is_empty(),"retry starts the deck with its decoys instead of skipping to a future target")
  var q=fresh();q.phase="search";q.moved_distance=10
- var wrong=card.duplicate(true);wrong.text="走";wrong.position=Vector2(215,580);wrong.velocity=Vector2(0,5000);wrong.resolved=false;q.cards=[wrong];q.advance(.02)
+ var wrong=card.duplicate(true);wrong.text=content.stages[0].distractors[0];wrong.position=Vector2(215,580);wrong.velocity=Vector2(0,5000);wrong.resolved=false;q.cards=[wrong];q.advance(.02)
  check(q.phase=="hint" and q.hint.reason=="meaning" and q.collected.is_empty(),"a real collision with the wrong word does not count as semantic success")
  for tier in [2,3,3]:
-  q.continue_stage();wrong=wrong.duplicate(true);wrong.position=Vector2(q.board_x,580);wrong.resolved=false;wrong.velocity=Vector2(0,5000);q.cards=[wrong];q.advance(.02)
+  q.continue_stage();q.begin_search();wrong=wrong.duplicate(true);wrong.position=Vector2(q.board_x,580);wrong.resolved=false;wrong.velocity=Vector2(0,5000);q.cards=[wrong];q.advance(.02)
   check(q.hint.get("tier",0)==tier and q.completed_stages==0,"hint tier escalates without resetting or auto-completing a stage")
  var retained=q.collected.duplicate();q.continue_stage();q.set_target(-900);advance(q,.5)
  check(q.board_x>=104 and q.board_target==104,"window remains inside source-space arena at its left extreme")
@@ -78,5 +80,5 @@ func run()->void:
  var report=OS.get_environment("PROLOGUE_WORD_REPORT")
  if not report.is_empty():
   var file=FileAccess.open(report,FileAccess.WRITE)
-  file.store_string(JSON.stringify({"checks":checks,"failures":failures,"captures":m.captures,"activeClockSeconds":m.clock,"sourceCardStartY":294,"targetSpeeds":[360,390,420],"stageSpawnIntervalsMs":[950,950,950],"firstSpawnMs":350,"retrySpawnMs":700,"stageTransitionMs":280,"minObservedCaptureReadableSeconds":m.captures.map(func(c):return c.age).min(),"initialNoInputContacts":unattended_contacts},"  "))
+  file.store_string(JSON.stringify({"checks":checks,"failures":failures,"captures":m.captures,"activeClockSeconds":m.clock,"sourceCardStartY":294,"targetSpeeds":[360,390,420],"stageSpawnIntervalsMs":[950,950,950],"firstSpawnMs":350,"retryReplaysClue":true,"stageTransitionMs":280,"minObservedCaptureReadableSeconds":m.captures.map(func(c):return c.age).min(),"initialNoInputContacts":unattended_contacts},"  "))
  print("PROLOGUE_WORD_MODEL: %d checks; %d failures"%[checks,failures]);quit(1 if failures else 0)

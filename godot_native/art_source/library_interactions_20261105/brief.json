@@ -1,0 +1,42 @@
+{
+  "schema": "library-interaction-generation-v1",
+  "tool": "built-in image_gen",
+  "modelExposed": false,
+  "family": "library_interactions_16",
+  "jobs": [
+    {
+      "id": "backpack",
+      "prompt": "Use case: identity-preserve. Production transparent 2D animation sprite sheet for 7:55 library. Match references exactly: fine pixel art, orthographic oblique top-down RPG, warm upper-left light, crisp structural color clusters, limited ink/navy/teal/brass/cream palette, quiet details, NO stipple/no grain, NO glow. Exactly 4 columns x 4 rows, 16 equal square cells in a square image. Each cell has one fully isolated complete subject with identical camera, scale, silhouette volume and registration anchor, generous transparent padding, no cell borders. Read left-to-right then top-to-bottom. Genuine transparent alpha, no scenery/shadows outside subject, no text labels/watermark. In-place animation only; no object translation between cells. Subject: the same navy blue two-pocket backpack with brass zips and top handle as reference1. No person/hands. Keep zipper seams and patches fixed on the fabric across all frames. Show the same front-oblique view at ALL frames, fixed bottom center. Row1 frames0-3: closed calm bag, tiny fabric anticipation, small side-pocket unzip; row2 frames4-7: the right side pocket gradually opens and fabric folds realistically; row3 frames8-11: a folded cream note becomes partially visible emerging from that side pocket, bag leans slightly but base stays registered; row4 frames12-15: cloth settles with side pocket open and cream note tucked visibly just inside lip. Note remains attached to side pocket (not detached in air). Stable blue-black broad fabric planes, no random pattern drift. Bag fills70% cell height, all straps remain attached.",
+      "references": [
+        "godot_native/assets/native/library_object_depth_20261104/backpack.png",
+        "godot_native/art_source/library_animation_20261105/preview_book.png"
+      ]
+    },
+    {
+      "id": "paper",
+      "prompt": "Use case: identity-preserve. Production transparent 2D animation sprite sheet for 7:55 library. Match references exactly: fine pixel art, orthographic oblique top-down RPG, warm upper-left light, crisp structural color clusters, limited ink/navy/teal/brass/cream palette, quiet details, NO stipple/no grain, NO glow. Exactly 4 columns x 4 rows, 16 equal square cells in a square image. Each cell has one fully isolated complete subject with identical camera, scale, silhouette volume and registration anchor, generous transparent padding, no cell borders. Read left-to-right then top-to-bottom. Genuine transparent alpha, no scenery/shadows outside subject, no text labels/watermark. In-place animation only; no object translation between cells. Subject: one small aged cream folded occupancy note, no hands, no book, no other objects. Reference is material/color/style only. Fixed paper center, front-oblique view shallow angle like a paper lying on a library desk. Same external 4:3 rectangular extent at all frames, filling70% cell width. Frames0-3: compact folded note with one lifted flap; frames4-7: flap gradually opens on real crease; frames8-11: note unfolds into a flat rectangular sheet with restrained crease bounce; frames12-15: unfolded sheet settles, final frame fully flat. Folding must be physically hinged, no rubber sheet, no torn/confetti particles. Sparse short ink strokes like illegible handwriting only, no generated readable words/numbers; actual clue text will be drawn in engine. Paper ivory, muted ochre fold shadows, fine dark olive edge. Preserve page corners and ink registration.",
+      "references": [
+        "godot_native/art_source/library_animation_20261105/preview_book.png"
+      ]
+    },
+    {
+      "id": "staff",
+      "prompt": "Use case: identity-preserve. Production transparent 2D animation sprite sheet for 7:55 library. Match references exactly: fine pixel art, orthographic oblique top-down RPG, warm upper-left light, crisp structural color clusters, limited ink/navy/teal/brass/cream palette, quiet details, NO stipple/no grain, NO glow. Exactly 4 columns x 4 rows, 16 equal square cells in a square image. Each cell has one fully isolated complete subject with identical camera, scale, silhouette volume and registration anchor, generous transparent padding, no cell borders. Read left-to-right then top-to-bottom. Genuine transparent alpha, no scenery/shadows outside subject, no text labels/watermark. In-place animation only; no object translation between cells. Subject: exactly same female library receptionist in reference1, black hair in high bun, light cream long-sleeve blouse, dark teal fitted vest, dark trousers and black shoes, original face/person identity. Reference2 sets pixel-density/style only, NOT clothing/identity. Full body in every cell fixed feet bottom center, same front-facing shallow top-down view. No desk/background. Row1 frames0-3: calm attentive idle, blink, slight chin lift responding to visitor; row2 frames4-7: lift right hand and extend open palm to receive a document, left hand remains at waist; row3 frames8-11: draw right hand back and nod once while checking an implied document, no floating props; row4 frames12-15: right hand grasping one small brown wooden rubber stamp, raise stamp, controlled downward stamping gesture, settle back to neutral in final cell. Keep head/bun, sleeves and vest seams fixed between frames, no breathing size changes, no caricature, no extra fingers/hands. Hands visible at chest/waist height to read above game counter.",
+      "references": [
+        "src/assets/rpg/npcs/library/front_desk_staff_2frame.png",
+        "godot_native/art_source/library_animation_20261105/preview_down.png"
+      ]
+    }
+  ],
+  "paperRevisionPrompt": "Edit the reference sprite sheet, preserve 4x4 grid, cream/ochre/ink palette and transparent background, replace ONLY the paper objects with an unmistakable single loose sheet of thin stationery unfolding. It is NOT a book: NO cover, NO binding, NO spine, NO stacked pages, NO page block, NO booklet. Exactly 16 evenly spaced sequential cells, one isolated loose sheet per cell. Fine structural pixel art, quiet solid color clusters, no grain, no surrounding glow or edge confetti. Frame0 small folded rectangular note, frames1-7 one flap opens about a real crease, frames8-13 a second fold flattens, frames14-15 one flat single sheet with two crease lines and very sparse illegible handwritten strokes. Orthographic shallow top-down view, fixed center, fixed scale, generous transparent padding, no hands, labels, shadows or background. Paper must be paper-thin, not solid blocks, show a floppy curled corner only. Actual transparency.",
+  "runtimeUse": {
+    "backpack": "empty-pocket frames 0-7; note is a separate interactive object",
+    "paper": "all 16; reversed subset on pickup",
+    "staff": "frames 0-11; held-stamp alternates retained as source only; original physical stamp owns contact and ink"
+  },
+  "constraints": [
+    "no collision, save or story authority changes",
+    "palette normalized; fixed per-family scale and anchors",
+    "chapter2 deferred family"
+  ]
+}

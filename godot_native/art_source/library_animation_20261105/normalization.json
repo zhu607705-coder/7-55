@@ -1,0 +1,581 @@
+{
+	"actors": {
+		"down": {
+			"frames": [
+				{
+					"baseline": 160,
+					"frame": 0,
+					"headCenterX": 139.0,
+					"masterInk": "Rect2i(27, 24, 64, 136)",
+					"source": "Rect2i(82, 48, 112, 239)"
+				},
+				{
+					"baseline": 160,
+					"frame": 1,
+					"headCenterX": 134.0,
+					"masterInk": "Rect2i(28, 24, 64, 136)",
+					"source": "Rect2i(78, 49, 112, 238)"
+				},
+				{
+					"baseline": 160,
+					"frame": 2,
+					"headCenterX": 128.0,
+					"masterInk": "Rect2i(28, 26, 65, 134)",
+					"source": "Rect2i(72, 50, 114, 235)"
+				},
+				{
+					"baseline": 160,
+					"frame": 3,
+					"headCenterX": 122.0,
+					"masterInk": "Rect2i(28, 32, 64, 128)",
+					"source": "Rect2i(66, 50, 112, 225)"
+				},
+				{
+					"baseline": 160,
+					"frame": 4,
+					"headCenterX": 115.0,
+					"masterInk": "Rect2i(29, 24, 64, 136)",
+					"source": "Rect2i(60, 49, 112, 239)"
+				},
+				{
+					"baseline": 160,
+					"frame": 5,
+					"headCenterX": 140.0,
+					"masterInk": "Rect2i(29, 28, 64, 132)",
+					"source": "Rect2i(86, 48, 112, 232)"
+				},
+				{
+					"baseline": 160,
+					"frame": 6,
+					"headCenterX": 135.0,
+					"masterInk": "Rect2i(29, 30, 63, 130)",
+					"source": "Rect2i(80, 49, 111, 228)"
+				},
+				{
+					"baseline": 160,
+					"frame": 7,
+					"headCenterX": 128.0,
+					"masterInk": "Rect2i(27, 26, 65, 134)",
+					"source": "Rect2i(71, 49, 114, 235)"
+				},
+				{
+					"baseline": 160,
+					"frame": 8,
+					"headCenterX": 122.0,
+					"masterInk": "Rect2i(27, 25, 63, 135)",
+					"source": "Rect2i(65, 49, 111, 236)"
+				},
+				{
+					"baseline": 160,
+					"frame": 9,
+					"headCenterX": 116.0,
+					"masterInk": "Rect2i(27, 27, 66, 133)",
+					"source": "Rect2i(59, 51, 115, 234)"
+				},
+				{
+					"baseline": 160,
+					"frame": 10,
+					"headCenterX": 140.0,
+					"masterInk": "Rect2i(29, 28, 64, 132)",
+					"source": "Rect2i(85, 50, 112, 231)"
+				},
+				{
+					"baseline": 160,
+					"frame": 11,
+					"headCenterX": 135.0,
+					"masterInk": "Rect2i(29, 24, 63, 136)",
+					"source": "Rect2i(80, 50, 111, 238)"
+				},
+				{
+					"baseline": 160,
+					"frame": 12,
+					"headCenterX": 128.0,
+					"masterInk": "Rect2i(28, 24, 63, 136)",
+					"source": "Rect2i(72, 50, 111, 238)"
+				},
+				{
+					"baseline": 160,
+					"frame": 13,
+					"headCenterX": 122.0,
+					"masterInk": "Rect2i(28, 24, 64, 136)",
+					"source": "Rect2i(66, 50, 112, 239)"
+				},
+				{
+					"baseline": 160,
+					"frame": 14,
+					"headCenterX": 115.0,
+					"masterInk": "Rect2i(29, 31, 64, 129)",
+					"source": "Rect2i(60, 50, 112, 226)"
+				},
+				{
+					"baseline": 160,
+					"frame": 15,
+					"headCenterX": 140.0,
+					"masterInk": "Rect2i(30, 26, 64, 134)",
+					"source": "Rect2i(87, 49, 112, 235)"
+				},
+				{
+					"baseline": 160,
+					"frame": 16,
+					"headCenterX": 135.0,
+					"masterInk": "Rect2i(29, 29, 63, 131)",
+					"source": "Rect2i(80, 50, 110, 230)"
+				},
+				{
+					"baseline": 160,
+					"frame": 17,
+					"headCenterX": 128.0,
+					"masterInk": "Rect2i(29, 29, 63, 131)",
+					"source": "Rect2i(73, 50, 110, 230)"
+				},
+				{
+					"baseline": 160,
+					"frame": 18,
+					"headCenterX": 122.0,
+					"masterInk": "Rect2i(29, 29, 63, 131)",
+					"source": "Rect2i(68, 50, 110, 230)"
+				},
+				{
+					"baseline": 160,
+					"frame": 19,
+					"headCenterX": 116.0,
+					"masterInk": "Rect2i(29, 29, 63, 131)",
+					"source": "Rect2i(61, 50, 111, 230)"
+				}
+			],
+			"masterSize": [
+				120,
+				160
+			],
+			"runtimeSize": [
+				96,
+				128
+			],
+			"sharedScale": 0.570212765957447,
+			"sourceSize": "Vector2i(1254, 1254)",
+			"uniqueWalkFrames": 16
+		},
+		"side": {
+			"frames": [
+				{
+					"baseline": 160,
+					"frame": 0,
+					"headCenterX": 135.0,
+					"masterInk": "Rect2i(32, 25, 54, 135)",
+					"source": "Rect2i(86, 49, 93, 233)"
+				},
+				{
+					"baseline": 160,
+					"frame": 1,
+					"headCenterX": 132.0,
+					"masterInk": "Rect2i(32, 27, 54, 133)",
+					"source": "Rect2i(83, 49, 93, 230)"
+				},
+				{
+					"baseline": 160,
+					"frame": 2,
+					"headCenterX": 130.0,
+					"masterInk": "Rect2i(32, 28, 54, 132)",
+					"source": "Rect2i(81, 49, 93, 228)"
+				},
+				{
+					"baseline": 160,
+					"frame": 3,
+					"headCenterX": 127.0,
+					"masterInk": "Rect2i(26, 28, 60, 132)",
+					"source": "Rect2i(68, 49, 103, 228)"
+				},
+				{
+					"baseline": 160,
+					"frame": 4,
+					"headCenterX": 124.0,
+					"masterInk": "Rect2i(22, 26, 68, 134)",
+					"source": "Rect2i(58, 49, 118, 231)"
+				},
+				{
+					"baseline": 160,
+					"frame": 5,
+					"headCenterX": 136.0,
+					"masterInk": "Rect2i(28, 27, 57, 133)",
+					"source": "Rect2i(80, 50, 99, 229)"
+				},
+				{
+					"baseline": 160,
+					"frame": 6,
+					"headCenterX": 132.0,
+					"masterInk": "Rect2i(33, 27, 53, 133)",
+					"source": "Rect2i(85, 50, 91, 229)"
+				},
+				{
+					"baseline": 160,
+					"frame": 7,
+					"headCenterX": 129.0,
+					"masterInk": "Rect2i(32, 25, 53, 135)",
+					"source": "Rect2i(81, 50, 92, 232)"
+				},
+				{
+					"baseline": 160,
+					"frame": 8,
+					"headCenterX": 127.0,
+					"masterInk": "Rect2i(31, 28, 55, 132)",
+					"source": "Rect2i(77, 50, 94, 228)"
+				},
+				{
+					"baseline": 160,
+					"frame": 9,
+					"headCenterX": 124.0,
+					"masterInk": "Rect2i(23, 26, 64, 134)",
+					"source": "Rect2i(61, 50, 110, 231)"
+				},
+				{
+					"baseline": 160,
+					"frame": 10,
+					"headCenterX": 136.0,
+					"masterInk": "Rect2i(25, 25, 62, 135)",
+					"source": "Rect2i(76, 49, 107, 232)"
+				},
+				{
+					"baseline": 160,
+					"frame": 11,
+					"headCenterX": 132.0,
+					"masterInk": "Rect2i(32, 27, 53, 133)",
+					"source": "Rect2i(84, 50, 92, 229)"
+				},
+				{
+					"baseline": 160,
+					"frame": 12,
+					"headCenterX": 130.0,
+					"masterInk": "Rect2i(32, 26, 54, 134)",
+					"source": "Rect2i(81, 50, 93, 231)"
+				},
+				{
+					"baseline": 160,
+					"frame": 13,
+					"headCenterX": 127.0,
+					"masterInk": "Rect2i(32, 28, 53, 132)",
+					"source": "Rect2i(79, 49, 92, 228)"
+				},
+				{
+					"baseline": 160,
+					"frame": 14,
+					"headCenterX": 124.0,
+					"masterInk": "Rect2i(23, 29, 70, 131)",
+					"source": "Rect2i(60, 50, 121, 226)"
+				},
+				{
+					"baseline": 160,
+					"frame": 15,
+					"headCenterX": 136.0,
+					"masterInk": "Rect2i(24, 27, 68, 133)",
+					"source": "Rect2i(74, 50, 118, 229)"
+				},
+				{
+					"baseline": 160,
+					"frame": 16,
+					"headCenterX": 132.0,
+					"masterInk": "Rect2i(33, 25, 53, 135)",
+					"source": "Rect2i(85, 50, 91, 232)"
+				},
+				{
+					"baseline": 160,
+					"frame": 17,
+					"headCenterX": 129.0,
+					"masterInk": "Rect2i(32, 26, 53, 134)",
+					"source": "Rect2i(81, 50, 92, 231)"
+				},
+				{
+					"baseline": 160,
+					"frame": 18,
+					"headCenterX": 127.0,
+					"masterInk": "Rect2i(32, 25, 53, 135)",
+					"source": "Rect2i(79, 50, 92, 232)"
+				},
+				{
+					"baseline": 160,
+					"frame": 19,
+					"headCenterX": 124.0,
+					"masterInk": "Rect2i(32, 26, 53, 134)",
+					"source": "Rect2i(76, 50, 92, 231)"
+				}
+			],
+			"masterSize": [
+				120,
+				160
+			],
+			"runtimeSize": [
+				96,
+				128
+			],
+			"sharedScale": 0.58008658008658,
+			"sourceSize": "Vector2i(1254, 1254)",
+			"uniqueWalkFrames": 16
+		},
+		"up": {
+			"frames": [
+				{
+					"baseline": 160,
+					"frame": 0,
+					"headCenterX": 138.0,
+					"masterInk": "Rect2i(29, 25, 62, 135)",
+					"source": "Rect2i(83, 51, 109, 236)"
+				},
+				{
+					"baseline": 160,
+					"frame": 1,
+					"headCenterX": 131.0,
+					"masterInk": "Rect2i(29, 25, 62, 135)",
+					"source": "Rect2i(77, 51, 109, 236)"
+				},
+				{
+					"baseline": 160,
+					"frame": 2,
+					"headCenterX": 126.0,
+					"masterInk": "Rect2i(30, 25, 60, 135)",
+					"source": "Rect2i(73, 50, 106, 237)"
+				},
+				{
+					"baseline": 160,
+					"frame": 3,
+					"headCenterX": 121.0,
+					"masterInk": "Rect2i(28, 25, 63, 135)",
+					"source": "Rect2i(65, 50, 110, 237)"
+				},
+				{
+					"baseline": 160,
+					"frame": 4,
+					"headCenterX": 115.0,
+					"masterInk": "Rect2i(28, 25, 64, 135)",
+					"source": "Rect2i(59, 51, 112, 236)"
+				},
+				{
+					"baseline": 160,
+					"frame": 5,
+					"headCenterX": 139.0,
+					"masterInk": "Rect2i(27, 27, 65, 133)",
+					"source": "Rect2i(81, 50, 114, 233)"
+				},
+				{
+					"baseline": 160,
+					"frame": 6,
+					"headCenterX": 132.0,
+					"masterInk": "Rect2i(29, 26, 64, 134)",
+					"source": "Rect2i(78, 50, 112, 235)"
+				},
+				{
+					"baseline": 160,
+					"frame": 7,
+					"headCenterX": 126.0,
+					"masterInk": "Rect2i(30, 28, 60, 132)",
+					"source": "Rect2i(74, 51, 105, 231)"
+				},
+				{
+					"baseline": 160,
+					"frame": 8,
+					"headCenterX": 121.0,
+					"masterInk": "Rect2i(30, 31, 60, 129)",
+					"source": "Rect2i(68, 51, 105, 226)"
+				},
+				{
+					"baseline": 160,
+					"frame": 9,
+					"headCenterX": 116.0,
+					"masterInk": "Rect2i(28, 25, 62, 135)",
+					"source": "Rect2i(60, 52, 108, 236)"
+				},
+				{
+					"baseline": 160,
+					"frame": 10,
+					"headCenterX": 139.0,
+					"masterInk": "Rect2i(29, 25, 62, 135)",
+					"source": "Rect2i(84, 50, 108, 237)"
+				},
+				{
+					"baseline": 160,
+					"frame": 11,
+					"headCenterX": 133.0,
+					"masterInk": "Rect2i(29, 25, 62, 135)",
+					"source": "Rect2i(78, 51, 108, 236)"
+				},
+				{
+					"baseline": 160,
+					"frame": 12,
+					"headCenterX": 126.0,
+					"masterInk": "Rect2i(30, 27, 60, 133)",
+					"source": "Rect2i(74, 50, 105, 234)"
+				},
+				{
+					"baseline": 160,
+					"frame": 13,
+					"headCenterX": 122.0,
+					"masterInk": "Rect2i(30, 34, 60, 126)",
+					"source": "Rect2i(70, 50, 106, 221)"
+				},
+				{
+					"baseline": 160,
+					"frame": 14,
+					"headCenterX": 115.0,
+					"masterInk": "Rect2i(29, 25, 64, 135)",
+					"source": "Rect2i(60, 50, 112, 237)"
+				},
+				{
+					"baseline": 160,
+					"frame": 15,
+					"headCenterX": 139.0,
+					"masterInk": "Rect2i(27, 27, 63, 133)",
+					"source": "Rect2i(82, 50, 111, 234)"
+				},
+				{
+					"baseline": 160,
+					"frame": 16,
+					"headCenterX": 132.0,
+					"masterInk": "Rect2i(30, 27, 61, 133)",
+					"source": "Rect2i(79, 51, 107, 233)"
+				},
+				{
+					"baseline": 160,
+					"frame": 17,
+					"headCenterX": 126.0,
+					"masterInk": "Rect2i(30, 28, 60, 132)",
+					"source": "Rect2i(73, 51, 106, 232)"
+				},
+				{
+					"baseline": 160,
+					"frame": 18,
+					"headCenterX": 121.0,
+					"masterInk": "Rect2i(30, 27, 62, 133)",
+					"source": "Rect2i(68, 51, 108, 233)"
+				},
+				{
+					"baseline": 160,
+					"frame": 19,
+					"headCenterX": 116.0,
+					"masterInk": "Rect2i(30, 28, 62, 132)",
+					"source": "Rect2i(63, 51, 108, 232)"
+				}
+			],
+			"masterSize": [
+				120,
+				160
+			],
+			"runtimeSize": [
+				96,
+				128
+			],
+			"sharedScale": 0.570212765957447,
+			"sourceSize": "Vector2i(1254, 1254)",
+			"uniqueWalkFrames": 16
+		}
+	},
+	"book": {
+		"cell": [
+			192,
+			160
+		],
+		"frames": 16,
+		"height": 110,
+		"pivot": [
+			80,
+			154
+		],
+		"rows": [
+			{
+				"frame": 0,
+				"ink": "Rect2i(72, 46, 16, 108)",
+				"pivotFraction": 0.5,
+				"source": "Rect2i(144, 56, 37, 248)"
+			},
+			{
+				"frame": 1,
+				"ink": "Rect2i(77, 45, 27, 109)",
+				"pivotFraction": 0.1,
+				"source": "Rect2i(124, 54, 62, 250)"
+			},
+			{
+				"frame": 2,
+				"ink": "Rect2i(76, 44, 36, 110)",
+				"pivotFraction": 0.1,
+				"source": "Rect2i(103, 52, 83, 252)"
+			},
+			{
+				"frame": 3,
+				"ink": "Rect2i(76, 42, 54, 112)",
+				"pivotFraction": 0.08,
+				"source": "Rect2i(82, 48, 123, 256)"
+			},
+			{
+				"frame": 4,
+				"ink": "Rect2i(76, 43, 61, 111)",
+				"pivotFraction": 0.07,
+				"source": "Rect2i(92, 49, 140, 254)"
+			},
+			{
+				"frame": 5,
+				"ink": "Rect2i(75, 43, 66, 111)",
+				"pivotFraction": 0.07,
+				"source": "Rect2i(80, 49, 151, 254)"
+			},
+			{
+				"frame": 6,
+				"ink": "Rect2i(75, 43, 72, 111)",
+				"pivotFraction": 0.07,
+				"source": "Rect2i(67, 49, 164, 254)"
+			},
+			{
+				"frame": 7,
+				"ink": "Rect2i(74, 43, 80, 111)",
+				"pivotFraction": 0.07,
+				"source": "Rect2i(55, 49, 183, 254)"
+			},
+			{
+				"frame": 8,
+				"ink": "Rect2i(74, 45, 83, 109)",
+				"pivotFraction": 0.07,
+				"source": "Rect2i(69, 52, 190, 249)"
+			},
+			{
+				"frame": 9,
+				"ink": "Rect2i(74, 45, 84, 109)",
+				"pivotFraction": 0.07,
+				"source": "Rect2i(61, 52, 192, 249)"
+			},
+			{
+				"frame": 10,
+				"ink": "Rect2i(67, 45, 84, 109)",
+				"pivotFraction": 0.16,
+				"source": "Rect2i(52, 51, 193, 250)"
+			},
+			{
+				"frame": 11,
+				"ink": "Rect2i(53, 45, 92, 109)",
+				"pivotFraction": 0.29,
+				"source": "Rect2i(38, 51, 210, 250)"
+			},
+			{
+				"frame": 12,
+				"ink": "Rect2i(40, 44, 99, 110)",
+				"pivotFraction": 0.4,
+				"source": "Rect2i(46, 48, 226, 252)"
+			},
+			{
+				"frame": 13,
+				"ink": "Rect2i(32, 42, 104, 112)",
+				"pivotFraction": 0.46,
+				"source": "Rect2i(35, 43, 238, 257)"
+			},
+			{
+				"frame": 14,
+				"ink": "Rect2i(27, 52, 107, 102)",
+				"pivotFraction": 0.5,
+				"source": "Rect2i(24, 66, 244, 234)"
+			},
+			{
+				"frame": 15,
+				"ink": "Rect2i(22, 57, 117, 97)",
+				"pivotFraction": 0.5,
+				"source": "Rect2i(3, 68, 269, 222)"
+			}
+		],
+		"sharedScale": 0.436507936507937
+	},
+	"schema": "library-animation-import-v1"
+}

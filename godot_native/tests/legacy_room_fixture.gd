@@ -30,11 +30,15 @@ static func read(owner:Node,source_path:String,check:Callable)->Dictionary:
 	var upgraded:Dictionary=loaded.state
 	check.call(owner.validate_snapshot(upgraded),"Migrated room fixture passes strict current-version validation")
 	var preserved:Dictionary=upgraded.duplicate(true)
-	for pair:Array in [["actOne","tiyiUpdateStage"],["ui","homeDeskReturnScene"],["qizhenLake","legacyNetMaterialsConsumed"]]:
+	for pair:Array in [["actOne","tiyiUpdateStage"],["ui","homeDeskReturnScene"],["qizhenLake","legacyNetMaterialsConsumed"],["ui","brightnessRevision"],["ui","brightnessUserAdjusted"],["ui","brightnessLegacy100Repaired"]]:
 		if not original[pair[0]].has(pair[1]):preserved[pair[0]].erase(pair[1])
+	check.call(upgraded.phoneBattery.keys()==["percent"] and upgraded.phoneBattery.percent==original.phoneBattery.percent,"Legacy room phone keeps exact battery without retired charging fields")
+	check.call(upgraded.ui.brightness==original.ui.brightness and upgraded.ui.brightnessRevision==1 and not upgraded.ui.brightnessLegacy100Repaired,"Later-room migration preserves the original manual brightness without an early-game repair")
+	for key:String in ["lowPowerMode","rechargeCount"]:
+		if original.phoneBattery.has(key):preserved.phoneBattery[key]=original.phoneBattery[key]
 	check.call(preserved==original,"Version migration preserves every recorded story fact, item, proof and object checkpoint")
 	var expected_stage:="legacy_ready" if original.actOne.exerciseStarted or original.actOne.weatherWaterTaken else "not_started"
-	check.call(upgraded.actOne.tiyiUpdateStage==expected_stage and upgraded.ui.homeDeskReturnScene==null,"Legacy access follows earned evidence and does not create a desktop return")
+	check.call(upgraded.actOne.tiyiUpdateStage==expected_stage and not upgraded.ui.has("homeDeskReturnScene"),"Legacy access follows earned evidence and does not create a desktop return")
 	check.call(not upgraded.native.has("c4_plate_press") and not upgraded.native.has("c4_media_studio"),"Migration invents no press or studio checkpoint")
 	# The same missing fields must remain invalid when labelled current v36.
 	# Exercise both real read/import boundaries, not only the shape validator.

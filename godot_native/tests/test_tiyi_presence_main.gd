@@ -106,17 +106,17 @@ func check_presence_rail() -> void:
 	shell.phone_scroll.scroll_vertical=previous_scroll;await frames()
 	var content_panels=form.find_children("*","Panel",true,false).filter(func(panel):return panel.position.y>=54)
 	for panel in content_panels:
-		check(panel.position.x>=38 and panel.get_rect().end.x<=364.5,"content card preserves the right boundary and clears the rail edge")
+		check(panel.position.x>=14 and panel.get_rect().end.x<=364.5 and absf(panel.position.x-(378-panel.get_rect().end.x))<.5,"content card keeps equal left and right margins")
 	for label in form.find_children("*","Label",true,false):
 		if label.position.y<54:continue
 		check(label.position.x>=50 and label.get_rect().end.x<=364.5 and label.get_rect().end.y<=form.size.y,"presence text stays inside inset app content: "+label.text)
 		check(label.get_line_count()==label.get_visible_line_count(),"all wrapped presence text lines stay visible: "+label.text)
 	var route=node("TiyiRecordedRoute")
-	var headings=form.find_children("*","Label",true,false).filter(func(label):return label.text=="检测到室内异常锻炼路线")
+	var headings=form.find_children("*","Label",true,false).filter(func(label):return label.text=="本次会话的已调查地点")
 	check(headings.size()==1 and not headings[0].get_rect().intersects(route.get_rect()),"route heading and wrapped route remain separate")
 	for i in range(3):
 		var body=node("TiyiEvidence_"+str(i))
-		var header=form.find_children("*","Label",true,false).filter(func(label):return label.position.y==706+i*117+8)
+		var header=form.find_children("*","Label",true,false).filter(func(label):return label.position.y==706+i*150+8)
 		check(header.size()==1 and not header[0].get_rect().intersects(body.get_rect()),"source card heading and body remain separate: "+str(i))
 func report() -> void:
 	var path=OS.get_environment("UI_QA_REPORT")
@@ -132,7 +132,7 @@ func run() -> void:
 		await new_shell(); await open_ready()
 		if node("TiyiPresenceForm")==null: continue
 		await check_presence_rail()
-		check(node("TiyiEvidence_1").text.contains("公示编号 47\n") and not node("TiyiEvidence_1").text.contains("47.0"),"source notice number is displayed as integer")
+		check(node("TiyiEvidence_1").text.contains("公示记录编号 47\n") and not node("TiyiEvidence_1").text.contains("47.0"),"source notice number is displayed as integer")
 		check(node("TiyiField_arrival").text=="5" and node("TiyiField_notice").text=="45" and node("TiyiField_proofs").text=="1","authored wrong defaults displayed")
 		check(shell.page_body.find_children("*","Button",true,false).filter(func(b): return b.text=="提交补录单").is_empty(),"generic appended form action is removed")
 		for id in ["TiyiField_arrival","TiyiField_notice","TiyiField_proofs","TiyiPresenceSubmit"]:

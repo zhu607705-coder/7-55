@@ -1,7 +1,7 @@
 {
   "sourceCommit": "39ccde029b0cd25a6011739a4e4f98f8c898b2c3",
-  "assetCount": 721,
-  "totalBytes": 626525838,
+  "assetCount": 724,
+  "totalBytes": 626642438,
   "assets": [
     {
       "path": "assets/anim/.gitkeep",
@@ -1119,6 +1119,16 @@
       "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
     },
     {
+      "path": "assets/phone/library-search/runtime/ball_lightning.webp",
+      "bytes": 41852,
+      "sha256": "e51d8bae842de954cf637a70a726ee0e88a3804d24b0708453fb8843d2cf3b0b"
+    },
+    {
+      "path": "assets/phone/library-search/runtime/three_body.webp",
+      "bytes": 42040,
+      "sha256": "695dce10fd365efa721d6795876d084bca67f1a6c0f047cdb697685045cc3c8d"
+    },
+    {
       "path": "assets/phone/library-search/runtime/three_minute_empty_seat.webp",
       "bytes": 63858,
       "sha256": "ab92741b94302b1c69076e8ea199e2bd3c5a4e1c239bfae97900b7d77a6399bd"
@@ -1142,6 +1152,11 @@
       "path": "assets/phone/library-search/runtime/three_minute_rise_boundaries.webp",
       "bytes": 42128,
       "sha256": "cc9dfcaa8bf89ce60610d52cb533b4c2b8938e973c60c64fab22e58ca456ef17"
+    },
+    {
+      "path": "assets/phone/library-search/runtime/wandering_earth.webp",
+      "bytes": 32708,
+      "sha256": "fe97c5989e29db42d710e21a1fa75aa6314a5962c84ede781d296e6bee5de945"
     },
     {
       "path": "assets/phone/library-search/three_minute_empty_seat.png",

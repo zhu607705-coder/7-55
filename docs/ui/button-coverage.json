@@ -96,14 +96,6 @@
     "label": "<i className=\"cc-toggle-icon\" aria-hidden=\"true\"> ☾ </i><span>勿扰</span>"
   },
   {
-    "id": 12,
-    "file": "src/components/ControlCenter.tsx",
-    "line": 313,
-    "decision": "content-layout",
-    "variant": "ghost",
-    "label": "<strong>{state.phoneBattery.lowPowerMode ? \"关闭低电量模式\" : \"开启低电量模式\"}</strong><span>{state.phoneBattery.lowPowerMode ? \"解除亮度上限，可手动调高\" "
-  },
-  {
     "id": 13,
     "file": "src/components/ControlCenter.tsx",
     "line": 344,
@@ -662,22 +654,6 @@
     "decision": "standard-key",
     "variant": "secondary",
     "label": "关闭 "
-  },
-  {
-    "id": 83,
-    "file": "src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx",
-    "line": 77,
-    "decision": "scene-object",
-    "variant": null,
-    "label": "<svg viewBox=\"0 0 52 78\" aria-hidden=\"true\"><rect x=\"4\" y=\"2\" width=\"44\" height=\"73\" rx=\"5\" fill=\"#48464b\" stroke=\"#29262d\" stroke"
-  },
-  {
-    "id": 84,
-    "file": "src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx",
-    "line": 81,
-    "decision": "scene-object",
-    "variant": null,
-    "label": "×"
   },
   {
     "id": 85,
@@ -3005,13 +2981,6 @@
     "decision": "scene-object",
     "variant": null,
     "label": "Transparent modal dismissal backdrop"
-  },
-  {
-    "id": 376,
-    "file": "src/scenes/phone/P01_Desktop/EarlyDeskCharging.tsx",
-    "decision": "scene-object",
-    "variant": null,
-    "label": "Physical charging contact"
   },
   {
     "id": 377,

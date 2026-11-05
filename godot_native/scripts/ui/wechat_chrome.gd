@@ -2,8 +2,9 @@ extends RefCounted
 ## Phone-sized WeChat chrome; no copied contacts, device status or unread counts.
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
+const Palette=preload("res://scripts/ui/phone_palette.gd")
 const INK=Color("191919")
-const MUTED=Color("999999")
+const MUTED=Palette.MUTED
 const GREEN=Color("07b75a")
 
 class Mark extends Control:
@@ -47,6 +48,7 @@ static func label(parent: Control,text: String,font_size: int,color: Color=INK) 
 
 static func conversation(parent: Control,title: String,preview: String,time: String,font_scale: float,pinned: bool=false) -> Button:
 	var button=Button.new();button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;button.custom_minimum_size.y=maxf(72,58*font_scale)
+	button.set_meta("phone_button_role","composite")
 	Ui.apply_button(button,Color("ededed") if pinned else Color.WHITE,INK,Color.TRANSPARENT,0,0,16,Vector2.ZERO)
 	parent.add_child(button)
 	var margin=MarginContainer.new();margin.mouse_filter=Control.MOUSE_FILTER_IGNORE;button.add_child(margin)

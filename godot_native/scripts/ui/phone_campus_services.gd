@@ -1,4 +1,5 @@
 extends RefCounted
+const Notice=preload("res://scripts/ui/native_phone_notice.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const Type=preload("res://scripts/ui/native_typography.gd")
 const Account=preload("res://scripts/chapters/campus_network_account.gd")
@@ -6,6 +7,7 @@ var copy: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data
 var language_copy: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/language-examples.json"))
 var network_reason=""
 var network_feedback=""
+var network_feedback_pending=false
 var scale=1.0
 
 class Classroom extends Control:
@@ -166,12 +168,13 @@ func classroom(b,list: Control) -> void:
 	attendance.add_child(radar);radar.visible=false
 	var result=label(attendance,c.status_signed if signed else c.status_finished if not current else c.status_not_signed,14)
 	result.name="SmartClassroomRadarResult";result.visible=false
+	Notice.style_inline(result,"system",roundi(14*scale))
 	trigger.pressed.connect(func():
 		radar.visible=true;result.visible=true
 		reveal_result(result)
-		if not current or signed:result.text=c.status_signed if signed else c.status_finished;return
-		trigger.disabled=true;result.text=c.radar_scanning
-		radar.begin(func():result.text=c.radar_failed_reason;trigger.disabled=false;reveal_result(result)))
+		if not current or signed:result.text=c.status_signed if signed else c.status_finished;Notice.style_inline(result,"success" if signed else "system",roundi(14*scale));return
+		trigger.disabled=true;result.text=c.radar_scanning;Notice.style_inline(result,"system",roundi(14*scale))
+		radar.begin(func():result.text=c.radar_failed_reason;Notice.style_inline(result,"error",roundi(14*scale));trigger.disabled=false;reveal_result(result)))
 	if b.zjuding_detail=="record":label(attendance,c.status_signed if signed else c.status_finished,15)
 	button(attendance,"返回学在浙大","SmartClassroomLearn",func():b._zju_open("learn"))
 
@@ -201,8 +204,14 @@ func network(b,list: Control) -> void:
 		var choice=button(review,reason.label,"NetworkReason_"+reason.id,func():network_reason=reason.id;b.action_requested.emit("phone_refresh",{}))
 		choice.toggle_mode=true;choice.button_pressed=network_reason==reason.id
 	button(review,c.appeal_submit_btn,"NetworkReviewSubmit",func():
+		network_feedback_pending=true
 		var before=Account.account(b.s)
 		network_feedback=c.notice_already_processed if before.resolved else c.notice_unviewed if not before.bill_seen or not before.receipt_seen else c.notice_wrong_reason if network_reason!="duplicate_billing" else c.notice_success
 		b.action_requested.emit("phone_network_review",network_reason))
-	if not network_feedback.is_empty():label(review,network_feedback,14).name="NetworkReviewResult"
+	if not network_feedback.is_empty():
+		var result:=label(review,network_feedback,14);result.name="NetworkReviewResult"
+		Notice.style_inline(result,"success" if network_feedback in [c.notice_success,c.notice_already_processed] else "warning",roundi(14*scale))
+		if network_feedback_pending:
+			network_feedback_pending=false
+			result.ready.connect(func():reveal_result(result))
 	button(list,"打开控制中心切换网络","ZjudingNetworkControls",func():b.page_requested.emit("control_center"))

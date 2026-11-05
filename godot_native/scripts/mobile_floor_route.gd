@@ -4,6 +4,10 @@ extends RefCounted
 const MAX_CORNERS := 192
 const MAX_EDGES := 4096
 const CORNER_CLEARANCE := 0.25
+# Scenes with independently measured furniture may opt into a larger bounded
+# graph. The default remains unchanged for all existing planner consumers.
+var corner_limit := MAX_CORNERS
+var edge_limit := MAX_EDGES
 var edge_checks := 0
 var corner_count := 0
 
@@ -34,7 +38,9 @@ func plan(start: Vector2,goal: Vector2,boxes: Array,allowed: Rect2,stand: Callab
 		var box:=obstacle.grow(CORNER_CLEARANCE)
 		for point: Vector2 in [box.position,Vector2(box.end.x,box.position.y),box.end,Vector2(box.position.x,box.end.y)]:
 			if not allowed.has_point(point) or not stand.call(point) or nodes.has(point): continue
-			if nodes.size()-2>=MAX_CORNERS: return none
+			if nodes.size()-2>=corner_limit:
+				corner_count=nodes.size()-2
+				return none
 			nodes.append(point)
 	corner_count=nodes.size()-2
 	var costs: Array[float]=[]
@@ -61,7 +67,7 @@ func plan(start: Vector2,goal: Vector2,boxes: Array,allowed: Rect2,stand: Callab
 			if cost>=costs[next]: continue
 			var key:=Vector2i(mini(current,next),maxi(current,next))
 			if not edges.has(key):
-				if edge_checks>=MAX_EDGES: return none
+				if edge_checks>=edge_limit: return none
 				edge_checks+=1; edges[key]=bool(clear.call(nodes[current],nodes[next]))
 			if edges[key]: costs[next]=cost; previous[next]=current
 	return none

@@ -32,7 +32,8 @@ export class FlagController {
   setUi<K extends keyof UiState>(key: K, value: UiState[K]): void {
     this.store.setState((state) => ({
       ...state,
-      ui: { ...state.ui, [key]: value }
+      ui: { ...state.ui, [key]: value,
+        ...(key === "brightness" ? { brightnessRevision: 1, brightnessUserAdjusted: true } : {}) }
     }));
     this.events.emit("ui_changed", { key, value });
   }

@@ -29,12 +29,19 @@ func run() -> void:
 		await frames();var game: Control=shell.active_game;game.set_process(false)
 		check(game.size==Vector2(dimensions) and game.scale==Vector2.ONE,"real Main gives fishing the full physical viewport")
 		check(not shell.world_frame.is_visible_in_tree(),"fishing owns presentation without old lake hints beneath it")
-		await tap(game.start_button);await tap(game.pause_button)
+		await tap(game.start_button)
+		var input:=InputEventKey.new();input.keycode=KEY_A;input.physical_keycode=KEY_A;input.pressed=true;root.push_input(input,true)
+		input=input.duplicate();input.pressed=false;root.push_input(input,true);game._process(0);await frames()
+		await tap(game.pause_button)
 		check(game.paused,"actual root controls reach Pause")
 		root.size=Vector2i(dimensions.y,dimensions.x);shell._layout();await frames()
 		check(game.paused and game.model.controls.is_empty(),"rotation retains Pause and releases held controls")
 		root.size=dimensions;shell._layout();await frames()
-		await tap(game.exit_button)
+		var exit: Button
+		for button: Button in game.shared_pause_overlay.action_buttons:
+			if button.text==game.exit_button.text: exit=button
+		check(exit!=null and exit.is_visible_in_tree(),"shared Exit is visible")
+		await tap(exit)
 		check(not is_instance_valid(shell.active_game) and shell.world_frame.is_visible_in_tree(),"Exit removes the sole game and returns the existing lake")
 		check(shell.world_viewport.gui_get_focus_owner()==shell.world,"Exit restores world keyboard focus without another click")
 		check(not shell.world._shell_input_blocked(),"lake input owner is unpaused after Exit")

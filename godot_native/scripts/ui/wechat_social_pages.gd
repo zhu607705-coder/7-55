@@ -55,6 +55,7 @@ func copy(parent: Control, text: String, size: int=17, color: Color=Palette.INK)
 
 func button(parent: Control, text: String, callback: Callable, id: String, primary: bool=false) -> Button:
 	var control:=Button.new();Typography.apply_body(control)
+	control.set_meta("phone_button_role","action")
 	control.name=id;control.text=text;control.custom_minimum_size.y=44
 	control.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	control.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
@@ -102,6 +103,8 @@ func footer(b, root: Control) -> void:
 		var color: Color=Palette.ACCENT if tab==selected else Palette.INK
 		var action=b._button(root,"",Rect2(i*94.5,b.APP_HEIGHT-height,94.5,height),func():tab=selected;panel="";article="";b.tiyi_official_open=false;refresh(b),Palette.CHROME,Palette.INK,0,Color.TRANSPARENT)
 		action.name="WechatTab_"+selected
+		action.set_meta("phone_button_role","navigation")
+		action.set_meta("phone_button_selected",tab==selected)
 		Chrome.icon(action,selected,Rect2(33,7,29,29),color)
 		var caption=b._label(action,["微信","通讯录","发现","我"][i],Rect2(0,40,94.5,23),mini(17,font_size(b,13)),color,HORIZONTAL_ALIGNMENT_CENTER)
 		caption.name="WechatTabCaption"

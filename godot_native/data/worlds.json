@@ -13,24 +13,6 @@
     "RPG_PLAYER_FRAME_HEIGHT": 128,
     "RPG_PLAYER_DISPLAY_SCALE": 0.65
   },
-  "chargingConstants": {
-    "THEATER_CHARGING_STATION": {
-      "id": "theater_charging_station",
-      "label": "手机充电服务站",
-      "x": 595,
-      "y": 773,
-      "width": 77,
-      "height": 93,
-      "stand": {
-        "x": 665,
-        "y": 790
-      },
-      "proximity": 46,
-      "requiredMode": "light"
-    },
-    "PHONE_CHARGING_DURATION_MS": 2200,
-    "PHONE_BATTERY_RECHARGE_PERCENT": 45
-  },
   "sourceHashes": {
     "src/data/maps/zijingang-campus-runtime.json": "f27ecc3f98a057ac9c16d914f58013db2c0308da9c96cd7ee48ffceac90f7abe",
     "src/data/maps/zijingang-campus-loop-runtime.json": "97f431857fa2cd48eee7154786afd5e9d1d249229a0aa145ed67f85312d69d3f",
@@ -38,8 +20,7 @@
     "src/scenes/rpg/LibraryInteriorModel.ts": "10a839a3a0840c6e2c3a70d737e222f0c4469e01a143bc069d0aa3e3f0d205cb",
     "src/scenes/rpg/CanteenInteriorModel.ts": "90968926a40219eed3063d5ede58cd831141faa04b944aa53164b74b1a29dcdb",
     "src/scenes/rpg/RpgPlayerTextures.ts": "ae3e21ec65a5400e283bb834fb85e628b93e46dd6d975fc5d7ff90a7bdfcab38",
-    "src/core/PhoneChargingStation.ts": "50cf6303341bd4ce09f3b6830f98beb6e9af4e92e1309ffd6053525033c7b83e",
-    "src/scenes/rpg/TheaterInteriorModel.ts": "4bbab5e08b9c079b2d2928e82c1773d7d731230132d3c6946a21ff89861e97d7",
+    "src/scenes/rpg/TheaterInteriorModel.ts": "3c649ae2f840e5e8d15d11919f1ad34f5aa719e7d224d065e32a2e6ba19d954c",
     "src/scenes/rpg/QizhenLakeModel.ts": "c3dcb8a53effbf911628d036403f75919e33b044eaaf6fcec043f0406167e8e7",
     "src/data/chapter4-three-floor-maze.layout.json": "560472c51b77073ab99a72e2d7a6aa7d5bc07ed8ae661b48e9ca7e1db6a39d0d",
     "src/data/chapter4-temporal-maze.topology.json": "d71fe5bd87114ccd6ee96a1ec2d6634d43dad42383779b3da1f9f937b182e9a5",
@@ -5003,21 +4984,6 @@
       ],
       "interactionTargets": [
         {
-          "id": "theater_charging_station",
-          "label": "手机充电服务站",
-          "x": 595,
-          "y": 773,
-          "width": 77,
-          "height": 93,
-          "stand": {
-            "x": 665,
-            "y": 790
-          },
-          "proximity": 46,
-          "requiredMode": "light",
-          "kind": "charger"
-        },
-        {
           "id": "theater_poster",
           "label": "入口海报玻璃",
           "x": 282,
@@ -5496,21 +5462,6 @@
           }
         ],
         "THEATER_INTERACTION_TARGETS": [
-          {
-            "id": "theater_charging_station",
-            "label": "手机充电服务站",
-            "x": 595,
-            "y": 773,
-            "width": 77,
-            "height": 93,
-            "stand": {
-              "x": 665,
-              "y": 790
-            },
-            "proximity": 46,
-            "requiredMode": "light",
-            "kind": "charger"
-          },
           {
             "id": "theater_poster",
             "label": "入口海报玻璃",

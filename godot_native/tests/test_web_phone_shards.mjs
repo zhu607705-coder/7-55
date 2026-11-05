@@ -6,11 +6,11 @@ import {test} from 'node:test';
 import {phoneRecoveryCase} from '../tools/web_phone_recovery.mjs';
 import {PHONE_GROUPS, PHONE_COVERAGE, phoneGroups, phoneCoverage, phoneInputs, runPhoneRecoveryGroups, assertPhoneCoverage, assertPhoneShardUnion} from '../tools/web_phone_shards.mjs';
 
-await test('default all retains the original ordered three flows and all nine labels', async () => {
+await test('default all retains the original ordered three flows and all eleven labels', async () => {
   const seen = [], callbacks = Object.fromEntries(PHONE_GROUPS.map(group => [group, async () => { seen.push(group); }]));
   await runPhoneRecoveryGroups(undefined, callbacks);
   assert.deepEqual(seen, ['charging','c1-tiyi','c2-tiyi']);
-  assert.equal(phoneCoverage().length,9); assert.equal(new Set(phoneCoverage()).size,9);
+  assert.equal(phoneCoverage().length,11); assert.equal(new Set(phoneCoverage()).size,11);
   const source = readFileSync(new URL('../tools/web_phone_recovery.mjs', import.meta.url), 'utf8');
   const emitted = [...source.matchAll(/evidence\.coverage\.push\(([^;]+)\);/g)].flatMap(match => [...match[1].matchAll(/'([^']+)'/g)].map(row=>row[1]));
   assert.deepEqual(emitted, phoneCoverage());
@@ -23,8 +23,10 @@ await test('default all retains the original ordered three flows and all nine la
     const at = c2.indexOf(operation); assert.ok(at > last, `${operation} must remain in original order`); last = at;
   }
   assert.match(source,/h\.interval\(2400\)/);
-  assert.match(source,/Date\.now\(\) - began >= 2200/);
-  assert.match(source,/real desktop charge completes', 12000/);
+  assert.match(source,/compat-c1-desk-/);
+  assert.match(source,/consumption-only \$\{percent\}% before reload/);
+  assert.match(source,/music remains usable at zero\/one battery/);
+  assert.doesNotMatch(source,/click\('DeskDockContact'\)/);
 });
 
 for (const group of PHONE_GROUPS) await test(`actual runner enters only the ${group} import boundary`, async () => {
@@ -65,12 +67,12 @@ await test('aggregate rejects missing, duplicate, extra, mixed or partial phone 
 });
 await test('each selected group requires its complete distinct exact-source input identities', () => {
   const input=filename=>({filename,sha256:'a'.repeat(64)});
-  const fixtures={variants:[input('zero'),input('one')],earned:{firstTiyi:input('first'),secondTiyi:input('second')}};
-  assert.deepEqual(phoneInputs(fixtures).map(x=>x.filename),['zero','one','first','second']);
-  assert.deepEqual(phoneInputs(fixtures,'charging').map(x=>x.filename),['zero','one']);
+  const fixtures={variants:[input('zero'),input('one')],deskVariants:[input('desk-zero'),input('desk-one')],earned:{firstTiyi:input('first'),secondTiyi:input('second')}};
+  assert.deepEqual(phoneInputs(fixtures).map(x=>x.filename),['zero','one','desk-zero','desk-one','first','second']);
+  assert.deepEqual(phoneInputs(fixtures,'charging').map(x=>x.filename),['zero','one','desk-zero','desk-one']);
   assert.deepEqual(phoneInputs(fixtures,'c1-tiyi').map(x=>x.filename),['first']);
   assert.deepEqual(phoneInputs(fixtures,'c2-tiyi').map(x=>x.filename),['second']);
-  for (const mutate of [x=>x.variants.pop(),x=>x.variants.push(input('extra')),x=>x.variants[1]=x.variants[0],x=>delete x.earned.secondTiyi,x=>x.earned.firstTiyi.sha256='bad']) {const bad=structuredClone(fixtures);mutate(bad);assert.throws(()=>phoneInputs(bad));}
+  for (const mutate of [x=>x.variants.pop(),x=>delete x.deskVariants,x=>x.deskVariants.pop(),x=>x.deskVariants[0]=x.variants[0],x=>x.variants.push(input('extra')),x=>x.variants[1]=x.variants[0],x=>delete x.earned.secondTiyi,x=>x.earned.firstTiyi.sha256='bad']) {const bad=structuredClone(fixtures);mutate(bad);assert.throws(()=>phoneInputs(bad));}
 });
 
 const readyC2 = () => ({sampleFrame:20, documentHidden:false,

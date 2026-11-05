@@ -172,12 +172,12 @@ func run() -> void:
 	# Manual typing and copied text pass exactly the same existing input/controller path.
 	await restore_earned(); clipboard.text="三分钟离座法"
 	var without_terminal=await search_from_input()
-	check(without_terminal.ids.size()==5 and not without_terminal.complete,"Exact title still cannot bypass terminal evidence gate")
+	check(without_terminal.ids.size()==controller.library._data().library.catalogResults.size() and not without_terminal.complete,"Exact title still cannot bypass terminal evidence gate")
 	await click(node("LibraryCatalogResult_three-minute-leave-method"))
 	check(not state.d.items.callNumber755,"Selection before terminal still cannot award source evidence")
 	controller.dispatch(earned,"lib_catalog_terminal")
 	await restore_earned(); var typed=await search_from_input()
-	check(typed.ids.size()==5 and typed.complete and not typed.items.callNumber755,"Manual search yields five source results but requires deliberate selection")
+	check(typed.ids.size()==controller.library._data().library.catalogResults.size() and typed.complete and not typed.items.callNumber755,"Manual search includes authored and real-book decoys and requires deliberate selection")
 	var native_available=DisplayServer.has_feature(DisplayServer.FEATURE_CLIPBOARD)
 	check(native_available or not OS.get_cmdline_user_args().has("--require-native-clipboard"),"Required native clipboard exists")
 	if native_available:

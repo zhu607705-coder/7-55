@@ -24,6 +24,16 @@ func _process(delta: float) -> void:
 		editing=true; suppress_activation=true; editing_started.emit()
 
 func _gui_input(event: InputEvent) -> void:
+	# A platform-cancelled contact is not a tap, including in the prologue
+	# where rearrangement is disabled. Godot's emulated mouse release may
+	# still emit pressed; the existing can_activate guard must reject it.
+	if (event is InputEventScreenTouch or event is InputEventMouseButton) and event.canceled:
+		held=false;elapsed=0;suppress_activation=true
+		return
+	# The touch event and its emulated mouse release can both carry cancellation.
+	# Start the next genuine gesture cleanly, even when this app is not editable.
+	if (event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and event.pressed) or (event is InputEventScreenTouch and event.pressed) or (event is InputEventKey and event.is_action_pressed("ui_accept",false)):
+		suppress_activation=editing
 	if not editable: return
 	if event is InputEventKey and event.pressed:
 		if event.keycode==KEY_F2:

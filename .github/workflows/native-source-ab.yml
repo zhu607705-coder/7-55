@@ -1,0 +1,174 @@
+name: Native source checkout comparison
+on:
+  pull_request:
+    paths: ['.github/workflows/native-source-ab.yml']
+permissions:
+  contents: read
+jobs:
+  producer:
+    name: Capture exact comparison source
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+      manifest_id: ${{ steps.manifest-upload.outputs.artifact-id }}
+      manifest_sha: ${{ steps.capture.outputs.manifest_sha }}
+      archive_sha: ${{ steps.capture.outputs.archive_sha }}
+      source_bytes: ${{ steps.capture.outputs.source_bytes }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Capture complete original source with unchanged verifier
+        id: capture
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+          EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          python3 -B godot_native/tools/native_source_transport.py capture \
+            --root "$GITHUB_WORKSPACE" --bundle-dir "$RUNNER_TEMP/source-ab" \
+            --head "$EXPECTED_HEAD" --base "$EXPECTED_BASE"
+      - uses: actions/upload-artifact@v4
+        id: upload
+        with:
+          name: source-ab-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/source-ab
+          compression-level: 0
+          include-hidden-files: true
+          retention-days: 1
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        id: manifest-upload
+        with:
+          name: source-ab-manifest-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/source-ab/manifest.json
+          retention-days: 1
+          if-no-files-found: error
+  compare:
+    name: Source comparison ${{ matrix.trial }} ${{ matrix.method }}
+    needs: producer
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - {trial: 1, method: direct}
+          - {trial: 1, method: transport}
+          - {trial: 2, method: direct}
+          - {trial: 2, method: transport}
+    env:
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+      MANIFEST_SHA: ${{ needs.producer.outputs.manifest_sha }}
+      ARCHIVE_SHA: ${{ needs.producer.outputs.archive_sha }}
+      SOURCE_BYTES: ${{ needs.producer.outputs.source_bytes }}
+      METHOD: ${{ matrix.method }}
+      TRIAL: ${{ matrix.trial }}
+    steps:
+      - name: Start end-to-end source readiness clock
+        run: |
+          mkdir -p "$RUNNER_TEMP/source-ab-report"
+          python3 -c 'import time,os; from pathlib import Path; Path(os.environ["RUNNER_TEMP"],"source-ab-start").write_text(str(time.monotonic()))'
+      - uses: actions/checkout@v4
+        if: matrix.method == 'direct'
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        if: matrix.method == 'transport'
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: /godot_native/tools/native_source_transport.py
+      - name: Authenticate independent Git bootstrap and bound download disk
+        run: |
+          [[ "$MANIFEST_SHA" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$ARCHIVE_SHA" =~ ^[0-9a-f]{64}$ ]]
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object --no-filters godot_native/tools/native_source_transport.py)" = "$(git rev-parse HEAD:godot_native/tools/native_source_transport.py)"
+          python3 -B godot_native/tools/native_source_transport.py download-disk \
+            --root "$GITHUB_WORKSPACE" --bundle-dir "$RUNNER_TEMP/source-ab" \
+            --source-bytes "$SOURCE_BYTES" --head "$EXPECTED_HEAD" --base "$EXPECTED_BASE"
+      - uses: actions/download-artifact@v4
+        if: matrix.method == 'transport'
+        with:
+          artifact-ids: ${{ needs.producer.outputs.artifact_id }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/source-ab
+      - uses: actions/download-artifact@v4
+        if: matrix.method == 'direct'
+        with:
+          artifact-ids: ${{ needs.producer.outputs.manifest_id }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/source-ab-manifest
+      - name: Restore baseline complete source with unchanged verifier
+        if: matrix.method == 'transport'
+        run: |
+          python3 -B godot_native/tools/native_source_transport.py restore \
+            --root "$GITHUB_WORKSPACE" --bundle-dir "$RUNNER_TEMP/source-ab" \
+            --head "$EXPECTED_HEAD" --base "$EXPECTED_BASE" \
+            --manifest-sha "$MANIFEST_SHA" --archive-sha "$ARCHIVE_SHA"
+          test ! -e "$RUNNER_TEMP/source-ab/source.tar"
+          cp "$RUNNER_TEMP/source-ab/restore-metrics.json" "$RUNNER_TEMP/source-ab-report/restore.json"
+      - name: Verify full checkout with unchanged complete capture and same producer manifest
+        if: matrix.method == 'direct'
+        run: |
+          python3 -B godot_native/tools/native_source_transport.py capture \
+            --root "$GITHUB_WORKSPACE" --bundle-dir "$RUNNER_TEMP/source-ab-direct" \
+            --head "$EXPECTED_HEAD" --base "$EXPECTED_BASE" \
+            | tee "$RUNNER_TEMP/source-ab-report/direct-capture.jsonl"
+          python3 -B - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          tmp = Path(os.environ['RUNNER_TEMP'])
+          original = tmp / 'source-ab-manifest/manifest.json'
+          actual = tmp / 'source-ab-direct/manifest.json'
+          for path in (original, actual):
+              assert path.is_file() and not path.is_symlink() and path.stat().st_size <= 16 * 1024**2
+              assert hashlib.sha256(path.read_bytes()).hexdigest() == os.environ['MANIFEST_SHA'], 'Producer manifest mismatch'
+          assert original.read_bytes() == actual.read_bytes(), 'Complete source/provenance differs'
+          manifest = json.loads(actual.read_text())
+          assert manifest['archiveSha256'] == os.environ['ARCHIVE_SHA'], 'Canonical archive differs'
+          assert manifest['sourceBytes'] == int(os.environ['SOURCE_BYTES']), 'Source size differs'
+          # Capture freshly checks every file OID, SHA256, executable mode, tree,
+          # commit and complete run provenance. Its temporary tar makes this a
+          # conservative upper bound for a future read-only streaming verifier.
+          (tmp / 'source-ab-direct/source.tar').unlink()
+          PY
+      - name: Verify complete ordinary Git index and record source readiness
+        run: |
+          python3 -B - <<'PY'
+          import importlib.util, json, os, time
+          from pathlib import Path
+          root = Path(os.environ['GITHUB_WORKSPACE'])
+          spec = importlib.util.spec_from_file_location('transport', root / 'godot_native/tools/native_source_transport.py')
+          t = importlib.util.module_from_spec(spec); spec.loader.exec_module(t)
+          entries = t.tree_entries(root)
+          expected = b''.join(f"{e['mode']} {e['oid']} 0\t{e['path']}\0".encode() for e in entries)
+          assert sorted(t.git(root, 'ls-files', '--stage', '-z').split(b'\0')) == sorted(expected.split(b'\0'))
+          assert all(row[:1] == b'H' for row in t.git(root, 'ls-files', '-v', '-z').split(b'\0') if row), 'Sparse/assume-unchanged flags'
+          t.clean(root)
+          tmp = Path(os.environ['RUNNER_TEMP'])
+          report = dict(method=os.environ['METHOD'], trial=int(os.environ['TRIAL']),
+                        seconds=round(time.monotonic()-float((tmp/'source-ab-start').read_text()),3),
+                        commit=os.environ['GITHUB_SHA'], tree=t.git(root,'rev-parse','HEAD^{tree}').decode().strip(),
+                        run=os.environ['GITHUB_RUN_ID'], attempt=os.environ['GITHUB_RUN_ATTEMPT'],
+                        manifestSha256=os.environ['MANIFEST_SHA'], archiveSha256=os.environ['ARCHIVE_SHA'],
+                        sourceBytes=int(os.environ['SOURCE_BYTES']), files=len(entries),
+                        runnerImage=os.environ.get('ImageVersion'), includesProducerWait=False,
+                        directIncludesConservativeCanonicalTar=True)
+          (tmp/'source-ab-report/result.json').write_text(json.dumps(report,indent=2)+'\n')
+          print(json.dumps(report))
+          PY
+      - name: Preserve measurement evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-ab-report-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.trial }}-${{ matrix.method }}
+          path: ${{ runner.temp }}/source-ab-report
+          retention-days: 3
+          if-no-files-found: error

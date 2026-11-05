@@ -54,7 +54,7 @@ func run() -> void:
 		await tap(game.start_button); game._process(1.0/60);await tap(game.pause_button)
 		root.size=Vector2i(430,860);shell.size=Vector2(430,860);shell._layout();shell._refresh();shell._resume_canteen_defense();await frames()
 		check(shell.active_game==game and game.paused and game.config.session_id==session and starts==count+1,"refresh resize and entry cannot replace paused session")
-		await tap(game.exit_button);count=starts
+		await tap(pause_action(game,game.exit_button));count=starts
 		for i in range(6):shell._process(.1);shell._refresh();shell._layout();await frames(1)
 		check(not is_instance_valid(shell.active_game) and starts==count,"Exit stays exited across refresh and process frames")
 		# Existing phone Tasks/Return path supplies a real, ordinary entry action.

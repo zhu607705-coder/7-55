@@ -99,7 +99,7 @@ func recovery_intro() -> Control:
 	root.add_child(paper);paper.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var back := AppFrame.BackButton.new();back.name="C35IntroBack";back.position=Vector2(12,6);back.size=Vector2(44,44)
 	back.set_meta("phone_nav_kind","exit")
-	for mode in ["normal","hover","pressed"]:back.add_theme_stylebox_override(mode,StyleBoxEmpty.new())
+	NativeUi.apply_button(back,Color.TRANSPARENT,AppFrame.INK,Color.TRANSPARENT,0,0,18)
 	back.tooltip_text="返回手机主页";back.pressed.connect(func() -> void:page_requested.emit("phone_home"));root.add_child(back)
 	var chapter := label("第 3.5 章",17,AppFrame.MUTED);chapter.position=Vector2(28,66);chapter.size=Vector2(368,26);root.add_child(chapter)
 	var title := label("未同步的\n七分五十五秒",39,AppFrame.INK);title.name="C35IntroTitle"

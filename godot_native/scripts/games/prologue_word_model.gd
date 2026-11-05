@@ -7,9 +7,9 @@ const BOARD_Y=658.0
 const BOARD_SPEED=440.0
 const MAX_TILT=PI/30.0
 const STEP=1.0/120.0
-const CARD_HEIGHT=92.0
+const CARD_HEIGHT=52.0
 const GLYPH_GRID=20
-const GLYPH_CELL=4.0
+const GLYPH_CELL=2.0
 const LETTER_GAP=5.0
 const WORD_PADDING=16.0
 const FONT_SIZE=24
@@ -17,6 +17,7 @@ const SPAWN_INTERVAL=.95
 const FALL_SPEED=360.0
 const STAGE_SPEED_INCREASE=30.0
 const FIRST_SPAWN_DELAY=.35
+const MIN_CLUE_DURATION=3.6
 const DEMONSTRATION_DELAY=.28
 const RETRY_DELAY=.70
 const STAGE_TRANSITION=.28
@@ -77,7 +78,8 @@ func missing() -> Array:
 func clue_duration() -> float:
 	var total=0.0
 	for fragment:String in current().get("fragments",[]):total+=maxf(.9,fragment.length()*.09)*reading_time_scale
-	return total
+	# Keep the existing brief between-round orientation beat without adding text.
+	return maxf(MIN_CLUE_DURATION*reading_time_scale,total)
 
 func spawn_interval() -> float:
 	return SPAWN_INTERVAL
@@ -109,11 +111,14 @@ func set_review(value:bool) -> void:
 	board_target=board_x;board_velocity=0
 
 func continue_stage() -> void:
+	# Explicit retry: completed rounds survive, but a failed round starts clean.
 	if phase!="hint":return
-	phase="search";hint={};cards.clear();spawn_clock=spawn_interval()-RETRY_DELAY
-	retry_pending=true
+	phase="clue";hint={};cards.clear();collected.clear()
+	captures=captures.filter(func(c):return int(c.stage)<stage)
+	clue_elapsed=0;spawn_clock=0;spawn_index=0;target_serial=0
+	beat_index=0;released_words=[];retry_pending=false;transition_left=0
 	board_target=board_x;board_velocity=0;accumulator=0
-	events.append({"kind":"continued","stage":stage,"collected":collected.duplicate()})
+	events.append({"kind":"continued","stage":stage,"collected":[]})
 
 func advance(delta:float,direction:float=0) -> Array:
 	events=[]
@@ -192,11 +197,13 @@ func _spawn() -> void:
 	var lane:float=ARENA.position.x+width/2+4 if from_left else ARENA.end.x-width/2-4
 	if demonstration:lane=215
 	var center=Vector2(lane,294)
-	# Reaction-critical motion remains unchanged. The opening harmless rebound
+	# Restore the authored reaction pace, with readable shallow diagonal drift.
+	# Rendering and swept collisions use the same angle and trajectory.
+	# The opening harmless rebound
 	# teaches the same real solid window before the first target arrives.
 	var fall=460.0 if demonstration else fall_speed()
-	var velocity=Vector2(0.0 if demonstration else 4.0 if from_left else -4.0,fall)
-	cards.append({"id":serial,"text":word,"target":target,"demonstration":demonstration,"position":center,"size":Vector2(width,CARD_HEIGHT),"angle":deg_to_rad(-3 if from_left else 3),"velocity":velocity,"resolved":false,"life":.65,"age":0.0})
+	var velocity=Vector2(0.0 if demonstration else (12.0 if from_left else -12.0),fall)
+	cards.append({"id":serial,"text":word,"target":target,"demonstration":demonstration,"position":center,"size":Vector2(width,CARD_HEIGHT),"angle":0.0 if demonstration else (-PI/60.0 if from_left else PI/60.0),"velocity":velocity,"resolved":false,"life":.65,"age":0.0})
 	spawn_index+=1
 	events.append({"kind":"spawn","id":serial,"text":word})
 

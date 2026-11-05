@@ -48,7 +48,7 @@ var page_body: VBoxContainer
 var c3_device_panel: Control
 var object_focus: Node
 var modal: Control
-var modal_panel: PanelContainer
+var modal_panel: Control
 var modal_notice_slot: Control
 var modal_previous_focus: WeakRef
 # Room 302 alone replaces the shell with an opaque full-window studio.
@@ -96,9 +96,8 @@ var inventory_handle: Button
 var compact_inventory_open := false
 var compact_world_contract := false
 var media_host: Node
-var world_effect: Control
 var battery_prank: Control
-var home_charging_host: Node
+var world_effect: Control
 var capture_busy := false
 var checkin_feedback_depth := 0
 var audio_director: Node
@@ -107,6 +106,7 @@ var library_story_host: Control
 var c3_narrative_host: Control
 const CanteenObjective = preload("res://scripts/presentation/canteen_objective.gd")
 const NativeJournalView = preload("res://scripts/ui/native_journal_view.gd")
+const PhoneOverlayShell = preload("res://scripts/ui/phone_overlay_shell.gd")
 const ObservationComparisonSession = preload("res://scripts/presentation/observation_comparison_session.gd")
 var chapter4_time_feedback: Control
 const ObservationComparisonView = preload("res://scripts/ui/observation_comparison_view.gd")
@@ -164,9 +164,6 @@ func _ready() -> void:
 		if is_instance_valid(battery_prank): battery_prank.consume_reserve(percent)
 	)
 	State.story_reset.connect(_reset_runtime_presentations)
-	State.battery_recharged.connect(func():
-		if is_instance_valid(battery_prank): battery_prank.reset()
-	)
 	resized.connect(_layout)
 	_setup_runtime_hosts()
 	_restore_shell_surface()
@@ -233,6 +230,7 @@ func _build_shell() -> void:
 	chapter_label = _label("7:55",NativeUi.FONT_DISPLAY,Color("e9eed7"))
 	add_child(chapter_label)
 	phone = PanelContainer.new()
+	phone.set_meta("phone_ui_scope", true)
 	NativeUi.enable_scale_aware_text(phone)
 	phone.theme = NativeUi.make_theme(Typography.body_font(),16,16)
 	var phone_border := _box(PAPER,Color("0d0c0a"),0,3)
@@ -480,13 +478,20 @@ func _show_phone_surface() -> void:
 	_layout()
 	phone_world_return.grab_focus()
 
+func _library_reading_locked()->bool:
+	if str(State.d.native.page)!="library_rule" or not State.d.ui.libraryFinalsPuzzle.archivedRuleCollected or State.d.ui.libraryFinalsPuzzle.archivedRuleRead:return false
+	var reader:Node=page_body.find_child("LibraryRuleReader",true,false) if is_instance_valid(page_body) else null
+	return reader!=null and not bool(reader.get_meta("end_seen",false))
+
 func _return_from_phone() -> void:
+	if _library_reading_locked():return
 	if not _has_world_scene() or _surface_navigation_blocked(): return
 	State.d.runtimeMode = "rpg"
 	State.save_game()
 	_show_world_mobile()
 
 func _back_from_phone() -> void:
+	if _library_reading_locked():return
 	# Escape follows the same visible navigation callbacks as pointer/touch.
 	# Only the phone homepage hands control back to the world.
 	if is_instance_valid(phone_document):
@@ -514,6 +519,8 @@ func _on_controller_page_intent(_action: String,_previous: Dictionary,current: D
 		_refresh_inventory_dock()
 		_layout()
 	if _action=="lib_shelf" and _begin_library_reveal(_previous,current,result): return
+	if result.get("page","") in ["library_rule","library_record"] and current.native.scene=="library_interior":
+		_open_library_world_document.call_deferred(str(result.page));return
 	if result.has("open_c4_floor_selection"):
 		_open_chapter4_floor_selection(result.open_c4_floor_selection)
 		return
@@ -624,6 +631,17 @@ func _cancel_library_reveal() -> void:
 func _validate_library_reveal() -> void:
 	if not pending_library_reveal.is_empty() and not _library_reveal_current(): _cancel_library_reveal()
 
+func _open_library_world_document(page:String)->void:
+	if State.d.native.page!=page or State.d.native.scene!="library_interior" or not pending_library_reveal.is_empty():return
+	if is_instance_valid(modal):return
+	if world.library_layers!=null and world.library_layers.shelf_animating:return
+	_show_world_mobile()
+	phone_builder.s=State.d
+	modal=preload("res://scripts/ui/library_world_document.gd").new()
+	modal.configure(self,phone_builder,page,State.get_view(page))
+	add_child(modal);_layout_modal()
+	phone_chrome.set_input_blocked(true)
+
 func _library_world_presentation(cue: String,payload: Dictionary,layer: RefCounted) -> void:
 	if cue!="library_archived_rule_reveal_completed":
 		_game_presentation(cue,payload)
@@ -637,10 +655,7 @@ func _library_world_presentation(cue: String,payload: Dictionary,layer: RefCount
 	pending_library_reveal={}
 	_game_presentation(cue,payload)
 	world_page_origin_scene="library_interior"
-	_cancel_surface_gestures()
-	mobile_world=false
-	_layout()
-	phone_world_return.grab_focus()
+	_open_library_world_document("library_rule")
 
 func _layout() -> void:
 	if flc_entry_mode:
@@ -727,13 +742,13 @@ func _layout() -> void:
 		for button in inventory_buttons.get_children(): button.cancel_gesture()
 		inventory_dock_rect=dock_rect
 	_sync_inventory_dock_input()
-	chapter_label.visible=false
-	_layout_toast()
 	if is_instance_valid(battery_prank):
 		battery_prank.position=phone.position if phone.visible else world_frame.position
 		battery_prank.scale=phone.scale if phone.visible else world_frame.scale
 		battery_prank.size=Vector2(430,860) if phone.visible else Vector2(960,540)
 		battery_prank.move_to_front()
+	chapter_label.visible=false
+	_layout_toast()
 	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(is_instance_valid(modal) or is_instance_valid(active_game) or is_instance_valid(phone_document))
 	if active_game:
 		if fitted_activity: active_game.configure_activity_layout(available,compact_layout)
@@ -810,6 +825,12 @@ func _notice_scene_busy() -> bool:
 	# feedback owner are filtered before anything reaches this queue.
 	if is_instance_valid(c3_device_panel): return true
 	if is_instance_valid(modal_notice_slot): return false
+	# Local phone receipts own the phone's notice lane temporarily.
+	# Hidden transient notices still age and expire.
+	if is_instance_valid(phone) and phone.visible:
+		var local_notice:=page_body.find_child("SourceToast",true,false) if is_instance_valid(page_body) else null
+		if is_instance_valid(local_notice) and local_notice.is_visible_in_tree(): return true
+		if is_instance_valid(battery_prank) and battery_prank.visible: return true
 	if is_instance_valid(active_game) or is_instance_valid(phone_document) or is_instance_valid(control_center): return true
 	if is_instance_valid(file_dialog) and file_dialog.visible: return true
 	if State.story_input_locked() or str(State.d.native.page)=="desktop":return true
@@ -836,6 +857,25 @@ func _hide_notice_surface() -> void:
 	notice_surface="";notice_world_revision=-1
 	toast.text="";toast_time=0;toast.hide()
 	if is_instance_valid(modal_notice_slot):modal_notice_slot.hide()
+	_sync_home_notice_lane()
+
+func _sync_home_notice_lane() -> void:
+	# The persistent home banner is an entry point, not a second toast. Keep
+	# its route intact while a transient phone notice owns the same top lane.
+	if not is_instance_valid(page_body): return
+	var local_notice:=page_body.find_child("SourceToast",true,false)
+	var occupied: bool=is_instance_valid(phone) and phone.visible and not is_instance_valid(modal_notice_slot) and (
+		(is_instance_valid(toast) and toast.visible and notice_surface=="toast")
+		or (is_instance_valid(local_notice) and local_notice.is_visible_in_tree())
+		or (is_instance_valid(battery_prank) and battery_prank.visible))
+	for banner_name: String in ["HomeFriendNotice","HomeInterludeTopNotice"]:
+		var banner:=page_body.find_child(banner_name,true,false) as Control
+		if is_instance_valid(banner) and banner.get_meta("phone_notice_lane","")=="home_banner": banner.visible=not occupied
+
+func _on_local_phone_notice_shown() -> void:
+	# A local receipt is newer ordinary feedback, not a reason to save an old
+	# Main toast for later. Critical captions and persistent records are separate.
+	_hide_notice_surface();notice_queue.clear();_layout_toast()
 
 func _layout_story_caption() -> void:
 	if not is_instance_valid(story_caption):return
@@ -888,6 +928,7 @@ func _layout_toast() -> void:
 		if not world.subtitle.is_empty() and world.subtitle_left>0 and not _world_notice_owned():
 			_hide_notice_surface();return
 		toast.text="";toast_time=0;toast.hide()
+		_sync_home_notice_lane()
 		if not _world_notice_owned():
 			world._receive_feedback(item.text)
 			notice_world_revision=world.subtitle_revision
@@ -912,15 +953,19 @@ func _layout_toast() -> void:
 		toast.scale=Vector2.ONE;PhoneNotice.layout(toast,minf(680,maxf(160,size.x-32)))
 		toast.position=Vector2((size.x-toast.size.x)/2,maxf(12,size.y-toast.size.y-maxf(72,size.y*.1)))
 	toast.move_to_front()
+	_sync_home_notice_lane()
 
 func _advance_notices(delta:float) -> void:
+	var world_clock_owned:=_world_notice_owned()
 	_sync_notice_remaining()
-	var caption_was_active:=story_caption_time>0
 	story_caption_time=maxf(0,story_caption_time-maxf(0,delta))
-	if not _notice_scene_busy() and not caption_was_active and not notice_queue.current.is_empty():
+	if not notice_queue.current.is_empty():
 		if float(notice_queue.current.remaining)<=0:
 			_hide_notice_surface();notice_queue.finish()
-		elif notice_surface=="toast":notice_queue.advance(delta)
+		# A visible world notice has already advanced on the world's clock.
+		# Every other transient ages even under dialogue, battery warnings or
+		# hidden controls, rather than replaying stale interaction results later.
+		elif not world_clock_owned:notice_queue.advance(delta)
 	_layout_toast()
 
 func _show_story_caption(text:String,tone:String,duration:float,speaker:String="") -> void:
@@ -949,6 +994,13 @@ func _relayout_after_minimum() -> void:
 	if is_inside_tree(): _layout()
 
 func _layout_modal() -> void:
+	if is_instance_valid(modal) and modal.has_meta("journal_shared_shell"):
+		var shared: Dictionary=modal.get_meta("journal_shared_shell")
+		var content: VBoxContainer=shared.content
+		var height:=minf(854.0/(424.0/378.0),51.0+content.get_combined_minimum_size().y+14.0)
+		shared.panel.size=Vector2(378,maxf(90,height))
+		shared.scroll.size=Vector2(350,maxf(1,shared.panel.size.y-65))
+		return
 	if _room302_studio_active():
 		modal.scale = Vector2.ONE
 		modal.layout_fullscreen(Rect2(Vector2.ZERO,size),_room302_safe_insets())
@@ -991,7 +1043,8 @@ func _layout_modal() -> void:
 	modal_panel.size = Vector2(dialog_width,minf(dialog_limit,natural_height))
 	modal_panel.position = (size-modal_panel.size)/2
 	if modal_panel.get_meta("selected_surface","")=="journal":
-		# Single-page composition. Position/wrapping adapt, locked type stays fixed.
+		# The phone branch is the shared 378px overlay handled above. Retained
+		# world journals keep their existing independent reading-layer geometry.
 		modal_panel.size.x=maxf(1,minf(580,size.x*(0.86 if size.x<600 else 0.70)))
 		modal_panel.position=(size-modal_panel.size)/2
 	elif modal_panel.get_meta("selected_surface","")=="dialogue":
@@ -1021,6 +1074,8 @@ func _refresh() -> void:
 		n.page="phone_home"
 		State.d.ui.controlCenterOpen=true
 	var page: String = n.page
+	if page in ["library_rule","library_record"] and n.scene=="library_interior" and not is_instance_valid(modal):
+		_open_library_world_document.call_deferred(page)
 	# Preserve the source Photos mount baseline behind Control Center overlays.
 	var photos_mounted := not mobile_world
 	if photo_brightness_session.observe(page if photos_mounted else "",State.d.ui):
@@ -1044,6 +1099,7 @@ func _refresh() -> void:
 		phone_builder = load("res://scripts/ui/phone_pages.gd").new()
 		phone_builder.connect("action_requested",_on_phone_action)
 		phone_builder.brightness_preview_requested.connect(_preview_phone_brightness)
+		phone_builder.local_notice_shown.connect(_on_local_phone_notice_shown)
 		phone_builder.connect("page_requested",_on_phone_page)
 		if phone_builder.has_signal("presentation_requested"): phone_builder.connect("presentation_requested",_play_presentation_cue)
 		if phone_builder.has_signal("document_requested"): phone_builder.connect("document_requested",_open_phone_document)
@@ -1055,7 +1111,6 @@ func _refresh() -> void:
 		if later_phone_builder.has_signal("presentation_requested"): later_phone_builder.connect("presentation_requested",_play_presentation_cue)
 	if phone_builder:
 		phone_builder.entry_session=State.get_phone_entry_session()
-		phone_builder.home_desk=State.get_home_desk_controller()
 	var source_entry_loading: bool=phone_builder!=null and phone_builder.entry_session.family=="zjuding" and phone_builder.entry_session.phase!="ready"
 	if later_page and later_phone_builder and not source_entry_loading: custom_body = later_phone_builder.build(page,view,State.d)
 	if custom_body == null and phone_builder: custom_body = phone_builder.build(page,view,State.d)
@@ -1366,7 +1421,44 @@ func _invoke_action(action: Dictionary) -> void:
 		_show_form(action)
 	else: State.act(str(action.id),action.get("value"))
 
+func _phone_journal_base(title: String) -> VBoxContainer:
+	_close_modal()
+	var previous_focus: Control=get_viewport().gui_get_focus_owner()
+	_cancel_surface_gestures()
+	modal_previous_focus=weakref(previous_focus) if previous_focus!=null else null
+	var builder: RefCounted=load("res://scripts/ui/phone_pages.gd").new()
+	var shared: Dictionary=PhoneOverlayShell.create(builder,title,_close_modal,90,"Journal")
+	shared.backdrop.name="JournalDropdownBackdrop"
+	# Pointer entry matches Control Center: no pre-focused close ring.
+	# The nonvisual modal owns keys; Tab begins at the real shared close.
+	shared.backdrop.focus_mode=Control.FOCUS_NONE
+	modal=PhoneOverlayShell.wrap(builder,shared.root)
+	modal.name="NativeModalOverlay";modal.z_index=65;modal.focus_mode=Control.FOCUS_ALL
+	modal.theme=NativeUi.make_theme(Typography.body_font(),13,13)
+	modal_panel=shared.panel;modal_panel.name="NativeModalPanel"
+	modal_panel.set_meta("selected_surface","journal")
+	modal_notice_slot=null
+	var scroll:=ScrollContainer.new();scroll.name="JournalScroll"
+	scroll.position=Vector2(14,51);scroll.size=Vector2(350,100)
+	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;scroll.follow_focus=true
+	modal_panel.add_child(scroll)
+	var content:=VBoxContainer.new();content.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	content.add_theme_constant_override("separation",10);scroll.add_child(content)
+	shared.scroll=scroll;shared.content=content;shared.builder=builder
+	modal.set_meta("journal_shared_shell",shared)
+	modal_panel.set_meta("dialog_content",content)
+	phone.add_child(modal)
+	content.minimum_size_changed.connect(_layout_modal.call_deferred)
+	_layout_modal();modal.grab_focus()
+	phone_chrome.set_input_blocked(true);_sync_inventory_dock_input()
+	return content
+
 func _modal_base(title: String,surface: String="paper",preserve_departure: bool=false) -> VBoxContainer:
+	if surface=="selected_journal" and int(State.d.native.chapter)==1 and phone.visible:
+		return _phone_journal_base(title)
+	# C1 system/form prompts share phone-paper styling. Authored dialogue,
+	# task pages and every later world/document surface keep their own renderer.
+	var phone_prompt:bool=surface=="paper" and State.d.get("runtimeMode","phone")=="phone" and int(State.d.native.chapter)==1
 	if is_instance_valid(world): world.cancel_exploration_gestures()
 	if not preserve_departure or not _theater_departure_active(): _cancel_world_effect()
 	_close_modal(_room302_studio_active())
@@ -1383,14 +1475,18 @@ func _modal_base(title: String,surface: String="paper",preserve_departure: bool=
 	# documents and the in-phone Control Center keep their brightness veil.
 	modal.z_index = 300
 	if is_instance_valid(phone_chrome): phone_chrome.set_input_blocked(true)
-	modal.color = Color.TRANSPARENT if surface.begins_with("selected_") else Color(0.03,0.06,0.08,0.66 if surface!="paper" else 0.76)
+	modal.color = Color(0.13,0.14,0.13,0.42) if phone_prompt or surface=="selected_journal" else (Color.TRANSPARENT if surface.begins_with("selected_") else Color(0.03,0.06,0.08,0.66 if surface!="paper" else 0.76))
 	modal.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(modal)
 	var panel: PanelContainer
-	if surface.begins_with("selected_"):
+	if phone_prompt:
+		panel=PanelContainer.new();panel.set_meta("phone_ui_scope",true);panel.set_meta("phone_prompt",true)
+		panel.add_theme_stylebox_override("panel",PhoneNotice.dialog_style())
+	elif surface.begins_with("selected_"):
 		panel = PanelContainer.new()
 		SelectedUi.apply_paper_panel(panel,Vector2(8,8))
 		panel.set_meta("selected_surface",surface.trim_prefix("selected_"))
+		if surface=="selected_journal": panel.set_meta("phone_ui_scope",true)
 	elif surface in ["notebook","loose_sheet"]:
 		panel = preload("res://scripts/ui/campus_notebook_panel.gd").new()
 		panel.mode = surface
@@ -1427,7 +1523,10 @@ func _modal_base(title: String,surface: String="paper",preserve_departure: bool=
 	if surface in ["paper","notebook"]: close_button.set_meta("tactile_variant","ghost")
 	close_button.size_flags_vertical=Control.SIZE_SHRINK_CENTER
 	NativeUi.apply_button(close_button,CampusMaterial.PAPER,CampusMaterial.INK,CampusMaterial.PAPER_EDGE,0,1,16,Vector2(12,8))
-	if surface.begins_with("selected_"):
+	if phone_prompt:
+		Typography.apply_display(label);label.add_theme_color_override("font_color",PhoneNotice.INK)
+		NativeUi.apply_button(close_button,PhoneNotice.PAPER,PhoneNotice.INK,PhoneNotice.INK,0,2,16,Vector2(12,8))
+	if surface.begins_with("selected_") and surface!="selected_journal":
 		var selected_surface:=surface.trim_prefix("selected_")
 		SelectedUi.apply_label(label,selected_surface,"heading")
 		SelectedUi.apply_button(close_button,selected_surface)
@@ -1443,6 +1542,7 @@ func _modal_base(title: String,surface: String="paper",preserve_departure: bool=
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	box.add_child(scroll)
+	if surface=="selected_journal": NativeJournalView.style_modal(panel,label,close_button,scroll)
 	var content := VBoxContainer.new()
 	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	content.add_theme_constant_override("separation",10)
@@ -1511,7 +1611,7 @@ func _close_modal(force_studio: bool = false) -> void:
 	var closed_item := inspected_item_id
 	inspected_item_id=""
 	if is_instance_valid(modal):
-		remove_child(modal)
+		modal.get_parent().remove_child(modal)
 		modal.queue_free()
 	modal = null
 	_restore_room302_shell()
@@ -1684,6 +1784,8 @@ func _style_world_item(button: Button, selected: bool) -> void:
 
 func _inspect_item(item: Dictionary) -> void:
 	var box := _modal_base(str(item.name),"loose_sheet")
+	# Item dialogs live outside the phone tree; their UI still uses its flat controls.
+	modal_panel.set_meta("phone_ui_scope",true)
 	inspected_item_id=str(item.get("id",""))
 	if is_instance_valid(phone_chrome):
 		var artwork_row:=CenterContainer.new()
@@ -1703,10 +1805,10 @@ func _inspect_item(item: Dictionary) -> void:
 	text.name="InventoryObservation"
 	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(text)
-	box.add_child(_button("选择使用",func(): State.select_item(str(item.id)); _close_modal()))
 
 func _show_inventory() -> void:
 	var box := _modal_base("物品","notebook")
+	modal_panel.set_meta("phone_ui_scope",true)
 	var grid:=GridContainer.new()
 	grid.name="InventoryGrid"
 	grid.columns=2
@@ -1773,8 +1875,10 @@ func _show_journal() -> void:
 	_refresh_observation_comparison()
 	var current: Dictionary=CanteenObjective.current(State.d)
 	var journal:=NativeJournalView.new()
+	if modal.has_meta("journal_shared_shell"):journal.phone_builder=modal.get_meta("journal_shared_shell").builder
 	if return_to_world: journal.context_texture=world.background
 	journal.configure(State.objective(),str(current.get("detail","")),State.d.native.log,observation_comparison_session.available(),return_to_world)
+	journal.configure_digits(State.d)
 	journal.resume_requested.connect(func():
 		_close_modal()
 		if return_to_world or _is_canteen_defense_entry() or _is_bike_chase_entry():
@@ -1787,7 +1891,23 @@ func _show_journal() -> void:
 	)
 	journal.comparison_requested.connect(func(): _show_observation_comparison(true))
 	box.add_child(journal)
-	journal.call_deferred("focus_control","JournalResume")
+	if modal.has_meta("journal_shared_shell"):
+		var shared: Dictionary=modal.get_meta("journal_shared_shell")
+		var close: Button=shared.close
+		close.pressed.disconnect(_close_modal)
+		close.pressed.connect(func():journal.resume_requested.emit())
+		close.name="JournalResume";close.tooltip_text=journal.return_label;close.accessibility_name=journal.return_label
+		journal.resume_button=close
+	else:
+		# Retain the world return's complete original callback and label.
+		var close_button:=modal.find_child("NativeModalClose",true,false) as Button
+		var header:=close_button.get_parent()
+		header.remove_child(close_button);close_button.queue_free()
+		journal.resume_button.reparent(header)
+		journal.resume_button.size_flags_horizontal=Control.SIZE_SHRINK_END
+		journal.resume_button.size_flags_vertical=Control.SIZE_SHRINK_CENTER
+	if not modal.has_meta("journal_shared_shell"):
+		journal.call_deferred("focus_control","JournalResume")
 
 func _refresh_observation_comparison() -> void:
 	var documents: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/native/item_catalog.json"))
@@ -1797,17 +1917,25 @@ func _show_observation_comparison(from_journal: bool=false) -> void:
 	if is_instance_valid(active_game) or State.story_input_locked(): return
 	_refresh_observation_comparison()
 	if not observation_comparison_session.available(): return
-	var box := _modal_base("线索对照","notebook")
+	var box := _modal_base("线索对照","selected_journal")
 	if from_journal:
 		if world_frame.is_visible_in_tree(): modal_previous_focus=weakref(world)
-		var back:=_button("返回调查记录",_show_journal)
+		var back: Button
+		if modal.has_meta("journal_shared_shell"):back=PhoneOverlayShell.action(modal.get_meta("journal_shared_shell").builder,"返回调查记录",_show_journal)
+		else:
+			back=_button("返回调查记录",_show_journal)
+			NativeJournalView.style_button(back,false)
 		back.name="ObservationJournalReturn"
+		back.autowrap_mode=TextServer.AUTOWRAP_OFF
+		back.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
 		box.add_child(back)
 	var comparison = ObservationComparisonView.new()
+	if modal.has_meta("journal_shared_shell"):comparison.phone_builder=modal.get_meta("journal_shared_shell").builder
 	comparison.configure(observation_comparison_session)
 	comparison.close_requested.connect(_close_modal)
 	box.add_child(comparison)
-	comparison.call_deferred("_restore_focus","ObservationSlot0")
+	if not modal.has_meta("journal_shared_shell"):
+		comparison.call_deferred("_restore_focus","ObservationSlot0")
 
 func _fit_choice_popup(choice: OptionButton) -> void:
 	# Native PopupMenu does not wrap option lines. Measure the actual bundled
@@ -1913,8 +2041,15 @@ func _show_settings() -> void:
 		box.add_child(_button("导入原网页存档",func(): _feedback(str(web_platform.import_legacy_save().message))))
 	box.add_child(_button("重新开始",func():
 		var confirm := _modal_base("确认重新开始？")
-		confirm.add_child(_label("将重置故事进度。此操作不会退出应用。",17))
-		confirm.add_child(_button("确认重置",func(): _reset_progress(); _close_modal()))
+		modal.find_child("NativeModalClose",true,false).text="取消"
+		var warning:=_label("将重置故事进度。此操作不会退出应用。",17)
+		warning.name="NativeResetWarning"
+		if modal_panel.get_meta("phone_prompt",false):PhoneNotice.style_inline(warning,"warning",17)
+		confirm.add_child(warning)
+		var reset:=_button("确认重置",func(): _reset_progress(); _close_modal())
+		reset.name="NativeResetConfirm"
+		if modal_panel.get_meta("phone_prompt",false):NativeUi.apply_button(reset,PhoneNotice.WARNING_PAPER,PhoneNotice.accent_for("提示"),PhoneNotice.INK,0,2,16)
+		confirm.add_child(reset)
 	))
 	box.add_child(_button("全屏 / 窗口",func(): DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN else DisplayServer.WINDOW_MODE_FULLSCREEN)))
 	if State.developer_tools_available(): box.add_child(_button("DEV · 独立场景检查",_show_developer))
@@ -1926,8 +2061,11 @@ func _show_settings() -> void:
 			action_button.set_meta("tactile_variant","ghost" if action_button.text.begins_with("当前：") or action_button.text in ["全屏 / 窗口","保存画面截图","重新开始"] or action_button.text.begins_with("DEV") else "tertiary")
 			if action_button.text=="重新开始":
 				action_button.add_theme_color_override("font_color",CampusMaterial.CORAL)
+		if action_button is Button and modal_panel.get_meta("phone_prompt",false):
+			NativeUi.apply_button(action_button,PhoneNotice.WARNING_PAPER if action_button.text=="重新开始" else PhoneNotice.PAPER,PhoneNotice.accent_for("提示") if action_button.text=="重新开始" else PhoneNotice.INK,PhoneNotice.INK,0,2,16,Vector2(12,8))
 	var note_text:="原生 Godot 迁移进行中\n支持原生存档与原版浏览器 v2–35 存档。" if State.developer_tools_available() else "支持保存当前进度，也可导入原浏览器版存档。"
-	if is_instance_valid(web_platform): note_text += "\n" + web_platform.storage_note()
+	if OS.has_feature("web") and not CloudSaves.member_id.is_empty(): note_text="账号进度同步到云端，可导出个人备份。"
+	elif is_instance_valid(web_platform): note_text += "\n" + web_platform.storage_note()
 	var note := _label(note_text,15,Color("6b756c"))
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(note)
@@ -1939,7 +2077,10 @@ func _capture_after_menu() -> void:
 	_capture.call_deferred()
 
 func _save_progress() -> void:
-	if OS.has_feature("web") and not CloudSaves.member_id.is_empty(): CloudSaves.save_now()
+	if OS.has_feature("web") and not CloudSaves.member_id.is_empty():
+		_on_web_save_feedback("正在保存…")
+		await CloudSaves.save_now()
+		_on_web_save_feedback("已保存" if CloudSaves.status_text.begins_with("云端已保存") else CloudSaves.status_text)
 	elif is_instance_valid(web_platform): web_platform.request_save()
 	else: _feedback("已保存" if State.save_game() else "测试会话不覆盖正式存档")
 
@@ -2452,7 +2593,14 @@ func _feedback(message: String,tone: String="system",duration_override:float=-1)
 	if _room302_studio_active():modal.set_feedback(message);return
 	if _virtual_run_owns_feedback(message) or _scene_owns_feedback(message):return
 	if (c3_device_action_depth>0 or _issued_swan_catch_feedback(message)) and _show_local_world_feedback(message):return
-	_sync_notice_remaining()
+	if message.strip_edges().is_empty():return
+	# Control Center uses its own builder/root. Both local surfaces participate
+	# in the same latest interaction order as the main transient lane.
+	for local_root:Control in [page_body,control_center]:
+		var local_notice:=local_root.find_child("SourceToast",true,false) if is_instance_valid(local_root) else null
+		if is_instance_valid(local_notice) and local_notice.get_meta("phone_local_notice",false) and local_notice.has_method("dismiss"):
+			local_notice.dismiss()
+	_sync_notice_remaining();_hide_notice_surface()
 	var duration:float=duration_override if duration_override>=0 else clampf(1.6+message.length()*.12,2.4,6.5)
 	notice_queue.enqueue(message,str(PhoneNotice.SPEAKERS.get(tone,"系统")),duration,duration_override>=0)
 	_layout_toast()
@@ -2599,10 +2747,6 @@ func _sync_story_hosts() -> void:
 	_story_host_active(c3_narrative_host,needs_narrative)
 
 func _setup_runtime_hosts() -> void:
-	if home_charging_host == null:
-		home_charging_host = load("res://scripts/media/home_charging_host.gd").new()
-		add_child(home_charging_host)
-		home_charging_host.setup(_read_runtime_state, func() -> Dictionary: return State.d, State.get_home_charging_session, State.act)
 	_sync_story_hosts()
 	if ResourceLoader.exists("res://scripts/media/audio_director.gd") and audio_director == null:
 		audio_director = load("res://scripts/media/audio_director.gd").new()
@@ -2727,6 +2871,7 @@ func _capture_world(config: Dictionary) -> void:
 	State.act(str(config.get("on_success","c3_journal_capture_result")),session)
 
 func _reset_runtime_presentations() -> void:
+	if is_instance_valid(battery_prank): battery_prank.reset()
 	_clear_notice_presentations()
 	if is_instance_valid(phone_object_pickup): phone_object_pickup.reset("story-reset")
 	_cancel_library_reveal()
@@ -2755,7 +2900,6 @@ func _reset_runtime_presentations() -> void:
 		audio_director.reset()
 		audio_director.setup(_read_runtime_state)
 	if is_instance_valid(media_host) and media_host.has_method("_stop_current"): media_host._stop_current()
-	if is_instance_valid(battery_prank): battery_prank.reset()
 	_resume_canteen_defense_after_reset.call_deferred()
 
 func _resume_canteen_defense_after_reset() -> void:
@@ -2791,6 +2935,7 @@ func _combine_inventory_items(a: String,b: String) -> void:
 	State.act("c1_combine",{"a":a,"b":b})
 
 func _on_phone_page(page: String) -> void:
+	if _library_reading_locked():return
 	_cancel_library_reveal()
 	if page=="control_center":
 		if not _theater_departure_active():
@@ -2842,6 +2987,7 @@ func _refresh_control_center() -> void:
 		control_builder=load("res://scripts/ui/phone_pages.gd").new()
 		control_builder.action_requested.connect(_on_phone_action)
 		control_builder.brightness_preview_requested.connect(_preview_phone_brightness)
+		control_builder.local_notice_shown.connect(_on_local_phone_notice_shown)
 		control_builder.page_requested.connect(_on_phone_page)
 		control_builder.presentation_requested.connect(_play_presentation_cue)
 	control_center=control_builder.build("control_center",State.get_view("control_center"),State.d)
@@ -2894,8 +3040,8 @@ func shutdown() -> void:
 		active_game.queue_free()
 		active_game=null
 	if is_instance_valid(voice_player): voice_player.stop(); voice_player.stream=null
-	if is_instance_valid(media_host): await media_host.shutdown()
 	if is_instance_valid(battery_prank): await battery_prank.shutdown()
+	if is_instance_valid(media_host): await media_host.shutdown()
 	if is_instance_valid(audio_director): await audio_director.shutdown()
 
 func _open_phone_document(config: Dictionary) -> void:

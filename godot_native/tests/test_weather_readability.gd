@@ -44,7 +44,7 @@ func run() -> void:
 		if width>=1100: check(game.row_centers==[175.0,265.0,355.0] and game.row_buttons[0].position==Vector2(42,150),"desktop cloud geometry is preserved")
 	game.started=true; game.touch_directions=[1,1,1]; game.directions=[1,1,1]
 	game._notification(MainLoop.NOTIFICATION_APPLICATION_FOCUS_OUT)
-	check(game.paused and game.directions==[0,0,0] and game.touch_directions==[0,0,0] and game.start_button.visible,"existing pause/release/resume contract preserved")
+	check(game.paused and game.directions==[0,0,0] and game.touch_directions==[0,0,0] and game.shared_pause_overlay.is_open(),"existing pause/release/resume contract preserved")
 	game.queue_free(); await process_frame
 	print("Weather readability: ",checks," checks / ",failures," failures")
 	quit(1 if failures else 0)

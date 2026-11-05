@@ -156,6 +156,8 @@ func _draw() -> void:
 		for i in range(3): draw_rect(Rect2(x+12+i*22,375,17,24),[Color("bfa65d"),Color("738ea0"),Color("a26763")][i])
 		for wheel: int in [15,73]: draw_circle(Vector2(x+wheel,415),6,Color("192126"))
 	if phase=="arrival":
+		preload("res://scripts/presentation/library_object_motion.gd").draw_handoff(self,size,v,session.reduced_motion)
+		draw_set_transform(origin,0,Vector2.ONE*scale_factor)
 		_panel(Rect2(300,205,360,90),Color("050b10",0.9),Color("e2cf70")); _text(Vector2(444,232),"MISSION",12,Color("75d7e7")); _text(Vector2(350,270),"追到东区大食堂",28,Color("f4edd2"))
 	if not narrow: _panel(Rect2(26,420,908,88),Color("071017",0.95),Color("8ab3b7") if v.tone=="system" else Color("cfbd74"))
 	draw_rect(Rect2(0,535,960,5),Color("19323d")); draw_rect(Rect2(0,535,960*float(v.overallProgress),5),Color("7ce1ed"))

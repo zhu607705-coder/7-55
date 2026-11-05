@@ -1,4 +1,5 @@
 import type { EventBus } from "../core/EventBus";
+import libraryFinalsContent from "../data/library-finals.content.json";
 import { canAccessTiyi } from "./TiyiAccessModel";
 import type {
   GameStore,
@@ -232,7 +233,7 @@ export class LibraryFinalsController {
     this.patchFinals("evidence_gathering", {
       catalogSearchCompleted: true
     });
-    this.events.emit("library_catalog_results_shown", { resultCount: 5 });
+    this.events.emit("library_catalog_results_shown", { resultCount: libraryFinalsContent.library.catalogResults.length });
     return true;
   }
 
