@@ -5984,3 +5984,13 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - Water gestures retain the acquired kayak/pan/mode context instead of the following camera position. Actual moving-world tests pass 38/38 after three original failures; existing paddle, gesture and mobile-touch regressions pass 37/37, 21/21 and 441/441. Scene, focus, zoom, pan, mode, phone and modal changes still cancel held input, including competing fingers.
 - Local checks use official Godot 4.7.1 with the pinned SHA-256, isolated save directories, source synchronization and validated derived media. The retained-Web release attempt passed 36/39 validators; offline single-file rendering was killed with exit 137, including an isolated retry, so artifact verification and browser smoke could not run locally. No validation threshold or build budget was weakened.
 - Combined native selected-stage results and exact-head CI are recorded in the PR. These per-fix results are not a full native-suite pass, actual Web network/account acceptance, physical-device test or manual full playthrough. No merge or deployment is performed.
+
+## 2026-11-06 智云课堂参考界面
+
+- 智云课堂原生入口改为青色标题区、周课表和全部课程检索。课表回放进入课程详情，PPT 识别使用游戏课堂板书演示。数字签到和雷达沿用原入口与控制器。
+- 本地 Godot Web 导出及模拟手机普通点击检查通过，覆盖浙大钉入口、课表回放、切换 PPT、返回课表、进入全部课程和课程信息签到入口。未上传发布。
+
+## 2026-11-06 智云课堂微积分回放
+
+- 周课表和课程列表共用六条排课；微积分回放提供四页 PPT 与八条字幕。第三页保留计算题，答案 120 在回放字幕揭晓。
+- 雷达检测提示改走主界面手机通知队列。原生导航 252 项通过。未提交发布。
