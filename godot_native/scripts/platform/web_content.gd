@@ -126,7 +126,9 @@ static func required_families(snapshot: Dictionary) -> Array:
 	var recovered: Dictionary = snapshot.get("chapterThreeInterlude", {})
 	if lake.get("phase", "") == "complete" and recovered.get("phase", "") == "replay_ready" and bool(recovered.get("replayUnlocked", false)): level = 4
 	if scene == "duan_yongping_temporal_maze" or page.begins_with("c4_") or bool(snapshot.get("chapter4", {}).get("prologueSeen", false)): level = 4
-	return ["chapter2", "chapter3", "chapter35", "chapter4"].slice(0, level)
+	var families := STORY_FAMILIES.slice(0, level)
+	if page in ["bonsai", "tiyi"]: families.push_front("phone_" + page)
+	return families
 
 func _required_ids(families: Array) -> Array:
 	var result: Array = []
@@ -151,7 +153,7 @@ func ensure_state(snapshot: Dictionary) -> bool:
 	return ready
 
 static func next_prefetch_families(snapshot: Dictionary) -> Array:
-	var required := required_families(snapshot)
+	var required := required_families(snapshot).filter(func(family): return family in STORY_FAMILIES)
 	return [STORY_FAMILIES[required.size()]] if required.size() < STORY_FAMILIES.size() else []
 
 func _set_prefetch_window(snapshot: Dictionary) -> void:

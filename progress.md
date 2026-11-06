@@ -14,6 +14,12 @@
 - Final local 18 source/transport contract commands pass, including loader103, resource-cache47, streaming24 and source-inventory8 checks. The original loader/provenance/shared-block behavior fails the new regressions. Runtime content_loader.js grows by only three net lines; the build inventory changes one existing line. No new dependency, runtime module or asset.
 - Local real Chromium validation could not start because Unix socket creation is prohibited; no browser-storage pass is claimed. Retained-Web release remains36/39: offline single-file build exit137 leaves artifact verification/browser smoke unrun. New-head real export/browser execution and native mounting remain required, independently from these Node fixtures. No merge or deployment is performed.
 
+## 2026-11-06 图书馆页面触控滚动修复
+
+- 以 `main` 的 `7e46ddcd` 为基线。图书馆正文和嵌套座位列表原先阻断触摸滚动，卡片上的滑动还会误触馆藏选择或消耗恢复证明。仅在现有 `native_library_pages.gd` 的滚动正文中复用 CC98 的 PASS 传递方式，让原生 ScrollContainer 取消拖动中的按压。固定页头、预约确认层和文档弹层保持原输入边界；不改控制器、存档、道具语义或共享按钮。
+- 新增自动发现的真实 Main/World 触摸回归，覆盖 `390×844`、`360×640`、`430×860`、`1280×720`，经普通首页和浙大钉入口检查正文/卡片滚动、取消拖动、静止点击、返回重入、预约取消及已提交文档查看。官方 Godot `4.7.1.stable.official.a13da4feb`、隔离存档：未修版本 **554 项中 84 处失败**，修复后 **554/554 通过**。已重新完成源同步、完整媒体转换和引擎导入。断言数量不是覆盖率；本条不声称完整原生套件、实际浏览器、图形观感或实体手机验收完成。
+- 保留 Web 的本地 `npm run validate:release` 为 **36/39 通过**。未改的离线单文件构建被终止（exit 137），缺少产物使后续产物检查和 Chromium smoke 无法完成；没有修改门禁或构建预算。完整原生与真实 Godot Web 验收交由该提交的 PR CI 单独记录，保持草稿，不自动合并或部署。
+
 ## 2026-11-06 架构盘点与开发规范
 
 - 以 `14e86ac5` 为基线核对正式 Godot 运行时、保留的 React/Phaser 实现、共创平台及发布路径。记录 QFramework 的已接入职责与仍可直接写入状态的兼容入口，按交互顺序、结果和保存、宿主拆分提出渐进迁移方案。首个建议试点为图书馆规则阅读与离页。
@@ -5945,3 +5951,19 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - Corrected only the browser harness expectation for explicitly constructed legacy desktop saves: the validated import now correctly arrives at bonsai. Ordinary page, chapter, scene and import-completion checks retain their original requirements and 60-second limit. The unchanged harness fails two new regression cases; the corrected input/shard suites pass 88/88. Real Chromium desktop-1280 and touch-390 each pass 981 checks, including 0/1 percent imports, save/reload, manual light/music and original plant gates. This local official 4.7.1 rebuild matches CI production sources and fixture hashes; two non-C1 derived videos differ from the CI artifact, so byte-identical export acceptance is not claimed.
 - Updated the static rehearsal test to preserve reading, clear held input, and retain the paper menu's Return/Restart/Exit without a pause action. Input, coordinates, deterministic model and replay assertions remain. The focused test passes 74 checks in 3.6 seconds; its seven previously unrun stages pass. The original main runtime and original test pass 75 checks because main still has one extra Pause-button bounds check. A test-only 20-second failure watchdog prevents the reproduced script-error hang; production, workflow limits, sharding and full-coverage gates are unchanged.
 - The integrated final candidate passes 13/13 selected native stages (eight targets plus five prerequisites) with unchanged inputs; 634 of 647 stages were not selected. Node 22.23.4 input/shard tests pass 59/29 and retained Web quick checks pass 5/5. These focused results do not claim full-suite success; a complete new-head CI run remains required. No merge or deployment is performed.
+
+## 2026-11-06 北教钟表资源延迟加载
+
+- 北教钟表贴图由走廊钟面和维修视图共用。维修视图入树后才读取，正式 Web 导出验证贴图与导入载荷归第 4 章资源包。
+- 本地以 `14e86ac5` 为基线，工作树另含退场动画改动。启动 PCK 从 27,477,800 降至 26,542,956 字节。模拟手机冷启动传输 33,293,970 字节，开始按钮约 14.0 秒就绪。钟表面板和重入测试共 479 项通过。浏览器测量覆盖启动，第四章钟表操作由原生测试验证。
+
+## 2026-11-06 盆栽对象包与启动预算
+
+- 盆栽专用贴图和开花素材独立归入 `phone_bonsai`，通过当前页面状态按需加载，章节预取顺序保持独立。
+- 模拟手机 20 Mbps、60 ms RTT 冷启动至原生主场景为 14.006 秒、26,846,728 字节。盆栽由普通点击进入，3.797 秒可交互，对象包传输 6,434,750 字节。进入前没有盆栽包请求。
+- 浏览器探针可按 10 秒、20 MB 启用硬门槛。当前盆栽节点通过，启动节点仍未通过。
+
+## 2026-11-06 浙大体艺按需资源
+
+- 体艺的原始计数和启动贴图移到 `phone_tiyi`，进入体艺页面后按现有内容门槛加载。正式 Web 包归属检查和原生体艺视觉布局 250 项通过。
+- 20 Mbps、60 ms 延迟模拟手机冷启动至原生主场景为 13.055 秒、25,040,365 字节，盆栽节点为 3.769 秒和 6,434,750 字节。体艺节点的完整浏览器操作等待尚未单独计时。

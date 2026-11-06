@@ -66,7 +66,7 @@ func run() -> void:
 	b.entry_session.route(s);b.entry_session.advance(1400);await show()
 	var count=button("TiyiCount47");var marker: Control=page.find_child("TiyiSevenPickupSource",true,false);var plate: TextureRect=page.find_child("TiyiSourcePlate",true,false)
 	check(count.get_global_rect().grow(.1).encloses(marker.get_global_rect()),"seven pickup has a real overlapping hit target")
-	check(plate.texture.atlas==Seven.SOURCE and plate.texture.region==Seven.COUNT_REGION,"original gold seven stays a source crop")
+	check(plate.texture.atlas==load(Seven.SOURCE_PATH) and plate.texture.region==Seven.COUNT_REGION,"original gold seven stays a source crop")
 	await click(count);check(actions==[["c1_tiyi_digit",null]],"one ordinary count click emits original pickup intent")
 	for polygon in Identity.Runner.LIMBS:
 		for point in polygon:check(Rect2(8,8,64,64).has_point(point),"runner silhouette retains an inset on all sides")

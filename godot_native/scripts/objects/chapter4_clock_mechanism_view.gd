@@ -1,6 +1,7 @@
 extends Control
 ## The original plate with independent hands, gears and crown.
-const PLATE=preload("res://assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_clock_states_v01.png")
+const PLATE_PATH := "res://assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_clock_states_v01.png"
+var plate: Texture2D
 var hour_angle:=0.0
 var minute_angle:=0.0
 var recoil:=0.0
@@ -28,6 +29,8 @@ var readout:=""
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
 func _ready()->void:
+	# The chapter pack is mounted before this view enters the tree.
+	plate = load(PLATE_PATH) as Texture2D
 	texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST;resized.connect(_place_parts);_place_parts()
 func fit()->float:return minf(size.x/360.0,size.y/430.0)
 func local_point(source:Vector2)->Vector2:return (size-Vector2(360,430)*fit())/2+source*fit()
@@ -131,7 +134,7 @@ func dispose()->void:
 func _draw()->void:
 	var factor:float=fit()
 	draw_set_transform((size-Vector2(360,430)*factor)/2,0,Vector2.ONE*factor)
-	draw_texture_rect_region(PLATE,Rect2(15,12,321,313),Rect2(42,52,321,313))
+	draw_texture_rect_region(plate,Rect2(15,12,321,313),Rect2(42,52,321,313))
 	# The wheels and latches share a physical housing attached to the clockcase.
 	draw_rect(Rect2(67,300,199,105),Color("111916"))
 	draw_rect(Rect2(70,296,193,105),Color("514936"))
