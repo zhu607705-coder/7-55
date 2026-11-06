@@ -174,3 +174,82 @@ test('a runtime error remains fatal even after an accepted injected network fail
   assert.equal(f.errors.length, 1);
   assert.throws(f.finish, /no page, runtime, script or uncancelled network errors/);
 });
+
+// Execute the runner's independent storage probe, without host status or receipts.
+const { createHash, webcrypto } = await import('node:crypto');
+const sha = bytes => createHash('sha256').update(bytes).digest('hex');
+const cacheProbe = between('async function readContentCache(packs)', 'async function cachedContentEvidence(packs)');
+async function probe(pack, rows, whole, denied = false) {
+  let closed = false;
+  const context = vm.createContext({ ArrayBuffer, Uint8Array, URL, crypto: webcrypto, location: { origin: 'https://synthetic.invalid' },
+    indexedDB: { open(name) {
+      assert.equal(name, '755-godot-resources-v1');
+      if (denied) throw Error('IDB denied');
+      const request = {};
+      queueMicrotask(() => {
+        request.result = { close() { closed = true; }, transaction(storeName, mode) {
+          assert.equal(storeName, 'chunks'); assert.equal(mode, 'readonly');
+          const tx = {}, reads = [];
+          tx.objectStore = () => ({ get(key) { const read = {}; reads.push([key, read]); return read; } });
+          queueMicrotask(() => { for (const [key, read] of reads) read.result = rows.get(key); tx.oncomplete(); });
+          return tx;
+        } };
+        request.onsuccess();
+      });
+      return request;
+    } },
+    caches: { keys: async () => whole ? ['755-godot-content-v1'] : [], open: async name => {
+      assert.equal(name, '755-godot-content-v1');
+      return { match: async key => {
+        assert.equal(key, `https://synthetic.invalid/.755-content-cache/${pack.sha256}.pck`);
+        return new Response(whole);
+      } };
+    } },
+  });
+  const result = await vm.runInContext(`${cacheProbe}\nreadContentCache`, context)([pack]);
+  assert.equal(closed, !denied);
+  return result.packs[0];
+}
+function storedPack(staticChunks = false) {
+  const bytes = new Uint8Array(1048576 + 31).fill(17), pack = { id: 'chapter2_probe', bytes: bytes.length, sha256: sha(bytes) }, rows = new Map();
+  if (staticChunks) pack.transportChunks = [];
+  for (let offset = 0, index = 0; offset < bytes.length; offset += 1048576, index++) {
+    const part = bytes.slice(offset, offset + 1048576), digest = sha(part);
+    if (staticChunks) pack.transportChunks.push({ bytes: part.length, sha256: digest, offset });
+    rows.set(staticChunks ? 'chunk:' + digest : pack.sha256 + ':' + index, { bytes: part.buffer, digest });
+  }
+  return { bytes, pack, rows };
+}
+for (const staticChunks of [false, true]) test(`independent content probe verifies all ${staticChunks ? 'static' : 'ordinary'} IDB bytes and detects a duplicate`, async () => {
+  const { bytes, pack, rows } = storedPack(staticChunks);
+  const idb = await probe(pack, rows);
+  assert.equal(idb.indexedDB.complete, true); assert.equal(idb.indexedDB.sha256, pack.sha256); assert.equal(idb.cacheStorage.present, false);
+  const duplicate = await probe(pack, rows, bytes);
+  assert.equal(duplicate.indexedDB.complete, true); assert.equal(duplicate.cacheStorage.complete, true);
+  assert.equal(!duplicate.indexedDB.complete || !duplicate.cacheStorage.present, false);
+});
+test('independent probe rejects missing/corrupt IDB data but accepts the SHA-verified whole-cache fallback', async () => {
+  const { bytes, pack, rows } = storedPack(); rows.delete(pack.sha256 + ':1');
+  assert.equal((await probe(pack, rows)).indexedDB.complete, false);
+  const fallback = await probe(pack, rows, bytes);
+  assert.equal(fallback.indexedDB.complete, false); assert.equal(fallback.cacheStorage.complete, true);
+  const denied = await probe(pack, rows, bytes, true);
+  assert.equal(denied.indexedDB.complete, false); assert.equal(denied.cacheStorage.complete, true);
+  assert.equal((await probe(pack, rows, bytes.slice(1), true)).cacheStorage.complete, false);
+});
+test('ordinary local block digests cannot replace the full manifest SHA gate', async () => {
+  const { pack, rows } = storedPack(); const row = rows.get(pack.sha256 + ':0');
+  new Uint8Array(row.bytes)[0] ^= 1; row.digest = sha(new Uint8Array(row.bytes));
+  assert.equal((await probe(pack, rows)).indexedDB.complete, false);
+});
+test('independent probe accepts valid legacy static-chunk keys without migrating or writing', async () => {
+  const { pack, rows } = storedPack(true);
+  pack.transportChunks.forEach((chunk, index) => { rows.set(pack.sha256 + ':' + index, rows.get('chunk:' + chunk.sha256)); rows.delete('chunk:' + chunk.sha256); });
+  assert.equal((await probe(pack, rows)).indexedDB.complete, true);
+});
+test('streaming acceptance keeps real reload, zero content network, and items/wallet gates', () => {
+  assert.match(runner, /requests\.length === 0, 'ordinary reload makes no C2 HTTP requests/);
+  assert.match(runner, /performance\.timeOrigin'\) !== oldDocument/);
+  assert.match(runner, /cache-only reload preserves earned items and wallet/);
+  assert.match(runner, /!pack\.indexedDB\.complete \|\| pack\.cacheStorage\.present === false/);
+});

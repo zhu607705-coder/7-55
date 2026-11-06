@@ -1458,7 +1458,9 @@ func _phone_journal_base(title: String) -> VBoxContainer:
 	return content
 
 func _modal_base(title: String,surface: String="paper",preserve_departure: bool=false) -> VBoxContainer:
-	if surface=="selected_journal" and int(State.d.native.chapter)==1 and phone.visible:
+	# Choose the journal shell by the visible surface in every chapter.
+	# World journals retain their landscape reading layer and return behavior.
+	if surface=="selected_journal" and phone.visible:
 		return _phone_journal_base(title)
 	# C1 system/form prompts share phone-paper styling. Authored dialogue,
 	# task pages and every later world/document surface keep their own renderer.
