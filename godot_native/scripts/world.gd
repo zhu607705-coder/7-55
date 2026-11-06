@@ -1979,7 +1979,7 @@ func handle_root_exploration_pointer(event: InputEvent) -> bool:
 
 func _begin_direct_pointer(id:int,point:Vector2,role:String)->void:
 	var duplicate:bool=direct_gestures.pointers.has(id)
-	_direct_gesture_action(direct_gestures.begin(id,point,role,_direct_gesture_context(),State.d))
+	_direct_gesture_action(direct_gestures.begin(id,point,role,_direct_gesture_context(role),State.d))
 	if not duplicate and direct_gestures.pointers.has(id):
 		var target:Dictionary=_pick_target((point-size/2)/zoom+camera) if role=="map" else {}
 		direct_gestures.pointers[id]["target_id"]=str(target.get("id",""))
@@ -1990,8 +1990,14 @@ func _end_direct_pointer(id:int,point:Vector2,canceled:bool)->void:
 		canceled=canceled or str(target.get("id",""))!=str(direct_gestures.pointers[id].get("target_id",""))
 	_direct_gesture_action(direct_gestures.end(id,point,canceled or not Rect2(Vector2.ZERO,size).has_point(point),_direct_gesture_context(),State.d))
 
-func _direct_gesture_context()->Array:
-	return [world_key,str(State.d.get("runtimeMode","")),str(State.d.get("native",{}).get("scene","")),size,camera,zoom,host_node.world_view.get_global_rect() if is_instance_valid(host_node) else get_global_rect()]
+func _direct_gesture_context(role:String="")->Array:
+	# Paddle ownership follows the finger, not the camera following the boat.
+	# Keep the acquired context kind while ignored/competing fingers lift.
+	var water:bool=kayak!=null and (role.begins_with("paddle_") or role.begins_with("water_"))
+	if direct_gestures.has_active():water=direct_gestures.context[4] is Dictionary
+	var transform:Variant=camera
+	if water:transform={"kayak":kayak.get_instance_id() if kayak!=null else 0,"pan":pan_offset,"mode":State.d.native.mode}
+	return [world_key,str(State.d.get("runtimeMode","")),str(State.d.get("native",{}).get("scene","")),size,transform,zoom,host_node.world_view.get_global_rect() if is_instance_valid(host_node) else get_global_rect()]
 
 func _direct_touch_role(local:Vector2)->String:
 	if hud_mode_rect().has_point(local):return "mode"

@@ -64,6 +64,9 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 		let canvasFocusHandler = null;
 		let canvasBlurHandler = null;
 		let inputFocusHandler = null;
+		let documentFocusHandler = null;
+		let documentBlurHandler = null;
+		let disposed = false;
 		let touchCancelHandler = null;
 		let saveWatch = null;
 		let saveUncommitted = false;
@@ -102,21 +105,38 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 			observeVisibility: receive => {
 				const canvas = document.getElementById('canvas');
 				let windowFocused = document.hasFocus();
-				let canvasFocused = !canvas || document.activeElement === canvas;
-				visibilityHandler = () => receive(document.hidden, windowFocused && canvasFocused);
-				focusHandler = () => { windowFocused = true; canvasFocused = !canvas || document.activeElement === canvas; visibilityHandler(); };
+				// Godot 4.7.1 moves text focus to its sibling IME or virtual
+				// keyboard element. Those are part of the game, not a window exit.
+				const gameHasFocus = () => {
+					const active = document.activeElement;
+					if (!canvas || active === canvas) return true;
+					if (!active || active.parentElement !== canvas.parentElement) return false;
+					if (active.matches('div.ime[contenteditable="true"]')) return true;
+					return active.matches('input:not([type="file"]), textarea') &&
+						active.style.position === 'absolute' && active.style.zIndex === '-1' &&
+						!active.disabled;
+				};
+				visibilityHandler = () => {
+					if (!disposed) receive(document.hidden, windowFocused && document.hasFocus() && gameHasFocus());
+				};
+				focusHandler = () => { windowFocused = true; visibilityHandler(); };
 				blurHandler = () => { windowFocused = false; visibilityHandler(); };
-				canvasFocusHandler = () => { canvasFocused = true; windowFocused = document.hasFocus(); visibilityHandler(); };
-				canvasBlurHandler = () => { canvasFocused = false; visibilityHandler(); };
-				// Some mobile returns omit window focus while leaving canvas active.
-				// Reconcile on a real canvas input before the engine routes it. This
-				// restores input availability only; the native Continue still owns resume.
+				canvasFocusHandler = () => { windowFocused = document.hasFocus(); visibilityHandler(); };
+				// During blur, activeElement may temporarily be body. Wait until the
+				// focus handoff settles so an internal text edit never pauses a frame.
+				canvasBlurHandler = () => { Promise.resolve().then(visibilityHandler); };
+				documentFocusHandler = () => { windowFocused = document.hasFocus(); visibilityHandler(); };
+				documentBlurHandler = canvasBlurHandler;
+				// Reconcile mobile returns that omit window focus, without stealing
+				// focus from the engine's active text input.
 				inputFocusHandler = () => {
 					if (document.hidden) return;
-					canvas?.focus(); windowFocused = document.hasFocus();
-					canvasFocused = !canvas || document.activeElement === canvas; visibilityHandler();
+					if (!gameHasFocus()) canvas?.focus();
+					windowFocused = document.hasFocus(); visibilityHandler();
 				};
 				document.addEventListener('visibilitychange', visibilityHandler);
+				document.addEventListener('focusin', documentFocusHandler);
+				document.addEventListener('focusout', documentBlurHandler);
 				window.addEventListener('focus', focusHandler);
 				window.addEventListener('blur', blurHandler);
 				canvas?.addEventListener('focus', canvasFocusHandler);
@@ -189,11 +209,14 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 				cancelSaveWatch(); if (accepted) saveUncommitted = false;
 			},
 			dispose: () => {
+				disposed = true;
 				cancelSaveWatch();
 				window.__GODOT_755_ORIENTATION__?.dispose();
 				window.removeEventListener('beforeunload', beforeUnload);
 				if (input) input.remove();
 				if (visibilityHandler) document.removeEventListener('visibilitychange', visibilityHandler);
+				if (documentFocusHandler) document.removeEventListener('focusin', documentFocusHandler);
+				if (documentBlurHandler) document.removeEventListener('focusout', documentBlurHandler);
 				if (focusHandler) window.removeEventListener('focus', focusHandler);
 				if (blurHandler) window.removeEventListener('blur', blurHandler);
 				const canvas = document.getElementById('canvas');
@@ -659,4 +682,3 @@ func _exit_tree() -> void:
 	_save_callback = null
 	_save_token += 1
 	_save_pending = false
-
