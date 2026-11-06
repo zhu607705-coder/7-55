@@ -83,10 +83,15 @@ func base(b, title: String, back: Callable) -> Control:
 
 func body(b, root: Control, key: String, height: float, bottom: float=0, background: Color=Color.TRANSPARENT) -> Control:
 	var scroll=ScrollContainer.new(); scroll.name="LibraryScroll_"+key; scroll.position=Vector2(0,54); scroll.size=Vector2(378,b.APP_HEIGHT-54-bottom); scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED; root.add_child(scroll)
-	var inner=Control.new(); inner.custom_minimum_size=Vector2(370,maxf(scroll.size.y,height)); inner.size=inner.custom_minimum_size; scroll.add_child(inner)
+	var inner=Control.new(); inner.mouse_filter=Control.MOUSE_FILTER_PASS; inner.custom_minimum_size=Vector2(370,maxf(scroll.size.y,height)); inner.size=inner.custom_minimum_size; scroll.add_child(inner)
 	if background.a>0: b._panel(inner,Rect2(0,0,378,inner.size.y),background)
 	scroll.get_v_scroll_bar().value_changed.connect(func(value): scroll_positions[key]=int(value))
-	root.ready.connect(func(): scroll.scroll_vertical=int(scroll_positions.get(key,0)))
+	root.ready.connect(func():
+		# Let ScrollContainer cancel a card press when it becomes a swipe.
+		# Only body descendants bubble; fixed headers and sheets stay unchanged.
+		for control: Control in inner.find_children("*","Control",true,false):
+			if control is BaseButton or control is LineEdit: control.mouse_filter=Control.MOUSE_FILTER_PASS
+		scroll.scroll_vertical=int(scroll_positions.get(key,0)))
 	return inner
 
 func bottom_nav(b, root: Control, spaces_page: bool=false) -> void:
@@ -299,7 +304,7 @@ func seats(b) -> Control:
 	else:
 		b._panel(inner,Rect2(14,y,350,347),Color.WHITE,BLUE,0,2)
 		var list_scroll=ScrollContainer.new(); list_scroll.name="LibrarySeatListScroll"; list_scroll.position=Vector2(24,y+11); list_scroll.size=Vector2(330,325); list_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED; inner.add_child(list_scroll)
-		var list=Control.new(); list.custom_minimum_size=Vector2(321,ceil(count/4.0)*42); list_scroll.add_child(list)
+		var list=Control.new(); list.mouse_filter=Control.MOUSE_FILTER_PASS; list.custom_minimum_size=Vector2(321,ceil(count/4.0)*42); list_scroll.add_child(list)
 		for i in range(count):
 			var seat="%03d" % (i+1)
 			var target: Button=b._button(list,seat,Rect2((i%4)*81,int(i/4)*42,75,36),func(): select_seat(b,root,seat),BLUE if seat==selected_seat else Color.WHITE,Color.WHITE if seat==selected_seat else INK,0,Color("9d9a93")); target.name="LibrarySeat_"+seat; target.add_theme_font_size_override("font_size",13)
