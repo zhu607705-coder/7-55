@@ -33,7 +33,7 @@ func collect(touch: bool=false) -> void:
 	check(host.z_index==111 and host.z_index>shell.toast.z_index,"moving7 stays visible through its authored text-only taunt")
 	check(named("TiyiSevenPickupSource")==null,"taken7 source cannot be extracted again")
 	check(rect(named("TiyiSourcePlate"))==original_rect and named("TiyiSourcePlate").texture==original_texture,"original count artwork stays fixed throughout extraction")
-	check(named("TiyiSourcePlate").texture.atlas==Seven.SOURCE and named("TiyiSourcePlate").texture.region==Seven.COUNT_REGION,"count uses the original 47 crop without replacing its glyphs")
+	check(named("TiyiSourcePlate").texture.atlas==load(Seven.SOURCE_PATH) and named("TiyiSourcePlate").texture.region==Seven.COUNT_REGION,"count uses the original 47 crop without replacing its glyphs")
 	check(named("TiyiSourcePlate").material.shader.code==Seven.COUNT_TAKEN_SHADER,"taken count removes only the original7 while retaining4")
 	check(cues.count(SEVEN_SOUND)==1 and seven_events.count("tiyi_47")==1,"original10_ and authored tiyi_47 event each occur once")
 	check(cues.count(SEVEN_VOICE)==0,"existing native taunt remains text-only")
@@ -73,7 +73,7 @@ func run() -> void:
 		if revision.sourceFile=="vo.map.json" and revision.get("key","")=="tiyi_47":approved_seven_taunt=revision.newText
 	check(not approved_seven_taunt.is_empty(),"native text-revision catalog owns anchor02 taunt copy")
 	var touch_before: bool=Input.emulate_mouse_from_touch; Input.emulate_mouse_from_touch=true
-	check(Seven.SOURCE.get_size()==Vector2(852,1846),"verified original source dimensions")
+	check(load(Seven.SOURCE_PATH).get_size()==Vector2(852,1846),"verified original source dimensions")
 	check(Seven.SEVEN_REGION.position.x==126 and Seven.SEVEN_REGION.end.x==194,"crop starts strictly after the complete4 atx118")
 	for dimensions: Vector2i in [Vector2i(390,844),Vector2i(430,860),Vector2i(1180,812)]:
 		await fixture(dimensions); await collect(); verify_poses(dimensions)

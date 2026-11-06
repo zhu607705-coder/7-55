@@ -5929,3 +5929,19 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - Corrected only the browser harness expectation for explicitly constructed legacy desktop saves: the validated import now correctly arrives at bonsai. Ordinary page, chapter, scene and import-completion checks retain their original requirements and 60-second limit. The unchanged harness fails two new regression cases; the corrected input/shard suites pass 88/88. Real Chromium desktop-1280 and touch-390 each pass 981 checks, including 0/1 percent imports, save/reload, manual light/music and original plant gates. This local official 4.7.1 rebuild matches CI production sources and fixture hashes; two non-C1 derived videos differ from the CI artifact, so byte-identical export acceptance is not claimed.
 - Updated the static rehearsal test to preserve reading, clear held input, and retain the paper menu's Return/Restart/Exit without a pause action. Input, coordinates, deterministic model and replay assertions remain. The focused test passes 74 checks in 3.6 seconds; its seven previously unrun stages pass. The original main runtime and original test pass 75 checks because main still has one extra Pause-button bounds check. A test-only 20-second failure watchdog prevents the reproduced script-error hang; production, workflow limits, sharding and full-coverage gates are unchanged.
 - The integrated final candidate passes 13/13 selected native stages (eight targets plus five prerequisites) with unchanged inputs; 634 of 647 stages were not selected. Node 22.23.4 input/shard tests pass 59/29 and retained Web quick checks pass 5/5. These focused results do not claim full-suite success; a complete new-head CI run remains required. No merge or deployment is performed.
+
+## 2026-11-06 北教钟表资源延迟加载
+
+- 北教钟表贴图由走廊钟面和维修视图共用。维修视图入树后才读取，正式 Web 导出验证贴图与导入载荷归第 4 章资源包。
+- 本地以 `14e86ac5` 为基线，工作树另含退场动画改动。启动 PCK 从 27,477,800 降至 26,542,956 字节。模拟手机冷启动传输 33,293,970 字节，开始按钮约 14.0 秒就绪。钟表面板和重入测试共 479 项通过。浏览器测量覆盖启动，第四章钟表操作由原生测试验证。
+
+## 2026-11-06 盆栽对象包与启动预算
+
+- 盆栽专用贴图和开花素材独立归入 `phone_bonsai`，通过当前页面状态按需加载，章节预取顺序保持独立。
+- 模拟手机 20 Mbps、60 ms RTT 冷启动至原生主场景为 14.006 秒、26,846,728 字节。盆栽由普通点击进入，3.797 秒可交互，对象包传输 6,434,750 字节。进入前没有盆栽包请求。
+- 浏览器探针可按 10 秒、20 MB 启用硬门槛。当前盆栽节点通过，启动节点仍未通过。
+
+## 2026-11-06 浙大体艺按需资源
+
+- 体艺的原始计数和启动贴图移到 `phone_tiyi`，进入体艺页面后按现有内容门槛加载。正式 Web 包归属检查和原生体艺视觉布局 250 项通过。
+- 20 Mbps、60 ms 延迟模拟手机冷启动至原生主场景为 13.055 秒、25,040,365 字节，盆栽节点为 3.769 秒和 6,434,750 字节。体艺节点的完整浏览器操作等待尚未单独计时。
