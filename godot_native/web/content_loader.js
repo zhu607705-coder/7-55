@@ -138,9 +138,9 @@
       const connection=await db();if(!connection)return null;
       return new Promise(resolve=>{
         let transaction,result=null;
-        try{transaction=connection.transaction('chunks',mode);const request=run(transaction.objectStore('chunks'));if(request)request.onsuccess=()=>{result=request.result;};}
+        try{transaction=connection.transaction('chunks',mode);const request=run(transaction.objectStore('chunks'));if(Array.isArray(request))result=request;else if(request)request.onsuccess=()=>{result=request.result;};}
         catch(_){unavailable=true;stats.storage='unavailable';resolve(null);return;}
-        transaction.oncomplete=()=>resolve(result===undefined?null:result);
+        transaction.oncomplete=()=>resolve(Array.isArray(result)?result.map(request=>request.result):result===undefined?null:result);
         transaction.onerror=transaction.onabort=()=>{unavailable=true;stats.storage='unavailable';resolve(null);};
       });
     }
@@ -176,10 +176,12 @@
         received+=bytes.byteLength;
         if(options.onProgress)options.onProgress(received,resource.bytes,{reusedBytes:reused,networkBytes:network,storage:stats.storage});
       }
+      let cached=[];
       for(let index=0;index<chunks.length;index++) {
         checkSignal(signal);
+        if(index%8===0)cached=await operation('readonly',store=>chunks.slice(index,index+8).map(chunk=>store.get(chunkKey(chunk))))||[];
         const chunk=chunks[index], canonical=chunkKey(chunk);
-        let saved=await operation('readonly',store=>store.get(canonical)), legacy=false;
+        let saved=cached[index%8], legacy=false;cached[index%8]=null;
         if(!saved){saved=await operation('readonly',store=>store.get(key(resource,index)));legacy=!!saved;}
         const bytes=saved && saved.bytes instanceof ArrayBuffer?new Uint8Array(saved.bytes):null;
         if(bytes && bytes.byteLength===chunk.bytes && await digestBytes(bytes,signal)===chunk.sha256) {
@@ -222,9 +224,13 @@
       // Partial chunks are quarantined transport data: every byte, including
       // reused chunks, must pass the manifest's complete SHA before any caller
       // receives them. Their local digest detects a torn/corrupt IDB record.
+      // Queue at most eight 1 MiB block reads per transaction. Await its commit
+      // before trusting any result; retain the same block and whole-file hashes.
+      let cached=[];
       for(let index=0;received<resource.bytes;index++) {
         checkSignal(signal);
-        const saved=await operation('readonly',store=>store.get(key(resource,index)));
+        if(index%8===0)cached=await operation('readonly',store=>Array.from({length:Math.min(8,Math.ceil(resource.bytes/BLOCK_BYTES)-index)},(_,offset)=>store.get(key(resource,index+offset))))||[];
+        const saved=cached[index%8];cached[index%8]=null;
         if(!saved)break;
         const bytes=saved.bytes instanceof ArrayBuffer?new Uint8Array(saved.bytes):null;
         if(!bytes || bytes.byteLength!==Math.min(BLOCK_BYTES,resource.bytes-received) || await digestBytes(bytes,signal)!==saved.digest) {await discard(resource,index);break;}
