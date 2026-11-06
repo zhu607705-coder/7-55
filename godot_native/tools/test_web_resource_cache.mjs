@@ -22,33 +22,65 @@ function chunked(bytes,file='index.pck') {
   return {file,bytes:bytes.length,sha256:hash(bytes),chunks};
 }
 
-function idb(storage,failWrites=false) {
+function idb(storage,failWrites=false,options={}) {
   return {open(){
     const request={};setImmediate(()=>{
       request.result={objectStoreNames:{contains:()=>true},close(){},transaction(name,mode){
-        assert.equal(name,'chunks');const transaction={objectStore(){return {
+        assert.equal(name,'chunks');options.transactions?.push(mode);
+        let pending=0,aborted=false;
+        const transaction={objectStore(){return {
           get:key=>run(()=>storage.get(key)),put:(value,key)=>run(()=>{storage.set(key,structuredClone(value));return key;}),delete:key=>run(()=>storage.delete(key)),
         };}};
-        function run(action){const result={};setImmediate(()=>{
-          if(failWrites&&mode==='readwrite'){transaction.onabort?.();return;}
-          result.result=action();result.onsuccess?.();setImmediate(()=>transaction.oncomplete?.());
+        function run(action){pending++;const result={};setImmediate(()=>{
+          if(aborted)return;
+          if(failWrites&&mode==='readwrite'){aborted=true;transaction.onabort?.();return;}
+          result.result=action();result.onsuccess?.();
+          if(--pending===0)setTimeout(()=>{
+            if(mode==='readonly'&&options.abortReads){aborted=true;transaction.onabort?.();return;}
+            if(mode==='readonly')options.beforeReadCommit?.();
+            transaction.oncomplete?.();
+          },mode==='readonly'?(options.readDelay||0):0);
         });return result;}
         return transaction;
       }};request.onsuccess?.();
     });return request;
   }};
 }
-function fixture({stored=new Map(),fetcher,noIDB=false,failWrites=false,nativeCrypto=false,cryptoDenied=false}={}) {
+function fixture({stored=new Map(),fetcher,noIDB=false,failWrites=false,nativeCrypto=false,cryptoDenied=false,idbOptions={}}={}) {
   const requests=[];
   const context={window:{},document:{baseURI:'http://755-cache.test/7-55/releases/new/'},location:{origin:'http://755-cache.test'},navigator:{},URL,Response,ReadableStream,ArrayBuffer,Uint8Array,Uint32Array,DataView,TextEncoder,setTimeout,AbortController,
     ...(nativeCrypto?{crypto:cryptoDenied?{subtle:{digest:async()=>{throw new Error('Crypto denied fixture');}}}:crypto.webcrypto}:{}),
     fetch:async(url,init)=>{requests.push({url,init});return fetcher?fetcher(url,init,requests.length):new Response(payload);},
-    ...(noIDB?{}:{indexedDB:idb(stored,failWrites)})};
+    ...(noIDB?{}:{indexedDB:idb(stored,failWrites,idbOptions)})};
   vm.runInNewContext(source,context);
   return {api:context.window.Godot755Content,context,requests,stored,cache:context.window.Godot755Content.createResourceCache()};
 }
 const rangeResponse=(bytes,start)=>new Response(bytes.subarray(start),{status:206,headers:{'Content-Range':`bytes ${start}-${bytes.length-1}/${bytes.length}`}});
 function prefix(stored,bytes,count=2){for(let i=0;i<count;i++){const data=Uint8Array.from(bytes.subarray(i*block,(i+1)*block));stored.set(`${hash(bytes)}:${i}`,{bytes:data.buffer,digest:hash(data)});}}
+
+// Warm reads use bounded transactions, without changing integrity or receipts.
+for(const staticChunks of [false,true]) {
+  const bytes=Buffer.alloc(block*17+319);for(let i=0;i<bytes.length;i++)bytes[i]=(i*37+(i>>>11))&255;
+  const item=staticChunks?chunked(bytes):{file:'warm.pck',bytes:bytes.length,sha256:hash(bytes)};
+  const stored=new Map(),transactions=[];
+  if(staticChunks)for(const part of item.chunks){const data=Uint8Array.from(bytes.subarray(part.offset,part.offset+part.bytes));stored.set('chunk:'+part.sha256,{bytes:data.buffer,digest:part.sha256});}
+  else prefix(stored,bytes,Math.ceil(bytes.length/block));
+  const f=fixture({stored,nativeCrypto:true,idbOptions:{transactions},fetcher:()=>{throw Error('warm network forbidden');}});
+  const loaded=await f.cache.load(item);
+  check(Buffer.from(loaded.buffer).equals(bytes)&&loaded.indexedDBComplete&&transactions.length===3&&transactions.every(mode=>mode==='readonly'),`Warm ${staticChunks?'static':'ordinary'} 18-block resource uses three committed reads and retains exact hashes/receipt`);
+}
+{
+  const stored=new Map();prefix(stored,payload,3);const transactions=[];
+  const f=fixture({stored,nativeCrypto:true,idbOptions:{transactions,abortReads:true}});
+  const loaded=await f.cache.load(resource);
+  check(loaded.source==='network'&&!loaded.indexedDBComplete&&f.requests.length===1&&Buffer.from(loaded.buffer).equals(payload),'An aborted read batch exposes no records or durable receipt and safely falls back to verified network');
+}
+{
+  const stored=new Map();prefix(stored,payload,3);const controller=new AbortController();
+  const f=fixture({stored,nativeCrypto:true,idbOptions:{beforeReadCommit:()=>controller.abort()}});
+  await assert.rejects(f.cache.load(resource,{signal:controller.signal}),{name:'AbortError'});
+  check(f.requests.length===0&&f.stored.size===3,'Cancellation during a read batch stops before consumption/network without deleting cached data');
+}
 
 // The pure-JS path is always exercised with crypto entirely absent.
 for(const size of [1,55,56,63,64,65,127,128,129,1024,block+71]) {
@@ -169,7 +201,9 @@ for(const nativeCrypto of [true,false]) {
   const table=chunked(payload),badManifest={...table,sha256:'0'.repeat(64)};
   const f=fixture({nativeCrypto,fetcher:url=>{const part=table.chunks.find(chunk=>url.endsWith(chunk.file));return new Response(payload.subarray(part.offset,part.offset+part.bytes));}});
   await assert.rejects(f.cache.load(badManifest,{response:true}),/Content digest differs/);
-  check(f.stored.size===0,'Whole-resource SHA remains required after per-block verification and removes quarantined blocks: '+(nativeCrypto?'native':'fallback'));
+  check(table.chunks.every(chunk=>f.stored.has('chunk:'+chunk.sha256)),'Whole-resource SHA remains required while independently verified chunks stay reusable: '+(nativeCrypto?'native':'fallback'));
+  const recovered=await f.cache.load(table,{response:true});
+  check(Buffer.from(await recovered.response.arrayBuffer()).equals(payload)&&f.requests.length===table.chunks.length,'A valid whole-resource identity reuses verified chunks after inconsistent metadata was rejected: '+(nativeCrypto?'native':'fallback'));
 }
 {
   const f=fixture({nativeCrypto:true,cryptoDenied:true});
@@ -228,15 +262,18 @@ for(const nativeCrypto of [true,false]) {
 // neither queued cancellation nor late network settlement may leak slots.
 {
   const table=chunked(payload),controller=new AbortController();
-  let released=0,restored=false;
+  let released=0,restored=false,allStarted;
+  const started=new Promise(resolve=>{allStarted=resolve;});
   const f=fixture({nativeCrypto:true,fetcher:(url,init)=>{
+    if(f.requests.length===3)allStarted();
     if(restored){const part=table.chunks.find(item=>url.endsWith(item.file));return new Response(payload.subarray(part.offset,part.offset+part.bytes));}
     return new Promise((_resolve,reject)=>{init.signal.addEventListener('abort',()=>{released++;reject(new Error('cancelled fixture'));},{once:true});});
   }});
   const pending=f.cache.load(table,{signal:controller.signal});
   const queued=f.cache.load(table,{signal:controller.signal});
   const settled=Promise.allSettled([pending,queued]);
-  for(let attempt=0;attempt<1000&&f.requests.length<3;attempt++)await new Promise(resolve=>setImmediate(resolve));
+  let deadline;
+  try{await Promise.race([started,new Promise((_resolve,reject)=>{deadline=setTimeout(()=>reject(new Error('Three workers did not start')),5000);})]);}finally{clearTimeout(deadline);}
   assert.equal(f.requests.length,3);controller.abort();
   const results=await settled;
   check(results.every(item=>item.status==='rejected'&&item.reason.name==='AbortError')&&released===3&&f.requests.length===3,'Cancelling active and queued chunk workers releases every occupied slot without additional requests');

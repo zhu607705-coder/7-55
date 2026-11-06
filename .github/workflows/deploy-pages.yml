@@ -238,6 +238,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           node godot_native/tests/test_web_acceptance_workflow.mjs
           node godot_native/tests/test_web_consumer_source_closure.mjs
+          node godot_native/tests/test_web_source_inventory.mjs
           node godot_native/tests/test_preparation_pipeline.mjs
           node godot_native/tests/test_media_conversion_cache.mjs
           node godot_native/tests/test_resource_import_cache.mjs
@@ -434,7 +435,14 @@ jobs:
           if (!streaming?.controlledFailures?.length || streaming.freshWithBlockedBackground?.evidence.chapter !== 1 || streaming.freshWithBlockedBackground.content.blocking) throw Error('Missing actual first-chapter use with deferred HTTP blocked');
           if (!streaming.requiredFailure?.content.blocking || !streaming.requiredFailure.content.retryVisible || streaming.recovery?.realKeyboardMovement !== true || streaming.recovery.content.blocking) throw Error('Missing required-content failure and real user-retry map recovery');
           const reload = streaming.reload;
-          if (!reload || reload.oldDocumentTimeOrigin === reload.newDocumentTimeOrigin || reload.afterEvidence?.chapter !== 2 || !Array.isArray(reload.chapter2HttpRequests) || reload.chapter2HttpRequests.length !== 0 || !reload.cache?.keys?.length) throw Error('Missing cache-only real-document C2 reload');
+          if (!reload || reload.oldDocumentTimeOrigin === reload.newDocumentTimeOrigin || reload.afterEvidence?.chapter !== 2 || !Array.isArray(reload.chapter2HttpRequests) || reload.chapter2HttpRequests.length !== 0) throw Error('Missing cache-only real-document C2 reload');
+          const expectedPacks = streaming.deferredPacks?.filter(pack => pack.family === 'chapter2'), cachedPacks = reload.cache?.packs;
+          if (!expectedPacks?.length || !Array.isArray(cachedPacks) || cachedPacks.length !== expectedPacks.length || new Set(expectedPacks.map(pack => pack.id)).size !== expectedPacks.length || new Set(cachedPacks.map(pack => pack.id)).size !== cachedPacks.length) throw Error('Missing exact C2 cache coverage');
+          for (const pack of expectedPacks) {
+            const cached = cachedPacks.find(value => value.id === pack.id);
+            const verified = copy => copy?.complete === true && copy.bytes === pack.bytes && copy.sha256 === pack.sha256;
+            if (!cached || !(verified(cached.indexedDB) || verified(cached.cacheStorage)) || (cached.indexedDB?.complete && cached.cacheStorage?.present !== false)) throw Error('Missing SHA-verified, nonduplicated C2 cache: ' + pack.id);
+          }
           const receipt = {sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine,
             inputBundle: JSON.parse(fs.readFileSync('godot_native/exports/verification/verified-streaming-inputs.json', 'utf8')),
             fixtureSha256: fixture.sha256, case: item.id, controlledDeferredFailures: streaming.controlledFailures.length,
