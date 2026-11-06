@@ -204,10 +204,12 @@ await test('moved streaming validator still rejects every missing original fault
       const report = { passed: true, exportManifest: { sourceCommit: sha, engine: '4.7.1.stable.official' },
         cases: [{ id: 'desktop-1280', passed: true, imports: [{ filename: fixture.fixture, sha256: fixture.sha256 }],
           streaming: { controlledFailures: [{ url: 'synthetic.pck' }],
+            deferredPacks: [1, 2].map(index => ({ id: 'chapter2_' + index, family: 'chapter2', bytes: index * 1048576, sha256: String(index).repeat(64) })),
             freshWithBlockedBackground: { evidence: { chapter: 1 }, content: { blocking: false } },
             requiredFailure: { content: { blocking: true, retryVisible: true } },
             recovery: { realKeyboardMovement: true, content: { blocking: false } },
-            reload: { oldDocumentTimeOrigin: 1, newDocumentTimeOrigin: 2, afterEvidence: { chapter: 2 }, chapter2HttpRequests: [], cache: { keys: ['synthetic'] } } } }] };
+            reload: { oldDocumentTimeOrigin: 1, newDocumentTimeOrigin: 2, afterEvidence: { chapter: 2 }, chapter2HttpRequests: [],
+              cache: { packs: [1, 2].map(index => ({ id: 'chapter2_' + index, indexedDB: { complete: true, bytes: index * 1048576, sha256: String(index).repeat(64) }, cacheStorage: { present: false, complete: false } })) } } } }] };
       mutate(report);
       writeFileSync(path.join(directory, 'web-acceptance.json'), JSON.stringify(report));
       return spawnSync(process.execPath, ['--input-type=module'], { input: code, cwd: root,
@@ -218,6 +220,11 @@ await test('moved streaming validator still rejects every missing original fault
     const receipt = JSON.parse(readFileSync(path.join(directory, 'ci-streaming-receipt.json'), 'utf8'));
     assert.deepEqual(receipt.inputBundle, bundle);
     assert.equal(receipt.verified.length, 4);
+    const fallback = run(r => {
+      const pack = r.cases[0].streaming.reload.cache.packs[0];
+      pack.cacheStorage = { ...pack.indexedDB, present: true }; pack.indexedDB = { complete: false };
+    });
+    assert.equal(fallback.status, 0, fallback.stderr);
     for (const [label, mutate] of [
       ['failed report', r => { r.passed = false; }],
       ['wrong source', r => { r.exportManifest.sourceCommit = 'c'.repeat(40); }],
@@ -240,7 +247,17 @@ await test('moved streaming validator still rejects every missing original fault
       ['wrong reloaded chapter', r => { r.cases[0].streaming.reload.afterEvidence.chapter = 1; }],
       ['missing reload network record', r => { delete r.cases[0].streaming.reload.chapter2HttpRequests; }],
       ['network instead of cache', r => { r.cases[0].streaming.reload.chapter2HttpRequests.push({}); }],
-      ['missing cache keys', r => { r.cases[0].streaming.reload.cache.keys = []; }]
+      ['missing cached pack', r => { r.cases[0].streaming.reload.cache.packs.pop(); }],
+      ['duplicate cached pack', r => { const p = r.cases[0].streaming.reload.cache.packs; p[1] = p[0]; }],
+      ['unknown cached pack', r => { r.cases[0].streaming.reload.cache.packs[1].id = 'old_release'; }],
+      ['missing manifest coverage', r => { r.cases[0].streaming.deferredPacks = []; }],
+      ['duplicate manifest identity', r => { const p = r.cases[0].streaming.deferredPacks; p[1] = p[0]; }],
+      ['unverified bytes', r => { r.cases[0].streaming.reload.cache.packs[0].indexedDB.complete = false; }],
+      ['wrong byte size', r => { r.cases[0].streaming.reload.cache.packs[0].indexedDB.bytes++; }],
+      ['wrong SHA', r => { r.cases[0].streaming.reload.cache.packs[0].indexedDB.sha256 = '0'.repeat(64); }],
+      ['duplicate whole copy', r => { r.cases[0].streaming.reload.cache.packs[0].cacheStorage.present = true; }],
+      ['corrupt whole fallback', r => { const p = r.cases[0].streaming.reload.cache.packs[0]; p.cacheStorage = { ...p.indexedDB, present: true, sha256: '0'.repeat(64) }; p.indexedDB.complete = false; }],
+      ['legacy keys without byte evidence', r => { r.cases[0].streaming.reload.cache = { keys: ['synthetic'] }; }]
     ]) assert.notEqual(run(mutate).status, 0, `${label} must not pass the moved validator`);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });

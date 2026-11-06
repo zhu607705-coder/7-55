@@ -41,11 +41,12 @@ async function until(predicate, label) {
 async function quiet() { for (let index = 0; index < 5; index++) await turn(); }
 function response(id, overrides = {}) { return new Response(body(id), { status: 200, ...overrides }); }
 function deferred() { let resolve, reject; const promise = new Promise((yes, no) => { resolve = yes; reject = no; }); return { promise, resolve, reject }; }
-function idb(storage) {
-  return {open(){const request={};setImmediate(()=>{
+function idb(storage, options = {}) {
+  let writes = 0;
+  return {open(){if(options.idbDenied)throw new Error('IDB denied fixture');const request={};setImmediate(()=>{
     request.result={objectStoreNames:{contains:()=>true},close(){},transaction(){const transaction={objectStore(){return {
-      get:key=>run(()=>storage.get(key)),put:(value,key)=>run(()=>{storage.set(key,structuredClone(value));return key;}),delete:key=>run(()=>storage.delete(key))
-    };}};function run(action){const result={};setImmediate(()=>{result.result=action();result.onsuccess?.();setImmediate(()=>transaction.oncomplete?.());});return result;}return transaction;}};request.onsuccess?.();});return request;}};
+      get:key=>run(()=>storage.get(key)),put:(value,key)=>run(()=>{storage.set(key,structuredClone(value));return key;}, true),delete:key=>run(()=>storage.delete(key))
+    };}};function run(action, write=false){const result={};setImmediate(()=>{const aborted=write && ++writes > (options.idbAbortAfterWrites ?? Infinity);result.result=aborted?'uncommitted':action();result.onsuccess?.();setImmediate(()=>aborted?transaction.onabort?.():transaction.oncomplete?.());});return result;}return transaction;}};request.onsuccess?.();});return request;}};
 }
 function chunkedPack(bytes,id='chapter2_large',family='chapter2') {
   const sha256=digest(bytes),transportChunks=[];
@@ -70,7 +71,7 @@ function fixture(options = {}) {
     navigator: { connection: { saveData: Boolean(options.saveData) } },
     URL, Response, TextEncoder, TextDecoder, setTimeout, AbortController, ArrayBuffer, Uint8Array, Uint32Array, DataView, ReadableStream,
     crypto: options.crypto || (options.noCrypto ? {} : crypto.webcrypto),
-    ...(options.idb?{indexedDB:idb(chunks)}:{}),
+    ...(options.idb?{indexedDB:idb(chunks, options)}:{}),
     requestAnimationFrame: callback => { raf.push(callback); return raf.length; },
     fetch: async (url, init) => {
       const info = { url, init, sequence: requests.length + 1 };
@@ -348,8 +349,111 @@ for (const kind of ['truncated', 'overflow']) {
  check('Optional activity is absent from ordinary story background order', !optional.backgroundOrder.includes('flc_activity'));
 }
 
+
+// Real builder policy: only packs above 6,000,000 bytes have static chunks.
+// These simulated stores exercise commit/abort receipts, not browser eviction.
+for (const size of [2097471, 6291775]) {
+  const stored=new Map(), chunks=new Map();
+  for(let release=0;release<4;release++) {
+    const bytes=new Uint8Array(size);
+    for(let i=0;i<size;i++)bytes[i]=(i*31+(i>>>11)+Math.floor(i/1048576)*17)&255;
+    bytes[1048588]=release;
+    const p=chunkedPack(bytes);if(size<=6000000)delete p.transportChunks;
+    const m={...manifest,packs:[p]};
+    const fetch=({url})=>{
+      if(!p.transportChunks)return new Response(bytes);
+      const c=p.transportChunks.find(c=>url.endsWith(c.file));assert.ok(c);
+      return new Response(bytes.subarray(c.offset,c.offset+c.bytes));
+    };
+    const f=fixture({manifest:m,idb:true,stored,chunks,fetch});request(f.host,p.id);
+    await until(()=>f.events.length===1,'durable pack mount');
+    await f.host.acknowledge(p.id,true,'');
+    check(`${size} bytes release ${release}: committed IDB pack has no duplicate whole cache`, stored.size===0);
+    const offline=fixture({manifest:m,idb:true,stored,chunks,fetch:()=>{throw Error('offline');}});
+    request(offline.host,p.id);await until(()=>offline.events.length===1,'offline IDB mount');
+    check(`${size} bytes release ${release}: new loader reconstructs exact offline pack`,offline.copies[0]?.bytes.equals(Buffer.from(bytes)) && offline.requests.length===0);
+    await offline.host.acknowledge(p.id,true,'');offline.host.dispose();f.host.dispose();
+  }
+  const retained=[...chunks.values()].reduce((sum,v)=>sum+v.bytes.byteLength,0);
+  check(`${size} bytes: retains existing versions without a second whole-pack copy`,retained===(size===2097471?8389884:9437503));
+}
+for(const failure of [{idbDenied:true},{idbAbortAfterWrites:0},{idbAbortAfterWrites:1}]) {
+  for(const size of [2097471,6291775]) {
+    const bytes=new Uint8Array(size).fill(73),p=chunkedPack(bytes);if(size<=6000000)delete p.transportChunks;
+    const m={...manifest,packs:[p]};
+    const f=fixture({manifest:m,idb:true,...failure,fetch:({url})=>{
+      if(!p.transportChunks)return new Response(bytes);
+      const c=p.transportChunks.find(c=>url.endsWith(c.file));return new Response(bytes.subarray(c.offset,c.offset+c.bytes));
+    }});
+    request(f.host,p.id);await until(()=>f.events.length===1,'IDB failure mount');
+    check(`${size} bytes ${JSON.stringify(failure)}: no whole cache before mount ACK`,f.stored.size===0);
+    await f.host.acknowledge(p.id,true,'');
+    check(`${size} bytes ${JSON.stringify(failure)}: incomplete IDB keeps whole-cache fallback`,f.stored.size===1);
+    const offline=fixture({manifest:m,stored:f.stored,fetch:()=>{throw Error('offline');}});
+    request(offline.host,p.id);await until(()=>offline.events.length===1,'offline whole-cache mount');
+    check(`${size} bytes ${JSON.stringify(failure)}: fallback supports offline reload`,offline.copies[0]?.bytes.equals(Buffer.from(bytes)) && offline.requests.length===0);
+    await offline.host.acknowledge(p.id,true,'');offline.host.dispose();f.host.dispose();
+  }
+}
+
+// A failed pack owns its release-bound records, not independently verified
+// content-addressed blocks shared with an already accepted offline release.
+{
+  const bytes=Buffer.alloc(6291775);
+  for(let i=0;i<bytes.length;i++)bytes[i]=(i*31+(i>>>11)+Math.floor(i/1048576)*17)&255;
+  const oldPack=chunkedPack(bytes),changed=Buffer.from(bytes);changed[1048588]^=43;
+  const updatedPack=chunkedPack(changed);
+  const fetchPack=(pack,body)=>({url})=>{
+    const chunk=pack.transportChunks.find(item=>url.endsWith(item.file));assert.ok(chunk);
+    return new Response(body.subarray(chunk.offset,chunk.offset+chunk.bytes));
+  };
+  async function acceptedRelease() {
+    const f=fixture({manifest:{...manifest,packs:[oldPack]},idb:true,fetch:fetchPack(oldPack,bytes)});
+    request(f.host,oldPack.id);await until(()=>f.events.length===1,'accepted shared-block release');
+    await f.host.acknowledge(oldPack.id,true,'');
+    check('The accepted old release is retained in IDB without a whole-pack fallback',f.stored.size===0 && f.chunks.size===oldPack.transportChunks.length);
+    f.host.dispose();return f;
+  }
+  for(const failure of ['native','manifest']) {
+    const previous=await acceptedRelease(),pack=structuredClone(updatedPack);
+    // All chunk hashes remain correct. Only this negative control makes the
+    // whole manifest inconsistent; the native-ACK case uses correct metadata.
+    if(failure==='manifest'){pack.sha256='f'.repeat(64);pack.file=`content/${pack.id}-${pack.sha256.slice(0,16)}.pck`;}
+    const update=fixture({manifest:{...manifest,packs:[pack]},idb:true,chunks:previous.chunks,stored:previous.stored,fetch:fetchPack(pack,changed)});
+    request(update.host,pack.id);await until(()=>update.events.length===1,`${failure} rejected update`);
+    if(failure==='native') {
+      check('A correct updated pack reuses shared chunks and reaches native verification',update.requests.length===1 && update.copies[0]?.bytes.equals(changed));
+      await update.host.acknowledge(pack.id,false,'native mount rejected fixture');
+    } else check('Inconsistent whole SHA rejects before any native copy',update.copies.length===0 && /Content digest differs/.test(update.events[0].error));
+    check(`${failure}: pack rejection keeps every verified old-release chunk`,oldPack.transportChunks.every(chunk=>previous.chunks.has('chunk:'+chunk.sha256)));
+    const offline=fixture({manifest:{...manifest,packs:[oldPack]},idb:true,chunks:previous.chunks,stored:previous.stored,fetch:()=>{throw Error('offline fixture');}});
+    request(offline.host,oldPack.id);await until(()=>offline.events.length===1,`${failure} old offline reconstruction`);
+    check(`${failure}: a fresh loader reconstructs the old release exactly without network or whole cache`,offline.requests.length===0 && offline.copies[0]?.bytes.equals(bytes) && previous.stored.size===0);
+    await offline.host.acknowledge(oldPack.id,true,'');offline.host.dispose();
+    request(update.host,pack.id);await quiet();
+    check(`${failure}: rejection remains visible without automatic retry`,record(update.host,pack.id).status==='error' && record(update.host,pack.id).attempts===1);
+    retry(update.host,pack.id);await until(()=>update.events.length===2,`${failure} explicit retry`);
+    if(failure==='native') {
+      check('Explicit retry revalidates cached bytes and offers the exact updated pack for native mounting again',update.requests.length===1 && update.copies.length===2 && update.copies[1].bytes.equals(changed));
+      await update.host.acknowledge(pack.id,true,'');
+      check('A successful native retry completes the rejected updated pack',record(update.host,pack.id).status==='mounted');
+    } else check('Explicit retry of inconsistent metadata still fails whole SHA and never copies a PCK',record(update.host,pack.id).status==='error' && record(update.host,pack.id).attempts===2 && update.copies.length===0 && /Content digest differs/.test(update.events[1].error));
+    update.host.dispose();
+  }
+  const previous=await acceptedRelease(),chunk=oldPack.transportChunks[0],key='chunk:'+chunk.sha256;
+  new Uint8Array(previous.chunks.get(key).bytes)[9]^=1;
+  let evictedBeforeFetch=false;
+  const repaired=fixture({manifest:{...manifest,packs:[oldPack]},idb:true,chunks:previous.chunks,stored:previous.stored,fetch:info=>{
+    evictedBeforeFetch=!previous.chunks.has(key);
+    return fetchPack(oldPack,bytes)(info);
+  }});
+  request(repaired.host,oldPack.id);await until(()=>repaired.events.length===1,'corrupt canonical repair');
+  check('A demonstrably corrupt canonical record is still deleted before fetching only its replacement',evictedBeforeFetch && repaired.requests.length===1 && repaired.copies[0]?.bytes.equals(bytes) && digest(new Uint8Array(previous.chunks.get(key).bytes))===chunk.sha256);
+  repaired.host.dispose();
+}
+
 console.log(JSON.stringify({
   success: true, checks: checks.length, loaderSha256: digest(source),
-  scope: 'Node VM with real SHA-256 and tiny in-memory browser/cache/fetch/engine fixtures; no real video, network download, story mutation or native mounting',
+  scope: 'Node VM with real SHA-256 and in-memory browser/cache/fetch/engine fixtures, including policy-sized packs; no real video, network download, story mutation or native mounting',
   details: checks,
 }, null, 2));

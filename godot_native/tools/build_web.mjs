@@ -138,7 +138,7 @@ function walk(directory) {
   });
 }
 function sourceInventory() {
-  const files = ['scripts', 'scenes', 'data', 'assets', 'campuses'].flatMap(directory => walk(path.join(project, directory)))
+  const files = ['scripts', 'scenes', 'data', 'assets', 'campuses', 'shaders', 'addons', 'ui_assets'].flatMap(directory => walk(path.join(project, directory)))
     .concat(['project.godot', 'export_presets.cfg', ...browserSources, ...deliveryTools].map(file => path.join(project, file)))
     // Import sidecars and newly generated UIDs can differ between a clean CI
     // checkout and an editor workspace; the exported PCK has its own byte hash.
