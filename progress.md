@@ -1,3 +1,11 @@
+## 2026-11-06 认证输入焦点与跨章节手机任务界面
+
+- 独立副本以 `bb842b0b` 开始，提交前已同步到 `02ab5f83`，保留新合入的图书馆触控、存档续玩和缓存修复。`web_platform.gd` 认可 Godot 4.7.1 自有 IME 和虚拟键盘的焦点，延后判断元素间失焦，避免输入过程中暂停整棵场景树；真正的窗口失焦、标签隐藏和外部控件仍阻断游戏，退出时清理新增监听和待执行回调。
+- `main.gd` 按当前可见的手机场景选择共享任务弹窗，不再限制第一章。第一至四章手机任务记录、以及现有第一至二章线索对照复用第一章位置、宽度、字体和关闭控件；地图任务保留现有阅读层与返回现场行为。章节任务内容、线索可用性、控制器及存档语义不变。其他 C1 专用表单样式仍是原有场景设计，未扩大到所有剧情文档。
+- Godot `4.7.1.stable.official.a13da4feb`：源同步、导入/解析完成；实际认证页面 **144 项通过**，含回去填写、连续键入、退格、滚轮及原登录回归；四章手机及地图任务 **264 项通过**，覆盖 `1280×720`、`1440×900`、`390×844`、`844×390`，长记录滚动、焦点、线索对照返回与场景/故事不变性。相同 264 项另在 NVIDIA OpenGL 图形渲染通过，已查看桌面和手机截图。测试使用唯一 Windows 临时用户目录，没有写入正式存档。
+- 执行原有 JS 存档传输回归 **41 项通过**；新增依赖无关的焦点交接/虚拟键盘/窗口及可见性事件/销毁回归通过。本机 Edge `156.0.4314.58` 实际 DOM、连续键盘、退格和滚轮输入通过；使用模拟 Godot 输入接收端，不是完整 WebGL 游戏。无头浏览器没有提供真实切换标签页的失焦，窗口失焦/恢复以明确合成事件和 Node 模型验证。
+- 限制：正式原生总测试入口只支持 Linux/macOS，在 Windows 报 `NATIVE_TEST_PLATFORM_REQUIRED`，因此这里使用明确隔离的定向引擎运行。未完成完整原生/保留 Web 发布套件、完整 Godot WebGL、Firefox/WebKit、真实切换应用窗口及实体手机验收。提交与草稿 PR 单独记录；不自动合并或部署。
+
 ## 2026-11-06 — bounded warm content reads and receipt compatibility
 
 - PR224 head f49b72a1, built with main bb842b0b, passed the actual Chromium streaming scenario (1141 checks): all 16 C2 packs (107,056,752 bytes) had exact IDB SHA coverage without whole-cache duplicates, and a real document reload made zero C2 HTTP requests while preserving items/wallet. However, warm Main took 49,239 ms, and library/Tiyi reloads timed out while still preparing resources. These are release blockers, not completed browser acceptance.
