@@ -89,7 +89,8 @@ function classify(name) {
   // Source/native preview builds remain complete and do not use this planner.
   if (name.startsWith('assets/native/dorm_modular/')) return 'chapter2';
   if (name.startsWith('assets/native/dorm_cabinet/')) return 'chapter2';
-  if (name.startsWith('assets/native/bonsai/')) return 'core';
+  if (/^assets\/ui\/tiyi_(?:main|loading)\.png$/.test(name)) return 'phone_tiyi';
+  if (name.startsWith('assets/native/bonsai/') || /^assets\/ui\/bonsai_(?:bloom|bud)\.png$/.test(name)) return 'phone_bonsai';
   if (/^assets\/rpg\/(campus|landmarks)\//.test(name)) return /loop_panorama/.test(name) ? 'chapter35' : 'chapter2';
   if (/^assets\/rpg\/(portraits|chapter4-stair)\//.test(name)) return 'chapter4';
   if (/^assets\/rpg\/(qizhen_fishing|qizhen)\//.test(name)) return 'chapter35';
@@ -275,7 +276,7 @@ for (const [name, owner] of ownership) {
   if (isFlcRuntimePath(name.replace(/\.(?:import|remap)$/, '')) && owner.group !== 'flc_activity')
     throw new Error(`FLC activity resource promoted outside its admission gate: ${name} (${owner.reason})`);
 }
-const groupOrder = ['core', 'chapter2', 'chapter3', 'chapter35', 'chapter4', 'flc_activity', 'campus_shared', 'campus_chaoyang', 'campus_haidian', 'campus_changping'];
+const groupOrder = ['core', 'phone_bonsai', 'phone_tiyi', 'chapter2', 'chapter3', 'chapter35', 'chapter4', 'flc_activity', 'campus_shared', 'campus_chaoyang', 'campus_haidian', 'campus_changping'];
 const summaries = groupOrder.map(id => {
   const files = entries.filter(entry => ownership.get(entry.path).group === id).sort((a, b) => a.path.localeCompare(b.path, 'en'));
   return { id, count: files.length, payloadBytes: files.reduce((sum, entry) => sum + entry.bytes, 0), paths: files.map(entry => entry.path) };

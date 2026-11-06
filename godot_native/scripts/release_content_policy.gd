@@ -2,6 +2,7 @@ extends RefCounted
 ## Export features select the shipped content; saved state and launch arguments
 ## cannot bring research-only campuses back into a story-only release.
 const STORY_FAMILIES := ["chapter2", "chapter3", "chapter35", "chapter4"]
+const PHONE_FAMILIES := ["phone_bonsai", "phone_tiyi"]
 const ACTIVITY_FAMILIES := ["flc_activity"]
 const CAMPUS_FAMILIES := ["campus_shared", "campus_chaoyang", "campus_haidian", "campus_changping"]
 
@@ -15,7 +16,7 @@ static func campuses_available() -> bool:
 	return not story_only()
 
 static func family_available(family: Variant) -> bool:
-	return family is String and (family in STORY_FAMILIES or family in ACTIVITY_FAMILIES or (campuses_available() and family in CAMPUS_FAMILIES))
+	return family is String and (family in STORY_FAMILIES or family in PHONE_FAMILIES or family in ACTIVITY_FAMILIES or (campuses_available() and family in CAMPUS_FAMILIES))
 
 static func scene_available(path: String) -> bool:
 	var normalized := path.simplify_path()

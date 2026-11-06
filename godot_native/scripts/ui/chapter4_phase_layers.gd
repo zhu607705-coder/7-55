@@ -5,6 +5,12 @@ const FloorSpace=preload("res://scripts/space/north_floor_space.gd")
 const NpcInteractionMotion=preload("res://scripts/presentation/npc_interaction_motion.gd")
 var npc_interaction_motion:RefCounted=NpcInteractionMotion.new()
 var reduced_npc_motion:=false
+var previous_support_floor: String = ""
+var previous_support_people: Array = []
+var departing_support_people: Array = []
+const SUPPORT_SETTLE_MS := 380.0
+const SUPPORT_EXIT_MS := 1680.0
+const ATTENDANT_EXIT_OFFSET := Vector2(42, 0)
 ## Source ChapterFourTemporalMazeScene phase props and ChapterFourClockMotion.
 ## All clocks here are local presentation time; no story state is written.
 const Room=preload("res://scripts/games/chapter4_room204_model.gd")
@@ -35,18 +41,30 @@ func tick(delta: float,state: Dictionary) -> void:
 	var c: Dictionary=state.get("chapter4",{}); var facts: Array=c.get("factIds",[])
 	var key: String=str(c.get("floor",""))+":"+str(c.get("phase",""))+":"+str(c.get("timeState",""))
 	var is_repaired: bool="cart_wheel_repaired" in facts; var is_open: bool="cart_wheel_cover_opened" in facts
-	if not is_same(state,state_owner) or key!=phase_key:
+	var same_owner: bool = is_same(state, state_owner)
+	var floor_id := str(c.get("floor", ""))
+	var active_people := support_people(state)
+	if not same_owner or key!=phase_key:
+		departing_support_people.clear()
+		if same_owner and floor_id == previous_support_floor:
+			for person: Dictionary in previous_support_people:
+				if not active_people.has(person):
+					departing_support_people.append(person)
 		# An ordinary load replaces the owner even in the same phase. Restored
 		# completed props are terminal, not a continuation of retired timing.
 		state_owner=state
 		npc_interaction_motion.reset()
 		phase_key=key; elapsed_ms=0; repair_ms=float(source.maintenanceRuntime.repairedPush.durationMs); oil_ms=9999; repaired=is_repaired; cover_open=is_open
+	previous_support_floor = floor_id
+	previous_support_people = active_people
 	if is_repaired and not repaired: repair_ms=0
 	if is_open and not cover_open: oil_ms=0
 	repaired=is_repaired; cover_open=is_open
 	var step: float=minf(delta,0.05)*1000
 	reduced_npc_motion=bool(state.get("native",{}).get("settings",{}).get("reduced_motion",false))
 	elapsed_ms+=step; repair_ms+=step; oil_ms+=step
+	if reduced_npc_motion or elapsed_ms >= SUPPORT_EXIT_MS:
+		departing_support_people.clear()
 	var next_clock: String=clock_frame(state)+":"+str(c.get("worldTimeSeconds",0))+":"+str("hour_hand_installed" in facts)+":"+str(manual_minute(state))
 	if next_clock!=clock_key: clock_ms=0; clock_key=next_clock
 	clock_ms+=step
@@ -251,6 +269,20 @@ func support_people(state: Dictionary) -> Array:
 	for entry in [source.frontDeskRuntime]+source.supportNpcRuntimes:
 		if c.get("floor","")==entry.storyFloor and c.get("phase","") in entry.activePhases: out.append(entry)
 	return out
+func support_departure_pose(person: Dictionary) -> Dictionary:
+	var travel := clampf((elapsed_ms - SUPPORT_SETTLE_MS) / (SUPPORT_EXIT_MS - SUPPORT_SETTLE_MS), 0.0, 1.0)
+	var guard_walk := str(person.npcId) == "a2_elevator_attendant" and travel > 0.0
+	var position := Room.point(person.position)
+	var walk_time := 0.0
+	if guard_walk:
+		var offset := ATTENDANT_EXIT_OFFSET * smoothstep(0.0, 1.0, travel)
+		position += offset
+		var walk: Dictionary = npcs["guard_walk"]
+		walk_time = offset.length() / 44.0 * float(walk.frameCount) / float(walk.fps) * 1000.0
+	var fade_start := 0.64 if guard_walk else 0.30
+	return {"position": position, "animation": "guard_walk" if guard_walk else person.animation,
+		"time_ms": walk_time, "alpha": 1.0 - smoothstep(fade_start, 1.0, travel)}
+
 func support_interacted(state:Dictionary,target_id:String,action:String,result:Dictionary)->bool:
 	if not bool(result.get("handled",false)):return false
 	var actions:Dictionary={"a1_front_desk_attendant":"c4_front_desk","a2_elevator_attendant":"c4_deduction","a3_reference_teacher":"c4_reference_teacher"}
@@ -377,3 +409,9 @@ func _draw_people(owner: RefCounted,canvas: CanvasItem,context: Dictionary,state
 			if tex!=null:
 				Picker.record(canvas,[str(person.interactionAnchorId)],support_geometry(person,pose,tex))
 			_npc(owner,canvas,context,pose.animation,p,float(person.uniformScale),pose.time_ms,pose.flip,1.0,Rect2(),float(pose.angle_degrees))
+	# A retired visual has no picker registration and cannot receive input.
+	for person: Dictionary in departing_support_people:
+		var pose := support_departure_pose(person)
+		var p: Vector2 = pose.position
+		if _depth(context, p.y, front):
+			_npc(owner, canvas, context, pose.animation, p, float(person.uniformScale), pose.time_ms, false, pose.alpha)

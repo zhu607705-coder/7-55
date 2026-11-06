@@ -138,6 +138,16 @@ func run() -> void:
 		holder.state.chapter4.phase=sample[0]; holder.state.chapter4.floor=sample[1]; holder.state.chapter4.timeState=sample[2]; holder.state.chapter4.factIds=sample[3]
 		var before: Dictionary=holder.state.duplicate(true); layers.tick(0.016,holder.state); holder.queue_redraw(); await process_frame; await process_frame
 		check(holder.state==before,"Presentation never writes story state: "+sample[0]+str(sample[3]))
+	holder.state.chapter4.floor = "A2"
+	holder.state.chapter4.phase = "room204_restore"
+	layers.tick(0.0, holder.state)
+	holder.state.chapter4.phase = "final_minute_recovery"
+	for index in range(20):
+		layers.tick(.05, holder.state)
+	holder.queue_redraw()
+	await process_frame
+	await process_frame
+	check(layers.phases.departing_support_people.size() == 1 and layers.phases.support_people(holder.state).is_empty(), "Canvas draws the outgoing attendant with no active NPC target")
 	holder.queue_free(); await process_frame
 	var honor_holder:Surface=Surface.new();honor_holder.size=Vector2(960,540);honor_holder.layers=layers;honor_holder.state=fresh();root.add_child(honor_holder)
 	await honor_lighting(honor_holder,layers)

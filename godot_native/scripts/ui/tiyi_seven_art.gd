@@ -1,7 +1,7 @@
 extends RefCounted
 ## Native extraction of the verified right-hand7 from the original852×1846
 ## plate. No image is replaced, generated or moved as a whole.
-const SOURCE=preload("res://assets/ui/tiyi_main.png")
+const SOURCE_PATH = "res://assets/ui/tiyi_main.png"
 const SOURCE_SIZE=Vector2(852,1846)
 const SEVEN_REGION=Rect2(126,458,68,98)
 const COUNT_REGION=Rect2(40,458,154,98)
@@ -43,7 +43,7 @@ static func material_for(code: String) -> ShaderMaterial:
 	return material
 static func cutout() -> AtlasTexture:
 	if _cutout==null:
-		_cutout=AtlasTexture.new(); _cutout.atlas=SOURCE; _cutout.region=SEVEN_REGION
+		_cutout=AtlasTexture.new(); _cutout.atlas=load(SOURCE_PATH); _cutout.region=SEVEN_REGION
 	return _cutout
 static func cutout_material() -> ShaderMaterial:
 	if _cutout_material==null: _cutout_material=material_for(CUTOUT_SHADER)
@@ -62,7 +62,7 @@ static func source_rect(plate: TextureRect) -> Rect2:
 
 static func count_texture() -> AtlasTexture:
 	if _count==null:
-		_count=AtlasTexture.new();_count.atlas=SOURCE;_count.region=COUNT_REGION
+		_count=AtlasTexture.new();_count.atlas=load(SOURCE_PATH);_count.region=COUNT_REGION
 	return _count
 
 static func style_count(plate: TextureRect,taken: bool) -> void:

@@ -15,6 +15,9 @@ const width = mobile ? 390 : 1440, height = mobile ? 844 : 900, dpr = mobile ? 3
 const mbps = Number(opt('mbps', '20')), latency = Number(opt('latency', '60'));
 const cpuRate = Number(opt('cpu-rate', '1'));
 if (!Number.isFinite(cpuRate) || cpuRate < 1 || cpuRate > 20) throw new Error('--cpu-rate must be between 1 and 20');
+const probeBonsai = process.argv.includes('--probe-bonsai');
+const enforceBudget = process.argv.includes('--enforce-budget');
+const startupBudget = { milliseconds: 10_000, bytes: 20_000_000 };
 const sampleMs = Number(opt('sample-ms', '8000'));
 const passNames = opt('passes', 'cold,warm-restart').split(',');
 if (!passNames.length || passNames.some(name => !['cold', 'warm-restart'].includes(name)) || passNames[0] !== 'cold') throw new Error('Measure cold before a same-profile warm restart');
@@ -66,7 +69,7 @@ async function run(label){
     const snapshot=()=>evaluate('window.__GODOT_755__?.snapshot?.()??null');
     const tap=async(x,y)=>{if(mobile){await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y,id:1}]});await pause(65);await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});}else{await cdp.send('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,x,y});await pause(65);await cdp.send('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,x,y});}};
     const press=async()=>{await cdp.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});await pause(65);await cdp.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});};
-    const clickText=async text=>{const found=await poll(async()=>{const s=await snapshot();const c=s?.visibleControls?.find(c=>c.text===text&&!c.disabled);return c?{s,c}:null;},text,20000);const g=await evaluate('(()=>{const r=document.getElementById("canvas").getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height};})()');const v=found.s.viewport;const r=found.c.rect;await tap(g.x+(r.x+r.width/2)/(v.width??v.size?.x)*g.width,g.y+(r.y+r.height/2)/(v.height??v.size?.y)*g.height);await pause(350);};
+    const clickText=async (text, byName = false)=>{const found=await poll(async()=>{const s=await snapshot();const c=s?.visibleControls?.find(c=>(byName ? c.name : c.text)===text&&!c.disabled);return c?{s,c}:null;},text,20000);const g=await evaluate('(()=>{const r=document.getElementById("canvas").getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height};})()');const v=found.s.viewport;const r=found.c.rect;await tap(g.x+(r.x+r.width/2)/(v.width??v.size?.x)*g.width,g.y+(r.y+r.height/2)/(v.height??v.size?.y)*g.height);await pause(350);};
     await cdp.send('Page.enable');await cdp.send('Runtime.enable');await cdp.send('Network.enable');await cdp.send('Performance.enable');
     await cdp.send('Emulation.setCPUThrottlingRate',{rate:cpuRate});
     await cdp.send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:dpr,mobile});await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:mobile,maxTouchPoints:5});
@@ -90,6 +93,29 @@ async function run(label){
     row.cadence={samples:frames.length,p50Ms:percentile(.5),p95Ms:percentile(.95),p99Ms:percentile(.99),over50ms:frames.filter(x=>x>50).length};
     const atReady=row.startedAt+row.readyMs;
     row.bootTransfer={requests:row.requests.filter(x=>x.startedAt<=atReady).length,encodedBytes:row.requests.filter(x=>x.finishedAt<=atReady).reduce((s,x)=>s+(x.encodedDataLength||0),0),chunkRequests:row.requests.filter(x=>new URL(x.url).pathname.includes('/boot/')&&x.startedAt<=atReady).length};
+    // Include transfers that finish after the start button but before native input.
+    const playableAt = row.startedAt + row.mainMs;
+    const playableBytes = row.requests.filter(request => request.finishedAt <= playableAt)
+      .reduce((sum, request) => sum + (request.encodedDataLength || 0), 0);
+    row.startupBudget = { limits: startupBudget, milliseconds: row.mainMs, bytes: playableBytes,
+      passed: row.mainMs <= startupBudget.milliseconds && playableBytes <= startupBudget.bytes };
+    if (probeBonsai) {
+      const familyPath = request => new URL(request.url).pathname.includes('/content/phone_bonsai_');
+      if (row.requests.some(familyPath)) throw new Error('Bonsai pack requested before entry');
+      const started = Date.now();
+      await clickText('HomeBonsaiOpen', true);
+      await poll(async () => {
+        const state = await snapshot();
+        return state?.state?.native?.page === 'bonsai' && state.content?.blocking === false
+          && state.content.readyFamilies?.includes('phone_bonsai')
+          && state.visibleControls?.some(control => control.name === 'BonsaiPlant');
+      }, 'bonsai ready for interaction', 20000);
+      const milliseconds = Date.now() - started;
+      const bytes = row.requests.filter(request => request.startedAt >= started && familyPath(request))
+        .reduce((sum, request) => sum + (request.encodedDataLength || 0), 0);
+      row.bonsaiBudget = { limits: startupBudget, milliseconds, bytes,
+        passed: milliseconds <= startupBudget.milliseconds && bytes <= startupBudget.bytes };
+    }
     row.passed=row.errors.length===0&&s.engine==='Godot'&&s.version==='4.7.1-stable (official)';
     console.log(`${label}: ready ${row.readyMs}ms, main ${row.mainMs}ms, boot transfer ${row.bootTransfer.encodedBytes}B, ${row.bootTransfer.chunkRequests} chunks; rAF p95 ${row.cadence.p95Ms}ms`);
   }catch(e){row.error=e.stack;row.passed=false;throw e;}
@@ -99,6 +125,6 @@ async function run(label){
     await fs.writeFile(output,JSON.stringify(report,null,2)+'\n');
   }
 }
-try{for(const name of passNames)await run(name);report.passed=report.passes.every(x=>x.passed);}
+try{for(const name of passNames)await run(name);report.passed=report.passes.every(x=>x.passed && (!enforceBudget || (x.startupBudget.passed && (x.bonsaiBudget?.passed ?? true)))); if (!report.passed) process.exitCode=1;}
 catch(e){report.error=e.stack;process.exitCode=1;}
 finally{report.finishedAt=new Date().toISOString();await fs.rm(owned,{recursive:true,force:true});report.ownedProfileRemoved=true;await fs.writeFile(output,JSON.stringify(report,null,2)+'\n');}
