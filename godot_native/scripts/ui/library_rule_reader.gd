@@ -11,6 +11,8 @@ func build(b,view:Dictionary)->Control:
 	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	root.add_child(scroll)
 	var volume:Control=b._base(Color.TRANSPARENT,1100)
+	# The printed page must pass finger drags to its ScrollContainer.
+	volume.mouse_filter=Control.MOUSE_FILTER_PASS
 	volume.custom_minimum_size=Vector2(296,1100);scroll.add_child(volume)
 	# Cloth cover, inset title plate, spine and exposed page edges share the book.
 	b._panel(volume,Rect2(7,8,282,317),Color("183c3d"),Color("101f25"),0,2)
@@ -32,8 +34,10 @@ func build(b,view:Dictionary)->Control:
 	b._label(volume,"—  755  —",Rect2(44,962,221,25),13,Color("766849"),HORIZONTAL_ALIGNMENT_CENTER)
 	var close:Button=b._button(volume,"合上书",Rect2(44,1035,221,46),func():
 		if not root.get_meta("end_seen",false):return
-		if b.s.ui.libraryFinalsPuzzle.archivedRuleCollected and not b.s.ui.libraryFinalsPuzzle.archivedRuleRead:b.action_requested.emit("lib_read_rule",null)
-		b.page_requested.emit("library_app"),Color("214748"),Color("efe3c5"))
+		var acknowledge:bool=b.s.ui.libraryFinalsPuzzle.archivedRuleCollected and not b.s.ui.libraryFinalsPuzzle.archivedRuleRead
+		# Reading starts narration and locks navigation. Leave the reader first.
+		b.page_requested.emit("library_app")
+		if acknowledge:b.action_requested.emit("lib_read_rule",null),Color("214748"),Color("efe3c5"))
 	close.name="LibraryRuleAction" if b.s.ui.libraryFinalsPuzzle.archivedRuleCollected and not b.s.ui.libraryFinalsPuzzle.archivedRuleRead else "LibraryRuleClose"
 	close.disabled=not root.get_meta("end_seen",false)
 	var bar:VScrollBar=scroll.get_v_scroll_bar()
