@@ -169,7 +169,9 @@ for(const nativeCrypto of [true,false]) {
   const table=chunked(payload),badManifest={...table,sha256:'0'.repeat(64)};
   const f=fixture({nativeCrypto,fetcher:url=>{const part=table.chunks.find(chunk=>url.endsWith(chunk.file));return new Response(payload.subarray(part.offset,part.offset+part.bytes));}});
   await assert.rejects(f.cache.load(badManifest,{response:true}),/Content digest differs/);
-  check(f.stored.size===0,'Whole-resource SHA remains required after per-block verification and removes quarantined blocks: '+(nativeCrypto?'native':'fallback'));
+  check(table.chunks.every(chunk=>f.stored.has('chunk:'+chunk.sha256)),'Whole-resource SHA remains required while independently verified chunks stay reusable: '+(nativeCrypto?'native':'fallback'));
+  const recovered=await f.cache.load(table,{response:true});
+  check(Buffer.from(await recovered.response.arrayBuffer()).equals(payload)&&f.requests.length===table.chunks.length,'A valid whole-resource identity reuses verified chunks after inconsistent metadata was rejected: '+(nativeCrypto?'native':'fallback'));
 }
 {
   const f=fixture({nativeCrypto:true,cryptoDenied:true});

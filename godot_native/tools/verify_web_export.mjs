@@ -1293,14 +1293,62 @@ async function prepareStreamingFault() {
   await active.cdp.send('Network.setBlockedURLs', { urls: deferredUrls });
 }
 
-async function cachedContentKeys() {
-  return evaluate(`(async()=>{
-    if(typeof caches==='undefined')return {available:false,names:[],keys:[]};
-    const names=await caches.keys();
-    if(!names.includes('755-godot-content-v1'))return {available:true,names,keys:[]};
-    const cache=await caches.open('755-godot-content-v1');
-    return {available:true,names,keys:(await cache.keys()).map(request=>request.url)};
-  })()`);
+// Independent readonly storage evidence, not the loader's in-memory receipt.
+async function readContentCache(packs) {
+  const digest = async bytes => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), byte => byte.toString(16).padStart(2, '0')).join('');
+  let db, cache, indexedDBError = '', cacheError = '';
+  try {
+    db = await new Promise((resolve, reject) => {
+      const request = indexedDB.open('755-godot-resources-v1');
+      request.onupgradeneeded = () => request.transaction.abort();
+      let blocked = false;
+      request.onsuccess = () => { if (blocked) request.result.close(); else resolve(request.result); };
+      request.onerror = () => reject(request.error);
+      request.onblocked = () => { blocked = true; reject(new Error('Content database blocked')); };
+    });
+  } catch (error) { indexedDBError = String(error); }
+  try {
+    if ((await caches.keys()).includes('755-godot-content-v1')) cache = await caches.open('755-godot-content-v1');
+  } catch (error) { cacheError = String(error); }
+  const results = [];
+  try {
+    for (const pack of packs) {
+      const result = { id: pack.id, indexedDB: { complete: false }, cacheStorage: { present: cacheError ? null : false, complete: false } };
+      if (db) try {
+        const chunks = pack.transportChunks || pack.chunks;
+        const count = chunks ? chunks.length : Math.ceil(pack.bytes / 1048576);
+        const rows = await new Promise((resolve, reject) => {
+          const tx = db.transaction('chunks', 'readonly'), store = tx.objectStore('chunks'), requests = [];
+          for (let index = 0; index < count; index++) requests.push({ canonical: chunks ? store.get('chunk:' + chunks[index].sha256) : null, legacy: store.get(pack.sha256 + ':' + index) });
+          tx.oncomplete = () => resolve(requests.map(row => row.canonical?.result || row.legacy.result));
+          tx.onerror = tx.onabort = () => reject(tx.error || new Error('Content read aborted'));
+        });
+        const whole = new Uint8Array(pack.bytes); let offset = 0, valid = true;
+        for (let index = 0; index < rows.length; index++) {
+          const row = rows[index], bytes = row?.bytes instanceof ArrayBuffer ? new Uint8Array(row.bytes) : null;
+          const expectedBytes = chunks ? chunks[index].bytes : Math.min(1048576, pack.bytes - offset);
+          const expectedDigest = chunks ? chunks[index].sha256 : row?.digest;
+          if (!bytes || bytes.length !== expectedBytes || await digest(bytes) !== expectedDigest) { valid = false; break; }
+          whole.set(bytes, offset); offset += bytes.length;
+        }
+        const sha256 = valid && offset === pack.bytes ? await digest(whole) : null;
+        result.indexedDB = { complete: sha256 === pack.sha256, bytes: offset, sha256 };
+      } catch (error) { result.indexedDB.error = String(error); }
+      if (cache) try {
+        const response = await cache.match(new URL('/.755-content-cache/' + pack.sha256 + '.pck', location.origin).href);
+        if (response) {
+          const bytes = await response.arrayBuffer(), sha256 = await digest(bytes);
+          result.cacheStorage = { present: true, complete: response.ok && bytes.byteLength === pack.bytes && sha256 === pack.sha256, bytes: bytes.byteLength, sha256 };
+        }
+      } catch (error) { result.cacheStorage.present = null; result.cacheStorage.error = String(error); }
+      results.push(result);
+    }
+  } finally { if (db) db.close(); }
+  return { indexedDBError, cacheError, packs: results };
+}
+
+async function cachedContentEvidence(packs) {
+  return evaluate(`(${readContentCache.toString()})(${JSON.stringify(packs)})`);
 }
 
 function storyEvidence(value) {
@@ -1380,9 +1428,12 @@ async function streamingCase() {
   active.screenshots.push(await screenshot('desktop-streaming-campus-recovered'));
   active.streaming.recovery = { at: Date.now(), evidence: storyEvidence(await snapshot()), content: ready.content, realKeyboardMovement: moved };
 
-  const expectedCacheKeys = chapter2Packs.map(pack => new URL('/.755-content-cache/' + pack.sha256 + '.pck', new URL(url).origin).href);
-  const cached = await poll(async () => { const value = await cachedContentKeys(); return value.available && expectedCacheKeys.every(key => value.keys.includes(key)) ? value : null; }, 'only natively accepted C2 chunks are committed to actual CacheStorage', 60000);
-  check(cached.available && expectedCacheKeys.every(key => cached.keys.includes(key)), 'CacheStorage contains every verified C2 chunk under its full SHA-256 identity', cached);
+  const cached = await poll(async () => {
+    const value = await cachedContentEvidence(chapter2Packs);
+    return value.packs.every(pack => pack.indexedDB.complete || pack.cacheStorage.complete) ? value : null;
+  }, 'natively accepted C2 packs have complete SHA-verified browser storage', 60000);
+  check(cached.packs.every(pack => pack.indexedDB.complete || pack.cacheStorage.complete), 'every C2 pack has an independently verified persisted copy', cached);
+  check(cached.packs.every(pack => !pack.indexedDB.complete || pack.cacheStorage.present === false), 'complete IDB packs have no duplicate whole-pack CacheStorage entry', cached);
   active.streaming.cacheBeforeReload = cached;
   await settings(); await saveProgressAndWait('streaming explicit save'); await interval(1600);
   const saved = await snapshot();
@@ -1398,7 +1449,7 @@ async function streamingCase() {
   check(requests.length === 0, 'ordinary reload makes no C2 HTTP requests while all deferred URLs remain explicitly blocked', requests);
   check(await evaluate('performance.timeOrigin') !== oldDocument && state(resumed).native.chapter === 2 && state(resumed).native.scene === 'campus_bootstrap', 'cache recovery occurs in a new real document and retains the saved C2 route');
   check(hash(JSON.stringify(state(resumed).items)) === hash(JSON.stringify(state(saved).items)) && hash(JSON.stringify(state(resumed).wallet)) === hash(JSON.stringify(state(saved).wallet)), 'cache-only reload preserves earned items and wallet');
-  active.streaming.reload = { beforeEvidence: storyEvidence(saved), afterEvidence: storyEvidence(resumed), mainReadyMs: reloaded.mainReadyMs, oldDocumentTimeOrigin: oldDocument, newDocumentTimeOrigin: await evaluate('performance.timeOrigin'), chapter2HttpRequests: requests, cache: await cachedContentKeys() };
+  active.streaming.reload = { beforeEvidence: storyEvidence(saved), afterEvidence: storyEvidence(resumed), mainReadyMs: reloaded.mainReadyMs, oldDocumentTimeOrigin: oldDocument, newDocumentTimeOrigin: await evaluate('performance.timeOrigin'), chapter2HttpRequests: requests, cache: await cachedContentEvidence(chapter2Packs) };
   active.screenshots.push(await screenshot('desktop-streaming-campus-cache-reload'));
   check(active.streaming.controlledFailures.length > 0 && active.streaming.controlledFailures.every(failure => active.deferredUrls.has(failure.url) && ['', 'net::ERR_BLOCKED_BY_CLIENT'].includes(failure.errorText) && failure.blockedReason === 'inspector'), 'only explicitly injected deferred inspector blocks are recorded as controlled failures', active.streaming.controlledFailures);
   console.log('desktop-1280: earned C2 file import, visible failure/retry, full-family map recovery and cache-only real reload passed');

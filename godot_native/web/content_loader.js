@@ -147,16 +147,17 @@
     const key=(resource,index)=>resource.sha256+':'+index;
     const chunkKey=chunk=>'chunk:'+chunk.sha256;
     async function discard(resource,first=0) {
+      // A pack-level failure invalidates only its quarantined legacy records.
+      // Independently verified SHA-addressed chunks may serve another release;
+      // loadChunks removes a canonical record only when that block is corrupt.
       for(let index=first;index<Math.ceil(resource.bytes/BLOCK_BYTES);index++) {
         await operation('readwrite',store=>store.delete(key(resource,index)));
-        const chunks=resource.transportChunks||resource.chunks;
-        if(chunks)await operation('readwrite',store=>store.delete(chunkKey(chunks[index])));
       }
     }
-    function completed(resource,options,output,reused,network) {
+    function completed(resource,options,output,reused,network,persisted) {
       stats.reusedBytes+=reused;
       const source=network?(reused?'resumed-network':'network'):'verified-cache';
-      if(!options.response)return {buffer:output.buffer,source,reusedBytes:reused};
+      if(!options.response)return {buffer:output.buffer,source,reusedBytes:reused,indexedDBComplete:persisted===resource.bytes};
       let index=0;
       const stream=new ReadableStream({pull(controller){if(index===output.length){controller.close();return;}const bytes=output[index];output[index++]=null;controller.enqueue(bytes);},cancel(){output.length=0;}});
       return {response:new Response(stream,{headers:{'Content-Type':'application/wasm','Content-Length':String(resource.bytes)}}),source,reusedBytes:reused};
@@ -168,7 +169,7 @@
       if(options.signal)options.signal.addEventListener('abort',cancel,{once:true});
       try {
       const output=options.response?[]:new Uint8Array(resource.bytes), missing=[];
-      let received=0,reused=0,network=0,next=0;
+      let received=0,reused=0,network=0,next=0,persisted=0;
       function accept(index,bytes) {
         checkSignal(signal);
         if(options.response)output[index]=bytes;else output.set(bytes,chunks[index].offset);
@@ -186,7 +187,7 @@
             const migrated=await operation('readwrite',store=>store.put({bytes:bytes.buffer,digest:chunk.sha256},canonical));
             if(migrated!==null)await operation('readwrite',store=>store.delete(key(resource,index)));
           }
-          reused+=bytes.byteLength;accept(index,bytes);
+          persisted+=bytes.byteLength;reused+=bytes.byteLength;accept(index,bytes);
         }
         else {if(saved)await operation('readwrite',store=>store.delete(legacy?key(resource,index):canonical));missing.push(index);}
       }
@@ -199,7 +200,7 @@
           const bytes=await fetchChunk(chunk,options.priority,signal);network+=bytes.byteLength;stats.networkBytes+=bytes.byteLength;
           if(bytes.byteLength!==chunk.bytes || await digestBytes(bytes,signal)!==chunk.sha256)throw new Error('Chunk digest or size differs');
           const saved=await operation('readwrite',store=>store.put({bytes:bytes.buffer,digest:chunk.sha256},chunkKey(chunk)));
-          if(saved!==null)stats.writtenBytes+=bytes.byteLength;
+          if(saved!==null){stats.writtenBytes+=bytes.byteLength;persisted+=bytes.byteLength;}
           accept(index,bytes);
         }
       }
@@ -208,14 +209,14 @@
       catch(error){controller.abort();await Promise.allSettled(workers);throw error;}
       const digest=options.response?await digestParts(output,signal):await digestBytes(output,signal);
       if(digest!==resource.sha256){await discard(resource);throw new Error('Content digest differs');}
-      return completed(resource,options,output,reused,network);
+      return completed(resource,options,output,reused,network,persisted);
       } finally {if(options.signal)options.signal.removeEventListener('abort',cancel);}
     }
     async function load(resource,options={}) {
       const signal=options.signal;checkSignal(signal);
       if(resource && (resource.transportChunks!==undefined||resource.chunks!==undefined))return loadChunks(resource,options);
       const url=identity(resource), output=options.response?[]:new Uint8Array(resource.bytes);
-      let received=0, reused=0, network=0;
+      let received=0, reused=0, network=0, persisted=0;
       const progress=()=>{if(options.onProgress)options.onProgress(received,resource.bytes,{reusedBytes:reused,networkBytes:network,storage:stats.storage});};
       const accept=bytes=>{checkSignal(signal);if(options.response)output.push(bytes);else output.set(bytes,received);received+=bytes.byteLength;progress();};
       // Partial chunks are quarantined transport data: every byte, including
@@ -227,7 +228,7 @@
         if(!saved)break;
         const bytes=saved.bytes instanceof ArrayBuffer?new Uint8Array(saved.bytes):null;
         if(!bytes || bytes.byteLength!==Math.min(BLOCK_BYTES,resource.bytes-received) || await digestBytes(bytes,signal)!==saved.digest) {await discard(resource,index);break;}
-        reused+=bytes.byteLength;accept(bytes);
+        persisted+=bytes.byteLength;reused+=bytes.byteLength;accept(bytes);
       }
       if(received<resource.bytes) {
         const release=await acquire(signal);
@@ -268,7 +269,7 @@
         if(response.status===200 && received) {
           // A server may ignore Range (including gzip delivery). Consume its
           // complete decoded body without mixing it with a cached prefix.
-          received=0;reused=0;if(options.response)output.length=0;
+          received=0;reused=0;persisted=0;if(options.response)output.length=0;
         }
         let block=new Uint8Array(Math.min(BLOCK_BYTES,resource.bytes-received)), filled=0;
         async function append(bytes) {
@@ -282,7 +283,7 @@
               const index=received/BLOCK_BYTES;
               const digest=await digestBytes(block,signal);
               const saved=await operation('readwrite',store=>store.put({bytes:block.buffer,digest},key(resource,index)));
-              if(saved!==null)stats.writtenBytes+=block.byteLength;
+              if(saved!==null){stats.writtenBytes+=block.byteLength;persisted+=block.byteLength;}
               accept(block);block=new Uint8Array(Math.min(BLOCK_BYTES,resource.bytes-received));filled=0;
             }
           }
@@ -299,7 +300,7 @@
       if(digest!==resource.sha256){await discard(resource);throw new Error('Content digest differs');}
       // WASM is streamed to Godot's official fetch-based preloader. No second
       // whole-file concatenation or persistent override of browser fetch.
-      return completed(resource,options,output,reused,network);
+      return completed(resource,options,output,reused,network,persisted);
     }
     return {load,discard,snapshot:()=>({...stats})};
   }
@@ -403,6 +404,8 @@
       if (!response) {
         const loaded = await resourceCache.load(record.pack, { signal, priority: foreground.has(record.pack.id) ? 'high' : 'low', onProgress: count => { if(active===run&&!disposed&&!signal.aborted)record.received = count; } });
         current(run);
+        // Only completed IDB transactions count toward a complete cached pack.
+        record.indexedDBComplete = loaded.indexedDBComplete;
         record.source = loaded.source;
         record.buffer = loaded.buffer;
         const path = '/755-content/' + record.pack.sha256 + '.pck';
@@ -484,7 +487,7 @@
         record.status = accepted ? 'mounted' : 'error'; record.error = accepted ? '' : String(message || 'Content verification failed');
         const store = await cache();
         if(disposed||active!==run)return;
-        if (accepted && store && record.source !== 'verified-cache') {
+        if (accepted && store && !record.indexedDBComplete && record.source !== 'verified-cache') {
           await store.put(cacheKey(record.pack), new Response(record.buffer, { headers: { 'Content-Type': 'application/octet-stream' } })).catch(() => {});
         } else if (!accepted && store) await store.delete(cacheKey(record.pack)).catch(() => {});
         if (!accepted) await resourceCache.discard(record.pack);
