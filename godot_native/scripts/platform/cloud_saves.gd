@@ -244,7 +244,7 @@ func _use_guest() -> void:
 	_applying=false
 	if not result.get("ok",false) or result.get("corrupt",false): _failure({"error":"本机游客存档无法读取，原文件已保留。请导出备份后检查。"},true);return
 	has_save=bool(result.get("hasSave",false));_dirty=false
-	if _transport!=null: _transport.pending(false)
+	if _transport!=null: _set_transport_pending(false)
 	_set_status("游客试玩 · 进度仅保存在本机");_resume()
 
 func _download(snapshot: Dictionary) -> Dictionary:
@@ -303,7 +303,7 @@ func _install(prepared: Dictionary) -> void:
 	if generation!=_epoch: return
 	if not persisted: _failure({"error":"云存档仍在，但本机备份尚未确认，请重试；暂时不要刷新。"});return
 	_pending={};_dirty=false;has_save=true
-	_transport.pending(false);_set_status("云端已保存 · "+_saved_time(str(head.current.savedAt)));_resume()
+	_set_transport_pending(false);_set_status("云端已保存 · "+_saved_time(str(head.current.savedAt)));_resume()
 
 func _upload(captured: Dictionary,kind: String="save") -> Dictionary:
 	var generation:=_epoch
@@ -377,14 +377,18 @@ func _enter_if_entry() -> void:
 	var current:=get_tree().current_scene
 	if current!=null and current.has_method("open_story"): current.open_story.call_deferred()
 
+func _set_transport_pending(value: bool) -> void:
+	if _transport!=null: _transport.pending(value)
+
 func _mark_dirty() -> void:
 	if _applying or State.developer_mode: return
 	if member_id.is_empty():
+		has_save=true
 		JavaScriptBridge.force_fs_sync()
 		return
 	if not _dirty: _dirty_age=0
 	_dirty=true;_quiet=0
-	if _transport!=null: _transport.pending(true)
+	if _transport!=null: _set_transport_pending(true)
 	_set_status("已写入本机 · 云端同步中…")
 
 func flush() -> void:
@@ -400,8 +404,8 @@ func flush() -> void:
 	if _pending.is_empty() and captured_digest==_last_local_digest:
 		# The server already acknowledged these exact game bytes, but the local
 		# write above still needs its own durability confirmation.
-		_dirty=false;_busy=false;_transport.pending(false)
-		_set_status("云端已保存 · "+_saved_time(str(head.get("current",{}).get("savedAt",""))))
+		_reconcile_acknowledged_progress()
+		_busy=false
 		return
 	_set_status("正在上传账号进度…")
 	var result: Dictionary=await _upload(captured)
@@ -413,12 +417,25 @@ func flush() -> void:
 		_last_local_digest=_digest(acknowledged)
 		_record("cloud-sync.json",{"revision":head.revision,"cloudDigest":head.current.digest,"localDigest":_last_local_digest})
 		_pending={}
-		var latest: Dictionary=State.capture_cloud_bundle()
-		_dirty=latest.get("ok",false) and _digest(latest.bundle)!=_last_local_digest
-		if not _dirty: _transport.pending(false);_set_status("云端已保存 · "+_saved_time(str(head.current.savedAt)))
-		else: _quiet=0;_dirty_age=0;_set_status("正在同步后续进度…")
+		_reconcile_acknowledged_progress()
 	else: _failure(result)
 	_busy=false
+
+func _reconcile_acknowledged_progress() -> void:
+	# Disk/network acknowledgements describe the captured bytes, not changes
+	# made while awaiting them. Failed capture is unknown, never clean.
+	var latest: Dictionary=State.capture_cloud_bundle()
+	if not latest.get("ok",false):
+		_dirty=true
+		_set_transport_pending(true)
+		_failure(latest)
+		return
+	_dirty=_digest(latest.bundle)!=_last_local_digest
+	_set_transport_pending(_dirty)
+	if _dirty:
+		_quiet=0;_dirty_age=0;_set_status("正在同步后续进度…")
+	else:
+		_set_status("云端已保存 · "+_saved_time(str(head.get("current",{}).get("savedAt",""))))
 
 func save_now() -> void:
 	if member_id.is_empty():
