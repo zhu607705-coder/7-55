@@ -10,7 +10,7 @@ import crypto from 'node:crypto';
 const source=fs.readFileSync(new URL('../web/content_loader.js',import.meta.url),'utf8');
 const hash=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
 const block=1024*1024;
-function fixture({chunked=true,bytes=block*3+129,loader=source,bodyFallback=false,noCrypto=false}={}) {
+function fixture({chunked=true,bytes=block*3+129,loader=source,bodyFallback=false,noCrypto=false,copyDelayMs=0}={}) {
   const data=Buffer.alloc(bytes);for(let i=0;i<bytes;i++)data[i]=(i*37+(i>>>10))&255;
   const pack={id:'chapter2_fixture',family:'chapter2',bytes,sha256:hash(data)};
   pack.file=`content/${pack.id}-${pack.sha256.slice(0,16)}.pck`;
@@ -47,7 +47,7 @@ function fixture({chunked=true,bytes=block*3+129,loader=source,bodyFallback=fals
         async arrayBuffer(){const out=await new Response(bytes).arrayBuffer();end();return out;}};
     }};
   vm.runInNewContext(loader,context);
-  const host=context.window.Godot755Content.create({manifest,engine:{copyToFS(path,buffer){copies.push({at:time,bytes:Buffer.from(buffer),path});}}});
+  const host=context.window.Godot755Content.create({manifest,engine:{copyToFS(path,buffer){time+=copyDelayMs;copies.push({at:time,bytes:Buffer.from(buffer),path});}}});
   host.install((id,path,error)=>events.push({id,path,error,at:time}));
   const snapshot=()=>JSON.parse(host.snapshot());
   async function step(ms=16,frame=true) {
@@ -130,4 +130,14 @@ test('persistent low FPS defers optional work, but never blocks explicit foregro
   for(let i=0;i<20;i++)await f.step(50);
   assert.equal(f.snapshot().backgroundBudget.consumedBytes,before);
   f.demand();await f.until(()=>f.events.length>0,1000);assert.equal(f.requests.length,1);assert.equal(f.events[0].error,'');f.host.dispose();
+});
+
+test('stage timings separate response preparation, synchronous FS copy and native acknowledgement',async()=>{
+  const f=fixture({bytes:99,copyDelayMs:12});f.demand();await f.until(()=>f.events.length>0);
+  const timing=f.snapshot().packs[0].timings;assert.equal(timing.copyToFsMs,12);
+  for(const key of ['bytesReadyMs','pacingWaitMs','cacheLookupMs','cacheStorageReadMs','cacheReadMs','cacheWriteMs','verifyMs','reassemblyMs'])assert(Number.isFinite(timing[key])&&timing[key]>=0,key);
+  assert.equal(timing.pacingWaitMs,0);assert.equal(timing.nativeAckMs,undefined);
+  const before=f.now();await f.step(25);await f.host.acknowledge(f.pack.id,true,'');
+  assert(f.snapshot().packs[0].timings.nativeAckMs>=f.now()-before);
+  timing.copyToFsMs=-1;assert.equal(f.snapshot().packs[0].timings.copyToFsMs,12);f.host.dispose();
 });

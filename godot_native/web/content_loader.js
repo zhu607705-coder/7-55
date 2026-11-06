@@ -5,6 +5,7 @@
   // works on a plain-IP HTTP origin, where CacheStorage/WebCrypto do not.
   const BLOCK_BYTES = 1024 * 1024;
   const BACKGROUND_SLICE_BYTES = 64 * 1024;
+  const clockNow = () => globalThis.performance ? performance.now() : Date.now();
   function sha256() {
     const state = new Uint32Array([0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19]);
     const constants = new Uint32Array([0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2]);
@@ -84,8 +85,8 @@
   // and HTTP buffers may receive ahead; only a server can enforce a hard rate.
   function createBackgroundBudget() {
     const sliceBytes=BACKGROUND_SLICE_BYTES, targetBytesPerSecond=512*1024;
-    const now=()=>globalThis.performance ? performance.now() : Date.now();
-    let began=null, nextAt=0, quietUntil=0, lastFrame=0, consumedBytes=0, waits=0;
+    const now=clockNow;
+    let began=null, nextAt=0, quietUntil=0, lastFrame=0, consumedBytes=0, waits=0, waitMs=0;
     const sleepers=new Set();
     function wake() { for(const finish of [...sleepers])finish(); }
     function sleep(ms,signal) {
@@ -111,7 +112,7 @@
         while(!required()) {
           const delay=Math.max(nextAt,quietUntil)-now();
           if(delay<=0)break;
-          waits++;await sleep(Math.min(delay,250),signal);checkSignal(signal);
+          waits++;const began=now();await sleep(Math.min(delay,250),signal);waitMs+=now()-began;checkSignal(signal);
         }
         if(required())return;
         const current=now();if(began===null)began=current;const age=current-began;
@@ -119,7 +120,7 @@
         // Do not accumulate credit while idle or hidden, then burst on return.
         nextAt=current+1000*bytes/rate;consumedBytes+=bytes;
       },
-      snapshot:()=>({targetBytesPerSecond,sliceBytes,consumedBytes,waits,framePressure:now()<quietUntil})
+      snapshot:()=>({targetBytesPerSecond,sliceBytes,consumedBytes,waits,waitMs,framePressure:now()<quietUntil})
     };
   }
   function identity(resource) {
@@ -144,7 +145,10 @@
     let database, unavailable=false;
     let activeDownloads=0;
     const waitingDownloads=[];
-    const stats={storage:'opening',reusedBytes:0,networkBytes:0,writtenBytes:0};
+    const stats={storage:'opening',reusedBytes:0,networkBytes:0,writtenBytes:0,cacheReadMs:0,cacheWriteMs:0,readTransactions:0,writeTransactions:0,verifyMs:0,reassemblyMs:0};
+    async function verifyBytes(bytes,signal,cooperative) {
+      const began=clockNow();try{return await digestBytes(bytes,signal,cooperative);}finally{stats.verifyMs+=clockNow()-began;}
+    }
     function acquire(signal) {
       checkSignal(signal);
       return new Promise((resolve,reject)=>{
@@ -194,8 +198,11 @@
       return unavailable?Promise.resolve(null):database;
     }
     async function operation(mode,run) {
+      const began=clockNow();
       const connection=await db();if(!connection)return null;
-      return new Promise(resolve=>{
+      return new Promise(done=>{
+        const read=mode==='readonly';stats[read?'readTransactions':'writeTransactions']++;
+        const resolve=value=>{stats[read?'cacheReadMs':'cacheWriteMs']+=clockNow()-began;done(value);};
         let transaction,result=null;
         try{transaction=connection.transaction('chunks',mode);const request=run(transaction.objectStore('chunks'));if(request)request.onsuccess=()=>{result=request.result;};}
         catch(_){unavailable=true;stats.storage='unavailable';resolve(null);return;}
@@ -230,7 +237,9 @@
       let received=0,reused=0,network=0,next=0;
       function accept(index,bytes) {
         checkSignal(signal);
+        const began=clockNow();
         if(options.response)output[index]=bytes;else output.set(bytes,chunks[index].offset);
+        stats.reassemblyMs+=clockNow()-began;
         received+=bytes.byteLength;
         if(options.onProgress)options.onProgress(received,resource.bytes,{reusedBytes:reused,networkBytes:network,storage:stats.storage});
       }
@@ -241,7 +250,7 @@
         if(!saved){saved=await operation('readonly',store=>store.get(key(resource,index)));legacy=!!saved;}
         const bytes=saved && saved.bytes instanceof ArrayBuffer?new Uint8Array(saved.bytes):null;
         if(options.pace)await options.pace(0,signal);
-        if(bytes && bytes.byteLength===chunk.bytes && await digestBytes(bytes,signal,!!options.pace)===chunk.sha256) {
+        if(bytes && bytes.byteLength===chunk.bytes && await verifyBytes(bytes,signal,!!options.pace)===chunk.sha256) {
           if(legacy) {
             const migrated=await operation('readwrite',store=>store.put({bytes:bytes.buffer,digest:chunk.sha256},canonical));
             if(migrated!==null)await operation('readwrite',store=>store.delete(key(resource,index)));
@@ -257,7 +266,7 @@
           checkSignal(signal);
           const index=missing[next++], chunk=chunks[index];
           const bytes=await fetchChunk(chunk,options.priority,signal,options.pace);network+=bytes.byteLength;stats.networkBytes+=bytes.byteLength;
-          if(bytes.byteLength!==chunk.bytes || await digestBytes(bytes,signal,!!options.pace)!==chunk.sha256)throw new Error('Chunk digest or size differs');
+          if(bytes.byteLength!==chunk.bytes || await verifyBytes(bytes,signal,!!options.pace)!==chunk.sha256)throw new Error('Chunk digest or size differs');
           const saved=await operation('readwrite',store=>store.put({bytes:bytes.buffer,digest:chunk.sha256},chunkKey(chunk)));
           if(saved!==null)stats.writtenBytes+=bytes.byteLength;
           accept(index,bytes);
@@ -266,7 +275,7 @@
       const workers=Array.from({length:Math.min(options.pace?1:3,missing.length)},worker);
       try { await Promise.all(workers); }
       catch(error){controller.abort();await Promise.allSettled(workers);throw error;}
-      const digest=options.response?await digestParts(output,signal):await digestBytes(output,signal,!!options.pace);
+      const digest=options.response?await digestParts(output,signal):await verifyBytes(output,signal,!!options.pace);
       if(digest!==resource.sha256){await discard(resource);throw new Error('Content digest differs');}
       return completed(resource,options,output,reused,network);
       } finally {if(options.signal)options.signal.removeEventListener('abort',cancel);}
@@ -277,7 +286,7 @@
       const url=identity(resource), output=options.response?[]:new Uint8Array(resource.bytes);
       let received=0, reused=0, network=0;
       const progress=()=>{if(options.onProgress)options.onProgress(received,resource.bytes,{reusedBytes:reused,networkBytes:network,storage:stats.storage});};
-      const accept=bytes=>{checkSignal(signal);if(options.response)output.push(bytes);else output.set(bytes,received);received+=bytes.byteLength;progress();};
+      const accept=bytes=>{checkSignal(signal);const began=clockNow();if(options.response)output.push(bytes);else output.set(bytes,received);stats.reassemblyMs+=clockNow()-began;received+=bytes.byteLength;progress();};
       // Partial chunks are quarantined transport data: every byte, including
       // reused chunks, must pass the manifest's complete SHA before any caller
       // receives them. Their local digest detects a torn/corrupt IDB record.
@@ -287,7 +296,7 @@
         const saved=await operation('readonly',store=>store.get(key(resource,index)));
         if(!saved)break;
         const bytes=saved.bytes instanceof ArrayBuffer?new Uint8Array(saved.bytes):null;
-        if(!bytes || bytes.byteLength!==Math.min(BLOCK_BYTES,resource.bytes-received) || await digestBytes(bytes,signal)!==saved.digest) {await discard(resource,index);break;}
+        if(!bytes || bytes.byteLength!==Math.min(BLOCK_BYTES,resource.bytes-received) || await verifyBytes(bytes,signal)!==saved.digest) {await discard(resource,index);break;}
         reused+=bytes.byteLength;accept(bytes);
       }
       if(received<resource.bytes) {
@@ -344,7 +353,7 @@
             checkSignal(signal);block.set(bytes.subarray(at,at+take),filled);filled+=take;at+=take;
             if(filled===block.byteLength) {
               const index=received/BLOCK_BYTES;
-              const digest=await digestBytes(block,signal,!!options.pace);
+              const digest=await verifyBytes(block,signal,!!options.pace);
               const saved=await operation('readwrite',store=>store.put({bytes:block.buffer,digest},key(resource,index)));
               if(saved!==null)stats.writtenBytes+=block.byteLength;
               accept(block);block=new Uint8Array(Math.min(BLOCK_BYTES,resource.bytes-received));filled=0;
@@ -359,7 +368,7 @@
         if(received!==resource.bytes || filled)throw new Error('Incomplete content');
         } finally {release();}
       }
-      const digest=options.response?await digestParts(output,signal):await digestBytes(output,signal,!!options.pace);
+      const digest=options.response?await digestParts(output,signal):await verifyBytes(output,signal,!!options.pace);
       if(digest!==resource.sha256){await discard(resource);throw new Error('Content digest differs');}
       // WASM is streamed to Godot's official fetch-based preloader. No second
       // whole-file concatenation or persistent override of browser fetch.
@@ -459,24 +468,34 @@
       const required=[...foreground].some(id=>id!==active.record.pack.id&&records.get(id).status==='idle');
       if(!optionalAllowed() || !prefetchFamilies.has(active.record.pack.family) || required)active.controller.abort();
     }
+    function mountDownloaded(run) {
+      current(run);const record=run.record, after=resourceCache.snapshot();
+      // Wall times include async waits; they are not CPU-time measurements.
+      const timing={bytesReadyMs:clockNow()-run.startedAt,pacingWaitMs:budget.snapshot().waitMs-run.waitBefore,cacheLookupMs:run.cacheLookupMs,cacheStorageReadMs:run.cacheStorageReadMs||0};
+      for(const key of ['cacheReadMs','cacheWriteMs','readTransactions','writeTransactions','verifyMs','reassemblyMs'])timing[key]=(after[key]||0)-(run.cacheBefore[key]||0);
+      timing.verifyMs+=run.cacheStorageVerifyMs||0;
+      const began=clockNow(), path='/755-content/'+record.pack.sha256+'.pck';
+      engine.copyToFS(path,record.buffer);timing.copyToFsMs=clockNow()-began;
+      record.timings=timing;record.status='mounting';run.ackStartedAt=clockNow();
+      notify(record,path,'');
+    }
     async function download(run) {
       const record=run.record, signal=run.controller.signal;
       const pace=run.optional ? (bytes,signal)=>budget.pace(bytes,signal,()=>foreground.has(record.pack.id)) : null;
       const store = await cache();
       current(run);
+      const lookupBegan=clockNow();
       let response = record.attempts === 1 && store ? await abortable(store.match(cacheKey(record.pack)).catch(() => null),signal) : null;
       current(run);
+      run.cacheLookupMs=clockNow()-lookupBegan;
       record.source = response ? 'verified-cache' : 'network';
       if (!response) {
         const loaded = await resourceCache.load(record.pack, { signal, pace, priority: foreground.has(record.pack.id) ? 'high' : 'low', onProgress: count => { if(active===run&&!disposed&&!signal.aborted)record.received = count; } });
         current(run);
         record.source = loaded.source;
         record.buffer = loaded.buffer;
-        const path = '/755-content/' + record.pack.sha256 + '.pck';
-        if(pace)await pace(0,signal);current(run);
-        engine.copyToFS(path, record.buffer);
-        record.status = 'mounting';
-        notify(record, path, '');
+        if(pace)await pace(0,signal);
+        mountDownloaded(run);
         return;
       }
       if (!response.ok) throw new Error('HTTP ' + response.status);
@@ -487,7 +506,8 @@
         let count = 0;
         try {
           while (true) {
-            const chunk = await abortable(reader.read(),signal);
+            const began=clockNow();const chunk = await abortable(reader.read(),signal);
+            run.cacheStorageReadMs=(run.cacheStorageReadMs||0)+clockNow()-began;
             current(run);
             if (chunk.done) break;
             if (count + chunk.value.byteLength > bytes.byteLength) throw new Error('Content size differs');
@@ -500,23 +520,22 @@
         } catch (error) { await reader.cancel().catch(() => {}); throw error; }
         if (count !== record.pack.bytes) throw new Error('Incomplete content');
       } else {
-        bytes = new Uint8Array(await abortable(response.arrayBuffer(),signal));current(run);record.received = bytes.byteLength;
+        const began=clockNow();bytes = new Uint8Array(await abortable(response.arrayBuffer(),signal));
+        run.cacheStorageReadMs=clockNow()-began;current(run);record.received = bytes.byteLength;
         if (bytes.byteLength !== record.pack.bytes) throw new Error('Content size differs');
       }
-      if (await digestBytes(bytes,signal,!!pace) !== record.pack.sha256) throw new Error('Content digest differs');
+      const verifyBegan=clockNow(), digest=await digestBytes(bytes,signal,!!pace);run.cacheStorageVerifyMs=clockNow()-verifyBegan;
+      if (digest !== record.pack.sha256) throw new Error('Content digest differs');
       current(run);
       record.buffer = bytes.buffer;
-      const path = '/755-content/' + record.pack.sha256 + '.pck';
-      if(pace)await pace(0,signal);current(run);
-      engine.copyToFS(path, record.buffer);
-      record.status = 'mounting';
-      notify(record, path, '');
+      if(pace)await pace(0,signal);
+      mountDownloaded(run);
     }
     async function pump() {
       if (disposed || !receive || active) return;
       const record = next();
       if (!record) return;
-      const run={record,controller:new AbortController(),optional:!foreground.has(record.pack.id)};
+      const run={record,controller:new AbortController(),optional:!foreground.has(record.pack.id),startedAt:clockNow(),cacheBefore:resourceCache.snapshot(),waitBefore:budget.snapshot().waitMs};
       active = run; record.status = 'downloading'; record.error = ''; record.received = 0; record.attempts++;
       try { await download(run); }
       catch (error) {
@@ -557,6 +576,7 @@
         const record = records.get(id);
         const run=active;
         if (disposed || !record || !run || record !== run.record || record.status !== 'mounting') return;
+        record.timings.nativeAckMs=clockNow()-run.ackStartedAt;
         record.status = accepted ? 'mounted' : 'error'; record.error = accepted ? '' : String(message || 'Content verification failed');
         const store = await cache();
         if(disposed||active!==run)return;
@@ -572,7 +592,7 @@
         // boot/chunk workers. Whole-PCK copy/hash/mount remains indivisible.
         requestAnimationFrame(() => requestAnimationFrame(() => { if(!disposed&&!background){background = true;requestAnimationFrame(frame);pump();} }));
       },
-      snapshot: () => JSON.stringify({ background, saveData:saveData(), backgroundBudget:budget.snapshot(), prefetchFamilies: [...prefetchFamilies], active: active ? active.record.pack.id : '', resourceCache: resourceCache.snapshot(), packs: Array.from(records.values(), r => ({ id: r.pack.id, family: r.pack.family, status: r.status, received: r.received, bytes: r.pack.bytes, error: r.error, source: r.source, attempts: r.attempts })) }),
+      snapshot: () => JSON.stringify({ background, saveData:saveData(), backgroundBudget:budget.snapshot(), prefetchFamilies: [...prefetchFamilies], active: active ? active.record.pack.id : '', resourceCache: resourceCache.snapshot(), packs: Array.from(records.values(), r => ({ id: r.pack.id, family: r.pack.family, status: r.status, received: r.received, bytes: r.pack.bytes, error: r.error, source: r.source, attempts: r.attempts, timings: r.timings || {} })) }),
       dispose: () => {
         disposed = true;receive = null;budget.wake();
         if(typeof window.removeEventListener==='function')for(const name of ['online','offline'])window.removeEventListener(name,onVisibility);
