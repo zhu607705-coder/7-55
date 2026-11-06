@@ -64,6 +64,47 @@ func run()->void:
 	state.d=state.d.duplicate(true);phases.tick(0,state.d)
 	check(phases.npc_interaction_motion.responses.is_empty(),"ordinary load retires prior response")
 
+	var exit_state: Dictionary = state.d.duplicate(true)
+	exit_state.native.settings.reduced_motion = false
+	exit_state.chapter4.floor = "A2"
+	var exits: RefCounted = Phases.new()
+	exits.tick(0.0, exit_state)
+	var attendant: Dictionary = exits.support_people(exit_state)[0]
+	var origin := Vector2(700, 224)
+	exit_state.chapter4.phase = "final_minute_recovery"
+	var retired_state := exit_state.duplicate(true)
+	exits.tick(0.0, exit_state)
+	check(exits.support_people(exit_state).is_empty() and exits.departing_support_people.size() == 1, "departing actor immediately leaves the active interaction roster")
+	var leaving: Dictionary = exits.support_departure_pose(attendant)
+	check(leaving.position == origin and leaving.alpha == 1.0 and leaving.animation == attendant.animation, "departure starts with a still beat at the original feet")
+	for index in range(18):
+		exits.tick(.05, exit_state)
+	leaving = exits.support_departure_pose(attendant)
+	check(leaving.animation == "guard_walk" and leaving.position.x > origin.x and leaving.time_ms > 0, "attendant walks along the hall with a distance-driven gait")
+	for index in range(16):
+		exits.tick(.05, exit_state)
+	check(exits.departing_support_people.is_empty() and exit_state == retired_state, "departure expires without writing game state")
+	exit_state.chapter4.floor = "A3"
+	exit_state.chapter4.phase = "room204_restore"
+	exits.tick(0.0, exit_state)
+	exit_state.chapter4.phase = "final_minute_recovery"
+	exits.tick(0.0, exit_state)
+	for index in range(20):
+		exits.tick(.05, exit_state)
+	leaving = exits.support_departure_pose(exits.departing_support_people[0])
+	check(leaving.position == pivot and leaving.alpha < 1.0 and leaving.animation == teacher.animation, "teacher fades at the authored feet using her own artwork")
+	exits.tick(0.0, exit_state.duplicate(true))
+	check(exits.departing_support_people.is_empty(), "restoring a save cancels outgoing presentation")
+	exit_state.chapter4.phase = "room204_restore"
+	exits.tick(0.0, exit_state)
+	exit_state.chapter4.floor = "A1"
+	exits.tick(0.0, exit_state)
+	check(exits.departing_support_people.is_empty(), "changing floors never draws an actor from the old floor")
+	exit_state.native.settings.reduced_motion = true
+	exit_state.chapter4.phase = "final_minute_recovery"
+	exits.tick(0.0, exit_state)
+	check(exits.departing_support_people.is_empty(), "reduced motion skips the outgoing pose")
+
 	# Exercise the real world/controller path, including distance rejection.
 	state.begin_checkpoint("c4-755-room204-1850")
 	var world:Control=load("res://scripts/world.gd").new();world.size=Vector2(960,540);root.add_child(world);world.set_process(false)

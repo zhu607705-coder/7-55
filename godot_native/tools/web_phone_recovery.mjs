@@ -351,10 +351,14 @@ export async function phoneRecoveryCase(h) {
     for (let i = 0; i < 3; i++) {
       const current = await h.poll(async () => {
         const value = await read();
-        return value.state.native.page === 'phone_home' || value.visibleControls.some(c => ['PhoneNav_exit', 'PhoneNav_back'].includes(c.name)) ? value : null;
+        if (value.content?.blocking) return null;
+        const currentPage = value.state.native.page;
+        if (currentPage === 'phone_home') return value;
+        if (currentPage === 'bonsai' && !value.visibleControls.some(c => c.name === 'BonsaiPlant')) return null;
+        return value.visibleControls.some(c => !c.disabled && ['PhoneNav_exit', 'PhoneNav_back'].includes(c.name)) ? value : null;
       }, 'ordinary return navigation');
       if (current.state.native.page === 'phone_home') return;
-      const nav = current.visibleControls.find(c => c.name === 'PhoneNav_exit') || current.visibleControls.find(c => c.name === 'PhoneNav_back');
+      const nav = current.visibleControls.find(c => c.name === 'PhoneNav_exit' && !c.disabled) || current.visibleControls.find(c => c.name === 'PhoneNav_back' && !c.disabled);
       await click(nav.name);
     }
     await page('phone_home');

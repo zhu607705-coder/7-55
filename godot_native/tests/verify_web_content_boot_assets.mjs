@@ -97,6 +97,10 @@ function verifyDeferredWorldAssets(folder, delivery) {
   asset('scenes/theater/funhouse_stage_editable.scn', 'chapter3');
   asset('assets/native/theater_chest_20261023/prop_chest_overhead_body_v2.png', 'chapter3');
   asset('assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_power_panel_states_v01.png', 'chapter4');
+  asset('assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_clock_states_v01.png', 'chapter4');
+  for (const art of ['main', 'loading']) asset(`assets/ui/tiyi_${art}.png`, 'phone_tiyi');
+  for (const art of ['bloom', 'bud']) asset(`assets/ui/bonsai_${art}.png`, 'phone_bonsai');
+  for (const art of ['flower_opening_24', 'flower_clean_backing', 'flower_closed_reference']) asset(`assets/native/bonsai/${art}.png`, 'phone_bonsai');
   for (const direction of ['', '_up', '_down']) asset(`assets/rpg/npcs/finale/guard_walk${direction}_8frame.png`, 'chapter4');
   asset('assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_a2_room204_furniture_v02.png', 'chapter4');
   return { checked: [...checked].sort(), resources: checked.size, importedPayloads: payloads.size, deferredResourceBytes: [...payloads.values()].reduce((sum, bytes) => sum + bytes, 0) };
