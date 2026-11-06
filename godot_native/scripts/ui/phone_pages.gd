@@ -1612,8 +1612,10 @@ func _zju_row(body: Control, y: float, title: String, detail: String, label: Str
 
 func _zju_utility(root: Control) -> void:
 	var titles={"smart_classroom":"智云课堂","network_account":"网络缴费","campus_map":"校园地图","logistics":"后勤服务","lost_found":"失物招领","visitor_preview":"访客预约预览","language_cards":"慧学外语","feedback_draft":"开发者反馈","all_apps":"全部应用","contacts":"通讯录","messages":"消息","profile":"我的"}
-	_header(root,titles.get(zjuding_panel,"浙大钉"),Color("f8faff"),BLUE,_zju_back,"back","返回浙大钉")
+	var classroom: bool = zjuding_panel=="smart_classroom"
+	_header(root,titles.get(zjuding_panel,"浙大钉"),Color.WHITE if classroom else Color("f8faff"),INK if classroom else BLUE,_zju_back,"back","返回浙大钉")
 	var body=_zju_scroll(root,57)
+	if classroom: body.get_parent().size.y+=60
 	var network={"campus_wifi":"校园网已连接","cellular":"当前使用移动数据","offline":"当前处于离线状态"}.get(s.networkMode,"")
 	match zjuding_panel:
 		"smart_classroom","network_account","campus_map","language_cards": campus_services.build(self,body,zjuding_panel)
@@ -1665,7 +1667,7 @@ func _zju_utility(root: Control) -> void:
 				for item in JSON.parse_string(FileAccess.get_file_as_string("res://data/source/items.config.json")):
 					if item.id==zjuding_detail: info.text=str(item.get("description",item.get("intro",item.name)))
 		"visitor_preview","feedback_draft": _zju_draft_form(body)
-	_zju_nav(root,zjuding_panel if zjuding_panel in ["contacts","messages","profile"] else "all_apps")
+	if not classroom: _zju_nav(root,zjuding_panel if zjuding_panel in ["contacts","messages","profile"] else "all_apps")
 
 func _zju_draft_form(body: Control) -> void:
 	var visitor=zjuding_panel=="visitor_preview"

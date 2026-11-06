@@ -2953,6 +2953,7 @@ func _on_phone_page(page: String) -> void:
 func _on_phone_action(id: String,value: Variant) -> void:
 	if is_instance_valid(phone_object_pickup): phone_object_pickup.capture_action(id,page_body,State.d)
 	match id:
+		"smart_classroom_notice": _feedback(str(value)); return
 		"native_save_manager": CloudSaves.show_manager(); return
 		"native_open_community": CommunityPortal.open_community(); return
 		"native_player_account": CommunityPortal.open_account(); return
