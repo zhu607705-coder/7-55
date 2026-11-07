@@ -38,14 +38,18 @@
 				1024,
 				1536
 			],
-			"outputSha256": "e424e8aa8b3514b5784cc6103a4b760fc2e4c21d8c880e297af10ccbd5304157",
+			"outputSha256": "8308d9eec213c63f133948e925a053d77fc1f83842e99fed3017742e7276e4b0",
 			"palette": "755-campus-morning-32",
+			"seatPoint": [
+				0.5,
+				0.472872316837311
+			],
 			"size": [
 				466,
 				700
 			],
-			"source": "godot_native/art_source/library_object_depth_20261104/originals/chair_north.png",
-			"sourceSha256": "d3683e63b569836c274a151a7f5ba54ef656c4e354bd5fa235345b9fb737cf37",
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/chair_south.png",
+			"sourceSha256": "86418503040274cd631e0499d8e9c238d1d477c6e67a0bb552c4ceb45b355c92",
 			"uniformScale": true
 		},
 		"chair_south": {
@@ -309,33 +313,33 @@
 		"table": {
 			"binaryAlpha": true,
 			"masterSize": [
-				1430,
-				1100
+				1433,
+				1098
 			],
-			"outputSha256": "9b1170460fd9e826cffd5cec81161df921d1d1de5859e4d90d24fcbc9d1bc4f7",
+			"outputSha256": "93f4b402bcbb1bb3e050ccef156b953045cbf8b7262857adb780e6fffe52dc5a",
 			"palette": "755-campus-morning-32",
 			"size": [
 				700,
 				537
 			],
-			"source": "godot_native/art_source/library_object_depth_20261104/originals/table.png",
-			"sourceSha256": "f04877a9f27169cd4f241128e4788df6781b9040851f9649af1609a1e43c7d9a",
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/catalog_desk_full.png",
+			"sourceSha256": "18468d7b6a6ba981c496ec602b5916c89d18bd58fabec3d87381a52f8cde851e",
 			"uniformScale": true
 		},
 		"table_oblique": {
 			"binaryAlpha": true,
 			"masterSize": [
-				1586,
-				992
+				1677,
+				938
 			],
-			"outputSha256": "b93daf0a366296d55817ed835466e64f3f6583998b3ece2c069ccd21061ba9ad",
+			"outputSha256": "54e1448805c032f5228d52e526d6be60a66635488317908c90b704e4d53d6dd2",
 			"palette": "755-campus-morning-32",
 			"size": [
 				700,
 				391
 			],
-			"source": "godot_native/art_source/library_object_depth_20261104/originals/table_oblique.png",
-			"sourceSha256": "22c1b5bde5b25d80dca1cc0ac686486bb6e84068573d3a50401a14efeae470dc",
+			"source": "godot_native/art_source/library_object_depth_20261104/originals/reading_table_full.png",
+			"sourceSha256": "2ef346bba995842a0d98a2c887c9f0547a096336ea5673444e9fbe05bc198bf1",
 			"uniformScale": true
 		},
 		"terminal": {
@@ -360,11 +364,11 @@
 				790,
 				1989
 			],
-			"outputSha256": "5b541ab8074e33cae438498a03040271a4cd8e5d7431410999a532d0c9339a60",
+			"outputSha256": "5cd511c137a64c4fc2ea622ceca79c3c3b6623cc4bed4ef5d3fd68827d2bba2e",
 			"palette": "755-campus-morning-32",
 			"size": [
 				121,
-				700
+				560
 			],
 			"source": "godot_native/art_source/library_object_depth_20261104/originals/turnstile.png",
 			"sourceSha256": "7259e77919a87a4a9b8985dc5513e56c47aeac521ff5b1c6df8bf1cd1eaf5bd8",

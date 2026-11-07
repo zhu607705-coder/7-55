@@ -2,7 +2,7 @@ extends SceneTree
 ## Declared entrance fixtures exercise the live renderer/body/input. The existing
 ## routed library entry test separately earns the introduction and record by UI.
 const Metrics=preload("res://scripts/player_metrics.gd")
-const Door=preload("res://scripts/presentation/library_entrance_door.gd")
+const Gate=preload("res://scripts/presentation/library_turnstiles.gd")
 var checks:=0
 var failures:=0
 var state:Node
@@ -28,7 +28,7 @@ func finger(point:Vector2,down:bool)->void:
 func move_input(direction:Vector2,ticks:int,touch:bool)->void:
 	var code:int=KEY_W if direction==Vector2.UP else KEY_S
 	if touch:
-		var anchor:=Vector2(715,641.5 if direction==Vector2.UP else 770)
+		var anchor:=Vector2(715,695 if direction==Vector2.UP else 848)
 		var point:Vector2=(anchor+Metrics.FOOT_CENTER_OFFSET-world.camera)*world.zoom+world.size/2
 		finger(point,true);finger(point,false)
 		for i:int in range(240):
@@ -49,9 +49,10 @@ func run()->void:
 	var source:=FileAccess.get_file_as_string("res://../src/scenes/rpg/LibraryInteriorModel.ts")
 	for literal:String in ["x: 750","y: 724","closedLeftX: 697","closedRightX: 803","openOffset: 56","blockerY: 742","sensorHalfWidth: 156","sensorHalfHeight: 142"]:
 		check(source.contains(literal),"retained Web source geometry "+literal)
-	# Wide landscape can see around the glass assembly. Its original source
-	# spawn between the turnstiles must not yield a route through painted outer
-	# masonry. This is the exact physical path found by production Web QA.
+	fixture("library_interior",Vector2(715,790))
+	check(world.player==Vector2(715,842) and not state.d.native.has("lib_admission_recorded") and not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"old vestibule save resumes outside the new gate without earning a record")
+	# The legacy and current entry spawns must both be contained by the new
+	# gate row and the source plate's south masonry.
 	for dimensions:Vector2 in [Vector2(824,314),Vector2(960,540),Vector2(390,844)]:
 		for spawn_y:float in [792.5,842.0]:
 			fixture("library_interior",Vector2(715,spawn_y));world.size=dimensions;world.mobile_exploration=true;world.touch_controls=true;world._update_camera();world.queue_redraw();await process_frame
@@ -79,6 +80,22 @@ func run()->void:
 		for i:int in range(20):world._process(.05)
 		keyboard(KEY_S,false)
 		check(world.player.y>780 and world.player.y<789.1 and world.can_stand(world.player),"actual keyboard body stops against the visible fixed south-wall base "+str(x))
+	for side: int in [Gate.INWARD,Gate.OUTWARD]:
+		var start := Vector2(620 if side < 0 else 900, 842)
+		var goal := Vector2(500 if side < 0 else 1000, start.y)
+		fixture("library_interior",start)
+		world._floor_bounds=Rect2(Vector2.ZERO,world.world_size)
+		world.grab_focus()
+		check(world.can_stand(start),"clear floor on the entrance landing "+str([side,start,world.player]))
+		check(not world.can_stand(goal),"landing edge blocks foot placement "+str([side,goal]))
+		check(not world._floor_segment_clear(start,goal),"landing edge blocks a lateral tap route "+str(side))
+		var key := KEY_A if side < 0 else KEY_D
+		keyboard(key,true)
+		for frame in 24: world._process(.05)
+		keyboard(key,false)
+		var feet := Metrics.foot_rect(world.player)
+		var aperture: Vector2 = world.library_gate.aperture_x
+		check(side*(world.player.x-start.x)>35 and feet.position.x>=aperture.x and feet.end.x<=aperture.y,"real lateral movement stops on the paved landing "+str(side))
 	fixture("library_interior",Vector2(715,842))
 	for id:String in ["library_entrance","library_front_desk","library_shelf_755"]:
 		var spawn:Dictionary=world.spec.spawns[id]
@@ -107,54 +124,75 @@ func run()->void:
 		moved=world.player.distance_to(seat_before)>0;break
 	check(moved and world.can_stand(world.player),"recovered seat Continue supports real keyboard displacement with the unchanged physical body")
 	state.developer_mode=true
-	for touch:bool in [false,true]:
-		fixture("library_interior",Vector2(715,842));world.mobile_exploration=touch;world.touch_controls=touch
+	for touch: bool in [false,true]:
+		fixture("library_interior", Vector2(715,842))
+		world.mobile_exploration=touch;world.touch_controls=touch
 		world.size=Vector2(390,844) if touch else Vector2(960,540)
+		world._update_camera()
 		world._floor_bounds=Rect2(Vector2.ZERO,world.world_size)
-		var original:Array=world.collisions.duplicate(true)
-		check(world.can_stand(world.player),"library entrance safe spawn "+str(touch))
-		check(not world.library_door.access_granted and world.library_door.progress==0,"unread record keeps physical leaves closed")
-		check(not world.can_stand(Vector2(715,710)),"closed left lane blocks actual foot body")
-		check(not world.can_stand(Vector2(785,710)),"closed right leaf also blocks its actual foot lane")
-		check(not world._floor_segment_clear(Vector2(715,770),Vector2(715,675)),"tap planner cannot route through closed leaf")
-		var closed_start:Vector2=world.player
+		var gate = world.library_gate
+		var closed_leaves: Array = gate.snapshot().leafRects
+		for index in gate.lanes.size():
+			for side in 2:
+				var leaf: Rect2 = closed_leaves[index * 2 + side]
+				var cabinet: Rect2 = gate.cabinets[index + side]
+				check(is_equal_approx(leaf.get_center().y,cabinet.get_center().y),"each visible hinge sits at the cabinet midpoint")
+		var left_axis := Metrics.anchor_from_foot_center(Vector2(715,gate.axis_y))
+		var right_axis := Metrics.anchor_from_foot_center(Vector2(785,gate.axis_y))
+		var original: Array = world.collisions.duplicate(true)
+		check(world.can_stand(world.player),"lower cabinets keep the authored spawn clear")
+		check(not gate.arrival_recorded and gate.lanes[0].progress==0 and gate.lanes[1].progress==0,"both lanes idle before entry")
+		check(not world.can_stand(left_axis) and not world.can_stand(right_axis),"both closed wing pairs block the actual foot body")
+		check(not world._floor_segment_clear(Vector2(715,842),Vector2(715,695)),"closed swing wings block the shared route planner")
+		var closed_start: Vector2=world.player
 		move_input(Vector2.UP,30,touch)
 		if touch:
-			check(world.player==closed_start and world._floor_route.is_empty(),"real floor tap cannot plan across unread closed leaves")
+			check(world.player==closed_start and world._floor_route.is_empty(),"unread lane cannot accept a floor route")
 			move_input(Vector2.UP,30,false)
-		check(world.player.y>=723 and world.player.y<733,"ordinary input stops at visible door base "+str(world.player))
-		var record:Dictionary=state.get_targets("library_interior").filter(func(t:Dictionary)->bool:return t.id=="entrance_record")[0]
-		check(world._distance(record)<=record.radius,"closed gate leaves record reachable")
-		world._try_interact(record);check(state.d.native.page=="library_record","real target opens existing record page")
+		check(gate.outside(world.player) and world.player.y<closed_start.y,"ordinary input stops outside the physical gate")
+		var record: Dictionary=world.targets.filter(func(t:Dictionary)->bool:return t.id=="entrance_record")[0]
+		check(world._distance(record)<=record.radius,"closed gate's reader is within reach")
+		world._try_interact(record)
 		state.act("lib_record")
-		check(state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"existing controller alone grants record access")
-		for i:int in range(10):world._process(.05)
-		check(world.library_door.progress==1 and world.can_stand(Vector2(715,710)),"fully open left lane clears actual foot body")
-		check(world.can_stand(Vector2(785,710)),"fully open right lane also clears actual foot body")
-		var entry_parts:Array[Rect2]=world.library_door.foreground_regions(Rect2(505,672,490,72))
-		var actor_frame:Rect2=Metrics.visual_rect(world.player)
-		check(not entry_parts.any(func(part:Rect2)->bool:return part.intersects(actor_frame)),"open central passage cannot repaint floor over approaching actor")
-		check(entry_parts.any(func(part:Rect2)->bool:return part.has_point(Vector2(530,700))) and entry_parts.any(func(part:Rect2)->bool:return part.has_point(Vector2(970,700))) and entry_parts.any(func(part:Rect2)->bool:return part.has_point(Vector2(750,676))),"source fixed sides and actual upper header remain foreground")
-		world.library_door.progress=.5
-		check(not world.can_stand(Vector2(715,710)) and world.can_stand(Vector2(750,710)),"partial leaf clearance uses each visible width instead of a whole-door boolean")
-		world.library_door.progress=1
-		check(world._floor_segment_clear(Vector2(715,740),Vector2(715,675)),"same tap planner accepts visible open passage")
-		check(world.collisions==original,"all static furniture, frame and turnstile solids retained")
-		move_input(Vector2.UP,10,touch)
-		check(world.player.y<700 and world.can_stand(world.player),"ordinary input physically crosses opened door")
-		var items:String=JSON.stringify(state.d.items)
-		move_input(Vector2.DOWN,18,touch)
-		check(world.player.y>760 and world.can_stand(world.player),"return movement crosses same safe door")
-		world.library_door.progress=.4
-		world.player=Vector2(715,710);world._sync_player();world.library_door.tick(.01,state.d)
-		check(world.library_door.progress==1,"occupied valid passage reopens interrupted closure")
-		var saved:Dictionary=state.d.duplicate(true);var restored:RefCounted=Door.new();restored.sync(saved)
-		check(restored.progress==1 and restored.collision_rects()[0].end.x==694,"ordinary restored actor derives open pose from existing record")
-		state.d.native.player={"scene":"library_interior","x":400.0,"y":650.0}
-		for i:int in range(20):world.library_door.tick(.05,state.d)
-		check(world.library_door.progress==0,"distant actor permits complete closure")
-		check(JSON.stringify(state.d.items)==items,"door motion never changes inventory")
-		check(not state.d.native.has("libraryDoor") and not state.d.native.has("doorProgress"),"no new saved door authority")
+		check(state.d.native.page=="phone_home" and gate.lanes[0].phase==Gate.Phase.SCANNING,"physical swipe starts before phone confirmation")
+		check(not state.d.ui.libraryFinalsPuzzle.entranceRecordRead and not state.d.native.get("lib_admission_recorded",false),"premature confirmation cannot record arrival")
+		for frame in 8: world._process(.05)
+		check(gate.lanes[0].progress>0 and gate.lanes[0].progress<1 and gate.lanes[0].direction==Gate.INWARD,"inbound wings swing through an intermediate pose")
+		for frame in 12: world._process(.05)
+		check(gate.lanes[0].progress==1 and world.can_stand(left_axis) and not world.can_stand(right_axis),"only the swiped lane opens")
+		check(world._floor_segment_clear(Vector2(715,842),Vector2(715,695)),"opened wing clears the same route planner")
+		move_input(Vector2.UP,15,touch)
+		check(Metrics.foot_rect(world.player).end.y<gate.axis_y and world.can_stand(world.player),"ordinary input enters the library through the wing")
+		check(state.d.native.get("lib_admission_recorded",false) and not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"crossing issues the unread record")
+		state.act("lib_record")
+		check(state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"phone acknowledgement follows physical entry")
+		for frame in 20: world._process(.05)
+		check(gate.lanes[0].progress==0,"lane closes after passage")
+		var items: Dictionary=state.d.items.duplicate(true)
+		world.player=Vector2(715,728);world._sync_player()
+		move_input(Vector2.DOWN,18,false)
+		check(gate.outside(world.player) and gate.lanes[0].direction==Gate.OUTWARD,"moving toward the inside sensor opens wings in the exit direction")
+		for frame in 20: world._process(.05)
+		check(gate.lanes[0].progress==0,"exit also closes after passage")
+		world.player=Vector2(785,842);world._sync_player()
+		var east: Dictionary=world.targets.filter(func(t:Dictionary)->bool:return t.id=="entrance_record_east")[0]
+		world._try_interact(east)
+		for frame in 16: world._process(.05)
+		check(gate.lanes[1].progress==1 and gate.lanes[0].progress==0,"repeat swipe can select the other lane")
+		world.player=right_axis;world._sync_player()
+		for frame in 65: gate.tick(.1,state.d,world.player)
+		check(gate.lanes[1].progress==1 and world.can_stand(world.player),"safety sensor holds the wings open around a stopped body")
+		world.player=Vector2(785,842);world._sync_player()
+		for frame in 12: gate.tick(.1,state.d,world.player)
+		check(gate.lanes[1].progress==0,"occupied lane closes once the body clears")
+		world._try_interact(east)
+		for frame in 65: gate.tick(.1,state.d,world.player)
+		check(gate.lanes[1].progress==0,"an unused swipe times out and closes")
+		var restored := Gate.new()
+		restored.sync(state.d.duplicate(true))
+		var safe := restored.restore_anchor(right_axis, Vector2(715,842))
+		check(restored.lanes[1].progress==0 and safe!=right_axis and restored.outside(safe),"a saved pose at the wing reloads clear of a closed lane")
+		check(world.collisions==original and state.d.items==items,"motion leaves cabinet solids, inventory and story authority unchanged")
 	fixture("theater_interior",Vector2(836,800))
 	world._floor_bounds=Rect2(Vector2.ZERO,world.world_size)
 	var motion:RefCounted=world.chapter3_layers.doors
@@ -176,6 +214,7 @@ func run()->void:
 	fixture("theater_interior",Vector2(836,880))
 	check(world.player==Vector2(836,880) and world.chapter3_layers.doors.progress==1,"restored occupied theater door never relocates player")
 	fixture("library_interior",Vector2(715,842))
-	check(not world.chapter3_layers.doors.departure_held and world._door_collision_rects().size()==4,"scene retirement discards theater hold and restores unread library leaves and fixed source walls")
+	var gate = world.library_gate
+	check(not world.chapter3_layers.doors.departure_held and world._door_collision_rects().size()==gate.fixed_collision_rects.size()+gate.guardrails.size()+4,"scene retirement restores all library barriers")
 	world.queue_free();await process_frame
 	print("INTERIOR_DOOR_COLLISION: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)

@@ -1,7 +1,7 @@
 {
-  "table": "generated-image:exec-9a03e404-5f9f-4636-9bf8-b2f347224183.png",
+  "table": "generated-image:exec-4e2c6595-375c-45e5-af73-2dedc119f331.png",
   "shelf_long": "generated-image:exec-6118e270-a723-40c6-9c6b-df36bd30c450.png",
-  "chair_north": "generated-image:exec-eff4762b-ee4f-4248-bb39-91ed997e130e.png",
+  "chair_north": "derived:originals/chair_south.png + originals/chair_north_approved_layout.png",
   "chair_south": "generated-image:exec-562ae33c-7f28-4939-9278-e99c1a393a43.png",
   "chair_east": "generated-image:exec-6bf1d6c1-daa2-4416-aae6-d9052732d047.png",
   "chair_west": "generated-image:exec-0d03629d-2039-4ffe-a92b-0c879bd642bd.png",
@@ -31,5 +31,5 @@
   "shelf_divider": "generated-image:exec-6118e270-a723-40c6-9c6b-df36bd30c450.png",
   "shelf_broad": "generated-image:exec-1a800e49-8454-486b-9c06-7bdd7aafd678.png",
   "water_dispenser_previous": "generated-image:exec-d9e84f40-262e-4db2-a0ff-70ed096f05eb.png",
-  "table_oblique": "generated-image:exec-0893668a-36fd-46df-8ab5-4fa17fb43a45.png"
+  "table_oblique": "generated-image:exec-2568b23b-4dca-4e4a-8fb6-2f393d4caf66.png"
 }

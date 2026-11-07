@@ -18,7 +18,7 @@ class Surface extends Control:
 		var origin: Vector2=size/2-center*magnify
 		draw_rect(Rect2(Vector2.ZERO,size),Color("0c1b24"))
 		draw_texture_rect(layer.art,Rect2(origin,Vector2(1500,900)*magnify),false)
-		var ctx: Dictionary={"origin":origin,"zoom":magnify,"player":actor,"scene_id":"library_interior"}
+		var ctx: Dictionary={"origin":origin,"zoom":magnify,"player":actor,"player_ground_y":PlayerMetrics.depth_y(actor),"scene_id":"library_interior"}
 		layer.draw_back(self,ctx,state)
 		if door!=null:
 			door.sync(state); door.draw(self,ctx,false)
@@ -124,7 +124,7 @@ func capture_gallery() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(directory))
 	root.size=Vector2i(960,540)
 	var view:=Surface.new(); view.size=Vector2(960,540); view.layer=layer; root.add_child(view)
-	var entrance: RefCounted=load("res://scripts/presentation/library_entrance_door.gd").new()
+	var entrance: RefCounted=load("res://scripts/presentation/library_turnstiles.gd").new()
 	var modes: Array=["shelf_idle","shelf_shake","shelf_shifted","shelf_paper","shelf_complete","shelf_actor_front","backpack_occupied","backpack_note_visible","backpack_note_collected","backpack_shaking","backpack_removed","front_desk_idle","front_desk_checking","front_desk_stamping","catalog_devices","catalog_actor_back","catalog_actor_front","printer_actor_back","printer_actor_front","entrance_closed","entrance_open","entrance_half"]
 	var requested: String=OS.get_environment("LIBRARY_CAPTURE_MODES")
 	if not requested.is_empty(): modes=modes.filter(func(mode: String) -> bool: return mode in requested.split(","))
@@ -155,11 +155,14 @@ func capture_gallery() -> void:
 			if mode=="printer_actor_back": view.actor=Vector2(878,560)
 			if mode=="printer_actor_front": view.actor=Vector2(827,591)
 		if mode.begins_with("entrance"):
-			view.center=Vector2(750,742); view.magnify=1.65; view.actor=Vector2(715,790)
+			view.center=Vector2(750,765); view.magnify=1.65; view.actor=Vector2(715,842)
 			s.native.player={"x":view.actor.x,"y":view.actor.y,"scene":"library_interior"}
 			s.ui.libraryFinalsPuzzle.entranceRecordRead=mode!="entrance_closed"
 			entrance.sync(s,true)
-			if mode=="entrance_half": entrance.progress=.5
+			entrance.bind_cabinets(layer.objects)
+			if mode!="entrance_closed":
+				entrance.use_reader(0, view.actor)
+				for frame in (5 if mode=="entrance_half" else 8): entrance.tick(.1, s, view.actor)
 			view.door=entrance
 		view.queue_redraw(); await process_frame; await RenderingServer.frame_post_draw
 		var path: String=directory+"/"+mode+".png"; root.get_texture().get_image().save_png(path); print("CAPTURE ",ProjectSettings.globalize_path(path))

@@ -490,7 +490,8 @@ func validate_snapshot(value: Variant, allow_legacy_v35_fields: bool=false) -> b
 		"c3_pending_handoff":{"id":"","scene":"","paperX":0.0,"paperY":0.0,"playerX":0.0,"playerY":0.0,"paperFrame":0,"paperFlip":false,"paperAngle":0.0},
 		"alarm_ringing":false,"wake_warned":false,"flower_eight_visible":false,"friend_scatter_pending":false,"tower_key_pending":false,
 		"c35_frame":"","c35_voice_stage":"","c35_summary_choice":"","c4_bio":"","c4_context":"","c4_last_dialogue":"","checkpoint_id":"",
-		"lib_catalog_results":false,"lib_dialogue_index":0,"lib_selected_photo":"","lib_photo_filter":"","c4_elevator_transport":false,"c4_native_elevator_completed":false,
+		"lib_catalog_results":false,"lib_dialogue_index":0,"lib_selected_photo":"","lib_photo_filter":"","lib_admission_recorded":false,
+		"c4_elevator_transport":false,"c4_native_elevator_completed":false,
 		"c35_listened":[],"c35_reviewed":[],"c35_voice_selection":[],"c35_photo_selection":[],"c35_route_selection":[],"lib_catalog_result_ids":[],
 		"c35_network_filters":{"time":"all","session":"all","area":"all"},"c3_tray_slots":[],"positions":{},"c4_stair_proof":{},"c4_closure_proof":{},
 		"save_import":{"kind":"","source_version":0,"normalizer_sha256":"","legacy_completed":false,"proof_facts":[],"source_chapter4":{}}

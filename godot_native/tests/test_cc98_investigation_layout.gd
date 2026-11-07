@@ -51,7 +51,7 @@ func earn() -> Dictionary:
 	s.actOne.phase="complete"; s.actOne.cc98Login.authenticated=true; s.actOne.inventoryRecovered=true
 	s.networkMode="campus_wifi"; s.ui.libraryFinalsPhase="library_route_unlocked"; s.items.rightArrow=true
 	for intent in ["c2_tiyi_discover","c2_tiyi_acquire","c2_tiyi_install"]: controller.dispatch(s,intent)
-	for intent in [["lib_enter",null],["lib_record",null],["lib_backpack",null],["lib_note",null],["lib_investigate","occupancyNote"],["lib_catalog_terminal",null],["lib_catalog_search","三分钟离座法"],["lib_catalog_select","three-minute-leave-method"],["lib_shelf",null],["lib_read_rule",null],["lib_front_desk",null],["lib_photo",null]]:
+	for intent in [["lib_enter",null],["lib_register_arrival",null],["lib_record",null],["lib_backpack",null],["lib_note",null],["lib_investigate","occupancyNote"],["lib_catalog_terminal",null],["lib_catalog_search","三分钟离座法"],["lib_catalog_select","three-minute-leave-method"],["lib_shelf",null],["lib_read_rule",null],["lib_front_desk",null],["lib_photo",null]]:
 		controller.dispatch(s,intent[0],intent[1]); acknowledge(controller,s)
 	s.ui.brightness=20
 	for intent in [["lib_dim_photo",null],["lib_view_photo","seat_022_clue"],["lib_item_report",null],["lib_scan",null],["lib_scan_result",{"scanMs":720,"identityChecks":[false,false,false],"stamped":true}]]:

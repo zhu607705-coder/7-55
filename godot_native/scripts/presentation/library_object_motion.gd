@@ -1,28 +1,17 @@
 extends RefCounted
 ## Disposable object feedback from accepted library actions. Never writes state,
 ## moves a physics body, grants evidence, waits on, or completes a story session.
-const Picker=preload("res://scripts/world_object_picker.gd")
-const Rules=preload("res://scripts/space/spatial_rules.gd")
 const CATALOG_MS:=780.0
 const SIT_MS:=420.0
 const TRANSFER_MS:=1010.0
-const ENTRY_MS:=900.0
 const REDUCED_MS:=180.0
-const ENTRY_AT:=Vector2(750,658)
-const ENTRY_READER:=Rect2(736,640,28,36)
-const ENTRY_POST:=Rect2(746,674,8,32)
-const ENTRY_BASE:=Rect2(739,704,22,8)
-const ENTRY_FOOTPRINT:=Rect2(741,704,18,8)
 var bound_state:Dictionary={}
 var active:=false
 var reduced:=false
 var catalog_unlocked:=false
-var record_read:=false
 var seated:=false
 var staff_ms:=-1.0
 var catalog_ms:=-1.0
-var entry_ms:=-1.0
-var record_open_ms:=-1.0
 var sit_ms:=-1.0
 var packets:Array=[]
 var player_at:=Vector2.ZERO
@@ -42,7 +31,6 @@ func sync(state:Dictionary,replaced:=false)->void:
 	var puzzle:Dictionary=state.get("ui",{}).get("libraryFinalsPuzzle",{})
 	reduced=bool(state.get("native",{}).get("settings",{}).get("reduced_motion",false))
 	catalog_unlocked=bool(puzzle.get("catalogUnlocked",false))
-	record_read=bool(puzzle.get("entranceRecordRead",false))
 	seated=bool(puzzle.get("playerSeated",false))
 	var loop:MainLoop=Engine.get_main_loop()
 	var owner:Node=(loop as SceneTree).root.get_node_or_null("State") if loop is SceneTree else null
@@ -66,8 +54,6 @@ static func accepted(action:String,before:Dictionary,next:Dictionary,result:Dict
 	match action:
 		"lib_front_desk":return "staff"
 		"lib_catalog_terminal":return "catalog" if gained(before,next,"catalogUnlocked") else ""
-		"lib_record":return "entry" if gained(before,next,"entranceRecordRead") else ""
-		"lib_open_record":return "record_open" if next.get("native",{}).get("page","")=="library_record" else ""
 		"lib_sit":return "sit" if gained(before,next,"playerSeated") else ""
 		"lib_note":return "note" if gained(before,next,"occupancyNoteCollected") and next.get("items",{}).get("occupancyNote",false) else ""
 		"lib_receipt":return "receipt" if gained(before,next,"seatReceiptCollected") and next.get("items",{}).get("seat022Receipt",false) else ""
@@ -83,8 +69,6 @@ func observe(action:String,before:Dictionary,next:Dictionary,result:Dictionary)-
 	match kind:
 		"staff":staff_ms=0
 		"catalog":catalog_ms=0
-		"entry":entry_ms=0
-		"record_open":record_open_ms=0
 		"sit":sit_ms=0;sit_from=player_at
 		"note":_packet("occupancyNote",Vector2(1282,422),Color("e7d38f"),0)
 		"receipt":_packet("seat022Receipt",Vector2(1400,421),Color("78a9df"),520)
@@ -101,8 +85,6 @@ func advance(delta:float)->void:
 	var ms:=minf(delta,.1)*1000
 	if staff_ms>=0:staff_ms=_clock(staff_ms,ms,1300)
 	if catalog_ms>=0:catalog_ms=_clock(catalog_ms,ms,CATALOG_MS)
-	if entry_ms>=0:entry_ms=_clock(entry_ms,ms,ENTRY_MS)
-	if record_open_ms>=0:record_open_ms=_clock(record_open_ms,ms,760)
 	if sit_ms>=0:sit_ms=_clock(sit_ms,ms,SIT_MS)
 	for packet:Dictionary in packets:packet.ageMs+=ms
 	packets=packets.filter(func(packet:Dictionary):return float(packet.ageMs)<(REDUCED_MS if reduced else TRANSFER_MS))
@@ -112,7 +94,7 @@ func _clock(age:float,ms:float,duration:float)->float:
 	return -1.0 if next>=(REDUCED_MS if reduced else duration) else next
 
 func cancel()->void:
-	staff_ms=-1;catalog_ms=-1;entry_ms=-1;record_open_ms=-1;sit_ms=-1;packets.clear()
+	staff_ms=-1;catalog_ms=-1;sit_ms=-1;packets.clear()
 
 static func _step(value:float)->float:return 0.0 if value<=0 else 1.0
 static func _pulse(age:float,half:float)->float:
@@ -126,13 +108,6 @@ func catalog_pose()->Dictionary:
 		var pulse:=_pulse(catalog_ms,130)
 		scale_value=lerpf(1,1.8,pulse);alpha=lerpf(1,.35,pulse)
 	return {"unlocked":catalog_unlocked,"indicatorScale":scale_value,"indicatorAlpha":alpha,"scanVisible":catalog_ms>=0 and not reduced and catalog_ms<420,"scanY":_step(catalog_ms/420),"scanAlpha":lerpf(.9,.25,_step(catalog_ms/420))}
-
-func entry_pose()->Dictionary:
-	var alpha:=1.0
-	if entry_ms>=0 and not reduced:alpha=.35 if fposmod(entry_ms,180)<90 else 1.0
-	var record_alpha:=1.0
-	if record_open_ms>=0 and not reduced:record_alpha=lerpf(1,.28,_pulse(record_open_ms,95))
-	return {"read":record_read,"sensorAlpha":alpha,"indicatorAlpha":record_alpha,"scanVisible":entry_ms>=0 and not reduced and entry_ms<420,"scanProgress":_step(entry_ms/420)}
 
 func actor_pose(anchor:Vector2)->Dictionary:
 	# Only the drawn cel moves. Caller retains the actual collision-resolved
@@ -162,28 +137,6 @@ func draw_catalog(canvas:CanvasItem)->void:
 	canvas.draw_circle(at,3*float(pose.indicatorScale),Color("65dca0",pose.indicatorAlpha) if catalog_unlocked else Color("d2aa54"))
 	if pose.scanVisible:
 		canvas.draw_rect(Rect2(catalog_screen.position+Vector2(0,catalog_screen.size.y*float(pose.scanY)),Vector2(catalog_screen.size.x,2)),Color("65dca0",pose.scanAlpha))
-
-func draw_entry(canvas:CanvasItem,context:Dictionary,front:bool)->void:
-	if not active or Rules.depth_in_front(ENTRY_BASE.end.y,float(context.get("player_ground_y",Rules.foot_y(context.player))))!=front:return
-	canvas.draw_set_transform(context.origin,0,Vector2.ONE*float(context.zoom))
-	var pose:=entry_pose()
-	# The reader stands on its own post just inside the door. Reach is measured
-	# at its floor base; picking follows the actual elevated screen.
-	if not record_read:Picker.record(canvas,["entrance_record"],ENTRY_READER)
-	canvas.draw_rect(Rect2(ENTRY_BASE.position+Vector2(2,2),ENTRY_BASE.size),Color("111a18",.4))
-	canvas.draw_rect(ENTRY_BASE,Color("293d47"))
-	canvas.draw_rect(ENTRY_BASE.grow(-2),Color("9caaa2"))
-	canvas.draw_rect(ENTRY_POST,Color("293d47"))
-	canvas.draw_rect(Rect2(ENTRY_POST.position+Vector2(2,0),Vector2(3,ENTRY_POST.size.y)),Color("9caaa2"))
-	canvas.draw_rect(Rect2(ENTRY_READER.position+Vector2(2,3),ENTRY_READER.size),Color("111a18",.5))
-	canvas.draw_rect(ENTRY_READER,Color("9caaa2"))
-	canvas.draw_rect(ENTRY_READER,Color("293d47"),false,2)
-	canvas.draw_rect(Rect2(ENTRY_AT-Vector2(10,13),Vector2(20,18)),Color("243f5a"))
-	canvas.draw_circle(ENTRY_AT+Vector2(6,-9),2,Color("72d79d",pose.indicatorAlpha) if record_read else Color("e3c65d",pose.indicatorAlpha))
-	canvas.draw_rect(Rect2(ENTRY_AT-Vector2(6,8),Vector2(12,2)),Color("70a7a0"))
-	canvas.draw_rect(Rect2(ENTRY_AT+Vector2(-8,10),Vector2(16,3)),Color("55d892",pose.sensorAlpha) if record_read else Color("243f5a"))
-	if pose.scanVisible:canvas.draw_rect(Rect2(656,696+132*float(pose.scanProgress),188,6),Color("6ce0af",.45*(1-float(pose.scanProgress))))
-	canvas.draw_set_transform(Vector2.ZERO)
 
 func draw_overlay(canvas:CanvasItem,context:Dictionary,viewport_size:Vector2,inventory_bounds:=Rect2())->void:
 	canvas.draw_set_transform(Vector2.ZERO)
@@ -276,4 +229,4 @@ func _notification(what:int)->void:
 		if exit_listener.is_valid() and view.tree_exiting.is_connected(exit_listener):view.tree_exiting.disconnect(exit_listener)
 
 func snapshot()->Dictionary:
-	return {"active":active,"catalogMs":catalog_ms,"staffMs":staff_ms,"entryMs":entry_ms,"recordOpenMs":record_open_ms,"sitMs":sit_ms,"packets":packets.duplicate(true),"stateConnected":state_ref!=null and state_ref.get_ref()!=null}
+	return {"active":active,"catalogMs":catalog_ms,"staffMs":staff_ms,"sitMs":sit_ms,"packets":packets.duplicate(true),"stateConnected":state_ref!=null and state_ref.get_ref()!=null}

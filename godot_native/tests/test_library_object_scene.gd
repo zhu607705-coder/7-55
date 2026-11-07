@@ -25,6 +25,16 @@ func check(ok:bool,label:String)->void:
 	checks+=1
 	if not ok:failures+=1;push_error("LIBRARY_OBJECT_SCENE "+label)
 func stand(center:Vector2)->bool:return world.can_stand(center-Metrics.FOOT_CENTER_OFFSET)
+func opaque_runs(image: Image, y: int) -> Array[Vector2i]:
+	var runs: Array[Vector2i] = []
+	var left := -1
+	for x: int in range(image.get_width() + 1):
+		var painted := x < image.get_width() and image.get_pixel(x, y).a > .5
+		if painted and left < 0: left = x
+		elif not painted and left >= 0:
+			runs.append(Vector2i(left, x - left))
+			left = -1
+	return runs
 func counter_contact()->void:
 	var area:Rect2=world.library_layers.objects.areas.front_desk_counter
 	world.capture_mode=false
@@ -69,16 +79,27 @@ func run()->void:
 	if not scene.ready:print(scene.issues);quit(1);return
 	counter_contact()
 	check(world.background==scene.clean_plate and world.background.get_size()==Vector2(1500,900),"real world uses exact source-sized empty plate")
+	check(world.texture_filter==CanvasItem.TEXTURE_FILTER_NEAREST,"library paint bypasses the SubViewport linear default")
+	for id: String in scene.rows:
+		var geometry: Dictionary = scene.geometry(id)
+		var display: Rect2 = geometry.rect
+		var source: Rect2 = geometry.source
+		check(display.position == display.position.round() and display.size == source.size and source.size == scene.areas[id].size.round(),"same world pixel grid for " + id)
+	check(scene.geometry("north_display_shelf").texture == scene.geometry("row_shelf_0").texture,"ordinary and interactive stacks share their actual raster tile")
+	var rail: Rect2 = scene.areas.diagonal_rail
+	var sample_y := rail.position.y + rail.size.y * .75
+	check(not Rules.depth_in_front(scene.baseline_at("diagonal_rail", rail.position.x + 6),sample_y),"actor at the outer end of the sloped railing is in front")
+	check(Rules.depth_in_front(scene.baseline_at("diagonal_rail", rail.end.x - 6),sample_y),"same foot Y on the carpet side is behind the railing")
 	var record_read:bool=state.d.ui.libraryFinalsPuzzle.entranceRecordRead
 	state.d.ui.libraryFinalsPuzzle.entranceRecordRead=false;world.refresh_world()
 	await process_frame;await process_frame
-	check(world._pick_target(Vector2(750,658)).get("id","")=="entrance_record","post-mounted reader owns its actual elevated screen")
+	check(world._pick_target(world.library_gate.reader_rect(0).get_center()).get("id","")=="entrance_record","cabinet reader owns its actual elevated screen")
 	var entrance_target:Dictionary=world.targets.filter(func(target:Dictionary):return target.id=="entrance_record")[0]
-	check(world._distance_at(entrance_target,Vector2(715,730))<=entrance_target.radius,"reader remains reachable on the first closed-door approach")
-	check(not stand(Vector2(750,708)) and stand(Vector2(715,708)),"new reader post has a solid base and leaves the admission lane clear")
-	check(world._pick_target(Vector2(700,720)).get("id","")=="entrance_record","closed glass door offers the same admission action as its reader")
+	check(world._distance_at(entrance_target,Vector2(715,842))<=entrance_target.radius,"reader is reachable from the authored entrance spawn")
+	check(stand(Vector2(750,708)) and not stand(Vector2(750,806)),"retired reader base clears the hall and lowered cabinets stay solid")
+	check(world._pick_target(world.library_gate.reader_rect(1).get_center()).get("id","")=="entrance_record_east","each lane has its own physical reader")
 	state.d.ui.libraryFinalsPuzzle.entranceRecordRead=true;world.refresh_world()
-	check(not world.targets.any(func(target:Dictionary):return target.id=="entrance_record"),"acknowledged gate record stops offering its notification")
+	check(world.targets.any(func(target:Dictionary):return target.id=="entrance_record" and target.label=="刷卡入馆"),"acknowledged record leaves a reusable card reader")
 	state.d.ui.libraryFinalsPuzzle.entranceRecordRead=record_read;world.refresh_world()
 	check(scene.snapshot().shelfSharesTexture,"evidence shelf uses the ordinary north-south stack artwork")
 	var previous_right:=0.0
@@ -101,7 +122,7 @@ func run()->void:
 	check(not scene.rows.has("southwest_display_shelf") and not scene.rows.has("southeast_display_shelf") and stand(Vector2(256,780)) and stand(Vector2(1190,780)),"both entrance cabinet locations are visibly and physically clear")
 	var cooler:Rect2=scene.areas.water_dispenser
 	var actor:=Metrics.visual_rect(Vector2.ZERO,world.display_scale_at(Vector2.ZERO))
-	check(is_equal_approx(actor.size.y,66.56) and is_equal_approx(actor.end.y,Metrics.GROUND_OFFSET) and is_equal_approx(cooler.size.y,92) and cooler.end.y==788,"cooler doubles uniformly about its original foot point")
+	check(is_equal_approx(actor.size.y,Metrics.FRAME.y*Metrics.DISPLAY_SCALE) and is_equal_approx(actor.end.y,Metrics.GROUND_OFFSET) and is_equal_approx(cooler.size.y,92) and cooler.end.y==788,"library player uses indoor size and keeps the calibrated floor anchor")
 	check(scene.areas.reading_divider_shelf==Rect2(903,68,40,274),"divider fills its complete architectural edge")
 	for index:int in range(1,5):
 		var id:="reading_table_"+str(index)
@@ -115,13 +136,79 @@ func run()->void:
 		var intended:=Rules.rect(scene.rows[id].bounds)
 		var drawn:Rect2=scene.areas[id]
 		check(drawn.size.x/intended.size.x>.97 and drawn.size.y/intended.size.y>.97,"calibrated furniture silhouette fills its measured rectangle "+id)
+	for id: String in ["reading_table_1", "reading_table_4", "catalog_desk"]:
+		var table: Image = scene.geometry(id).texture.get_image()
+		var upper := table.get_region(Rect2i(0, table.get_height() / 4, table.get_width(), 1)).get_used_rect()
+		var lower := table.get_region(Rect2i(0, table.get_height() / 2, table.get_width(), 1)).get_used_rect()
+		var foot_row := table.get_height() * 9 / 10
+		check(upper.size.x >= table.get_width() - 2 and abs(upper.size.x - lower.size.x) <= 1 and abs(upper.position.x - lower.position.x) <= 1,"tabletop stays orthographic " + id)
+		check(table.get_pixel(table.get_width() / 2, foot_row).a == 0 and table.get_region(Rect2i(0, foot_row, table.get_width(), 1)).get_used_rect().size.x > table.get_width() / 2,"complete table has legs and a transparent opening " + id)
+		var upper_supports := opaque_runs(table, table.get_height() * 4 / 5)
+		var feet := opaque_runs(table, table.get_height() - 1)
+		check(upper_supports.size() == 2 and upper_supports == feet and absi(feet[0].y - feet[1].y) <= 1,"table legs stay vertical and parallel from apron to floor " + id)
+	var picker := preload("res://scripts/world_object_picker.gd").new()
+	var seat_id := "reading_table_4_south_right"
+	var seat_point: Vector2 = scene.seat_point(seat_id)
+	check(picker.contains(scene.geometry(seat_id,Vector2.ZERO,"seat"),seat_point) and not picker.contains(scene.geometry(seat_id,Vector2.ZERO,"back"),seat_point),"sitting point is on the seat plane with a separate backrest")
+	var chair_pixels: Image = scene.geometry(seat_id).texture.get_image()
+	var ink := chair_pixels.get_used_rect()
+	var upper_legs := opaque_runs(chair_pixels, ink.position.y + floori(ink.size.y * .79))
+	var lower_legs := opaque_runs(chair_pixels, ink.end.y - 1)
+	check(upper_legs.size() == 2 and upper_legs == lower_legs and upper_legs[0].y == upper_legs[1].y,"both front legs have constant width and aligned feet with a transparent gap")
+	var chair_back: Image = scene.geometry(seat_id,Vector2.ZERO,"back").texture.get_image()
+	var center_x := ink.get_center().x
+	var upper_slat := ink.position.y + floori(ink.size.y * .15)
+	var seat_strip := ink.position.y + floori(ink.size.y * .24)
+	var lower_slat := ink.position.y + floori(ink.size.y * .32)
+	check(chair_back.get_pixel(center_x, upper_slat).a == 1 and chair_back.get_pixel(center_x, seat_strip).a == 0 and chair_back.get_pixel(center_x, lower_slat).a == 1,"two separate backrest slats leave the seat visible between them")
+	var upper_span := opaque_runs(chair_back, upper_slat)
+	var lower_span := opaque_runs(chair_back, lower_slat)
+	check(upper_span == [Vector2i(0, chair_back.get_width())] and lower_span == upper_span,"both backrest slats reach the same two posts")
+	var outline_rows: Array[int] = []
+	for row in range(1, chair_back.get_height()):
+		var opaque := chair_back.get_pixel(center_x, row).a == 1
+		if opaque != (chair_back.get_pixel(center_x, row - 1).a == 1):
+			outline_rows.append(row if opaque else row - 1)
+	var ink_color := Color("202b35").to_rgba32()
+	check(outline_rows.size() == 4 and outline_rows.all(func(row: int) -> bool: return chair_back.get_pixel(center_x, row).to_rgba32() == ink_color),"both slat edges survive map-scale sampling")
+	check(outline_rows.size() == 4 and outline_rows[1] - outline_rows[0] >= 6 and outline_rows[3] - outline_rows[2] >= 5,"exterior ink preserves both slat faces at map scale")
+	var seat_pixels: Image = scene.geometry(seat_id, Vector2.ZERO, "seat").texture.get_image()
+	var seat_row := ink.position.y + floori(ink.size.y * .56)
+	var seat_span := opaque_runs(seat_pixels, seat_row)
+	var post_spans := opaque_runs(chair_back, seat_row)
+	var seat_fits_behind := false
+	if post_spans.size() == 2 and seat_span.size() == 1:
+		var left_edge := post_spans[0].x + post_spans[0].y
+		seat_fits_behind = seat_span[0] == Vector2i(left_edge, post_spans[1].x - left_edge)
+	check(post_spans == lower_legs and seat_fits_behind,"full seat meets the post edges from behind without covering them")
+	var opposite_chair: Image = scene.textures["chair_south"].get_image()
+	var opposite_row := floori(opposite_chair.get_height() * .93)
+	var opposite_legs := opaque_runs(opposite_chair, opposite_row)
+	var wood_row := ink.position.y + floori(ink.size.y * .85)
+	var matching_leg_faces := opposite_legs.size() == 2 and lower_legs.size() == 2
+	if matching_leg_faces:
+		for side in 2:
+			var reference: Vector2i = opposite_legs[side]
+			var leg: Vector2i = lower_legs[side]
+			var reference_wood := 0
+			var visible_wood := 0
+			for x in range(reference.x, reference.x + reference.y):
+				reference_wood += int(opposite_chair.get_pixel(x, opposite_row).to_rgba32() != ink_color)
+			for x in range(leg.x, leg.x + leg.y):
+				visible_wood += int(chair_pixels.get_pixel(x, wood_row).to_rgba32() != ink_color)
+			matching_leg_faces = matching_leg_faces and visible_wood >= roundi(reference_wood * float(chair_pixels.get_width()) / opposite_chair.get_width())
+	check(matching_leg_faces,"exterior post ink leaves the same wood width as the opposite chair")
+	for prop: String in ["reading_table_1_lamp", "reading_table_4_book", "catalog_terminal"]:
+		var owner: String = scene.rows[prop].depthOwner
+		var area: Rect2 = scene.geometry(prop).rect
+		check(scene.table_surface(owner).has_point(Vector2(area.get_center().x,area.end.y - 1)) and scene.baseline(prop)==scene.baseline(owner),"tabletop contact and depth agree " + prop)
 	var wide_table:Rect2=scene.areas.reading_table_4
 	check(wide_table.has_point(Vector2(1368,445)),"receipt's authored seam is on the real wide tabletop")
 	check(scene.areas.reading_table_4_west.end.x>wide_table.position.x and scene.areas.reading_table_4_east.position.x<wide_table.end.x,"side chairs meet the wide table edges without detached gaps")
-	for side:int in [515,845]:
-		var first:Rect2=scene.areas["fixed_glass_"+str(side)+"_0"]
-		var last:Rect2=scene.areas["fixed_glass_"+str(side)+"_3"]
-		check(absf(first.position.x-side)<.01 and absf(last.end.x-(655 if side==515 else 986))<.01 and first.position.y==682 and last.end.y==825,"fixed glass paint covers its exact original solid edges "+str(side))
+	check(not scene.textures.has("glass_panel"),"no side glass is mounted in the object layer")
+	for x:float in [580.,910.]:
+		check(stand(Vector2(x,750)),"former side glass leaves a clear approach floor "+str(x))
+		check(not stand(Vector2(x,world.library_gate.axis_y)),"solid low guardrail closes the bypass "+str(x))
 	for family:String in scene.textures:
 		var image:Image=scene.textures[family].get_image()
 		if image.is_compressed():image.decompress()
@@ -130,7 +217,7 @@ func run()->void:
 			for x:int in image.get_width():
 				var alpha:int=roundi(image.get_pixel(x,y).a*255)
 				clear=clear or alpha==0;solid=solid or alpha==255
-				valid=valid and (alpha in [0,255] or (family=="glass_panel" and alpha==170))
+				valid=valid and alpha in [0,255]
 		check(clear and solid and valid,"verified real alpha "+family)
 	check(stand(Vector2(985,135)),"old table bounding-box corner is visibly clear walkable floor")
 	check(stand(Vector2(925,438)),"plant foliage does not form an invisible full-height wall")
@@ -153,12 +240,12 @@ func run()->void:
 	world.transition_alpha=0
 	world.player=Vector2(1180,500);world._sync_player();world.queue_redraw()
 	await process_frame;await process_frame
-	check(world._pick_target(Vector2(1368,448)).get("id")=="seat_022_gap","visible table seam accepts the existing right-arrow interaction")
+	var seam: Vector2 = world.library_layers.receipt_anchor()
+	check(scene.table_surface("reading_table_4").has_point(seam+Vector2(13,3)) and world._pick_target(seam+Vector2(0,3)).get("id")=="seat_022_gap","visible table seam stays inside the tabletop and accepts the right arrow")
 	state.d.ui.libraryFinalsPhase="evidence_gathering"
 	state.d.ui.libraryFinalsPuzzle.backpackEvicted=true;state.d.items.callNumber755=true;state.d.ui.libraryFinalsPuzzle.callNumberCollected=true
 	world.refresh_world();await process_frame;await process_frame
-	var chair:Rect2=scene.areas.reading_table_4_south_right
-	check(world._pick_target(chair.get_center()).get("id")=="seat_022_chair","visible 022 chair owns its ordinary click surface")
+	check(world._pick_target(seat_point).get("id")=="seat_022_chair","visible 022 seat owns its ordinary click surface")
 	var shelf:Rect2=scene.areas.north_display_shelf
 	var book:Rect2=world.library_layers.book.geometry(scene).rect
 	check(world._pick_target(book.get_center()).get("id")=="library_shelf_755","specific book spine owns the item-drop surface")

@@ -536,8 +536,8 @@ func _on_controller_page_intent(_action: String,_previous: Dictionary,current: D
 		_refresh_inventory_dock()
 		_layout()
 	if _action=="lib_shelf" and _begin_library_reveal(_previous,current,result): return
-	if result.get("page","") in ["library_rule","library_record"] and current.native.scene=="library_interior":
-		_open_library_world_document.call_deferred(str(result.page));return
+	if result.get("page","") == "library_rule" and current.native.scene=="library_interior":
+		_open_library_world_document.call_deferred("library_rule");return
 	if result.has("open_c4_floor_selection"):
 		_open_chapter4_floor_selection(result.open_c4_floor_selection)
 		return
@@ -1127,10 +1127,6 @@ func _refresh() -> void:
 		n.page="phone_home"
 		State.d.ui.controlCenterOpen=true
 	var page: String = n.page
-	# A shelf reveal owns the rule handoff. Restoring/cancelling its saved page
-	# must not silently reopen that reader on every ordinary refresh.
-	if page=="library_record" and n.scene=="library_interior" and not is_instance_valid(modal):
-		_open_library_world_document.call_deferred(page)
 	# Preserve the source Photos mount baseline behind Control Center overlays.
 	var photos_mounted := not mobile_world
 	if photo_brightness_session.observe(page if photos_mounted else "",State.d.ui):

@@ -49,21 +49,20 @@ func walk_to_record() -> void:
 	check(shell.world.player.distance_to(before)>1,"real W input moves the actor after releasing item focus",[before,shell.world.player])
 	check(shell.world.nearby.get("id","")=="entrance_record","real nearby lookup resolves entrance record",shell.world.nearby.get("id",""))
 func try_record() -> void:
-	var count:=actions.count("lib_open_record")
 	await press(KEY_SPACE)
-	check(actions.count("lib_open_record")==count+1 and state.d.native.page=="library_record","next Space opens nearby record once through normal interaction",{"page":state.d.native.page,"actions":actions.count("lib_open_record")-count,"bag_open":shell.compact_inventory_open})
-	check(not shell.inventory_handle.visible,"reading never restores the obsolete bag switch")
-	check(not state.d.ui.libraryFinalsPuzzle.entranceRecordRead and not state.d.ui.libraryFinalsPuzzle.backpackInspected,"opening record preserves evidence acknowledgement and later story gates")
+	check(shell.world.library_gate.snapshot().lanes[0].phase=="scanning" and not is_instance_valid(shell.modal),"next Space swipes at the nearby reader through normal interaction")
+	check(not shell.inventory_handle.visible,"reader interaction never restores the obsolete bag switch")
+	check(not state.d.ui.libraryFinalsPuzzle.entranceRecordRead and not state.d.ui.libraryFinalsPuzzle.backpackInspected,"unread swipe preserves the evidence and later story gates")
 func inline_keyboard() -> void:
 	await fixture()
 	var view_before:Rect2=shell.world_view.get_global_rect()
 	var camera_before:Vector2=shell.world.camera
 	var item:Control=shell.inventory_buttons.get_child(0)
 	item.grab_focus();await frames()
-	var count:=actions.count("lib_open_record")
+	var before: String = shell.world.library_gate.snapshot().lanes[0].phase
 	await press(KEY_SPACE)
 	check(state.d.native.selected_item==item.item_id and root.gui_get_focus_owner()==item,"Space selects the focused inline item")
-	check(actions.count("lib_open_record")==count,"item Space never leaks into nearby world actions")
+	check(shell.world.library_gate.snapshot().lanes[0].phase==before,"item Space never leaks into nearby world actions")
 	await press(KEY_ENTER)
 	check(is_instance_valid(shell.modal) and shell.inspected_item_id==item.item_id,"Enter opens the focused item's details")
 	shell._close_modal();await frames()

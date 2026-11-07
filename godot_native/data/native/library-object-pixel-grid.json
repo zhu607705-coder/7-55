@@ -1,0 +1,644 @@
+{
+	"backpack": [
+		700,
+		445,
+		34,
+		44
+	],
+	"catalog_back_1": [
+		220,
+		445,
+		124,
+		64
+	],
+	"catalog_back_2": [
+		220,
+		445,
+		124,
+		64
+	],
+	"catalog_desk": [
+		345,
+		445,
+		126,
+		97
+	],
+	"catalog_terminal": [
+		472,
+		445,
+		56,
+		59
+	],
+	"catalog_terminal_chair": [
+		601,
+		445,
+		35,
+		52
+	],
+	"catalog_terminal_chair@back": [
+		565,
+		445,
+		35,
+		52
+	],
+	"catalog_terminal_chair@seat": [
+		529,
+		445,
+		35,
+		52
+	],
+	"desk_back_1": [
+		0,
+		445,
+		219,
+		112
+	],
+	"desk_terminal": [
+		817,
+		275,
+		51,
+		54
+	],
+	"diagonal_rail": [
+		408,
+		558,
+		52,
+		65
+	],
+	"entrance_turnstile_0": [
+		735,
+		445,
+		19,
+		88
+	],
+	"entrance_turnstile_1": [
+		735,
+		445,
+		19,
+		88
+	],
+	"entrance_turnstile_2": [
+		735,
+		445,
+		19,
+		88
+	],
+	"fixed_glass_515_0": [
+		568,
+		558,
+		39,
+		143
+	],
+	"fixed_glass_515_1": [
+		568,
+		558,
+		39,
+		143
+	],
+	"fixed_glass_515_2": [
+		568,
+		558,
+		39,
+		143
+	],
+	"fixed_glass_515_3": [
+		568,
+		558,
+		39,
+		143
+	],
+	"fixed_glass_845_0": [
+		568,
+		558,
+		39,
+		143
+	],
+	"fixed_glass_845_1": [
+		568,
+		558,
+		39,
+		143
+	],
+	"fixed_glass_845_2": [
+		568,
+		558,
+		39,
+		143
+	],
+	"fixed_glass_845_3": [
+		568,
+		558,
+		39,
+		143
+	],
+	"front_desk_counter": [
+		486,
+		275,
+		330,
+		169
+	],
+	"north_display_shelf": [
+		0,
+		0,
+		45,
+		231
+	],
+	"notice_board": [
+		501,
+		558,
+		66,
+		104
+	],
+	"plant_0": [
+		755,
+		445,
+		48,
+		77
+	],
+	"plant_1": [
+		804,
+		445,
+		50,
+		80
+	],
+	"plant_10": [
+		134,
+		558,
+		48,
+		76
+	],
+	"plant_11": [
+		183,
+		558,
+		41,
+		65
+	],
+	"plant_12": [
+		225,
+		558,
+		35,
+		56
+	],
+	"plant_13": [
+		261,
+		558,
+		31,
+		49
+	],
+	"plant_14": [
+		261,
+		558,
+		31,
+		49
+	],
+	"plant_15": [
+		261,
+		558,
+		31,
+		49
+	],
+	"plant_2": [
+		855,
+		445,
+		52,
+		82
+	],
+	"plant_3": [
+		908,
+		445,
+		59,
+		94
+	],
+	"plant_4": [
+		908,
+		445,
+		59,
+		94
+	],
+	"plant_5": [
+		0,
+		558,
+		58,
+		92
+	],
+	"plant_6": [
+		908,
+		445,
+		59,
+		94
+	],
+	"plant_7": [
+		59,
+		558,
+		36,
+		57
+	],
+	"plant_8": [
+		96,
+		558,
+		37,
+		59
+	],
+	"plant_9": [
+		0,
+		558,
+		58,
+		92
+	],
+	"printer": [
+		637,
+		445,
+		62,
+		104
+	],
+	"reading_divider_shelf": [
+		46,
+		0,
+		40,
+		274
+	],
+	"reading_table_1": [
+		87,
+		0,
+		126,
+		70
+	],
+	"reading_table_1_book": [
+		506,
+		0,
+		27,
+		17
+	],
+	"reading_table_1_east": [
+		461,
+		0,
+		23,
+		48
+	],
+	"reading_table_1_lamp": [
+		485,
+		0,
+		20,
+		26
+	],
+	"reading_table_1_north_left": [
+		214,
+		0,
+		27,
+		49
+	],
+	"reading_table_1_north_right": [
+		326,
+		0,
+		27,
+		49
+	],
+	"reading_table_1_south_left": [
+		298,
+		0,
+		27,
+		41
+	],
+	"reading_table_1_south_left@back": [
+		270,
+		0,
+		27,
+		41
+	],
+	"reading_table_1_south_left@seat": [
+		242,
+		0,
+		27,
+		41
+	],
+	"reading_table_1_south_right": [
+		410,
+		0,
+		27,
+		41
+	],
+	"reading_table_1_south_right@back": [
+		382,
+		0,
+		27,
+		41
+	],
+	"reading_table_1_south_right@seat": [
+		354,
+		0,
+		27,
+		41
+	],
+	"reading_table_1_west": [
+		438,
+		0,
+		22,
+		48
+	],
+	"reading_table_2": [
+		534,
+		0,
+		156,
+		87
+	],
+	"reading_table_2_book": [
+		506,
+		0,
+		27,
+		17
+	],
+	"reading_table_2_east": [
+		938,
+		0,
+		23,
+		48
+	],
+	"reading_table_2_lamp": [
+		485,
+		0,
+		20,
+		26
+	],
+	"reading_table_2_north_left": [
+		691,
+		0,
+		27,
+		49
+	],
+	"reading_table_2_north_right": [
+		803,
+		0,
+		27,
+		49
+	],
+	"reading_table_2_south_left": [
+		775,
+		0,
+		27,
+		41
+	],
+	"reading_table_2_south_left@back": [
+		747,
+		0,
+		27,
+		41
+	],
+	"reading_table_2_south_left@seat": [
+		719,
+		0,
+		27,
+		41
+	],
+	"reading_table_2_south_right": [
+		887,
+		0,
+		27,
+		41
+	],
+	"reading_table_2_south_right@back": [
+		859,
+		0,
+		27,
+		41
+	],
+	"reading_table_2_south_right@seat": [
+		831,
+		0,
+		27,
+		41
+	],
+	"reading_table_2_west": [
+		915,
+		0,
+		22,
+		48
+	],
+	"reading_table_3": [
+		87,
+		0,
+		126,
+		70
+	],
+	"reading_table_3_book": [
+		506,
+		0,
+		27,
+		17
+	],
+	"reading_table_3_east": [
+		191,
+		275,
+		23,
+		48
+	],
+	"reading_table_3_lamp": [
+		485,
+		0,
+		20,
+		26
+	],
+	"reading_table_3_north_left": [
+		962,
+		0,
+		27,
+		49
+	],
+	"reading_table_3_north_right": [
+		56,
+		275,
+		27,
+		49
+	],
+	"reading_table_3_south_left": [
+		28,
+		275,
+		27,
+		41
+	],
+	"reading_table_3_south_left@back": [
+		0,
+		275,
+		27,
+		41
+	],
+	"reading_table_3_south_left@seat": [
+		990,
+		0,
+		27,
+		41
+	],
+	"reading_table_3_south_right": [
+		140,
+		275,
+		27,
+		41
+	],
+	"reading_table_3_south_right@back": [
+		112,
+		275,
+		27,
+		41
+	],
+	"reading_table_3_south_right@seat": [
+		84,
+		275,
+		27,
+		41
+	],
+	"reading_table_3_west": [
+		168,
+		275,
+		22,
+		48
+	],
+	"reading_table_4": [
+		534,
+		0,
+		156,
+		87
+	],
+	"reading_table_4_book": [
+		506,
+		0,
+		27,
+		17
+	],
+	"reading_table_4_east": [
+		462,
+		275,
+		23,
+		48
+	],
+	"reading_table_4_lamp": [
+		485,
+		0,
+		20,
+		26
+	],
+	"reading_table_4_north_left": [
+		215,
+		275,
+		27,
+		49
+	],
+	"reading_table_4_north_right": [
+		327,
+		275,
+		27,
+		49
+	],
+	"reading_table_4_south_left": [
+		299,
+		275,
+		27,
+		41
+	],
+	"reading_table_4_south_left@back": [
+		271,
+		275,
+		27,
+		41
+	],
+	"reading_table_4_south_left@seat": [
+		243,
+		275,
+		27,
+		41
+	],
+	"reading_table_4_south_right": [
+		411,
+		275,
+		27,
+		41
+	],
+	"reading_table_4_south_right@back": [
+		383,
+		275,
+		27,
+		41
+	],
+	"reading_table_4_south_right@seat": [
+		355,
+		275,
+		27,
+		41
+	],
+	"reading_table_4_west": [
+		439,
+		275,
+		22,
+		48
+	],
+	"row_shelf_0": [
+		0,
+		0,
+		45,
+		231
+	],
+	"row_shelf_1": [
+		0,
+		0,
+		45,
+		231
+	],
+	"row_shelf_2": [
+		0,
+		0,
+		45,
+		231
+	],
+	"row_shelf_3": [
+		0,
+		0,
+		45,
+		231
+	],
+	"row_shelf_4": [
+		0,
+		0,
+		45,
+		231
+	],
+	"row_shelf_6": [
+		0,
+		0,
+		45,
+		231
+	],
+	"row_shelf_7": [
+		0,
+		0,
+		45,
+		231
+	],
+	"row_shelf_8": [
+		0,
+		0,
+		45,
+		231
+	],
+	"south_rail_0": [
+		293,
+		558,
+		114,
+		17
+	],
+	"south_rail_1": [
+		293,
+		558,
+		114,
+		17
+	],
+	"south_rail_2": [
+		293,
+		558,
+		114,
+		17
+	],
+	"water_dispenser": [
+		461,
+		558,
+		39,
+		92
+	]
+}

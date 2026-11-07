@@ -128,7 +128,7 @@ func fixture(dim: Vector2i, action: String) -> void:
 
 func ordinary_input(action: String, touch: bool) -> void:
 	if touch:
-		var at: Vector2 = Motion.NOTE_AT if action == "lib_note" else Motion.GAP_AT if action == "lib_receipt" else Vector2(1255,407)
+		var at: Vector2 = Motion.NOTE_AT if action == "lib_note" else shell.world.library_layers.receipt_anchor() if action == "lib_receipt" else Vector2(1255,407)
 		var local: Vector2 = (at-world.camera)*world.zoom+world.size/2
 		check(world.exploration_safe_rect(true).has_point(local), "touch point is inside visible play area " + action)
 		for down in [true,false]:

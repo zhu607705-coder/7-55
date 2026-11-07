@@ -26,8 +26,7 @@
     "rail": "res://assets/native/library_object_depth_20261104/rail.png",
     "diagonal_rail": "res://assets/native/library_object_depth_20261104/diagonal_rail.png",
     "water_dispenser": "res://assets/native/library_object_depth_20261104/water_dispenser.png",
-    "notice_board": "res://assets/native/library_object_depth_20261104/notice_board.png",
-    "glass_panel": "res://assets/native/library_object_depth_20261104/glass_panel.png"
+    "notice_board": "res://assets/native/library_object_depth_20261104/notice_board.png"
   },
   "instances": [
     {
@@ -259,7 +258,9 @@
         ]
       ],
       "targets": [],
-      "chamfer": 4
+      "chamfer": 4,
+      "tableSurface": 0.63,
+      "tableCap": 0.722
     },
     {
       "id": "reading_table_1_north_left",
@@ -278,7 +279,8 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_1"
     },
     {
       "id": "reading_table_1_south_left",
@@ -299,6 +301,11 @@
       ],
       "targets": [
         "library_study_chair"
+      ],
+      "underTable": "reading_table_1",
+      "seatPoint": [
+        0.5,
+        0.472872316837311
       ]
     },
     {
@@ -318,7 +325,8 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_1"
     },
     {
       "id": "reading_table_1_south_right",
@@ -337,7 +345,12 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_1",
+      "seatPoint": [
+        0.5,
+        0.472872316837311
+      ]
     },
     {
       "id": "reading_table_1_west",
@@ -356,7 +369,8 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_1"
     },
     {
       "id": "reading_table_1_east",
@@ -375,14 +389,15 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_1"
     },
     {
       "id": "reading_table_1_lamp",
       "asset": "lamp",
       "bounds": [
-        1050,
-        177.66320000000002,
+        1053,
+        193.00260000000003,
         20,
         32
       ],
@@ -394,8 +409,8 @@
       "id": "reading_table_1_book",
       "asset": "open_book",
       "bounds": [
-        1085,
-        194.66320000000002,
+        1085.68,
+        202.3316,
         27,
         18
       ],
@@ -421,7 +436,9 @@
         ]
       ],
       "targets": [],
-      "chamfer": 4
+      "chamfer": 4,
+      "tableSurface": 0.63,
+      "tableCap": 0.722
     },
     {
       "id": "reading_table_2_north_left",
@@ -440,7 +457,8 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_2"
     },
     {
       "id": "reading_table_2_south_left",
@@ -459,7 +477,12 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_2",
+      "seatPoint": [
+        0.5,
+        0.472872316837311
+      ]
     },
     {
       "id": "reading_table_2_north_right",
@@ -478,7 +501,8 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_2"
     },
     {
       "id": "reading_table_2_south_right",
@@ -497,7 +521,12 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_2",
+      "seatPoint": [
+        0.5,
+        0.472872316837311
+      ]
     },
     {
       "id": "reading_table_2_west",
@@ -516,7 +545,8 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_2"
     },
     {
       "id": "reading_table_2_east",
@@ -535,14 +565,15 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_2"
     },
     {
       "id": "reading_table_2_lamp",
       "asset": "lamp",
       "bounds": [
-        1266,
-        171.63062857142856,
+        1284,
+        197.52702857142856,
         20,
         32
       ],
@@ -554,8 +585,8 @@
       "id": "reading_table_2_book",
       "asset": "open_book",
       "bounds": [
-        1301,
-        188.63062857142856,
+        1322.08,
+        199.31531428571427,
         27,
         18
       ],
@@ -581,7 +612,9 @@
         ]
       ],
       "targets": [],
-      "chamfer": 4
+      "chamfer": 4,
+      "tableSurface": 0.63,
+      "tableCap": 0.722
     },
     {
       "id": "reading_table_3_north_left",
@@ -600,7 +633,8 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_3"
     },
     {
       "id": "reading_table_3_south_left",
@@ -619,7 +653,12 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_3",
+      "seatPoint": [
+        0.5,
+        0.472872316837311
+      ]
     },
     {
       "id": "reading_table_3_north_right",
@@ -638,7 +677,8 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_3"
     },
     {
       "id": "reading_table_3_south_right",
@@ -657,7 +697,12 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_3",
+      "seatPoint": [
+        0.5,
+        0.472872316837311
+      ]
     },
     {
       "id": "reading_table_3_west",
@@ -676,7 +721,8 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_3"
     },
     {
       "id": "reading_table_3_east",
@@ -695,14 +741,15 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_3"
     },
     {
       "id": "reading_table_3_lamp",
       "asset": "lamp",
       "bounds": [
-        1052,
-        383.6632,
+        1055,
+        399.00260000000003,
         20,
         32
       ],
@@ -714,8 +761,8 @@
       "id": "reading_table_3_book",
       "asset": "open_book",
       "bounds": [
-        1087,
-        400.6632,
+        1087.68,
+        408.33160000000004,
         27,
         18
       ],
@@ -741,7 +788,9 @@
         ]
       ],
       "targets": [],
-      "chamfer": 4
+      "chamfer": 4,
+      "tableSurface": 0.63,
+      "tableCap": 0.722
     },
     {
       "id": "reading_table_4_north_left",
@@ -760,7 +809,8 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_4"
     },
     {
       "id": "reading_table_4_south_left",
@@ -779,7 +829,12 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_4",
+      "seatPoint": [
+        0.5,
+        0.472872316837311
+      ]
     },
     {
       "id": "reading_table_4_north_right",
@@ -798,7 +853,8 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_4"
     },
     {
       "id": "reading_table_4_south_right",
@@ -819,6 +875,11 @@
       ],
       "targets": [
         "seat_022_chair"
+      ],
+      "underTable": "reading_table_4",
+      "seatPoint": [
+        0.5,
+        0.472872316837311
       ]
     },
     {
@@ -838,7 +899,8 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_4"
     },
     {
       "id": "reading_table_4_east",
@@ -857,14 +919,15 @@
           0.25
         ]
       ],
-      "targets": []
+      "targets": [],
+      "underTable": "reading_table_4"
     },
     {
       "id": "reading_table_4_lamp",
       "asset": "lamp",
       "bounds": [
-        1265,
-        377.6306285714286,
+        1283,
+        403.5270285714286,
         20,
         32
       ],
@@ -876,8 +939,8 @@
       "id": "reading_table_4_book",
       "asset": "open_book",
       "bounds": [
-        1300,
-        394.6306285714286,
+        1321.08,
+        405.3153142857143,
         27,
         18
       ],
@@ -1047,16 +1110,18 @@
       "targets": [
         "catalog_terminal"
       ],
-      "chamfer": 4
+      "chamfer": 4,
+      "tableSurface": 0.6,
+      "tableCap": 0.708
     },
     {
       "id": "catalog_terminal",
       "asset": "terminal",
       "bounds": [
         625,
-        510,
-        71,
-        65
+        510.20000000000005,
+        64.45,
+        59
       ],
       "footprints": [],
       "targets": [
@@ -1083,6 +1148,11 @@
       ],
       "targets": [
         "catalog_terminal"
+      ],
+      "underTable": "catalog_desk",
+      "seatPoint": [
+        0.5,
+        0.472872316837311
       ]
     },
     {
@@ -1130,9 +1200,9 @@
       "asset": "turnstile",
       "bounds": [
         667,
-        762,
+        784,
         28,
-        110
+        88
       ],
       "footprints": [
         [
@@ -1149,9 +1219,9 @@
       "asset": "turnstile",
       "bounds": [
         737,
-        762,
+        784,
         28,
-        110
+        88
       ],
       "footprints": [
         [
@@ -1168,9 +1238,9 @@
       "asset": "turnstile",
       "bounds": [
         807,
-        762,
+        784,
         28,
-        110
+        88
       ],
       "footprints": [
         [
@@ -1554,7 +1624,17 @@
       ],
       "footprints": [],
       "targets": [],
-      "diagonalSolid": true
+      "diagonalSolid": true,
+      "depthLine": [
+        [
+          0.1,
+          0.42
+        ],
+        [
+          0.91,
+          1
+        ]
+      ]
     },
     {
       "id": "water_dispenser",
@@ -1592,102 +1672,6 @@
           0.15
         ]
       ],
-      "targets": []
-    },
-    {
-      "id": "fixed_glass_515_0",
-      "asset": "glass_panel",
-      "bounds": [
-        515,
-        682,
-        38.81428571428572,
-        143
-      ],
-      "footprints": [],
-      "targets": []
-    },
-    {
-      "id": "fixed_glass_515_1",
-      "asset": "glass_panel",
-      "bounds": [
-        548.7285714285714,
-        682,
-        38.81428571428572,
-        143
-      ],
-      "footprints": [],
-      "targets": []
-    },
-    {
-      "id": "fixed_glass_515_2",
-      "asset": "glass_panel",
-      "bounds": [
-        582.4571428571428,
-        682,
-        38.81428571428572,
-        143
-      ],
-      "footprints": [],
-      "targets": []
-    },
-    {
-      "id": "fixed_glass_515_3",
-      "asset": "glass_panel",
-      "bounds": [
-        616.1857142857143,
-        682,
-        38.81428571428572,
-        143
-      ],
-      "footprints": [],
-      "targets": []
-    },
-    {
-      "id": "fixed_glass_845_0",
-      "asset": "glass_panel",
-      "bounds": [
-        845,
-        682,
-        38.81428571428572,
-        143
-      ],
-      "footprints": [],
-      "targets": []
-    },
-    {
-      "id": "fixed_glass_845_1",
-      "asset": "glass_panel",
-      "bounds": [
-        879.0619047619048,
-        682,
-        38.81428571428572,
-        143
-      ],
-      "footprints": [],
-      "targets": []
-    },
-    {
-      "id": "fixed_glass_845_2",
-      "asset": "glass_panel",
-      "bounds": [
-        913.1238095238095,
-        682,
-        38.81428571428572,
-        143
-      ],
-      "footprints": [],
-      "targets": []
-    },
-    {
-      "id": "fixed_glass_845_3",
-      "asset": "glass_panel",
-      "bounds": [
-        947.1857142857143,
-        682,
-        38.81428571428572,
-        143
-      ],
-      "footprints": [],
       "targets": []
     }
   ],
