@@ -111,10 +111,12 @@ func run() -> void:
 	check(shell.world_view.get_global_rect()==play_rect,"inline item selection never resizes the game")
 	await cancel_floor_touch(source_screen(goal))
 	before=story();position=w.player;action_count=actions.size()
-	var footer_at:Vector2=shell.world_mode.get_global_rect().get_center();touch(footer_at,true);touch(footer_at,false,true);await frames()
-	check(w._floor_route.is_empty() and w.player==position and story()==before and actions.size()==action_count,"cancelled system-icon touch cannot walk or choose a hidden target")
+	check(not shell.world_mode.visible,"library floor fixture has no mode button before the story unlock")
+	var footer_at:Vector2=shell.world_tasks.get_global_rect().get_center();touch(footer_at,true);touch(footer_at,false,true);await frames()
+	check(w._floor_route.is_empty() and w.player==position and story()==before and actions.size()==action_count and shell.modal==null,"cancelled system-icon touch cannot walk, open the task or choose a hidden target")
 	touch(footer_at,true);touch(footer_at,false);await frames()
-	check(state.d.native.mode!=before.native.mode and not shell.world_mode.disabled,"fresh ordinary system-icon tap still switches the light after interruption")
+	check(is_instance_valid(shell.modal) and shell.modal.find_child("JournalObjective",true,false)!=null,"fresh ordinary system-icon tap opens the task after interruption")
+	shell._close_modal()
 	# Actual bag drag owns input while a floor route is active.
 	await route_fixture(Vector2i(430,860),Vector2(1040,598.3125),true)
 	await tap_ground(Vector2(1130,630));position=w.player

@@ -87,9 +87,11 @@ func run() -> void:
 	await scroll_to("Cc98LoginScroll",245)
 	await click(node("Cc98ReadCampusCard")); expect(s.actOne.cc98Login.studentIdDiscovered,"Actual source card read emits validated identity intent")
 	await show("cc98"); expect(node("Cc98LoginStudentId").text=="3250100755","Read card fills exact source ID on re-render")
+	await scroll_to("Cc98LoginScroll",0)
 	await click(node("Cc98AttendantIcon"))
 	await click(node("Cc98AttendantIcon"))
-	await create_timer(.3).timeout
+	await create_timer(.4).timeout
+	expect(node("Cc98PasswordHints").is_visible_in_tree(),"The attendant lands before the remarks can be read")
 	await scroll_to("Cc98LoginScroll",350)
 	for i in range(3):
 		await click(node("Cc98RevealHint")); await show("cc98")

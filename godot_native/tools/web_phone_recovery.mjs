@@ -398,6 +398,14 @@ export async function phoneRecoveryCase(h) {
           `${h.id}: ordinary legacy ${percent}% import preserves charge and brightness while removing retired power fields`);
         h.check(noRetiredControls(value), `${h.id}: imported home exposes no charging return control`);
         await click('HomeBonsaiOpen'); await page('bonsai');
+        // The route is set before the first deferred artwork mounts. Wait
+        // on the real object and exit control before exercising navigation.
+        await h.poll(async () => {
+          const current = await read();
+          return !current.content?.blocking && current.state.native.page === 'bonsai'
+            && current.visibleControls.some(c => c.name === 'BonsaiPlant')
+            && current.visibleControls.some(c => c.name === 'PhoneNav_exit' && !c.disabled);
+        }, 'first bonsai view and its ordinary exit are ready', h.bootTimeout);
         value = await read(`ordinary bonsai entry at ${percent}%`);
         h.check(noRetiredControls(value) && !value.state.flags.plantLit,
           `${h.id}: bonsai remains reachable without charging and dim light cannot satisfy the plant`);

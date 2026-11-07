@@ -1,5 +1,5 @@
 extends SceneTree
-## Full main.tscn → real SubViewport input → world → State → live controller.
+## Full main.tscn → real shell input → world → State → live controller.
 var state: Node
 var shell: Control
 var checks: int=0
@@ -13,17 +13,22 @@ func key(code: Key) -> void:
 	event.keycode=code; event.physical_keycode=code; event.pressed=true
 	shell.world_viewport.push_input(event,true)
 	event=event.duplicate(); event.pressed=false; shell.world_viewport.push_input(event,true)
+func screen_point(local: Vector2) -> Vector2:
+	var display: Control=shell.world_view
+	var pixel: Vector2=shell.world.get_global_transform_with_canvas()*local
+	return display.get_global_transform_with_canvas()*(pixel*display.size/Vector2(shell.world_viewport.size))
 func click(source: Vector2) -> void:
-	var point: Vector2=shell.world.size/2+(source-shell.world.camera)*shell.world.zoom
+	var local: Vector2=shell.world.size/2+(source-shell.world.camera)*shell.world.zoom
+	var point: Vector2=screen_point(local)
 	var event: InputEventMouseButton=InputEventMouseButton.new()
 	event.position=point; event.global_position=point; event.button_index=MOUSE_BUTTON_LEFT; event.pressed=true
-	shell.world_viewport.push_input(event,true)
-	event=event.duplicate(); event.pressed=false; shell.world_viewport.push_input(event,true)
+	root.push_input(event,true)
+	event=event.duplicate(); event.pressed=false; root.push_input(event,true)
 func swipe(side: String,reverse: bool=false) -> void:
-	var start:Vector2=shell.world.kayak_paddle_rects()[side].get_center()
+	var local:Vector2=shell.world.kayak_paddle_rects()[side].get_center()
 	var event: InputEventScreenTouch=InputEventScreenTouch.new()
-	event.index=0; event.position=start; event.pressed=true; shell.world_viewport.push_input(event,true)
-	event=event.duplicate(); event.pressed=false; event.position=start+Vector2(0,60 if reverse else -60); shell.world_viewport.push_input(event,true)
+	event.index=0; event.position=screen_point(local); event.pressed=true; root.push_input(event,true)
+	event=event.duplicate(); event.pressed=false; event.position=screen_point(local+Vector2(0,60 if reverse else -60)); root.push_input(event,true)
 func flush() -> void:
 	await process_frame; await process_frame
 	shell.world.set_process(false)

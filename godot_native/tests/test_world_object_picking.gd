@@ -109,7 +109,7 @@ func run() -> void:
 	await drag("campusCard",Vector2(836,470))
 	check(not feedback.is_empty() and str(feedback.back()).contains("太远"),"actual-drop-still-checks-proximity",feedback)
 	world.targets[0].radius=1000;world.targets[0].mode="dark";feedback.clear();await redraw();await drag("campusCard",Vector2(836,470))
-	check(not feedback.is_empty() and str(feedback.back()).contains("需要深色观察"),"actual-drop-still-checks-mode",feedback)
+	check(not feedback.is_empty() and str(feedback.back()).contains("需要深色模式"),"actual-drop-still-checks-mode",feedback)
 	check(state.d.items.campusCard and state.d.items.fishingRod,"rejected-drops-preserve-owned-items")
 	world.run_controller=false;world.targets[0].erase("mode");world.player=Vector2(836,460);world.interactions.clear()
 	# Transparent pixels in front reveal the actually visible underlying object.

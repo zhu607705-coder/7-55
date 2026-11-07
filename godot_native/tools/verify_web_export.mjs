@@ -691,16 +691,22 @@ async function freshCase(entryOnly = false) {
     return { bootReadyMs: start.bootReadyMs, mainReadyMs: start.mainReadyMs, geometry };
   }
   await settings();
-  const evidence = value => ({ page: state(value)?.native?.page, chapter: state(value)?.native?.chapter, mode: state(value)?.native?.mode, flags: state(value)?.flags, saveDigest: value?.saveDigest });
-  const s = await snapshot(); const beforeMode = state(s).native.mode; const toggle = controls(s).find(c => c.text.startsWith('当前：')); check(!!toggle, 'mode toggle states current and destination');
+  const evidence = value => ({ page: state(value)?.native?.page, chapter: state(value)?.native?.chapter, mode: state(value)?.native?.mode, network: state(value)?.networkMode, flags: state(value)?.flags, saveDigest: value?.saveDigest });
+  const s = await snapshot();
+  check(state(s).native.mode === 'light' && !controls(s).some(c => ['浅色模式', '深色模式'].includes(c.text)), 'fresh story keeps the later mode switch locked');
   active.fresh = { recording: true, inputs: [], before: evidence(s) };
-  await clickControl(toggle.text);
-  const toggled = await poll(async () => { const value = await snapshot(); return state(value)?.native.mode !== beforeMode ? value : null; }, 'real mode toggle');
+  await press('Escape');
+  await clickControl('ControlCenterTrigger', 'name');
+  const network = state(s).networkMode === 'campus_wifi' ? 'cellular' : 'campus_wifi';
+  await clickControl(network === 'cellular' ? 'ControlNetwork_cellular' : 'ControlNetwork_wifi', 'name');
+  const toggled = await poll(async () => { const value = await snapshot(); return state(value)?.networkMode === network ? value : null; }, 'ordinary control center network change');
   active.fresh.toggled = evidence(toggled);
+  await clickControl('PhoneNav_close', 'name');
+  await settings();
   const saved = await saveProgressAndWait(`${active.id} explicit save`);
   active.fresh.saved = evidence(saved); active.fresh.savedObservedAt = Date.now();
   check(saved.persistentStorageAvailable === true, `${active.id}: IndexedDB persistent storage available`);
-  const desired = { page: state(saved).native.page, chapter: state(saved).native.chapter, mode: state(saved).native.mode, flags: state(saved).flags };
+  const desired = { page: state(saved).native.page, chapter: state(saved).native.chapter, mode: state(saved).native.mode, network: state(saved).networkMode, flags: state(saved).flags };
   active.screenshots.push(await screenshot(`${active.id}-phone`));
   // The visible saved acknowledgement now proves this generation reached IDB.
   // Retain the additional original settle interval and independent diagnostics;
@@ -710,10 +716,10 @@ async function freshCase(entryOnly = false) {
   try { active.fresh.beforeReloadIDB = await readPersistentSaveEntries(); } catch (error) { active.fresh.beforeReloadIDB = { error: error.message }; }
   active.fresh.reloadRequestedAt = Date.now(); active.fresh.recording = false;
   const after = await startStory(true);
-  const actual = { page: state(after.snapshot).native.page, chapter: state(after.snapshot).native.chapter, mode: state(after.snapshot).native.mode, flags: state(after.snapshot).flags };
+  const actual = { page: state(after.snapshot).native.page, chapter: state(after.snapshot).native.chapter, mode: state(after.snapshot).native.mode, network: state(after.snapshot).networkMode, flags: state(after.snapshot).flags };
   active.fresh.desired = desired; active.fresh.afterReload = evidence(after.snapshot);
   active.fresh.differences = Object.keys(desired).filter(key => JSON.stringify(desired[key]) !== JSON.stringify(actual[key]));
-  check(JSON.stringify(actual) === JSON.stringify(desired), `${active.id}: actual page reload retains native save and selected mode`, active.fresh);
+  check(JSON.stringify(actual) === JSON.stringify(desired), `${active.id}: actual page reload retains native save and selected network`, active.fresh);
   return { bootReadyMs: start.bootReadyMs, mainReadyMs: start.mainReadyMs, reloadedMainReadyMs: after.mainReadyMs, savedDigest: saved.saveDigest, geometry: await assertLayout(`${active.id}-reloaded`) };
 }
 async function portableSaveCase() {
@@ -843,8 +849,12 @@ async function acceptPortraitFallback() {
 }
 async function cornerNavigationCase() {
   if (!fixtureDir) throw new Error('Corner navigation requires an earned ordinary save');
-  await importSave(path.join(fixtureDir, 'after_c3_enter_theater.json'));
-  await poll(async () => { const s = await snapshot(); return s?.world?.visible && state(s)?.native?.c3_theater_entry_seen && controls(s).some(c => c.name === 'WorldPhoneButton' && !c.disabled); }, 'earned theater navigation is available');
+  await importSave(path.join(fixtureDir, 'after_drained_lib_opening_complete.json'));
+  await poll(async () => {
+    const s = await snapshot();
+    return s?.content?.blocking === false && s.world?.visible && s.world.scene_id === 'campus_bootstrap'
+      && ['WorldPhoneButton', 'WorldMode'].every(name => controls(s).some(c => c.name === name && !c.disabled));
+  }, 'campus navigation is available after the Library unlock', bootTimeout);
   await acceptPortraitFallback();
   const before = await snapshot();
   const facts = s => JSON.stringify([s.items, s.actOne, s.ui.libraryFinalsPhase, s.canteenHunt, s.theaterHunt, s.qizhenLake, s.chapter4, s.rpgScene, s.rpgCheckpoint]);
@@ -880,8 +890,10 @@ async function cornerNavigationCase() {
   check(!controls(inline).some(c=>c.name==='WorldInventoryHandle'), `${active.id}: obsolete bag switch is absent`);
   const items = controls(inline).filter(c=>c.name.startsWith('WorldItem_'));
   check(items.length>0 && items.every(c=>c.text==='' && Math.abs(c.rect.width-44)<.1 && Math.abs(c.rect.height-44)<.1), `${active.id}: actual item artwork appears directly in 44px slots`);
-  const modeButton = controls(inline).find(c=>c.name==='WorldMode');
-  check(items[0].rect.x>=modeButton.rect.x+modeButton.rect.width && items[0].rect.y>=inline.world.rect.y+inline.world.rect.height-60, `${active.id}: items start immediately to the right of the in-game tools`);
+  const [taskButton, modeButton, phoneButton] = ['WorldTasks', 'WorldMode', 'WorldPhoneButton'].map(name => controls(inline).find(c => c.name === name));
+  const nextTo = (left, right) => !!left && !!right && Math.abs(left.rect.y - right.rect.y) < .1 && Math.abs(left.rect.x + left.rect.width + 8 - right.rect.x) < .1;
+  check(nextTo(taskButton, modeButton) && nextTo(modeButton, phoneButton), `${active.id}: tasks and mode sit beside the phone on the lower right`);
+  check(items[0].rect.x + items[0].rect.width <= taskButton.rect.x && items[0].rect.y >= inline.world.rect.y + inline.world.rect.height - 60, `${active.id}: inventory starts to the left of the tools`);
   const surfaceBefore=JSON.stringify([inline.world.rect,inline.world.size,inline.world.camera,inline.world.zoom]);
   await clickControl(items[0].name,'name');
   const selected=await snapshot();
