@@ -107,3 +107,23 @@ test('runtime authenticates bootstrap before source parsing without fetching a f
  assert.ok(restore.includes("--producer-attempt '${{ needs.prepare.outputs.producer_attempt }}'"));
  assert.doesNotMatch(body,/sparse-checkout disable|git checkout|git reset --hard|fetch.*unshallow/);
 });
+
+
+test('every workflow source restore explicitly binds the upstream producer attempt',()=>{
+ const directory=new URL('../../.github/workflows/',import.meta.url);
+ let callers=0;
+ for(const name of fs.readdirSync(directory).filter(name=>/\.ya?ml$/.test(name))){
+  const workflow=fs.readFileSync(new URL(name,directory),'utf8');
+  // Join shell continuations only, so a later command cannot supply this flag.
+  const joined=workflow.replace(/\\\r?\n[ \t]*/g,' ');
+  const commands=[...joined.matchAll(/native_source_transport\.py restore[^\r\n]*/g)];
+  for(const [command] of commands){
+   assert.match(command,/--producer-attempt '\$\{\{ needs\.[a-z_-]+\.outputs\.producer_attempt \}\}'/,name);
+   callers++;
+  }
+ }
+ assert.ok(callers>=2,'main native and source A/B restores must both be checked');
+ const comparison=fs.readFileSync(new URL('native-source-ab.yml',directory),'utf8');
+ assert.match(comparison,/producer_attempt: \$\{\{ steps\.capture\.outputs\.producer_attempt \}\}/);
+ assert.ok(comparison.includes('echo "producer_attempt=$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"'));
+});
