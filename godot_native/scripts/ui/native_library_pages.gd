@@ -65,7 +65,7 @@ func open_recovery(b) -> void:
 	if b.s.ui.libraryFinalsPhase=="top_ten_reached": b.action_requested.emit("lib_recovery_open",null)
 	else: b.page_requested.emit("library_recovery")
 
-func build(b, page: String, view: Dictionary) -> Control:
+func build(b, page: String, view: Dictionary={}) -> Control:
 	if page in ["library_catalog","c3_lake_catalog"]: return catalog(b)
 	if page=="library_recovery": return recovery(b)
 	if page=="library_record": return entrance_record(b,view)

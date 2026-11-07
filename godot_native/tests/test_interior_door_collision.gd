@@ -49,6 +49,8 @@ func run()->void:
 	var source:=FileAccess.get_file_as_string("res://../src/scenes/rpg/LibraryInteriorModel.ts")
 	for literal:String in ["x: 750","y: 724","closedLeftX: 697","closedRightX: 803","openOffset: 56","blockerY: 742","sensorHalfWidth: 156","sensorHalfHeight: 142"]:
 		check(source.contains(literal),"retained Web source geometry "+literal)
+	fixture("library_interior",Vector2(715,790))
+	check(world.player==Vector2(715,842) and not state.d.native.has("lib_admission_recorded") and not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"old vestibule save resumes outside the new gate without earning a record")
 	# The legacy and current entry spawns must both be contained by the new
 	# gate row and the source plate's south masonry.
 	for dimensions:Vector2 in [Vector2(824,314),Vector2(960,540),Vector2(390,844)]:

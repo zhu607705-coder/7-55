@@ -4,11 +4,13 @@ const Surface=preload("res://scripts/ui/native_phone_notice.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 # Notice styling must leave these independent world/dialogue surfaces intact.
+# The library revision centers dialogue in the world view and uses the
+# surrounding space on portrait layouts to keep the authored text readable.
 # Check-in's reviewed changes remove duplicate pause UI and redundant receipt copy;
 # its print geometry, timing and real receipt route have dedicated behavior tests.
 const REVIEWED_SURFACE_HASHES:={
-	"res://scripts/presentation/library_story_view.gd":"217f4c1b35af66d7c20e864d0c3f80d01ac71f8a929772ac4f0ff65872b29cdd",
-	"res://scripts/ui/selected_dialogue_layout.gd":"a3d5da59614b807640729e5f0c9b50a7e227fdbf6819791047a7edb80b2c1e03",
+	"res://scripts/presentation/library_story_view.gd":"c9ec03397651a7d6f88094d54253d1f65f036392f4d295a9eb6cbf1b034cfe43",
+	"res://scripts/ui/selected_dialogue_layout.gd":"e715203ffe96e7adacc7429aec34c84b93b3695c7dfe0ef2b4502f90c691aa3c",
 	"res://scripts/ui/checkin_success_view.gd":"cf60aa06ee738968ca33a147d19038b412de5dd6f9c38f7ba1398fd5852029d3",
 	"res://scripts/ui/native_typography.gd":"d763b08aa1718e34bdf88b745af3635a8dbe157832105533859d6ddc229c89f2",
 }
