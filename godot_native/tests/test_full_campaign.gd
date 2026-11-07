@@ -287,7 +287,7 @@ func beginning() -> void:
 	await boundary("dorm exit")
 
 func library() -> void:
-	for id in ["lib_enter","lib_record","lib_backpack","lib_note"]: await step(id)
+	for id in ["lib_enter","lib_register_arrival","lib_record","lib_backpack","lib_note"]: await step(id)
 	await step("lib_investigate","occupancyNote")
 	await step("lib_catalog_terminal")
 	await step("lib_catalog_search","三分钟离座法")

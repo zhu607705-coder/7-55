@@ -143,7 +143,7 @@ func _result(b,root: Control,p: Dictionary) -> void:
 func _sources(b,root: Control,p: Dictionary) -> void:
 	_text(b,root,"填写依据与核对用途",Rect2(50,668,308,28),17,BLUE)
 	var entries=[
-		["01 门禁记录 · 核对到座时间","07:55 基础馆入口 → 08:02 一层书库 022\n填写分钟差，用于核对同一次到馆会话" if p.entranceRecordRead else "未取得 · 回到基础图书馆入口，查看门禁记录小屏"],
+		["01 门禁记录 · 核对到座时间","07:55 基础馆入口 → 08:02 一层书库 022\n填写分钟差，用于核对同一次到馆会话" if p.entranceRecordRead else "未取得 · 在图书馆座位预约的「我的」中查看入馆记录"],
 		["02 论坛公示 · 关联原始记录","23 楼编辑：本次 022 公示记录编号 %s\n用来关联公示，不填楼层、排名或 BD 口令" % _notice_number() if p.investigationOpened else "未取得 · 在 022 座位拿到占座纸条，用它打开 CC98 调查帖"],
 		["03 旧版规则 · 核对材料完整性","本人确实到馆；目标座位与凭据一致；当前占用物不具备本人身份。\n填写要求的类别数，不是背包中的道具总数" if p.archivedRuleRead else "未取得 · 按索书号找到 06 架南端上层的 755 号书，抽出并读完规则"]
 	]

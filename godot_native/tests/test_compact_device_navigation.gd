@@ -57,8 +57,8 @@ func seed_case(id: String) -> void:
 		if id=="console": state.d.theaterHunt.admitted=true; state.d.theaterHunt.collectedProgramIds=["opening","spotlight","finale"]
 	elif id.begins_with("library"):
 		state.d.native.chapter=2; state.d.native.scene="library_interior"; state.d.native.page="library_app"; state.d.canteenHunt.active=false
-		state.d.ui.libraryFinalsPhase="library_entered" if id=="library_record" else "evidence_gathering"
-		state.d.ui.libraryFinalsPuzzle.investigationOpened=id!="library_record"
+		state.d.ui.libraryFinalsPhase="evidence_gathering"
+		state.d.ui.libraryFinalsPuzzle.investigationOpened=true
 	elif id.begins_with("c4"):
 		state.d.native.chapter=4; state.d.native.scene="duan_yongping_temporal_maze"; state.d.native.page="c4_notes"; state.d.canteenHunt.active=false
 		state.d.chapter4.prologueSeen=true; state.d.chapter4.phase="room204_restore"; state.d.chapter4.timeState="1850_evening"; state.d.chapter4.floor="A1"; state.d.chapter4.mode="light"; state.d.chapter4.factIds=["hour_hand_installed"]
@@ -112,8 +112,8 @@ func menu_labels(panel: Control,dark: bool) -> void:
 func run() -> void:
 	state=root.get_node("State"); seed_case("mixer")
 	root.size=Vector2i(390,844); main=load("res://scenes/main.tscn").instantiate(); root.add_child(main); await process_frame; await process_frame
-	var actions: Dictionary={"mixer":"c3_target:canteen-mixer","menu":"c3_target:ordering_kiosk","bike":"c3_target:bike","kiosk":"c3_target:theater_ticket_kiosk","console":"c3_target:theater_light_console","library_record":"lib_open_record","library_catalog":"lib_catalog_terminal","c4_duty":"c4_device_duty_board","c4_elevator":"c4_elevator","c4_power":"c4_power","c4_numeric":"c4_device_positioning_calibration"}
-	var pages: Dictionary={"library_record":"library_record","library_catalog":"library_catalog"}
+	var actions: Dictionary={"mixer":"c3_target:canteen-mixer","menu":"c3_target:ordering_kiosk","bike":"c3_target:bike","kiosk":"c3_target:theater_ticket_kiosk","console":"c3_target:theater_light_console","library_catalog":"lib_catalog_terminal","c4_duty":"c4_device_duty_board","c4_elevator":"c4_elevator","c4_power":"c4_power","c4_numeric":"c4_device_positioning_calibration"}
+	var pages: Dictionary={"library_catalog":"library_catalog"}
 	for width: int in [390,430,1280]:
 		for id: String in actions:
 			await prepare(id,width)
@@ -127,16 +127,6 @@ func run() -> void:
 			var position: Vector2=main.world.player
 			if id in WORLD_DEVICES:
 				await exercise_world_device(id,actions[id],width,scene,position,original_page)
-				continue
-			if id=="library_record":
-				var document: Control=main.modal
-				check(is_instance_valid(document) and document.name=="LibraryWorldDocument","record opens the actual world document")
-				check(main.world_frame.is_visible_in_tree() and not main.phone.is_visible_in_tree(),"record retains the Library world surface")
-				check(state.d.native.scene==scene and main.world.player==position and not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"opening preserves scene, position and unread evidence")
-				state.act("phone_refresh",{}); await process_frame; await process_frame
-				check(is_instance_valid(document) and document.is_visible_in_tree(),"ordinary refresh retains the open record")
-				if is_instance_valid(document): await click(find_button(document,"记下入馆记录"),"library record")
-				check(state.d.ui.libraryFinalsPuzzle.entranceRecordRead and main.world_frame.is_visible_in_tree(),"record confirmation accepts original evidence and returns to the world")
 				continue
 			if id=="library_catalog":
 				check(state.get_phone_entry_session().phase=="loading","new Library mount observes source Zjuding entry delay")

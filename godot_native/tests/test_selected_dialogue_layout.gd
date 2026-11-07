@@ -19,8 +19,8 @@ func run()->void:
 		for content:String in ["一句原文。","原始故事文字保留完整。".repeat(300)]:
 			var region:=Rect2(16,64,extent.x-32,extent.y-80)
 			var metrics:=Layout.metrics(region,1,"管理员",content,"点击 / 空格 / 回车继续")
-			check(region.encloses(metrics.panel),"right-side panel inside safe region")
-			check(is_equal_approx(metrics.panel.end.x,region.end.x),"selected geometry is right anchored")
+			check(region.encloses(metrics.panel),"panel stays inside its safe region")
+			check(is_equal_approx(metrics.panel.get_center().x,region.get_center().x),"dialogue is centered in its safe region")
 			check(is_equal_approx(metrics.panel.end.y,region.end.y),"short and overflowing dialogue stay on the bottom safe edge")
 			check(metrics.speaker_font==18 and metrics.body_font==14 and metrics.prompt_font==11,"locked role sizes")
 			var bounds:=Rect2(Vector2.ZERO,metrics.panel.size)
@@ -33,6 +33,7 @@ func run()->void:
 			await process_frame
 			view.tick();await process_frame;view.tick()
 			check(is_equal_approx(view.panel.get_rect().end.y,extent.y-(8 if script==Narrative else 16)),"actual short dialogue uses the bottom safe edge")
+			check(is_equal_approx(view.panel.get_rect().get_center().x,extent.x/2),"actual short dialogue is horizontally centered")
 			var paper:StyleBox=view.panel.get_theme_stylebox("panel")
 			check(paper is StyleBoxFlat and paper.bg_color==Notice.PAPER and paper.border_color==Notice.INK and paper.get_minimum_size()==Vector2.ZERO,"dialogue shares the notice paper without changing the measured rectangle")
 			check(is_equal_approx(view.panel.modulate.a,1),"paper surface does not compound text opacity")

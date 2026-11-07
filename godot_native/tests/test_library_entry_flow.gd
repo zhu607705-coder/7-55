@@ -59,6 +59,10 @@ func entry(dimensions: Vector2i) -> void:
 	var host: Control=shell.library_story_host
 	host.set_process(false)
 	check(host.current!=null and host.current.sequence_id=="library_entered","issued-library-entry-dialogue")
+	var world_rect: Rect2 = shell.world_view.get_global_rect()
+	var panel_rect: Rect2 = host.view.panel.get_global_rect()
+	check(panel_rect.position.x>=world_rect.position.x and panel_rect.end.x<=world_rect.end.x and is_equal_approx(world_rect.get_center().x,panel_rect.get_center().x),"entry-dialogue-centered-in-real-map",{"map":world_rect,"dialogue":panel_rect})
+	check(host.view.body_scroll.size.y >= host.view.body.get_theme_font("font").get_height(host.view.body.get_theme_font_size("font_size")),"entry-dialogue-keeps-one-readable-body-row")
 	var authored_lines: int=host.current.lines.size()
 	for i in authored_lines: await press(KEY_SPACE)
 	check(host.current==null and not shell.world._scene_presentation_blocks(),"issued-dialogue-completes",authored_lines)
@@ -69,27 +73,34 @@ func entry(dimensions: Vector2i) -> void:
 	for i in 14: shell.world._process(.05)
 	await key(KEY_W,false); shell.world._process(0)
 	check(shell.world.player.distance_to(before)>1,"routed-W-movement-works",[before,shell.world.player])
-	check(str(shell.world.nearby.get("id",""))=="entrance_record","actual-entry-record-is-nearest",shell.world.nearby)
+	check(str(shell.world.nearby.get("id",""))=="entrance_record","actual-reader-is-nearest",shell.world.nearby)
 	await press(KEY_SPACE)
-	check(state.d.native.page=="library_record","routed-Space-opens-record-without-pointer",{"page":state.d.native.page,"root_focus":focus_path(root),"world_focus":focus_path(shell.world_viewport)})
-	if state.d.native.page!="library_record":
-		shell.world.grab_focus(); await press(KEY_SPACE)
-		check(state.d.native.page=="library_record","focused-world-control-opens-record")
+	for tick in 16: shell.world._process(.05)
+	check(shell.world.library_gate.lanes[0].progress==1 and not is_instance_valid(shell.modal),"routed-Space-opens-the-gate")
+	check(state.get_actions("library_record").is_empty(),"untraversed-gate-does-not-create-a-record")
+	await key(KEY_W)
+	for tick in 14: shell.world._process(.05)
+	await key(KEY_W,false)
+	check(state.d.native.get("lib_admission_recorded",false),"actual-keyboard-entry-issues-record")
+	shell._show_phone_surface()
+	shell._on_phone_page("library_record")
+	await create_timer(1.6).timeout; await frames()
 	var actions=state.get_actions("library_record")
-	var record_buttons=buttons(shell.modal if is_instance_valid(shell.modal) else shell.page_body,"记下入馆记录")
+	var record_buttons=buttons(shell.page_body,"记下入馆记录")
 	check(actions.size()==1 and record_buttons.size()==1,"exactly-one-controller-record-action",record_buttons.size())
-	check(label_matches(shell.modal,str(state.get_view("library_record").body)),"record-evidence-text-unchanged")
+	check(label_matches(shell.page_body,str(state.get_view("library_record").body)),"record-evidence-text-unchanged")
 	check(not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"rendering-record-does-not-acknowledge")
 	if record_buttons.size()==1:
 		var button: Button=record_buttons[0]
-		check(button.name=="LibraryWorldDocumentClose" and shell.modal.get_global_rect().encloses(button.get_global_rect()) and not shell.phone.visible and shell.world_frame.visible,"record-action-visible-at-initial-scroll",{"button":button.get_global_rect(),"visible_scroll":shell.phone_scroll.get_global_rect()})
+		check(button.name=="LibraryRecordAction" and shell.phone_scroll.get_global_rect().encloses(button.get_global_rect()) and shell.phone.visible and not shell.world_frame.visible,"record-action-visible-at-initial-scroll",{"button":button.get_global_rect(),"visible_scroll":shell.phone_scroll.get_global_rect()})
 		await click(button.get_global_rect().get_center())
 		check(state.d.ui.libraryFinalsPuzzle.entranceRecordRead and state.d.ui.libraryFinalsPuzzle.clueIds.has("arrival_7_minutes"),"routed-record-click-earns-existing-clue")
 		check(not state.d.ui.libraryFinalsPuzzle.backpackInspected and state.d.ui.libraryFinalsPhase=="library_entered","record-preserves-next-story-gate")
-		check(buttons(shell.modal if is_instance_valid(shell.modal) else shell.page_body,"记下入馆记录").is_empty(),"acknowledged-record-action-removed")
-		state.act("lib_open_record"); await frames()
-		check(buttons(shell.modal if is_instance_valid(shell.modal) else shell.page_body,"记下入馆记录").is_empty() and state.d.ui.libraryFinalsPuzzle.clueIds.count("arrival_7_minutes")==1,"record-reopen-does-not-duplicate-clue-or-action")
-	if is_instance_valid(shell.modal):shell._close_modal();await frames()
+		check(buttons(shell.page_body,"记下入馆记录").is_empty(),"acknowledged-record-action-removed")
+		state.act("lib_record"); await frames()
+		check(state.d.ui.libraryFinalsPuzzle.clueIds.count("arrival_7_minutes")==1,"duplicate-confirmation-does-not-add-another-clue")
+	shell._return_from_phone(); await frames()
+	shell.world._process(0); shell.world.grab_focus()
 	await bag_dialogue()
 	# A deferred handoff must never steal focus from a new modal or hidden RPG.
 	shell._modal_base("Focus regression"); await frames(); var modal_focus=root.gui_get_focus_owner()
@@ -105,10 +116,7 @@ func entry(dimensions: Vector2i) -> void:
 func walk_to_bag() -> bool:
 	# Compute a collision-checked route, then walk it using routed W/A/S/D.
 	# No player teleport or progress mutation is used to reach the backpack.
-	# This fixture disables automatic processing. Spend the ordinary opening
-	# frames after the real record action before planning through its leaves.
-	for i in 10:shell.world._process(.05)
-	check(shell.world.library_door.access_granted and shell.world.library_door.progress==1,"earned-record-opens-physical-entrance")
+	check(shell.world.library_gate.arrival_recorded and state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"arrival-and-record-confirmation-are-distinct")
 	var start: Vector2=shell.world.player
 	var goal:=Vector2(1237,470)
 	var step:=16.5

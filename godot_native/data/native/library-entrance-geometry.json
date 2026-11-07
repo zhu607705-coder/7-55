@@ -1,16 +1,22 @@
 {
-  "schema": "7-55-native-library-entrance-geometry-v1",
+  "schema": "7-55-native-library-entrance-geometry-v2",
   "reference": "res://assets/rpg/interiors/library_interior.png",
   "sourceSize": [1500, 900],
+  "cabinetBounds": [[667, 784, 28, 88], [737, 784, 28, 88], [807, 784, 28, 88]],
+  "formerDoorBaseY": 736,
   "fixedCollisionRects": [
     {"id": "entrance_south_wall_west_base", "rect": [8, 828, 521, 25]},
-    {"id": "entrance_south_wall_east_base", "rect": [986, 828, 507, 25]}
+    {"id": "entrance_south_wall_east_base", "rect": [986, 828, 507, 25]},
+    {"id": "entrance_landing_west_trim", "rect": [529, 805, 7, 48]},
+    {"id": "entrance_landing_east_trim", "rect": [969, 805, 17, 48]},
+    {"id": "entrance_landing_west_exterior", "rect": [0, 853, 536, 47]},
+    {"id": "entrance_landing_east_exterior", "rect": [969, 853, 531, 47]}
   ],
-  "clearCentralApertureX": [529, 986],
+  "clearCentralApertureX": [536, 969],
   "provenance": {
-    "measuredAt": "2026-10-21",
-    "basis": "Visible continuous masonry bases at the south source-image edge; the central entrance, all glass, pillars, plants and furniture retain their original geometry.",
+    "measuredAt": "2026-11-07",
+    "basis": "Visible south masonry bases and the outer landing's blue floor edges on the clean plate.",
     "observedFailure": "Production Godot Web coarse landscape 844x390, closed record=false: real route from [715,792.5] through [705,847.875], [657,847.875], [452,817.875], [452,664.75], [505,642.75] to [715,641.5]. Every original body sample was accepted outside the painted west south wall.",
-    "scope": "Two fixed source-pixel wall-base strips only. They remain solid in both reality modes and at every leaf-animation progress. No domain facts, evidence, admission rules, original spawns or furniture bounds change."
+    "scope": "The guardrails span from the landing's solid edges to the lowered cabinets. The wings pivot at the visible cabinet midpoint."
   }
 }

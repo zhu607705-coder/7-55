@@ -6,6 +6,8 @@ const WALK_FRAMES:=16
 const BOOK_CELL:=Vector2(192,160)
 const BOOK_PIVOT:=Vector2(80,154)
 const BOOK_HEIGHT:=110.0
+const SEATED_HIP_Y := 93.0
+const SEATED_VISIBLE_ROWS := 98.0
 var ready:=false
 var walks:Dictionary={}
 var idles:Dictionary={}
@@ -29,15 +31,9 @@ func ensure_loaded()->bool:
 	if not ResourceLoader.exists(ROOT+"library_book_sheet.png"):return false
 	var original:Texture2D=load(ROOT+"library_book_sheet.png")
 	if original.get_size()!=BOOK_CELL*4:return false
-	# Shelf-scale detail is minified fivefold, so sample a filtered mip chain.
-	var image:Image=original.get_image()
-	if image.is_compressed():image.decompress()
-	image.generate_mipmaps()
-	var filtered:=CanvasTexture.new();filtered.diffuse_texture=ImageTexture.create_from_image(image)
-	filtered.texture_filter=CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	if ResourceLoader.exists(ROOT+"player_seated.png"):
 		seated=load(ROOT+"player_seated.png")
-	book=filtered;walks=pending;idles=idle_pending;ready=true
+	book=original;walks=pending;idles=idle_pending;ready=true
 	return true
 
 func actor(direction:String,flip:bool,elapsed_ms:float,moving:bool)->Dictionary:

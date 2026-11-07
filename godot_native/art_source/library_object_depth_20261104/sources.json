@@ -1,6 +1,6 @@
 {
-  "table": "originals/table.png",
-  "chair_north": "originals/chair_north.png",
+  "table": "originals/catalog_desk_full.png",
+  "chair_north": "originals/chair_south.png",
   "chair_south": "originals/chair_south.png",
   "chair_east": "originals/chair_east.png",
   "chair_west": "originals/chair_west.png",
@@ -22,5 +22,5 @@
   "shelf_divider": "originals/shelf_stack.png",
   "shelf_row": "originals/shelf_stack.png",
   "shelf_broad": "originals/shelf_broad.png",
-  "table_oblique": "originals/table_oblique.png"
+  "table_oblique": "originals/reading_table_full.png"
 }

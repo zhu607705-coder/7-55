@@ -60,6 +60,69 @@
       "reference": "src/assets/rpg/interiors/library_interior.png",
       "transparent_background": true,
       "prompt": "Original production sprite for the supplied Chinese campus library RPG map. Fine pixel art, restrained structural clusters, warm oak with dark blue, muted wine, olive and gold. Crisp pixel edges, upper left light, parallel orthographic edges, camera from SOUTH looking NORTH and downward at about 32 degrees above the floor. True transparent background, alone, no people, cast shadow, labels, UI, other objects or scenery. No convergence and no diagonal isometric rotation. One bare rectangular stained oak COLLEGE READING TABLE facing camera, no belongings and no chairs. Width 140, total height 88; upper tabletop should occupy only the upper HALF of total painted height (about 43), expressive apron, joinery and the clearly visible upright front legs occupy the lower HALF (about 45); a little rear leg visible behind. Straight horizontal table edge, almost head-on front elevation with a shallow rectangular tabletop seen from above. Medium muted honey wood, large quiet coherent color shapes, very little wood-grain noise, no ornament. Uniformly scale friendly. Complete silhouette, all feet visible."
+    },
+    {
+      "output": "generated-image:exec-046a585f-9c3a-4807-99f8-7c1fb283a09e.png",
+      "original": "originals/reading_table_overhead.png",
+      "references": [
+        "godot_native/assets/native/library_object_depth_20261104/table_oblique.png (before this revision)",
+        "godot_native/assets/native/library_object_depth_20261104/clean_plate.png"
+      ],
+      "transparent_background": true,
+      "prompt": "This is a production sprite for a Chinese university library in a pixel-art RPG. The first image is the old desk being replaced, only a reference for wood and trim. The second image is the room, only a reference for colors and lighting. Generate exactly ONE transparent isolated wooden table sprite. TRUE ORTHOGRAPHIC 90-DEGREE OVERHEAD, camera pointed straight down, showing the tabletop plane only. Both long edges have the same width and are perfectly parallel, both short edges perpendicular, axis-aligned. All four corners form the same rectangular silhouette with tiny equal pixel chamfers. No perspective, no trapezoid, no isometric angle, no visible front apron, side faces or legs sticking out, no elliptical footprint, no chairs, no book, no lamp, no shadow beyond the sprite, no background or text. Game-ready hand-placed hard-edged fine pixel art, warm medium walnut and restrained amber trim, very dark muted brown single outline, upper-left light expressed within the rim, simple grouped horizontal wood grain, quiet center where items will be laid. Flat palette color clusters with hard pixel steps, no antialiasing, blur, gloss, photorealism, noisy isolated pixels, or painterly gradients. Center it, leave only a small safety margin, preserve transparent alpha. The object's outer rectangle should be large in the image. This is the long shared library reading table. The tabletop's occupied silhouette aspect ratio is 1.79:1, horizontal, approximately 780 by 436 fine pixels before packing. Keep a thin dark perimeter and a clean unadorned surface."
+    },
+    {
+      "output": "generated-image:exec-a80d7e1f-bcbe-47c6-b3bf-c1f7b5e4e500.png",
+      "original": "originals/catalog_desk_overhead.png",
+      "references": [
+        "godot_native/assets/native/library_object_depth_20261104/table.png (before this revision)",
+        "godot_native/assets/native/library_object_depth_20261104/clean_plate.png"
+      ],
+      "transparent_background": true,
+      "prompt": "This is a production sprite for a Chinese university library in a pixel-art RPG. The first image is the old desk being replaced, only a reference for wood and trim. The second image is the room, only a reference for colors and lighting. Generate exactly ONE transparent isolated wooden table sprite. TRUE ORTHOGRAPHIC 90-DEGREE OVERHEAD, camera pointed straight down, showing the tabletop plane only. Both long edges have the same width and are perfectly parallel, both short edges perpendicular, axis-aligned. All four corners form the same rectangular silhouette with tiny equal pixel chamfers. No perspective, no trapezoid, no isometric angle, no visible front apron, side faces or legs sticking out, no elliptical footprint, no chairs, no book, no lamp, no shadow beyond the sprite, no background or text. Game-ready hand-placed hard-edged fine pixel art, warm medium walnut and restrained amber trim, very dark muted brown single outline, upper-left light expressed within the rim, simple grouped horizontal wood grain, quiet center where items will be laid. Flat palette color clusters with hard pixel steps, no antialiasing, blur, gloss, photorealism, noisy isolated pixels, or painterly gradients. Center it, leave only a small safety margin, preserve transparent alpha. The object's outer rectangle should be large in the image. This is the more compact catalogue desk. The tabletop's occupied silhouette aspect ratio is approximately 1.30:1, horizontal, with a simpler walnut rim and even quieter grain so the terminal stays clear. Keep a single continuous top silhouette."
+    },
+    {
+      "output": "generated-image:exec-2568b23b-4dca-4e4a-8fb6-2f393d4caf66.png",
+      "original": "originals/reading_table_full.png",
+      "references": [
+        "reading projection guide 700x391, surface y218, apron y253",
+        "src/assets/rpg/interiors/library_interior.png",
+        "baseline normalized chair_north.png"
+      ],
+      "transparent_background": true,
+      "prompt": "Create one COMPLETE wooden library table as a transparent game sprite. The FIRST input is the exact shape and projection guide, the second is the library room and lighting reference, and the third is the texture and ink weight of the adjacent chair. Replace the flat colored guide with rendered fine pixel-art wood while tracing its rectangular outline, shallow dark front apron, and FOUR square support legs. Both sets of legs must be present: taller front pair and a partly visible shorter rear pair just inward, with transparent open space BETWEEN them down to their feet. Show the broad rectangular top and shallow front plane at the orthographic oblique overhead camera used in the room. The far and near top edges have EQUAL width and are perfectly horizontal, both sides are perfectly vertical and parallel, all legs parallel. Keep the top depth about 56–59 percent of the full sprite height, apron another 8–10 percent, front legs end at the marked bottom. Follow the guide's ratio, support positions, and proportions closely. This is a simple unadorned, modern university desk, with medium honey-walnut finish and modest amber rim. Hard-edged 2D fine-pixel art, muted warm palette, broad wood-grain groups, upper-left light. Transparent alpha beyond the silhouette and through the under-table openings. One whole uncropped table in the center. Exclude ornaments, other props, drawers, text, outlines of the guide, perspective convergence, isometric diagonals, point noise, gradients, and shadows outside the sprite. Long reading-room table, total occupied width to height 700:391, about 1.79:1. Room for two readers on each long side. Keep visible square feet, a thin apron and the open space under it."
+    },
+    {
+      "output": "generated-image:exec-4e2c6595-375c-45e5-af73-2dedc119f331.png",
+      "original": "originals/catalog_desk_full.png",
+      "references": [
+        "catalogue projection guide 700x537, surface y312, apron y361",
+        "src/assets/rpg/interiors/library_interior.png",
+        "baseline normalized chair_north.png"
+      ],
+      "transparent_background": true,
+      "prompt": "Create one COMPLETE wooden library table as a transparent game sprite. The FIRST input is the exact shape and projection guide, the second is the library room and lighting reference, and the third is the texture and ink weight of the adjacent chair. Replace the flat colored guide with rendered fine pixel-art wood while tracing its rectangular outline, shallow dark front apron, and FOUR square support legs. Both sets of legs must be present: taller front pair and a partly visible shorter rear pair just inward, with transparent open space BETWEEN them down to their feet. Show the broad rectangular top and shallow front plane at the orthographic oblique overhead camera used in the room. The far and near top edges have EQUAL width and are perfectly horizontal, both sides are perfectly vertical and parallel, all legs parallel. Keep the top depth about 56–59 percent of the full sprite height, apron another 8–10 percent, front legs end at the marked bottom. Follow the guide's ratio, support positions, and proportions closely. This is a simple unadorned, modern university desk, with medium honey-walnut finish and modest amber rim. Hard-edged 2D fine-pixel art, muted warm palette, broad wood-grain groups, upper-left light. Transparent alpha beyond the silhouette and through the under-table openings. One whole uncropped table in the center. Exclude ornaments, other props, drawers, text, outlines of the guide, perspective convergence, isometric diagonals, point noise, gradients, and shadows outside the sprite. Compact library catalogue desk, total occupied width to height 700:537, about 1.30:1. Same construction and depth view as the reading tables, more compact proportions."
+    },
+    {
+      "output": "generated-image:exec-f8fec3bd-aa6e-420f-8f9c-b8bb908ab0f0.png",
+      "status": "superseded",
+      "references": [
+        "original normalized chair_north.png at 9e1ff44b",
+        "src/assets/rpg/interiors/library_interior.png"
+      ],
+      "transparent_background": true,
+      "prompt": "Edit the FIRST sprite into the revised version of THE SAME warm wooden chair for the library in the SECOND image. Preserve the incumbent furniture family faithfully: the same reddish-brown worn wood, dark blue-charcoal one-pixel edges, small brass-beige highlights, square posts, squared backrest and straight feet. Match the library's actual north-facing chair viewed from the south in an orthographic oblique top-down RPG. Keep the whole recognizable chair and the original viewing direction. Parallel horizontal tabletop-aligned edges, upright parallel supports, a visible shallow seat plane and short feet. Use a higher view than a frontal product photo, matching the room. The correction is the seat: bring the projected plane down close to the foot line and make it short in screen depth, about half its width, with a clear narrow front edge. The upper area should read as a narrow back rail and openings, not a large raised second seat. Use the same grain clusters and contrast as the supplied furniture. Keep the silhouette compact, around 27 wide by 32 tall in the game, with two visible near feet and the two shorter far feet. Do not add another chair, a table, a box frame, a pedestal, scenery, text, a cast shadow, diagonal/isometric lines or perspective convergence. True transparent alpha around the whole chair and between its posts. One complete sprite, uncropped."
+    },
+    {
+      "output": "generated-image:exec-0ec0735e-3fa4-46c6-9006-6e017fccb36a.png",
+      "original": "originals/chair_north_short_seat.png",
+      "references": [
+        "originals/chair_north_approved_layout.png",
+        "godot_native/assets/native/library_object_depth_20261104/chair_south.png"
+      ],
+      "transparent_background": true,
+      "prompt": "Image 1 is a final user-approved chair shape in the exact required rear-facing game orientation. This is an EDIT of image 1 to replace the flat material colors with pixel-art wood. Treat its alpha and every board boundary as LOCKED. Paint inside the existing silhouette at the same coordinates. Absolutely preserve the dimensions and placement of the square post caps, upper board and second board, seat behind them, two near legs, apron, transparent opening and level feet. In particular preserve the exact height of the backrest relative to the seat. The two vertical outer posts fully contain the seat within their width, flush outer silhouette from the cap to the foot, with no visible seat extending at either side. The long near legs must remain as long and straight as they are in image 1. On the 720 x 720 input, left post starts at x168 and ends x220, right post x499 to 551, caps top y105, bottom of both feet y670, and the open space under the apron begins at y474. The main broad back slat is already present, upper-middle from about y145 to y223; the second horizontal slat is about y260 to y311. The warmer tan bands in between and below are the seat showing through from behind. Never introduce black empty gaps between the boards over the seat; use the original flat color boundaries to distinguish the layers, their depth is already correct. This is not a new silhouette, viewpoint, chair model or a side turn. Image 2 supplies ONLY the active game's palette and small-scale wood grain and pixel style. Apply its deep red-brown boards, golden-ochre square top caps, narrow charcoal pixel edging, warm muted grain and crisp hard edges to image 1, without copying image 2's construction, tall empty backrest or differently located seat. Place some grain variation and simple hard-edge highlights inside each existing wooden board, distinguishing the slats from the seat. Use true transparent alpha outside exactly the shape in image 1 and in the opening between the two exposed legs. Keep generous transparent padding and the entire feet. Return ONE full pixel-art chair, no environment, shadow, other props or text.",
+      "registration": "Generated wood grain applied to the approved 384 × 566 orthographic shape, with the two back slats separated by the visible seat."
     }
   ]
 }
