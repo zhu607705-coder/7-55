@@ -252,7 +252,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 	var phase = _phase(s)
 	var items: Dictionary = s.items
 	if SceneSession.pending_opening(s) and action not in ["lib_dialogue_open","lib_dialogue_next","lib_opening_complete"]: return _ok("请先完成 022 转场。")
-	if action in ["lib_note","lib_shelf","lib_photo","lib_scan","lib_receipt","lib_apply_pass","lib_sit"] and s.native.get("mode","light") != "light": return _ok("深色观察不执行物理操作。请切换到浅色操作。")
+	if action in ["lib_note","lib_shelf","lib_photo","lib_scan","lib_receipt","lib_apply_pass","lib_sit"] and s.native.get("mode","light") != "light": return _ok("切到浅色模式再试。")
 	if action in ["lib_investigate", "lib_upload", "lib_bd_briefing", "lib_bd_select", "lib_bd_undo", "lib_bd_submit"] and (s.networkMode != "campus_wifi" or not s.actOne.cc98Login.authenticated): return _ok("请在校园网完成 CC98 统一身份认证。")
 	match action:
 		"lib_enter":
@@ -550,7 +550,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			s.native.page = "phone_home"
 			s.currentScene = "phone_home"
 			s.rpgCheckpoint = "campus_library_gate"
-			return _world(s,"campus_bootstrap","")
+			return _world(s,"campus_bootstrap","022：深色模式也打开了。")
 
 	return _ok("当前阶段没有这个操作。")
 

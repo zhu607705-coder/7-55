@@ -13,6 +13,59 @@ func check(ok:bool,label:String) -> void:
 	if not ok: failures+=1;push_error("TRANSIENT_NOTICE_LATEST: "+label)
 func shown(text:String) -> bool:
 	return shell.toast.is_visible_in_tree() and shell.toast.text==text and shell.notice_queue.current.get("text","")==text and shell.notice_queue.pending.is_empty()
+
+func check_balance_cue() -> void:
+	var director: Node=shell.audio_director
+	for intervening_event: String in ["none","newer","expiry"]:
+		director.reset()
+		shell._clear_notice_presentations()
+		state.d=state.initial()
+		state.d.native.chapter=2;state.d.native.page="campus_card"
+		state.d.actOne.phase="movement_required";state.d.actOne.rightArrowAssembled=true
+		state.d.actOne.inventoryRecovered=true;state.d.items.campusCard=true;state.d.items.rightArrow=true
+		state.d.flags.checkinDone=true;state.d.native.selected_item="rightArrow"
+		state.changed.emit();await frames()
+		var balance: Button=shell.find_child("CampusCardBalance",true,false)
+		check(is_instance_valid(balance) and balance.is_visible_in_tree() and not balance.disabled,"campus card opens with the original balance control")
+		if not is_instance_valid(balance):continue
+		balance.pressed.emit()
+		var message: String=state.last_result.get("message","")
+		check(state.d.wallet.campusCardCents==600 and shown(message),"right arrow applies and the receipt starts in the phone's top lane")
+		var balance_cues: Array=director.scheduled.filter(func(entry: Dictionary)->bool:return entry.id=="act2_balance_shifted")
+		check(balance_cues.any(func(entry: Dictionary)->bool:return entry.get("cue",{}).get("channel")=="text"),"the actual balance event has a scheduled subtitle")
+		if intervening_event=="newer":
+			message="后续操作提示"
+			state.feedback.emit(message)
+		shell._advance_notices(7.0 if intervening_event=="expiry" else .1)
+		var anchor: Rect2=shell.toast.get_global_rect()
+		var time: float=shell.toast_time
+		for entry: Dictionary in balance_cues:entry.at=director.presentation_clock()
+		director._process(0)
+		if intervening_event=="expiry":
+			check(not shell.toast.visible and shell.notice_queue.current.is_empty(),"late audio cannot resurrect an expired receipt")
+		else:
+			check(shown(message) and shell.toast.get_global_rect().is_equal_approx(anchor) and is_equal_approx(shell.toast_time,time),"delayed duplicate neither moves nor renews the visible receipt")
+		check(not shell.phone_story_caption.visible and not shell.story_caption.visible,"delayed duplicate never opens a second caption")
+		await frames()
+
+func check_spoken_feedback() -> void:
+	var director: Node=shell.audio_director
+	director.reset();shell._clear_notice_presentations()
+	var text: String=director.source.storyLines.prologue_narrator_caught.subtitleZh
+	director.source.events.notice_test_receipt_voice={"cues":[{"channel":"voice","asset":"vo_prologue_narrator_caught","subtitleKey":"prologue_narrator_caught","durationMs":180}]}
+	state.feedback.emit(text)
+	director.update_state("notice_test",state.d,state.d,{"message":text,"presentation":["notice_test_receipt_voice"]})
+	for entry: Dictionary in director.scheduled:entry.at=director.presentation_clock()
+	director._process(0)
+	check(director.last_subtitle.text==text and director.last_subtitle.get("repeatsFeedback",false) and director.voice_asset=="vo_prologue_narrator_caught" and shown(text) and not shell.phone_story_caption.visible,"voice still plays while its duplicate keeps the first visual owner")
+	await frames()
+	director.reset()
+	shell._clear_notice_presentations()
+	director.cue("notice_test_receipt_voice")
+	for entry: Dictionary in director.scheduled:entry.at=director.presentation_clock()
+	director._process(0)
+	check(not director.last_subtitle.get("repeatsFeedback",false) and shell.phone_story_caption.is_visible_in_tree() and shell.phone_story_caption.text==text,"an independently requested voice caption still renders")
+
 func run() -> void:
 	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"disposable test save profile")
 	if failures:quit(1);return
@@ -77,15 +130,18 @@ func run() -> void:
 		for index in 20:state.feedback.emit("替换普通提示 %02d"%index)
 		check(director.scheduled==scheduled,"ordinary burst cannot remove, reorder or retime critical scheduled cues")
 		director.scheduled[0].at=director.presentation_clock();director._process(0)
-		check(shell.story_caption_line.text=="系统：保留的第一句对白" and shell.story_caption.panel.is_visible_in_tree() and not shell.toast.visible,"first real scheduled dialogue owns its own visible caption")
+		check(shell.phone_story_caption.text=="系统：保留的第一句对白" and shell.phone_story_caption.is_visible_in_tree() and not shell.story_caption.visible and not shell.toast.visible,"first scheduled dialogue uses one phone caption")
+		check(shell.phone_story_caption.has_node("NoticeAvatar") and shell.phone_story_caption.get_theme_stylebox("normal").bg_color==shell.toast.get_theme_stylebox("normal").bg_color,"timed phone dialogue shares the phone notice composition")
 		state.feedback.emit("对白遮挡下的过期提示");shell._advance_notices(10)
 		check(shell.notice_queue.current.is_empty() and not shell.toast.visible and director.scheduled.size()==1,"hidden ordinary feedback expires without consuming the second scheduled dialogue")
 		director.scheduled[0].at=director.presentation_clock();director._process(0)
-		check(shell.story_caption_line.text=="玩家：保留的第二句对白" and shell.story_caption.panel.is_visible_in_tree(),"second scheduled dialogue still appears in authored order")
+		check(shell.phone_story_caption.text=="玩家：保留的第二句对白" and shell.phone_story_caption.is_visible_in_tree(),"second scheduled dialogue still appears in authored order")
 		shell._advance_notices(2)
-		check(not shell.toast.visible and shell.notice_queue.pending.is_empty() and director.scheduled.is_empty(),"story finish cannot resurrect stale ordinary feedback")
+		check(not shell.toast.visible and not shell.phone_story_caption.visible and shell.notice_queue.pending.is_empty() and director.scheduled.is_empty(),"story finish retires the caption and does not resurrect stale feedback")
 		check(state.d==committed,"all clocks and presentation handoffs preserve committed inventory, history and story state")
 		director.reset();await frames()
+	await check_balance_cue()
+	await check_spoken_feedback()
 	await shell.shutdown();shell.queue_free();await frames()
 	print("TRANSIENT_NOTICE_LATEST: ",checks," checks; ",failures," failures")
 	quit(1 if failures else 0)

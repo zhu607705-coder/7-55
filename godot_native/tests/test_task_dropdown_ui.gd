@@ -80,15 +80,8 @@ func run() -> void:
 				await click(await reveal_control("JournalHistoryToggle"));await settle();verify_dropdown()
 				await capture_state("05-real-history-expanded",dimensions)
 				await click(await reveal_control("JournalHistoryToggle"));await settle()
-				await click(await reveal_control("JournalObservationCompare"));await settle();verify_dropdown()
-				await capture_state("06-real-earned-clue-selector",dimensions)
-				for index in 2:
-					var card: Dictionary=shell.observation_comparison_session.cards[index]
-					await click(await reveal_control("ObservationChoice_"+str(card.id).replace(":","_")));await settle()
-				await click(await reveal_control("ObservationCompare"));await settle();verify_dropdown()
-				await capture_state("07-real-earned-clue-comparison",dimensions)
-				await click(await reveal_control("ObservationJournalReturn"));await settle();verify_dropdown()
-			check(state.d==before,"task, history and clue subpage preserve earned progress")
+				check(find("JournalCluesCard")==null and find("JournalObservationCompare")==null,"no extra task section or focus target after earning clues")
+			check(state.d==before,"task and history preserve earned progress")
 			await press_key(KEY_ESCAPE);await frames(4)
 			check(not is_instance_valid(shell.modal),"Escape dismisses candidate exactly once")
 			if stage==0:

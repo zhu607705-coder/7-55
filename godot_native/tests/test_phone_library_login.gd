@@ -82,11 +82,16 @@ func run() -> void:
 	s=fresh(); await show("cc98")
 	expect(node("Cc98LoginSubmit").disabled,"Empty source login cannot submit")
 	expect(node("Cc98LoginAttempts").text=="立即机会 3/3","Source immediate attempts shown")
-	expect(node("Cc98HintFragment_0")==null and not node("Cc98AttendantRemark").text.contains("ZheJiang"),"Authentication starts with a character remark, without exposed password fragments")
+	expect(node("Cc98HintFragment_0")==null and not node("Cc98PasswordHints").is_visible_in_tree(),"Authentication starts with the password clues hidden")
 	await capture("cc98-login-top")
 	await scroll_to("Cc98LoginScroll",245)
 	await click(node("Cc98ReadCampusCard")); expect(s.actOne.cc98Login.studentIdDiscovered,"Actual source card read emits validated identity intent")
 	await show("cc98"); expect(node("Cc98LoginStudentId").text=="3250100755","Read card fills exact source ID on re-render")
+	await scroll_to("Cc98LoginScroll",0)
+	await click(node("Cc98AttendantIcon"))
+	await click(node("Cc98AttendantIcon"))
+	await create_timer(.4).timeout
+	expect(node("Cc98PasswordHints").is_visible_in_tree(),"The attendant lands before the remarks can be read")
 	await scroll_to("Cc98LoginScroll",350)
 	for i in range(3):
 		await click(node("Cc98RevealHint")); await show("cc98")
@@ -230,10 +235,16 @@ func run() -> void:
 	s=fresh(); s.items.rightArrow=true; s.actOne.rightArrowAssembled=true; s.actOne.exerciseStarted=true
 	await show("campus_card"); var balance=node("CampusCardBalance")
 	expect(balance!=null and balance is Button,"Campus-card source balance has a visible native target")
-	expect(node("CampusCardGradient").size.is_equal_approx(Vector2(392,256)/pages.PHONE_SCALE) and node("CampusCardPlate").clip_contents,"Gradient texture ignores intrinsic size before layout and clips inside card border")
+	expect(node("CampusCardGradient").size.is_equal_approx(Vector2(392,204)/pages.PHONE_SCALE) and node("CampusCardPlate").clip_contents,"Shortened card contains its gradient")
+	var caption: Label=node("CampusCardBalanceLabel")
+	var label_width:=caption.get_theme_font("font").get_string_size(caption.text,HORIZONTAL_ALIGNMENT_LEFT,-1,caption.get_theme_font_size("font_size")).x
+	var gap: float=balance.position.x-caption.position.x-label_width
+	expect(balance.alignment==HORIZONTAL_ALIGNMENT_LEFT and gap>=0 and gap<=14,"The amount reads immediately after the label")
+	expect(not surface.find_children("*","Label",true,false).any(func(label: Label): return label.text.begins_with("我的零钱")),"The card displays a single balance")
+	var cash_before: int=s.wallet.cashCents
 	await capture("campus-card-source")
 	balance._drop_data(Vector2(10,10),{"kind":"inventory_item","item":"rightArrow"})
-	expect(s.actOne.balanceShifted and s.items.rightArrow and s.wallet.campusCardCents==600,"Actual balance drop retains reusable arrow and delegates decimal shift")
+	expect(s.actOne.balanceShifted and s.items.rightArrow and s.wallet.campusCardCents==600 and s.wallet.cashCents==cash_before,"Balance drop shifts the card amount and retains the arrow and cash")
 	# Source later notifications, evolving unresolved timestamps and direct app targets.
 	s=fresh(); s.flags.codeScattered=true; s.actOne.phase="complete"; s.canteenHunt.active=true; s.native.chapter=3
 	s.theaterHunt.cc98TicketCommissionPhase="posted"; await show("phone_home")

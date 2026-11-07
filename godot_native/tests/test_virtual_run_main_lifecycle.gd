@@ -19,6 +19,7 @@ func prepare(view: Vector2i) -> void:
 	state_node.d.native.page = "tiyi"
 	state_node.d.native.scene = "dorm_hub"
 	state_node.d.networkMode = "cellular"
+	state_node.d.ui.brightness = 35
 	state_node.d.actOne.phase = "movement_required"
 	state_node.d.actOne.characterNamed = true
 	state_node.d.actOne.identityVerified = true
@@ -54,6 +55,10 @@ func run() -> void:
 		check(is_instance_valid(attempt) and shell.active_game == attempt and attempt.accepted,"Main retains the exact accepted game instance")
 		check(attempt.return_button.visible and attempt.completed == 10,"retained result exposes explicit return with all ten fixes")
 		check(shell.toast.text.is_empty() and not shell.toast.visible,"generic result toast cannot cover retained result controls")
+		check(shell.phone_chrome.brightness_veil.color.a>.1 and not shell.phone_chrome.brightness_veil.is_visible_in_tree(),"The phone dimmer cannot cover the completed run")
+		shell.phone_chrome.set_display_brightness(100)
+		check(shell.phone_chrome.brightness_grade.strength>0 and not shell.phone_chrome.brightness_grade.is_visible_in_tree(),"Brightening the covered phone also leaves the run unfiltered")
+		shell.phone_chrome.set_display_brightness(35)
 		# Also observe the source's real delayed cue while its result is still
 		# mounted. This waits only in the test; gameplay adds no delay.
 		var cue_deadline := Time.get_ticks_msec()+2000
@@ -78,6 +83,7 @@ func run() -> void:
 		check(shell.active_game == null and state_node.d.actOne.exerciseStarted,"actual Return closes once and retains authoritative success")
 		await frames(3)
 		check(not is_instance_valid(attempt),"completed instance is freed only after explicit return")
+		check(shell.phone_chrome.brightness_veil.is_visible_in_tree() and shell.phone_chrome.brightness_veil.color.a>.1,"The saved brightness applies again on returning to Tiyi")
 		var repeated_open: Dictionary = state_node.act("c2_exercise")
 		check(not repeated_open.has("game") and shell.active_game == null,"ordinary completed story cannot open the fresh run used by the next fixture")
 	await prepare(Vector2i(390,844))

@@ -49,6 +49,21 @@ modal and rotation interruption, and measures the close target in CSS pixels.
 Exact-candidate Web execution and new screenshot review are separate gates;
 adding these assertions alone is not a passed result.
 
+The first candidate (`377d78a3`, tested merge `0e670a40`) subsequently passed
+[actual Web acceptance](https://github.com/zhu607705-coder/7-55/actions/runs/42371938044).
+Standard and Retina touch inputs exercised the coexisting stick and direct
+approach. The new book captures show readable portrait text; ordinary scrolling
+exposes a measured 302×48 CSS-pixel close control. The reviewed PNGs match their
+receipt hashes. These results do not stand in for later-commit acceptance.
+
+Full native testing also exposed a Room 204 overlap: a fixture selected furniture
+under the painted stick. Ordinary touch panning can expose it, after which the
+original furniture drag works. A new regression preserves this recovery path and
+checks exact-once placement. It additionally found and fixes both orders of
+simultaneous stick/native-furniture ownership. The stick remains in a stable
+position; scene input never passes through the visible control. The gesture
+recovery fixture freezes world processing, so it is not live locomotion evidence.
+
 Physical thumb reach, hand obstruction, edge gestures, device safe areas, mobile
 Safari behavior, thermal performance and a full four-chapter touch playthrough
 remain unverified. No merge or deployment is part of this audit.

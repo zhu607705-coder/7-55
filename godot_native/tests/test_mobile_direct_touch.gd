@@ -47,7 +47,8 @@ func key(code: Key, down: bool) -> void:
 	event.keycode = code; event.physical_keycode = code; event.pressed = down
 	send(event)
 func world_screen(local: Vector2) -> Vector2:
-	return shell.world_view.get_global_transform_with_canvas() * (local * shell.world_view.size / Vector2(shell.world_viewport.size))
+	var display: Rect2=shell.world_view.get_global_rect()
+	return display.position+local*display.size/shell.world.size
 func source_screen(point: Vector2) -> Vector2:
 	return world_screen((point-shell.world.camera)*shell.world.zoom+shell.world.size/2)
 func target(id := TARGET_ID) -> Dictionary:
@@ -114,7 +115,8 @@ func assert_layout(insets: Vector4) -> void:
 	var map:Rect2=shell.world_view.get_global_rect()
 	var back:Rect2=shell.mobile_back.get_global_rect()
 	check(absf(back.end.x-(map.end.x-8))<.01 and absf(back.end.y-(map.end.y-8))<.01 and back.size.x>=44 and back.size.y>=44,"phone icon retains a physical44px target in the map's bottom right")
-	check(shell.world.size==Vector2(shell.world_viewport.size),"world pixels match SubViewport exactly")
+	var rendered := root.get_final_transform()*map
+	check(rendered.size.is_equal_approx(Vector2(shell.world_viewport.size)),"world backing matches the rendered pixels")
 	observations.append({"size":str(shell.size),"safe":str(safe),"world":str(shell.world_frame.get_global_rect()),"gestureArea":str(metrics.gestureArea)})
 
 func plaque_character_rects() -> Array[Rect2]:
@@ -140,7 +142,12 @@ func assert_mobile_plaque_at_bottom(label: String) -> void:
 	check(metrics.scheme=="direct_world" and metrics.has("stick"),label+" retains direct scene gestures and locomotion stick")
 	check(shell.world.mobile_exploration and overlay.plaque.is_visible_in_tree(),label+" has a confirmed mobile plaque")
 	check(region.encloses(plaque) and safe.encloses(plaque),label+" stays entirely in the game viewport and simulated safe area")
-	check(absf(plaque.get_center().x-region.get_center().x)<=1,label+" remains horizontally centered")
+	var stick_bounds:Rect2=metrics.stick
+	var physical_stick:=Rect2(world_screen(stick_bounds.position),world_screen(stick_bounds.end)-world_screen(stick_bounds.position))
+	check(not plaque.intersects(physical_stick),label+" entire paper stays clear of the painted stick")
+	var normal_centered:bool=absf(plaque.get_center().x-region.get_center().x)<=1
+	var reserved_lane:bool=plaque.position.x>=physical_stick.end.x+7.9 and plaque.end.x<=region.end.x-7.9
+	check(normal_centered or reserved_lane,label+" stays centred or uses the clear right-hand lane beside the stick")
 	check(plaque.end.y>=region.position.y+region.size.y*.6,label+" uses the lower playfield above the inline tools")
 	# The local version keeps its tools and items inside the game viewport.
 	# Check actual character/shadow envelopes against those visible controls.
@@ -194,6 +201,27 @@ func test_direct_tap() -> void:
 	# Leaving the same source range clears the confirmed plaque.
 	shell.world.player=FAR; shell.world._sync_player(); shell.world._process(0); await frames()
 	check(not shell.world.selected_overlay.plaque.visible,"range exit clears confirmed title")
+func test_long_confirmed_paper() -> void:
+	for dimensions:Vector2i in [Vector2i(390,844),Vector2i(568,320),Vector2i(844,390)]:
+		await fixture(dimensions)
+		# Presentation-only long-copy fixture. Interaction still begins with an
+		# ordinary source-object tap; no controller result is injected.
+		var point:=visible_pick();touch(point,true);touch(point,false);await frames(8)
+		# The real action refreshes source targets. Replace display copy only
+		# after that refresh, otherwise the fixture itself loses its long text.
+		var long_title:="用于检查窄屏换行的完整物件名称与现场说明记录"
+		var definition:=target();definition.label=long_title
+		shell.world._sync_selected_overlay();await frames(8)
+		check(shell.world.selected_overlay.object_heading.text==long_title,"long confirmed paper retains every authored fixture character")
+		assert_mobile_plaque_at_bottom("long confirmed paper")
+		var settled:Rect2=shell.world.selected_overlay.plaque.get_global_rect()
+		await frames(8)
+		check(shell.world.selected_overlay.plaque.get_global_rect().is_equal_approx(settled),"long wrapped paper keeps its complete settled position and size")
+		var journal:Vector2=shell.world_tasks.get_global_rect().get_center()
+		touch(journal,true);touch(journal,false);await frames()
+		check(is_instance_valid(shell.modal),"long paper leaves the actual journal touch target operable")
+		shell._close_modal();await frames()
+
 func test_no_remote_or_arrival() -> void:
 	await fixture()
 	shell.world.player=FAR;shell.world.pan_offset=Vector2(110,0)
@@ -388,6 +416,7 @@ func run() -> void:
 			await fixture(row[0],row[1],bag); assert_layout(row[1])
 			await confirm_and_check_bottom_plaque()
 	await test_direct_tap()
+	await test_long_confirmed_paper()
 	await test_no_remote_or_arrival()
 	await test_drag_and_cancel()
 	await test_root_capture()

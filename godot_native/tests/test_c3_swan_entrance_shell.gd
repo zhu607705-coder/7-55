@@ -116,7 +116,7 @@ func run() -> void:
 
 	# Native skip activates on release; emulated mouse and cancelled touch do not.
 	await fixture(); config=capture(); effect=shell.world_effect; lease=config.session
-	await frames(); var skip: Vector2=effect.skip_rect().get_center()
+	await frames(); var skip: Vector2=effect.get_global_transform_with_canvas()*effect.skip_rect().get_center()
 	mouse(skip,true,-1); mouse(skip,false,-1)
 	check(not effect.reported,"touch-synthesized mouse cannot skip twice")
 	touch(skip,true); touch(skip,false,7,true)

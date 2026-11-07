@@ -11,7 +11,8 @@ func check(ok: bool,label: String) -> void:
 func frames(count: int=2) -> void:
  for i in range(count):await process_frame
 func screen(point: Vector2) -> Vector2:
- return shell.world_view.get_global_transform_with_canvas()*(point*shell.world_view.size/Vector2(shell.world_viewport.size))
+ var display: Rect2=shell.world_view.get_global_rect()
+ return display.position+point*display.size/shell.world.size
 func mouse(point: Vector2,pressed: bool,device: int=0) -> void:
  var e:=InputEventMouseButton.new();e.button_index=MOUSE_BUTTON_LEFT;e.position=point;e.global_position=point;e.pressed=pressed;e.device=device;root.push_input(e,true);await frames()
 func motion(point: Vector2) -> void:
@@ -58,17 +59,17 @@ func run() -> void:
  await mouse(center("left"),false);check(count()==0,"blocking world presentation cancels old pointer")
  shell.world_effect.free();shell.world_effect=null
  # A real finger has an existing native route; emulated mouse must not duplicate it.
- var start:Vector2=shell.world.kayak_paddle_rects().left.get_center();var touch:=InputEventScreenTouch.new();touch.index=7;touch.position=start;touch.pressed=true;shell.world_viewport.push_input(touch,true);await frames()
+ var start:Vector2=shell.world.kayak_paddle_rects().left.get_center();var touch:=InputEventScreenTouch.new();touch.index=7;touch.position=shell.world.get_global_transform_with_canvas()*start;touch.pressed=true;shell.world_viewport.push_input(touch,true);await frames()
  n=count();await mouse(screen(start),true,-1);await mouse(screen(start),false,-1);check(count()==n,"touch-emulated mouse grants no paddle")
  await mouse(screen(start),true);await mouse(screen(start),false);check(count()==n,"real mouse cannot steal a finger-owned same-side paddle")
  touch=touch.duplicate();touch.pressed=false;shell.world_viewport.push_input(touch,true);await frames()
  check(count()==n+1 and shell.world.kayak.last_side=="left","existing finger route still strokes exactly once")
  p=center("right");n=count();await mouse(p,true)
- touch=InputEventScreenTouch.new();touch.index=9;touch.position=shell.world.kayak_paddle_rects().right.get_center();touch.pressed=true;shell.world_viewport.push_input(touch,true);await frames()
+ touch=InputEventScreenTouch.new();touch.index=9;touch.position=shell.world.get_global_transform_with_canvas()*shell.world.kayak_paddle_rects().right.get_center();touch.pressed=true;shell.world_viewport.push_input(touch,true);await frames()
  touch=touch.duplicate();touch.pressed=false;shell.world_viewport.push_input(touch,true);await frames()
  check(count()==n,"finger cannot steal a mouse-owned same-side paddle")
  await mouse(p,false);check(count()==n+1 and shell.world.kayak.last_side=="right","original owner releases once after competing pointer")
- touch=InputEventScreenTouch.new();touch.index=11;touch.position=start;touch.pressed=true;shell.world_viewport.push_input(touch,true);await frames();n=count()
+ touch=InputEventScreenTouch.new();touch.index=11;touch.position=shell.world.get_global_transform_with_canvas()*start;touch.pressed=true;shell.world_viewport.push_input(touch,true);await frames();n=count()
  touch=touch.duplicate();touch.pressed=false;touch.canceled=true;shell.world_viewport.push_input(touch,true);await frames()
  check(count()==n,"native finger cancellation remains neutral")
  await reset(Vector2i(1180,812));var retired_corner:=screen(Vector2(120,shell.world.size.y-130));await mouse(retired_corner,true);await mouse(retired_corner,false)

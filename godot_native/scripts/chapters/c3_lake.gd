@@ -314,7 +314,7 @@ func physical(s: Dictionary, id: String) -> Dictionary:
 	if kind=="reflection":
 		if selected.value=="net_frame":
 			if light(s):
-				return response(net_frame_location() if q.observedFishingSpotIds.has("net_frame") else "这里是网框的倒影。切换深色观察，记录它的位置。")
+				return response(net_frame_location() if q.observedFishingSpotIds.has("net_frame") else "这里是网框的倒影。切到深色模式，记录它的位置。")
 			unique(q.observedFishingSpotIds,selected.value)
 			return response(net_frame_location())
 		if light(s): return response(prose("chapter3-qizhen-lake.content","reflection.lightWater"))

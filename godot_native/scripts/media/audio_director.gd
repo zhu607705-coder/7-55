@@ -15,6 +15,8 @@ var _tiyi_taunt_waiting:=false
 var _explicit_ids_current: Dictionary = {}
 var _mapping_previous: Dictionary = {}
 var _mapping_next: Dictionary = {}
+var _mapping_feedback: String = ""
+var _whitespace := RegEx.create_from_string("\\s+")
 var _narrative_owned_current := false
 var source: Dictionary = {}
 var external_cue_prefixes: Array = []
@@ -90,7 +92,7 @@ func _process(_delta: float) -> void:
 			var tone: String="player" if str(line.text).begins_with("玩家：") else "system" if str(line.text).begins_with("系统：") or str(line.text).begins_with("手机系统：") else "task" if str(line.text).begins_with("任务：") else "narrator"
 			last_subtitle={"text":str(line.text),"surface":"toast","durationMs":float(line.durationMs),"tone":tone,"presentationRole":"notification" if tone=="task" else "dialogue"}
 			subtitle_timed.emit(str(line.text),"toast",float(line.durationMs),tone)
-			feedback(str(line.text))
+			feedback(str(line.text),true)
 		elif pending.has("inspect"): inspect_requested.emit(str(pending.inspect))
 		elif pending.has("trigger"): cue(str(pending.id),pending.trigger)
 		else: _play_cue(pending.cue, str(pending.id))
@@ -211,7 +213,7 @@ func _token(id: String, payload: Dictionary) -> String:
 	for key in keys: ordered[key] = payload[key]
 	return id + ":" + JSON.stringify(ordered)
 
-func cue(id: String, payload: Dictionary = {}) -> void:
+func cue(id: String, payload: Dictionary = {}, feedback_text: String = "") -> void:
 	if not _ready_to_play: return
 	id = str(source.get("aliases", {}).get(id, id))
 	for prefix in external_cue_prefixes:
@@ -227,7 +229,7 @@ func cue(id: String, payload: Dictionary = {}) -> void:
 	if id == "native_story_subtitle":
 		last_subtitle={"text":str(payload.get("text","")),"surface":"toast","durationMs":float(payload.get("durationMs",2400)),"tone":str(payload.get("tone","system")),"presentationRole":"notification" if payload.get("tone","")=="task" else "dialogue"}
 		subtitle_timed.emit(str(payload.get("text","")),"toast",float(payload.get("durationMs",2400)),str(payload.get("tone","system")))
-		feedback(str(payload.get("text",""))); return
+		feedback(str(payload.get("text","")),true); return
 	if id in ["native_activity_paused","native_activity_resumed","native_activity_closed"]:
 		for prefix in payload.get("prefixes",[]):
 			if id == "native_activity_paused": pause_prefix(str(prefix))
@@ -274,6 +276,7 @@ func cue(id: String, payload: Dictionary = {}) -> void:
 		var alarm_cues: Array = beat.get("cues", []).duplicate(true)
 		alarm_cues.append({"channel":"ambient","owner":"phone_alarm_tone","asset":"procedural_phone_alarm","volume":1.0,"loop":true,"action":"play" if id == "phone_alarm_started" else "stop"})
 		beat.cues = alarm_cues
+	var presented := feedback_text if not feedback_text.is_empty() else _mapping_feedback
 	for original in beat.get("cues", []):
 		# The owner-specific close above has already stopped this music. Do not
 		# let a deferred closed event stop a newer scene's score.
@@ -281,6 +284,11 @@ func cue(id: String, payload: Dictionary = {}) -> void:
 		var item: Dictionary = original.duplicate(true)
 		if payload.get("subtitleKey") is String: item.subtitleKey = payload.subtitleKey
 		var line: Dictionary = source.get("storyLines", {}).get(str(item.get("subtitleKey", "")), {})
+		# The originating action already supplied this line to its feedback
+		# surface. Keep the classification even if playback starts after a new
+		# action, a page change or the original receipt's expiry.
+		if not presented.is_empty() and not line.is_empty() and _normalize_subtitle(str(line.get("subtitleZh","")))==presented:
+			item["repeatsFeedback"] = true
 		if not item.has("asset") and item.get("channel") == "voice" and line.has("voiceAsset"): item.asset = line.voiceAsset
 		if id.begins_with("chapter35_voice_audition_") and payload.get("previewKind") == "event":
 			if _finite_number(payload.get("startMs")): item.startMs = maxf(0, float(payload.startMs))
@@ -300,13 +308,15 @@ func schedule_cue(id: String, payload: Dictionary, delay_ms: float) -> void:
 func _release_token(token: String) -> void:
 	emitted_this_turn.erase(token)
 
-func feedback(text: String) -> void:
+func _normalize_subtitle(text: String) -> String:
+	return _whitespace.sub(text.strip_edges()," ",true)
+
+func feedback(text: String, already_presented: bool = false) -> void:
 	# Exact source chapterThreeStoryLineKeyForSubtitle algorithm, no substring
 	# splitting, translated matches or guessed roles.
-	var whitespace:=RegEx.new(); whitespace.compile("\\s+")
-	var normalized: String=whitespace.sub(text.strip_edges()," ",true)
+	var normalized := _normalize_subtitle(text)
 	var key: String=str(source.get("chapter3KeysBySubtitle",{}).get(normalized,""))
-	if not key.is_empty(): cue("chapter3_story_line",{"subtitleKey":key})
+	if not key.is_empty(): cue("chapter3_story_line",{"subtitleKey":key},normalized if already_presented else "")
 
 func _queue_theater_dialogue(id: String, inspect_after: bool=false) -> void:
 	var lines: Array=source.get("theaterDialogue",{}).get(id,[])
@@ -362,6 +372,7 @@ func _play_text(item: Dictionary, duration_override: float = -1) -> void:
 	var role:String="dialogue" if line.get("kind","") in ["dialogue","taunt"] else "notification"
 	var speaker:String=str({"narrator":"旁白","system":"系统","player":"玩家","seat022":"022","cleaner":"保洁阿姨","guard":"保安"}.get(str(line.get("speaker","")),"系统"))
 	last_subtitle = {"text":text,"surface":"toast","durationMs":duration,"tone":tone,"presentationRole":role,"speaker":speaker}
+	if item.get("repeatsFeedback",false): last_subtitle["repeatsFeedback"] = true
 	subtitle_timed.emit(text, "toast", duration, tone)
 	subtitle.emit(text, "toast")
 	if _tiyi_taunt_waiting and str(item.get("subtitleKey",""))=="sys_net_try":
@@ -656,6 +667,7 @@ func update_state(action: String, previous: Dictionary, next: Dictionary, result
 	_narrative_owned_current=bool(result.get("narrative_owned",false))
 	_mapping_previous=previous
 	_mapping_next=next
+	_mapping_feedback=_normalize_subtitle(str(result.get("message","")))
 	_refresh_settings()
 	for entry in derive_state_cues(previous, next): cue(str(entry.cueId), entry.get("payload", {}))
 	# Controller-owned explicit events preserve payloads and survive action renaming.
@@ -678,6 +690,7 @@ func update_state(action: String, previous: Dictionary, next: Dictionary, result
 	_map_chapter4(action, previous, next, result)
 	_explicit_ids_current.clear()
 	_mapping_previous={}; _mapping_next={}
+	_mapping_feedback=""
 	_narrative_owned_current=false
 
 func _explicit_cue(entry: Dictionary) -> void:

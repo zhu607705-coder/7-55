@@ -567,12 +567,19 @@ async function assertLayout(label) {
   check(Math.abs(geometry.dpr - active.dpr) < .01, `${label}: actual browser pixel ratio matches the test`, geometry);
   check(Math.abs(s.viewport.width - geometry.canvas.width) <= 2 && Math.abs(s.viewport.height - geometry.canvas.height) <= 2, `${label}: logical Godot layout uses CSS dimensions on high-density screens`, { viewport: s.viewport, geometry });
   check(Math.abs(geometry.canvas.pixelWidth - geometry.canvas.width * geometry.dpr) <= 2 && Math.abs(geometry.canvas.pixelHeight - geometry.canvas.height * geometry.dpr) <= 2, `${label}: high-density rendering keeps the full backing resolution`, geometry);
+  if (s.world?.visible && !s.content?.blocking) {
+    const { rect, renderSize } = s.world;
+    const width = rect.width * geometry.canvas.pixelWidth / s.viewport.width;
+    const height = rect.height * geometry.canvas.pixelHeight / s.viewport.height;
+    check(renderSize && Math.abs(renderSize.x - width) <= 2 && Math.abs(renderSize.y - height) <= 2 && renderSize.x * 9 === renderSize.y * 16,
+      `${label}: world render target matches the visible physical pixels`, { rect, renderSize, width, height });
+  }
   if (s.activity?.kind === 'flc') {
     check(!phone || Object.keys(phone).length === 0, `${label}: optional FLC has no hidden story phone`, phone);
   } else if (phone) {
     check(Math.abs(phone.width / phone.height - .5) < .01, `${label}: phone has uniform 1:2 aspect`, phone);
     check(phone.x >= 0 && phone.y >= 0 && phone.x + phone.width <= s.viewport.width + 1 && phone.y + phone.height <= s.viewport.height + 1, `${label}: phone and its hit areas stay inside the logical viewport`, phone);
-    check(phone.height >= geometry.height * .85 || phone.width >= geometry.width * .9, `${label}: phone uses the available height or portrait width instead of shrinking to physical pixels`, { phone, geometry });
+    if (!s.world?.visible) check(phone.height >= geometry.height * .85 || phone.width >= geometry.width * .9, `${label}: phone uses the available height or portrait width instead of shrinking to physical pixels`, { phone, geometry });
   }
   return geometry;
 }
@@ -684,16 +691,22 @@ async function freshCase(entryOnly = false) {
     return { bootReadyMs: start.bootReadyMs, mainReadyMs: start.mainReadyMs, geometry };
   }
   await settings();
-  const evidence = value => ({ page: state(value)?.native?.page, chapter: state(value)?.native?.chapter, mode: state(value)?.native?.mode, flags: state(value)?.flags, saveDigest: value?.saveDigest });
-  const s = await snapshot(); const beforeMode = state(s).native.mode; const toggle = controls(s).find(c => c.text.startsWith('当前：')); check(!!toggle, 'mode toggle states current and destination');
+  const evidence = value => ({ page: state(value)?.native?.page, chapter: state(value)?.native?.chapter, mode: state(value)?.native?.mode, network: state(value)?.networkMode, flags: state(value)?.flags, saveDigest: value?.saveDigest });
+  const s = await snapshot();
+  check(state(s).native.mode === 'light' && !controls(s).some(c => ['浅色模式', '深色模式'].includes(c.text)), 'fresh story keeps the later mode switch locked');
   active.fresh = { recording: true, inputs: [], before: evidence(s) };
-  await clickControl(toggle.text);
-  const toggled = await poll(async () => { const value = await snapshot(); return state(value)?.native.mode !== beforeMode ? value : null; }, 'real mode toggle');
+  await press('Escape');
+  await clickControl('ControlCenterTrigger', 'name');
+  const network = state(s).networkMode === 'campus_wifi' ? 'cellular' : 'campus_wifi';
+  await clickControl(network === 'cellular' ? 'ControlNetwork_cellular' : 'ControlNetwork_wifi', 'name');
+  const toggled = await poll(async () => { const value = await snapshot(); return state(value)?.networkMode === network ? value : null; }, 'ordinary control center network change');
   active.fresh.toggled = evidence(toggled);
+  await clickControl('PhoneNav_close', 'name');
+  await settings();
   const saved = await saveProgressAndWait(`${active.id} explicit save`);
   active.fresh.saved = evidence(saved); active.fresh.savedObservedAt = Date.now();
   check(saved.persistentStorageAvailable === true, `${active.id}: IndexedDB persistent storage available`);
-  const desired = { page: state(saved).native.page, chapter: state(saved).native.chapter, mode: state(saved).native.mode, flags: state(saved).flags };
+  const desired = { page: state(saved).native.page, chapter: state(saved).native.chapter, mode: state(saved).native.mode, network: state(saved).networkMode, flags: state(saved).flags };
   active.screenshots.push(await screenshot(`${active.id}-phone`));
   // The visible saved acknowledgement now proves this generation reached IDB.
   // Retain the additional original settle interval and independent diagnostics;
@@ -703,10 +716,10 @@ async function freshCase(entryOnly = false) {
   try { active.fresh.beforeReloadIDB = await readPersistentSaveEntries(); } catch (error) { active.fresh.beforeReloadIDB = { error: error.message }; }
   active.fresh.reloadRequestedAt = Date.now(); active.fresh.recording = false;
   const after = await startStory(true);
-  const actual = { page: state(after.snapshot).native.page, chapter: state(after.snapshot).native.chapter, mode: state(after.snapshot).native.mode, flags: state(after.snapshot).flags };
+  const actual = { page: state(after.snapshot).native.page, chapter: state(after.snapshot).native.chapter, mode: state(after.snapshot).native.mode, network: state(after.snapshot).networkMode, flags: state(after.snapshot).flags };
   active.fresh.desired = desired; active.fresh.afterReload = evidence(after.snapshot);
   active.fresh.differences = Object.keys(desired).filter(key => JSON.stringify(desired[key]) !== JSON.stringify(actual[key]));
-  check(JSON.stringify(actual) === JSON.stringify(desired), `${active.id}: actual page reload retains native save and selected mode`, active.fresh);
+  check(JSON.stringify(actual) === JSON.stringify(desired), `${active.id}: actual page reload retains native save and selected network`, active.fresh);
   return { bootReadyMs: start.bootReadyMs, mainReadyMs: start.mainReadyMs, reloadedMainReadyMs: after.mainReadyMs, savedDigest: saved.saveDigest, geometry: await assertLayout(`${active.id}-reloaded`) };
 }
 async function portableSaveCase() {
@@ -836,8 +849,12 @@ async function acceptPortraitFallback() {
 }
 async function cornerNavigationCase() {
   if (!fixtureDir) throw new Error('Corner navigation requires an earned ordinary save');
-  await importSave(path.join(fixtureDir, 'after_c3_enter_theater.json'));
-  await poll(async () => { const s = await snapshot(); return s?.world?.visible && state(s)?.native?.c3_theater_entry_seen && controls(s).some(c => c.name === 'WorldPhoneButton' && !c.disabled); }, 'earned theater navigation is available');
+  await importSave(path.join(fixtureDir, 'after_drained_lib_opening_complete.json'));
+  await poll(async () => {
+    const s = await snapshot();
+    return s?.content?.blocking === false && s.world?.visible && s.world.scene_id === 'campus_bootstrap'
+      && ['WorldPhoneButton', 'WorldMode'].every(name => controls(s).some(c => c.name === name && !c.disabled));
+  }, 'campus navigation is available after the Library unlock', bootTimeout);
   await acceptPortraitFallback();
   const before = await snapshot();
   const facts = s => JSON.stringify([s.items, s.actOne, s.ui.libraryFinalsPhase, s.canteenHunt, s.theaterHunt, s.qizhenLake, s.chapter4, s.rpgScene, s.rpgCheckpoint]);
@@ -873,8 +890,10 @@ async function cornerNavigationCase() {
   check(!controls(inline).some(c=>c.name==='WorldInventoryHandle'), `${active.id}: obsolete bag switch is absent`);
   const items = controls(inline).filter(c=>c.name.startsWith('WorldItem_'));
   check(items.length>0 && items.every(c=>c.text==='' && Math.abs(c.rect.width-44)<.1 && Math.abs(c.rect.height-44)<.1), `${active.id}: actual item artwork appears directly in 44px slots`);
-  const modeButton = controls(inline).find(c=>c.name==='WorldMode');
-  check(items[0].rect.x>=modeButton.rect.x+modeButton.rect.width && items[0].rect.y>=inline.world.rect.y+inline.world.rect.height-60, `${active.id}: items start immediately to the right of the in-game tools`);
+  const [taskButton, modeButton, phoneButton] = ['WorldTasks', 'WorldMode', 'WorldPhoneButton'].map(name => controls(inline).find(c => c.name === name));
+  const nextTo = (left, right) => !!left && !!right && Math.abs(left.rect.y - right.rect.y) < .1 && Math.abs(left.rect.x + left.rect.width + 8 - right.rect.x) < .1;
+  check(nextTo(taskButton, modeButton) && nextTo(modeButton, phoneButton), `${active.id}: tasks and mode sit beside the phone on the lower right`);
+  check(items[0].rect.x + items[0].rect.width <= taskButton.rect.x && items[0].rect.y >= inline.world.rect.y + inline.world.rect.height - 60, `${active.id}: inventory starts to the left of the tools`);
   const surfaceBefore=JSON.stringify([inline.world.rect,inline.world.size,inline.world.camera,inline.world.zoom]);
   await clickControl(items[0].name,'name');
   const selected=await snapshot();
@@ -978,6 +997,7 @@ async function scrollLibraryRuleToClose() {
         const topLeft = await renderPoint({ x: c.x, y: c.y }, value);
         const bottomRight = await renderPoint({ x: c.x + c.width, y: c.y + c.height }, value);
         check(bottomRight.x - topLeft.x >= 44 && bottomRight.y - topLeft.y >= 44, `${active.id}: visible rule close control retains a 44 CSS-pixel touch target`, { topLeft, bottomRight });
+        active.screenshots.push(await screenshot(`${active.id}-library-rule-close-visible-${active.screenshots.length}`));
       }
       return value;
     }
@@ -1534,9 +1554,14 @@ async function assertBottomPlaque(value, label) {
   if (value.world.input.scheme === 'direct_world') {
     const tools = controls(value).filter(control => /^(WorldTasks|WorldTaskButton|WorldMode|WorldPhoneButton|WorldItem_)/.test(control.name));
     check(tools.every(({ rect: tool }) => plaque.x + plaque.width <= tool.x || tool.x + tool.width <= plaque.x || plaque.y + plaque.height <= tool.y || tool.y + tool.height <= plaque.y), `${active.id}: ${label} plaque clears the actual inline tools and items`, { plaque, tools });
-  } else check(plaque.x + plaque.width <= stick.x || stick.x + stick.width <= plaque.x || plaque.y + plaque.height <= stick.y || stick.y + stick.height <= plaque.y, `${active.id}: ${label} plaque does not overlap the actual joystick rectangle`, { plaque, stick });
+  }
+  if (stick.width > 0) check(plaque.x + plaque.width <= stick.x || stick.x + stick.width <= plaque.x || plaque.y + plaque.height <= stick.y || stick.y + stick.height <= plaque.y, `${active.id}: ${label} complete paper clears the actual joystick rectangle`, { plaque, stick });
   check(inRect({ x: plaque.x, y: plaque.y }, rect) && inRect({ x: plaque.x + plaque.width, y: plaque.y + plaque.height }, rect), `${active.id}: ${label} confirmed plaque stays inside the actual world`, { rect, plaque });
-  check(Math.abs(plaque.x + plaque.width / 2 - rect.x - rect.width / 2) <= 1 && (value.world.input.scheme === 'direct_world' ? plaque.y + plaque.height >= rect.y + rect.height * .6 : Math.abs(rect.y + rect.height - plaque.y - plaque.height - 4) <= 1), `${active.id}: ${label} confirmed plaque is bottom-centred above its actual controls`, { rect, plaque });
+  const centered = Math.abs(plaque.x + plaque.width / 2 - rect.x - rect.width / 2) <= 1;
+  const besideStick = value.world.input.scheme === 'direct_world' && stick.width > 0
+    && plaque.x >= stick.x + stick.width + 7 && plaque.x + plaque.width <= rect.x + rect.width - 7
+    && Math.abs(plaque.x + plaque.width / 2 - (stick.x + stick.width + rect.x + rect.width) / 2) <= 1;
+  check((centered || besideStick) && (value.world.input.scheme === 'direct_world' ? plaque.y + plaque.height >= rect.y + rect.height * .6 : Math.abs(rect.y + rect.height - plaque.y - plaque.height - 4) <= 1), `${active.id}: ${label} confirmed paper keeps its bottom anchor in the unobstructed playfield`, { rect, plaque, stick });
   const later = await mobileSample(value, 500);
   check(JSON.stringify(later.world.input.plaque.rect) === JSON.stringify(plaque), `${active.id}: ${label} deferred layout keeps the plaque anchored`);
   active.screenshots.push(await screenshot(`${active.id}-${label}-confirmed-bottom`));
@@ -1743,6 +1768,7 @@ async function mobileWorldCase() {
     check(mobileDistance(before, value.world.player) > 1 && worldTarget(value, 'exit_door').distance <= worldTarget(value, 'exit_door').radius, 'desktop direction input moves the actual actor while the earned door remains nearby');
     await press(' ', 'Space');
     value = await poll(async () => { const s = await snapshot(); return s?.world?.scene_id === 'campus_bootstrap' ? s : null; }, 'PC Space retains the existing proximity-gated dorm exit', 60000);
+    await assertLayout(`${active.id} campus after dorm exit`);
     active.mobileWorld.coverage.push('PC direction + Space');
     active.mobileWorld.completed = true;
     active.screenshots.push(await screenshot(`${active.id}-pc-space-campus`));

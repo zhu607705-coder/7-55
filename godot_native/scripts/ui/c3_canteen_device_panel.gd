@@ -286,7 +286,7 @@ func refresh() -> void:
 		controls.clean.visible=not c.bikePaid;controls.clean.disabled=not bool(s.items.get("greaseTissue",false))
 		controls.pay.visible=not c.bikePaid;controls.ride.visible=c.bikePaid
 		labels.hint.text="Esc 关闭 · 纸巾使用后保留" if s.items.get("greaseTissue",false) else "Esc 关闭"
-	if kind!="drink": controls.mode.text="切换到浅色操作" if dark else "切换到深色观察"
+	if kind!="drink": controls.mode.text="浅色模式" if dark else "深色模式"
 	_palette(dark)
 	last_dark=dark;queue_redraw()
 func _palette(dark: bool) -> void:

@@ -19,15 +19,7 @@ func click(node: Control) -> void:
 	for down: bool in [true,false]:
 		var ev := InputEventMouseButton.new();ev.position=point;ev.button_index=MOUSE_BUTTON_LEFT;ev.pressed=down;root.push_input(ev)
 	await frames(3)
-func key(code: Key) -> void:
-	for down: bool in [true,false]:
-		var ev := InputEventKey.new();ev.keycode=code;ev.physical_keycode=code;ev.pressed=down;root.push_input(ev)
-	await frames(2)
 func named(id: String) -> Control: return shell.find_child(id,true,false)
-func scan_width(node: Node, width: float) -> void:
-	if node is Control and node.is_visible_in_tree():
-		check(rect(node).size.x<=width+1,"contained node width "+str(node.name))
-	for child in node.get_children(): scan_width(child,width)
 func run() -> void:
 	Main=load("res://scripts/main.gd")
 	state=root.get_node("State");state.developer_mode=true
@@ -38,45 +30,6 @@ func run() -> void:
 		state.d.flags.cardZeroTaken=true;state.d.digits.d1="0"
 		for flag in ["plantLit","plantWatered","plantFertilized"]: state.d.flags[flag]=true
 		shell=Main.new();shell.size=Vector2(dim);root.add_child(shell);await frames(6)
-		var before: Dictionary=state.d.duplicate(true)
-		shell._show_journal();await frames(4)
-		var hook := named("JournalObservationCompare")
-		check(hook!=null,"journal exposes optional comparison at "+str(dim))
-		await click(hook);await frames(4)
-		var view := named("ObservationComparison")
-		check(view!=null,"real pointer opens new comparison modal")
-		check(not named("ObservationCompare").is_enabled() if named("ObservationCompare").has_method("is_enabled") else named("ObservationCompare").disabled,"incomplete comparison disabled")
-		var one := named("ObservationChoice_item_waterDrop")
-		check(one!=null and one.size.y>=44 and rect(one).size.y>=28,"shared-shell option preserves its44logical target and minimum physical pointer area")
-		check(is_equal_approx(rect(one).size.y,one.size.y*shell.phone.scale.y*shell.phone_builder.PHONE_SCALE),"option target follows exactly the shared phone transform")
-		await click(one)
-		check(shell.observation_comparison_session.selected[0]=="item:waterDrop","pointer chooses first held card")
-		var choose_scroll: ScrollContainer = named("ObservationComparison").get_parent().get_parent()
-		choose_scroll.ensure_control_visible(named("ObservationChoice_item_headphone"));await frames(3)
-		await click(named("ObservationChoice_item_headphone"))
-		check(shell.observation_comparison_session.can_compare(),"pointer chooses second distinct card")
-		check(rect(choose_scroll).encloses(rect(named("ObservationCompare"))),"compare stays visible after choosing two materials without scrolling to the list end")
-		check(named("ObservationCompare").get_index()<named("ObservationChoices").get_index(),"compare precedes the growing choice list")
-		await click(named("ObservationCompare"));await frames(3)
-		check(shell.observation_comparison_session.stage=="comparison","comparison requires actual enabled button")
-		check(named("ObservationBody0").text.contains("早八") and named("ObservationBody1").text.contains("凹槽"),"original earned descriptions are actually rendered")
-		check(named("ObservationBody0").text.find("tower-lock")==-1,"no target ID printed")
-		check(rect(shell.modal_panel).position.x>=0 and rect(shell.modal_panel).end.x<=dim.x+1,"modal contained horizontally")
-		scan_width(view,dim.x-20)
-		# Bottom controls can be reached through the existing modal ScrollContainer.
-		var scroll: ScrollContainer = view.get_parent().get_parent()
-		scroll.ensure_control_visible(named("ObservationSwap"));await frames(3)
-		await click(named("ObservationSwap"));await frames(3)
-		check(shell.observation_comparison_session.selected==["item:headphone","item:waterDrop"],"swap changes order through actual control")
-		await key(KEY_ESCAPE)
-		check(not is_instance_valid(shell.modal),"Escape closes comparison with existing modal route")
-		check(state.d.items==before.items and state.d.flags==before.flags and state.d.digits==before.digits and state.d.actOne==before.actOne,"comparison cannot mutate chapter/items/facts")
-		# Reopen preserves ephemeral selection but still filters any unavailable item.
-		shell._show_journal();await frames(2);await click(named("JournalObservationCompare"));await frames(2)
-		check(shell.observation_comparison_session.selected==["item:headphone","item:waterDrop"],"optional local selection preserved while game session remains")
-		await key(KEY_ESCAPE)
-		state.d.items.headphone=false;shell._refresh_observation_comparison()
-		check(not shell.observation_comparison_session.can_compare(),"stale consumed card is removed on refresh")
 		# Ending recovery page builds its own context and invokes only original intent.
 		state.d=state.initial();state.d.flags.checkinDone=true;state.d.native.page="ending";state.d.currentScene="ending"
 		shell._refresh();await frames(5)

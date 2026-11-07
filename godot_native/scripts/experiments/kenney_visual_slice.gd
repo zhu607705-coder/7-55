@@ -162,7 +162,7 @@ func toggle_journal() -> void:
 	journal=LockedJournal.new()
 	var entries: Array=[]
 	if observed:entries.append({"text":"练习记录：查看过纸条。"})
-	journal.configure("观察寝室物件", "已查看纸条。" if observed else "尚未查看纸条。",entries,false,true)
+	journal.configure("观察寝室物件", "已查看纸条。" if observed else "尚未查看纸条。",entries,true)
 	journal.resume_requested.connect(close_journal)
 	add_child(journal);_paper_behind(journal);journal_open=true;layout_journal();position_labels()
 func layout_journal() -> void:

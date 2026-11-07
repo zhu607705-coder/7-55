@@ -18,7 +18,7 @@ static func label_layout(context: Dictionary, font: Font, display_scale: float, 
 	var z: float = context.zoom
 	var scale: float = maxf(display_scale,.1)
 	# Screen readability is independent of world zoom and desktop split scaling.
-	var font_size: int = ceili(16.0/scale)
+	var font_size: int = ceili(18.0/scale)
 	var pad: float = 7.0/scale
 	var text_size: Vector2 = font.get_string_size(LIBRARY_NAME,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size)
 	var point: Vector2 = context.origin + LIBRARY_LABEL*z

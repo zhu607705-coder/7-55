@@ -30,6 +30,7 @@ const GameArchitecture = preload("res://scripts/architecture/game_architecture.g
 const NavigationCommand = preload("res://scripts/architecture/commands/navigation_command.gd")
 const StoryActionCommand = preload("res://scripts/architecture/commands/story_action_command.gd")
 const ChapterQuery = preload("res://scripts/architecture/queries/chapter_query.gd")
+const ChapterSystem = preload("res://scripts/architecture/systems/chapter_system.gd")
 var _architecture: GameArchitecture
 # Legacy callers retain one shared dictionary; there is no parallel model/save.
 var d: Dictionary:
@@ -268,6 +269,12 @@ func open_scene(scene: String) -> void:
 
 func toggle_mode() -> void:
 	game_architecture().send_command(NavigationCommand.new("toggle_mode", ""))
+
+func mode_switch_unlocked() -> bool:
+	return ChapterSystem.mode_switch_unlocked(d)
+
+func mode_label() -> String:
+	return "深色模式" if d.native.mode=="dark" else "浅色模式"
 
 func _record(message: String) -> void:
 	d.native.log.append({"text":message,"time":Time.get_datetime_string_from_system()})
@@ -689,6 +696,13 @@ func _upgrade_legacy_net_receipt(snapshot: Dictionary) -> void:
 func _sanitize_runtime_resume(snapshot: Dictionary) -> void:
 	if snapshot.theaterHunt.propBoxOpened: preload("res://scripts/games/theater_chest_mechanism.gd").ensure(snapshot)
 	_upgrade_legacy_phone_state(snapshot)
+	# An early save from before the gate may already be dark. Restore the
+	# accessible mode before presenting a world that has no switch yet.
+	if not ChapterSystem.mode_switch_unlocked(snapshot):
+		snapshot.native.mode="light"
+		snapshot.themeMode="normal"
+		for domain: String in ["chapter4","canteenHunt","theaterHunt","qizhenLake"]:
+			snapshot[domain].mode="light"
 	# The source lake rehydrates at its checkpoint, not a stale moving/chasing
 	# framebuffer position. This never alters a saved photo recipe or story fact.
 	var positions: Dictionary=snapshot.native.get("positions",{})

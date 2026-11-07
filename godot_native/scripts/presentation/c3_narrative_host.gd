@@ -137,8 +137,9 @@ func _sync_view_layout() -> void:
 		var surface:Control=shell.world_view
 		var ratio:Vector2=surface.size/Vector2(shell.world_viewport.size)
 		var to_host:Transform2D=get_global_transform_with_canvas().affine_inverse()*surface.get_global_transform_with_canvas()
-		var start:Vector2=to_host*(local_safe.position*ratio)
-		var finish:Vector2=to_host*(local_safe.end*ratio)
+		var from_world:Transform2D=world.get_global_transform_with_canvas().scaled(ratio)
+		var start:Vector2=to_host*(from_world*local_safe.position)
+		var finish:Vector2=to_host*(from_world*local_safe.end)
 		view.exploration_rect=Rect2(start,finish-start)
 		parent=self
 	if view.get_parent()!=parent:

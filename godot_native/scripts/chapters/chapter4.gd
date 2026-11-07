@@ -368,7 +368,7 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		return _ok("",{"scene":SCENE})
 	if action=="c4_mode":
 		invalidate_progressive_session()
-		c.mode="dark" if c.mode=="light" else "light"; s.native.mode=c.mode; return _ok("深色观察" if c.mode=="dark" else "浅色操作")
+		c.mode="dark" if c.mode=="light" else "light"; s.native.mode=c.mode; return _ok("深色模式" if c.mode=="dark" else "浅色模式")
 	if action=="c4_cancel_floor_selection":
 		if value is Dictionary and pending.get("action","")=="c4_floor_select" and value.get("session","")==pending.get("token","missing"): pending={}
 		return _ok()

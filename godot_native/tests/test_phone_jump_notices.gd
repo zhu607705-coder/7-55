@@ -7,8 +7,8 @@ const Ui=preload("res://scripts/ui/native_ui_theme.gd")
 # Check-in's reviewed changes remove duplicate pause UI and redundant receipt copy;
 # its print geometry, timing and real receipt route have dedicated behavior tests.
 const REVIEWED_SURFACE_HASHES:={
-	"res://scripts/presentation/library_story_view.gd":"37e9f9eb02baae751c2edc4c0fa6408c2c94a79808ab18296508b28bc68b2eec",
-	"res://scripts/ui/selected_dialogue_layout.gd":"dfb4328faec3e1a1272ffea7332116fb7cb0d16512457359adf356232a667fed",
+	"res://scripts/presentation/library_story_view.gd":"217f4c1b35af66d7c20e864d0c3f80d01ac71f8a929772ac4f0ff65872b29cdd",
+	"res://scripts/ui/selected_dialogue_layout.gd":"a3d5da59614b807640729e5f0c9b50a7e227fdbf6819791047a7edb80b2c1e03",
 	"res://scripts/ui/checkin_success_view.gd":"cf60aa06ee738968ca33a147d19038b412de5dd6f9c38f7ba1398fd5852029d3",
 	"res://scripts/ui/native_typography.gd":"d763b08aa1718e34bdf88b745af3635a8dbe157832105533859d6ddc229c89f2",
 }

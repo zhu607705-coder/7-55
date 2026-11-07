@@ -1,5 +1,7 @@
 extends Control
 ## Native 960x540 rendering of ChapterThreeOpeningOverlay and its CSS parts.
+const Notice = preload("res://scripts/ui/native_phone_notice.gd")
+const Typography = preload("res://scripts/ui/native_typography.gd")
 signal advance
 signal skip
 var session: RefCounted
@@ -12,16 +14,18 @@ var scale_factor: float=1
 var origin:=Vector2.ZERO
 var last_beat: int=-1
 var subtitle_panel:=Rect2()
+var subtitle_paper := Notice.card_style()
 var narrow: bool=false
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter=Control.MOUSE_FILTER_STOP
 	clip_contents=true
-	font=preload("res://scripts/ui/native_typography.gd").body_font()
+	font=Typography.body_font()
 	subtitle=Label.new(); subtitle.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	subtitle.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	subtitle.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
-	subtitle.add_theme_color_override("font_color",Color("f4edd6"))
+	Typography.apply_body(subtitle)
+	subtitle.add_theme_color_override("font_color",Notice.INK)
 	add_child(subtitle)
 	advance_button=Button.new(); advance_button.pressed.connect(func():advance.emit()); advance_button.draw.connect(_draw_advance_icon); add_child(advance_button)
 	skip_button=Button.new(); skip_button.text="跳过演出"; skip_button.pressed.connect(func():skip.emit()); add_child(skip_button)
@@ -41,7 +45,8 @@ func tick() -> void:
 	visible=true
 	scale_factor=minf(size.x/960,size.y/540); origin=(size-Vector2(960,540)*scale_factor)/2
 	var view: Dictionary=session.snapshot()
-	subtitle.text=str(view.speaker)+"："+str(view.text)
+	var text:=str(view.text)
+	subtitle.text="" if text.is_empty() else str(view.speaker)+"："+text
 	narrow=size.x<620
 	subtitle.position=origin+Vector2(42,430)*scale_factor
 	subtitle.size=Vector2(720,76)*scale_factor
@@ -127,11 +132,9 @@ func _draw() -> void:
 		_text(center+Vector2(-44,34),"RECORD QUERY",10,Color("98a9ad")); _text(center+Vector2(-18,55),"07:55",10,Color("ff7772") if phase=="record_escape" else Color("6fd3e7"))
 	if phase in ["mode_unlock","mode_explanation"]:
 		_panel(Rect2(288,160,384,160),Color("051018",0.96),Color("61cbe4"))
-		_text(Vector2(424,189),"外观模式切换",12,Color("dfcf77"))
 		_panel(Rect2(314,210,105,45),Color("d8e3e7"),Color("d8e3e7")); _text(Vector2(326,239),"浅色模式",16,Color("16242b"))
 		_panel(Rect2(541,210,105,45),Color("102b3b"),Color("61cbe4")); _text(Vector2(553,239),"深色模式",16,Color("98ecff"))
 		draw_line(Vector2(438,232),Vector2(522,232),Color("61cbe4"),3); draw_rect(Rect2(474,225,13,13),Color("f3df79"))
-		_text(Vector2(360,293),"当前校园 / 07:55 的校园残影",14,Color("a9c0c9"))
 	if phase in ["paper_burst","paper_dialogue"]:
 		var lift: float=0 if session.reduced_motion else sin(session.elapsed_ms/950*TAU)*4
 		var paper_scale: float=1 if phase=="paper_dialogue" else lerpf(0.2,1,minf(1,p*2))
@@ -159,7 +162,6 @@ func _draw() -> void:
 		preload("res://scripts/presentation/library_object_motion.gd").draw_handoff(self,size,v,session.reduced_motion)
 		draw_set_transform(origin,0,Vector2.ONE*scale_factor)
 		_panel(Rect2(300,205,360,90),Color("050b10",0.9),Color("e2cf70")); _text(Vector2(444,232),"MISSION",12,Color("75d7e7")); _text(Vector2(350,270),"追到东区大食堂",28,Color("f4edd2"))
-	if not narrow: _panel(Rect2(26,420,908,88),Color("071017",0.95),Color("8ab3b7") if v.tone=="system" else Color("cfbd74"))
 	draw_rect(Rect2(0,535,960,5),Color("19323d")); draw_rect(Rect2(0,535,960*float(v.overallProgress),5),Color("7ce1ed"))
 	draw_set_transform(Vector2.ZERO)
-	if narrow: _panel(subtitle_panel,Color("071017",0.95),Color("8ab3b7") if v.tone=="system" else Color("cfbd74"))
+	draw_style_box(subtitle_paper,subtitle_panel)

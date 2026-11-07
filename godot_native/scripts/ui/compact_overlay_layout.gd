@@ -72,5 +72,5 @@ static func world(font: Font, source_size: Vector2, display_scale: float, text: 
 	# Real feedback can occupy more than one line. Grow its own bar rather
 	# than enlarge the map or allow text to run below the fixed viewport.
 	var body_height := minf(source_size.y-header_height-body_gap*2,maxf(32.0/scale,text_size.y+12.0/scale))
-	var mode_width := font.get_string_size("浅色操作",HORIZONTAL_ALIGNMENT_LEFT,-1,mode_font).x+padding*2
+	var mode_width := font.get_string_size("浅色模式",HORIZONTAL_ALIGNMENT_LEFT,-1,mode_font).x+padding*2
 	return {"compact":true,"title_font":title_font,"mode_font":mode_font,"body_font":body_font,"header_height":header_height,"padding":padding,"body_padding":body_padding,"body_width":body_width,"body_height":body_height,"body_gap":body_gap,"body_inset":6.0/scale,"mode_rect":Rect2(source_size.x-mode_width,0,mode_width,header_height)}

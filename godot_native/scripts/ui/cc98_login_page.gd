@@ -1,6 +1,8 @@
 extends RefCounted
 ## Native authentication: the attendant's remarks carry the existing password clues.
 ## Form drafts are local; identity, hint count, attempts and lockout stay controller-owned.
+const PhoneNotice = preload("res://scripts/ui/native_phone_notice.gd")
+const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
 const REMARKS = [
 	"校园卡都没拿稳，就想混进论坛？报名字没用，我只认卡面上的那串数字。",
 	"连我是谁都没看？门楣上写着 ZheJiang University。大写的站得这么直，你倒一个也没记住。",
@@ -9,10 +11,12 @@ const REMARKS = [
 ]
 const REPLIES = ["那你叫什么？", "你管了多久？", "话说完了？"]
 const HELP_REPLY = "行，少绕两句。校名里站直的大写字母在前，书院开门的年份跟上，我最后那句话的收尾也别落下。中间别塞空格。"
+const INITIAL_FEEDBACK = "想进去？证件拿出来。"
+const ATTENDANT_FEEDBACK = "你惊动了认证值班员。"
 var student_id = ""
 var password = ""
 var password_visible = false
-var feedback = "想进去？证件拿出来，下面再慢慢聊。"
+var feedback = INITIAL_FEEDBACK
 var scroll_position = 0
 var dialogue_index = -1
 var help_visible = false
@@ -21,12 +25,14 @@ var hint_pending = false
 var login_pending = false
 var attempt_before = 0
 var submitted_id = ""
+var attendant_taps := 0
 
 func reset() -> void:
 	student_id=""; password=""; password_visible=false; scroll_position=0
-	feedback="想进去？证件拿出来，下面再慢慢聊。"
+	feedback=INITIAL_FEEDBACK
 	dialogue_index=-1; help_visible=false
 	card_pending=false; hint_pending=false; login_pending=false
+	attendant_taps=0
 
 func remaining_ms(login: Dictionary) -> int:
 	return maxi(0,int(login.lockUntilMs)-int(Time.get_unix_time_from_system()*1000.0)) if login.lockUntilMs!=null else 0
@@ -79,14 +85,22 @@ void fragment() {
 	var scroll=ScrollContainer.new(); scroll.name="Cc98LoginScroll"; scroll.position=Vector2(0,69.5); scroll.size=Vector2(378,b.APP_HEIGHT-69.5); scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED; root.add_child(scroll)
 	# Godot's touch-to-mouse drag must bubble through the authored canvas to
 	# its sole scroll owner. STOP here swallows the swipe while wheels pass.
-	var content=Control.new(); content.mouse_filter=Control.MOUSE_FILTER_PASS; content.custom_minimum_size=Vector2(372,800); scroll.add_child(content)
+	var content=Control.new(); content.mouse_filter=Control.MOUSE_FILTER_PASS; scroll.add_child(content)
 	var charcoal=Color("3f4246"); var light=Color("f7fbff"); var amber=Color("f0ad42")
 	b._panel(content,Rect2(20,22,345,329),Color(.17,.18,.2,.35))
 	b._panel(content,Rect2(14,16,345,329),charcoal,Color("bfc1c4"),0,2)
 	b._label(content,"首次进入 CC98",Rect2(30,29,260,19),11,amber)
 	b._label(content,"浙大通行证",Rect2(30,47,270,34),24,light)
-	b._panel(content,Rect2(315,31,30,30),Color.WHITE)
-	for square in [Rect2(322,38,7,7),Rect2(331,38,7,7),Rect2(322,47,16,7)]: b._panel(content,square,Color("253345"))
+	var attendant := Button.new()
+	attendant.name="Cc98AttendantIcon"
+	attendant.position=Vector2(308,24)
+	attendant.size=Vector2(44,44)
+	attendant.set_meta("tactile_exempt",true)
+	NativeUi.apply_button(attendant,Color.TRANSPARENT,light,Color.TRANSPARENT,0,0,14,Vector2.ZERO)
+	content.add_child(attendant)
+	var face: Panel = b._panel(attendant,Rect2(7,7,30,30),Color.WHITE)
+	face.name="Face"; face.pivot_offset=Vector2(15,15)
+	for square in [Rect2(7,7,7,7),Rect2(16,7,7,7),Rect2(7,16,16,7)]: b._panel(face,square,Color("253345"))
 	for x in range(30,344,9): b._panel(content,Rect2(x,90,5,2),Color("aab4bd"))
 	b._label(content,"ID",Rect2(30,106,37,43),11,amber)
 	var id_field: LineEdit=b._line_edit(content,"10 位学号",Rect2(73,107,270,39),student_id); id_field.name="Cc98LoginStudentId"; id_field.max_length=10
@@ -121,30 +135,36 @@ void fragment() {
 		if not submit.disabled: submit.pressed.emit())
 	update_inputs.call()
 	var timer=Timer.new(); timer.wait_time=.25; timer.autostart=true; timer.timeout.connect(update_inputs); root.add_child(timer)
-	b._panel(content,Rect2(30,294,313,47),Color("282b2e"))
-	b._panel(content,Rect2(30,294,4,47),amber)
-	var feedback_label: Label=b._label(content,feedback,Rect2(42,298,291,39),13,Color("eef6ff")); feedback_label.name="Cc98LoginFeedback"
-	b._panel(content,Rect2(20,367,345,403),Color(.17,.18,.2,.35))
-	b._panel(content,Rect2(14,361,345,403),charcoal,Color("bfc1c4"),0,2)
+	var feedback_label: Label=b._label(content,feedback,Rect2(30,293,313,48),13)
+	feedback_label.name="Cc98LoginFeedback"
+	PhoneNotice.style_inline(feedback_label,"warning" if remaining_ms(login)>0 else "system",13)
+	var identity_shadow: Panel=b._panel(content,Rect2(20,367,345,90),Color(.17,.18,.2,.35))
+	var identity_plate: Panel=b._panel(content,Rect2(14,361,345,90),charcoal,Color("bfc1c4"),0,2)
 	var reader: Button=b._button(content,"",Rect2(28,375,316,62),func(): card_pending=true; b.action_requested.emit("c2_card_identity",null),Color("4f5155"),light,0,Color("db9e3b")); reader.name="Cc98ReadCampusCard"
 	b._panel(reader,Rect2(8,10,57,42),Color("153a72"),Color("0d274c"),0,2)
 	b._label(reader,"ZJU\n07:55",Rect2(14,14,44,34),10,Color.WHITE)
 	b._label(reader,"校园卡身份已读取" if login.studentIdDiscovered else "出示校园卡",Rect2(75,7,195,23),13,light)
 	b._label(reader,"林星宇 · 3250100755" if login.studentIdDiscovered else "翻看随身物品里的卡面",Rect2(75,29,194,25),11,Color("d9dde1"))
 	b._label(reader,"填入" if login.studentIdDiscovered else "读取",Rect2(277,17,35,28),11,amber,HORIZONTAL_ALIGNMENT_CENTER)
-	b._label(content,"认证值班员",Rect2(28,447,280,22),13,amber)
-	var remark: Label=b._label(content,"",Rect2(28,477,316,112),15,light)
+	var dialogue := Control.new()
+	dialogue.name="Cc98PasswordHints"
+	dialogue.position=Vector2(0,447)
+	dialogue.size=Vector2(372,306)
+	dialogue.mouse_filter=Control.MOUSE_FILTER_PASS
+	content.add_child(dialogue)
+	b._label(dialogue,"认证值班员",Rect2(28,0,280,22),13,amber)
+	var remark: Label=b._label(dialogue,"",Rect2(28,30,316,112),15,light)
 	remark.name="Cc98AttendantRemark"; remark.vertical_alignment=VERTICAL_ALIGNMENT_TOP
-	var reply: Button=b._button(content,"",Rect2(28,600,316,44),func(): hint_pending=true; b.action_requested.emit("c2_login_hint",null),Color("4a4d51"),Color.WHITE,0,Color("d4d6d8"))
+	var reply: Button=b._button(dialogue,"",Rect2(28,153,316,44),func(): hint_pending=true; b.action_requested.emit("c2_login_hint",null),Color("4a4d51"),Color.WHITE,0,Color("d4d6d8"))
 	reply.name="Cc98RevealHint"; reply.add_theme_font_size_override("font_size",14)
-	var previous: Button=b._button(content,"上一句",Rect2(28,652,151,40),func(): pass,Color.TRANSPARENT,light,0,Color("747f8d"))
+	var previous: Button=b._button(dialogue,"上一句",Rect2(28,205,151,40),func(): pass,Color.TRANSPARENT,light,0,Color("747f8d"))
 	previous.name="Cc98PreviousRemark"; previous.add_theme_font_size_override("font_size",13)
-	var following: Button=b._button(content,"下一句",Rect2(193,652,151,40),func(): pass,Color.TRANSPARENT,light,0,Color("747f8d"))
+	var following: Button=b._button(dialogue,"下一句",Rect2(193,205,151,40),func(): pass,Color.TRANSPARENT,light,0,Color("747f8d"))
 	following.name="Cc98NextRemark"; following.add_theme_font_size_override("font_size",13)
-	var help: Button=b._button(content,"说清楚一点",Rect2(28,704,316,44),func(): pass,Color.TRANSPARENT,light,0,Color("747f8d"))
+	var help: Button=b._button(dialogue,"说清楚一点",Rect2(28,257,316,44),func(): pass,Color.TRANSPARENT,light,0,Color("747f8d"))
 	help.name="Cc98AskClearly"; help.add_theme_font_size_override("font_size",13)
 	help.visible=int(login.failureCount)>=2
-	var return_to_form: Button=b._button(content,"回去填写",Rect2(28,600,316,44),func():
+	var return_to_form: Button=b._button(dialogue,"回去填写",Rect2(28,153,316,44),func():
 		scroll.scroll_vertical=0; password_field.grab_focus(),Color("4a4d51"),light,0,Color("d4d6d8"))
 	return_to_form.name="Cc98ReturnToForm"; return_to_form.add_theme_font_size_override("font_size",14)
 	# Re-reading is local presentation. Only the next spoken reply emits the
@@ -166,6 +186,31 @@ void fragment() {
 		help_visible=false; update_dialogue.call())
 	help.pressed.connect(func(): help_visible=not help_visible; update_dialogue.call())
 	update_dialogue.call()
+	var display_hints := func(revealed: bool):
+		dialogue.visible=revealed
+		identity_plate.size.y=403 if revealed else 90
+		identity_shadow.size.y=identity_plate.size.y
+		content.custom_minimum_size=Vector2(372,800 if revealed else 469)
+		attendant.accessibility_name="认证值班员" if revealed else "通行证头像"
+	display_hints.call(attendant_taps>=2)
+	var reveal_attendant := func():
+		feedback_label.text=feedback
+		display_hints.call(true)
+	attendant.pressed.connect(func():
+		if attendant_taps>=2: return
+		attendant_taps+=1
+		if attendant_taps<2: return
+		feedback=ATTENDANT_FEEDBACK
+		if bool(b.s.native.get("settings",{}).get("reduced_motion",false)):
+			reveal_attendant.call()
+			return
+		var resting_y := face.position.y
+		var motion:=face.create_tween()
+		motion.tween_property(face,"position:y",resting_y-24.0,.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		motion.parallel().tween_property(face,"rotation",-.16,.14)
+		motion.tween_property(face,"position:y",resting_y,.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		motion.parallel().tween_property(face,"rotation",0.0,.18)
+		motion.tween_callback(reveal_attendant))
 	# Taps still reach their original controls; a swipe that starts over a
 	# control can reach ScrollContainer and cancel the pressed button normally.
 	for control: Control in content.find_children("*","Control",true,false):

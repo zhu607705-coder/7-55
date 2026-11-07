@@ -36,7 +36,9 @@ func run()->void:
 				check(overlay.objective.text==goal and overlay.object_heading.text==plaque_text,"authored content retained")
 				check(overlay.objective.get_theme_font_size("font_size")==13 and overlay.object_heading.get_theme_font_size("font_size")==18,"locked sizes not enlarged")
 				check(overlay.mouse_filter==Control.MOUSE_FILTER_IGNORE and overlay.plaque.mouse_filter==Control.MOUSE_FILTER_IGNORE,"world pointer owner preserved")
-				check(overlay.plaque.get_child_count()==3 and overlay.plaque.get_child(1) is Label,"interaction has no background card")
+				var paper: StyleBoxFlat=overlay.plaque.get_theme_stylebox("panel")
+				var notice_style: StyleBoxFlat=load("res://scripts/ui/native_phone_notice.gd").card_style()
+				check(paper.bg_color==notice_style.bg_color and paper.border_color==notice_style.border_color and paper.corner_radius_top_left==notice_style.corner_radius_top_left,"interaction uses the same paper as subtitles")
 				check(is_equal_approx(overlay.task.modulate.a,1) and is_equal_approx(overlay.plaque.modulate.a,1),"foreground opacity remains full; only scrim fades")
 	# Real scrolling owns input only while text overflows; passive HUD passes
 	# through to the original world floor-tap coordinate contract.

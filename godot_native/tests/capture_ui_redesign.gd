@@ -162,21 +162,6 @@ func capture_interactions(dimensions: Vector2i) -> void:
 	await fresh_shell(dimensions)
 	await capture(prefix + "campus-map")
 
-	fixture_note = "DEV c2-dorm-exit + owned headphone/waterDrop; read-only comparison; not earned completion"
-	if not fixture_checkpoint("c2-dorm-exit"): return
-	state.d.items.headphone = true; state.d.items.waterDrop = true
-	await fresh_shell(dimensions)
-	shell._show_observation_comparison()
-	var comparison = shell.observation_comparison_session
-	comparison.clear()
-	var first: bool = comparison.choose("item:headphone")
-	var second: bool = comparison.choose("item:waterDrop")
-	if require_fixture(first and second and comparison.compare() and is_instance_valid(shell.modal), "comparison opens with two source cards"):
-		var view = shell.modal.find_child("ObservationComparison",true,false)
-		if require_fixture(is_instance_valid(view), "comparison renderer exists"):
-			view._render()
-			await capture(prefix + "clue-comparison")
-
 	fixture_note = "DEV c2-occupancy-note + owned occupancyNote; actual inspection; not earned completion"
 	if not fixture_checkpoint("c2-occupancy-note"): return
 	state.d.items.occupancyNote = true

@@ -71,6 +71,9 @@ func run() -> void:
 		check(inner!=null and exit_button!=null,"actual Main mounts the unauthenticated CC98 page at "+str(viewport))
 		if inner==null or exit_button==null: continue
 		app_geometry("authentication initial",phone_rect)
+		await click(node("Cc98AttendantIcon"))
+		await click(node("Cc98AttendantIcon"))
+		await create_timer(.3).timeout
 		var exit_rect:=rect(exit_button)
 		var story:=JSON.stringify({"items":state.d.items,"actOne":state.d.actOne})
 		await wheel(inner,MOUSE_BUTTON_WHEEL_DOWN,24)
