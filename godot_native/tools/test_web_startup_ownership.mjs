@@ -57,6 +57,9 @@ try {
   resource('assets/native/north_objects_20261025/student_desk.png', 'chapter4');
   resource('assets/native/north_objects_20261025/wall_face.png', 'chapter4');
   resource('assets/ui/tiyi_main.png', 'core');
+  // Raw PNG tiles are runtime-loaded; preserve their chapter ownership.
+  records.set('assets/native/campus_layered/test/0_0.png', Buffer.from('layer tile fixture'));
+  expected.set('assets/native/campus_layered/test/0_0.png', 'chapter2');
   records.set('assets/unknown_owner.bin', Buffer.from('retain unknown ownership'));
   expected.set('assets/unknown_owner.bin', 'core');
   let offset = 0;

@@ -79,6 +79,8 @@ function classify(name) {
   if (/^assets\/(objectized\/chapter4|native\/(stair_b|endless_stair_b3|canruo))\//.test(name)) return 'chapter4';
   if (/^assets\/native\/chapter35_recovery_/.test(name)) return 'chapter35';
   if (/^assets\/native\/(qizhen_rain_rescue|lake_assembly|kayak)\//.test(name)) return 'chapter35';
+  // Layered campus is loaded with campus_bootstrap, never the opening phone.
+  if (/^assets\/native\/campus_layered\//.test(name)) return 'chapter2';
   if (/^assets\/native\/north_objects_20261025\//.test(name)) return 'chapter4';
   if (/^assets\/native\/(library_rebuild_20261020|library_object_depth_20261104|library_animation_20261105|library_interactions_20261105)\//.test(name)) return 'chapter2';
   if (/^assets\/native\/(theater_rebuild_20261020|liangzhu_performance_20261021|theater_chest_20261023)\//.test(name)) return 'chapter3';
