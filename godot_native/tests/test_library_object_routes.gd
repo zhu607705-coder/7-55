@@ -48,7 +48,8 @@ func run()->void:
 		check(world.library_layers.objects.ready,"separate object scene activates")
 		# Model the fully opened, already-authorized entrance; no story action is
 		# granted by this geometric navigation fixture.
-		world.library_door.progress=1.0
+		world.library_gate.use_reader(0, Vector2(715, 850))
+		for frame in 8: world.library_gate.tick(.1, state.d, Vector2(715, 850))
 		var before:Dictionary=state.d.duplicate(true)
 		for offset:int in [0,16]:
 			world.library_layers.shelf_offset=offset

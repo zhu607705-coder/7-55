@@ -37,7 +37,6 @@ static func depth_y(anchor: Vector2) -> float:
 	return anchor.y+FOOT_CENTER_OFFSET.y
 static func scale_at(scene: String,world_y: float,perspective: Dictionary={}) -> float:
 	if scene=="campus_bootstrap": return DISPLAY_SCALE*.5
-	if scene=="library_interior": return DISPLAY_SCALE*.8
 	if scene!="campus_qizhen_loop" or perspective.is_empty(): return DISPLAY_SCALE
 	var progress := clampf((world_y-float(perspective.farY))/(float(perspective.nearY)-float(perspective.farY)),0,1)
 	return DISPLAY_SCALE*float(perspective.baseMultiplier)*lerpf(float(perspective.farMultiplier),float(perspective.nearMultiplier),progress)

@@ -65,20 +65,23 @@ func open_recovery(b) -> void:
 	if b.s.ui.libraryFinalsPhase=="top_ten_reached": b.action_requested.emit("lib_recovery_open",null)
 	else: b.page_requested.emit("library_recovery")
 
-func build(b, page: String) -> Control:
+func build(b, page: String, view: Dictionary={}) -> Control:
 	if page in ["library_catalog","c3_lake_catalog"]: return catalog(b)
 	if page=="library_recovery": return recovery(b)
+	if page=="library_record": return entrance_record(b,view)
 	if b.s.ui.librarySeatReserved: selected_seat=str(b.s.ui.librarySelectedSeat)
 	match local_page:
 		"spaces": return spaces(b)
+		"mine": return reservation_mine(b)
 		"seat": return seats(b)
 		"location": return CampusWayfinding.build_location(b,func(): goto(b,"seat"))
 	return home(b)
 
-func base(b, title: String, back: Callable) -> Control:
+func base(b, title: String, back: Callable, back_label: String="") -> Control:
 	var root: Control=b._base(Color("f6f7fa"),b.APP_HEIGHT)
 	root.set_meta("handles_all_actions",true)
-	b._header(root,title,Color.WHITE,INK,back,"back","返回图书馆" if local_page!="home" else "返回浙大钉")
+	if back_label.is_empty(): back_label="返回图书馆" if local_page!="home" else "返回浙大钉"
+	b._header(root,title,Color.WHITE,INK,back,"back",back_label)
 	return root
 
 func body(b, root: Control, key: String, height: float, bottom: float=0, background: Color=Color.TRANSPARENT) -> Control:
@@ -94,11 +97,54 @@ func body(b, root: Control, key: String, height: float, bottom: float=0, backgro
 		scroll.scroll_vertical=int(scroll_positions.get(key,0)))
 	return inner
 
-func bottom_nav(b, root: Control, spaces_page: bool=false) -> void:
+func bottom_nav(b, root: Control) -> void:
 	b._panel(root,Rect2(0,b.APP_HEIGHT-60,378,60),Color.WHITE,Color("dce0e6"),0,1)
 	for i in range(2):
 		b._label(root,["⌂","◎"][i],Rect2(i*189,b.APP_HEIGHT-56,189,27),22,Color("666666"),HORIZONTAL_ALIGNMENT_CENTER)
-		b._label(root,"首页" if i==0 else "我的中心" if spaces_page else "我的",Rect2(i*189,b.APP_HEIGHT-28,189,22),12,Color("666666"),HORIZONTAL_ALIGNMENT_CENTER)
+		b._label(root,"首页" if i==0 else "我的",Rect2(i*189,b.APP_HEIGHT-28,189,22),12,Color("666666"),HORIZONTAL_ALIGNMENT_CENTER)
+
+func reservation_nav(b, root: Control) -> void:
+	b._panel(root,Rect2(0,b.APP_HEIGHT-60,378,60),Color.WHITE,Color("dce0e6"),0,1)
+	for i in 2:
+		var page: String = ["spaces","mine"][i]
+		var selected: bool = page==local_page
+		var tab: Button = b._button(root,["首页","我的"][i],Rect2(i*189+1,b.APP_HEIGHT-59,187,59),
+			func(): goto(b,page),Color("eef3fa") if selected else Color.WHITE,BLUE if selected else MUTED,0,Color.TRANSPARENT)
+		tab.name = ["LibraryReservationHomeTab","LibraryReservationMyTab"][i]
+		tab.add_theme_font_size_override("font_size",16)
+		mark_segment(tab,selected)
+
+func reservation_mine(b) -> Control:
+	var root := base(b,"我的",func(): goto(b,"spaces"),"返回座位预约")
+	var inner := body(b,root,"mine",72,60)
+	var entry: Button = b._button(inner,"入馆记录",Rect2(16,16,346,54),
+		func(): b.page_requested.emit("library_record"),Color.WHITE,INK,4,Color("dce0e6"))
+	entry.name = "LibraryEntranceRecord"
+	entry.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	entry.add_theme_font_size_override("font_size",17)
+	for style in ["normal","hover","pressed"]:
+		entry.get_theme_stylebox(style).content_margin_left = 16
+	b._label(inner,"›",Rect2(327,16,21,54),18,MUTED,HORIZONTAL_ALIGNMENT_CENTER)
+	reservation_nav(b,root)
+	return root
+
+func entrance_record(b, view: Dictionary) -> Control:
+	var root := base(b,"入馆记录",func():
+		local_page="mine"
+		b.page_requested.emit("library_app"),"返回我的")
+	var inner := body(b,root,"record",296)
+	b._panel(inner,Rect2(16,16,346,208),Color.WHITE,Color("dce0e6"),4,1)
+	# The shared inventory handle may be visible beside this reading surface.
+	var evidence: Label = b._label(inner,str(view.get("body","")),Rect2(60,33,285,174),18,INK)
+	evidence.name = "LibraryRecordEvidence"
+	evidence.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	evidence.add_theme_constant_override("line_spacing",4)
+	for action: Dictionary in view.get("actions",[]):
+		if action.id=="lib_record":
+			var confirm: Button = b._act(inner,str(action.label),Rect2(16,240,346,48),"lib_record",null,BLUE,Color.WHITE,4,Color.TRANSPARENT)
+			confirm.name = "LibraryRecordAction"
+			confirm.add_theme_font_size_override("font_size",16)
+	return root
 
 func home(b) -> Control:
 	var root=base(b,"浙大移动图书馆",func(): b._return_zjuding())
@@ -228,7 +274,7 @@ func spaces(b) -> Control:
 	b._label(inner,"没有更多了" if not available_rooms.is_empty() else "该馆暂未开放可预约空间",Rect2(left,y,working_width,46),14,MUTED,HORIZONTAL_ALIGNMENT_CENTER).name="LibraryRoomsEnd"
 	inner.custom_minimum_size.y=maxf(inner.get_parent().size.y,y+58)
 	inner.size.y=inner.custom_minimum_size.y
-	bottom_nav(b,root,true)
+	reservation_nav(b,root)
 	if not sheet.is_empty(): add_sheet(b,root)
 	Typography.apply_body_text_tree(root)
 	return root

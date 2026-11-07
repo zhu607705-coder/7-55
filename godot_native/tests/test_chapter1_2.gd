@@ -143,6 +143,7 @@ func _library_tests() -> void:
 	_finish_library_story("library_entered")
 	act("lib_backpack")
 	expect(not s.ui.libraryFinalsPuzzle.backpackInspected,"entrance record precedes backpack")
+	act("lib_register_arrival")
 	act("lib_record")
 	act("lib_backpack")
 	_finish_library_story("library_occupied_seat_found")

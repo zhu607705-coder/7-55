@@ -1,7 +1,8 @@
 extends RefCounted
 ## Physical book presentation and pointer ownership. The chapter grants evidence.
 const Picker=preload("res://scripts/world_object_picker.gd")
-const SOURCE:=Rect2(140,840,35,110)
+# The stack tile has one texel per world pixel, including its original spine.
+const SOURCE:=Rect2(28,168,7,22)
 const LOCATION:="06架 · 南端上层 · 755号"
 const PULL_DISTANCE:=18.0
 var owner_state:Dictionary={}
@@ -44,8 +45,7 @@ func available()->bool:
 
 func geometry(objects:RefCounted,shelf_offset:=0.0)->Dictionary:
 	var whole:Dictionary=objects.geometry("north_display_shelf",Vector2(shelf_offset,0))
-	var factor:float=whole.rect.size.x/whole.source.size.x
-	return {"texture":whole.texture,"source":SOURCE,"rect":Rect2(whole.rect.position+SOURCE.position*factor,SOURCE.size*factor)}
+	return {"texture":whole.texture,"source":SOURCE,"rect":Rect2(whole.rect.position+SOURCE.position,SOURCE.size)}
 
 func begin(id:int,point:Vector2,next_context:Array)->void:
 	pulling=true;pointer_id=id;start=point;offset=0;hold_ms=0;return_ms=280;context=next_context.duplicate()

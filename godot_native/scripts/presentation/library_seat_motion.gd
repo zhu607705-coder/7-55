@@ -93,15 +93,15 @@ func note_pose() -> Dictionary:
 		alpha = 1.0 - smoothstep(0.0 if reduced else 370.0, REDUCED_MS if reduced else PICKUP_MS, note_ms)
 	return {"visible": active and ((inspected and not note_collected) or note_ms >= 0), "position": at, "angle": angle, "bend": bend, "alpha": alpha, "width": dimensions.x, "height": dimensions.y}
 
-func receipt_pose() -> Dictionary:
-	var at := GAP_AT
+func receipt_pose(gap := GAP_AT) -> Dictionary:
+	var at := gap
 	var width := 8.0
 	var height := 12.0
 	var angle := 0.0
 	var bend := 2.0
 	var alpha := 1.0
 	var arrow := 0.0
-	var arrow_at := GAP_AT + Vector2(-34, 0)
+	var arrow_at := gap + Vector2(-34, 0)
 	if receipt_ms >= 0:
 		if reduced:
 			width = 42.0; height = 24.0; at += Vector2(20, -6); bend = 0.0

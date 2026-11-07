@@ -13,14 +13,7 @@ func ensure_loaded()->bool:
 		if not ResourceLoader.exists(path):return false
 		var texture:Texture2D=load(path)
 		if texture.get_size()!=CELLS[id]*4:return false
-		if id!="staff":
-			var pixels:=texture.get_image()
-			if pixels.is_compressed():pixels.decompress()
-			pixels.generate_mipmaps()
-			var filtered:=CanvasTexture.new();filtered.diffuse_texture=ImageTexture.create_from_image(pixels)
-			filtered.texture_filter=CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
-			pending[id]=filtered
-		else:pending[id]=texture
+		pending[id]=texture
 	sheets=pending;ready=true;return true
 
 static func source(id:String,index:int)->Rect2:

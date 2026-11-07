@@ -26,7 +26,7 @@ var _npc_feedback_focused := true
 var _npc_completion_waiting: Dictionary = {}
 const KayakObject = preload("res://scripts/objects/kayak_world_adapter.gd")
 const CampusWayfinding = preload("res://scripts/ui/campus_wayfinding.gd")
-const LibraryEntranceDoor = preload("res://scripts/presentation/library_entrance_door.gd")
+const LibraryTurnstiles = preload("res://scripts/presentation/library_turnstiles.gd")
 const DirectWorldGestures=preload("res://scripts/direct_world_gestures.gd")
 const TargetApproach=preload("res://scripts/target_approach.gd")
 const NorthObjects=preload("res://scripts/presentation/north_generated_objects.gd")
@@ -44,7 +44,7 @@ const SourceTiledTexture=preload("res://scripts/presentation/source_tiled_textur
 # after its first visit so returning does not rebuild every prop and observer.
 const CANTEEN_SCENE_SCRIPT="res://scripts/objects/canteen_object_scene.gd"
 const DORM_SCENE_SCRIPT="res://scripts/objects/dorm_scene_adapter.gd"
-var library_door:RefCounted=LibraryEntranceDoor.new()
+var library_gate := LibraryTurnstiles.new()
 var direct_gestures:RefCounted=DirectWorldGestures.new()
 var background_tiles:RefCounted=SourceTiledTexture.new()
 var background_is_tiled:bool=false
@@ -253,7 +253,7 @@ func refresh_world() -> void:
 	if is_instance_valid(native_canteen):native_canteen.sync(State.d,incoming)
 	if incoming!=scene_id: _kayak_boundary_hint_at=-KAYAK_BOUNDARY_HINT_COOLDOWN_MS
 	if library_layers!=null: library_layers.sync(State.d,incoming!=scene_id)
-	library_door.sync(State.d,incoming!=scene_id)
+	library_gate.sync(State.d, incoming != scene_id)
 	if chapter3_layers!=null: chapter3_layers.sync(State.d,incoming!=scene_id)
 	if incoming.is_empty(): return
 	var floor_id := str(State.d.get("chapterFour",{}).get("floor",State.d.get("chapter4",{}).get("floor","A1")))
@@ -265,7 +265,10 @@ func refresh_world() -> void:
 	var prior_position := player
 	var key := incoming + ":" + (floor_id+":"+time_id+":"+phase_id if incoming == "duan_yongping_temporal_maze" else zone+":"+vehicle_id if incoming == "qizhen_lake" else "")
 	targets = State.get_targets(incoming)
-	if incoming=="library_interior" and library_layers!=null:library_layers.align_object_targets(targets)
+	if incoming == "library_interior" and library_layers != null:
+		library_gate.bind_cabinets(library_layers.objects)
+		library_layers.align_object_targets(targets)
+		library_gate.align_targets(targets)
 	if key == world_key and pending_teleport == Vector2.INF:
 		_sync_npc_feedback()
 		queue_redraw()
@@ -278,6 +281,8 @@ func refresh_world() -> void:
 	_sync_npc_feedback()
 	pan_offset = Vector2.ZERO
 	scene_id = incoming
+	# A new SubViewport defaults to linear even when the root uses nearest.
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST if scene_id == "library_interior" else CanvasItem.TEXTURE_FILTER_PARENT_NODE
 	player_turn.clear(); walk_clock=0
 	_last_floor = floor_id
 	last_zone = zone
@@ -287,7 +292,7 @@ func refresh_world() -> void:
 	world_size = Vector2(float(spec.worldSize.width),float(spec.worldSize.height))
 	background_rect = Rect2(Vector2.ZERO,world_size)
 	collisions = spec.get("collisions",[]).duplicate(true)
-	if scene_id=="library_interior" and library_layers!=null and library_layers.objects.ready:
+	if scene_id=="library_interior" and library_layers!=null:
 		collisions=library_layers.objects.collisions(collisions)
 	if chapter3_layers!=null: collisions=chapter3_layers.adjusted_collisions(collisions,State.d)
 	foreground = []
@@ -397,6 +402,9 @@ func refresh_world() -> void:
 	if pending_teleport != Vector2.INF:
 		player = pending_teleport
 		pending_teleport = Vector2.INF
+	if scene_id == "library_interior":
+		var entrance: Dictionary = spawns.get("library_entrance", {})
+		player = library_gate.restore_anchor(player, Vector2(entrance.get("x", 715), entrance.get("y", 842)))
 	if scene_id == "qizhen_lake" and vehicle_id == "kayak" and ResourceLoader.exists("res://scripts/games/kayak_model.gd"):
 		kayak = load("res://scripts/games/kayak_model.gd").new()
 		kayak.configure({"phase":"world","bounded":false})
@@ -466,7 +474,7 @@ func can_stand(point: Vector2, kayak_heading: float=NAN) -> bool:
 	return true
 
 func _door_collision_rects()->Array[Rect2]:
-	if scene_id=="library_interior":return library_door.collision_rects()
+	if scene_id=="library_interior":return library_gate.collision_rects()
 	if scene_id=="theater_interior" and chapter3_layers!=null:return chapter3_layers.doors.collision_rects()
 	return []
 
@@ -525,7 +533,9 @@ func _resolve_library_shelf_contact()->bool:
 func interior_door_snapshot()->Dictionary:
 	# Detached measurements for ordinary input acceptance; no mutation port.
 	if scene_id=="library_interior":
-		return {"scene":scene_id,"opening":Rect2(644,681,212,86),"progress":library_door.progress,"visualProgress":library_door.progress,"sensorOpen":library_door.sensor_open,"accessGranted":library_door.access_granted,"leafRects":library_door.leaf_rects(),"collisionRects":library_door.collision_rects(),"playerFoot":PlayerMetrics.foot_rect(player,scene_id),"departureHeld":false,"routeStatus":_floor_status,"routeWaypointCount":_floor_route.size()}
+		var gate: Dictionary = library_gate.snapshot()
+		gate.merge({"scene":scene_id,"playerFoot":PlayerMetrics.foot_rect(player,scene_id),"departureHeld":false,"routeStatus":_floor_status,"routeWaypointCount":_floor_route.size()})
+		return gate
 	if scene_id=="theater_interior" and chapter3_layers!=null:
 		var door:RefCounted=chapter3_layers.doors
 		return {"scene":scene_id,"opening":door.opening,"progress":door.progress,"visualProgress":door.visual_progress,"sensorOpen":door.sensor_open,"passable":door.passable(),"leafRects":door.leaf_rects(),"collisionRects":door.collision_rects(),"playerFoot":PlayerMetrics.foot_rect(player,scene_id),"departureHeld":door.departure_held,"clockOwned":door.departure_clock_owned,"routeStatus":_floor_status,"routeWaypointCount":_floor_route.size()}
@@ -634,6 +644,14 @@ func _try_interact(target: Dictionary = {}) -> void:
 	if mobile_exploration:
 		mobile_confirmed_target_id=str(target.get("id",""));mobile_confirmed_world_key=world_key
 	var action: String=str(target.get("action",target.get("id","")))
+	if scene_id == "library_interior":
+		if action == "lib_exit" and not library_gate.outside(player):
+			State.feedback.emit("请先通过出馆闸机。")
+			return
+		if target.has("turnstileLane"):
+			library_gate.use_reader(int(target.turnstileLane), player)
+			queue_redraw()
+			return
 	var library_scan: bool=scene_id=="library_interior" and action=="lib_scan"
 	# A refused identity check must not rotate the player toward the desk.
 	if not target.get("follow_player",false) and not library_scan:
@@ -854,7 +872,7 @@ func _process(delta: float) -> void:
 		# The terminal cue can hand the visible surface to its earned reader.
 		# Do not apply a held movement key after that handoff in this same tick.
 		if is_instance_valid(host_node) and not host_node.world_frame.is_visible_in_tree(): return
-	library_door.tick(delta,State.d)
+	library_gate.tick(delta, State.d, player)
 	if chapter4_layers != null and scene_id == "duan_yongping_temporal_maze":
 		chapter4_layers.tick(delta,State.d)
 		queue_redraw()
@@ -962,6 +980,8 @@ func _process(delta: float) -> void:
 		floor_route_finished = following_floor_route and _floor_route.is_empty()
 		if old.distance_to(player) > 0:
 			_sync_player()
+			if scene_id=="library_interior" and library_gate.crossed_inward(old,player):
+				State.act("lib_register_arrival")
 			if scene_id == "dorm_hub" and State.d.actOne.get("movementEnabled",false) and not _manual_sent:
 				_manual_sent = true
 				State.act("c2_manual_input",{"moved":true,"distance":old.distance_to(player)*2,"input":_input_kind})
@@ -974,6 +994,7 @@ func _process(delta: float) -> void:
 	var nearest := INF
 	for target in targets:
 		if target.get("decorative",false): continue
+		if scene_id == "library_interior" and target.id == "library_exit" and not library_gate.outside(player): continue
 		var distance := _distance(target)
 		# The always-near self-inspection target is a fallback, not a permanent
 		# Space-key occluder over the desk, cabinet and earned dorm exit.
@@ -1105,8 +1126,10 @@ func _record_plate_targets() -> void:
 	plate_targets.reverse()
 	for target: Dictionary in plate_targets:
 		if target.has("art") or target.get("follow_player",false): continue
+		if scene_id == "library_interior" and target.id == "library_exit" and not library_gate.outside(player): continue
 		if is_instance_valid(native_canteen) and native_canteen.owns_target(str(target.get("id",""))):continue
 		if is_instance_valid(room301_exhibit) and room301_exhibit.owns_target(str(target.get("id",""))):continue
+		if target.has("turnstileLane"): continue
 		if library_layers!=null and scene_id=="library_interior" and library_layers.owns_pick_target(str(target.get("id",""))): continue
 		if chapter3_layers!=null and chapter3_layers.owns_pick_target(target,State.d): continue
 		if chapter4_layers!=null and scene_id=="duan_yongping_temporal_maze" and chapter4_layers.owns_pick_target(str(target.get("id",""))): continue
@@ -1137,7 +1160,7 @@ func _render_context() -> Dictionary:
 		var chair_pose: Dictionary = library_layers.local_chair_pose()
 		if not chair_pose.is_empty():
 			ground = lerpf(ground, chair_pose.depth, chair_pose.settle)
-			if chair_pose.settle > 0.5: seated_chair = chair_pose.chair
+			if chair_pose.settle >= 0.5: seated_chair = chair_pose.chair
 	return {"origin":size/2-camera*zoom,"zoom":zoom,"player":player,"player_ground_y":ground,"seated_chair":seated_chair,"scene_id":scene_id,"floor":_last_floor,"nearby_id":str(nearby.get("id","")),"background":background,"mode_mix":mode_mix,"actor_occluders":_actor_occluders()}
 
 func _actor_occluders()->Array:
@@ -1272,8 +1295,7 @@ func _draw_base_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	_draw_floor_route(origin,canvas)
 	if chapter3_layers!=null: chapter3_layers.draw_back(canvas,layer_context,State.d)
 	if library_layers!=null: library_layers.draw_back(canvas,layer_context,State.d)
-	library_door.draw(canvas,layer_context,false)
-	if library_layers!=null:library_layers.draw_entrance(canvas,layer_context,false)
+	library_gate.draw(canvas, layer_context, false)
 func _draw_actor_pass(canvas: CanvasItem,layer_context: Dictionary,defer_foreground:bool=false) -> void:
 	var origin: Vector2=layer_context.origin
 	north_objects.draw_objects(canvas,layer_context,false)
@@ -1306,9 +1328,14 @@ func _draw_actor_pass(canvas: CanvasItem,layer_context: Dictionary,defer_foregro
 		if not actor_ids.is_empty(): register_object_surface(actor_ids,player_geometry())
 		canvas.draw_set_transform(origin+drawn_player*zoom,deg_to_rad(float(actor.angle)),Vector2.ONE*zoom)
 		if seated_fraction > 0.0:
-			var visible_fraction := 1.0 if seated_art else 1.0 - 0.25 * seated_fraction
+			var animations = library_layers.animations
+			# From behind the chair, the calves and shoes fold away under the table.
+			var visible_fraction: float = animations.SEATED_VISIBLE_ROWS / frame.get_height() if seated_art else 1.0 - 0.25 * seated_fraction
 			var source_rect := Rect2(Vector2.ZERO, frame.get_size() * Vector2(1.0, visible_fraction))
-			var seated_rect := Rect2(visual.position - drawn_player + Vector2(0, -9.0 * seated_fraction), visual.size * Vector2(1.0, visible_fraction))
+			# Match the seated cel's hip to the seat painted in the live sprite.
+			var hip := visual.size * Vector2(0.5, animations.SEATED_HIP_Y / PlayerMetrics.FRAME.y)
+			var seat_position := Vector2(chair_pose.seat) - hip
+			var seated_rect := Rect2(visual.position.lerp(seat_position, seated_fraction) - drawn_player, visual.size * Vector2(1.0, visible_fraction))
 			canvas.draw_texture_rect_region(frame, seated_rect, source_rect)
 		else:
 			canvas.draw_texture_rect(frame,Rect2(visual.position-drawn_player,Vector2(-visual.size.x,visual.size.y) if actor.flip_h else visual.size),false)
@@ -1352,17 +1379,12 @@ func _draw_actor_foreground_suffix(canvas: CanvasItem,layer_context: Dictionary)
 				canvas.draw_set_transform(Vector2.ZERO)
 				continue
 			var region := _rect(cover.get("maskBounds",cover))
-			var regions:Array[Rect2]=[]
-			if scene_id=="library_interior":regions=library_door.foreground_regions(region)
-			else:regions.append(region)
-			for visible_region:Rect2 in regions:
-				var dest:=Rect2(origin+visible_region.position*zoom,visible_region.size*zoom)
-				if background_is_tiled:background_tiles.draw_region(canvas,dest,visible_region,Color(1,1,1,alpha))
-				else:canvas.draw_texture_rect_region(background,dest,visible_region,Color(1,1,1,alpha))
+			var dest:=Rect2(origin+region.position*zoom,region.size*zoom)
+			if background_is_tiled:background_tiles.draw_region(canvas,dest,region,Color(1,1,1,alpha))
+			else:canvas.draw_texture_rect_region(background,dest,region,Color(1,1,1,alpha))
 	if chapter3_layers!=null: chapter3_layers.draw_landmarks(canvas,layer_context,State.d)
 	if library_layers!=null: library_layers.draw_front(canvas,layer_context,State.d)
-	library_door.draw(canvas,layer_context,true)
-	if library_layers!=null:library_layers.draw_entrance(canvas,layer_context,true)
+	library_gate.draw(canvas, layer_context, true)
 func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	var origin: Vector2=layer_context.origin
 	if lake_session!=null: lake_session.draw(canvas,origin,zoom,bool(State.d.native.settings.reduced_motion))

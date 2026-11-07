@@ -91,7 +91,7 @@ func earned_shelf() -> Dictionary:
 	s.ui.libraryFinalsPhase="library_route_unlocked"
 	var controller=Chapter.new()
 	controller.dispatch(s,"lib_enter"); acknowledge(controller,s)
-	controller.dispatch(s,"lib_record"); controller.dispatch(s,"lib_backpack"); acknowledge(controller,s)
+	controller.dispatch(s,"lib_register_arrival"); controller.dispatch(s,"lib_record"); controller.dispatch(s,"lib_backpack"); acknowledge(controller,s)
 	controller.dispatch(s,"lib_note"); controller.dispatch(s,"lib_investigate","occupancyNote"); acknowledge(controller,s)
 	controller.dispatch(s,"lib_catalog_terminal"); controller.dispatch(s,"lib_catalog_search","三分钟离座法")
 	controller.dispatch(s,"lib_catalog_select","three-minute-leave-method"); acknowledge(controller,s)

@@ -13,9 +13,13 @@ func reload_primary(surface:String,actor:Vector2,prior:Dictionary) -> void:
 	check(state.d.runtimeMode==("phone" if surface=="phone" else "rpg"),"ordinary restart restores the last explicit surface")
 	check(state.d.native.scene==prior.scene and state.d.rpgCheckpoint==prior.checkpoint and shell.world.player==actor,"ordinary restart preserves scene, checkpoint and actor")
 	check(state.d.items==prior.items and state.d.wallet==prior.wallet and state.d.actOne==prior.actOne and state.d.ui.libraryFinalsPuzzle==prior.puzzle,"ordinary restart preserves inventory, wallet and progression")
+	check(state.d.native.get("lib_admission_recorded",false) and not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"ordinary restart preserves the unread arrival")
 func verify_viewport(view:Vector2i) -> void:
 	await create_shell(view,"library_interior")
 	state.d.rpgCheckpoint="library_entrance"
+	# This saved location is past the new wings. Seed the arrival earned by a
+	# normal traversal before exercising phone/world persistence at this pose.
+	state.d.native.lib_admission_recorded=true
 	shell.world.player=shell.world._find_safe(Vector2(715,790));shell.world._sync_player()
 	var actor:Vector2=shell.world.player
 	var prior:Dictionary={"scene":state.d.native.scene,"checkpoint":state.d.rpgCheckpoint,"items":state.d.items.duplicate(true),"wallet":state.d.wallet.duplicate(true),"actOne":state.d.actOne.duplicate(true),"puzzle":state.d.ui.libraryFinalsPuzzle.duplicate(true)}
@@ -30,6 +34,7 @@ func verify_viewport(view:Vector2i) -> void:
 		exclusive("world")
 		check(state.d.native.scene==prior.scene and shell.world.player==actor and state.d.rpgCheckpoint==prior.checkpoint,"import restores scene position and checkpoint")
 		check(state.d.items==prior.items and state.d.wallet==prior.wallet and state.d.actOne==prior.actOne and state.d.ui.libraryFinalsPuzzle==prior.puzzle,"import retains inventory, wallet and evidence")
+		check(state.d.native.get("lib_admission_recorded",false) and not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"portable import preserves the unread arrival")
 		check(not is_instance_valid(shell.active_game),"import creates no unrelated activity owner")
 		await click(shell.mobile_back);exclusive("phone");disk_mode("phone")
 	# Reload the actual last phone choice first, then exercise the ordinary

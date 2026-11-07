@@ -79,10 +79,11 @@ func advance_chair(delta: float) -> String:
 
 func local_chair_pose() -> Dictionary:
 	if local_chair.is_empty() or not objects.ready: return {}
-	var chair: Rect2 = objects.areas[CHAIR_IDS[local_chair]]
+	var id: String = CHAIR_IDS[local_chair]
+	var chair: Rect2 = objects.areas[id]
 	var progress := smoothstep(0.0, SIT_SECONDS, chair_age)
 	var destination := Vector2(chair.get_center().x, chair.end.y - PlayerMetrics.GROUND_OFFSET)
-	return {"point": chair_start.lerp(destination, progress), "settle": smoothstep(0.48, 1.0, progress), "depth": chair.end.y - 0.5, "chair": CHAIR_IDS[local_chair]}
+	return {"point": chair_start.lerp(destination, progress), "settle": smoothstep(0.48, 1.0, progress), "depth": chair.end.y - 0.5, "seat": objects.seat_point(id), "chair": id}
 
 var pass_from:=Vector2.ZERO
 
@@ -221,20 +222,16 @@ func active_shelf_body()->Dictionary:
 
 func align_object_targets(targets:Array)->void:
 	if not active or not objects.ready:return
-	if motion.record_read:
-		targets.assign(targets.filter(func(target:Dictionary):return target.id!="entrance_record"))
 	var has_study_chair := not targets.is_empty() and targets.any(func(target: Dictionary): return target.id == GeometryNotebook.ID)
 	if has_study_chair:
 		var chair: Rect2 = objects.areas[CHAIR_IDS.library_study_chair]
 		var at := Vector2(chair.get_center().x, chair.end.y - PlayerMetrics.FOOT_CENTER_OFFSET.y)
 		targets.append({"id":"library_study_chair", "label":"开始自习", "action":"library_study", "position":[at.x, at.y], "radius":56.0, "mode":"light"})
 	for target:Dictionary in targets:
-		if target.id=="entrance_record":
-			target.label="查验门禁记录"
-			var reach:Rect2=motion.ENTRY_FOOTPRINT
-			reach.position-=PlayerMetrics.FOOT_CENTER_OFFSET
-			target.position=[reach.get_center().x,reach.get_center().y]
-			target.bounds=[reach.position.x,reach.position.y,reach.size.x,reach.size.y]
+		if target.id=="seat_022_gap":
+			var at := receipt_anchor()
+			target.position = [at.x, at.y]
+			target.bounds = [at.x - 17, at.y - 8, 34, 20]
 		if target.id=="library_shelf_755":
 			target.label=ShelfBook.LOCATION
 			var reach:Rect2=book.geometry(objects,shelf_offset).rect
@@ -281,13 +278,13 @@ func paper_pose() -> Dictionary:
 	return {"position":position,"alpha":alpha,"glowAlpha":glow_alpha,"glowPosition":glow_position,"visible":shelf_animating}
 func debug_snapshot() -> Dictionary:
 	var shelf_body:=active_shelf_body()
-	return {"active":active,"shelfPhase":shelf_phase,"shelfFrame":shelf_frame,"shelfOffset":shelf_offset,"shelfAnimating":shelf_animating,"shelfMs":shelf_ms,"shelfTotalMs":shelf_total_ms(),"shelfCollision":shelf_body,"backpack":backpack_pose(),"backpackClearPatch":bag_evicted,"backpackMs":bag_ms,"backpackTotalMs":bag_total_ms(),"paper":paper_pose(),"receiptMs":seat.receipt_ms,"note":seat.note_pose(),"receipt":seat.receipt_pose(),"staff":staff_pose(),"stampMs":stamp_ms,"stamp":stamp_pose(),"interactionAnimation":interaction_snapshot(),"objectRebuild":rebuild.snapshot(),"objectScene":objects.snapshot(),"objectMotion":motion.snapshot(),"printer":printer.snapshot()}
+	return {"active":active,"shelfPhase":shelf_phase,"shelfFrame":shelf_frame,"shelfOffset":shelf_offset,"shelfAnimating":shelf_animating,"shelfMs":shelf_ms,"shelfTotalMs":shelf_total_ms(),"shelfCollision":shelf_body,"backpack":backpack_pose(),"backpackClearPatch":bag_evicted,"backpackMs":bag_ms,"backpackTotalMs":bag_total_ms(),"paper":paper_pose(),"receiptMs":seat.receipt_ms,"note":seat.note_pose(),"receipt":seat.receipt_pose(receipt_anchor()),"staff":staff_pose(),"stampMs":stamp_ms,"stamp":stamp_pose(),"interactionAnimation":interaction_snapshot(),"objectRebuild":rebuild.snapshot(),"objectScene":objects.snapshot(),"objectMotion":motion.snapshot(),"printer":printer.snapshot()}
 
 func interaction_snapshot()->Dictionary:
 	return {"ready":interactions.ready,"family":"library_interactions_16","bagFrame":interactions.bag_frame(seat.inspect_ms,seat.inspected,reduced),"paperFrame":interactions.paper_frame(seat.inspect_ms,seat.note_ms,reduced),"staffFrame":interactions.staff_frame(clock_ms,motion.staff_ms,scanning_ms,stamp_ms,reduced)}
 
 func owns_pick_target(id: String) -> bool:
-	return id in ["front_desk","identity_machine","library_shelf_755","occupancy_note",GeometryNotebook.ID] or (objects.ready and id in ["entrance_record","seat_022_gap","seat_022_chair","library_study_chair"]) or ((objects.ready or rebuild.ready) and id in ["catalog_terminal","printer","backpack","bag_photo","backpack_pass"])
+	return id in ["front_desk","identity_machine","library_shelf_755","occupancy_note",GeometryNotebook.ID] or (objects.ready and id in ["seat_022_gap","seat_022_chair","library_study_chair"]) or ((objects.ready or rebuild.ready) and id in ["catalog_terminal","printer","backpack","bag_photo","backpack_pass"])
 
 func _context(canvas: CanvasItem,context: Dictionary) -> void:
 	canvas.draw_set_transform(context.get("origin",Vector2.ZERO),0,Vector2.ONE*float(context.get("zoom",1)))
@@ -339,13 +336,13 @@ func _draw_depth_pass(canvas: CanvasItem,context: Dictionary,state: Dictionary,f
 			var printer_geometry:Dictionary=objects.geometry("printer")
 			printer_geometry.calibratedParts=true
 			printer.draw(canvas,printer_geometry,["printer"])
-		if SpatialRules.depth_in_front(objects.baseline("reading_table_1")+.02,ground)==front:GeometryNotebook.draw(canvas)
+		if SpatialRules.depth_in_front(objects.baseline("reading_table_1"),ground)==front:GeometryNotebook.draw(canvas)
 		if _in_pass(548,context,front):_draw_seat_status(canvas)
 		var note:Dictionary=seat.note_pose()
-		if SpatialRules.depth_in_front(objects.baseline("reading_table_4")+.02,ground)==front and note.visible:
+		if SpatialRules.depth_in_front(objects.baseline("reading_table_4"),ground)==front and note.visible:
 			if note.alpha>0.05:Picker.record(canvas,["occupancy_note"] if not seat.note_collected else [],SeatMotion.paper_geometry(note))
 			_draw_seat_paper(canvas,context,note,"纸条",Color("e9dcae"))
-		if SpatialRules.depth_in_front(objects.baseline("reading_table_4")+.03,ground)==front:_draw_receipt(canvas,context)
+		if SpatialRules.depth_in_front(objects.baseline("reading_table_4"),ground)==front:_draw_receipt(canvas,context)
 		if shelf_animating and SpatialRules.depth_in_front(objects.baseline("north_display_shelf"),ground)==front:
 			var paper_offset:=_row_recess().get_center()-Vector2(514,152)
 			canvas.draw_set_transform(Vector2(context.origin)+paper_offset*float(context.zoom),0,Vector2.ONE*float(context.zoom))
@@ -387,9 +384,6 @@ func _draw_depth_pass(canvas: CanvasItem,context: Dictionary,state: Dictionary,f
 		var ratio: float=_stepped(bag_ms/620); var at: Vector2=(pass_from+Vector2(0,-18)).lerp(Vector2(1255,373),ratio)
 		canvas.draw_set_transform(Vector2(context.get("origin",Vector2.ZERO))+at*float(context.get("zoom",1)),TAU*ratio,Vector2.ONE*float(context.get("zoom",1)))
 		canvas.draw_rect(Rect2(-30,-16,60,32),Color("2f8a59")); canvas.draw_string(font,Vector2(-22,6),"PASS",HORIZONTAL_ALIGNMENT_LEFT,-1,14,Color("f6f1dc")); canvas.draw_set_transform(Vector2.ZERO)
-
-func draw_entrance(canvas:CanvasItem,context:Dictionary,front:bool)->void:
-	if active and objects.ready:motion.draw_entry(canvas,context,front)
 
 func draw_feedback(canvas:CanvasItem,context:Dictionary,extent:Vector2,receiver:Rect2)->void:
 	if active and objects.ready:motion.draw_overlay(canvas,context,extent,receiver)
@@ -525,13 +519,19 @@ func _draw_seat_paper(canvas: CanvasItem,context: Dictionary,pose: Dictionary,la
 		canvas.draw_string(font,Vector2(-10,5-float(pose.bend)/2),label,HORIZONTAL_ALIGNMENT_LEFT,-1,9,Color("40372c",float(pose.alpha)))
 	canvas.draw_set_transform(Vector2.ZERO)
 
+func receipt_anchor() -> Vector2:
+	if not objects.ready: return SeatMotion.GAP_AT
+	var surface: Rect2 = objects.table_surface("reading_table_4")
+	return surface.end - Vector2(18, 5)
+
 func _draw_receipt(canvas: CanvasItem,context: Dictionary) -> void:
 	_context(canvas,context)
 	# The table's physical seam remains after acquisition; no hover decoration.
-	canvas.draw_line(SeatMotion.GAP_AT+Vector2(-13,3),SeatMotion.GAP_AT+Vector2(13,3),Color("514332"),2)
-	if objects.ready:Picker.record(canvas,["seat_022_gap"],Rect2(SeatMotion.GAP_AT-Vector2(17,8),Vector2(34,20)))
+	var gap := receipt_anchor()
+	canvas.draw_line(gap+Vector2(-13,3),gap+Vector2(13,3),Color("514332"),2)
+	if objects.ready:Picker.record(canvas,["seat_022_gap"],Rect2(gap-Vector2(17,8),Vector2(34,20)))
 	canvas.draw_set_transform(Vector2.ZERO)
-	var pose: Dictionary=seat.receipt_pose()
+	var pose: Dictionary=seat.receipt_pose(gap)
 	if not pose.visible: return
 	if objects.ready:Picker.record(canvas,["seat_022_gap"],SeatMotion.paper_geometry(pose))
 	if pose.arrowAlpha>0:

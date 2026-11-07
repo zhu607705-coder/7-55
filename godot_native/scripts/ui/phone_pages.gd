@@ -1834,27 +1834,14 @@ func _directory() -> Control:
 
 func _library(page: String, view: Dictionary) -> Control:
 	if page=="library_rule":return preload("res://scripts/ui/library_rule_reader.gd").new().build(self,view)
-	if page in ["library_app","library_catalog","library_recovery","c3_lake_catalog"]: return native_library.build(self,page)
+	if page in ["library_app","library_catalog","library_recovery","library_record","c3_lake_catalog"]: return native_library.build(self,page,view)
 	var rows: Array = view.get("rows",[])
 	var root = _base(Color("f5f6fa"),maxf(460,200+rows.size()*196))
-	_header(root,str(view.get("title","图书馆")),Color("174d9d"),Color.WHITE,func():
-		if page=="library_app": _return_zjuding()
-		else: page_requested.emit("library_app"),"back","返回浙大钉" if page=="library_app" else "返回图书馆")
+	_header(root,str(view.get("title","图书馆")),Color("174d9d"),Color.WHITE,func(): page_requested.emit("library_app"),"back","返回图书馆")
 	var y = 76
 	if rows.is_empty():
 		_panel(root,Rect2(16,76,346,342),Color.WHITE,Color("c7d0da"),3,1)
-		# Keep rule text and its action clear of the collapsed phone inventory rail.
-		var rule_page=page=="library_rule"
-		var text_left=60 if rule_page else 31
-		_label(root,str(view.get("body","")),Rect2(text_left,91,346-text_left,310),20,Color("34445c"))
-		if page in ["library_record","library_rule"]:
-			var action_id="lib_read_rule" if rule_page else "lib_record"
-			var action_left=60 if rule_page else 16
-			for action: Dictionary in view.get("actions",[]):
-				if action.id!=action_id: continue
-				var read_action=_act(root,str(action.label),Rect2(action_left,434,362-action_left,48),str(action.id),null,BLUE,Color.WHITE,3,Color.TRANSPARENT)
-				read_action.name="LibraryRuleAction" if rule_page else "LibraryRecordAction"
-				read_action.disabled=bool(action.get("disabled",false))
+		_label(root,str(view.get("body","")),Rect2(31,91,315,310),20,Color("34445c"))
 	else:
 		_label(root,str(view.get("body","")),Rect2(20,67,338,102),17,MUTED)
 		y = 180
