@@ -36,7 +36,7 @@ const EXPECTED_ZONE_IDS = [
   "classroom_zone",
   "bakery_back_area"
 ];
-const EXPECTED_ZONE_LABELS = ["大厅", "西走廊", "东走廊", "教室区", "面包店后场"];
+const EXPECTED_ZONE_LABELS = ["大厅", "西走廊", "东走廊", "教室区", "面包坊后场"];
 const EXPECTED_GUARD_MODES = ["absent", "patrol", "chase"];
 const EXPECTED_PHASE_TIME = {
   opening_handoff: ["external_evidence", "2245_opening"],
@@ -1148,8 +1148,8 @@ function validateTask7RuntimeSources(errors) {
     || !/timeStateCount:\s*6/.test(stagePresentation)
     || !/assertExactUniqueIds\(PHASE_IDS, Object\.keys\(PHASE_COPY\), 13/.test(stagePresentation)
     || !/assertExactUniqueIds\(TIME_STATE_IDS, Object\.keys\(TIME_STATE_COPY\), 6/.test(stagePresentation)
-    || !/现场 22:45 · 手机 07:55:23 未同步/.test(stagePresentation)
-    || !/旧钟 22:45 · 维修时段 · 手机已同步/.test(stagePresentation)
+    || !/北教现场 22:45 · 手机卡在 07:55:23（未同步）/.test(stagePresentation)
+    || !/旧钟 22:45 · 夜间检修切电 · 手机已同步/.test(stagePresentation)
     || !/selectChapterFourStagePresentation/.test(stagePresentation)) {
     errors.push("Task 7-13 stage selector must cover 13 phases, 6 time states and distinguish both 22:45 contexts");
   }
@@ -2265,12 +2265,12 @@ function validate(content) {
     errors.push("maintenance must preserve diagnosis, two physical actions and Task11 handoff");
   }
   if (!isRecord(content.tasks)
-    || content.tasks.turn_clock_to_0755?.label !== "把旧钟拨向 07:55"
-    || content.tasks.solve_light_grid?.label !== "点亮追赶所需的通路"
-    || content.tasks.reach_lecture_202?.label !== "追进 202，关好门"
-    || content.tasks.collect_final_minute?.label !== "取回黄铜分针组件"
-    || content.tasks.return_via_main_stair?.label !== "把黄铜分针组件带回一楼大厅"
-    || content.tasks.install_final_minute?.label !== "将黄铜分针组件装回大厅旧钟") {
+    || content.tasks.turn_clock_to_0755?.label !== "把修好的大厅旧钟拨向 07:55"
+    || content.tasks.solve_light_grid?.label !== "操作配电面板：点亮大厅、东走廊与教室区"
+    || content.tasks.reach_lecture_202?.label !== "甩开保安，沿主楼梯冲进二楼 202 落闩"
+    || content.tasks.collect_final_minute?.label !== "在 202 阶梯座椅间取回黄铜分针组件与纸条"
+    || content.tasks.return_via_main_stair?.label !== "带着黄铜分针组件，从主楼梯回一楼大厅"
+    || content.tasks.install_final_minute?.label !== "把黄铜分针组件装回旧钟，恢复 07:55") {
     errors.push("Task 11-13 quest copy must use the physical component name, real return destination and visible clock-face action");
   }
 

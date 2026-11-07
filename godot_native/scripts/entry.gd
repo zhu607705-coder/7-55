@@ -117,6 +117,10 @@ func _ready() -> void:
 		community_note=Label.new();community_note.text="分享经历 · 反馈卡点 · 看制作进展"
 		community_note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;community_note.add_theme_color_override("font_color",UiMaterial.WOOD);content.add_child(community_note)
 	flc_button=_button("未来学习中心 · 自由探索",open_flc);flc_button.name="OpenFutureLearningCenter";flc_button.set_meta("tactile_paper_ink",true);content.add_child(flc_button)
+	if not State.save_compatibility_error.is_empty():
+		story_button.disabled=true;flc_button.disabled=true
+		detail.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		detail.text=State.save_compatibility_error;detail.visible=true
 	_paper_focus(flc_button)
 	if ReleaseContent.campuses_available():
 		campus_heading=_section_title("独立校园漫游");content.add_child(campus_heading)
@@ -336,6 +340,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		close_previews();get_viewport().set_input_as_handled()
 
 func open_story() -> void:
+	if not State.save_compatibility_error.is_empty(): return
 	if OS.has_feature("web") and not CloudSaves.can_enter(): CloudSaves.show_manager();return
 	_open(STORY_SCENE)
 
@@ -352,6 +357,7 @@ func _sync_cloud_controls() -> void:
 	restart_button.disabled=not CloudSaves.ready_for_play;manage_button.disabled=not CloudSaves.ready_for_play
 
 func open_flc() -> void:
+	if not State.save_compatibility_error.is_empty(): return
 	if OS.has_feature("web") and not CloudSaves.can_enter(): CloudSaves.show_manager();return
 	if opening:return
 	opening=true

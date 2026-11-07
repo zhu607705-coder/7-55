@@ -1,3 +1,10 @@
+## 2026-11-07 第四章现场线索与文本对齐
+
+- 按字段合并用户提供的阶段、任务、对白和失败反馈，维持 13 个阶段、41 项任务和 117 条分级提示。重新生成文本索引，更新六件核心道具说明，合并已被新正文替代的 30 条 Godot 对白覆盖。
+- 补齐三轮旧钟的原始记录与推算提示。区分 18:50 楼内记录与 22:43:31 闭楼回放，电梯说明指向 A3 实际到站。303 参照仍是楼梯前的主线条件，301 和 302 保留为档案支线。203、开放自习区、维修和 07:54 配电采用实际现场操作的说明。
+- JSON 结构、ID、时间、数值判定和掉落条件对比通过。Godot 4.7.1 专项及先决阶段 19 项通过；保留 Web quick、第四章剧情、因果、拓扑、运行时、Task 14 及原生文本、音频和机关导出校验通过。
+- 保留三句与现有保安配音对应的字幕；重新生成原生存档校验目录，变动仅限第四章来源记录和嵌入文案。
+
 ## 2026-11-06 认证输入焦点与跨章节手机任务界面
 
 - 独立副本以 `bb842b0b` 开始，提交前已同步到 `02ab5f83`，保留新合入的图书馆触控、存档续玩和缓存修复。`web_platform.gd` 认可 Godot 4.7.1 自有 IME 和虚拟键盘的焦点，延后判断元素间失焦，避免输入过程中暂停整棵场景树；真正的窗口失焦、标签隐藏和外部控件仍阻断游戏，退出时清理新增监听和待执行回调。
@@ -43,6 +50,14 @@
 
 - 以 `14e86ac5` 为基线核对正式 Godot 运行时、保留的 React/Phaser 实现、共创平台及发布路径。记录 QFramework 的已接入职责与仍可直接写入状态的兼容入口，按交互顺序、结果和保存、宿主拆分提出渐进迁移方案。首个建议试点为图书馆规则阅读与离页。
 - 新增[架构与开发规范](docs/ARCHITECTURE.md)，从仓库规则和协作入口链接，并澄清 README 中正式 Web 发布与保留 Web 回归的边界。核对文档链接、源码依据与差异。本次交付范围为文档。
+
+## 2026-11-06 — protect saves created by newer game versions
+
+- Reproduced native startup accepting a sourceVersion 37 save in the version 36 runtime: successive ordinary page saves rewrote the primary and then its backup. Manual import also accepted future-version native files. The fix checks both primary and backup before selection, blocks persistence with an explicit update message, and rejects future imports before migration, media or CC98 changes. Profile activation reuses the same check and clears the block only when a compatible profile opens.
+- Reused the entrance detail label and disabled story/FLC entry while blocked, including direct entry calls. No new runtime module, save field, dependency or asset was introduced. Compatible v35 migration, v36 and historical versionless native files remain supported; corrupt-primary recovery remains intact.
+- Official Godot 4.7.1 with isolated user directories: the new regression passes 44 assertions including two independent engine startups, versions 37/37.5/999/string-37, exact original-byte preservation, rejected import side effects and profile recovery. Existing profile checks pass 144 and save integration 1829 (236 file imports, 117 checkpoints).
+- The official selected-stage aggregate passes 24/24 with unchanged inputs (input SHA-256 26372fa9f01bd3ac2cd912f0bfbed1982df20f887fd65cd71300ea84b8adc840); 631/655 stages were not selected. This includes startup, entry, FLC, native/Web save contracts, Continue and the original SaveStore differential, not a full-suite or real browser pass.
+- Retained-Web release passes 36/39 locally. The unchanged offline single-file build is again killed with exit 137, so its artifact check and dependent browser smoke cannot complete. Exact-head full CI remains required; no limits were relaxed, no merge or deployment performed.
 
 ## 2026-10-31 — approved FLC 53-file integration
 
@@ -6049,4 +6064,4 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 
 - 最终合并 `d869df49` 的 Retina 390×844、DPR3 C2 体艺重载仍被真实 Web 门禁拦住。截图停在 101.8/129.2 MB 资源遮罩；存档摘要独立核验一致，缓存重用没有重新下载。已完成包的 SHA 活动时间约 1.2 秒，原生确认约 23.7 秒，缓存读取约 28 秒；这些数据证明真实加载超时，不把它改称旧快照误报。
 - 候选只在 WebContent 独立不透明遮罩完全盖住入口时隐藏 Entry 绘制和焦点。入口继续处理并发布只读快照；取消、错误重试及退出恢复原可见性和焦点规则，不抢占其他可见管理器。资源、画质、校验、存档和 60 秒 Main 门禁均未更改。
-- 固定官方 Godot 4.7.1 的真实 Entry 生命周期检查 35/35、既有纸墨入口检查 97/97、WebContent 检查 289/289 通过。独立代码复查无阻塞问题。同源真实 Web A/B 和 PR 完整验收仍在进行；本条不声称性能问题已修复，也不声称正式站已经发布。
+- 固定官方 Godot 4.7.1 的真实 Entry 生命周期检查 35/35、既有纸墨入口检查 97/97、WebContent 检查 289/289 通过。独立代码复查无阻塞问题。随后本地 Web 基线导出完成，但工作区重置中断夹具准备和 A/B，未获得浏览器性能结论。保留后来合入的新版存档保护和第四章文本；组合提交仍须经过 PR 完整验收，不声称性能问题已修复或正式站已经发布。

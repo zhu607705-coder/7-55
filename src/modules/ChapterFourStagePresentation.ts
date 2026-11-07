@@ -84,8 +84,8 @@ export function validateChapterFourStagePresentationContract(): ChapterFourStage
   const maintenanceTime = requireTimeContract(maintenancePhase.timeState);
   const openingLabel = TIME_STATE_COPY[openingPhase.timeState].timeStateLabel;
   const maintenanceLabel = TIME_STATE_COPY[maintenancePhase.timeState].timeStateLabel;
-  if (openingLabel !== "现场 22:45 · 手机 07:55:23 未同步"
-    || maintenanceLabel !== "旧钟 22:45 · 维修时段 · 手机已同步"
+  if (openingLabel !== "北教现场 22:45 · 手机卡在 07:55:23（未同步）"
+    || maintenanceLabel !== "旧钟 22:45 · 夜间检修切电 · 手机已同步"
     || openingPhase.timeAuthority === maintenancePhase.timeAuthority
     || openingTime.phoneStatusTimeTrusted === maintenanceTime.phoneStatusTimeTrusted
     || CONTEXT_COPY.timeSources.external_evidence === CONTEXT_COPY.timeSources.hall_clock
