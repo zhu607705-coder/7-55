@@ -63,7 +63,7 @@ func configure(id: String, state: Dictionary, font: Font = null) -> bool:
 	var title_box := VBoxContainer.new()
 	title_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title_box)
-	title_box.add_child(label(session.definition.locationLabel+" · "+("深色观察" if session.mode == "dark" else "浅色操作"),13,muted))
+	title_box.add_child(label(session.definition.locationLabel+" · "+("深色模式" if session.mode == "dark" else "浅色模式"),13,muted))
 	title_box.add_child(label(session.definition.title,20,text_ink))
 	close_button = button("关闭","close",request_close)
 	# Reserve the real caption width instead of wrapping an icon into the padding.

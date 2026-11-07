@@ -32,7 +32,8 @@ func run() -> void:
 		while host.current!=null and beats<40:
 			view.tick()
 			var source: Dictionary=session.snapshot()
-			check(view.subtitle.text==str(source.speaker)+"："+str(source.text),"exact source text remains on beat "+str(beats))
+			var expected_subtitle: String="" if str(source.text).is_empty() else str(source.speaker)+"："+str(source.text)
+			check(view.subtitle.text==expected_subtitle,"exact source text remains on beat "+str(beats))
 			var triangle: PackedVector2Array=view.advance_triangle()
 			check(triangle.size()==(0 if source.phase=="arrival" else 3),"native source down-triangle appears only before arrival")
 			for vertex: Vector2 in triangle:

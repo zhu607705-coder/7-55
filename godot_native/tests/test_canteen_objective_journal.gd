@@ -29,7 +29,7 @@ func journal_cases(dimensions: Vector2i) -> void:
 	check(node("JournalObjective").text=="与收餐口阿姨交谈","earned snapshot names reachable staff step")
 	check(node("JournalNextStep").text=="到右侧收餐口，与阿姨交谈。","earned shelf does not replace auntie step")
 	check(not node("JournalHistory").visible and node("JournalHistory").get_child_count()==0,"history begins collapsed and unbuilt")
-	check(node("JournalObservationCompare")==null,"chapter3 respects existing comparison eligibility")
+	check(node("JournalCluesCard")==null,"map task has no clue comparison section")
 	check(root.gui_get_focus_owner()==node("JournalResume"),"journal focuses return control")
 	check_layout()
 	await click(node("JournalHistoryToggle"))
@@ -131,15 +131,15 @@ func controller_case(dimensions: Vector2i) -> void:
 	check(not state.d.items.cafeteriaWages and state.d.wallet.cashCents==earned.wallet.cashCents,"two trays do not alter source reward gate")
 func comparison_case(dimensions: Vector2i) -> void:
 	var fixture:=earned.duplicate(true);fixture.native.chapter=2;fixture.canteenHunt.active=false
+	fixture.native.scene="campus_bootstrap";fixture.rpgScene="campus_bootstrap"
 	await restore(fixture,dimensions)
+	await click(shell.mobile_back)
+	check(not shell.world_frame.visible and shell.phone.visible,"map phone button returns to the phone surface")
 	var before:=JSON.stringify(state.d)
-	shell._show_journal();await frames()
-	check(node("JournalObservationCompare")!=null,"existing earned chapter2 comparison is discoverable")
-	await click(node("JournalObservationCompare"))
-	check(node("ObservationJournalReturn")!=null,"comparison exposes explicit journal return")
-	await click(node("ObservationJournalReturn"))
-	check(node("JournalResume")!=null and not node("JournalHistory").visible,"comparison returns to current task hierarchy")
-	check(JSON.stringify(state.d)==before,"comparison round-trip preserves complete save")
+	await click(node("TaskTrigger"))
+	check(node("JournalObservationCompare")==null and node("JournalCluesCard")==null,"phone task omits the comparison even after earning clues")
+	check(node("JournalResume")!=null and not node("JournalHistory").visible,"phone task retains current progress and collapsed history")
+	check(JSON.stringify(state.d)==before,"opening the phone task preserves the complete save")
 	await press(KEY_ESCAPE)
 func run() -> void:
 	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated test profile")

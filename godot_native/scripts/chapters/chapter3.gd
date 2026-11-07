@@ -511,7 +511,7 @@ func _rehearsal_ready(s: Dictionary) -> bool:
 	return str(s.get("runtimeMode",""))=="rpg" and str(s.get("rpgScene",""))=="theater_interior" and bool(theater.get("active",false)) and bool(theater.get("admitted",false)) and str(theater.get("phase","")) in REHEARSAL_PHASES and can_operate(s,"theater_interior","theater_shadow_rehearsal")
 
 func _begin_rehearsal(s: Dictionary) -> Dictionary:
-	if not _rehearsal_ready(s): return {"handled":true,"message":"先到侧翼的扇架旁，用浅色操作排练。","ephemeral":true}
+	if not _rehearsal_ready(s): return {"handled":true,"message":"到侧翼扇架旁，切到浅色模式排练。","ephemeral":true}
 	invalidate_rehearsal_session();rehearsal_serial+=1
 	rehearsal_session=RehearsalSession.new(s,rehearsal_serial)
 	return {"handled":true,"ephemeral":true,"game":{"kind":"theater_shadow_rehearsal","script":"res://scripts/games/theater_shadow_rehearsal.gd","puzzleId":RehearsalModel.PUZZLE_ID,"session":rehearsal_session.token.duplicate(true),"on_success":"c3_rehearsal_result","on_cancel":"c3_rehearsal_cancel","title":"借扇成蝶","settings":s.native.get("settings",{})}}

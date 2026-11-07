@@ -35,6 +35,14 @@ func run() -> void:
 		var exit_button: Button=node("Cc98LoginExit")
 		var header_rect:=rect(exit_button);var phone_rect:=rect(shell.phone)
 		var story:=JSON.stringify({"items":state.d.items,"actOne":state.d.actOne})
+		var attendant: Button=node("Cc98AttendantIcon")
+		var icon_center:=rect(attendant).get_center()
+		await swipe(icon_center,icon_center+Vector2(0,92))
+		await tap(attendant)
+		check(not node("Cc98PasswordHints").is_visible_in_tree(),"a swipe on the face does not count as an activation")
+		await tap(attendant)
+		await create_timer(.3).timeout
+		check(node("Cc98PasswordHints").is_visible_in_tree(),"two stationary touches reveal the attendant")
 		var area:=rect(scroll)
 		# Negative control reproduces the former authored-canvas blocker in this
 		# instance only, so a mouse-wheel surrogate cannot satisfy this test.

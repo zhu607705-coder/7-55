@@ -1,9 +1,13 @@
 extends Control
-const CampusMaterial = preload("res://scripts/ui/campus_ui_material.gd")
+const Notice = preload("res://scripts/ui/native_phone_notice.gd")
+var feedback_paper := Notice.card_style()
+var feedback_paragraph := TextParagraph.new()
+var feedback_paragraph_key: Array = []
 const CompactOverlay = preload("res://scripts/ui/compact_overlay_layout.gd")
 const OverflowText=preload("res://scripts/ui/overflow_text.gd")
 var overflow_feedback:ScrollContainer
 const WorldOverlay = preload("res://scripts/ui/world_overlay_layout.gd")
+const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
 const MobileFloorRoute = preload("res://scripts/mobile_floor_route.gd")
 const CanteenFloorTap = preload("res://scripts/canteen_floor_tap.gd")
 const PlayerMetrics = preload("res://scripts/player_metrics.gd")
@@ -161,6 +165,7 @@ var object_picker: RefCounted=ObjectPicker.new()
 
 func _ready() -> void:
 	clip_contents = true
+	NativeUi.enable_scale_aware_text(self)
 	touch_controls = DisplayServer.is_touchscreen_available()
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	focus_mode = Control.FOCUS_ALL
@@ -170,8 +175,9 @@ func _ready() -> void:
 	selected_overlay=load("res://scripts/ui/world_selected_overlay.gd").new();add_child(selected_overlay)
 	overflow_feedback=OverflowText.new();overflow_feedback.name="OverflowFeedback";overflow_feedback.z_index=90;add_child(overflow_feedback)
 	var feedback_label:=Label.new();add_child(feedback_label)
-	feedback_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;feedback_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-	load("res://scripts/ui/native_typography.gd").apply_body(feedback_label);feedback_label.add_theme_color_override("font_color",Color("f1f2dc"))
+	feedback_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	load("res://scripts/ui/native_typography.gd").apply_body(feedback_label)
+	feedback_label.add_theme_color_override("font_color",Notice.INK)
 	overflow_feedback.setup(feedback_label);overflow_feedback.hide()
 	State.world_teleport.connect(_receive_teleport)
 	State.feedback.connect(_receive_feedback)
@@ -621,7 +627,7 @@ func _try_interact(target: Dictionary = {}) -> void:
 		State.feedback.emit("太远了，请靠近"+str(target.get("label","目标"))+"。"); return
 	var required_mode := str(target.get("mode",""))
 	if not required_mode.is_empty() and required_mode != str(State.d.native.mode):
-		State.feedback.emit("当前是%s，这个操作需要%s。" % ["深色观察" if State.d.native.mode == "dark" else "浅色操作","深色观察" if required_mode == "dark" else "浅色操作"]); return
+		State.feedback.emit("当前是%s，这个操作需要%s。" % [State.mode_label(),"深色模式" if required_mode == "dark" else "浅色模式"]); return
 	var required_item := str(target.get("item",""))
 	if not required_item.is_empty() and str(State.d.native.selected_item) != required_item:
 		State.feedback.emit("请先从物品栏选择对应物品。"); return
@@ -1371,7 +1377,9 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 		var extent:=Vector2(10,8) if State.d.chapter4.guardMode=="patrol" else Vector2(10.2,7.65)
 		SpatialRules.draw_actor_covers(canvas,guard_context,guard_position.y+extent.y,Rect2(guard_position-Vector2(guard_size.x/2,guard_size.y*.89)/zoom,guard_size/zoom))
 	var name_text := str(State.d.get("playerName",State.d.get("characterName","")))
-	if not presentation_actor_hidden and not name_text.is_empty(): canvas.draw_string(font,origin+player*zoom+Vector2(-25,22),name_text,HORIZONTAL_ALIGNMENT_CENTER,100,14,Color.WHITE)
+	if not presentation_actor_hidden and not name_text.is_empty():
+		var name_size:=WorldOverlay.font_pixels(16,hud_display_scale()) if scene_id=="campus_bootstrap" else 14
+		canvas.draw_string(font,origin+player*zoom+Vector2(-25,22),name_text,HORIZONTAL_ALIGNMENT_CENTER,100,name_size,Color.WHITE)
 	_draw_npc_feedback(canvas,layer_context)
 	if _exploration_overlay_blocked():
 		if is_instance_valid(selected_overlay):selected_overlay.hide()
@@ -1415,14 +1423,20 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	var device_feedback:bool=is_instance_valid(device) and device.has_method("owns_feedback_surface") and device.owns_feedback_surface()
 	if device_feedback and is_instance_valid(overflow_feedback): overflow_feedback.hide()
 	if hud.body_height>0 and not device_feedback and (not subtitle.is_empty() or guard_capture.active):
-		CampusMaterial.draw(canvas,body_rect,"paper")
+		canvas.draw_style_box(feedback_paper,body_rect)
 		if hud.body_overflow and is_instance_valid(overflow_feedback):
 			overflow_feedback.label.text=line;overflow_feedback.label.add_theme_font_size_override("font_size",hud.body_font)
-			overflow_feedback.label.add_theme_color_override("font_color",CampusMaterial.INK)
 			overflow_feedback.layout_body(Rect2(body_rect.position.x+hud.body_padding,body_rect.position.y+hud.body_inset,body_rect.size.x-hud.body_padding*2,body_rect.size.y-hud.body_inset*2),hud.body_content_height)
 			overflow_feedback.show()
 		else:
-			canvas.draw_multiline_string(hud_font,Vector2(body_rect.position.x+hud.body_padding,body_rect.position.y+hud.body_inset+hud_font.get_ascent(hud.body_font)),line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font,-1,CampusMaterial.INK)
+			var key: Array = [line,hud.body_width,hud.body_font]
+			if key!=feedback_paragraph_key:
+				feedback_paragraph_key=key
+				feedback_paragraph.clear()
+				feedback_paragraph.width=hud.body_width
+				feedback_paragraph.break_flags=TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND
+				feedback_paragraph.add_string(line,hud_font,hud.body_font)
+			feedback_paragraph.draw(canvas.get_canvas_item(),body_rect.position+Vector2(hud.body_padding,hud.body_inset),Notice.INK)
 	if transition_alpha > 0: canvas.draw_rect(Rect2(Vector2.ZERO,size),Color(.04,.08,.12,transition_alpha))
 
 func _exploration_overlay_blocked()->bool:
@@ -1451,7 +1465,8 @@ func _sync_selected_overlay()->void:
 	if blocked:
 		if is_instance_valid(overflow_feedback):overflow_feedback.hide()
 	if not selected_overlay.visible:return
-	var title:Dictionary={"dorm_hub":"寝室","campus_bootstrap":"紫金港校区","library_interior":"基础图书馆","canteen_interior":"东食堂","theater_interior":"剧场","qizhen_lake":"启真湖","duan_yongping_temporal_maze":"段永平教学楼","campus_qizhen_loop":"通往启真湖的路"}
+	var title:Dictionary={"campus_bootstrap":"紫金港校区","library_interior":"基础图书馆","canteen_interior":"东食堂","theater_interior":"剧场","qizhen_lake":"启真湖","duan_yongping_temporal_maze":"段永平教学楼","campus_qizhen_loop":"通往启真湖的路"}
+	if scene_id=="dorm_hub":title[scene_id]=State.content("act-one-bootstrap.content.json").dorm.title
 	var hud:Dictionary=hud_metrics(_hud_line())
 	var display:float=hud_display_scale()
 	var extent:Vector2=selected_overlay_native_rect.size if selected_overlay_is_native else size
@@ -1463,7 +1478,7 @@ func _sync_selected_overlay()->void:
 		safe_bottom=minf(safe_bottom,(host_node.world_tasks.get_global_rect().position.y-host_node.world_view.get_global_rect().position.y)/display-hud.body_gap)
 	var bottom:float=safe_bottom*display if selected_overlay_is_native else safe_bottom
 	selected_overlay.mobile_exploration=mobile_exploration
-	selected_overlay.sync_view(extent,1.0 if selected_overlay_is_native else display,str(title.get(scene_id,scene_id)),State.objective(),str((_mobile_confirmed_target() if mobile_exploration else nearby).get("label","")) if subtitle.is_empty() and not _interaction_presentation_blocks() else "","深色观察" if State.d.native.mode=="dark" else "浅色操作",mode_rect,bottom,str(host_node.phone_chrome.time_label.text) if is_instance_valid(host_node) and is_instance_valid(host_node.phone_chrome) else "",str((_mobile_confirmed_target() if mobile_exploration else nearby).get("hud_prompt","")))
+	selected_overlay.sync_view(extent,1.0 if selected_overlay_is_native else display,str(title.get(scene_id,scene_id)),State.objective(),str((_mobile_confirmed_target() if mobile_exploration else nearby).get("label","")) if subtitle.is_empty() and not _interaction_presentation_blocks() else "",State.mode_label(),mode_rect,bottom,str(host_node.phone_chrome.time_label.text) if is_instance_valid(host_node) and is_instance_valid(host_node.phone_chrome) else "",str((_mobile_confirmed_target() if mobile_exploration else nearby).get("hud_prompt","")))
 
 func _mobile_confirmed_target() -> Dictionary:
 	if mobile_confirmed_target_id.is_empty(): return {}
@@ -1490,16 +1505,19 @@ func hud_display_scale() -> float:
 	return 1.0
 
 func hud_metrics(text: String) -> Dictionary:
-	var hud:=WorldOverlay.hud(hud_font,size,hud_display_scale(),text,mobile_exploration,float(State.d.native.settings.get("text_scale",1.0)))
+	var caption_size:=18 if scene_id=="campus_bootstrap" else WorldOverlay.BODY_PX
+	var hud:=WorldOverlay.hud(hud_font,size,hud_display_scale(),text,mobile_exploration,float(State.d.native.settings.get("text_scale",1.0)),caption_size)
 	# The visible mode control belongs to the same root-space footer as the
-	# phone/bag/journal. Expose its actual rectangle; no invisible top hit area.
+	# phone/bag/journal. Only expose a hit area while that control is visible.
+	hud.mode_rect=Rect2()
 	if is_instance_valid(host_node) and is_instance_valid(host_node.get("world_mode")) and is_instance_valid(host_node.get("world_view")):
 		hud.header_height=0.0
-		var surface:Control=host_node.world_view
 		var mode:Control=host_node.world_mode
-		var physical:Rect2=mode.get_global_rect()
-		var display:float=hud_display_scale()
-		hud.mode_rect=Rect2((physical.position-surface.get_global_rect().position)/display,physical.size/display)
+		if mode.is_visible_in_tree():
+			var surface:Control=host_node.world_view
+			var physical:Rect2=mode.get_global_rect()
+			var display:float=hud_display_scale()
+			hud.mode_rect=Rect2((physical.position-surface.get_global_rect().position)/display,physical.size/display)
 	var narrative:Variant=host_node.get("c3_narrative_host") if is_instance_valid(host_node) else null
 	if subtitle.is_empty() and is_instance_valid(narrative) and narrative.blocks_input() and (not narrative.has_method("owns_world_contract") or not narrative.owns_world_contract()):
 		# The dialogue supplies the useful text. Retire idle movement prose so
@@ -1638,7 +1656,7 @@ func _library_book_input(event:InputEvent)->bool:
 	var hit:Rect2=book.geometry(library_layers.objects,library_layers.shelf_offset).rect.grow(10)
 	if not hit.has_point(point):return false
 	if State.d.native.mode!="light":
-		State.feedback.emit("切换到浅色操作，再向下抽出这本书。");return true
+		State.feedback.emit("切换到浅色模式，再向下抽出这本书。");return true
 	if _distance(target)>float(target.radius):
 		if _queue_target_approach(target):_floor_pending_interaction.clear()
 		return true

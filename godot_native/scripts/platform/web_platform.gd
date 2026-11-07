@@ -639,6 +639,7 @@ func read_snapshot() -> Dictionary:
 		world = _properties(shell.world, ["scene_id", "player", "camera", "zoom", "size", "mobile_exploration", "last_zone", "last_vehicle", "subtitle", "subtitle_left", "nearby", "touch_axis", "facing", "player_flip", "mobile_confirmed_target_id"])
 		world["visible"] = shell.world_frame.is_visible_in_tree()
 		world["rect"] = _rect(shell.world_view.get_global_rect())
+		world["renderSize"] = _json_value(shell.world_viewport.size)
 		if world.scene_id == "library_interior" and shell.world.library_layers != null:
 			var layers: RefCounted = shell.world.library_layers
 			world["librarySeat"] = {"id":layers.local_chair, "settled":layers.chair_age >= layers.SIT_SECONDS}

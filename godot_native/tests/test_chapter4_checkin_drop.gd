@@ -24,7 +24,8 @@ func run() -> void:
 	var point:=Vector2(799,619)
 	print("PICKS ",shell.world._pick_target(point,false)," DROP ",shell.world._pick_target(point,true))
 	var local: Vector2=(point-shell.world.camera)*shell.world.zoom+shell.world.size/2
-	var screen: Vector2=shell.world_view.get_global_transform_with_canvas()*(local*shell.world_view.size/Vector2(shell.world_viewport.size))
+	var display: Rect2=shell.world_view.get_global_rect()
+	var screen: Vector2=display.position+local*display.size/shell.world.size
 	print("BRIDGE expected=",local," actual=",shell.world_view.source_position(shell.world_view.get_global_transform_with_canvas().affine_inverse()*screen))
 	var card: Control
 	for item in shell.inventory_buttons.get_children():

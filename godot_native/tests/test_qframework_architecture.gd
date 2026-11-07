@@ -108,6 +108,10 @@ func run() -> void:
 	check(notifications == count + 1, "selection event returns through system bridge")
 	state.open_page("phone_home")
 	check(state.d.native.page == "phone_home" and notifications == count + 2, "navigation command updates shared model once")
+	var locked_mode_state := JSON.stringify(state.d)
+	state.toggle_mode()
+	check(JSON.stringify(state.d) == locked_mode_state and notifications == count + 2, "mode command leaves a pre-022 save untouched")
+	state.d.native.chapter = 3
 	state.toggle_mode()
 	check(state.d.native.mode == "dark" and state.d.qizhenLake.mode == "dark", "mode command synchronizes authored domains")
 	architecture.queue_free()

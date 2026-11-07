@@ -66,6 +66,21 @@ func scroll_to_bottom() -> void:
 	await process_frame
 	await process_frame
 
+func reveal_attendant() -> void:
+	var snapshot := JSON.stringify(state)
+	var before := actions.size()
+	var face: Control=node("Cc98AttendantIcon").get_node("Face")
+	var resting_y:=face.position.y
+	expect(not node("Cc98PasswordHints").is_visible_in_tree(),"Password hints start hidden")
+	await click("Cc98AttendantIcon")
+	expect(not node("Cc98PasswordHints").is_visible_in_tree(),"One click leaves the hints hidden")
+	await click("Cc98AttendantIcon")
+	expect(face.position.y<resting_y-10 and not node("Cc98PasswordHints").is_visible_in_tree() and node("Cc98LoginFeedback").text!="你惊动了认证值班员。","Second click makes the face jump before showing any new text")
+	await create_timer(.4).timeout
+	expect(node("Cc98PasswordHints").is_visible_in_tree() and node("Cc98AttendantIcon").accessibility_name=="认证值班员","The movement reveals the attendant and its hints")
+	expect(is_equal_approx(face.position.y,resting_y) and node("Cc98LoginFeedback").text=="你惊动了认证值班员。","Landing shows the discovery in the existing paper feedback box")
+	expect(actions.size()==before and JSON.stringify(state)==snapshot,"Discovery does not change the saved authentication facts")
+
 func enter_password(value: String) -> void:
 	var input: LineEdit = node("Cc98LoginPassword")
 	input.text = value
@@ -102,10 +117,11 @@ func run() -> void:
 	expect(node("Cc98LoginExit").position.y<60,"Authentication returns through the fixed top-left action")
 	check_readable()
 	await capture("desktop-initial")
-	await scroll_to_bottom()
 	await click("Cc98ReadCampusCard")
 	await show()
 	expect(state.actOne.cc98Login.studentIdDiscovered and node("Cc98LoginStudentId").text=="3250100755","Existing identity intent reads and fills the campus card")
+	await reveal_attendant()
+	await scroll_to_bottom()
 	for expected in ["ZheJiang University","1897","气势来!"]:
 		var before = int(state.actOne.cc98Login.revealedHintCount)
 		await click("Cc98RevealHint")
@@ -144,6 +160,7 @@ func run() -> void:
 	surface.position = Vector2(6,40)
 	pages.cc98_login.reset()
 	await show()
+	await reveal_attendant()
 	await scroll_to_bottom()
 	expect(node("Cc98AttendantRemark").text.ends_with("!"),"Saved hint count restores the latest spoken remark")
 	check_readable()
@@ -174,6 +191,13 @@ func run() -> void:
 	enter_password("ZJU1897!")
 	await click("Cc98LoginSubmit")
 	expect(state.actOne.cc98Login.authenticated and state.actOne.cc98Login.revealedHintCount==0,"Correct original credentials remain sufficient without a new dialogue gate")
+	state=fresh();state.native.settings={"reduced_motion":true}
+	pages.cc98_login.reset()
+	await show()
+	await click("Cc98AttendantIcon")
+	expect(not node("Cc98PasswordHints").visible,"Reduced motion still requires two clicks")
+	await click("Cc98AttendantIcon")
+	expect(node("Cc98PasswordHints").visible and node("Cc98LoginFeedback").text=="你惊动了认证值班员。","Reduced motion reveals the same message and hints without animation")
 	view.free()
 	print("CC98_AUTH_DIALOGUE_TESTS: %d checks; %d failures" % [checks,failures])
 	quit(1 if failures else 0)

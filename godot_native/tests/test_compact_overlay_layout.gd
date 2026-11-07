@@ -49,8 +49,7 @@ func run() -> void:
 		check((shell.world_view.get_global_rect().position+mode_rect.position*scale).is_equal_approx(mode_root.position) and (mode_rect.size*scale).is_equal_approx(mode_root.size),"mode metadata matches the actual root button instead of a hidden top hitbox")
 		if scale<0.7 or world.mobile_exploration: check(mode_rect.size.y*scale>=28 and mode_rect.size.x*scale>=28,"compact mode hitbox exceeds28px")
 		var previous_mode: String=state.d.native.mode
-		var view_transform: Transform2D=shell.world_view.get_global_transform_with_canvas()
-		var mode_point: Vector2=view_transform*mode_rect.get_center()
+		var mode_point: Vector2=mode_root.get_center()
 		var mode_motion:=InputEventMouseMotion.new(); mode_motion.position=mode_point; root.push_input(mode_motion)
 		for down: bool in [true,false]:
 			var event:=InputEventMouseButton.new(); event.button_index=MOUSE_BUTTON_LEFT; event.position=mode_point; event.pressed=down; root.push_input(event)

@@ -69,7 +69,7 @@ export function ElevatorTrackSyncGame({
       : result === "misaligned"
         ? "开门区间没有完整覆盖黄色进入窗口。继续移动整段轿厢历史。"
         : result === "wrong_mode"
-          ? "当前仍在深色观察。切回浅色操作后才能启动历史重放。"
+          ? "切到浅色模式后启动历史重放。"
           : result === "locked" || result === "inactive"
             ? "当前剧情阶段尚未开放轿厢重放。"
             : "拖动下方时间游标，三条轨道会保持同一历史偏移。";
@@ -96,7 +96,7 @@ export function ElevatorTrackSyncGame({
 
       <div className="chapter4-elevator-sync__summary">
         <span>当前模式</span>
-        <strong>{mode === "dark" ? "深色观察" : "浅色操作"}</strong>
+        <strong>{mode === "dark" ? "深色模式" : "浅色模式"}</strong>
         <span>重放起点</span>
         <strong>{formatClock(startSeconds)}</strong>
         <span>尝试</span>
@@ -161,7 +161,7 @@ export function ElevatorTrackSyncGame({
 
       <footer>
         {mode === "dark" ? (
-          <Button variant="secondary" type="button" onClick={onSwitchToLight}>切到浅色操作</Button>
+          <Button variant="secondary" type="button" onClick={onSwitchToLight}>浅色模式</Button>
         ) : (
           <Button variant="primary"
             type="button"

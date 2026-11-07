@@ -105,7 +105,8 @@ func run() -> void:
 	var registration: Dictionary=feedback.source.finalClockRuntime.visualRegistration
 	var p:=Vector2(registration.axis.x,registration.axis.y)
 	var world_point: Vector2=(p-shell.world.camera)*shell.world.zoom+shell.world.size/2
-	var expected: Vector2=shell.world_view.get_global_transform_with_canvas()*(world_point*shell.world_view.size/Vector2(shell.world_viewport.size))
+	var display: Rect2=shell.world_view.get_global_rect()
+	var expected: Vector2=display.position+world_point*display.size/shell.world.size
 	var actual: Vector2=feedback.get_global_transform_with_canvas()*(feedback._world_transform()*p)
 	check(actual.distance_to(expected)<.01,"feedback uses actual SubViewport-to-display mapping, not unrelated root coordinates")
 	for dimensions in [Vector2i(1280,720),Vector2i(844,390),Vector2i(390,844)]:

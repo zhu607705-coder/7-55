@@ -1,7 +1,7 @@
 extends Control
 ## Non-modal source subtitles: dialogue locks interaction, never ordinary walking.
 const Typography=preload("res://scripts/ui/native_typography.gd")
-const Selected=preload("res://scripts/ui/selected_ui_theme.gd")
+const Notice=preload("res://scripts/ui/native_phone_notice.gd")
 const DialogueLayout=preload("res://scripts/ui/selected_dialogue_layout.gd")
 const OverflowText=preload("res://scripts/ui/overflow_text.gd")
 var body_scroll:ScrollContainer
@@ -22,13 +22,12 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter=Control.MOUSE_FILTER_IGNORE
 	panel=Panel.new(); panel.clip_contents=true; panel.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(panel)
-	Selected.apply_paper_panel(panel)
+	panel.add_theme_stylebox_override("panel",Notice.card_style())
 	for field: String in ["speaker","body"]:
 		var label:=Label.new(); label.mouse_filter=Control.MOUSE_FILTER_IGNORE;label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		Typography.apply_body(label)
 		panel.add_child(label); set(field,label)
 	body_scroll=OverflowText.new();panel.add_child(body_scroll);body_scroll.setup(body)
-	body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART; Selected.apply_label(body,"dialogue","body")
 	visible=false
 func tick() -> void:
 	if not is_instance_valid(panel): return

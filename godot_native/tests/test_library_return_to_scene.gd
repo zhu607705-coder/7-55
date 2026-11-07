@@ -76,7 +76,7 @@ func run() -> void:
 			assert_layout(compact)
 			check(state.d.native.scene==scene and shell.world.player==retained and state.d.native.positions==positions,"return preserves retained scene, live actor and stored position")
 			check(state.d.ui.libraryFinalsPuzzle==puzzle and state.d.items==items and state.d.ui.libraryFinalsPhase=="library_entered","return never advances existing story or inventory")
-			if not compact: check(shell.phone.get_global_rect().is_equal_approx(phone_rect) and shell.world_viewport.size==Vector2i(960,540),"surface switches retain phone bounds and authored world viewport")
+			if not compact: check(shell.phone.get_global_rect().is_equal_approx(phone_rect) and shell.world.size==Vector2(960,540),"surface switches retain phone bounds and authored world viewport")
 			if repeat<2: await app_again()
 		# The next source interaction works without finding another footer or refocusing.
 		shell.world._process(0)

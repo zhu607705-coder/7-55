@@ -19,7 +19,9 @@ func run() -> void:
 			var actor:Rect2=shell.world.PlayerMetrics.visual_rect(shell.world.player,shell.world.display_scale_at(shell.world.player))
 			var physical_scale:float=shell.world.hud_display_scale()
 			var painted:Rect2=shell.world_view.get_global_rect()
-			check(shell.world.size==Vector2(960,540) and shell.world_viewport.size==Vector2i(960,540),"every exploration keeps the canonical landscape viewport: "+checkpoint)
+			var rendered := root.get_final_transform()*painted
+			check(shell.world.size==Vector2(960,540),"every exploration keeps the canonical logical viewport: "+checkpoint)
+			check(rendered.size.distance_to(Vector2(shell.world_viewport.size))<.01 and rendered.position.distance_to(rendered.position.round())<.01,"the render target matches the displayed pixels: "+checkpoint)
 			check(is_equal_approx(painted.size.x/painted.size.y,16.0/9.0) and Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(painted),"narrow windows letterbox the map without stretching or overflow: "+checkpoint)
 			check(actor==actor_before,"layout retains source actor dimensions: "+checkpoint)
 			if dimensions.x<1100:

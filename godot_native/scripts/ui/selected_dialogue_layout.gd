@@ -2,6 +2,7 @@ extends RefCounted
 ## Selected prose rests on the bottom safe edge; mobile uses the safe width.
 ## Uses the selected fonts for both painting and measurement. No state or input.
 const Selected=preload("res://scripts/ui/selected_ui_theme.gd")
+const Notice=preload("res://scripts/ui/native_phone_notice.gd")
 static func _height(text:String,width:float,role:String,px:int)->float:
 	if text.is_empty():return 0
 	var face:=Selected.font("dialogue",role)
@@ -31,5 +32,6 @@ static func metrics(region:Rect2,display_scale:float,speaker:String,text:String,
 	return {"panel":Rect2(region.end.x-width,region.end.y-height,width,height),"speaker":Rect2(padding,padding,inner,heading_height),"body":Rect2(padding,body_y,inner,body_height),"body_viewport":Rect2(padding,body_y,inner,visible_height),"prompt":Rect2(padding,body_y+visible_height+(gap if tip_height>0 else 0),inner,tip_height),"speaker_font":heading_px,"body_font":body_px,"prompt_font":tip_px,"body_overflow":overflow}
 static func apply_role(label:Label,role:String,px:int)->void:
 	Selected.apply_label(label,"dialogue",role)
+	label.add_theme_color_override("font_color",Notice.MUTED if role=="tip" else Notice.INK)
 	label.add_theme_font_size_override("font_size",px)
 	label.add_theme_constant_override("line_spacing",roundi(float(px)*float(Selected.role("dialogue",role).leading)-Selected.font("dialogue",role).get_height(px)))

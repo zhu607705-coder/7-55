@@ -4,7 +4,6 @@ const Notice=preload("res://scripts/ui/native_phone_notice.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
 const Selected=preload("res://scripts/ui/selected_ui_theme.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
-const PaperInk=preload("res://scripts/ui/paper_ink_material.gd")
 var checks:=0
 var failures:=0
 class TimedLine extends RefCounted:
@@ -30,9 +29,9 @@ func run()->void:
 			check(view.body.get_theme_font("font")==Selected.font("dialogue","body"),"measured and rendered body font agree")
 			check(view.mouse_filter==Control.MOUSE_FILTER_IGNORE and view.panel.mouse_filter==Control.MOUSE_FILTER_IGNORE,"narrative remains pointer transparent")
 			var paper:StyleBox=view.panel.get_theme_stylebox("panel")
-			check(paper is StyleBoxFlat and paper.bg_color==PaperInk.PAPER and paper.get_minimum_size()==Vector2.ZERO,"paper is bounded by the existing narrative rectangle without added padding")
-			check(Ui._contrast(view.body.get_theme_color("font_color"),PaperInk.PAPER)>=4.5,"narrative ink remains readable on its own paper surface")
-			check(view.speaker.get_theme_color("font_color")==Selected.color("dialogue","heading"),"exact selected speaker color")
+			check(paper is StyleBoxFlat and paper.bg_color==Notice.PAPER and paper.border_color==Notice.INK and paper.get_minimum_size()==Vector2.ZERO,"narrative paper matches the shared notice and existing rectangle")
+			check(Ui._contrast(view.body.get_theme_color("font_color"),Notice.PAPER)>=4.5,"narrative ink remains readable")
+			check(view.speaker.get_theme_color("font_color")==Notice.INK,"speaker uses shared ink")
 	for who:String in ["系统","旁白","提示","我"]:
 		var notice:Label=Notice.create("完整反馈不包含继续按钮。",who);host.add_child(notice)
 		Notice.layout(notice,350)

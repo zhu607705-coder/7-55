@@ -42,7 +42,7 @@ func run() -> void:
 				var layout:=Wayfinding.label_layout(context,font,scale,visible)
 				check(not layout.is_empty(),"Gate label remains visible across viewport, split-scale and zoom")
 				if not layout.is_empty():
-					check(float(layout.physical_font_size)>=16,"Physical identity type is at least16px")
+					check(float(layout.physical_font_size)>=18,"Library identity is at least 18 layout pixels")
 					check(visible.encloses(layout.rect),"Identity is in-world and clear of HUD")
 	var context={"scene_id":"campus_bootstrap","origin":Vector2(480,270)-Wayfinding.LIBRARY_GATE*1.1,"player":Vector2(2550,650),"zoom":1.1}
 	var handoff_context=context.duplicate()

@@ -278,7 +278,7 @@ func _run_graphical_touch_skip() -> void:
 	var host: Dictionary=presenter.read_state.call().native.host
 	var display_scale: float=host.world_display_scale
 	check(not is_same(presenter.read_state.call(),state.d) and host.focused and host.world_visible,"portrait touch uses untouched Main host reader")
-	check(presenter.native_renderer.size==Vector2(960,540) and shell.world_viewport.size==Vector2i(960,540),"touch adaptation preserves fixed native cinematic viewport")
+	check(presenter.native_renderer.size==Vector2(960,540) and shell.world.size==Vector2(960,540),"touch adaptation preserves fixed native cinematic viewport")
 	check(presenter.skip.size.y*display_scale>=44 and presenter.skip.get_theme_font_size("font_size")*display_scale>=16,"portrait skip has actual 44px minimum height and readable 16px font")
 	check(Rect2(Vector2.ZERO,Vector2(960,540)).encloses(presenter.skip.get_rect()),"enlarged skip remains inside logical cinematic viewport")
 	check(presenter.native_renderer.external_caption,"portrait native caption uses only one outer Label")
