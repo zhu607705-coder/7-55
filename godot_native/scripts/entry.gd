@@ -49,6 +49,10 @@ var story_heading: Label
 var campus_heading: Label
 var title_rule: ColorRect
 var brightness_grade: Control
+var _content_cover_active := false
+var _visible_before_content_cover := true
+var _focus_before_content_cover: WeakRef
+var _focus_behavior_before_content_cover: int
 
 func _ready() -> void:
 	set_meta("paper_ink_scope",true)
@@ -137,12 +141,36 @@ func _ready() -> void:
 	brightness_grade=DisplayGrade.new();brightness_grade.name="EntryDisplayGrade";brightness_grade.z_index=201
 	add_child(brightness_grade);brightness_grade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	brightness_grade.set_strength(0.0)
+	WebContent.blocking_changed.connect(_sync_content_cover)
+	_sync_content_cover(WebContent.is_blocking())
 	if OS.has_feature("web"):
 		JavaScriptBridge.eval("""(()=>{let data={};Object.defineProperty(window,'__GODOT_755__',{configurable:true,value:Object.freeze({snapshot:()=>JSON.parse(JSON.stringify(data))})});window.__FLC_ENTRY_READONLY__={publish:raw=>{data=JSON.parse(raw)}};})()""",true)
 		_entry_bridge=JavaScriptBridge.get_interface("__FLC_ENTRY_READONLY__")
 		# Publish readiness and its receipt together; never expose a bare entry flag.
 		_entry_bridge.publish(JSON.stringify(entry_snapshot()))
 		JavaScriptBridge.eval("delete window.__FLC_ENTRY_READONLY__",true)
+
+# WebContent owns a separate opaque CanvasLayer. Stop drawing this chooser
+# beneath it, but leave processing and the read-only snapshot publisher alive.
+func _sync_content_cover(blocking: bool) -> void:
+	if blocking == _content_cover_active: return
+	_content_cover_active = blocking
+	if blocking:
+		_visible_before_content_cover = visible
+		var focused := get_viewport().gui_get_focus_owner()
+		_focus_before_content_cover = weakref(focused) if focused != null and is_ancestor_of(focused) else null
+		_focus_behavior_before_content_cover = focus_behavior_recursive
+		focus_behavior_recursive = Control.FOCUS_BEHAVIOR_DISABLED
+		hide()
+	else:
+		focus_behavior_recursive = _focus_behavior_before_content_cover
+		visible = _visible_before_content_cover
+		var focused: Control = _focus_before_content_cover.get_ref() if _focus_before_content_cover != null else null
+		_focus_before_content_cover = null
+		# A separate manager may have taken focus during loading. Do not steal it.
+		var current_focus := get_viewport().gui_get_focus_owner()
+		if is_instance_valid(focused) and focused.is_visible_in_tree() and (current_focus == null or not current_focus.is_visible_in_tree()):
+			focused.grab_focus()
 
 func entry_snapshot()->Dictionary:
 	var controls:Array=[]
@@ -158,6 +186,13 @@ func _process(dt:float)->void:
 	if _entry_snapshot_left<=0:
 		_entry_snapshot_left=.1;_entry_bridge.publish(JSON.stringify(entry_snapshot()))
 func _exit_tree()->void:
+	if WebContent.blocking_changed.is_connected(_sync_content_cover):
+		WebContent.blocking_changed.disconnect(_sync_content_cover)
+	if _content_cover_active:
+		focus_behavior_recursive = _focus_behavior_before_content_cover
+		visible = _visible_before_content_cover
+		_content_cover_active = false
+	_focus_before_content_cover = null
 	if _entry_bridge!=null:
 		JavaScriptBridge.eval("if(window.__GODOT_755__?.snapshot?.().entry)delete window.__GODOT_755__",true)
 		_entry_bridge=null
@@ -300,6 +335,7 @@ func _launch_example(relative_path: String) -> void:
 	preview_status.text="已在独立窗口打开；关闭样例后可继续选择。" if process>0 else "暂时无法启动独立窗口。源码位置："+relative_path
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not is_visible_in_tree(): return
 	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode==KEY_ESCAPE and previews_open and not is_instance_valid(preview_instance):
 		close_previews();get_viewport().set_input_as_handled()
 
