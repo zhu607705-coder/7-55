@@ -22,7 +22,29 @@ func record_action()->Button:
 		if is_instance_valid(button) and button.is_visible_in_tree():return button
 		await create_timer(.05).timeout
 	return null
+func reveal_record_action(button:Button)->void:
+	var document:Control=shell.modal
+	var scroll:ScrollContainer=document.find_child("LibraryWorldDocumentScroll",true,false)
+	for frame in range(8):
+		if not document.layout_pending:break
+		await process_frame
+	check(not document.layout_pending,"record layout settles before ordinary touch reading")
+	for attempt in range(12):
+		var area:Rect2=scroll.get_global_rect()
+		if area.encloses(button.get_global_rect()):break
+		var start:Vector2=area.position+area.size*Vector2(.75,.85)
+		var finish:Vector2=area.position+area.size*Vector2(.75,.15)
+		touch(start,true);await frames(2)
+		for step in range(1,11):
+			finger(start.lerp(finish,step/10.0),(finish-start)/10.0);await frames(2)
+		touch(finish,false);await create_timer(.35).timeout;await frames()
+	check(scroll.get_global_rect().encloses(button.get_global_rect()),"ordinary touch scroll exposes the full record confirmation target")
+	check(not state.d.ui.libraryFinalsPuzzle.entranceRecordRead and actions.count("lib_record")==0,"reading and scrolling cannot confirm the record")
 func run()->void:
+	# Headless CI has no touchscreen capability flag. Enable Godot's native
+	# touch-scroll handling while all gestures still enter as root touch events.
+	var old_touch:bool=Input.emulate_touch_from_mouse
+	Input.emulate_touch_from_mouse=true
 	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated root event test")
 	state=root.get_node("State");state.action_completed.connect(func(id,_a,_b,_c):actions.append(id))
 	for extent:Vector2i in [Vector2i(390,844),Vector2i(844,390),Vector2i(1280,720)]:
@@ -41,8 +63,10 @@ func run()->void:
 		if not is_instance_valid(record) or not record.is_visible_in_tree():print("DIRECT_RECORD_UI_DIAGNOSTIC ",JSON.stringify({"view":extent,"page":state.d.native.page,"phase":state.d.ui.libraryFinalsPhase,"phoneVisible":shell.phone.visible,"worldVisible":shell.world_frame.visible,"mobileWorld":shell.mobile_world,"recordExists":is_instance_valid(record),"recordVisible":record.is_visible_in_tree() if is_instance_valid(record) else false,"actions":state.get_actions("library_record"),"last":state.last_result,"pending":w._floor_pending_interaction}))
 		check(is_instance_valid(record) and record.is_visible_in_tree(),"original record confirmation is visible")
 		check(shell.world_frame.visible and not shell.phone.visible,"record remains in the Library world")
-		if is_instance_valid(record):await tap(record.get_global_rect().get_center())
-		check(state.d.ui.libraryFinalsPuzzle.entranceRecordRead and state.d.ui.libraryFinalsPuzzle.clueIds.count("arrival_7_minutes")==1,"real touch confirmation earns original evidence exactly once")
+		if is_instance_valid(record):
+			await reveal_record_action(record)
+			await tap(record.get_global_rect().get_center())
+		check(state.d.ui.libraryFinalsPuzzle.entranceRecordRead and actions.count("lib_record")==1 and state.d.ui.libraryFinalsPuzzle.clueIds.count("arrival_7_minutes")==1,"real touch confirmation earns original evidence exactly once")
 		check(not is_instance_valid(shell.modal) and shell.world_frame.visible,"confirming the record returns to the same world")
 		shell.world.set_process(false)
 		for i:int in range(12):w._process(.05)
@@ -76,4 +100,5 @@ func run()->void:
 	for i:int in range(120):shell.world._process(.016)
 	check(actions.count("lib_open_record")==0 and not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"closing a cancelled approach panel never submits a stale record request")
 	await shell.shutdown();shell.free();await frames()
+	Input.emulate_touch_from_mouse=old_touch
 	print("DIRECT_LIBRARY_ENTRY_MAIN: %d checks; %d failures"%[checks,failures]);quit(1 if failures else 0)

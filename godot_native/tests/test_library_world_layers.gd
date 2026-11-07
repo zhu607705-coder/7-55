@@ -202,7 +202,14 @@ func test_native_world_integration() -> void:
 		var scroll: ScrollContainer=document.find_child("LibraryWorldDocumentScroll",true,false)
 		var close: Button=document.find_child("LibraryWorldDocumentClose",true,false)
 		check(close.disabled and not document.can_close(),"unread rule cannot close before scrolling")
-		await process_frame; await process_frame
+		# Reflow settles asynchronously and suppresses geometry-only end signals.
+		# Wait for that readiness condition, not a fixed frame count whose signal
+		# handlers may run before the document's deferred layout continuation.
+		for frame in range(8):
+			if not document.layout_pending:break
+			await process_frame
+		check(not document.layout_pending,"document layout becomes ready within eight frames")
+		check(close.disabled and not document.end_seen and scroll.scroll_vertical==0,"layout settling alone preserves the unread gate")
 		scroll.scroll_vertical=int(scroll.get_v_scroll_bar().max_value); await process_frame
 		check(not close.disabled,"reaching the end enables the original read action")
 		close.pressed.emit(); await process_frame; await process_frame

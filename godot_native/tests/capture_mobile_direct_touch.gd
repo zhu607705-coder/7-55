@@ -40,7 +40,7 @@ func run() -> void:
 		await shot(prefix+"-02-direct-tap","Same fixture; root finger tap toggled source lamp once, no joystick confirm")
 		touch(held_point(),true,3); await frames()
 		check(shell.world.direct_gestures.has_active(),"capture holds an actual scene press without dispatch")
-		await shot(prefix+"-03-scene-press-held","Root touch owns a visible scene press; no fixed joystick; animation frozen for deterministic screenshot")
+		await shot(prefix+"-03-scene-press-held","Root touch owns a visible scene press; movement-only joystick visible; animation frozen for deterministic screenshot")
 		touch(held_point(),false,3,true); await frames()
 		if prefix in ["portrait","landscape-safearea"]:
 			await frames()
@@ -50,6 +50,11 @@ func run() -> void:
 			shell._close_modal(); await frames()
 			check(not shell.world.selected_overlay.plaque.visible,"journal dismissal does not restore stale target label")
 			await shot(prefix+"-06-journal-closed","Journal closed; no stale confirmed label or held joystick resumes")
+		var stick_center:=world_screen(shell.world.mobile_control_metrics().stick.get_center())
+		touch(stick_center,true,8);drag(stick_center+Vector2(24,0),Vector2(24,0),8);await frames()
+		check(shell.world.mobile_stick_id==8 and shell.world.touch_axis.x>0,"capture owns a real displaced locomotion stick")
+		await shot(prefix+"-07-stick-held","Root touch owns movement-only analog stick; simulation frozen, no object confirmation")
+		touch(stick_center,false,8,true);await frames();held_clear("capture stick cancellation")
 	var file:=FileAccess.open(capture_output.path_join("mobile-touch-captures.json"),FileAccess.WRITE)
 	if file==null: quit(2); return
 	file.store_string(JSON.stringify({"captures":capture_records,"checks":checks,"failures":failures,"engine":Engine.get_version_info(),"physical_device":false,"safe_area":"simulated OS inset seam"},"\t")); file.close()

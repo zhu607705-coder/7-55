@@ -101,6 +101,11 @@ var _manual_sent := false
 var _last_floor := ""
 var _input_kind := "keyboard"
 var touch_axis := Vector2.ZERO
+var mobile_stick_id := -1
+var mobile_stick_context: Array = []
+var mobile_stick_state: Dictionary = {}
+var mobile_stick_visual: Control
+var mobile_stick_bounds := Rect2()
 var kayak: RefCounted
 var safe_player := Vector2.ZERO
 var foreground: Array = []
@@ -172,6 +177,7 @@ func _ready() -> void:
 	worlds = JSON.parse_string(FileAccess.get_file_as_string("res://data/worlds.json")).worlds
 	font = load("res://scripts/ui/native_typography.gd").body_font()
 	hud_font = load("res://scripts/ui/native_typography.gd").body_font()
+	mobile_stick_visual=load("res://scripts/ui/mobile_locomotion_stick.gd").new();mobile_stick_visual.world=self;add_child(mobile_stick_visual)
 	selected_overlay=load("res://scripts/ui/world_selected_overlay.gd").new();add_child(selected_overlay)
 	overflow_feedback=OverflowText.new();overflow_feedback.name="OverflowFeedback";overflow_feedback.z_index=90;add_child(overflow_feedback)
 	var feedback_label:=Label.new();add_child(feedback_label)
@@ -830,6 +836,8 @@ func _process(delta: float) -> void:
 	if library_layers!=null and library_layers.book.pulling and (not library_layers.book.matches(_library_book_context()) or not is_visible_in_tree() or _interaction_presentation_blocks() or _shell_input_blocked()):
 		library_layers.book.cancel();queue_redraw()
 	if _inventory_owns_pointer(): cancel_exploration_gestures()
+	if mobile_stick_id>=0 and (mobile_stick_context!=_mobile_stick_context() or not is_same(mobile_stick_state,State.d) or not _mobile_stick_available()):cancel_exploration_gestures()
+	if is_instance_valid(mobile_stick_visual):mobile_stick_visual.queue_redraw()
 	if not kayak_mouse_gesture.is_empty() and not _kayak_mouse_valid(): kayak_mouse_gesture.clear()
 	if _floor_feedback_left>0:
 		_floor_feedback_left=maxf(0,_floor_feedback_left-delta)
@@ -940,7 +948,7 @@ func _process(delta: float) -> void:
 	# A zero-length route waypoint still needs its normal completion step.
 	if axis.length_squared() > 0 or not _floor_route.is_empty():
 		if mobile_exploration and _floor_route.is_empty(): pan_offset=Vector2.ZERO
-		axis = axis.normalized()
+		axis = axis.limit_length(1.0) if mobile_stick_id>=0 and touch_axis.length_squared()>0 else axis.normalized()
 		var speed := 208.0 if scene_id == "duan_yongping_temporal_maze" and State.d.chapter4.phase == "final_chase" else 176.0 if scene_id == "duan_yongping_temporal_maze" else 160.0 if scene_id == "dorm_hub" else 165.0
 		if scene_id in ["canteen_interior","theater_interior","qizhen_lake"] and Input.is_key_pressed(KEY_SHIFT): speed = 228.0
 		var displacement := axis*speed*delta
@@ -1477,8 +1485,10 @@ func _sync_selected_overlay()->void:
 	if is_instance_valid(host_node) and is_instance_valid(host_node.get("world_tasks")):
 		safe_bottom=minf(safe_bottom,(host_node.world_tasks.get_global_rect().position.y-host_node.world_view.get_global_rect().position.y)/display-hud.body_gap)
 	var bottom:float=safe_bottom*display if selected_overlay_is_native else safe_bottom
+	var plaque_exclusion:=mobile_stick_rect() if _mobile_stick_available() else Rect2()
+	if selected_overlay_is_native:plaque_exclusion=Rect2(plaque_exclusion.position*display,plaque_exclusion.size*display)
 	selected_overlay.mobile_exploration=mobile_exploration
-	selected_overlay.sync_view(extent,1.0 if selected_overlay_is_native else display,str(title.get(scene_id,scene_id)),State.objective(),str((_mobile_confirmed_target() if mobile_exploration else nearby).get("label","")) if subtitle.is_empty() and not _interaction_presentation_blocks() else "",State.mode_label(),mode_rect,bottom,str(host_node.phone_chrome.time_label.text) if is_instance_valid(host_node) and is_instance_valid(host_node.phone_chrome) else "",str((_mobile_confirmed_target() if mobile_exploration else nearby).get("hud_prompt","")))
+	selected_overlay.sync_view(extent,1.0 if selected_overlay_is_native else display,str(title.get(scene_id,scene_id)),State.objective(),str((_mobile_confirmed_target() if mobile_exploration else nearby).get("label","")) if subtitle.is_empty() and not _interaction_presentation_blocks() else "",State.mode_label(),mode_rect,bottom,str(host_node.phone_chrome.time_label.text) if is_instance_valid(host_node) and is_instance_valid(host_node.phone_chrome) else "",str((_mobile_confirmed_target() if mobile_exploration else nearby).get("hud_prompt","")),-1.0,plaque_exclusion)
 
 func _mobile_confirmed_target() -> Dictionary:
 	if mobile_confirmed_target_id.is_empty(): return {}
@@ -1581,6 +1591,7 @@ func _gui_input(event: InputEvent) -> void:
 	if is_instance_valid(native_dorm):native_dorm.observe_input(event)
 	if capture_mode or _scene_presentation_blocks() or _shell_input_blocked(): return
 	if is_instance_valid(host_node) and is_instance_valid(host_node.get("world_effect")) and host_node.world_effect.get_meta("blocks_input",false): return
+	if _mobile_stick_input(event):accept_event();return
 	if _library_book_input(event):accept_event();return
 	if _kayak_mouse_input(event): accept_event(); return
 	if (mobile_exploration or touch_controls or event is InputEventScreenTouch or event is InputEventScreenDrag) and _mobile_exploration_input(event): return
@@ -1665,6 +1676,10 @@ func _library_book_input(event:InputEvent)->bool:
 	grab_focus();queue_redraw();return true
 
 func _get_drag_data(at_position: Vector2) -> Variant:
+	# Godot may request native GUI drag data from touch-emulated mouse motion
+	# even after the stick accepted the touch. Never give that second route
+	# furniture ownership while the locomotion finger is still held.
+	if mobile_stick_id>=0:return null
 	if capture_mode or _interaction_presentation_blocks() or _shell_input_blocked() or chapter4_layers == null or scene_id != "duan_yongping_temporal_maze": return null
 	if is_instance_valid(host_node) and is_instance_valid(host_node.get("world_effect")): return null
 	var point := (at_position-size/2)/zoom+camera
@@ -1728,7 +1743,7 @@ func _sync_guard_capture_input():
 
 func _begin_guard_capture(action:String,value:Dictionary={}):
 	if not guard_capture.begin(_guard_capture_context(),action,value):return
-	_cancel_floor_route();move_target=Vector2.INF;touch_axis=Vector2.ZERO;direct_gestures.cancel()
+	_cancel_floor_route();move_target=Vector2.INF;touch_axis=Vector2.ZERO;direct_gestures.cancel();_release_mobile_stick()
 	if mobile_exploration:cancel_exploration_gestures()
 	walk_clock=0;guard_visible=true
 	_sync_guard_capture_input();queue_redraw()
@@ -1898,7 +1913,7 @@ func _notification(what: int) -> void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_WM_WINDOW_FOCUS_OUT]: _npc_feedback_focused = false
 	elif what in [NOTIFICATION_APPLICATION_FOCUS_IN,NOTIFICATION_WM_WINDOW_FOCUS_IN]: _npc_feedback_focused = true
 	if what==NOTIFICATION_DRAG_END: _finish_table_drag()
-	elif what==NOTIFICATION_WM_WINDOW_FOCUS_OUT:cancel_exploration_gestures()
+	elif what in [NOTIFICATION_WM_WINDOW_FOCUS_OUT,NOTIFICATION_APPLICATION_FOCUS_OUT]:cancel_exploration_gestures()
 	elif what==NOTIFICATION_VISIBILITY_CHANGED and is_inside_tree() and not is_visible_in_tree():cancel_exploration_gestures()
 	elif what==NOTIFICATION_RESIZED:cancel_exploration_gestures()
 
@@ -1906,6 +1921,7 @@ func cancel_exploration_gestures() -> void:
 	_cancel_table_drag()
 	if library_layers!=null:library_layers.book.cancel()
 	touch_axis=Vector2.ZERO;move_target=Vector2.INF
+	_release_mobile_stick()
 	mobile_confirmed_target_id="";mobile_confirmed_world_key=""
 	if direct_gestures!=null:direct_gestures.cancel()
 	kayak_mouse_gesture.clear()
@@ -1976,9 +1992,56 @@ func handle_root_kayak_pointer(event: InputEvent) -> bool:
 
 func mobile_control_metrics() -> Dictionary:
 	var metrics:Dictionary={"scheme":"direct_world","gestureArea":exploration_safe_rect(true),"mode":hud_mode_rect(),"paddles":kayak_paddle_rects()}
+	if _mobile_stick_available():metrics["stick"]=mobile_stick_rect()
 	if mobile_exploration and is_visible_in_tree():
 		mobile_control_observation={"frame":Engine.get_process_frames(),"world_key":world_key,"size":size,"display_scale":hud_display_scale(),"metrics":metrics}
 	return metrics
+
+func _mobile_stick_available() -> bool:
+	return mobile_exploration and kayak==null and not capture_mode and is_visible_in_tree() and not _scene_presentation_blocks() and not _shell_input_blocked() and (scene_id!="dorm_hub" or bool(State.d.actOne.get("controlsInstalled",false)))
+
+func mobile_stick_rect() -> Rect2:
+	if mobile_stick_id>=0:return mobile_stick_bounds
+	# Physical display pixels, inside the playfield and above the existing footer.
+	var safe:=exploration_safe_rect(true)
+	var scale:=hud_display_scale()
+	var diameter:=minf(104.0/scale,minf(safe.size.x-16.0/scale,safe.size.y-16.0/scale))
+	return Rect2(Vector2(safe.position.x+8.0/scale,safe.end.y-diameter-8.0/scale),Vector2.ONE*maxf(1,diameter))
+
+func _mobile_stick_context() -> Array:
+	return [world_key,str(State.d.get("runtimeMode","")),str(State.d.native.scene),str(State.d.native.mode),size,host_node.world_view.get_global_rect() if is_instance_valid(host_node) else get_global_rect()]
+
+func _release_mobile_stick() -> void:
+	mobile_stick_id=-1;mobile_stick_context=[];mobile_stick_state={};touch_axis=Vector2.ZERO
+	if is_instance_valid(mobile_stick_visual):mobile_stick_visual.queue_redraw()
+
+func _mobile_stick_input(event: InputEvent) -> bool:
+	if not (event is InputEventScreenTouch or event is InputEventScreenDrag):return false
+	# Locomotion holds one owner. Other scene fingers cannot turn a held
+	# movement into a camera gesture or queue an object tap on release.
+	if mobile_stick_id>=0 and event.index!=mobile_stick_id:return true
+	if event is InputEventScreenTouch and event.pressed:
+		if not _mobile_stick_available() or _inventory_owns_pointer():return false
+		var rect:=mobile_stick_rect()
+		if event.position.distance_to(rect.get_center())>rect.size.x/2:return false
+		# Preserve an already-owned native drag when another finger touches
+		# the stick. Its preview and release still belong to the first owner.
+		if _native_table_drag or get_viewport().gui_is_dragging() or get_tree().root.gui_is_dragging():return true
+		# A second finger cannot replace the owner or become a floor tap.
+		if mobile_stick_id>=0:return true
+		direct_gestures.cancel()
+		mobile_stick_bounds=rect
+		mobile_stick_id=event.index;mobile_stick_context=_mobile_stick_context();mobile_stick_state=State.d
+		_cancel_floor_route();move_target=Vector2.INF;grab_focus()
+	elif event.index!=mobile_stick_id:return false
+	if event is InputEventScreenTouch and not event.pressed:
+		_release_mobile_stick();return true
+	var rect:=mobile_stick_rect()
+	var axis:Vector2=(event.position-rect.get_center())/(rect.size.x*.32)
+	var strength:=clampf((axis.length()-.15)/.85,0,1)
+	touch_axis=axis.normalized()*strength
+	mobile_stick_visual.queue_redraw()
+	return true
 
 func _inventory_owns_pointer() -> bool:
 	if is_instance_valid(InventoryGesture.touch_owner()): return true
@@ -2008,6 +2071,11 @@ func handle_root_exploration_pointer(event: InputEvent) -> bool:
 	elif event is InputEventMouseButton or event is InputEventMouseMotion:
 		if event is InputEventMouseButton and (event.button_index!=MOUSE_BUTTON_LEFT or event.pressed):return false
 	else:return false
+	if id==mobile_stick_id and id>=0:
+		if mobile_stick_context!=_mobile_stick_context() or not is_same(mobile_stick_state,State.d) or not _mobile_stick_available() or _inventory_owns_pointer():
+			cancel_exploration_gestures();return true
+		var stick_event:InputEvent=event.duplicate();stick_event.position=_mobile_local_from_root(event.position)
+		_mobile_stick_input(stick_event);return true
 	if not direct_gestures.pointers.has(id):return false
 	if capture_mode or not is_visible_in_tree() or _scene_presentation_blocks() or _shell_input_blocked() or _inventory_owns_pointer() or not direct_gestures.valid(_direct_gesture_context(),State.d):
 		cancel_exploration_gestures();return true
@@ -2088,8 +2156,10 @@ func _direct_gesture_action(action:Dictionary)->void:
 			if not _interaction_presentation_blocks():State.toggle_mode()
 
 func _mobile_exploration_input(event: InputEvent) -> bool:
-	# This is a direct scene surface. The map never reserves invisible controls.
+	# Only the painted locomotion stick reserves a movement surface. Objects
+	# outside it retain direct interaction, with no confirmation button.
 	if (event is InputEventMouseButton or event is InputEventMouseMotion) and event.device==-1:return true
+	if _mobile_stick_input(event):accept_event();return true
 	if event is InputEventKey and event.pressed:_cancel_floor_route()
 	if event is InputEventMouseMotion and (event.button_mask & MOUSE_BUTTON_MASK_RIGHT or event.button_mask & MOUSE_BUTTON_MASK_MIDDLE):
 		direct_gestures.cancel();_mobile_pan(event.relative);accept_event();return true

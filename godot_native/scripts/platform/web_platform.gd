@@ -573,7 +573,7 @@ func _world_input_observation() -> Dictionary:
 	var observed: Dictionary = view.mobile_control_observation
 	var geometry_available: bool = view.mobile_exploration and shell.world_frame.is_visible_in_tree() and observed.get("world_key", "") == view.world_key and observed.get("size", Vector2.ZERO) == view.size and observed.get("display_scale", -1.0) == view.hud_display_scale() and int(observed.get("frame", -10)) >= Engine.get_process_frames() - 2
 	var metrics: Dictionary = observed.metrics if geometry_available else {}
-	var stick: Rect2 = metrics.get("stick_rect", Rect2())
+	var stick: Rect2 = metrics.get("stick", Rect2())
 	var target_rows: Array = []
 	for target: Dictionary in view.targets:
 		var source: Vector2 = view._target_point(target)
@@ -582,11 +582,12 @@ func _world_input_observation() -> Dictionary:
 	var owners: Array = []
 	for index: Variant in view.direct_gestures.pointers:
 		owners.append({"index": index, "role": str(view.direct_gestures.pointers[index].role)})
+	if view.mobile_stick_id>=0:owners.append({"index":view.mobile_stick_id,"role":"stick"})
 	var plaque: Dictionary = {"visible": false}
 	if is_instance_valid(view.selected_overlay):
 		var overlay: Control = view.selected_overlay
 		plaque = {"visible": overlay.plaque.is_visible_in_tree(), "rect": _rect(_control_rect(overlay.plaque)), "text": overlay.object_heading.text}
-	return {"dormPropActions": _observed_dorm_prop_actions, "geometryAvailable": geometry_available, "geometryFrame": observed.get("frame", -1) if geometry_available else -1, "scheme": metrics.get("scheme", ""), "gestureArea": _rect(metrics.get("gestureArea", Rect2())), "stick": _json_value(_world_root_point(metrics.stick)) if geometry_available and metrics.has("stick") else null, "stickRect": _rect(Rect2(_world_root_point(stick.position), _world_root_point(stick.end) - _world_root_point(stick.position))) if geometry_available and stick.has_area() else {}, "confirmRect": _rect(metrics.get("interact", Rect2())), "targets": target_rows, "owners": owners, "mouseOwned": view.direct_gestures.pointers.has(-999), "routeWaypointCount":view._floor_route.size(), "inventoryOwned": view._inventory_owns_pointer(), "modalVisible": is_instance_valid(shell.modal), "plaque": plaque}
+	return {"dormPropActions": _observed_dorm_prop_actions, "geometryAvailable": geometry_available, "geometryFrame": observed.get("frame", -1) if geometry_available else -1, "scheme": metrics.get("scheme", ""), "gestureArea": _rect(metrics.get("gestureArea", Rect2())), "stick": _json_value(_world_root_point(stick.get_center())) if geometry_available and metrics.has("stick") else null, "stickRect": _rect(Rect2(_world_root_point(stick.position), _world_root_point(stick.end) - _world_root_point(stick.position))) if geometry_available and stick.has_area() else {}, "confirmRect": _rect(metrics.get("interact", Rect2())), "targets": target_rows, "owners": owners, "mouseOwned": view.direct_gestures.pointers.has(-999), "routeWaypointCount":view._floor_route.size(), "inventoryOwned": view._inventory_owns_pointer(), "modalVisible": is_instance_valid(shell.modal), "plaque": plaque}
 
 func _visible_controls(node: Node, controls: Array, audio: Array, video: Array) -> void:
 	if node is Control and node.is_visible_in_tree() and (node.get_viewport() != shell.world_viewport or shell.world_frame.is_visible_in_tree()) and (node is BaseButton or node is LineEdit or node is Label or node.name in ["ControlBrightness", "LibraryWorldDocumentScroll"]):
