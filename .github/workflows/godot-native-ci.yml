@@ -147,7 +147,7 @@ jobs:
     needs: [prepare, contracts]
     if: ${{ !cancelled() && needs.prepare.result == 'success' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       max-parallel: 12
@@ -184,6 +184,7 @@ jobs:
             --root "$GITHUB_WORKSPACE" --bundle-dir "$RUNNER_TEMP/native-source" \
             --head '${{ github.event.pull_request.head.sha || github.sha }}' \
             --base '${{ github.event.pull_request.base.sha || '' }}' \
+            --producer-attempt '${{ needs.prepare.outputs.producer_attempt }}' \
             --manifest-sha '${{ needs.prepare.outputs.source_manifest_sha }}' \
             --archive-sha '${{ needs.prepare.outputs.source_archive_sha }}'
           test ! -e "$RUNNER_TEMP/native-source/source.tar"
@@ -217,6 +218,7 @@ jobs:
             --producer-attempt '${{ needs.prepare.outputs.producer_attempt }}' \
             --output-receipt "$RUNNER_TEMP/native-inputs-verified.json"
       - name: Run every owned stage against frozen producer inputs
+        timeout-minutes: 10
         env:
           GODOT_TEST_REPORT: ${{ runner.temp }}/native-result/native-test-report.json
           NATIVE_TEST_JOBS: '2'

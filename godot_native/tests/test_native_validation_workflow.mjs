@@ -101,6 +101,9 @@ test('runtime authenticates bootstrap before source parsing without fetching a f
  assert.doesNotMatch(body,/github-token:|run-id:|repository:/);
  assert.match(jobs.contracts,/test_native_source_transport_integration.mjs/);
  assert.ok(body.indexOf('test ! -e "$RUNNER_TEMP/native-source/source.tar"') < body.indexOf('native_validation_bundle.mjs restore'));
- assert.match(body,/timeout-minutes: 10/);
+ assert.match(body,/^    timeout-minutes: 15$/m);
+ assert.match(body,/name: Run every owned stage against frozen producer inputs\n        timeout-minutes: 10/);
+ const restore=body.split('native_source_transport.py restore')[1].split('      - uses:')[0];
+ assert.ok(restore.includes("--producer-attempt '${{ needs.prepare.outputs.producer_attempt }}'"));
  assert.doesNotMatch(body,/sparse-checkout disable|git checkout|git reset --hard|fetch.*unshallow/);
 });

@@ -57,8 +57,8 @@ class Transport(unittest.TestCase):
         names = b'\0'.join(name.encode() for name in self.files if name != t.HELPER) + b'\0'
         t.git(self.dst, 'update-index', '--skip-worktree', '-z', '--stdin', data=names)
 
-    def restore(self, context=None):
-        return t.restore(self.dst, self.bundle, context or self.context, self.receipt['manifest_sha'], self.receipt['archive_sha'])
+    def restore(self, context=None, producer_attempt='1'):
+        return t.restore(self.dst, self.bundle, context or self.context, self.receipt['manifest_sha'], self.receipt['archive_sha'], producer_attempt)
 
     def resign(self, mutate=None):
         p = self.bundle / 'manifest.json'; m = json.loads(p.read_text())
@@ -93,6 +93,35 @@ class Transport(unittest.TestCase):
         self.assertNotIn(b'generated.bin', t.git(self.dst, 'ls-files', '-z'))
         (self.dst / 'plain.txt').write_text('changed')
         self.assertIn(b'changed', t.git(self.dst, 'diff', 'HEAD'))
+
+    def test_rerun_restores_exact_explicit_producer(self):
+        result = self.restore(dict(self.context, attempt='2'))
+        self.assertEqual(result['source'], t.identity(self.src, self.context))
+        self.assertEqual((self.dst / 'plain.txt').read_bytes(), self.files['plain.txt'])
+
+    def test_rerun_rejects_unbound_wrong_and_future_producer(self):
+        for producer in ['', None, '0', '-1', '01', 'wrong', '2', '3']:
+            with self.subTest(producer=producer), self.assertRaises(ValueError):
+                self.restore(dict(self.context, attempt='2'), producer)
+        self.assertFalse((self.dst / 'plain.txt').exists())
+
+    def test_rerun_keeps_run_source_and_hash_binding(self):
+        retry = dict(self.context, attempt='2')
+        for field, value in [('run', '124'), ('head', 'c'*40), ('base', 'c'*40),
+                             ('commit', 'c'*40), ('repository', 'other/repo'),
+                             ('workflow', 'other'), ('event', 'push')]:
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                self.restore(dict(retry, **{field: value}))
+        for field in ['manifest_sha', 'archive_sha']:
+            saved = self.receipt[field]
+            self.receipt[field] = '0'*64
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                self.restore(retry)
+            self.receipt[field] = saved
+        self.resign(lambda m: m['source'].update(tree='c'*40))
+        with self.assertRaises(ValueError):
+            self.restore(retry)
+        self.assertFalse((self.dst / 'plain.txt').exists())
 
     def test_wrong_provenance_all_fields(self):
         for field in self.context:
@@ -232,7 +261,7 @@ class Transport(unittest.TestCase):
 
     def test_symlink_ancestor_rejected(self):
         link=self.base/'link';link.symlink_to(self.dst, target_is_directory=True)
-        with self.assertRaises(ValueError): t.restore(link,self.bundle,self.context,self.receipt['manifest_sha'],self.receipt['archive_sha'])
+        with self.assertRaises(ValueError): t.restore(link,self.bundle,self.context,self.receipt['manifest_sha'],self.receipt['archive_sha'],'1')
 
     def test_tree_rejects_symlinks_gitlinks_and_case_collision(self):
         original=t.git

@@ -82,6 +82,14 @@ def identity(root, context):
     return dict(context, tree=git(root, 'rev-parse', 'HEAD^{tree}').decode().strip())
 
 
+def producer_identity(root, context, producer_attempt):
+    consumer = identity(root, context)
+    require(isinstance(producer_attempt, str) and re.fullmatch('[1-9][0-9]*', producer_attempt)
+            and int(producer_attempt) <= int(consumer['attempt']), 'Invalid or future producer attempt')
+    # Only the explicitly bound producer attempt differs on a failed-job rerun.
+    return dict(consumer, attempt=producer_attempt)
+
+
 def disk(path, needed, phase):
     free = shutil.disk_usage(path).free
     print(json.dumps(dict(phase=phase, freeBytes=free, requiredBytes=needed)), flush=True)
@@ -172,12 +180,12 @@ def capture(root, bundle, context):
         raise
 
 
-def load_manifest(root, bundle, context, manifest_sha, archive_sha):
+def load_manifest(root, bundle, context, manifest_sha, archive_sha, producer_attempt):
     path = bundle / 'manifest.json'
     require(path.is_file() and not path.is_symlink() and path.stat().st_size <= 16 * 1024**2, 'Invalid manifest file')
     require(sha256(path) == manifest_sha, 'Manifest digest mismatch')
     m = json.loads(path.read_text())
-    require(m['schema'] == SCHEMA and m['source'] == identity(root, context), 'Source provenance mismatch')
+    require(m['schema'] == SCHEMA and m['source'] == producer_identity(root, context, producer_attempt), 'Source provenance mismatch')
     entries = m['entries']
     require(isinstance(entries, list) and len(entries) <= MAX_FILES, 'Invalid source inventory')
     require([{k: e[k] for k in ('path', 'mode', 'oid')} for e in entries] == tree_entries(root), 'Manifest differs from authentic Git tree')
@@ -194,10 +202,10 @@ def load_manifest(root, bundle, context, manifest_sha, archive_sha):
     return m
 
 
-def restore(root, bundle, context, manifest_sha, archive_sha):
+def restore(root, bundle, context, manifest_sha, archive_sha, producer_attempt):
     started = time.monotonic()
     root, bundle = location(root, bundle)
-    m = load_manifest(root, bundle, context, manifest_sha, archive_sha)
+    m = load_manifest(root, bundle, context, manifest_sha, archive_sha, producer_attempt)
     # A new checkout may contain ONLY the independently fetched bootstrap helper.
     existing = []
     for current, directories, files in os.walk(root, followlinks=False):
@@ -253,7 +261,7 @@ def restore(root, bundle, context, manifest_sha, archive_sha):
         require(git(root, 'hash-object', '-w', '--no-filters', '--stdin-paths', data=paths)
                 == expected_blobs, 'Blob population mismatch')
         blob_seconds = time.monotonic() - started - verified_seconds
-        require(identity(root, context) == m['source'], 'Checkout identity changed')
+        require(producer_identity(root, context, producer_attempt) == m['source'], 'Checkout identity changed')
         git(root, 'config', 'core.sparseCheckout', 'false')
         git(root, 'config', 'core.sparseCheckoutCone', 'false')
         git(root, 'read-tree', '--reset', 'HEAD')
@@ -274,7 +282,7 @@ def restore(root, bundle, context, manifest_sha, archive_sha):
         git(root, 'update-index', '--refresh')
         clean(root)
         require(all(row[:1] == b'H' for row in git(root, 'ls-files', '-v', '-z').split(b'\0') if row), 'Sparse index flags remain')
-        require(identity(root, context) == m['source'], 'Final source identity mismatch')
+        require(producer_identity(root, context, producer_attempt) == m['source'], 'Final source identity mismatch')
         # Required before prepared-project staging: do not retain a second 2GB copy.
         archive.unlink()
         result = dict(sourceBytes=m['sourceBytes'], archiveBytes=m['archiveBytes'], files=len(m['entries']),
@@ -311,6 +319,7 @@ def main():
     p.add_argument('--base', default='')
     p.add_argument('--manifest-sha', default='')
     p.add_argument('--archive-sha', default='')
+    p.add_argument('--producer-attempt', default='')
     p.add_argument('--source-bytes', type=int, default=0)
     args = p.parse_args()
     context = dict(repository=os.environ.get('GITHUB_REPOSITORY', ''), workflow=os.environ.get('GITHUB_WORKFLOW', ''),
@@ -319,7 +328,7 @@ def main():
     if args.command == 'capture':
         capture(args.root, args.bundle_dir, context)
     elif args.command == 'restore':
-        restore(args.root, args.bundle_dir, context, args.manifest_sha, args.archive_sha)
+        restore(args.root, args.bundle_dir, context, args.manifest_sha, args.archive_sha, args.producer_attempt)
     elif args.command == 'download-disk':
         identity(args.root, context)
         require(0 < args.source_bytes <= MAX_BYTES, 'Invalid producer source byte bound')
