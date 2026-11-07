@@ -1362,19 +1362,19 @@
     "chase.started": [
       {
         "speaker": "guard",
-        "text": "那边的同学，站住！大半夜的不回寝室，猫在大厅钟底下捣鼓什么呢？！"
+        "text": "同学，站住。离旧钟远一点。"
       }
     ],
     "chase.close": [
       {
         "speaker": "guard",
-        "text": "手电筒都照着你后背了，还跑！赶紧停下！"
+        "text": "我看到你了。停下。"
       }
     ],
     "chase.floor_changed": [
       {
         "speaker": "guard",
-        "text": "往二楼跑了是吧？二楼这会儿早锁门了，听见没有，快下来！"
+        "text": "同学，停下！前面的，听见没有？"
       }
     ],
     "chase.failed": [
