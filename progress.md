@@ -44,6 +44,14 @@
 - 以 `14e86ac5` 为基线核对正式 Godot 运行时、保留的 React/Phaser 实现、共创平台及发布路径。记录 QFramework 的已接入职责与仍可直接写入状态的兼容入口，按交互顺序、结果和保存、宿主拆分提出渐进迁移方案。首个建议试点为图书馆规则阅读与离页。
 - 新增[架构与开发规范](docs/ARCHITECTURE.md)，从仓库规则和协作入口链接，并澄清 README 中正式 Web 发布与保留 Web 回归的边界。核对文档链接、源码依据与差异。本次交付范围为文档。
 
+## 2026-11-06 — protect saves created by newer game versions
+
+- Reproduced native startup accepting a sourceVersion 37 save in the version 36 runtime: successive ordinary page saves rewrote the primary and then its backup. Manual import also accepted future-version native files. The fix checks both primary and backup before selection, blocks persistence with an explicit update message, and rejects future imports before migration, media or CC98 changes. Profile activation reuses the same check and clears the block only when a compatible profile opens.
+- Reused the entrance detail label and disabled story/FLC entry while blocked, including direct entry calls. No new runtime module, save field, dependency or asset was introduced. Compatible v35 migration, v36 and historical versionless native files remain supported; corrupt-primary recovery remains intact.
+- Official Godot 4.7.1 with isolated user directories: the new regression passes 44 assertions including two independent engine startups, versions 37/37.5/999/string-37, exact original-byte preservation, rejected import side effects and profile recovery. Existing profile checks pass 144 and save integration 1829 (236 file imports, 117 checkpoints).
+- The official selected-stage aggregate passes 24/24 with unchanged inputs (input SHA-256 26372fa9f01bd3ac2cd912f0bfbed1982df20f887fd65cd71300ea84b8adc840); 631/655 stages were not selected. This includes startup, entry, FLC, native/Web save contracts, Continue and the original SaveStore differential, not a full-suite or real browser pass.
+- Retained-Web release passes 36/39 locally. The unchanged offline single-file build is again killed with exit 137, so its artifact check and dependent browser smoke cannot complete. Exact-head full CI remains required; no limits were relaxed, no merge or deployment performed.
+
 ## 2026-10-31 — approved FLC 53-file integration
 
 - User explicitly selected all 53 listed files for submission and merge. Local browser screenshots, movies, exports and temporary QA remain outside the delivered patch.
