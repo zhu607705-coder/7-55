@@ -152,6 +152,16 @@ Prioritize these surfaces:
 | Retained Web build, root dependencies, release artifact | `npm run validate:release` | Direct-open final `demo/index.html` and complete navigation chain |
 | CI routing or orchestration | Affected routing/workflow tests, including rejection cases | Run the changed workflows; preserve their existing gameplay cases and publication guards |
 
+## Practical change, retry and merge rules
+
+- Start with the observable risk and the affected consumers. Prioritize broken gameplay, saves, delivery or safety. Batch secondary differences; do not create a separate process for cosmetic issues.
+- Choose validation from actual dependencies, not directory names alone. Native-only changes use native and real Godot Web checks. Retained-Web or shared inputs use the affected retained suite too; unknown dependencies stay conservative. Documentation-only changes need review, not an unrelated game rebuild.
+- Match evidence to the claim. Script fixtures prove the harness; source counts and hashes prove inventory and identity. Changed interaction, lifecycle or save behavior needs real input, the resulting state and save/reload where relevant. Keep meaningful failure cases and complete affected coverage.
+- Inspect the first failing step and its logs, report and screenshot before changing a gate. Separate a product defect, a wrong/stale test expectation and an infrastructure interruption. A timeout alone does not establish which one occurred. Fix the demonstrated cause; do not remove assertions or extend gameplay limits merely to get green.
+- Retry only the affected job when evidence supports a transient interruption or a retry diagnostic. Reuse its explicitly identified producer and unchanged artifact hashes. Preserve the failed result. A changed implementation or harness requires a new-head run; an old pass is not evidence for new bytes. Do not repeatedly restart the full pipeline until it passes.
+- Before merging, check the current head, current base and interacting PRs. The affected checks must cover their combined tree and must have finished successfully, with no missing/cancelled coverage or unresolved real blocker. Recheck an overlapping base update; do not repeat expensive validation just for metadata when the tested input tree is unchanged.
+- CI success does not grant merge, deployment or access-change authority. Use the current task authorization, keep independent changes intact, and report the actual merged commit and any untested boundary. No extra approval document, fixed assertion total or duplicated source-string gate is required.
+
 ## Checks that do not justify their maintenance cost
 
 - CSS or DOM snapshots that fail on harmless presentation changes without proving a product risk;

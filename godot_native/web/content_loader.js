@@ -4,6 +4,8 @@
   // Content identities come from the current release manifest. IndexedDB also
   // works on a plain-IP HTTP origin, where CacheStorage/WebCrypto do not.
   const BLOCK_BYTES = 1024 * 1024;
+  const BACKGROUND_SLICE_BYTES = 64 * 1024;
+  const clockNow = () => globalThis.performance ? performance.now() : Date.now();
   function sha256() {
     const state = new Uint32Array([0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19]);
     const constants = new Uint32Array([0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2]);
@@ -54,19 +56,19 @@
       Promise.resolve(promise).then(value=>{signal.removeEventListener('abort',abort);resolve(value);},error=>{signal.removeEventListener('abort',abort);reject(error);});
     });
   }
-  async function digestParts(parts,signal) {
+  async function digestParts(parts,signal,sliceBytes=BLOCK_BYTES) {
     // Keep the WASM chunks separate: concatenating a second whole engine buffer
     // just to hash it increases peak startup memory. Yield between 1 MiB slices
     // so fallback verification cannot monopolize an input/rendering frame.
     const hash = sha256();
-    for (const bytes of parts) for (let offset = 0; offset < bytes.byteLength; offset += BLOCK_BYTES) {
+    for (const bytes of parts) for (let offset = 0; offset < bytes.byteLength; offset += sliceBytes) {
       checkSignal(signal);
-      hash.update(bytes.subarray(offset, offset + BLOCK_BYTES));
-      if (bytes.byteLength >= BLOCK_BYTES || parts.length > 1) await yieldToBrowser();
+      hash.update(bytes.subarray(offset, offset + sliceBytes));
+      if (bytes.byteLength >= sliceBytes || parts.length > 1) await yieldToBrowser();
     }
     checkSignal(signal);return hash.hex();
   }
-  async function digestBytes(bytes,signal) {
+  async function digestBytes(bytes,signal,cooperative=false) {
     checkSignal(signal);
     // Secure origins have the browser's asynchronous native implementation.
     // Plain-IP HTTP and restricted contexts keep the verified JS fallback.
@@ -77,7 +79,53 @@
         return Array.from(new Uint8Array(result), value => value.toString(16).padStart(2, '0')).join('');
       } catch (error) { checkSignal(signal); /* A denied crypto capability must not disable loading. */ }
     }
-    return digestParts([bytes],signal);
+    return digestParts([bytes],signal,cooperative ? BACKGROUND_SLICE_BYTES : BLOCK_BYTES);
+  }
+  // This budgets bytes consumed by JavaScript, not bytes on the wire. Fetch
+  // and HTTP buffers may receive ahead; only a server can enforce a hard rate.
+  function createBackgroundBudget() {
+    const sliceBytes=BACKGROUND_SLICE_BYTES, targetBytesPerSecond=512*1024;
+    const now=clockNow;
+    let began=null, nextAt=0, quietUntil=0, lastFrame=0, consumedBytes=0, waits=0, waitMs=0;
+    const sleepers=new Set();
+    function wake() { for(const finish of [...sleepers])finish(); }
+    function sleep(ms,signal) {
+      checkSignal(signal);
+      return new Promise((resolve,reject)=>{
+        let timer;
+        const cleanup=()=>{clearTimeout(timer);sleepers.delete(finish);signal.removeEventListener('abort',cancel);};
+        const finish=()=>{cleanup();resolve();};
+        const cancel=()=>{cleanup();reject(abortError());};
+        sleepers.add(finish);signal.addEventListener('abort',cancel,{once:true});
+        timer=setTimeout(finish,ms);
+      });
+    }
+    return {
+      sliceBytes, wake,
+      frame(time) {
+        const current=Number.isFinite(time)?time:now();
+        if(lastFrame && current-lastFrame>40)quietUntil=now()+250;
+        lastFrame=current;
+      },
+      async pace(bytes,signal,required) {
+        checkSignal(signal);
+        // A persistent low frame rate must reduce optional work, not postpone
+        // it forever. Allow at most one bounded slice after one second of
+        // pressure; subsequent calls start a new wait and cannot bank credit.
+        const pressureDeadline=now()+1000;
+        while(!required()) {
+          const delay=Math.max(nextAt,Math.min(quietUntil,pressureDeadline))-now();
+          if(delay<=0)break;
+          waits++;const began=now();await sleep(Math.min(delay,250),signal);waitMs+=now()-began;checkSignal(signal);
+        }
+        if(required())return;
+        const current=now();if(began===null)began=current;const age=current-began;
+        const rate=age<2000?targetBytesPerSecond/4:age<4000?targetBytesPerSecond/2:targetBytesPerSecond;
+        // Do not accumulate credit while idle or hidden, then burst on return.
+        nextAt=current+1000*bytes/rate;consumedBytes+=bytes;
+      },
+      snapshot:()=>({targetBytesPerSecond,sliceBytes,consumedBytes,waits,waitMs,framePressure:now()<quietUntil})
+    };
   }
   function identity(resource) {
     if (!resource || !Number.isSafeInteger(resource.bytes) || resource.bytes<1 || resource.bytes>1024*1024*1024 || !/^[a-f0-9]{64}$/.test(resource.sha256) || typeof resource.file!=='string') throw new Error('Invalid resource identity');
@@ -101,7 +149,10 @@
     let database, unavailable=false;
     let activeDownloads=0;
     const waitingDownloads=[];
-    const stats={storage:'opening',reusedBytes:0,networkBytes:0,writtenBytes:0};
+    const stats={storage:'opening',reusedBytes:0,networkBytes:0,writtenBytes:0,cacheReadMs:0,cacheWriteMs:0,readTransactions:0,writeTransactions:0,verifyMs:0,reassemblyMs:0};
+    async function verifyBytes(bytes,signal,cooperative) {
+      const began=clockNow();try{return await digestBytes(bytes,signal,cooperative);}finally{stats.verifyMs+=clockNow()-began;}
+    }
     function acquire(signal) {
       checkSignal(signal);
       return new Promise((resolve,reject)=>{
@@ -114,13 +165,29 @@
         if(activeDownloads<3)ticket.grant();else {waitingDownloads.push(ticket);if(signal)signal.addEventListener('abort',cancel,{once:true});}
       });
     }
-    async function fetchChunk(chunk,priority,signal) {
+    async function fetchChunk(chunk,priority,signal,pace) {
       const release=await acquire(signal);
       try {
         checkSignal(signal);
+        if(pace)await pace(0,signal);
         const response=await abortable(fetch(identity(chunk),{cache:'force-cache',priority:priority||'high',signal}),signal);
         if(!response.ok || response.status!==200)throw new Error('Chunk HTTP '+response.status);
-        const bytes=new Uint8Array(await abortable(response.arrayBuffer(),signal));checkSignal(signal);return bytes;
+        if(!pace)return new Uint8Array(await abortable(response.arrayBuffer(),signal));
+        const bytes=new Uint8Array(chunk.bytes);let received=0;
+        async function append(part) {
+          if(received+part.byteLength>bytes.byteLength)throw new Error('Chunk size differs');
+          for(let offset=0;offset<part.byteLength;offset+=BACKGROUND_SLICE_BYTES) {
+            const slice=part.subarray(offset,offset+BACKGROUND_SLICE_BYTES);
+            await pace(slice.byteLength,signal);checkSignal(signal);
+            bytes.set(slice,received);received+=slice.byteLength;
+          }
+        }
+        if(response.body && response.body.getReader) {
+          const reader=response.body.getReader();
+          try {while(true){const item=await abortable(reader.read(),signal);if(item.done)break;await append(item.value);}}
+          catch(error){await reader.cancel().catch(()=>{});throw error;}
+        } else await append(new Uint8Array(await abortable(response.arrayBuffer(),signal)));
+        if(received!==chunk.bytes)throw new Error('Chunk size differs');return bytes;
       } finally {release();}
     }
     function db() {
@@ -135,8 +202,11 @@
       return unavailable?Promise.resolve(null):database;
     }
     async function operation(mode,run) {
+      const began=clockNow();
       const connection=await db();if(!connection)return null;
-      return new Promise(resolve=>{
+      return new Promise(done=>{
+        const read=mode==='readonly';stats[read?'readTransactions':'writeTransactions']++;
+        const resolve=value=>{stats[read?'cacheReadMs':'cacheWriteMs']+=clockNow()-began;done(value);};
         let transaction,result=null;
         try{transaction=connection.transaction('chunks',mode);const request=run(transaction.objectStore('chunks'));if(Array.isArray(request))result=request;else if(request)request.onsuccess=()=>{result=request.result;};}
         catch(_){unavailable=true;stats.storage='unavailable';resolve(null);return;}
@@ -172,7 +242,9 @@
       let received=0,reused=0,network=0,next=0,persisted=0;
       function accept(index,bytes) {
         checkSignal(signal);
+        const began=clockNow();
         if(options.response)output[index]=bytes;else output.set(bytes,chunks[index].offset);
+        stats.reassemblyMs+=clockNow()-began;
         received+=bytes.byteLength;
         if(options.onProgress)options.onProgress(received,resource.bytes,{reusedBytes:reused,networkBytes:network,storage:stats.storage});
       }
@@ -184,7 +256,10 @@
         let saved=cached[index%8], legacy=false;cached[index%8]=null;
         if(!saved){saved=await operation('readonly',store=>store.get(key(resource,index)));legacy=!!saved;}
         const bytes=saved && saved.bytes instanceof ArrayBuffer?new Uint8Array(saved.bytes):null;
-        if(bytes && bytes.byteLength===chunk.bytes && await digestBytes(bytes,signal)===chunk.sha256) {
+        // Missing cache entries do not consume content bytes. Deferring each
+        // miss would delay the first network request by the whole chunk count.
+        if(bytes && options.pace)await options.pace(0,signal);
+        if(bytes && bytes.byteLength===chunk.bytes && await verifyBytes(bytes,signal,!!options.pace)===chunk.sha256) {
           if(legacy) {
             const migrated=await operation('readwrite',store=>store.put({bytes:bytes.buffer,digest:chunk.sha256},canonical));
             if(migrated!==null)await operation('readwrite',store=>store.delete(key(resource,index)));
@@ -199,17 +274,17 @@
         while(next<missing.length) {
           checkSignal(signal);
           const index=missing[next++], chunk=chunks[index];
-          const bytes=await fetchChunk(chunk,options.priority,signal);network+=bytes.byteLength;stats.networkBytes+=bytes.byteLength;
-          if(bytes.byteLength!==chunk.bytes || await digestBytes(bytes,signal)!==chunk.sha256)throw new Error('Chunk digest or size differs');
+          const bytes=await fetchChunk(chunk,options.priority,signal,options.pace);network+=bytes.byteLength;stats.networkBytes+=bytes.byteLength;
+          if(bytes.byteLength!==chunk.bytes || await verifyBytes(bytes,signal,!!options.pace)!==chunk.sha256)throw new Error('Chunk digest or size differs');
           const saved=await operation('readwrite',store=>store.put({bytes:bytes.buffer,digest:chunk.sha256},chunkKey(chunk)));
           if(saved!==null){stats.writtenBytes+=bytes.byteLength;persisted+=bytes.byteLength;}
           accept(index,bytes);
         }
       }
-      const workers=Array.from({length:Math.min(3,missing.length)},worker);
+      const workers=Array.from({length:Math.min(options.pace?1:3,missing.length)},worker);
       try { await Promise.all(workers); }
       catch(error){controller.abort();await Promise.allSettled(workers);throw error;}
-      const digest=options.response?await digestParts(output,signal):await digestBytes(output,signal);
+      const digest=options.response?await digestParts(output,signal):await verifyBytes(output,signal,!!options.pace);
       if(digest!==resource.sha256){await discard(resource);throw new Error('Content digest differs');}
       return completed(resource,options,output,reused,network,persisted);
       } finally {if(options.signal)options.signal.removeEventListener('abort',cancel);}
@@ -220,7 +295,7 @@
       const url=identity(resource), output=options.response?[]:new Uint8Array(resource.bytes);
       let received=0, reused=0, network=0, persisted=0;
       const progress=()=>{if(options.onProgress)options.onProgress(received,resource.bytes,{reusedBytes:reused,networkBytes:network,storage:stats.storage});};
-      const accept=bytes=>{checkSignal(signal);if(options.response)output.push(bytes);else output.set(bytes,received);received+=bytes.byteLength;progress();};
+      const accept=bytes=>{checkSignal(signal);const began=clockNow();if(options.response)output.push(bytes);else output.set(bytes,received);stats.reassemblyMs+=clockNow()-began;received+=bytes.byteLength;progress();};
       // Partial chunks are quarantined transport data: every byte, including
       // reused chunks, must pass the manifest's complete SHA before any caller
       // receives them. Their local digest detects a torn/corrupt IDB record.
@@ -229,11 +304,12 @@
       let cached=[];
       for(let index=0;received<resource.bytes;index++) {
         checkSignal(signal);
+        if(options.pace)await options.pace(0,signal);
         if(index%8===0)cached=await operation('readonly',store=>Array.from({length:Math.min(8,Math.ceil(resource.bytes/BLOCK_BYTES)-index)},(_,offset)=>store.get(key(resource,index+offset))))||[];
         const saved=cached[index%8];cached[index%8]=null;
         if(!saved)break;
         const bytes=saved.bytes instanceof ArrayBuffer?new Uint8Array(saved.bytes):null;
-        if(!bytes || bytes.byteLength!==Math.min(BLOCK_BYTES,resource.bytes-received) || await digestBytes(bytes,signal)!==saved.digest) {await discard(resource,index);break;}
+        if(!bytes || bytes.byteLength!==Math.min(BLOCK_BYTES,resource.bytes-received) || await verifyBytes(bytes,signal,!!options.pace)!==saved.digest) {await discard(resource,index);break;}
         persisted+=bytes.byteLength;reused+=bytes.byteLength;accept(bytes);
       }
       if(received<resource.bytes) {
@@ -243,6 +319,7 @@
         // The core/WASM names are mutable on GitHub Pages. Never force reuse of
         // a stale HTTP response after its manifest has changed. Deferred URLs
         // already contain their content hash and may use normal HTTP reuse.
+        if(options.pace)await options.pace(0,signal);
         const priority=options.priority||'high';
         async function fullGet() {
           const response=await abortable(fetch(url,{cache:'reload',priority,headers:{},signal}),signal);
@@ -284,10 +361,12 @@
           while(at<bytes.byteLength) {
             checkSignal(signal);
             if(!block.byteLength){await discard(resource);throw new Error('Content size differs');}
-            const take=Math.min(block.byteLength-filled,bytes.byteLength-at);block.set(bytes.subarray(at,at+take),filled);filled+=take;at+=take;
+            const take=Math.min(block.byteLength-filled,bytes.byteLength-at,options.pace?BACKGROUND_SLICE_BYTES:BLOCK_BYTES);
+            if(options.pace)await options.pace(take,signal);
+            checkSignal(signal);block.set(bytes.subarray(at,at+take),filled);filled+=take;at+=take;
             if(filled===block.byteLength) {
               const index=received/BLOCK_BYTES;
-              const digest=await digestBytes(block,signal);
+              const digest=await verifyBytes(block,signal,!!options.pace);
               const saved=await operation('readwrite',store=>store.put({bytes:block.buffer,digest},key(resource,index)));
               if(saved!==null){stats.writtenBytes+=block.byteLength;persisted+=block.byteLength;}
               accept(block);block=new Uint8Array(Math.min(BLOCK_BYTES,resource.bytes-received));filled=0;
@@ -302,7 +381,7 @@
         if(received!==resource.bytes || filled)throw new Error('Incomplete content');
         } finally {release();}
       }
-      const digest=options.response?await digestParts(output,signal):await digestBytes(output,signal);
+      const digest=options.response?await digestParts(output,signal):await verifyBytes(output,signal,!!options.pace);
       if(digest!==resource.sha256){await discard(resource);throw new Error('Content digest differs');}
       // WASM is streamed to Godot's official fetch-based preloader. No second
       // whole-file concatenation or persistent override of browser fetch.
@@ -377,7 +456,9 @@
     let prefetchFamilies = new Set(manifest.backgroundOrder.slice(0, 1));
     let disposed = false;
     let cachePromise;
-    const saveData = !!(navigator.connection && navigator.connection.saveData);
+    const budget=createBackgroundBudget();
+    const saveData=()=>!!(navigator.connection && navigator.connection.saveData);
+    const optionalAllowed=()=>!document.hidden && navigator.onLine!==false && !saveData();
     const cacheKey = pack => new URL('/.755-content-cache/' + pack.sha256 + '.pck', location.origin).href;
     function cache() {
       if (!cachePromise) cachePromise = Promise.resolve().then(() => typeof caches === 'undefined' ? null : caches.open('755-godot-content-v1')).catch(() => null);
@@ -390,7 +471,7 @@
     }
     function next() {
       for (const id of foreground) if (records.get(id).status === 'idle') return records.get(id);
-      if (background && !saveData && !document.hidden) for (const family of manifest.backgroundOrder) if (prefetchFamilies.has(family)) for (const record of records.values()) if (record.pack.family === family && record.status === 'idle') return record;
+      if (background && optionalAllowed()) for (const family of manifest.backgroundOrder) if (prefetchFamilies.has(family)) for (const record of records.values()) if (record.pack.family === family && record.status === 'idle') return record;
       return null;
     }
     function notify(record, path, error) { if (receive && !disposed) receive(record.pack.id, path, error || ''); }
@@ -398,26 +479,38 @@
     function preemptOptional() {
       if(!active || active.record.status!=='downloading' || foreground.has(active.record.pack.id))return;
       const required=[...foreground].some(id=>id!==active.record.pack.id&&records.get(id).status==='idle');
-      if(document.hidden || !prefetchFamilies.has(active.record.pack.family) || required)active.controller.abort();
+      if(!optionalAllowed() || !prefetchFamilies.has(active.record.pack.family) || required)active.controller.abort();
+    }
+    function mountDownloaded(run) {
+      current(run);const record=run.record, after=resourceCache.snapshot();
+      // Wall times include async waits; they are not CPU-time measurements.
+      const timing={bytesReadyMs:clockNow()-run.startedAt,pacingWaitMs:budget.snapshot().waitMs-run.waitBefore,cacheLookupMs:run.cacheLookupMs,cacheStorageReadMs:run.cacheStorageReadMs||0};
+      for(const key of ['cacheReadMs','cacheWriteMs','readTransactions','writeTransactions','verifyMs','reassemblyMs'])timing[key]=(after[key]||0)-(run.cacheBefore[key]||0);
+      timing.verifyMs+=run.cacheStorageVerifyMs||0;
+      const began=clockNow(), path='/755-content/'+record.pack.sha256+'.pck';
+      engine.copyToFS(path,record.buffer);timing.copyToFsMs=clockNow()-began;
+      record.timings=timing;record.status='mounting';run.ackStartedAt=clockNow();
+      notify(record,path,'');
     }
     async function download(run) {
       const record=run.record, signal=run.controller.signal;
+      const pace=run.optional ? (bytes,signal)=>budget.pace(bytes,signal,()=>foreground.has(record.pack.id)) : null;
       const store = await cache();
       current(run);
+      const lookupBegan=clockNow();
       let response = record.attempts === 1 && store ? await abortable(store.match(cacheKey(record.pack)).catch(() => null),signal) : null;
       current(run);
+      run.cacheLookupMs=clockNow()-lookupBegan;
       record.source = response ? 'verified-cache' : 'network';
       if (!response) {
-        const loaded = await resourceCache.load(record.pack, { signal, priority: foreground.has(record.pack.id) ? 'high' : 'low', onProgress: count => { if(active===run&&!disposed&&!signal.aborted)record.received = count; } });
+        const loaded = await resourceCache.load(record.pack, { signal, pace, priority: foreground.has(record.pack.id) ? 'high' : 'low', onProgress: count => { if(active===run&&!disposed&&!signal.aborted)record.received = count; } });
         current(run);
         // Only completed IDB transactions count toward a complete cached pack.
         record.indexedDBComplete = loaded.indexedDBComplete;
         record.source = loaded.source;
         record.buffer = loaded.buffer;
-        const path = '/755-content/' + record.pack.sha256 + '.pck';
-        engine.copyToFS(path, record.buffer);
-        record.status = 'mounting';
-        notify(record, path, '');
+        if(pace)await pace(0,signal);
+        mountDownloaded(run);
         return;
       }
       if (!response.ok) throw new Error('HTTP ' + response.status);
@@ -428,31 +521,36 @@
         let count = 0;
         try {
           while (true) {
-            const chunk = await abortable(reader.read(),signal);
+            const began=clockNow();const chunk = await abortable(reader.read(),signal);
+            run.cacheStorageReadMs=(run.cacheStorageReadMs||0)+clockNow()-began;
             current(run);
             if (chunk.done) break;
             if (count + chunk.value.byteLength > bytes.byteLength) throw new Error('Content size differs');
-            bytes.set(chunk.value, count); count += chunk.value.byteLength; record.received = count;
+            for(let offset=0;offset<chunk.value.byteLength;offset+=BACKGROUND_SLICE_BYTES) {
+              const slice=chunk.value.subarray(offset,offset+BACKGROUND_SLICE_BYTES);
+              if(pace)await pace(slice.byteLength,signal);current(run);
+              bytes.set(slice,count);count+=slice.byteLength;record.received=count;
+            }
           }
         } catch (error) { await reader.cancel().catch(() => {}); throw error; }
         if (count !== record.pack.bytes) throw new Error('Incomplete content');
       } else {
-        bytes = new Uint8Array(await abortable(response.arrayBuffer(),signal));current(run);record.received = bytes.byteLength;
+        const began=clockNow();bytes = new Uint8Array(await abortable(response.arrayBuffer(),signal));
+        run.cacheStorageReadMs=clockNow()-began;current(run);record.received = bytes.byteLength;
         if (bytes.byteLength !== record.pack.bytes) throw new Error('Content size differs');
       }
-      if (await digestBytes(bytes,signal) !== record.pack.sha256) throw new Error('Content digest differs');
+      const verifyBegan=clockNow(), digest=await digestBytes(bytes,signal,!!pace);run.cacheStorageVerifyMs=clockNow()-verifyBegan;
+      if (digest !== record.pack.sha256) throw new Error('Content digest differs');
       current(run);
       record.buffer = bytes.buffer;
-      const path = '/755-content/' + record.pack.sha256 + '.pck';
-      engine.copyToFS(path, record.buffer);
-      record.status = 'mounting';
-      notify(record, path, '');
+      if(pace)await pace(0,signal);
+      mountDownloaded(run);
     }
     async function pump() {
       if (disposed || !receive || active) return;
       const record = next();
       if (!record) return;
-      const run={record,controller:new AbortController()};
+      const run={record,controller:new AbortController(),optional:!foreground.has(record.pack.id),startedAt:clockNow(),cacheBefore:resourceCache.snapshot(),waitBefore:budget.snapshot().waitMs};
       active = run; record.status = 'downloading'; record.error = ''; record.received = 0; record.attempts++;
       try { await download(run); }
       catch (error) {
@@ -465,7 +563,10 @@
         active = null;if(!cancelled)notify(record, '', record.error);pump();
       }
     }
-    const onVisibility = () => { preemptOptional();if (!document.hidden) pump(); };
+    const onVisibility = () => { preemptOptional();budget.wake();if(optionalAllowed())pump(); };
+    const frame=time=>{if(disposed)return;budget.frame(time);requestAnimationFrame(frame);};
+    if(typeof window.addEventListener==='function')for(const name of ['online','offline'])window.addEventListener(name,onVisibility);
+    if(navigator.connection && typeof navigator.connection.addEventListener==='function')navigator.connection.addEventListener('change',onVisibility);
     if (typeof document.addEventListener === 'function') document.addEventListener('visibilitychange', onVisibility);
     const host = {
       manifest: () => JSON.stringify(manifest),
@@ -477,19 +578,20 @@
         if (!Array.isArray(selected) || selected.length > 1 || selected.some(family => !manifest.backgroundOrder.includes(family))) return;
         prefetchFamilies = new Set(selected);preemptOptional();pump();
       },
-      request: raw => { if(disposed)return;for (const id of selectIds(raw)) foreground.add(id);preemptOptional();pump(); },
+      request: raw => { if(disposed)return;for (const id of selectIds(raw)) foreground.add(id);budget.wake();preemptOptional();pump(); },
       retry: raw => {
         if(disposed)return;
         for (const id of selectIds(raw)) {
           const record = records.get(id); foreground.add(id);
           if (record.status === 'error') { record.status = 'idle'; record.error = ''; }
         }
-        preemptOptional();pump();
+        budget.wake();preemptOptional();pump();
       },
       acknowledge: async (id, accepted, message) => {
         const record = records.get(id);
         const run=active;
         if (disposed || !record || !run || record !== run.record || record.status !== 'mounting') return;
+        record.timings.nativeAckMs=clockNow()-run.ackStartedAt;
         record.status = accepted ? 'mounted' : 'error'; record.error = accepted ? '' : String(message || 'Content verification failed');
         const store = await cache();
         if(disposed||active!==run)return;
@@ -501,12 +603,16 @@
       },
       startPrefetch: () => {
         // Two frames leave the first chapter's first paint and input ahead of
-        // optional network work. Only one small content block runs at a time.
-        requestAnimationFrame(() => requestAnimationFrame(() => { if(!disposed){background = true;pump();} }));
+        // optional work. One paced background body; foreground keeps its three
+        // boot/chunk workers. Whole-PCK copy/mount remains indivisible; native
+        // SHA admission is separately sliced by the Godot content coordinator.
+        requestAnimationFrame(() => requestAnimationFrame(() => { if(!disposed&&!background){background = true;requestAnimationFrame(frame);pump();} }));
       },
-      snapshot: () => JSON.stringify({ background, saveData, prefetchFamilies: [...prefetchFamilies], active: active ? active.record.pack.id : '', resourceCache: resourceCache.snapshot(), packs: Array.from(records.values(), r => ({ id: r.pack.id, family: r.pack.family, status: r.status, received: r.received, bytes: r.pack.bytes, error: r.error, source: r.source, attempts: r.attempts })) }),
+      snapshot: () => JSON.stringify({ background, saveData:saveData(), backgroundBudget:budget.snapshot(), prefetchFamilies: [...prefetchFamilies], active: active ? active.record.pack.id : '', resourceCache: resourceCache.snapshot(), packs: Array.from(records.values(), r => ({ id: r.pack.id, family: r.pack.family, status: r.status, received: r.received, bytes: r.pack.bytes, error: r.error, source: r.source, attempts: r.attempts, timings: r.timings || {} })) }),
       dispose: () => {
-        disposed = true;receive = null;
+        disposed = true;receive = null;budget.wake();
+        if(typeof window.removeEventListener==='function')for(const name of ['online','offline'])window.removeEventListener(name,onVisibility);
+        if(navigator.connection && typeof navigator.connection.removeEventListener==='function')navigator.connection.removeEventListener('change',onVisibility);
         if(active){active.controller.abort();if(active.record.status==='downloading'||active.record.status==='mounting')active.record.status='idle';}
         active=null;for(const record of records.values())record.buffer=null;
         if (typeof document.removeEventListener === 'function') document.removeEventListener('visibilitychange', onVisibility);

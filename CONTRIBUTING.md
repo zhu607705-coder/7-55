@@ -47,6 +47,7 @@ npm run validate:release
 
 仓库的 pre-push hook 和 GitHub Actions 会执行当前登记的检查；新增验证器后，应同步更新
 测试策略、本文档和对应 Web 或原生工作流。
+失败分类、单任务重跑和合并边界按[实用规则](docs/TESTING.md#practical-change-retry-and-merge-rules)执行；不要用重复全量重跑代替定位失败。
 
 提交信息采用：
 

@@ -69,7 +69,7 @@ function fixture(options = {}) {
       addEventListener: (name, fn) => { if (name === 'visibilitychange') visibilityListeners.add(fn); },
       removeEventListener: (name, fn) => { if (name === 'visibilitychange') visibilityListeners.delete(fn); } }, location: { origin },
     navigator: { connection: { saveData: Boolean(options.saveData) } },
-    URL, Response, TextEncoder, TextDecoder, setTimeout, AbortController, ArrayBuffer, Uint8Array, Uint32Array, DataView, ReadableStream,
+    URL, Response, TextEncoder, TextDecoder, setTimeout, clearTimeout, AbortController, ArrayBuffer, Uint8Array, Uint32Array, DataView, ReadableStream,
     crypto: options.crypto || (options.noCrypto ? {} : crypto.webcrypto),
     ...(options.idb?{indexedDB:idb(chunks, options)}:{}),
     requestAnimationFrame: callback => { raf.push(callback); return raf.length; },
