@@ -5985,6 +5985,17 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - Local checks use official Godot 4.7.1 with the pinned SHA-256, isolated save directories, source synchronization and validated derived media. The retained-Web release attempt passed 36/39 validators; offline single-file rendering was killed with exit 137, including an isolated retry, so artifact verification and browser smoke could not run locally. No validation threshold or build budget was weakened.
 - Combined native selected-stage results and exact-head CI are recorded in the PR. These per-fix results are not a full native-suite pass, actual Web network/account acceptance, physical-device test or manual full playthrough. No merge or deployment is performed.
 
+## 2026-11-06 — 后台预取的消费预算
+
+- 基于 `main` 的 `bb842b0`，只修改 Godot Web 加载器与相关合约/文档。主界面两帧后的现有预取贯穿首章小游戏；`chapter1_2.gd` 的签到/恢复动作发出 `prologue_interception.gd`，由 `State.game_requested` 进入 Main。未新增进度、存档或游戏完成门槛。
+- 后台大包 worker 从三个改为一个；网络响应最多 64 KiB 一片，消费预算 128→256→512 KiB/s，长帧退让。前台同包接管立即解除等待；其他前台、隐藏、离线、省流量会抢占/取消。未新增素材、依赖、传输副本或打包格式。
+- 实包规模仅引用 PR #224 的真实构建清单（run `42173974356`）：第二章 16 包共 107,056,752 B，首包 17,836,924 B。512 KiB/s 下纯消费约需 204 秒，另加起步、网络和帧退让；这不是已测下载时间。
+- 独立调度测试 11/11；既有 loader、resource-cache、boot/chapter chunk 检查通过。合成 3,145,857 B 的同加载器对照中，后台并发 3→1，预算调度时间约 8.77 秒；时间由测试时钟控制，不是浏览器帧率或网络实测。内部只读复核未见重大正确性回归。
+- 已与 PR #224 初始缓存补丁做三方合并与合约回归，不复制缓存改动进入本 PR；其暖缓存读取修复仍在独立进行，合并前需按最终 head 再验证。
+- 当前环境的浏览器无法连接本地测试服务器（`ERR_CONNECTION_REFUSED`），未完成实际 Godot Web/手机帧时间、CPU、峰值内存验收。整包复制/原生校验/挂载仍可能形成尖峰；浏览器预缓冲不受硬带宽约束，持续低帧率会暂停后台。精确 PR head 的构建与浏览器 CI 另行给出，不把这些合约检查当成整体验收。
+
+- 同日追加全链诊断：JS 缓存事务/校验/重组/预算等待/MEMFS/ACK 与原生 SHA/PCK 挂载分开计时，通过原有只读快照提供，未改存档。调度/计时 12/12；官方 Godot 4.7.1 真实 tiny PCK 130/0，FLC 取消21/0、策略9/0。一个 Linux tiny PCK 样本挂载41.854ms，不能外推实际Web，也不是纹理解码时间。
+- 与 #224 的8块有界读取候选组合时，普通IDB循环有一处文本冲突：保留8块读取、persisted收据、共享块保护和 pace(0)帧门控，并用计时wrapper保留原SHA。隔离合并后的缓存51、loader103、调度12通过。合并顺序/最终head仍须再次核对；本PR不暗中包含该缓存补丁。
 ## 2026-11-06 智云课堂参考界面
 
 - 智云课堂原生入口改为青色标题区、周课表和全部课程检索。课表回放进入课程详情，PPT 识别使用游戏课堂板书演示。数字签到和雷达沿用原入口与控制器。
@@ -5994,6 +6005,17 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 
 - 周课表和课程列表共用六条排课；微积分回放提供四页 PPT 与八条字幕。第三页保留计算题，答案 120 在回放字幕揭晓。
 - 雷达检测提示改走主界面手机通知队列。原生导航 252 项通过。未提交发布。
+
+## 2026-11-07 — 有界校验与重复界面构建
+
+- 在 PR #225 已提交的后台预取和阶段计时基础上，正常纳入固定主线 `73c88a0`。保留 #224 的分块缓存去重、事务回执与八块批读，以及主线的登录、手账和课堂修改；未恢复遗失的未提交候选，也未调整纹理分辨率、遮挡、剧情、存档或资源分包。
+- 原生收到大包后，从下一帧开始使用同一 SHA 上下文。后台每帧最多 256 KiB/约 1.5 ms，必需资源最多 4 MiB/约 16 ms；64 KiB 块结束后检查预算。前台接管不重读，重复回调不另起任务，退出/重配清单会关闭文件。完整摘要和挂载成功之后才确认就绪。MEMFS 整包复制、PCK 挂载和 GPU 上传仍不受该分片保证。
+- 官方 Godot 4.7.1 同一实际 17,837,136 B PCK 样本：旧整包 SHA 62.788 ms；新后台校验跨 69 帧，累计活动片段 70.006 ms、最长片段 1.510 ms、含等待总接收 458.695 ms。它以较长墙钟等待换取较小单帧工作，不是吞吐提速或 Web/实体手机帧率实测。实际 PCK、坏摘要、截断、前台接管、暂停、重复回调、重试、替换与退出测试通过，样本运行 289 检查。
+- 持续慢帧不再无限推迟后台进度：每次压力等待最多一秒，仍只放行有界片段；空的静态分块缓存记录不逐个等待。新增 20/10 FPS 调度与冷缓存失败夹具在旧代码失败，在修正后通过。未提高浏览器验收超时，也未把夹具当成此前 CI 超时的实际根因证明。
+- 只复用非序章的手机主页/设置隐藏子树。换页、State 替换和重新显示仍重建；微信等带延迟剧情回调的页面保留原来的重建/取消行为。实际受控 C2 交流测试覆盖隐藏刷新、返回、旧回调取消与状态替换。20 次隐藏更新样本为 0 次重建/25,641 µs，对照为 20 次/475,526 µs，仅为同进程 headless 墙钟时间，不是浏览器帧率。
+- 已运行源同步、完整媒体转换/验证和导入。原生正式预检与专项是部分验证，不声称完整套件通过；手机专项及 Node 加载/缓存/调度/工作流回归通过。保留 Web release 本地 36/39：离线单文件构建被终止（137），随后缺少单文件产物，浏览器预览为 HTTP 404。完整原生与实际 Godot Web 的精确提交验收交由 PR CI；不把上传、通过或合并混为一事。没有合并或部署。
+
+- 同源真实 Web 首轮发现前台回归：桌面 C3 重载中 36 包的活动 SHA 仅 2.264 秒，但 376 次逐帧让出令原生确认累计 35.7 秒；Retina C2 的 146 次逐帧让出累计 34.36 秒。缓存无重复网络、无预算等待。只把遮罩下的必需资源预算从 1 MiB/6 ms 调整为 4 MiB/16 ms；后台仍是 256 KiB/1.5 ms。保持全部摘要、挂载和超时断言，等待新精确提交的 Web 验收。
 
 ## 2026-11-07 校园分层地图 PR 候选整合
 
@@ -6009,3 +6031,5 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - 更新已经懒加载的档案胶片和体艺图片归属测试，仍以真实 kayak 脚本/场景链验证硬预加载提升 core；69 项资源归属检查通过。
 - 真实 Godot 4.7.1 导出复现新增校园后 102 包超过 100 包限制。只在包数超限时确定性合并最小同 family 普通包，当前两次合并恢复 100 包；其余 98 包身份、core 与 family 字节均不变，6 MB 普通目标、24 MB 硬限和 1 MiB 传输块继续保留。验证器重算必要性和精确成员，拒绝伪造例外；新增真实字节规模回归纳入非部署 CI。
 - 上述专项不代替完整原生与浏览器验收；实际构建和新提交 CI 结果记录于 PR #230。银泉北桥东侧落脚台向南旧小径的已知断点没有修改。
+
+- 合并前再次同步 `95124a80700130e83f4bf82500a31051c82f52b6`：保留后台预取、有界原生校验、隐藏手机页复用及新增回归；唯一文本冲突为本日志的追加段，双方记录均保留。新组合须重新验收，不沿用先前基线的全绿结果。

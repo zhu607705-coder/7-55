@@ -17,6 +17,8 @@ class LegacyTransport extends RefCounted:
 class Transport extends LegacyTransport:
 	var prefetch_families: Array = []
 	var windows: Array = []
+	var snapshot_data := {"packs": [{"id": "transport_sample", "timings": {"verifyMs": 2.5}}]}
+	func snapshot() -> String: return JSON.stringify(snapshot_data)
 	func setPrefetchFamilies(raw: String) -> void:
 		prefetch_families = JSON.parse_string(raw)
 		windows.append(prefetch_families.duplicate())
@@ -39,9 +41,13 @@ func check(value: bool, message: String) -> void:
 		push_error("WEB CONTENT: " + message)
 func write_file(filename: String, bytes: PackedByteArray) -> void:
 	var file := FileAccess.open(filename, FileAccess.WRITE); file.store_buffer(bytes); file.close()
-func record(id: String, family: String) -> Dictionary:
+func record(id: String, family: String, payload_bytes: int = 0) -> Dictionary:
 	var source := fixture_directory.path_join(id + ".txt")
-	write_file(source, ("Actual isolated content " + id).to_utf8_buffer())
+	var payload := ("Actual isolated content " + id).to_utf8_buffer()
+	if payload_bytes > 0:
+		payload.resize(payload_bytes)
+		payload.fill(37)
+	write_file(source, payload)
 	var filename := fixture_directory.path_join(id + ".pck")
 	var packer := PCKPacker.new()
 	check(packer.pck_start(filename) == OK and packer.add_file("res://755_content_test/" + id + ".txt", source) == OK and packer.flush() == OK, "test fixture is an actual official PCK " + id)
@@ -63,6 +69,20 @@ func new_probe(records: Array, host: Transport) -> Probe:
 	return result
 func deliver(coordinator: Probe, id: String, error := "") -> void:
 	coordinator._on_pack_received([id, coordinator._expected_path(id), error])
+
+func check_timings(coordinator: Probe, id: String, hashed: bool, mounted: bool) -> void:
+	var observed: Dictionary = {}
+	for pack: Dictionary in coordinator.read_snapshot().packs:
+		if pack.id == id: observed = pack.stageTimings
+	check(not observed.is_empty(), "recognized callback exposes stage timings")
+	if observed.is_empty(): return
+	check(typeof(observed.receiveMs) == TYPE_FLOAT and observed.receiveMs >= 0, "receive duration is a real nonnegative measurement")
+	for stage: String in ["sha256Ms", "mountMs"]:
+		var ran := hashed if stage == "sha256Ms" else mounted
+		check((typeof(observed[stage]) == TYPE_FLOAT and observed[stage] >= 0 and observed.receiveMs >= observed[stage]) if ran else observed[stage] == null, "stage timing reports actual execution, not an invented zero: " + stage)
+	if hashed and mounted: check(observed.receiveMs >= observed.sha256Ms + observed.mountMs, "receive duration includes SHA-256 and PCK mount")
+	observed.receiveMs = -1.0; observed.sha256Ms = -1.0
+	check(coordinator._packs[id].stageTimings.receiveMs >= 0 and coordinator._packs[id].stageTimings.sha256Ms != -1.0, "nested timing snapshot cannot mutate private diagnostics")
 
 func test_recovered_replay(state: Node) -> void:
 	# Full checked-in source state, not a fabricated chapter-four completion.
@@ -92,6 +112,77 @@ func test_recovered_replay(state: Node) -> void:
 	check(Coordinator.required_families(locked).size() == 3, "earlier destination confirmation does not request C4")
 	locked = replay.duplicate(true); locked.qizhenLake.phase = "tool_chain"
 	check(Coordinator.required_families(locked).size() == 3, "an unfinished lake cannot promote the replay content requirement")
+
+func test_sliced_verification() -> void:
+	# Real PCK, native FileAccess and actual SHA. This exercises frame admission,
+	# not a synthetic digest or a claim about Web/GPU/physical-device performance.
+	var pack := record("chapter2_sliced", "chapter2", 17836924)
+	var host := Transport.new()
+	var probe := new_probe([pack], host)
+	var before := Time.get_ticks_usec()
+	var baseline := FileAccess.get_sha256(probe._expected_path(pack.id))
+	var baseline_ms := (Time.get_ticks_usec() - before) / 1000.0
+	check(baseline == pack.sha256, "whole-file measurement uses the same actual PCK")
+	var result: Array = []
+	deliver(probe, pack.id)
+	check(probe._verifications.size() == 1 and host.acknowledgements.is_empty() and probe.mounts == 0, "large receipt defers native hashing beyond MEMFS callback and does not acknowledge early")
+	var job: Dictionary = probe._verifications[pack.id]
+	deliver(probe, pack.id); deliver(probe, pack.id, "duplicate transport error")
+	check(probe._verifications.size() == 1 and host.acknowledgements.is_empty(), "in-flight duplicates share verification without releasing host-owned bytes")
+	var frames := 0
+	while host.acknowledgements.is_empty() and frames < 2000:
+		var previous: int = job.file.get_position() if job.file.is_open() else int(pack.bytes)
+		await process_frame
+		frames += 1
+		if job.file.is_open():
+			check(job.file.get_position() - previous <= Coordinator.HASH_SLICE_BYTES, "one process frame consumes at most the native byte slice")
+			check(result.is_empty() and not probe.ready_for_state({"native":{"chapter":2}}), "partial digest cannot release a gameplay waiter")
+	check(frames > 1 and frames < 2000 and host.acknowledgements.size() == 1 and host.acknowledgements[0].accepted and probe.mounts == 1 and not probe.is_blocking(), "complete background digest mounts once without interrupting current gameplay")
+	check_timings(probe, pack.id, true, true)
+	var timing: Dictionary = probe._packs[pack.id].stageTimings
+	check(timing.sha256Slices >= ceili(float(pack.bytes) / Coordinator.HASH_SLICE_BYTES) and timing.sha256MaxSliceMs <= timing.sha256Ms, "measured slice counts cover every byte and max active slice is bounded by total work")
+	print("WEB_CONTENT_SLICED_SAMPLE: ", JSON.stringify({"bytes": pack.bytes, "wholeFileShaMs": baseline_ms, "frameCount": frames, "timings": timing}))
+	probe.queue_free(); await process_frame
+
+	# A changed file during an actual multi-frame read fails closed. On retry,
+	# the same ordinary request/ACK contract can recover without a save write.
+	var retry_host := Transport.new()
+	var retry_probe := new_probe([pack], retry_host)
+	var retry_result: Array = []
+	deliver(retry_probe, pack.id)
+	await process_frame; await process_frame
+	var promoted: Dictionary = retry_probe._verifications[pack.id]
+	var offset: int = promoted.file.get_position()
+	begin_wait(retry_probe, ["chapter2"], retry_result)
+	check(retry_probe._verifications[pack.id] == promoted and promoted.file.get_position() == offset and retry_result.is_empty(), "foreground promotion retains the exact partial digest and current offset")
+	paused = true
+	await process_frame; await process_frame
+	paused = false
+	check(promoted.file.get_position() > offset and promoted.file.get_position() - offset <= 2 * Coordinator.REQUIRED_HASH_SLICE_BYTES, "required digest advances within the larger frame budget while gameplay is paused")
+	write_file(retry_probe._expected_path(pack.id), PackedByteArray([1, 2, 3]))
+	for frame in 10:
+		if not retry_host.acknowledgements.is_empty(): break
+		await process_frame
+	check(not retry_host.acknowledgements.is_empty() and not retry_host.acknowledgements.back().accepted and retry_probe.mounts == 0 and retry_result.is_empty() and retry_probe._retry.visible, "truncation between slices rejects mounting and exposes the ordinary retry")
+	write_file(retry_probe._expected_path(pack.id), original_bytes[pack.id])
+	retry_probe._retry_required(); deliver(retry_probe, pack.id)
+	for frame in 2000:
+		if not retry_result.is_empty(): break
+		await process_frame
+	check(retry_result == [true] and retry_probe.mounts == 1 and retry_host.acknowledgements.back().accepted, "explicit retry verifies original bytes and recovers from an interrupted read")
+	retry_probe.queue_free(); await process_frame
+
+	var cancelled_host := Transport.new()
+	var cancelled := new_probe([pack], cancelled_host)
+	deliver(cancelled, pack.id)
+	var cancelled_file: FileAccess = cancelled._verifications[pack.id].file
+	check(cancelled._configure_manifest(manifest([pack]), cancelled_host), "manifest replacement cancels old native verification")
+	await process_frame
+	check(not cancelled_file.is_open() and cancelled_host.acknowledgements.is_empty() and cancelled.mounts == 0 and cancelled._verifications.is_empty(), "cancelled manifest work closes its file without acknowledging or mounting stale content")
+	deliver(cancelled, pack.id)
+	var exiting_file: FileAccess = cancelled._verifications[pack.id].file
+	cancelled.queue_free(); await process_frame; await process_frame
+	check(not exiting_file.is_open() and cancelled_host.acknowledgements.is_empty(), "tree exit closes pending reads and cannot issue a late accepted ACK")
 
 func run() -> void:
 	if not load("res://tests/native_test_isolation.gd").is_isolated_save():
@@ -170,11 +261,15 @@ func run() -> void:
 	check(coordinator.is_blocking() and coordinator._overlay.visible and host.requests == [[a.id, b.id]], "concurrent waits share one request and a visible required-content overlay")
 	check(first.is_empty() and second.is_empty(), "a family cannot resolve with chunks still missing")
 	check(host.windows.is_empty(), "required content does not advance optional prefetch before mounting")
+	check(coordinator.read_snapshot().packs[0].stageTimings == {"sha256Ms": null, "mountMs": null, "receiveMs": null}, "undelivered pack does not invent measurements")
 	var detached: Dictionary = coordinator.read_snapshot()
+	detached.transport.packs[0].timings.verifyMs = -1.0
+	check(coordinator.read_snapshot().transport.packs[0].timings.verifyMs == 2.5 and host.snapshot_data.packs[0].timings.verifyMs == 2.5, "transport timing snapshot is detached from host and future reads")
 	detached.packs[0].status = "ready"; detached.requiredIds.clear()
 	check(coordinator.read_snapshot().packs[0].status == "requested" and coordinator.read_snapshot().requiredIds.size() == 2, "read-only snapshots detach nested pack and waiter arrays")
 	write_file(coordinator._expected_path(a.id), PackedByteArray([1, 2, 3]))
 	deliver(coordinator, a.id)
+	check_timings(coordinator, a.id, false, false)
 	check(coordinator.mounts == 0 and not host.acknowledgements.back().accepted and coordinator._retry.visible, "wrong file size is rejected before mounting and exposes retry")
 	coordinator._request_missing([a.id, b.id])
 	check(host.requests.size() == 1, "an error never causes a per-frame automatic redownload")
@@ -182,12 +277,15 @@ func run() -> void:
 	check(host.retries == [[a.id]] and not coordinator._retry.visible, "user retry targets only the failed chunk")
 	var changed: PackedByteArray = original_bytes[a.id].duplicate(); changed[changed.size() - 1] ^= 1
 	write_file(coordinator._expected_path(a.id), changed); deliver(coordinator, a.id)
+	check_timings(coordinator, a.id, true, false)
 	check(coordinator.mounts == 0 and not host.acknowledgements.back().accepted, "same-length wrong SHA-256 bytes are rejected before mounting")
 	coordinator._retry_required()
 	coordinator._on_pack_received([a.id, coordinator._expected_path(a.id) + ".wrong", ""])
 	check(coordinator.mounts == 0 and not host.acknowledgements.back().accepted, "a callback cannot mount a different absolute path")
 	coordinator._retry_required()
 	write_file(coordinator._expected_path(a.id), original_bytes[a.id]); deliver(coordinator, a.id)
+	check_timings(coordinator, a.id, true, true)
+	print("WEB_CONTENT_STAGE_SAMPLE: ", coordinator._packs[a.id].stageTimings)
 	check(coordinator.mounts == 1 and host.acknowledgements.back().accepted and FileAccess.get_file_as_string("res://755_content_test/" + a.id + ".txt").ends_with(a.id), "actual valid PCK is verified, mounted and only then acknowledged")
 	check(first.is_empty() and second.is_empty() and not coordinator.ready_for_state({"native": {"chapter": 2}}), "first mounted chunk does not prematurely unlock its family")
 	deliver(coordinator, b.id)
@@ -198,7 +296,15 @@ func run() -> void:
 	var count := host.requests.size()
 	check(await coordinator.ensure_families(["chapter2"]), "a later consumer of an already ready family succeeds")
 	check(host.requests.size() == count and not coordinator.is_blocking(), "ready content is never requested or covered again")
+	deliver(coordinator, a.id)
+	check_timings(coordinator, a.id, true, false)
+	check(coordinator.mounts == 2 and host.acknowledgements.back().accepted and coordinator.ready_for_state({"native": {"chapter": 2}}), "valid duplicate rechecks integrity but does not remount or change readiness")
+	var unchanged := coordinator.read_snapshot()
+	coordinator._on_pack_received(["unknown", "", ""])
+	coordinator._on_pack_received([a.id])
+	check(coordinator.read_snapshot() == unchanged, "malformed or unknown callbacks cannot alter diagnostics or readiness")
 	coordinator._on_pack_received([a.id, coordinator._expected_path(a.id), "late network failure"])
+	check_timings(coordinator, a.id, false, false)
 	check(coordinator.ready_for_state({"native": {"chapter": 2}}) and coordinator.mounts == 2 and not host.acknowledgements.back().accepted, "late failed duplicate is not cached and cannot revoke verified mounted content")
 	coordinator.start_prefetch(); coordinator.start_prefetch()
 	check(host.prefetches == 1, "background prefetch starts idempotently")
@@ -209,6 +315,7 @@ func run() -> void:
 	var fourth: Array = []
 	begin_wait(coordinator, ["chapter4"], fourth)
 	coordinator.reject_mount = true; deliver(coordinator, d.id)
+	check_timings(coordinator, d.id, true, true)
 	check(coordinator.mounts == 4 and fourth.is_empty() and coordinator._retry.visible and not host.acknowledgements.back().accepted, "a validated file that cannot mount remains blocked and is never cached as accepted")
 	coordinator.reject_mount = false; coordinator._retry_required(); deliver(coordinator, d.id)
 	await process_frame
@@ -219,6 +326,7 @@ func run() -> void:
 	var legacy := Probe.new(); root.add_child(legacy)
 	legacy.directory = fixture_directory
 	check(legacy._configure_manifest(manifest([a]), old_host), "old cached loader remains a supported explicit transport")
+	check(legacy.read_snapshot().transport.is_empty(), "legacy transport without snapshot capability is never called")
 	var legacy_result: Array = []
 	begin_state_wait(legacy, {"native":{"chapter":2}}, legacy_result)
 	check(old_host.requests == [[a.id]] and legacy_result.is_empty(), "old loader still receives required PCK requests")
@@ -226,6 +334,19 @@ func run() -> void:
 	legacy.start_prefetch()
 	check(legacy_result == [true] and old_host.prefetches == 0 and not legacy._prefetch_started, "old loader completes required state without unbounded optional prefetch or missing-method calls")
 	legacy.queue_free()
+	var reentrant_host := Transport.new()
+	var reentrant := new_probe([a], reentrant_host)
+	var nested := [false]
+	reentrant.content_changed.connect(func():
+		if nested[0]: return
+		nested[0] = true
+		deliver(reentrant, a.id, "nested failure")
+	)
+	deliver(reentrant, a.id)
+	check_timings(reentrant, a.id, false, false)
+	check(reentrant.mounts == 1 and reentrant.ready_for_state({"native": {"chapter": 2}}), "reentrant callback preserves ready and the latest callback diagnostics")
+	reentrant.queue_free()
+	await test_sliced_verification()
 	check(not await coordinator.ensure_families(["untrusted_family"]), "unexpected family request is rejected")
 	var backup_after := FileAccess.get_file_as_bytes(state.BACKUP_PATH) if FileAccess.file_exists(state.BACKUP_PATH) else PackedByteArray()
 	check(state.d == before and FileAccess.get_file_as_bytes(state.SAVE_PATH) == primary and backup_after == backup, "availability, rejection, retries and mounting never change story or either save")

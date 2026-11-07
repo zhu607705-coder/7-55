@@ -74,6 +74,8 @@ var mobile_world := false
 var world_page_origin_scene := ""
 var pending_library_reveal: Dictionary={}
 var phone_scroll_page := ""
+var phone_page_dirty := false
+var phone_page_state: Dictionary={}
 var mobile_back: Button
 var phone_world_return: Button
 var world_tasks: Button
@@ -682,6 +684,9 @@ func _layout() -> void:
 	phone.size = Vector2(430,860)
 	phone.position = Vector2((available.x - 430*phone_scale)/2,phone_top+(phone_space.y-860*phone_scale)/2)
 	phone.visible = not mobile_world and not fitted_activity
+	# Return, resize and activity cancellation may reveal a retained dirty page
+	# without another State.changed signal. Coalesce one current-state rebuild.
+	if phone.visible and phone_page_dirty: _schedule_refresh()
 	# One measured reading gutter below reserves the painted bag + badge.
 	# Keep the upstream page wrapper, without stacking a second approximate inset.
 	phone_world_return.visible = phone.visible and has_world and not is_instance_valid(active_game)
@@ -1084,6 +1089,27 @@ func _refresh() -> void:
 	var photos_mounted := not mobile_world
 	if photo_brightness_session.observe(page if photos_mounted else "",State.d.ui):
 		State.act("lib_dim_photo")
+	_refresh_phone_page(n,page)
+	_refresh_inventory_dock()
+	_refresh_control_center()
+	if world and world.has_method("refresh_world"): world.refresh_world()
+	_layout()
+	if is_instance_valid(phone_object_pickup): phone_object_pickup.after_refresh()
+
+func _refresh_phone_page(n: Dictionary,page: String) -> void:
+	# Keep destination changes: the builders also route/reset app-local sessions.
+	# Repeated hidden updates can share the existing subtree until it is shown.
+	# Reset/import replaces the state owner, so its old views must be rebound.
+	# App pages can own delayed gameplay callbacks. Preserve their original
+	# rebuild/cancel lifecycle; retain only audited passive destinations. The
+	# prologue homepage also owns the gear tween and must keep that lifecycle.
+	var passive: bool=page in ["phone_home","settings"] and str(State.d.actOne.phase)!="prologue"
+	var hidden: bool=(mobile_world and _has_world_scene()) or _activity_owns_scene()
+	if passive and hidden and page==phone_scroll_page and is_same(phone_page_state,State.d) and page_body.get_child_count()>0:
+		phone_page_dirty=true
+		return
+	phone_page_dirty=false
+	phone_page_state=State.d
 	# A new phone destination starts at its top. Same-page state refreshes keep
 	# the player's scroll position, including open overlay/brightness updates.
 	if page != phone_scroll_page:
@@ -1193,11 +1219,6 @@ func _refresh() -> void:
 	# The shared bottom-right PhoneWorldReturn already exposes that same action.
 	if not str(n.scene).is_empty() and not (custom_body and custom_body.get_meta("source_page",false)):
 		fallback_parent.add_child(_button("返回现场",_show_world_mobile))
-	_refresh_inventory_dock()
-	_refresh_control_center()
-	if world and world.has_method("refresh_world"): world.refresh_world()
-	_layout()
-	if is_instance_valid(phone_object_pickup): phone_object_pickup.after_refresh()
 
 func _add_app_grid(parent: Control) -> void:
 	var grid := GridContainer.new()

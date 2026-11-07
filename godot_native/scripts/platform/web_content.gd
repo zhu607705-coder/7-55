@@ -6,6 +6,16 @@ const FAMILIES := ["chapter2", "chapter3", "chapter35", "chapter4", "flc_activit
 const STORY_FAMILIES := ["chapter2", "chapter3", "chapter35", "chapter4"]
 const ReleaseContent = preload("res://scripts/release_content_policy.gd")
 const Ui = preload("res://scripts/ui/native_ui_theme.gd")
+# Bound native verification as well as JS consumption. This is a byte/time
+# admission budget, not a guarantee about OS scheduling or PCK mount duration.
+const HASH_BLOCK_BYTES := 64 * 1024
+const HASH_SLICE_BYTES := 256 * 1024
+const HASH_SLICE_USEC := 1500
+# Required content owns a loading cover. Give it one frame-sized CPU budget:
+# a 6 ms slice amplified every hash step into a 100–250 ms Web render wait.
+const REQUIRED_HASH_SLICE_BYTES := 4 * 1024 * 1024
+const REQUIRED_HASH_SLICE_USEC := 16000
+var _verifications: Dictionary = {}
 var _host: Variant
 var _callback: JavaScriptObject
 var _enabled := false
@@ -22,6 +32,7 @@ var _prefetch_started := false
 var _prefetch_families: Array = []
 var _prefetch_window_set := false
 var _prefetch_window_supported := false
+var _snapshot_supported := false
 var _overlay: CanvasLayer
 var _cover: Control
 var _card: PanelContainer
@@ -31,13 +42,15 @@ var _retry: Button
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	set_process(false)
 	if not OS.has_feature("web"): return
 	_host = JavaScriptBridge.get_interface("__GODOT_755_CONTENT_HOST__")
 	if not _require_web_host(_host): return
 	var supports_window: bool = bool(JavaScriptBridge.eval("typeof window.__GODOT_755_CONTENT_HOST__.setPrefetchFamilies === 'function'", true))
+	var supports_snapshot: bool = bool(JavaScriptBridge.eval("typeof window.__GODOT_755_CONTENT_HOST__.snapshot === 'function'", true))
 	JavaScriptBridge.eval("delete window.__GODOT_755_CONTENT_HOST__", true)
 	var raw: Variant = JSON.parse_string(str(_host.manifest()))
-	if not raw is Dictionary or not _configure_manifest(raw, _host, supports_window):
+	if not raw is Dictionary or not _configure_manifest(raw, _host, supports_window, supports_snapshot):
 		_enabled = true
 		_fatal_error = "游戏尚未准备完成，请重新加载页面后重试。当前进度已保留。"
 		_show_fatal()
@@ -79,9 +92,10 @@ func _valid_id(value: Variant) -> bool:
 		if character not in "abcdefghijklmnopqrstuvwxyz0123456789_": return false
 	return true
 
-func _configure_manifest(value: Dictionary, host: Variant, supports_window: bool = false) -> bool:
+func _configure_manifest(value: Dictionary, host: Variant, supports_window: bool = false, supports_snapshot: bool = false) -> bool:
 	# Also exercised with an isolated transport in tests. No test hook is exposed
 	# through the browser's read-only public observation surface.
+	_cancel_verifications()
 	_enabled = true
 	_fatal_error = "游戏资源目录无法读取，请重新打开页面。"
 	if value.get("schema") != "755-web-content-v1" or not value.get("core") is Dictionary or not _valid_file(value.core) or not value.get("packs") is Array or not value.get("backgroundOrder") is Array: return false
@@ -90,7 +104,7 @@ func _configure_manifest(value: Dictionary, host: Variant, supports_window: bool
 	var files: Dictionary = {str(value.core.file): true}
 	for item: Variant in value.packs:
 		if not item is Dictionary or not _valid_id(item.get("id")) or item.id == "core" or not ReleaseContent.family_available(item.get("family")) or not _valid_file(item) or packs.has(item.id) or files.has(item.file): return false
-		packs[item.id] = {"id": item.id, "family": item.family, "file": item.file, "bytes": int(item.bytes), "sha256": item.sha256, "status": "missing", "error": ""}
+		packs[item.id] = {"id": item.id, "family": item.family, "file": item.file, "bytes": int(item.bytes), "sha256": item.sha256, "status": "missing", "error": "", "stageTimings": {"sha256Ms": null, "mountMs": null, "receiveMs": null}}
 		if not families.has(item.family): families[item.family] = []
 		families[item.family].append(item.id)
 		files[item.file] = true
@@ -102,6 +116,7 @@ func _configure_manifest(value: Dictionary, host: Variant, supports_window: bool
 	_families = families
 	_host = host
 	_prefetch_window_supported = supports_window or (host != null and not host is JavaScriptObject and host.has_method("setPrefetchFamilies"))
+	_snapshot_supported = supports_snapshot or (host != null and not host is JavaScriptObject and host.has_method("snapshot"))
 	_fatal_error = ""
 	return true
 
@@ -227,32 +242,116 @@ func _expected_path(id: String) -> String:
 func _mount_pack(filename: String) -> bool:
 	return ProjectSettings.load_resource_pack(filename, false)
 
+func _cancel_verifications() -> void:
+	for job: Dictionary in _verifications.values():
+		job.file.close()
+	_verifications.clear()
+	set_process(false)
+
+func _exit_tree() -> void:
+	_cancel_verifications()
+
+func _process(_delta: float) -> void:
+	# The production host has one outstanding mount ACK. Keep the native side
+	# bounded too, even if a legacy host delivers several distinct packs at once.
+	if not _verifications.is_empty():
+		_advance_verification(_verifications.values()[0])
+
+func _advance_verification(job: Dictionary) -> void:
+	var file: FileAccess = job.file
+	var timing: Dictionary = job.timings
+	var began := Time.get_ticks_usec()
+	var consumed := 0
+	var error := ""
+	# Required content owns the loading cover and may use a larger bounded slice.
+	# Promotion continues this exact digest rather than reading the pack again.
+	var required: bool = job.id in _waiting_ids()
+	var byte_limit := REQUIRED_HASH_SLICE_BYTES if required else HASH_SLICE_BYTES
+	var time_limit := REQUIRED_HASH_SLICE_USEC if required else HASH_SLICE_USEC
+	while file.get_position() < int(job.record.bytes):
+		var wanted := mini(HASH_BLOCK_BYTES, int(job.record.bytes) - file.get_position())
+		var bytes := file.get_buffer(wanted)
+		if bytes.size() != wanted or job.hash.update(bytes) != OK:
+			error = "资源尚未下载完整，请重试。"
+			break
+		consumed += bytes.size()
+		if consumed >= byte_limit or Time.get_ticks_usec() - began >= time_limit: break
+	var elapsed := (Time.get_ticks_usec() - began) / 1000.0
+	timing.sha256Ms += elapsed
+	timing.sha256Slices += 1
+	timing.sha256MaxSliceMs = maxf(timing.sha256MaxSliceMs, elapsed)
+	if error.is_empty() and file.get_position() < int(job.record.bytes): return
+	if error.is_empty() and (file.get_length() != int(job.record.bytes) or job.hash.finish().hex_encode() != job.record.sha256):
+		error = "资源内容校验失败，请重试。"
+	file.close()
+	_verifications.erase(job.id)
+	set_process(not _verifications.is_empty())
+	_finish_received(job, error)
+
+func _finish_received(job: Dictionary, error: String) -> void:
+	var id: String = job.id
+	var record: Dictionary = job.record
+	var timings: Dictionary = job.timings
+	var already_ready: bool = record.status == "ready"
+	if error.is_empty() and not already_ready:
+		var mount_started := Time.get_ticks_usec()
+		var mounted := _mount_pack(job.filename)
+		timings.mountMs = (Time.get_ticks_usec() - mount_started) / 1000.0
+		if not mounted: error = "资源暂时无法打开，请重试。"
+	# A bad late duplicate cannot retire a verified mounted pack. No caller can
+	# observe readiness or an accepted ACK before the complete digest and mount.
+	if not already_ready:
+		record.status = "ready" if error.is_empty() else "error"
+		record.error = error
+	record.stageTimings = timings
+	if _host != null: _host.acknowledge(id, error.is_empty(), error)
+	_update_overlay()
+	content_changed.emit()
+	# Includes frame waits and resumed listeners; sha256Ms counts active slices.
+	timings.receiveMs = (Time.get_ticks_usec() - int(job.began)) / 1000.0
+
 func _on_pack_received(args: Array) -> void:
+	var receive_started := Time.get_ticks_usec()
 	if args.size() != 3 or not args[0] is String or not _packs.has(args[0]): return
 	var id: String = args[0]
+	# A repeated callback joins the in-flight verification. A premature ACK would
+	# let the host release/replace its MEMFS bytes while they are still being read.
+	if _verifications.has(id): return
 	var record: Dictionary = _packs[id]
-	var already_ready: bool = record.status == "ready"
+	# Last recognized callback only. Null means the stage did not run.
+	# PCK mounting is not resource loading, texture decoding or GPU upload.
+	var timings := {"sha256Ms": null, "mountMs": null, "receiveMs": null}
+	var job := {"id": id, "record": record, "timings": timings, "began": receive_started, "filename": ""}
 	var error := ""
 	if not args[2] is String or not str(args[2]).is_empty(): error = "网络暂时不可用，请重试。"
 	elif not args[1] is String or str(args[1]) != _expected_path(id): error = "资源位置校验失败，请重试。"
 	else:
 		var filename: String = args[1]
+		job.filename = filename
 		var file := FileAccess.open(filename, FileAccess.READ)
 		if file == null: error = "资源尚未下载完整，请重试。"
 		else:
 			var actual_bytes := file.get_length()
-			file.close()
-			if actual_bytes != int(record.bytes): error = "资源长度校验失败，请重试。"
-			elif FileAccess.get_sha256(filename) != record.sha256: error = "资源内容校验失败，请重试。"
-			elif not already_ready and not _mount_pack(filename): error = "资源暂时无法打开，请重试。"
-	# A bad late duplicate is rejected for caching but cannot retire a mounted
-	# pack that was already verified. Mount each accepted pack at most once.
-	if not already_ready:
-		_packs[id].status = "ready" if error.is_empty() else "error"
-		_packs[id].error = error
-	if _host != null: _host.acknowledge(id, error.is_empty(), error)
-	_update_overlay()
-	content_changed.emit()
+			if actual_bytes != int(record.bytes):
+				file.close()
+				error = "资源长度校验失败，请重试。"
+			else:
+				var hash := HashingContext.new()
+				if hash.start(HashingContext.HASH_SHA256) != OK:
+					file.close()
+					error = "资源内容校验失败，请重试。"
+				else:
+					job.file = file; job.hash = hash
+					timings.sha256Ms = 0.0
+					timings.sha256Slices = 0
+					timings.sha256MaxSliceMs = 0.0
+					_verifications[id] = job
+					set_process(true)
+					# Tiny receipts retain synchronous behavior. Larger content starts
+					# on the next frame, after the host's whole-pack MEMFS copy.
+					if actual_bytes <= HASH_BLOCK_BYTES: _advance_verification(job)
+					return
+	_finish_received(job, error)
 
 func start_prefetch() -> void:
 	if not _enabled or not _fatal_error.is_empty() or _prefetch_started or _host == null or not _prefetch_window_supported: return
@@ -265,11 +364,16 @@ func is_blocking() -> bool:
 	return _blocking
 
 func read_snapshot() -> Dictionary:
+	var transport: Dictionary = {}
+	if _snapshot_supported and _host != null:
+		var parser := JSON.new()
+		if parser.parse(str(_host.snapshot())) == OK and parser.data is Dictionary:
+			transport = parser.data
 	var packs: Array = []
 	var ready_families: Array = []
 	for id: String in _packs:
 		var record: Dictionary = _packs[id]
-		packs.append({"id": id, "family": record.family, "bytes": record.bytes, "status": record.status, "error": record.error})
+		packs.append({"id": id, "family": record.family, "bytes": record.bytes, "status": record.status, "error": record.error, "stageTimings": record.stageTimings.duplicate(true)})
 	for family: String in _families:
 		if _ids_ready(_families[family]): ready_families.append(family)
 	var required := _waiting_ids()
@@ -282,7 +386,7 @@ func read_snapshot() -> Dictionary:
 	var cancel_rect:Rect2=_cancel_optional_button.get_global_rect() if cancel_visible else Rect2()
 	var retry_visible: bool = is_instance_valid(_retry) and _retry.is_visible_in_tree()
 	var retry_rect: Rect2 = _retry.get_global_rect() if retry_visible else Rect2()
-	return {"enabled": _enabled, "monolithic": not _enabled, "blocking": _blocking, "prefetchStarted": _prefetch_started, "prefetchFamilies": _prefetch_families.duplicate(), "manifestError": _fatal_error, "readyFamilies": ready_families, "requiredIds": required, "requiredBytes": total, "loadedBytes": loaded, "packs": packs, "cancelVisible":cancel_visible,"cancelRect":{"x":cancel_rect.position.x,"y":cancel_rect.position.y,"width":cancel_rect.size.x,"height":cancel_rect.size.y},"retryVisible": retry_visible, "retryRect": {"x": retry_rect.position.x, "y": retry_rect.position.y, "width": retry_rect.size.x, "height": retry_rect.size.y}}.duplicate(true)
+	return {"transport": transport, "enabled": _enabled, "monolithic": not _enabled, "blocking": _blocking, "prefetchStarted": _prefetch_started, "prefetchFamilies": _prefetch_families.duplicate(), "manifestError": _fatal_error, "readyFamilies": ready_families, "requiredIds": required, "requiredBytes": total, "loadedBytes": loaded, "packs": packs, "cancelVisible":cancel_visible,"cancelRect":{"x":cancel_rect.position.x,"y":cancel_rect.position.y,"width":cancel_rect.size.x,"height":cancel_rect.size.y},"retryVisible": retry_visible, "retryRect": {"x": retry_rect.position.x, "y": retry_rect.position.y, "width": retry_rect.size.x, "height": retry_rect.size.y}}.duplicate(true)
 
 func _waiting_ids() -> Array:
 	var result: Array = []

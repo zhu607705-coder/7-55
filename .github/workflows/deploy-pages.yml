@@ -131,6 +131,7 @@ jobs:
         run: |
           node godot_native/tests/test_web_acceptance_bundle.mjs
           node godot_native/tools/test_web_content_loader.mjs
+          node --test godot_native/tools/test_web_background_budget.mjs
           node godot_native/tools/test_web_resource_cache.mjs
           node godot_native/tools/test_web_boot_chunks.mjs
           node godot_native/tools/test_web_audio_compat.mjs --export=godot_native/exports/web-release
