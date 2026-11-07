@@ -4,6 +4,8 @@ on:
     outputs:
       game:
         value: ${{ jobs.scope.outputs.game }}
+      retained_web:
+        value: ${{ jobs.scope.outputs.retained_web }}
       platform:
         value: ${{ jobs.scope.outputs.platform }}
 permissions:
@@ -14,6 +16,7 @@ jobs:
     outputs:
       game: ${{ steps.paths.outputs.game }}
       platform: ${{ steps.paths.outputs.platform }}
+      retained_web: ${{ steps.paths.outputs.retained_web }}
     steps:
       - uses: actions/checkout@v4
         with:

@@ -115,13 +115,13 @@ test('exact input identity detects edits, new untracked inputs, environment, too
   assert.equal(spawnSync('git', ['init', '-q', root]).status, 0);
   const binary = path.join(root, 'fake-godot'); fs.writeFileSync(binary, '#!/bin/sh\nprintf "4.7.1.test\\n"\n', {mode: 0o755});
   fs.writeFileSync(path.join(root, 'source.gd'), 'original');
-  const env = {PATH: process.env.PATH, LANG: 'C', GITHUB_REPOSITORY: 'fixture/repo', GITHUB_WORKFLOW: 'Native validation'};
+  const env = {PATH: process.env.PATH, LANG: 'C', GITHUB_REPOSITORY: 'fixture/repo', GITHUB_WORKFLOW: 'Native validation', RUNNER_TEMP: '/tmp/hosted-runner'};
   const snapshot = () => validationIdentity(root, {executable: binary, jobs: 2, env});
   const original = snapshot(); assert.equal(snapshot().sha256, original.sha256);
   fs.writeFileSync(path.join(root, 'new-helper.gd'), 'new untracked'); assert.notEqual(snapshot().sha256, original.sha256); fs.unlinkSync(path.join(root, 'new-helper.gd'));
   fs.writeFileSync(path.join(root, 'source.gd'), 'changed'); assert.notEqual(snapshot().sha256, original.sha256); fs.writeFileSync(path.join(root, 'source.gd'), 'original');
   assert.notEqual(validationIdentity(root, {executable: binary, jobs: 2, env: {...env, SOME_OPTION: '1'}}).sha256, original.sha256);
-  for (const name of ['GITHUB_REPOSITORY', 'GITHUB_WORKFLOW']) {
+  for (const name of ['GITHUB_REPOSITORY', 'GITHUB_WORKFLOW', 'RUNNER_TEMP']) {
    const changed = validationIdentity(root, {executable: binary, jobs: 2, env: {...env, [name]: `${env[name]}-changed`}});
    assert.notEqual(changed.environmentSha256, original.environmentSha256, name);
    assert.notEqual(changed.sha256, original.sha256, name);
@@ -159,7 +159,7 @@ test('external fixture paths cannot authorize resume by stable path spelling', (
 });
 
 test('hosted browser/account defaults do not serialize native readers or hide real overrides', () => {
- const env = {CI:'true',USER:'runner',CHROME_BIN:'/usr/bin/google-chrome',BUCT_V4_QA_DIR:'/tmp/native-qa',GODOT_TEST_REPORT:'/tmp/native-report.json'};
+ const env = {CI:'true',USER:'runner',CHROME_BIN:'/usr/bin/google-chrome',RUNNER_TEMP:'/home/runner/work/_temp',BUCT_V4_QA_DIR:'/tmp/native-qa',GODOT_TEST_REPORT:'/tmp/native-report.json'};
  assert.deepEqual(inheritedTestOverrides(path.dirname(project), env), []);
  for (const name of ['WORLD_SCRIPT_PATH','LAMP_SOURCE_FRAMES','CANTEEN_SOURCE_ROOT','SOURCE_REPO_ROOT']) {
   assert.deepEqual(inheritedTestOverrides(path.dirname(project), {...env,[name]:'/tmp/mutable-input'}), [name]);
@@ -188,6 +188,18 @@ test('GitHub metadata classification is exact-key only, not a GITHUB prefix exem
   fs.writeFileSync(path.join(directory, 'external.mjs'), 'const source = process.env.GITHUB_SOURCE_ROOT;\n');
   assert.deepEqual(inheritedTestOverrides(root, {GITHUB_REPOSITORY:'fixture/repo', GITHUB_WORKFLOW:'Native validation', GITHUB_SOURCE_ROOT:'/tmp/mutable-input'}), ['GITHUB_SOURCE_ROOT']);
  } finally {fs.rmSync(root, {recursive:true, force:true});}
+});
+
+test('a Web receipt helper can use runner scratch space without hiding native fixture overrides', () => {
+ const root = fs.mkdtempSync(path.join(os.tmpdir(), '755-runner-temp-test-'));
+ try {
+  const directory = path.join(root, 'godot_native/tools'); fs.mkdirSync(directory, {recursive:true});
+  fs.writeFileSync(path.join(directory, 'web-receipt.mjs'), 'const scratch = process.env.RUNNER_TEMP;\n');
+  fs.writeFileSync(path.join(directory, 'native-fixture.mjs'), 'const fixture = process.env.RUNNER_FIXTURE_PATH;\n');
+  const hosted = {RUNNER_TEMP:'/home/runner/work/_temp'};
+  assert.deepEqual(inheritedTestOverrides(root, hosted), []);
+  assert.deepEqual(inheritedTestOverrides(root, {...hosted,RUNNER_FIXTURE_PATH:'/tmp/external-fixture'}), ['RUNNER_FIXTURE_PATH']);
+ } finally {fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('workspace lock excludes a second process and can be released without stale ownership', async () => {

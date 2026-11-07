@@ -6,6 +6,19 @@ import {NATIVE_SHARD_COUNT} from '../tools/native_validation_shards.mjs';
 const source=fs.readFileSync(new URL('../../.github/workflows/godot-native-ci.yml',import.meta.url),'utf8');
 const matches=[...source.matchAll(/^  ([a-z][a-z0-9-]*):\n/gm)];
 const jobs=Object.fromEntries(matches.filter(m=>source.indexOf('jobs:\n')<m.index).map((m,i,a)=>[m[1],source.slice(m.index,a[i+1]?.index??source.length)]));
+test('new PR commits cancel obsolete native work without cancelling mainline or manual runs',()=>{
+ const integration=fs.readFileSync(new URL('../../.github/workflows/native-pr-integration.yml',import.meta.url),'utf8');
+ for(const [workflow,prefix] of [[source,'native-validation'],[integration,'native-integration']]){
+  const concurrency=workflow.split('\nconcurrency:\n')[1]?.split('\n\n')[0];
+  assert.ok(concurrency,'workflow-level concurrency is required');
+  assert.ok(concurrency.includes(`group: ${prefix}-\${{ github.event.pull_request.number || github.ref }}`));
+  const expression=concurrency.match(/cancel-in-progress: \$\{\{ (.*?) \}\}/)?.[1];
+  assert.ok(expression);
+  const cancel=new Function('github',`return (${expression});`);
+  assert.equal(cancel({event_name:'pull_request'}),true);
+  for(const event_name of ['push','workflow_dispatch'])assert.equal(cancel({event_name}),false);
+ }
+});
 test('bounded twelve-shard architecture retains original final required-check identity',()=>{
  assert.deepEqual(Object.keys(jobs),['contracts','prepare','runtime','graphics','native-parse-and-tests']);
  assert.match(jobs.runtime,/fail-fast: false/);assert.equal(Number(jobs.runtime.match(/max-parallel: (\d+)/)[1]),NATIVE_SHARD_COUNT);assert.deepEqual(JSON.parse(jobs.runtime.match(/shard: (\[[^\n]+\])/)[1]),Array.from({length:NATIVE_SHARD_COUNT},(_,i)=>i));
@@ -88,6 +101,29 @@ test('runtime authenticates bootstrap before source parsing without fetching a f
  assert.doesNotMatch(body,/github-token:|run-id:|repository:/);
  assert.match(jobs.contracts,/test_native_source_transport_integration.mjs/);
  assert.ok(body.indexOf('test ! -e "$RUNNER_TEMP/native-source/source.tar"') < body.indexOf('native_validation_bundle.mjs restore'));
- assert.match(body,/timeout-minutes: 10/);
+ assert.match(body,/^    timeout-minutes: 15$/m);
+ assert.match(body,/name: Run every owned stage against frozen producer inputs\n        timeout-minutes: 10/);
+ const restore=body.split('native_source_transport.py restore')[1].split('      - uses:')[0];
+ assert.ok(restore.includes("--producer-attempt '${{ needs.prepare.outputs.producer_attempt }}'"));
  assert.doesNotMatch(body,/sparse-checkout disable|git checkout|git reset --hard|fetch.*unshallow/);
+});
+
+
+test('every workflow source restore explicitly binds the upstream producer attempt',()=>{
+ const directory=new URL('../../.github/workflows/',import.meta.url);
+ let callers=0;
+ for(const name of fs.readdirSync(directory).filter(name=>/\.ya?ml$/.test(name))){
+  const workflow=fs.readFileSync(new URL(name,directory),'utf8');
+  // Join shell continuations only, so a later command cannot supply this flag.
+  const joined=workflow.replace(/\\\r?\n[ \t]*/g,' ');
+  const commands=[...joined.matchAll(/native_source_transport\.py restore[^\r\n]*/g)];
+  for(const [command] of commands){
+   assert.match(command,/--producer-attempt '\$\{\{ needs\.[a-z_-]+\.outputs\.producer_attempt \}\}'/,name);
+   callers++;
+  }
+ }
+ assert.ok(callers>=2,'main native and source A/B restores must both be checked');
+ const comparison=fs.readFileSync(new URL('native-source-ab.yml',directory),'utf8');
+ assert.match(comparison,/producer_attempt: \$\{\{ steps\.capture\.outputs\.producer_attempt \}\}/);
+ assert.ok(comparison.includes('echo "producer_attempt=$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"'));
 });

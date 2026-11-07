@@ -94,11 +94,11 @@ test('complete source restore preserves exact validationIdentity and prepared re
   git(value.root,'update-ref','--no-deref','HEAD',value.expected.commit);git(value.root,'read-tree','HEAD');
   execFileSync('python3',['-B',helper.pathname,'restore','--root',value.root,'--bundle-dir',value.sourceBundle,
     '--head',value.expected.head,'--base',value.expected.base,'--manifest-sha',value.sourceResult.manifest_sha,
-    '--archive-sha',value.sourceResult.archive_sha],{env:value.sourceEnv});
+    '--archive-sha',value.sourceResult.archive_sha,'--producer-attempt','1'],{env:{...value.sourceEnv,GITHUB_RUN_ATTEMPT:'2'}});
   assert.equal(git(value.root,'status','--porcelain'),'');assert.equal(git(value.root,'ls-files','--stage'),indexBefore);
   assert.ok(fs.existsSync(path.join(value.root,'godot_native/art_source/.gdignore')));
   assert.ok(!fs.existsSync(path.join(value.root,'godot_native/.godot/imported/texture.mock')),'source transport must not smuggle derived bytes');
-  const verified=verifyBundle({...value,receiptSha:result.receiptSha,producerAttempt:'1',restore:true});
+  const verified=verifyBundle({...value,expected:{...value.expected,attempt:'2'},receiptSha:result.receiptSha,producerAttempt:'1',restore:true});
   assert.equal(verified.verified,true);assert.equal(verified.restored,true);
   assert.deepEqual(fs.readFileSync(path.join(value.bundleDir,'bundle-receipt.json')),receiptBefore,'referencePlan receipt stays byte-identical');
   assert.deepEqual(validationIdentity(value.root,{executable:engine,jobs:2}),identityBefore,'all identity fields, including full input SHA, stay exact');

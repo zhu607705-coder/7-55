@@ -21,7 +21,7 @@ jobs:
     uses: ./.github/workflows/product-scope.yml
   verify-web:
     needs: scope
-    if: needs.scope.outputs.game == 'true'
+    if: needs.scope.outputs.retained_web == 'true'
     concurrency:
       group: web-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
       cancel-in-progress: true

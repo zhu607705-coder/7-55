@@ -31,7 +31,8 @@ function receiptCode(name, job = profilesJob) {
   return match[1].split('\n').map(line => line.replace(/^          /, '')).join('\n');
 }
 const worldCode = receiptCode('Accept actual world input for this profile');
-const phoneCode = receiptCode('Accept actual early charging and two-stage Tiyi phone input', phoneJob);
+const phoneReceiptPath = 'godot_native/tools/write_web_phone_receipt.mjs';
+const phoneReceiptSource = readFileSync(new URL('../tools/write_web_phone_receipt.mjs', import.meta.url), 'utf8');
 const phoneContract = readFileSync(new URL('../tools/web_phone_shards.mjs', import.meta.url), 'utf8');
 const fixtureHelper = readFileSync(new URL('../tools/prepare_web_controller_fixtures.mjs', import.meta.url), 'utf8');
 const consumerNames = ['browser_baseline', 'browser_streaming', 'browser_profiles', 'phone_profiles', 'library_profiles', 'browser_flc'];
@@ -117,11 +118,11 @@ await test('duration-balanced pairs preserve five exact phone keys and thirteen 
 });
 await test('all balanced phone invocations retain identical commands, validators and isolated evidence', () => {
   const title = 'Accept actual early charging and two-stage Tiyi phone input';
-  const separate = step(title, phoneJob);
+  for (const job of [phoneJob, profilesJob, streamingJob, libraryJob]) {
+    assert.equal((step(title, job).match(/node godot_native\/tools\/write_web_phone_receipt\.mjs/g) || []).length, 1);
+  }
   for (const [name, job, first] of [['world',profilesJob,'Preserve this profile\'s independent browser evidence'], ['streaming',streamingJob,'Preserve streaming evidence'], ['library',libraryJob,'Preserve this profile\'s library evidence']]) {
     const combined = step(title, job), paired = name !== 'streaming';
-    assert.equal(combined.split('        run: |\n')[1].trim(), separate.split('        run: |\n')[1].trim());
-    assert.equal(receiptCode(title, job), phoneCode);
     assert.equal((job.match(/node godot_native\/tools\/verify_web_export\.mjs/g) || []).length, 2);
     assert.match(combined, /timeout-minutes: 8/);
     assert.match(combined, /--output godot_native\/exports\/verification\/web_phone_recovery/);
@@ -287,6 +288,16 @@ await test('PRs cannot upload Pages and publication requires every consumer plus
   assert.doesNotMatch(workflow, /continue-on-error|pull_request_target/);
 });
 
+await test('only superseded PR acceptance can be cancelled', () => {
+  const concurrency = workflow.split('\nconcurrency:\n')[1].split('\njobs:\n')[0];
+  const expression = concurrency.match(/^  cancel-in-progress: \$\{\{ (.*?) \}\}$/m)?.[1];
+  assert.ok(expression, 'Missing event-scoped cancellation');
+  const cancel = new Function('github', `return (${expression});`);
+  for (const event_name of ['pull_request', 'push', 'workflow_dispatch']) {
+    assert.equal(cancel({event_name}), event_name === 'pull_request');
+  }
+});
+
 await test('sealed inputs allow independent profile diagnostics after producer post-transfer failure only', () => {
   assert.ok(build.indexOf('Seal exact-source browser acceptance inputs') < build.indexOf('Transfer immutable acceptance inputs to profile runners'));
   assert.doesNotMatch(build, /Accept actual Godot Web input/);
@@ -318,7 +329,6 @@ await test('producer artifact and consumer checkout bind one run and explicit pr
   assert.match(step('Verify exact source and every input byte'), /--receipt-sha "\$EXPECTED_RECEIPT_SHA"/);
   assert.match(step('Verify exact source and every input byte'), /--producer-attempt "\$EXPECTED_PRODUCER_ATTEMPT"/);
   assert.match(worldCode, /inputBundle: JSON.parse/);
-  assert.match(phoneCode, /inputBundle: JSON.parse/);
 });
 
 function sample(profile, scenario) {
@@ -333,22 +343,26 @@ function sample(profile, scenario) {
     phoneRecovery: { group: 'all', completed: true, coverage: phoneCoverage(), inputs: [{}] } };
   return { report: { passed: true, scenarios: scenario, exportManifest: { sourceCommit: sha, engine: '4.7.1.stable.official' }, cases: [item] }, fixture, fixtures };
 }
-function runReceipt(profile, scenario, mutate = () => {}) {
+function runReceipt(profile, scenario, mutate = () => {}, group = 'all') {
   const root = mkdtempSync(path.join(tmpdir(), '755-profile-receipt-'));
   try {
-    const input = sample(profile, scenario); mutate(input);
+    const input = sample(profile, scenario);
+    input.report.cases[0].phoneRecovery.group = group;
+    input.report.cases[0].phoneRecovery.coverage = phoneCoverage(group);
+    mutate(input);
     const verification = path.join(root, 'godot_native/exports/verification');
     const directory = path.join(verification, scenario === 'mobile-world' ? 'web_mobile_world' : 'web_phone_recovery');
     const earned = path.join(root, 'inputs/godot-web-inputs/controller-earned');
     mkdirSync(directory, { recursive: true }); mkdirSync(earned, { recursive: true });
     mkdirSync(path.join(root, 'godot_native/tools'), { recursive: true });
     writeFileSync(path.join(root, 'godot_native/tools/web_phone_shards.mjs'), phoneContract);
+    writeFileSync(path.join(root, phoneReceiptPath), phoneReceiptSource);
     writeFileSync(path.join(directory, 'web-acceptance.json'), JSON.stringify(input.report));
     writeFileSync(path.join(verification, 'verified-inputs.json'), JSON.stringify({ sourceCommit: sha, totalBytes: 12345, producerAttempt: '1' }));
     writeFileSync(path.join(earned, 'fixture-provenance.json'), JSON.stringify(input.fixture));
     writeFileSync(path.join(earned, 'phone-recovery-inputs.json'), JSON.stringify(input.fixtures));
-    const result = spawnSync(process.execPath, ['--input-type=module'], { input: scenario === 'mobile-world' ? worldCode : phoneCode, cwd: root,
-      env: { ...process.env, GITHUB_SHA: sha, ACCEPTANCE_PROFILE: profile, ACCEPTANCE_PHONE_GROUP: 'all', RUNNER_TEMP: path.join(root, 'inputs') }, encoding: 'utf8' });
+    const result = spawnSync(process.execPath, scenario === 'mobile-world' ? ['--input-type=module'] : [phoneReceiptPath], { input: scenario === 'mobile-world' ? worldCode : undefined, cwd: root,
+      env: { ...process.env, GITHUB_SHA: sha, ACCEPTANCE_PROFILE: profile, ACCEPTANCE_PHONE_GROUP: group, RUNNER_TEMP: path.join(root, 'inputs') }, encoding: 'utf8' });
     return { ...result, receipt: result.status === 0 ? JSON.parse(readFileSync(path.join(directory, `ci-${scenario}-receipt.json`), 'utf8')) : null };
   } finally { rmSync(root, { recursive: true, force: true }); }
 }
@@ -423,6 +437,37 @@ await test('all original phone receipt requirements still reject missing evidenc
     x => { x.report.cases[0].imports.pop(); },
     x => { x.report.cases[0].imports.at(-1).sha256 = 'd'.repeat(64); }
   ]) assert.notEqual(runReceipt('touch-390', 'phone-recovery', mutate).status, 0);
+});
+
+await test('shared phone receipt CLI retains every group and rejects invalid fixtures and reports', () => {
+  for (const group of ['all', 'charging', 'c1-tiyi', 'c2-tiyi']) {
+    const ok = runReceipt('retina-touch-390', 'phone-recovery', () => {}, group);
+    assert.equal(ok.status, 0, ok.stderr);
+    assert.equal(ok.receipt.group, group);
+    assert.deepEqual(ok.receipt.cases[0].coverage, phoneCoverage(group));
+    assert.equal(ok.receipt.inputs.length, {all: 6, charging: 4, 'c1-tiyi': 1, 'c2-tiyi': 1}[group]);
+    assert.equal(ok.receipt.inputBundle.producerAttempt, '1');
+    assert.match(ok.receipt.scope, /no physical-device or four-chapter manual playthrough claim/);
+  }
+  for (const [reason, mutate] of [
+    ['missing cases', x => { delete x.report.cases; }],
+    ['no cases', x => { x.report.cases = []; }],
+    ['missing manifest', x => { delete x.report.exportManifest; }],
+    ['missing screenshots', x => { delete x.report.cases[0].screenshots; }],
+    ['wrong width', x => { x.report.cases[0].width++; }],
+    ['wrong height', x => { x.report.cases[0].height++; }],
+    ['wrong pointer mode', x => { x.report.cases[0].touch = false; }],
+    ['wrong group', x => { x.report.cases[0].phoneRecovery.group = 'charging'; }],
+    ['missing earned fixture', x => { delete x.fixtures.earned.secondTiyi; }],
+    ['missing charging fixture', x => { x.fixtures.variants.pop(); }],
+    ['malformed fixture hash', x => { x.fixtures.earned.firstTiyi.sha256 = 'invalid'; }],
+    ['duplicate fixture identity', x => { x.fixtures.earned.secondTiyi.filename = x.fixtures.earned.firstTiyi.filename; }],
+    ['wrong imported filename', x => { x.report.cases[0].imports.at(-1).filename = 'unknown'; }]
+  ]) {
+    const result = runReceipt('touch-390', 'phone-recovery', mutate);
+    assert.notEqual(result.status, 0, reason);
+    assert.equal(result.receipt, null, reason);
+  }
 });
 
 // Library fixtures below are synthetic byte identities for executing the exact

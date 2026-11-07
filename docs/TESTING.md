@@ -48,7 +48,26 @@ The suite catalog and execution order live in `scripts/run-validation-suite.mjs`
 
 ## Blocking validation layers
 
-Every non-documentation pull request and every non-documentation push to `main` runs `npm run validate:release`, which contains the following layers.
+Changes to the retained Web source, its build tools, shared assets/controllers,
+root dependencies or unknown game inputs run `npm run validate:release`, which
+contains the following layers. Native-only `godot_native/` changes and native-only
+workflow changes do not rebuild the independent React/Phaser deliverable. They
+still run the applicable native and actual Godot Web workflows. Manual Web CI
+dispatch keeps the full release and extended suites available.
+The shared button CSS and theater test driver under `godot_native/` are explicit
+exceptions because retained Web imports them. Keep this shared-input list current
+when adding another dependency across those directories.
+
+The shared product classifier compares the PR base with the synthetic merge tree
+that CI actually tests. A newer change on `main` is not attributed to an older PR
+branch. Pushes compare before/after; missing comparison information runs all
+products conservatively. Routing changes have executable Git-history fixtures.
+
+For native, cross-PR and actual Godot Web checks, a newer commit on the same PR
+cancels its obsolete run. Other PRs, mainline runs and Pages publication are not
+cancelled. Actual browser cases, timeouts and final coverage requirements remain
+unchanged. The four phone consumers use one receipt validator rather than four
+copies of the same implementation.
 
 ### Critical gameplay behavior
 
@@ -130,7 +149,18 @@ Prioritize these surfaces:
 | Collision, doors, projection, world bounds | Relevant contract validator plus `validate:critical` | Solid/clear source-pixel samples and real player-body movement |
 | Audio manifest, voice, pursuit cues | Relevant audio verifier | Real browser unlock, cancel, route-exit, and audibility inspection |
 | Generated text or authored visual asset | `npm run validate:extended` | Visual inspection of the changed scene or asset consumer |
-| CI, build, dependencies, release artifact | `npm run validate:release` | Direct-open final `demo/index.html` and complete navigation chain |
+| Retained Web build, root dependencies, release artifact | `npm run validate:release` | Direct-open final `demo/index.html` and complete navigation chain |
+| CI routing or orchestration | Affected routing/workflow tests, including rejection cases | Run the changed workflows; preserve their existing gameplay cases and publication guards |
+
+## Practical change, retry and merge rules
+
+- Start with the observable risk and the affected consumers. Prioritize broken gameplay, saves, delivery or safety. Batch secondary differences; do not create a separate process for cosmetic issues.
+- Choose validation from actual dependencies, not directory names alone. Native-only changes use native and real Godot Web checks. Retained-Web or shared inputs use the affected retained suite too; unknown dependencies stay conservative. Documentation-only changes need review, not an unrelated game rebuild.
+- Match evidence to the claim. Script fixtures prove the harness; source counts and hashes prove inventory and identity. Changed interaction, lifecycle or save behavior needs real input, the resulting state and save/reload where relevant. Keep meaningful failure cases and complete affected coverage.
+- Inspect the first failing step and its logs, report and screenshot before changing a gate. Separate a product defect, a wrong/stale test expectation and an infrastructure interruption. A timeout alone does not establish which one occurred. Fix the demonstrated cause; do not remove assertions or extend gameplay limits merely to get green.
+- Retry only the affected job when evidence supports a transient interruption or a retry diagnostic. Reuse its explicitly identified producer and unchanged artifact hashes. Preserve the failed result. A changed implementation or harness requires a new-head run; an old pass is not evidence for new bytes. Do not repeatedly restart the full pipeline until it passes.
+- Before merging, check the current head, current base and interacting PRs. The affected checks must cover their combined tree and must have finished successfully, with no missing/cancelled coverage or unresolved real blocker. Recheck an overlapping base update; do not repeat expensive validation just for metadata when the tested input tree is unchanged.
+- CI success does not grant merge, deployment or access-change authority. Use the current task authorization, keep independent changes intact, and report the actual merged commit and any untested boundary. No extra approval document, fixed assertion total or duplicated source-string gate is required.
 
 ## Checks that do not justify their maintenance cost
 

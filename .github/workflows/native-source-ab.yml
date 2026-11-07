@@ -15,6 +15,7 @@ jobs:
       manifest_sha: ${{ steps.capture.outputs.manifest_sha }}
       archive_sha: ${{ steps.capture.outputs.archive_sha }}
       source_bytes: ${{ steps.capture.outputs.source_bytes }}
+      producer_attempt: ${{ steps.capture.outputs.producer_attempt }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,6 +30,7 @@ jobs:
           python3 -B godot_native/tools/native_source_transport.py capture \
             --root "$GITHUB_WORKSPACE" --bundle-dir "$RUNNER_TEMP/source-ab" \
             --head "$EXPECTED_HEAD" --base "$EXPECTED_BASE"
+          echo "producer_attempt=$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
         id: upload
         with:
@@ -111,6 +113,7 @@ jobs:
           python3 -B godot_native/tools/native_source_transport.py restore \
             --root "$GITHUB_WORKSPACE" --bundle-dir "$RUNNER_TEMP/source-ab" \
             --head "$EXPECTED_HEAD" --base "$EXPECTED_BASE" \
+            --producer-attempt '${{ needs.producer.outputs.producer_attempt }}' \
             --manifest-sha "$MANIFEST_SHA" --archive-sha "$ARCHIVE_SHA"
           test ! -e "$RUNNER_TEMP/source-ab/source.tar"
           cp "$RUNNER_TEMP/source-ab/restore-metrics.json" "$RUNNER_TEMP/source-ab-report/restore.json"
