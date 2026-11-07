@@ -6,6 +6,14 @@
 - 执行原有 JS 存档传输回归 **41 项通过**；新增依赖无关的焦点交接/虚拟键盘/窗口及可见性事件/销毁回归通过。本机 Edge `156.0.4314.58` 实际 DOM、连续键盘、退格和滚轮输入通过；使用模拟 Godot 输入接收端，不是完整 WebGL 游戏。无头浏览器没有提供真实切换标签页的失焦，窗口失焦/恢复以明确合成事件和 Node 模型验证。
 - 限制：正式原生总测试入口只支持 Linux/macOS，在 Windows 报 `NATIVE_TEST_PLATFORM_REQUIRED`，因此这里使用明确隔离的定向引擎运行。未完成完整原生/保留 Web 发布套件、完整 Godot WebGL、Firefox/WebKit、真实切换应用窗口及实体手机验收。提交与草稿 PR 单独记录；不自动合并或部署。
 
+## 2026-11-07 — simplify CI routing and repeated phone validation
+
+- PR #225's native-only changes still ran the separate retained React/Phaser release job for 289 seconds in run `42328959116`. Add a retained-Web scope rather than changing that suite: native-only changes skip it, while shared source/assets, root dependencies, unknown game paths, shared button CSS and the imported theater test driver keep it. Manual dispatch remains full.
+- Fix PR path classification to compare the base with the tested synthetic merge, rather than comparing divergent branch tips. Real Git/CLI fixtures reproduce the former false platform/retained-Web selection and cover renamed/deleted shared inputs and missing-SHA fallback.
+- Cancel superseded native, cross-PR and Godot Web checks only within the same PR. Mainline/manual runs and the separate Pages publication group are not cancelled. Replace four phone receipt implementations with one CLI and exercise that CLI's success and rejection cases directly.
+- Local checks: native validation contracts 169/169; routing plus Web workflow/consumer/phone contracts 80/80; media-tool fixtures 234/234; five workflow YAML files and all 67 shell steps parse; `git diff --check` passes. This is orchestration validation, not a local engine/gameplay pass. The cloud's preinstalled Godot is 4.6.3; the hosted workflows retain pinned 4.7.1 and perform the actual game/export/browser checks after publication of the working branch.
+- Existing #225 failure run `42325641201` timed out waiting for real Main in desktop library and Retina C2 reloads. Those cases and their timeouts stay intact. The latest Web run took 17m29s, while its final coverage job took 13 seconds; no speedup claim is made from deleting coverage checks, and none were deleted. No gameplay, assets, dependencies, merge, deployment or repository permissions change.
+
 ## 2026-11-06 — bounded warm content reads and receipt compatibility
 
 - PR224 head f49b72a1, built with main bb842b0b, passed the actual Chromium streaming scenario (1141 checks): all 16 C2 packs (107,056,752 bytes) had exact IDB SHA coverage without whole-cache duplicates, and a real document reload made zero C2 HTTP requests while preserving items/wallet. However, warm Main took 49,239 ms, and library/Tiyi reloads timed out while still preparing resources. These are release blockers, not completed browser acceptance.

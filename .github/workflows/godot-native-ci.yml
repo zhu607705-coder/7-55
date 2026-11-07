@@ -8,6 +8,10 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: native-validation-${{ github.event.pull_request.number || github.ref }}
+  # A newer PR commit replaces the old candidate. Mainline runs retain their evidence.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   contracts:
     name: Native validation contracts

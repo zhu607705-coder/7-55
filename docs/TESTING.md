@@ -48,7 +48,26 @@ The suite catalog and execution order live in `scripts/run-validation-suite.mjs`
 
 ## Blocking validation layers
 
-Every non-documentation pull request and every non-documentation push to `main` runs `npm run validate:release`, which contains the following layers.
+Changes to the retained Web source, its build tools, shared assets/controllers,
+root dependencies or unknown game inputs run `npm run validate:release`, which
+contains the following layers. Native-only `godot_native/` changes and native-only
+workflow changes do not rebuild the independent React/Phaser deliverable. They
+still run the applicable native and actual Godot Web workflows. Manual Web CI
+dispatch keeps the full release and extended suites available.
+The shared button CSS and theater test driver under `godot_native/` are explicit
+exceptions because retained Web imports them. Keep this shared-input list current
+when adding another dependency across those directories.
+
+The shared product classifier compares the PR base with the synthetic merge tree
+that CI actually tests. A newer change on `main` is not attributed to an older PR
+branch. Pushes compare before/after; missing comparison information runs all
+products conservatively. Routing changes have executable Git-history fixtures.
+
+For native, cross-PR and actual Godot Web checks, a newer commit on the same PR
+cancels its obsolete run. Other PRs, mainline runs and Pages publication are not
+cancelled. Actual browser cases, timeouts and final coverage requirements remain
+unchanged. The four phone consumers use one receipt validator rather than four
+copies of the same implementation.
 
 ### Critical gameplay behavior
 
@@ -130,7 +149,8 @@ Prioritize these surfaces:
 | Collision, doors, projection, world bounds | Relevant contract validator plus `validate:critical` | Solid/clear source-pixel samples and real player-body movement |
 | Audio manifest, voice, pursuit cues | Relevant audio verifier | Real browser unlock, cancel, route-exit, and audibility inspection |
 | Generated text or authored visual asset | `npm run validate:extended` | Visual inspection of the changed scene or asset consumer |
-| CI, build, dependencies, release artifact | `npm run validate:release` | Direct-open final `demo/index.html` and complete navigation chain |
+| Retained Web build, root dependencies, release artifact | `npm run validate:release` | Direct-open final `demo/index.html` and complete navigation chain |
+| CI routing or orchestration | Affected routing/workflow tests, including rejection cases | Run the changed workflows; preserve their existing gameplay cases and publication guards |
 
 ## Checks that do not justify their maintenance cost
 
