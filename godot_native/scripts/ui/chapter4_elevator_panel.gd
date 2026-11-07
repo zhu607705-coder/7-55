@@ -32,8 +32,8 @@ func configure(value:Dictionary) -> void:
 	selection=int(timeline.selectableStartMinSeconds)
 func _ready() -> void:
 	mouse_filter=Control.MOUSE_FILTER_STOP
-	heading=_label(22,"#f7f1dc");heading.text="18:50 / 一号电梯运行档案"
-	instruction=_label(18,"#a9bac7");instruction.text="拖动蓝色记录带，回放时观察门、乘客和上行指针。"
+	heading=_label(22,"#f7f1dc");heading.text="一号电梯 · 闭楼前回放"
+	instruction=_label(18,"#a9bac7");instruction.text="拖动蓝色记录带，让八秒开门区间盖住六秒进梯窗口。"
 	door_label=_label(16,"#79c5cf");door_label.text="门体开放"
 	passenger_label=_label(16,"#ffd36f");passenger_label.text="人物进入"
 	readout=_label(16,"#f7f1dc")

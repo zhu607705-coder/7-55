@@ -2,7 +2,7 @@
 
 > 本文件由 `npm run text:export` 从当前 `src/` 自动生成。请修改源文件后重新导出，不要只修改本文件。
 
-- 文本条目：7486
+- 文本条目：7518
 - 来源文件：165
 - 收录范围：剧情对白、字幕、任务说明、交互提示、按钮、页面标题、帖子、物品说明、失败反馈与玩家可见状态文案。
 - 排除范围：开发者面板、测试断言、内部 ID、CSS 类名、资源路径、存档字段和运行时调试信息。
@@ -17,7 +17,7 @@
 | [第二章](#第二章) | 418 |
 | [第三章](#第三章) | 1247 |
 | [3.5章过渡](#35章过渡) | 301 |
-| [第四章](#第四章) | 1825 |
+| [第四章](#第四章) | 1857 |
 | [结局](#结局) | 161 |
 | [跨章节与共用系统](#跨章节与共用系统) | 3071 |
 
@@ -5485,67 +5485,67 @@
    来源：[src/data/chapter4-755.content.json:5](../src/data/chapter4-755.content.json#L5)
 296. 阶段 1 · 接住签到纸
    来源：[src/data/chapter4-755.content.json:130](../src/data/chapter4-755.content.json#L130)
-297. 外部记录指向现场 22:45，手机仍停在 07:55:23，当前读数尚未同步。
+297. 墙上挂钟已走到 22:45，手机屏幕却卡死在 07:55:23。先去大厅公告栏前把停下的签到纸捡起来。
    来源：[src/data/chapter4-755.content.json:131](../src/data/chapter4-755.content.json#L131)
 298. 阶段 2 · 核对异常时间
    来源：[src/data/chapter4-755.content.json:134](../src/data/chapter4-755.content.json#L134)
-299. 现场 22:45 与手机 07:55:23 冲突，需要确认手机时间不可作为当前依据。
+299. 外部标准时间已是 22:45，早八考勤早在十四个小时前就截止了。手机上的 07:55:23 只是被卡住的本地假象。
    来源：[src/data/chapter4-755.content.json:135](../src/data/chapter4-755.content.json#L135)
 300. 阶段 3 · 接管大厅旧钟
    来源：[src/data/chapter4-755.content.json:138](../src/data/chapter4-755.content.json#L138)
-301. 缺失时针的轴孔旁留着一圈新磨痕，外圈只有一处额外刻度能够停住。
+301. 大厅旧钟连着整栋北教的授时母线。虽然少了时针，但钟壳里夹着麦穗工单和送料计数片，能推算出第一个可停靠的时刻。
    来源：[src/data/chapter4-755.content.json:139](../src/data/chapter4-755.content.json#L139)
 302. 阶段 4 · 找回旧时针
    来源：[src/data/chapter4-755.content.json:142](../src/data/chapter4-755.content.json#L142)
-303. 旧钟停在 12:25；楼内西侧传来周期性的机械声，检修灯仍亮着。
+303. 旧钟拨到了 12:25。一楼西侧面包坊传来传送带运转的动静，烤箱旁的检修灯还亮着。
    来源：[src/data/chapter4-755.content.json:143](../src/data/chapter4-755.content.json#L143)
-304. 阶段 5 · 恢复 204
+304. 阶段 5 · 调查晚间教学楼与恢复 204
    来源：[src/data/chapter4-755.content.json:146](../src/data/chapter4-755.content.json#L146)
-305. 旧钟停在 18:50；走廊照明已亮，电梯门机留下了几段彼此错开的时间痕迹。
+305. 旧时针已经装回。按书页刻印和课堂计时条推算时刻，再查看 104、105 与主电梯的错位记录。
    来源：[src/data/chapter4-755.content.json:147](../src/data/chapter4-755.content.json#L147)
-306. 阶段 6 · 完成维修
+306. 阶段 6 · 夜间检修与齿轮联动
    来源：[src/data/chapter4-755.content.json:150](../src/data/chapter4-755.content.json#L150)
-307. 旧钟停在 22:45；地面留有尚未干透的轮印，钟壳内传出断续摩擦声。
+307. 定位片已归位。按扳手印和检修轮次推算停机时刻，再到大厅追查保洁车油迹与旧钟卡顿。
    来源：[src/data/chapter4-755.content.json:151](../src/data/chapter4-755.content.json#L151)
-308. 阶段 7 · 接通必要照明
+308. 阶段 7 · 停电配电：点亮追赶通路
    来源：[src/data/chapter4-755.content.json:154](../src/data/chapter4-755.content.json#L154)
-309. 旧钟已到 07:54，最后一分钟被纸条带走，只需恢复通往目标区域的必要灯区。
+309. 旧钟刚拨到 07:54 就跳闸停电了。签到纸拆走了分针组件和最后一分钟，先在配电面板点亮通往二楼 202 的必经灯区。
    来源：[src/data/chapter4-755.content.json:155](../src/data/chapter4-755.content.json#L155)
-310. 阶段 8 · 追向 202
+310. 阶段 8 · 甩开保安，追进 202
    来源：[src/data/chapter4-755.content.json:158](../src/data/chapter4-755.content.json#L158)
-311. 旧钟仍停在 07:54，最后一分钟正在向二楼 202 移动。
+311. 时间卡在 07:54。趁清楼保安追上来之前，顺着点亮的走廊和主楼梯冲进二楼 202 阶梯教室！
    来源：[src/data/chapter4-755.content.json:159](../src/data/chapter4-755.content.json#L159)
 312. 阶段 9 · 取回黄铜分针组件
    来源：[src/data/chapter4-755.content.json:162](../src/data/chapter4-755.content.json#L162)
-313. 202 投影留下大厅旧钟的黄铜分针组件，取回后需要送回旧钟。
+313. 门闩已经落下。在 202 阶梯座椅之间找回大厅旧钟的黄铜分针组件和那张跑了一整天的签到纸。
    来源：[src/data/chapter4-755.content.json:163](../src/data/chapter4-755.content.json#L163)
-314. 阶段 10 · 把分针组件带回大厅
+314. 阶段 10 · 把最后一分钟装回旧钟
    来源：[src/data/chapter4-755.content.json:166](../src/data/chapter4-755.content.json#L166)
-315. 黄铜分针组件已经取回；电梯仍锁定，从二楼主楼梯下到一楼大厅。
+315. 黄铜分针组件和签到纸都拿到了。停电期间电梯停运，从主楼梯下到一楼大厅，把分针装回旧钟。
    来源：[src/data/chapter4-755.content.json:167](../src/data/chapter4-755.content.json#L167)
-316. 阶段 11 · 完成双重签到
+316. 阶段 11 · 完成 07:55 双重签到
    来源：[src/data/chapter4-755.content.json:170](../src/data/chapter4-755.content.json#L170)
-317. 旧钟与手机均为 07:55，校园卡与签到记录纸仍需分别通过验证。
+317. 大厅旧钟与手机同时跳回 07:55！去签到台左边刷校园卡、右边交签到纸，把这节早八彻底签上。
    来源：[src/data/chapter4-755.content.json:171](../src/data/chapter4-755.content.json#L171)
-318. 阶段 12 · 楼外两问
+318. 阶段 12 · 灿若星辰：回答两问
    来源：[src/data/chapter4-755.content.json:174](../src/data/chapter4-755.content.json#L174)
-319. 签到办完了。楼外的灯还没亮，校史墙上留着两问。
+319. 早八签到终于办妥了。推门走到北教楼外，在「灿若星辰」灯前留下你的回答。
    来源：[src/data/chapter4-755.content.json:175](../src/data/chapter4-755.content.json#L175)
 320. 阶段 13 · 本人来过
    来源：[src/data/chapter4-755.content.json:178](../src/data/chapter4-755.content.json#L178)
-321. 旧钟、手机与签到记录均已对齐到 07:55。
+321. 旧钟、手机与考勤记录全部定格在 07:55。这一天漫长的早八，终于翻篇了。
    来源：[src/data/chapter4-755.content.json:179](../src/data/chapter4-755.content.json#L179)
-322. 现场 22:45 · 手机 07:55:23 未同步
+322. 北教现场 22:45 · 手机卡在 07:55:23（未同步）
    来源：[src/data/chapter4-755.content.json:184](../src/data/chapter4-755.content.json#L184)；[src/modules/ChapterFourStagePresentation.ts:87](../src/modules/ChapterFourStagePresentation.ts#L87)
-323. 旧钟 12:25 · 面包坊时段 · 手机已同步
+323. 旧钟 12:25 · 正午面包坊时段 · 授时已接管
    来源：[src/data/chapter4-755.content.json:187](../src/data/chapter4-755.content.json#L187)
-324. 旧钟 18:50 · 晚间教室 · 手机已同步
+324. 旧钟 18:50 · 晚课翻页时段 · 授时已同步
    来源：[src/data/chapter4-755.content.json:190](../src/data/chapter4-755.content.json#L190)
-325. 旧钟 22:45 · 维修时段 · 手机已同步
+325. 旧钟 22:45 · 夜间检修切电 · 手机已同步
    来源：[src/data/chapter4-755.content.json:193](../src/data/chapter4-755.content.json#L193)；[src/modules/ChapterFourStagePresentation.ts:88](../src/modules/ChapterFourStagePresentation.ts#L88)
-326. 旧钟 07:54 · 停电时段 · 手机已同步
+326. 旧钟 07:54 · 停电追逐时段 · 差最后一分钟
    来源：[src/data/chapter4-755.content.json:196](../src/data/chapter4-755.content.json#L196)
-327. 旧钟 07:55 · 清晨签到 · 手机已同步
+327. 旧钟 07:55 · 早八签到时刻 · 全楼已同步
    来源：[src/data/chapter4-755.content.json:199](../src/data/chapter4-755.content.json#L199)
 328. 签到纸已落到公告栏前
    来源：[src/data/chapter4-755.content.json:203](../src/data/chapter4-755.content.json#L203)
@@ -5569,7 +5569,7 @@
    来源：[src/data/chapter4-755.content.json:212](../src/data/chapter4-755.content.json#L212)
 338. 主电梯三条历史轨道已读取
    来源：[src/data/chapter4-755.content.json:213](../src/data/chapter4-755.content.json#L213)
-339. 主电梯 18:50 重放窗口已校准
+339. 主电梯闭楼前的六秒进梯窗口已校准
    来源：[src/data/chapter4-755.content.json:214](../src/data/chapter4-755.content.json#L214)
 340. A1 值班签到板已重建
    来源：[src/data/chapter4-755.content.json:215](../src/data/chapter4-755.content.json#L215)
@@ -5623,2925 +5623,2989 @@
    来源：[src/data/chapter4-755.content.json:239](../src/data/chapter4-755.content.json#L239)
 365. 楼外灯已亮起
    来源：[src/data/chapter4-755.content.json:240](../src/data/chapter4-755.content.json#L240)
-366. 第四章交接条件尚未齐全。
+366. 还没有接下第四章的入楼任务。
    来源：[src/data/chapter4-755.content.json:246](../src/data/chapter4-755.content.json#L246)
-367. 先完成恢复回放并在任务卡确认进入。
+367. 先看完或跳过北教门前的回放，在任务卡上点击确认进入。
    来源：[src/data/chapter4-755.content.json:247](../src/data/chapter4-755.content.json#L247)
-368. 该操作不属于当前阶段。
+368. 现在还不到处理这里的时候。
    来源：[src/data/chapter4-755.content.json:250](../src/data/chapter4-755.content.json#L250)
-369. 打开任务栏，按当前目标继续。
+369. 打开右上角任务记录，先完成眼前的阶段目标。
    来源：[src/data/chapter4-755.content.json:251](../src/data/chapter4-755.content.json#L251)
-370. 当前楼层仍停留在上一段时间。
+370. 教学楼还停留在上一个时刻。
    来源：[src/data/chapter4-755.content.json:254](../src/data/chapter4-755.content.json#L254)
-371. 回到一楼旧钟，在浅色操作中选择钟面上新出现的稳定刻度。
+371. 回到一楼大厅旧钟前，切到「浅色操作」把指针拨到刚推算出的新时刻。
    来源：[src/data/chapter4-755.content.json:255](../src/data/chapter4-755.content.json#L255)
-372. 当前目标尚未开放。
+372. 这处物件目前还无法操作。
    来源：[src/data/chapter4-755.content.json:258](../src/data/chapter4-755.content.json#L258)
-373. 先完成任务栏中显示的当前前置操作。
+373. 按任务记录里的提示，先拿齐前置线索或工具。
    来源：[src/data/chapter4-755.content.json:259](../src/data/chapter4-755.content.json#L259)
-374. 当前阶段不能进入这一区域。
+374. 这片区域眼下还没开放。
    来源：[src/data/chapter4-755.content.json:262](../src/data/chapter4-755.content.json#L262)
-375. 返回当前楼层已开放的任务目标。
+375. 先回当前楼层把已解锁的调查点查完。
    来源：[src/data/chapter4-755.content.json:263](../src/data/chapter4-755.content.json#L263)
-376. 这次楼梯通行条件不成立。
+376. 楼梯通道目前走不通。
    来源：[src/data/chapter4-755.content.json:266](../src/data/chapter4-755.content.json#L266)
-377. 按任务栏目标从当前楼层的主楼梯继续。
+377. 按照任务提示，从当前楼层的主楼梯或电梯通行。
    来源：[src/data/chapter4-755.content.json:267](../src/data/chapter4-755.content.json#L267)
-378. 传送带仍在运行。
+378. 面包坊的传送带还在高速运转，直接伸手太危险。
    来源：[src/data/chapter4-755.content.json:270](../src/data/chapter4-755.content.json#L270)
-379. 烤箱旁有检修开关，可以先检查。
+379. 去烤箱旁边找到检修灯开关，先把传送带停下来。
    来源：[src/data/chapter4-755.content.json:271](../src/data/chapter4-755.content.json#L271)
-380. 传送带正在执行停机过程。
+380. 传送带正在减速停机。
    来源：[src/data/chapter4-755.content.json:274](../src/data/chapter4-755.content.json#L274)
-381. 等待停稳后再取露出的旧时针。
+381. 等履带彻底停稳后，再伸手取出露出来的旧时针。
    来源：[src/data/chapter4-755.content.json:275](../src/data/chapter4-755.content.json#L275)
-382. 旧钟的时针还没装回。
+382. 大厅旧钟还缺着那根时针。
    来源：[src/data/chapter4-755.content.json:278](../src/data/chapter4-755.content.json#L278)
-383. 检查面包坊传送带露出的金属部件，和钟面缺口比一比。
+383. 先去一楼西侧面包坊的传送带里取回「旧时针」，再装回表盘中心轴孔。
    来源：[src/data/chapter4-755.content.json:279](../src/data/chapter4-755.content.json#L279)
-384. A1 的时间差校验尚未完成。
+384. 一楼 104 和 105 两间教室的时间差还没核对完。
    来源：[src/data/chapter4-755.content.json:282](../src/data/chapter4-755.content.json#L282)
-385. 104 黑板擦痕与 105 讲台回放可按任意顺序确认。
+385. 去 104 用「深色观察」看黑板残影，去 105 用「浅色操作」查讲台回放，先后顺序不限。
    来源：[src/data/chapter4-755.content.json:283](../src/data/chapter4-755.content.json#L283)
-386. 主电梯的历史轨道尚未记录。
+386. 还没有读取主电梯门前的三条历史轨迹。
    来源：[src/data/chapter4-755.content.json:286](../src/data/chapter4-755.content.json#L286)
-387. 完成 104 与 105 校验后，可在一楼电梯门前用深色观察记录；这不限制浅色校准的先后。
+387. 在一楼电梯厅切到「深色观察」，看清轿厢、开门与进人三条轨道的时间关系。
    来源：[src/data/chapter4-755.content.json:287](../src/data/chapter4-755.content.json#L287)
-388. 主电梯重放窗口尚未校准。
+388. 主电梯的开门窗口还没校准到位。
    来源：[src/data/chapter4-755.content.json:290](../src/data/chapter4-755.content.json#L290)
-389. 使用浅色操作进入轿厢，让门体开放区间覆盖六秒进入窗口。
+389. 在「浅色操作」下把重放起点调到 22:43:31，让开门区间完整覆盖 6 秒进梯窗口，并在开门时走进去。
    来源：[src/data/chapter4-755.content.json:291](../src/data/chapter4-755.content.json#L291)
-390. 三层电梯运行记录尚未齐全。
+390. 一楼、二楼、三楼的电梯运行日志还没收集齐。
    来源：[src/data/chapter4-755.content.json:294](../src/data/chapter4-755.content.json#L294)
-391. 分别在一楼、三楼和二楼查阅起行、到站与外呼记录；三段可按任意顺序归档。
+391. 分别查看一楼起行、三楼到站与二楼外呼记录，顺序不限。
    来源：[src/data/chapter4-755.content.json:295](../src/data/chapter4-755.content.json#L295)
-392. 跨层停靠链尚未复核。
+392. 还没在电梯面板上核销各楼层的真实停靠状态。
    来源：[src/data/chapter4-755.content.json:298](../src/data/chapter4-755.content.json#L298)
-393. 三段记录齐全后，在浅色操作的电梯面板中确认实际到站层和未响应外呼层。
+393. 切到「浅色操作」打开电梯停站核对面板，标出 A3 为实际到站、A2 为未响应呼叫。
    来源：[src/data/chapter4-755.content.json:299](../src/data/chapter4-755.content.json#L299)
-394. A1 的三段值班记录还没有汇合。
+394. 一楼前台的三张值班牌还没按先后顺序归位。
    来源：[src/data/chapter4-755.content.json:302](../src/data/chapter4-755.content.json#L302)
-395. 到前台台面打开签到板；104、105 与电梯的调查顺序不受限制。
+395. 到一楼前台查看签到板，按夹痕从旧到新依次放回「104 教室 → 105 教室 → 主电梯」。
    来源：[src/data/chapter4-755.content.json:303](../src/data/chapter4-755.content.json#L303)
-396. 302 扫描台缺少旧导视胶片。
+396. 302 的扫描台上还没有放入旧导视胶片。
    来源：[src/data/chapter4-755.content.json:306](../src/data/chapter4-755.content.json#L306)
-397. 到三楼 301 的索引抽屉按年份、楼层与用途筛出胶片。
+397. 先去三楼 301 校史档案展，按「1991–1998、A3、入口导视」从抽屉里取出胶片。
    来源：[src/data/chapter4-755.content.json:307](../src/data/chapter4-755.content.json#L307)
-398. 三楼新旧导视影像尚未重合。
+398. 三楼的新旧导视影像还没有对齐重合。
    来源：[src/data/chapter4-755.content.json:310](../src/data/chapter4-755.content.json#L310)
-399. 带着 301 胶片到 302，校准平移和旋转后再进入错位楼梯。
+399. 带着 301 的胶片去 302 媒体工作室，右移 2 格、上移 1 格并顺时针旋转 90° 完成对齐。
    来源：[src/data/chapter4-755.content.json:311](../src/data/chapter4-755.content.json#L311)
-400. 钟面定位片尚未完成三轴校准。
+400. 手里的钟面定位片还没做三轴压痕校准，直接装上去会晃动。
    来源：[src/data/chapter4-755.content.json:314](../src/data/chapter4-755.content.json#L314)
-401. 到二楼 201 创客工坊调整横向、纵向和压力。
+401. 去二楼 201 创客工坊，按「横向 -2、纵向 +1、压力 3 档」对齐三处旧压痕。
    来源：[src/data/chapter4-755.content.json:315](../src/data/chapter4-755.content.json#L315)
-402. 五区供电关系仍不完整。
+402. 二楼 203 的五区供电环路还没恢复。
    来源：[src/data/chapter4-755.content.json:318](../src/data/chapter4-755.content.json#L318)
-403. 到二楼 203 恢复停电前的五条相邻连线。
+403. 去 203 计算机教室对照五区供电图，推接线块压住触点，再亲自走过检验通道。
    来源：[src/data/chapter4-755.content.json:319](../src/data/chapter4-755.content.json#L319)
-404. 202 到主楼梯的夜间疏散通路尚未确认。
+404. 从 202 到主楼梯的夜间疏散往返路线还没验证。
    来源：[src/data/chapter4-755.content.json:322](../src/data/chapter4-755.content.json#L322)
-405. 检查开放自习区路线板，比较四处鞋印的方向，再排列四块路线磁贴。
+405. 去开放自习区，对照 202 至主楼梯的鞋印，用物件留守触点，亲自完成往返检验。
    来源：[src/data/chapter4-755.content.json:323](../src/data/chapter4-755.content.json#L323)
-406. 竺老两问尚未完成。
+406. 还没在楼外的校史灯前回答竺老两问。
    来源：[src/data/chapter4-755.content.json:326](../src/data/chapter4-755.content.json#L326)
-407. 到楼外未点亮的灯前，依次回答两问。
+407. 走到教学楼外的「灿若星辰」灯前，依次选出两道问题的答案。
    来源：[src/data/chapter4-755.content.json:327](../src/data/chapter4-755.content.json#L327)
-408. 三楼与二楼之间的楼梯仍处于投影错位状态。
+408. 三楼通往二楼的楼梯还处在空间错位断开的状态。
    来源：[src/data/chapter4-755.content.json:330](../src/data/chapter4-755.content.json#L330)
-409. 在三楼晨间教室记录参照后，从主楼梯进入空间校准。
+409. 在三楼记下晨间教室参照并对齐 302 胶片后，进主楼梯通过旋转机关与切换固定视角接通道路。
    来源：[src/data/chapter4-755.content.json:331](../src/data/chapter4-755.content.json#L331)
-410. 204 复原缺少参照记录。
+410. 还缺少复原 204 桌椅所需的对比参照。
    来源：[src/data/chapter4-755.content.json:334](../src/data/chapter4-755.content.json#L334)
-411. 补齐 303 参照与 204 深色残影；家具摆放可以在两项记录之前或之后完成。
+411. 确保已在三楼晨间教室（303）和二楼 204 分别用「深色观察」记下了标准布局与地面残影。
    来源：[src/data/chapter4-755.content.json:335](../src/data/chapter4-755.content.json#L335)
-412. 204 仍有家具未复原。
+412. 204 教室里还有桌椅没摆回原位。
    来源：[src/data/chapter4-755.content.json:338](../src/data/chapter4-755.content.json#L338)
-413. 依据四处原始痕迹完成剩余成组摆放，直到四组全部复原。
+413. 对照窗侧、中央、讲台边、门侧四处地面残影，把 12 组桌椅按四组全部归位。
    来源：[src/data/chapter4-755.content.json:339](../src/data/chapter4-755.content.json#L339)
-414. 该家具未被当前场景识别。
+414. 没选中可搬动的课桌椅。
    来源：[src/data/chapter4-755.content.json:342](../src/data/chapter4-755.content.json#L342)
-415. 重新选取 204 内可见且尚未复原的家具。
+415. 点选 204 教室里还没归位的桌椅组。
    来源：[src/data/chapter4-755.content.json:343](../src/data/chapter4-755.content.json#L343)
-416. 该位置不属于 204 的复原槽位。
+416. 这里不是课桌椅原本的摆放槽位。
    来源：[src/data/chapter4-755.content.json:346](../src/data/chapter4-755.content.json#L346)
-417. 靠近教室内清晰显示的空槽位后重试。
+417. 靠近地面上有清晰残影框线的空槽位再放下。
    来源：[src/data/chapter4-755.content.json:347](../src/data/chapter4-755.content.json#L347)
-418. 该家具状态无法写入复原记录。
+418. 桌椅朝向摆反了，对不上讲台方向。
    来源：[src/data/chapter4-755.content.json:350](../src/data/chapter4-755.content.json#L350)
-419. 放下后重新选取家具，再放入任一空槽位。
+419. 把桌椅重新拿起，朝向讲台正面（向上）放入空槽位。
    来源：[src/data/chapter4-755.content.json:351](../src/data/chapter4-755.content.json#L351)
-420. 这组家具已经写入另一个槽位。
+420. 这组桌椅刚才已经摆进别的槽位了。
    来源：[src/data/chapter4-755.content.json:354](../src/data/chapter4-755.content.json#L354)
-421. 改选一组尚未复原的家具。
+421. 换选教室里另一组还没搬过的桌椅。
    来源：[src/data/chapter4-755.content.json:355](../src/data/chapter4-755.content.json#L355)
-422. 这个槽位已经有一组家具。
+422. 这个位置已经放好桌椅了。
    来源：[src/data/chapter4-755.content.json:358](../src/data/chapter4-755.content.json#L358)
-423. 把当前家具放入另一个空槽位。
+423. 把手里这组桌椅放到旁边还空着的残影槽位里。
    来源：[src/data/chapter4-755.content.json:359](../src/data/chapter4-755.content.json#L359)
-424. 这组家具已经完成复原。
+424. 这组桌椅已经归位妥当了。
    来源：[src/data/chapter4-755.content.json:362](../src/data/chapter4-755.content.json#L362)
-425. 继续选择一组尚未复原的家具。
+425. 去搬教室里剩下还没复原的桌椅。
    来源：[src/data/chapter4-755.content.json:363](../src/data/chapter4-755.content.json#L363)
-426. 这片痕迹不属于当前复原记录。
+426. 这片地面没有桌椅搬动残影。
    来源：[src/data/chapter4-755.content.json:366](../src/data/chapter4-755.content.json#L366)
-427. 靠近教室内仍有残影的痕迹区。
+427. 走近窗侧、中央、讲台边缘或门侧四处有残影的区域。
    来源：[src/data/chapter4-755.content.json:367](../src/data/chapter4-755.content.json#L367)
-428. 当前痕迹区与提交的复原组不一致。
+428. 手里这组桌椅和脚下这片残影区对不上号。
    来源：[src/data/chapter4-755.content.json:370](../src/data/chapter4-755.content.json#L370)
-429. 留在当前痕迹区并重新执行一次复原。
+429. 站在当前残影区里，重新选取对应的桌椅组摆放。
    来源：[src/data/chapter4-755.content.json:371](../src/data/chapter4-755.content.json#L371)
-430. 这组三处位置含有旧存档中的占用记录。
+430. 这片区域的槽位留着之前的摆放记录。
    来源：[src/data/chapter4-755.content.json:374](../src/data/chapter4-755.content.json#L374)
-431. 先处理其他痕迹区；当前组会保留原记录。
+431. 先去复原另外几片残影区，这里会自动保留原记录。
    来源：[src/data/chapter4-755.content.json:375](../src/data/chapter4-755.content.json#L375)
-432. 这组三处桌椅已经复原。
+432. 这一片的 3 组桌椅已经全部摆好了。
    来源：[src/data/chapter4-755.content.json:378](../src/data/chapter4-755.content.json#L378)
-433. 查看教室内仍有残影的痕迹区。
+433. 去教室里其他还闪着残影的区域继续摆放。
    来源：[src/data/chapter4-755.content.json:379](../src/data/chapter4-755.content.json#L379)
-434. 讲台抽屉尚未解锁。
+434. 204 讲台抽屉的电磁锁还锁着。
    来源：[src/data/chapter4-755.content.json:382](../src/data/chapter4-755.content.json#L382)
-435. 先完成四组复原并确认 07:55 投影。
+435. 先把教室里的四组桌椅全部归位，等前方 07:55 投影画面稳定后抽屉就会弹开。
    来源：[src/data/chapter4-755.content.json:383](../src/data/chapter4-755.content.json#L383)
-436. 一楼的时间记录还没有形成可比较的同一组。
+436. 一楼 104、105 和主电梯的时间记录还没收齐。
    来源：[src/data/chapter4-755.content.json:386](../src/data/chapter4-755.content.json#L386)
-437. 补齐 104、105 与电梯的原始记录，再查看它们共有的时间差。
+437. 先把两间教室的 7 分 55 秒延迟和电梯轨道都查完，再去前台归位值班牌。
    来源：[src/data/chapter4-755.content.json:387](../src/data/chapter4-755.content.json#L387)
-438. 投影中的时间、空间和纸痕仍未完成叠合。
+438. 204 的投影画面还在晃动，时间和纸痕没完全叠合。
    来源：[src/data/chapter4-755.content.json:390](../src/data/chapter4-755.content.json#L390)
-439. 回看教室里四组原始痕迹，确认它们在投影中同时稳定。
+439. 检查地面四组桌椅是否都已严丝合缝地归位，走到幕布前确认投影稳定。
    来源：[src/data/chapter4-755.content.json:391](../src/data/chapter4-755.content.json#L391)
-440. 保洁车与旧钟之间的同源碰撞痕迹尚未确认。
+440. 还没搞清保洁车和旧钟为什么会同时卡住。
    来源：[src/data/chapter4-755.content.json:394](../src/data/chapter4-755.content.json#L394)
-441. 比较教室投影的缺口形状与保洁车轮罩附近的擦痕。
+441. 靠近保洁车和旧钟，核对车轮摩擦声、地面油迹和钟壳卡顿声三项故障证据。
    来源：[src/data/chapter4-755.content.json:395](../src/data/chapter4-755.content.json#L395)
-442. 当前照明还没有确认纸痕经过的连续区域。
+442. 配电面板还没点亮通往二楼 202 的正确灯区。
    来源：[src/data/chapter4-755.content.json:398](../src/data/chapter4-755.content.json#L398)
-443. 回到配电面板，让先前记录过的三个区域同时保持可见。
+443. 在配电面板上点亮「大厅、东走廊、教室区」，同时让「西走廊、面包坊后场」保持熄灭。
    来源：[src/data/chapter4-755.content.json:399](../src/data/chapter4-755.content.json#L399)
-444. 身份记录与三楼留下的求学信息尚未形成完整对应。
+444. 三楼的参照教室与校史墙信息还没查看完整。
    来源：[src/data/chapter4-755.content.json:402](../src/data/chapter4-755.content.json#L402)
-445. 查看三楼参照教室与中央信息墙留下的姓名和时间细节。
+445. 去三楼查看晨间参照教室与走廊上的求是群星校史展牌。
    来源：[src/data/chapter4-755.content.json:403](../src/data/chapter4-755.content.json#L403)
-446. 大厅旧钟仍缺少钟面定位片。
+446. 大厅旧钟还缺一块固定刻度用的钟面定位片。
    来源：[src/data/chapter4-755.content.json:406](../src/data/chapter4-755.content.json#L406)
-447. 从 204 讲台抽屉取得定位片，再拖到旧钟插槽。
+447. 从 204 讲台取出定位片。完成 201 压痕校准、203 线路检验、自习区疏散和电梯停站核对后，再装回一楼旧钟。
    来源：[src/data/chapter4-755.content.json:407](../src/data/chapter4-755.content.json#L407)
-448. 保洁车轮的卡滞点尚未确认。
+448. 还不清楚保洁车轮子到底卡在哪儿了。
    来源：[src/data/chapter4-755.content.json:410](../src/data/chapter4-755.content.json#L410)
-449. 先检查卡住的车轮，再使用短撬棒打开轮罩。
+449. 先点击保洁车轮完成三项故障诊断，再用短撬棍撬开轮罩。
    来源：[src/data/chapter4-755.content.json:411](../src/data/chapter4-755.content.json#L411)
-450. 润滑位置仍被轮罩挡住。
+450. 金属轮罩还死死盖着轮轴，润滑油滴不进去。
    来源：[src/data/chapter4-755.content.json:414](../src/data/chapter4-755.content.json#L414)
-451. 先用短撬棒打开轮罩，再取得润滑油。
+451. 先用「短撬棍」撬开保洁车轮罩，再往轮轴上滴「通用润滑油」。
    来源：[src/data/chapter4-755.content.json:415](../src/data/chapter4-755.content.json#L415)
-452. 旧钟齿轮维修仍受保洁车阻挡。
+452. 保洁车还死死顶在旧钟底座旁，没法直接拨钟。
    来源：[src/data/chapter4-755.content.json:418](../src/data/chapter4-755.content.json#L418)
-453. 先给保洁车轮上油并让车移动，再处理旧钟齿轮。
+453. 先给撬开轮罩的保洁车轮轴上油，让保洁车挪开并联动复位旧钟齿轮。
    来源：[src/data/chapter4-755.content.json:419](../src/data/chapter4-755.content.json#L419)
-454. 旧钟齿轮仍处于断续状态。
+454. 旧钟里面的齿轮还卡着，分针拨不动。
    来源：[src/data/chapter4-755.content.json:422](../src/data/chapter4-755.content.json#L422)
-455. 先完成车轮维修，再给旧钟齿轮上油。
+455. 先用短撬棍和润滑油修好卡在钟座旁的保洁车轮，旧钟齿轮会随之联动恢复。
    来源：[src/data/chapter4-755.content.json:423](../src/data/chapter4-755.content.json#L423)
-456. 最后一分钟的拖拽过程尚未就绪。
+456. 旧钟还没修利索，分针暂时拨不到头。
    来源：[src/data/chapter4-755.content.json:426](../src/data/chapter4-755.content.json#L426)
-457. 完成旧钟维修后，在浅色操作中重新开始拖动分针。
+457. 完成保洁车与旧钟齿轮的联动维修后，在「浅色操作」下把分针拨向 07:55。
    来源：[src/data/chapter4-755.content.json:427](../src/data/chapter4-755.content.json#L427)
-458. 配电流程尚未开放或已经锁定。
+458. 现在还不需要动配电面板（或照明路线已经锁定了）。
    来源：[src/data/chapter4-755.content.json:430](../src/data/chapter4-755.content.json#L430)
-459. 先完成分针拖拽；若已锁定照明，继续前往 202。
+459. 如果还没拨钟，先去把旧钟拨向 07:55；如果已经点亮了三处灯区，赶紧上二楼追进 202！
    来源：[src/data/chapter4-755.content.json:431](../src/data/chapter4-755.content.json#L431)
-460. 这次追逐请求已失效。
+460. 刚才那轮追逐已经中断了。
    来源：[src/data/chapter4-755.content.json:434](../src/data/chapter4-755.content.json#L434)
-461. 从当前追逐检查点重新开始。
+461. 从一楼大厅检查点重新起步，顺着亮灯的东走廊和主楼梯冲上 202。
    来源：[src/data/chapter4-755.content.json:435](../src/data/chapter4-755.content.json#L435)
-462. 最后一分钟尚未安全取回。
+462. 被纸条拆走的「最后一分钟」还没拿回来。
    来源：[src/data/chapter4-755.content.json:438](../src/data/chapter4-755.content.json#L438)
-463. 抵达 202 并收取阶梯座椅间的黄铜分针组件。
+463. 进二楼 202 落下门闩后，在阶梯座椅之间取回「黄铜分针组件」和「签到记录纸」。
    来源：[src/data/chapter4-755.content.json:439](../src/data/chapter4-755.content.json#L439)
-464. 黄铜分针组件尚未送回一楼大厅旧钟。
+464. 「黄铜分针组件」还没装回一楼大厅的旧钟表盘上。
    来源：[src/data/chapter4-755.content.json:442](../src/data/chapter4-755.content.json#L442)
-465. 携带黄铜分针组件、校园卡和签到纸，经主楼梯返回一楼大厅。
+465. 带着黄铜分针组件、校园卡和签到纸，从二楼主楼梯下到一楼大厅装回旧钟。
    来源：[src/data/chapter4-755.content.json:443](../src/data/chapter4-755.content.json#L443)
-466. 第三章半的证据恢复尚未闭合。
+466. 启真湖到北教的过渡回放还没确认完毕。
    来源：[src/data/chapter4-755.content.json:446](../src/data/chapter4-755.content.json#L446)
-467. 返回手机完成时间线与地点确认，再继续第四章。
+467. 先在回放界面确认任务卡，正式进入第四章北教大厅。
    来源：[src/data/chapter4-755.content.json:447](../src/data/chapter4-755.content.json#L447)
-468. 当前签到条件尚未齐全。
+468. 早八签到的两项手续还没办全。
    来源：[src/data/chapter4-755.content.json:450](../src/data/chapter4-755.content.json#L450)
-469. 确认已到 07:55，并把对应的校园卡或签到纸拖到各自设备。
+469. 确认时间已回到 07:55，在签到台左边刷「电子校园卡」、右边交「签到记录纸」。
    来源：[src/data/chapter4-755.content.json:451](../src/data/chapter4-755.content.json#L451)
-470. 校园卡验证已经通过。
+470. 校园卡已经刷过啦。
    来源：[src/data/chapter4-755.content.json:454](../src/data/chapter4-755.content.json#L454)
-471. 继续提交签到记录纸。
+471. 把「签到记录纸」塞进签到台右边的纸槽里就能完成签到。
    来源：[src/data/chapter4-755.content.json:455](../src/data/chapter4-755.content.json#L455)
-472. 签到记录纸验证已经通过。
+472. 签到记录纸已经收进纸槽啦。
    来源：[src/data/chapter4-755.content.json:458](../src/data/chapter4-755.content.json#L458)
-473. 继续读取校园卡。
+473. 把「电子校园卡」放到签到台左边的读卡器上感应一下就能完成签到。
    来源：[src/data/chapter4-755.content.json:459](../src/data/chapter4-755.content.json#L459)
-474. 签到处还有一项记录没收好。
+474. 一楼签到台那边还有一项手续没办完呢。
    来源：[src/data/chapter4-755.content.json:462](../src/data/chapter4-755.content.json#L462)
-475. 先完成校园卡与签到纸的双重签到。
+475. 先回签到台把刷校园卡和交签到纸都做完，再推门去楼外。
    来源：[src/data/chapter4-755.content.json:463](../src/data/chapter4-755.content.json#L463)
-476. 灯光还没亮完。
+476. 楼外的「灿若星辰」灯正在渐亮归档中。
    来源：[src/data/chapter4-755.content.json:466](../src/data/chapter4-755.content.json#L466)
-477. 请稍等片刻。
+477. 稍等两秒钟，等灯光完全亮起后点击确认。
    来源：[src/data/chapter4-755.content.json:467](../src/data/chapter4-755.content.json#L467)
 478. 传送带还在转。烤箱旁那盏检修灯，连着一个开关。
    来源：[src/data/chapter4-755.content.json:512](../src/data/chapter4-755.content.json#L512)
-479. 接住公告栏前的纸条
+479. 捡起公告栏前的签到纸
    来源：[src/data/chapter4-755.content.json:831](../src/data/chapter4-755.content.json#L831)
-480. 纸条落在公告栏前。
+480. 签到纸撞在大厅公告栏上，正慢慢滑落。
    来源：[src/data/chapter4-755.content.json:833](../src/data/chapter4-755.content.json#L833)
-481. 等它停下来，别从下面追着跑。
+481. 别在底下跟着乱跑，等它彻底停稳再上前。
    来源：[src/data/chapter4-755.content.json:834](../src/data/chapter4-755.content.json#L834)
-482. 靠近落点后交互。
+482. 靠近公告栏落点，伸手把它捡起来。
    来源：[src/data/chapter4-755.content.json:835](../src/data/chapter4-755.content.json#L835)
-483. 查看大厅旧钟
+483. 检查一楼大厅的旧钟
    来源：[src/data/chapter4-755.content.json:839](../src/data/chapter4-755.content.json#L839)
-484. 大厅中央的旧钟还在响。
+484. 大厅中央那座落地旧钟还连着整栋楼的授时线。
    来源：[src/data/chapter4-755.content.json:841](../src/data/chapter4-755.content.json#L841)
-485. 指针有缺口，钟壳里也有卡顿声。
+485. 表盘上少了一根时针，钟壳里还夹着几张字条。
    来源：[src/data/chapter4-755.content.json:842](../src/data/chapter4-755.content.json#L842)
-486. 浅色操作时可以近看钟面。
+486. 切到「浅色操作」凑近钟面，看看它为什么拨不动。
    来源：[src/data/chapter4-755.content.json:843](../src/data/chapter4-755.content.json#L843)
-487. 试着拨动大厅旧钟
+487. 第一次校时：把旧钟拨到 12:25
    来源：[src/data/chapter4-755.content.json:847](../src/data/chapter4-755.content.json#L847)
-488. 外圈有一处额外刻度。
+488. 钟壳里的麦穗工单写着「正午换班时归零（12:00）」，送料计数片写着「计满二十五分钟」。
    来源：[src/data/chapter4-755.content.json:849](../src/data/chapter4-755.content.json#L849)
-489. 有些位置拨过去就会弹回，留意能停住的位置。
+489. 两项相加，异物卡进检修口的准确时刻是 12:25。
    来源：[src/data/chapter4-755.content.json:850](../src/data/chapter4-755.content.json#L850)
-490. 左右选择刻度，再确认。
+490. 压下分轮止逆爪，把时间校准到 12:25，接管楼内时间。
    来源：[src/data/chapter4-755.content.json:851](../src/data/chapter4-755.content.json#L851)
-491. 返回大厅重新调节旧钟
+491. 第二次校时：把旧钟拨到 18:50
    来源：[src/data/chapter4-755.content.json:855](../src/data/chapter4-755.content.json#L855)
-492. 金属时针装回后，钟面出现了一处新的稳定刻度。
+492. 装回的旧时针背面刻着「18:30 开课」，钟壳里的课堂计时条写着「铃响 20 分钟后投影翻页」。
    来源：[src/data/chapter4-755.content.json:857](../src/data/chapter4-755.content.json#L857)
-493. 回到大厅旧钟，左右切换当前可见的时间刻度。
-   来源：[src/data/chapter4-755.content.json:858](../src/data/chapter4-755.content.json#L858)；[src/data/chapter4-755.content.json:866](../src/data/chapter4-755.content.json#L866)
-494. 确认后留意楼内光线、设备声和可进入区域的变化。
+493. 18:30 加上 20 分钟，目标时刻是 18:50。
+   来源：[src/data/chapter4-755.content.json:858](../src/data/chapter4-755.content.json#L858)
+494. 接合时轮离合，把大厅旧钟校准到 18:50，开启晚间教室调查。
    来源：[src/data/chapter4-755.content.json:859](../src/data/chapter4-755.content.json#L859)
-495. 用定位片校准出的刻度再次调时
+495. 第三次校时：把旧钟拨到 22:45
    来源：[src/data/chapter4-755.content.json:863](../src/data/chapter4-755.content.json#L863)
-496. 定位片归位后，钟面又有一处刻度不再回弹。
+496. 定位片背面的扳手印写着「22:00 开始检修」，维修记录写着「每轮 15 分钟，第三轮结束切电」。
    来源：[src/data/chapter4-755.content.json:865](../src/data/chapter4-755.content.json#L865)
-497. 确认后观察地面痕迹与夜间照明的变化。
+497. 22:00 加上 3 轮 15 分钟（45 分钟），切电停机的准确时刻是 22:45。
+   来源：[src/data/chapter4-755.content.json:866](../src/data/chapter4-755.content.json#L866)
+498. 收紧定位片游隙，把大厅旧钟校准到 22:45，进入夜间检修时段。
    来源：[src/data/chapter4-755.content.json:867](../src/data/chapter4-755.content.json#L867)
-498. 查查面包坊的传送带
+499. 去一楼西侧面包坊停下传送带
    来源：[src/data/chapter4-755.content.json:871](../src/data/chapter4-755.content.json#L871)
-499. 一楼西侧传来机械声。
+500. 时间切到 12:25 后，一楼西侧面包坊传来了传送带的运转声。
    来源：[src/data/chapter4-755.content.json:873](../src/data/chapter4-755.content.json#L873)
-500. 传送带还在转，烤箱旁有一盏检修灯。
+501. 传送带还在转，没法直接伸手拿里面的金属件。
    来源：[src/data/chapter4-755.content.json:874](../src/data/chapter4-755.content.json#L874)
-501. 浅色操作时，可以检查检修灯旁的开关。
+502. 在「浅色操作」下检查烤箱旁边的检修灯开关，先把传送带停下来。
    来源：[src/data/chapter4-755.content.json:875](../src/data/chapter4-755.content.json#L875)
-502. 取走传送带上的旧时针
+503. 取出传送带上的旧时针
    来源：[src/data/chapter4-755.content.json:879](../src/data/chapter4-755.content.json#L879)
-503. 传送带停下后，缝里露出一段金属。
+504. 传送带停稳后，履带缝隙里露出了一截金属指针。
    来源：[src/data/chapter4-755.content.json:881](../src/data/chapter4-755.content.json#L881)
-504. 轴孔与大厅旧钟的缺口相似。
+505. 它的轴孔形状正好能对上大厅旧钟的缺口，背面还刻着书页图案。
    来源：[src/data/chapter4-755.content.json:882](../src/data/chapter4-755.content.json#L882)
-505. 等完全停稳，靠近拾取。
+506. 靠近传送带检修口，拾取「旧时针」。
    来源：[src/data/chapter4-755.content.json:883](../src/data/chapter4-755.content.json#L883)
-506. 回大厅装回旧时针
+507. 回大厅把旧时针装回表盘
    来源：[src/data/chapter4-755.content.json:887](../src/data/chapter4-755.content.json#L887)
-507. 时针已经找到了，大厅旧钟还缺着这一件。
+508. 旧时针已经到手，背面刻着「晚课 18:30 开始」的书页线索。
    来源：[src/data/chapter4-755.content.json:889](../src/data/chapter4-755.content.json#L889)
-508. 对照轴孔，别装到外圈刻度上。
+509. 回到一楼大厅旧钟前，对准中心轴孔。
    来源：[src/data/chapter4-755.content.json:890](../src/data/chapter4-755.content.json#L890)
-509. 浅色操作时，把时针放进对应接口。
+510. 在「浅色操作」下把旧时针装回中心轴，别误放到外圈刻度上。
    来源：[src/data/chapter4-755.content.json:891](../src/data/chapter4-755.content.json#L891)
-510. 去三楼找晨间教室的参照
+511. 在 A3 晨间教室记录标准布局
    来源：[src/data/chapter4-755.content.json:895](../src/data/chapter4-755.content.json#L895)
-511. 电梯厅还留着晚间运行记录。
+512. 三楼这间教室还保持着早八没被动过的标准桌椅摆法。
    来源：[src/data/chapter4-755.content.json:897](../src/data/chapter4-755.content.json#L897)
-512. 三楼有一间教室保留着晨间布置。
+513. 切到「深色观察」，把讲台、桌椅间距和入口边界记下来。
    来源：[src/data/chapter4-755.content.json:898](../src/data/chapter4-755.content.json#L898)
-513. 深色观察能记下桌椅与入口的位置。
+514. 记好这份参照后，从三楼主楼梯进入错位楼梯间下二楼。
    来源：[src/data/chapter4-755.content.json:899](../src/data/chapter4-755.content.json#L899)
-514. 查完一楼剩下的记录
+515. 核对一楼教室、电梯与前台值班板
    来源：[src/data/chapter4-755.content.json:903](../src/data/chapter4-755.content.json#L903)
-515. 一楼还有黑板、讲台、电梯和签到板没查完；任务栏会记下查过的地方。
+516. 104 教室黑板、105 教室讲台和主电梯都留着时间异常的痕迹。
    来源：[src/data/chapter4-755.content.json:905](../src/data/chapter4-755.content.json#L905)
-516. 104 和 105 留下的时间有出入，电梯记录也值得对照。签到板可以单独查看。
+517. 用 104 黑板和 105 回放比对时间差，再去电梯厅读取三条运行轨道。前台还留着三张值班牌。
    来源：[src/data/chapter4-755.content.json:906](../src/data/chapter4-755.content.json#L906)
-517. 深色观察读取痕迹，浅色操作调整设备；两种模式的进入顺序不会锁死进度。
+518. 104 与 105 都确认后，校准电梯就能上三楼。前台值班板可先做，也可在确认 204 投影前补齐。
    来源：[src/data/chapter4-755.content.json:907](../src/data/chapter4-755.content.json#L907)
-518. 查清 104 与 105 的时间差
+519. 核对 104 黑板笔画与 105 讲台回放
    来源：[src/data/chapter4-755.content.json:911](../src/data/chapter4-755.content.json#L911)
-519. 隔壁两间教室的记录对不上。
+520. 在 104 切到「深色观察」看擦掉的黑板字，首尾两笔相差 7 分 55 秒。
    来源：[src/data/chapter4-755.content.json:913](../src/data/chapter4-755.content.json#L913)
-520. 104 黑板擦过了，深色观察下还能看见笔画。
+521. 在 105 用「浅色操作」查讲台回放，07:47:05 到 07:55:00 同样慢了 7 分 55 秒（回放仅证明延迟）。
    来源：[src/data/chapter4-755.content.json:914](../src/data/chapter4-755.content.json#L914)
-521. 105 讲台留有本地回放，可以动手查；两间先看哪间都行。
+522. 两间教室查完后，记得去一楼前台把值班签到板归位。
    来源：[src/data/chapter4-755.content.json:915](../src/data/chapter4-755.content.json#L915)
-522. 核对电梯的开门时刻
+523. 读取主电梯的三条历史轨道
    来源：[src/data/chapter4-755.content.json:919](../src/data/chapter4-755.content.json#L919)
-523. 轿厢到站、门打开、人走进去，三段时间没有重合。
+524. 一楼主电梯留有闭楼前的档案。轿厢到站、门打开、人走进去，三段记录各有自己的时刻。
    来源：[src/data/chapter4-755.content.json:921](../src/data/chapter4-755.content.json#L921)
-524. 深色观察能读出三条轨道；浅色操作可以调重放起点。
+525. 旧钟显示 18:50，电梯回放用的是当晚闭楼前的档案时间。切到「深色观察」对照三条轨道。
    来源：[src/data/chapter4-755.content.json:922](../src/data/chapter4-755.content.json#L922)
-525. 看记录和试着校准，先做哪项都行。
+526. 观察与校准不分先后，调通后就能乘电梯上三楼。
    来源：[src/data/chapter4-755.content.json:923](../src/data/chapter4-755.content.json#L923)
-526. 让电梯开门时间够人通过
+527. 校准电梯重放起点，乘梯前往 A3
    来源：[src/data/chapter4-755.content.json:927](../src/data/chapter4-755.content.json#L927)
-527. 到一楼轿厢里试着调重放起点。
+528. 在「浅色操作」下把闭楼档案的起点调到 22:43:31，让八秒开门区间盖住六秒进梯窗口。
    来源：[src/data/chapter4-755.content.json:929](../src/data/chapter4-755.content.json#L929)
-528. 人要走六秒，门也得在这六秒里一直开着。
+529. 启动重放，在允许进入的六秒里走进轿厢，等轨迹跑完。
    来源：[src/data/chapter4-755.content.json:930](../src/data/chapter4-755.content.json#L930)
-529. 调好以后再看楼层显示，别只听到站铃。
+530. 注意：电梯会直达三楼（A3），二楼（A2）只是未响应的外呼。
    来源：[src/data/chapter4-755.content.json:931](../src/data/chapter4-755.content.json#L931)
-530. 核对各层电梯的停靠记录
+531. 核对三层电梯的实际停站
    来源：[src/data/chapter4-755.content.json:935](../src/data/chapter4-755.content.json#L935)
-531. 各层记录的事件不同，按过按钮不代表电梯停过。
+532. 有人在二楼按过外呼按钮，不代表轿厢真的在二楼停靠开门过。
    来源：[src/data/chapter4-755.content.json:937](../src/data/chapter4-755.content.json#L937)
-532. 轿厢里的起行轨、到站铃和外呼日志都能查看。
+533. 分别对照一楼起行、三楼实际到站、以及二楼未响应的外呼日志。
    来源：[src/data/chapter4-755.content.json:938](../src/data/chapter4-755.content.json#L938)
-533. 在面板上分清实际到站与未响应的呼叫。
+534. 在「浅色操作」的电梯面板里标明：A3 为实际到站，A2 为未响应呼叫。
    来源：[src/data/chapter4-755.content.json:939](../src/data/chapter4-755.content.json#L939)
-534. 回答校史墙上的两问
+535. 到楼外，在灿若星辰灯前回答两问
    来源：[src/data/chapter4-755.content.json:943](../src/data/chapter4-755.content.json#L943)
-535. 第一问是到浙大来做什么。
+536. 早八签到彻底搞定了，推门走出教学楼透口气吧。
    来源：[src/data/chapter4-755.content.json:945](../src/data/chapter4-755.content.json#L945)
-536. 第二问是将来毕业后要做什么样的人。
+537. 楼外的「灿若星辰」灯前浮现出竺可桢老校长的两问：到浙大来做什么？将来毕业后要做什么样的人？
    来源：[src/data/chapter4-755.content.json:946](../src/data/chapter4-755.content.json#L946)
-537. 按你的想法选择。
+538. 回想这一路从早八签到、图书馆挪书包到北教修钟的折腾与日常，选出你心里的答案并确认归档。
    来源：[src/data/chapter4-755.content.json:947](../src/data/chapter4-755.content.json#L947)
-538. 记录三楼晨间教室的布置
+539. 在 303 记录晨间布局
    来源：[src/data/chapter4-755.content.json:951](../src/data/chapter4-755.content.json#L951)
-539. 三楼晨间教室还保留着完整布局。
+540. 去 303 晨间教室，用「深色观察」记下讲台、桌椅和入口。下二楼复原 204 要用这份参照。
    来源：[src/data/chapter4-755.content.json:953](../src/data/chapter4-755.content.json#L953)
-540. 用深色观察看桌椅、入口和投影边界。
+541. 想顺路追查旧导视，可以在 301 按「1991–1998、A3、入口导视」取出胶片。
    来源：[src/data/chapter4-755.content.json:954](../src/data/chapter4-755.content.json#L954)
-541. 记下参照后，去主楼梯看看。
+542. 带胶片去 302 对齐入口、楼梯与荣誉墙。记下 303 布局后，就可以从主楼梯下二楼。
    来源：[src/data/chapter4-755.content.json:955](../src/data/chapter4-755.content.json#L955)
-542. 接通三楼通往二楼的楼梯
+543. 切换固定视角，接通 A3 到 A2 的错位楼梯
    来源：[src/data/chapter4-755.content.json:959](../src/data/chapter4-755.content.json#L959)
-543. 楼梯的断口在不同视角下位置不同。
+544. 北教的楼梯在时空错位下断成了几截，但换个固定视角就能利用视觉重合把断口接上。
    来源：[src/data/chapter4-755.content.json:961](../src/data/chapter4-755.content.json#L961)
-544. 横移、旋转和升降都可以调，先看端点能否接上。
+545. 先用横移台、旋转梯或升降台把端点调到同一视线方向。
    来源：[src/data/chapter4-755.content.json:962](../src/data/chapter4-755.content.json#L962)
-545. 换一个固定视角检查通路，再继续下一段。
+546. 切换视角让两端严丝合缝地连成通路，一步步下到二楼（A2）。
    来源：[src/data/chapter4-755.content.json:963](../src/data/chapter4-755.content.json#L963)
-546. 查看 204 留下的桌椅痕迹
+547. 在 204 用深色观察记录地面搬动残影
    来源：[src/data/chapter4-755.content.json:967](../src/data/chapter4-755.content.json#L967)
-547. 204 地上留着几组搬动痕迹。
+548. 二楼 204 教室的桌椅被人挪乱了，地上留着窗侧、中央、讲台边和门侧四片拖痕。
    来源：[src/data/chapter4-755.content.json:969](../src/data/chapter4-755.content.json#L969)
-548. 深色观察可记下原位置，三楼参照可以拿来比较。
+549. 切到「深色观察」记下这四组残影，与刚才在三楼记下的晨间标准布局对照。
    来源：[src/data/chapter4-755.content.json:970](../src/data/chapter4-755.content.json#L970)
-549. 收齐两处记录后再核对摆放结果。
+550. 两份记录都备齐后，就能彻底确认复原结果。
    来源：[src/data/chapter4-755.content.json:971](../src/data/chapter4-755.content.json#L971)
-550. 把教室恢复成早晨的样子
+551. 把 204 的 12 组桌椅按四组痕迹归位
    来源：[src/data/chapter4-755.content.json:975](../src/data/chapter4-755.content.json#L975)
-551. 用三楼参照和这里的地面痕迹核对摆放。
+552. 对照三楼晨间布局和 204 地面的四片搬动残影，把 12 组桌椅分成四组放回原槽位。
    来源：[src/data/chapter4-755.content.json:977](../src/data/chapter4-755.content.json#L977)
-552. 十二件家具分成四组，可以一组一组移。
+553. 「浅色操作」负责搬桌椅，「深色观察」随时补看地面残影，先后顺序不限。
    来源：[src/data/chapter4-755.content.json:978](../src/data/chapter4-755.content.json#L978)
-553. 浅色操作搬家具，深色观察补看痕迹，顺序不限。
+554. 四组桌椅全部归位后，教室前方的投影仪就会稳定下来。
    来源：[src/data/chapter4-755.content.json:979](../src/data/chapter4-755.content.json#L979)
-554. 看看 204 恢复出的画面
+555. 查看 204 稳定后的投影画面
    来源：[src/data/chapter4-755.content.json:983](../src/data/chapter4-755.content.json#L983)
-555. 桌椅归位后，前方投影出现了变化。
+556. 12 组桌椅全部归位后，讲台前方的投影幕布停止了闪烁。
    来源：[src/data/chapter4-755.content.json:985](../src/data/chapter4-755.content.json#L985)
-556. 靠近幕布，等画面稳定。
+557. 走到幕布前看清投影留下的「07:55」时间戳和纸条飞过的痕迹。
    来源：[src/data/chapter4-755.content.json:986](../src/data/chapter4-755.content.json#L986)
-557. 把看清的时间和纸痕记下来。
+558. 看完投影后，留心听讲台抽屉弹开的动静。
    来源：[src/data/chapter4-755.content.json:987](../src/data/chapter4-755.content.json#L987)
-558. 检查 204 讲台抽屉
+559. 从 204 讲台抽屉取出钟面定位片
    来源：[src/data/chapter4-755.content.json:991](../src/data/chapter4-755.content.json#L991)
-559. 投影稳定后，讲台那边响了一声。
+560. 投影稳定的一瞬间，204 讲台抽屉的电磁锁咔哒一声松开了。
    来源：[src/data/chapter4-755.content.json:993](../src/data/chapter4-755.content.json#L993)
-560. 抽屉松开了。
+561. 切到「浅色操作」拉开抽屉，取出里面的透明「钟面定位片」。
    来源：[src/data/chapter4-755.content.json:994](../src/data/chapter4-755.content.json#L994)
-561. 浅色操作时可以取出里面的部件。
+562. 定位片背面刻着扳手印（22:00 检修），装回旧钟前还得先去二楼其他房间做完校准和线路验证。
    来源：[src/data/chapter4-755.content.json:995](../src/data/chapter4-755.content.json#L995)
-562. 补齐二楼的现场记录
+563. 完成 201 压痕对齐、203 五区线路与自习区往返验证
    来源：[src/data/chapter4-755.content.json:999](../src/data/chapter4-755.content.json#L999)
-563. 201 有定位板，203 留有供电图，自习区还有路线板。
+564. 在 201 创客工坊：将定位板调至「横向 -2、纵向 +1、压力 3 档」，对齐三处旧压痕。
    来源：[src/data/chapter4-755.content.json:1001](../src/data/chapter4-755.content.json#L1001)
-564. 查看板上的原始痕迹，再动手调整。
+565. 在 203 计算机教室：恢复「大厅—西走廊—后场—教室区—东走廊」五区闭合环路并完成通道检验。
    来源：[src/data/chapter4-755.content.json:1002](../src/data/chapter4-755.content.json#L1002)
-565. 三处互不排队，先查哪处都可以。
+566. 在开放自习区：对照四处鞋印，验证从「202 门口 → 东走廊 → 交通核 → 主楼梯下行」的往返疏散路线。
    来源：[src/data/chapter4-755.content.json:1003](../src/data/chapter4-755.content.json#L1003)
-566. 把定位片装回大厅旧钟
+567. 回一楼大厅，把钟面定位片装回旧钟
    来源：[src/data/chapter4-755.content.json:1007](../src/data/chapter4-755.content.json#L1007)
-567. 定位片已校准，回一楼比对钟面。
+568. 定位片已在 201 完成三轴校准，二楼的供电环路和疏散路线也查清了。
    来源：[src/data/chapter4-755.content.json:1009](../src/data/chapter4-755.content.json#L1009)
-568. 透明片边缘的短刻度能对上接口。
+569. 回到一楼大厅旧钟前，对准表盘侧面的固定插槽。
    来源：[src/data/chapter4-755.content.json:1010](../src/data/chapter4-755.content.json#L1010)
-569. 浅色操作时把定位片放进插槽。
+570. 在「浅色操作」下将「钟面定位片」塞进插槽，消除指针松手后的摆动。
    来源：[src/data/chapter4-755.content.json:1011](../src/data/chapter4-755.content.json#L1011)
-570. 查清保洁车为什么卡住
+571. 诊断保洁车与旧钟齿轮的卡顿故障
    来源：[src/data/chapter4-755.content.json:1015](../src/data/chapter4-755.content.json#L1015)
-571. 靠近车轮，听听摩擦声。
+572. 22:45 的大厅里，保洁车卡在旧钟旁边，两边都在发出刺耳的金属刮擦声。
    来源：[src/data/chapter4-755.content.json:1017](../src/data/chapter4-755.content.json#L1017)
-572. 地面有油迹，旧钟里也有卡顿声。
+573. 现场有三条证据：保洁车轮的摩擦声（卡扣锁死）、地面油迹（轮轴缺油）、旧钟卡顿声（齿轮偏位）。
    来源：[src/data/chapter4-755.content.json:1018](../src/data/chapter4-755.content.json#L1018)
-573. 把现象和故障原因对应起来，提交前可以改选。
+574. 将三条故障现象与原因一一对应完成诊断，小心避开走廊里巡逻的保安。
    来源：[src/data/chapter4-755.content.json:1019](../src/data/chapter4-755.content.json#L1019)
-574. 去面包坊后场找工具
+575. 诊断轮轴故障，取得短撬棍
    来源：[src/data/chapter4-755.content.json:1023](../src/data/chapter4-755.content.json#L1023)
-575. 保洁车轮罩留着一道窄缝。
+576. 听轮轴摩擦声，查看地面油迹和旧钟的卡顿。
    来源：[src/data/chapter4-755.content.json:1025](../src/data/chapter4-755.content.json#L1025)
-576. 后场有短柄工具，可以看看扁头尺寸。
+577. 在保洁车旁把三种现象和故障原因对应起来。
    来源：[src/data/chapter4-755.content.json:1026](../src/data/chapter4-755.content.json#L1026)
-577. 浅色操作时拾取。
+578. 诊断通过后，短撬棍会放进道具栏。
    来源：[src/data/chapter4-755.content.json:1027](../src/data/chapter4-755.content.json#L1027)
-578. 撬开保洁车轮罩
+579. 用短撬棍撬开保洁车轮罩
    来源：[src/data/chapter4-755.content.json:1031](../src/data/chapter4-755.content.json#L1031)
-579. 轮罩挡住了卡住的部位。
+580. 故障诊断完成了，但保洁车的金属轮罩死死盖着轮轴。
    来源：[src/data/chapter4-755.content.json:1033](../src/data/chapter4-755.content.json#L1033)
-580. 短撬棍的扁头能伸进缝里。
+581. 从道具栏拿出扁头的「短撬棍」，对准轮罩边缘的窄缝。
    来源：[src/data/chapter4-755.content.json:1034](../src/data/chapter4-755.content.json#L1034)
-581. 浅色操作时，把撬棍用在轮罩上。
+582. 在「浅色操作」下用短撬棍撬开轮罩，露出里面干涩的轮轴。
    来源：[src/data/chapter4-755.content.json:1035](../src/data/chapter4-755.content.json#L1035)
-582. 看看打开的轮罩里面
+583. 打开轮罩，领到通用润滑油
    来源：[src/data/chapter4-755.content.json:1039](../src/data/chapter4-755.content.json#L1039)
-583. 轮罩已经松开，里面还有一小瓶油。
+584. 诊断通过后，道具栏里会有短撬棍。
    来源：[src/data/chapter4-755.content.json:1041](../src/data/chapter4-755.content.json#L1041)
-584. 车轮的摩擦声还没停。
+585. 在「浅色操作」下用短撬棍打开轮罩。
    来源：[src/data/chapter4-755.content.json:1042](../src/data/chapter4-755.content.json#L1042)
-585. 浅色操作时可以取出润滑油。
+586. 轮罩打开后，通用润滑油会放进道具栏。
    来源：[src/data/chapter4-755.content.json:1043](../src/data/chapter4-755.content.json#L1043)
-586. 修复轮轴与旧钟的卡滞
+587. 给轮轴上油，联动修好旧钟齿轮
    来源：[src/data/chapter4-755.content.json:1047](../src/data/chapter4-755.content.json#L1047)
-587. 检查已经打开的轮罩。
+588. 轮罩已经撬开，保洁车正好压在大厅旧钟的底部传动连杆上。
    来源：[src/data/chapter4-755.content.json:1049](../src/data/chapter4-755.content.json#L1049)
-588. 先前的诊断记录了车轮缺油和齿轮偏位。
+589. 在「浅色操作」下对保洁车轮轴使用「通用润滑油」。
    来源：[src/data/chapter4-755.content.json:1050](../src/data/chapter4-755.content.json#L1050)
-589. 浅色操作时给车轮上油，再确认联动修复结果。
+590. 轮轴顺滑挪开后，旧钟内部卡滞的齿轮也会随之复位咬合。
    来源：[src/data/chapter4-755.content.json:1051](../src/data/chapter4-755.content.json#L1051)
-590. 用余下的油修复旧钟齿轮
+591. 通过轮轴联动修复旧钟齿轮
    来源：[src/data/chapter4-755.content.json:1055](../src/data/chapter4-755.content.json#L1055)
-591. 车轮顺了，钟壳里还有摩擦声。
+592. 保洁车卡在旧钟的传动部位。
    来源：[src/data/chapter4-755.content.json:1057](../src/data/chapter4-755.content.json#L1057)
-592. 剩下的润滑油够处理齿轮。
+593. 打开轮罩后，把通用润滑油用在保洁车轮轴上。
    来源：[src/data/chapter4-755.content.json:1058](../src/data/chapter4-755.content.json#L1058)
-593. 回大厅，在浅色操作中给齿轮上油。
+594. 轮轴恢复转动时，旧钟齿轮也会联动归位。
    来源：[src/data/chapter4-755.content.json:1059](../src/data/chapter4-755.content.json#L1059)
-594. 把旧钟拨向 07:55
-   来源：[src/data/chapter4-755.content.json:1063](../src/data/chapter4-755.content.json#L1063)；[src/data/chapter4-755.content.json:1769](../src/data/chapter4-755.content.json#L1769)
-595. 查看维修完成后的大厅旧钟表盘。
+595. 把修好的大厅旧钟拨向 07:55
+   来源：[src/data/chapter4-755.content.json:1063](../src/data/chapter4-755.content.json#L1063)
+596. 保洁车和旧钟齿轮都已经修好，表盘终于能顺畅转动了。
    来源：[src/data/chapter4-755.content.json:1065](../src/data/chapter4-755.content.json#L1065)
-596. 车轮与钟内齿轮均修复后，旧钟才接受最终校时。
+597. 走到一楼大厅旧钟前，切到「浅色操作」。
    来源：[src/data/chapter4-755.content.json:1066](../src/data/chapter4-755.content.json#L1066)
-597. 在浅色操作中拖动旧钟分针到 07:55 刻度并松开。
+598. 按住分针往 07:55 的刻度拖动——哪怕只差最后一格。
    来源：[src/data/chapter4-755.content.json:1067](../src/data/chapter4-755.content.json#L1067)
-598. 点亮追赶所需的通路
+599. 操作配电面板：点亮大厅、东走廊与教室区
    来源：[src/data/chapter4-755.content.json:1071](../src/data/chapter4-755.content.json#L1071)
-599. 配电面板管着五个灯区。
+600. 分针停在 07:54 跳闸了，纸条拆走分针组件逃进了二楼 202。根据 203 的五区供电环路，每个开关会同时切换自身与相邻两区。
    来源：[src/data/chapter4-755.content.json:1073](../src/data/chapter4-755.content.json#L1073)
-600. 先前的疏散路线板和供电图都在记录里。
+601. 为了照亮追去 202 的路并堵死岔道，需要点亮「大厅、东走廊、教室区」，同时让「西走廊、面包坊后场」保持熄灭。
    来源：[src/data/chapter4-755.content.json:1074](../src/data/chapter4-755.content.json#L1074)
-601. 对照沿途区域调整，确认前可看走廊实际亮灭。
+602. 从初始灯态开始，各点一次「东走廊、教室区、面包坊后场」，看清五区亮灭后再确认。
    来源：[src/data/chapter4-755.content.json:1075](../src/data/chapter4-755.content.json#L1075)
-602. 追进 202，关好门
+603. 甩开保安，沿主楼梯冲进二楼 202 落闩
    来源：[src/data/chapter4-755.content.json:1079](../src/data/chapter4-755.content.json#L1079)
-603. 纸条沿已查明的通路上了楼。
+604. 灯光通路已经锁定！清楼保安听到动静追过来了，千万别往西侧面包坊或 203 死胡同跑。
    来源：[src/data/chapter4-755.content.json:1081](../src/data/chapter4-755.content.json#L1081)
-604. 保安会跟上楼，进门后别忘了门闩。
+605. 顺着亮灯的大厅跑向主楼梯上二楼，穿过东走廊直奔 202 阶梯教室。
    来源：[src/data/chapter4-755.content.json:1082](../src/data/chapter4-755.content.json#L1082)
-605. 到 202 门内按 Space 关门。
+606. 冲进 202 门内后，立刻按 Space 键落下防盗门闩把保安挡在门外！
    来源：[src/data/chapter4-755.content.json:1083](../src/data/chapter4-755.content.json#L1083)
-606. 取回黄铜分针组件
+607. 在 202 阶梯座椅间取回黄铜分针组件与纸条
    来源：[src/data/chapter4-755.content.json:1087](../src/data/chapter4-755.content.json#L1087)
-607. 门闩关好后再找，保安还在外面。
+608. 门闩已经落好，保安暂时进不来。
    来源：[src/data/chapter4-755.content.json:1089](../src/data/chapter4-755.content.json#L1089)
-608. 组件卡在阶梯座椅之间。
+609. 那张折腾了一整天的签到纸就停在 202 的阶梯座椅之间，旁边还卡着它拆走的「黄铜分针组件」。
    来源：[src/data/chapter4-755.content.json:1090](../src/data/chapter4-755.content.json#L1090)
-609. 检查固定扣和轴座，别直接硬拔。
+610. 上前解开固定扣，把「黄铜分针组件」和「签到记录纸」一并收回。
    来源：[src/data/chapter4-755.content.json:1091](../src/data/chapter4-755.content.json#L1091)
-610. 把黄铜分针组件带回一楼大厅
+611. 带着黄铜分针组件，从主楼梯回一楼大厅
    来源：[src/data/chapter4-755.content.json:1095](../src/data/chapter4-755.content.json#L1095)
-611. 沿来时的走廊回主楼梯。
+612. 「最后一分钟」和签到纸都拿回来了。
    来源：[src/data/chapter4-755.content.json:1097](../src/data/chapter4-755.content.json#L1097)
-612. 停电时电梯不开，得走楼梯。
+613. 停电期间主电梯不运行，顺着来时的二楼东走廊和主楼梯往下走。
    来源：[src/data/chapter4-755.content.json:1098](../src/data/chapter4-755.content.json#L1098)
-613. 下到一楼后，把组件带到旧钟前。
+614. 回到一楼大厅中央的旧钟前。
    来源：[src/data/chapter4-755.content.json:1099](../src/data/chapter4-755.content.json#L1099)
-614. 将黄铜分针组件装回大厅旧钟
+615. 把黄铜分针组件装回旧钟，恢复 07:55
    来源：[src/data/chapter4-755.content.json:1103](../src/data/chapter4-755.content.json#L1103)
-615. 靠近一楼大厅旧钟，确认表盘完整出现在画面中。
+616. 站到一楼大厅旧钟正面，让完整表盘出现在视野里。
    来源：[src/data/chapter4-755.content.json:1105](../src/data/chapter4-755.content.json#L1105)
-616. 黄铜分针组件可以放入大厅旧钟的可见表盘范围。
+617. 切到「浅色操作」，从道具栏拖出「黄铜分针组件」放进旧钟表盘。
    来源：[src/data/chapter4-755.content.json:1106](../src/data/chapter4-755.content.json#L1106)
-617. 在浅色操作中，把道具栏里的黄铜分针组件拖到旧钟表盘内松手。
+618. 当分针咔哒一声扣进 07:55，整栋北教的清晨就会重新回来。
    来源：[src/data/chapter4-755.content.json:1107](../src/data/chapter4-755.content.json#L1107)
-618. 完成刷卡与纸条签到
+619. 在签到台完成左刷卡、右交纸
    来源：[src/data/chapter4-755.content.json:1111](../src/data/chapter4-755.content.json#L1111)
-619. 签到处有读卡器和纸槽。
+620. 大厅旧钟和手机终于同时停在了 07:55！
    来源：[src/data/chapter4-755.content.json:1113](../src/data/chapter4-755.content.json#L1113)
-620. 刷卡、交纸都要完成，先做哪项都可以。
+621. 走到一楼前台旁边的早八签到台：左边是校园卡读卡器，右边是纸质签到槽。
    来源：[src/data/chapter4-755.content.json:1114](../src/data/chapter4-755.content.json#L1114)
-621. 用浅色操作分别提交校园卡与签到记录纸。
+622. 在「浅色操作」下把「电子校园卡」和「签到记录纸」分别放上去，先后顺序不限。
    来源：[src/data/chapter4-755.content.json:1115](../src/data/chapter4-755.content.json#L1115)
-622. 刷校园卡
+623. 在签到台左侧刷校园卡
    来源：[src/data/chapter4-755.content.json:1119](../src/data/chapter4-755.content.json#L1119)
-623. 纸条已经收下，还差身份核验。
+624. 签到记录纸已经收进纸槽了，还差刷一下校园卡核验身份。
    来源：[src/data/chapter4-755.content.json:1121](../src/data/chapter4-755.content.json#L1121)
-624. 签到台旁有读卡器。
+625. 把道具栏里的「电子校园卡」拖到签到台左边的读卡器上。
    来源：[src/data/chapter4-755.content.json:1122](../src/data/chapter4-755.content.json#L1122)
-625. 浅色操作时提交校园卡。
+626. 切到「浅色操作」，把校园卡拖到左侧读卡器。
    来源：[src/data/chapter4-755.content.json:1123](../src/data/chapter4-755.content.json#L1123)
-626. 交签到记录纸
+627. 在签到台右侧提交签到记录纸
    来源：[src/data/chapter4-755.content.json:1127](../src/data/chapter4-755.content.json#L1127)
-627. 刷卡已经通过，还差纸质记录。
+628. 校园卡已经刷过了，还差把追回来的纸质签到条交上去。
    来源：[src/data/chapter4-755.content.json:1129](../src/data/chapter4-755.content.json#L1129)
-628. 签到台旁有纸槽。
+629. 把道具栏里的「签到记录纸」拖到签到台右边的纸槽里。
    来源：[src/data/chapter4-755.content.json:1130](../src/data/chapter4-755.content.json#L1130)
-629. 浅色操作时提交签到记录纸。
+630. 纸槽收下记录后，确认签到回执。
    来源：[src/data/chapter4-755.content.json:1131](../src/data/chapter4-755.content.json#L1131)
-630. 本人来过
+631. 07:55 · 本人来过
    来源：[src/data/chapter4-755.content.json:1139](../src/data/chapter4-755.content.json#L1139)
-631. 沿楼梯间上行，甩开身后的保安
+632. 穿过主楼梯间，别被身后的保安追上
    来源：[src/data/chapter4-755.content.json:1143](../src/data/chapter4-755.content.json#L1143)
-632. 从下层平台进入右侧的上行梯段。
+633. 从一层楼梯口右侧梯段往上跑，利用平台折返甩开身后的手电筒光束。
    来源：[src/data/chapter4-755.content.json:1145](../src/data/chapter4-755.content.json#L1145)
-633. 沿可见地砖绕过扶手，再进入上方梯段。
+634. 留意脚下可见的地砖边界，连续穿过两段中继平台。
    来源：[src/data/chapter4-755.content.json:1146](../src/data/chapter4-755.content.json#L1146)
-634. 楼梯口通往二楼走廊，中途载入会从最近的平台继续。
+635. 冲出上方楼梯口即可抵达二楼东侧走廊。
    来源：[src/data/chapter4-755.content.json:1147](../src/data/chapter4-755.content.json#L1147)
-635. system
+636. system
    来源：[src/data/chapter4-755.content.json:1154](../src/data/chapter4-755.content.json#L1154)；[src/data/chapter4-755.content.json:1164](../src/data/chapter4-755.content.json#L1164)；[src/data/chapter4-755.content.json:1170](../src/data/chapter4-755.content.json#L1170)；[src/data/chapter4-755.content.json:1174](../src/data/chapter4-755.content.json#L1174)；[src/data/chapter4-755.content.json:1182](../src/data/chapter4-755.content.json#L1182)；[src/data/chapter4-755.content.json:1186](../src/data/chapter4-755.content.json#L1186)；[src/data/chapter4-755.content.json:1192](../src/data/chapter4-755.content.json#L1192)；[src/data/chapter4-755.content.json:1200](../src/data/chapter4-755.content.json#L1200)；[src/data/chapter4-755.content.json:1206](../src/data/chapter4-755.content.json#L1206)；[src/data/chapter4-755.content.json:1226](../src/data/chapter4-755.content.json#L1226)；[src/data/chapter4-755.content.json:1236](../src/data/chapter4-755.content.json#L1236)；[src/data/chapter4-755.content.json:1240](../src/data/chapter4-755.content.json#L1240)；[src/data/chapter4-755.content.json:1324](../src/data/chapter4-755.content.json#L1324)；[src/data/chapter4-755.content.json:1330](../src/data/chapter4-755.content.json#L1330)；[src/data/chapter4-755.content.json:1350](../src/data/chapter4-755.content.json#L1350)；[src/data/chapter4-755.content.json:1358](../src/data/chapter4-755.content.json#L1358)；[src/data/chapter4-755.content.json:1386](../src/data/chapter4-755.content.json#L1386)；[src/data/chapter4-755.content.json:1392](../src/data/chapter4-755.content.json#L1392)；[src/data/chapter4-755.content.json:1398](../src/data/chapter4-755.content.json#L1398)；[src/data/chapter4-755.content.json:1412](../src/data/chapter4-755.content.json#L1412)；[src/data/chapter4-755.content.json:1418](../src/data/chapter4-755.content.json#L1418)；[src/data/chapter4-755.content.json:1424](../src/data/chapter4-755.content.json#L1424)；[src/data/chapter4-755.content.json:1430](../src/data/chapter4-755.content.json#L1430)；[src/data/chapter4-755.content.json:1438](../src/data/chapter4-755.content.json#L1438)；[src/data/chapter4-755.content.json:1444](../src/data/chapter4-755.content.json#L1444)；[src/data/chapter4-755.content.json:1452](../src/data/chapter4-755.content.json#L1452)；[src/scenes/phone/P14_Wechat/index.tsx:451](../src/scenes/phone/P14_Wechat/index.tsx#L451)；[src/scenes/phone/P14_Wechat/index.tsx:454](../src/scenes/phone/P14_Wechat/index.tsx#L454)
-636. 现场画面已同步。异常签到纸正在飞向公告栏。
+637. 视野已同步！那张签到纸条正往大厅公告栏上撞，等它停稳了快去摁住它！
    来源：[src/data/chapter4-755.content.json:1155](../src/data/chapter4-755.content.json#L1155)
-637. player
+638. player
    来源：[src/data/chapter4-755.content.json:1160](../src/data/chapter4-755.content.json#L1160)；[src/data/chapter4-755.content.json:1178](../src/data/chapter4-755.content.json#L1178)；[src/data/chapter4-755.content.json:1196](../src/data/chapter4-755.content.json#L1196)；[src/data/chapter4-755.content.json:1216](../src/data/chapter4-755.content.json#L1216)；[src/data/chapter4-755.content.json:1230](../src/data/chapter4-755.content.json#L1230)；[src/data/chapter4-755.content.json:1340](../src/data/chapter4-755.content.json#L1340)；[src/data/chapter4-755.content.json:1354](../src/data/chapter4-755.content.json#L1354)；[src/data/chapter4-755.content.json:1404](../src/data/chapter4-755.content.json#L1404)；[src/data/chapter4-755.content.json:1434](../src/data/chapter4-755.content.json#L1434)；[src/data/chapter4-755.content.json:1448](../src/data/chapter4-755.content.json#L1448)
-638. 抓到了。
+639. ——抓到了！跑了大半个紫金港，这下看你还往哪钻！
    来源：[src/data/chapter4-755.content.json:1161](../src/data/chapter4-755.content.json#L1161)
-639. 正在提交签到记录……
+640. 正在将签到纸条写入教务考勤服务器……
    来源：[src/data/chapter4-755.content.json:1165](../src/data/chapter4-755.content.json#L1165)
-640. 提交失败。外部时间：22:45。
+641. ……提交失败。当前教学楼授时终端时间：22:45。
    来源：[src/data/chapter4-755.content.json:1171](../src/data/chapter4-755.content.json#L1171)
-641. 签到截止时间：07:55。
+642. 早八考勤截止时间：07:55。已超时 14 小时 50 分钟，系统拒绝接收。
    来源：[src/data/chapter4-755.content.json:1175](../src/data/chapter4-755.content.json#L1175)
-642. 手机上还写着 07:55:23。
+643. 怎么可能 22:45？！你看我手机右上角，明明还停在 07:55:23 啊！
    来源：[src/data/chapter4-755.content.json:1179](../src/data/chapter4-755.content.json#L1179)
-643. 手机上的时间没更新。现在已经是 22:45。
+644. 那是你手机被纸条卡死的本地显示。为了追这张纸，你从早八一路跑到了北教熄灯清楼。
    来源：[src/data/chapter4-755.content.json:1183](../src/data/chapter4-755.content.json#L1183)
-644. 记录找回来了，迟到还在。补材料不附送补时间。
+645. 签到纸是找回来了，但那节早八……十四个小时前就已经下课了。
    来源：[src/data/chapter4-755.content.json:1187](../src/data/chapter4-755.content.json#L1187)
-645. 旧钟能被拨动，但指针不会按你的动作走。
+646. 大厅这座旧钟还连着整栋楼的内部授时线。表盘能被拨动，指针却不会按你的动作走。
    来源：[src/data/chapter4-755.content.json:1193](../src/data/chapter4-755.content.json#L1193)
-646. 这是好消息？
+647. 你的意思是……只要把这座旧钟修好、拨回 07:55，这栋楼的签到机就会认为现在还是早上七点五十五？
    来源：[src/data/chapter4-755.content.json:1197](../src/data/chapter4-755.content.json#L1197)
-647. 它还在出错。
+648. 没错！既然补交材料不送时间，咱们就亲手把北教的时间拧回早八！先看看钟壳里留了什么检修线索。
    来源：[src/data/chapter4-755.content.json:1201](../src/data/chapter4-755.content.json#L1201)
-648. 时间源已切换：大厅旧钟。
+649. 授时母线接管成功！本楼当前时间源已切换为：大厅旧钟（12:25）。
    来源：[src/data/chapter4-755.content.json:1207](../src/data/chapter4-755.content.json#L1207)
-649. baker
+650. baker
    来源：[src/data/chapter4-755.content.json:1212](../src/data/chapter4-755.content.json#L1212)；[src/data/chapter4-755.content.json:1220](../src/data/chapter4-755.content.json#L1220)
-650. 那块金属你认识？我正要报异物。
+651. 同学，你手里那根金属条哪来的？刚才卡在传送带缝里咔咔响，我正准备填设备报修单呢。
    来源：[src/data/chapter4-755.content.json:1213](../src/data/chapter4-755.content.json#L1213)
-651. 大厅钟上的时针。
+652. 这是大厅那座旧钟上掉下来的时针，背面还刻着字。
    来源：[src/data/chapter4-755.content.json:1217](../src/data/chapter4-755.content.json#L1217)
-652. 那装回去吧。别算进我们这班的损耗。
+653. 原来是外头大钟上的零件啊……那你赶紧拿去装回去吧，省得算成我们面包坊这班的异物损耗。
    来源：[src/data/chapter4-755.content.json:1221](../src/data/chapter4-755.content.json#L1221)
-653. 黑板已经擦净，残留笔画仍按书写顺序逐段出现。首尾相差 7 分 55 秒。
+654. 104 教室的黑板明明擦干净了，但深色观察下，早八的粉笔字还在按落笔顺序一笔笔浮现……第一笔和最后一笔，刚好相差 7 分 55 秒。
    来源：[src/data/chapter4-755.content.json:1227](../src/data/chapter4-755.content.json#L1227)
-654. 人都下课了，这里还没写完。
+655. 人都走空了一整天，黑板上的板书还困在早八没下课。
    来源：[src/data/chapter4-755.content.json:1231](../src/data/chapter4-755.content.json#L1231)
-655. 讲台回放停在 07:47:05，教室记录显示 07:55:00。本地画面延迟 7 分 55 秒。
+656. 105 讲台的录播画面停在 07:47:05，教室挂钟记录却是 07:55:00。本地回放整整延迟了 7 分 55 秒。
    来源：[src/data/chapter4-755.content.json:1237](../src/data/chapter4-755.content.json#L1237)
-656. 该终端只能证明回放延迟，不能用于校准现场时间。
+657. 注意，这段讲台回放只能证明设备存在 7 分 55 秒的固定延迟，不能直接当成现场时间。
    来源：[src/data/chapter4-755.content.json:1241](../src/data/chapter4-755.content.json#L1241)
-657. 值班助理
+658. 值班助理
    来源：[src/data/chapter4-755.content.json:1246](../src/data/chapter4-755.content.json#L1246)；[src/data/chapter4-755.content.json:1252](../src/data/chapter4-755.content.json#L1252)；[src/data/chapter4-755.content.json:1258](../src/data/chapter4-755.content.json#L1258)；[src/data/chapter4-755.content.json:1264](../src/data/chapter4-755.content.json#L1264)；[src/data/chapter4-755.content.json:1270](../src/data/chapter4-755.content.json#L1270)；[src/data/chapter4-755.content.json:1276](../src/data/chapter4-755.content.json#L1276)；[src/data/chapter4-755.content.json:1282](../src/data/chapter4-755.content.json#L1282)
-658. 西边传送带里有东西响，面包坊的人还没取出来。
+659. 西边面包坊的传送带从中午起就有金属刮擦声，店里的人忙着烤面包，还没空停机拆开看呢。
    来源：[src/data/chapter4-755.content.json:1247](../src/data/chapter4-755.content.json#L1247)
-659. 104 的板书和 105 的回放时间不对，得查两间。只填一间，这张表交不上去。
+660. 104 的黑板残影和 105 的讲台录播时间对不上，两间教室都得去核对一下。只查一间的话，我这值班表没法归档。
    来源：[src/data/chapter4-755.content.json:1253](../src/data/chapter4-755.content.json#L1253)
-660. 104 记下了。105 讲台还有一段回放没查。
+661. 104 的 7 分 55 秒粉笔延迟记下了。隔壁 105 讲台的录播终端还没查，你再去瞅一眼？
    来源：[src/data/chapter4-755.content.json:1259](../src/data/chapter4-755.content.json#L1259)
-661. 105 记下了。104 擦过的黑板再看一眼。
+662. 105 的录播延迟记下了。隔壁 104 擦干净的黑板上好像也有东西，切深色观察再看一眼吧。
    来源：[src/data/chapter4-755.content.json:1265](../src/data/chapter4-755.content.json#L1265)
-662. 两间都齐了。电梯那边还有记录，今天的表格够用。
+663. 104 和 105 的时间差都对上了！对了，台面上这三张值班牌（104、105、主电梯）刚才散了，你顺手按夹痕从旧到新帮我挂回签到板上吧。
    来源：[src/data/chapter4-755.content.json:1271](../src/data/chapter4-755.content.json#L1271)
-663. 现在是 07:55。校园卡放到左侧读卡器，签到纸放入右侧纸槽。
+664. 同学早啊！现在刚好 07:55，赶上早八啦。左边读卡器刷校园卡，右边槽口塞纸质签到条，两边弄完就能进教室了。
    来源：[src/data/chapter4-755.content.json:1277](../src/data/chapter4-755.content.json#L1277)
-664. 钟、手机、签到纸都对上了。今天总算能填“正常”。
+665. 大厅旧钟、手机和你的签到条全都对上 07:55 了。今天的值班日志，我总算能踏踏实实打个“正常”了。
    来源：[src/data/chapter4-755.content.json:1283](../src/data/chapter4-755.content.json#L1283)
-665. 安全员
+666. 安全员
    来源：[src/data/chapter4-755.content.json:1288](../src/data/chapter4-755.content.json#L1288)；[src/data/chapter4-755.content.json:1294](../src/data/chapter4-755.content.json#L1294)；[src/data/chapter4-755.content.json:1300](../src/data/chapter4-755.content.json#L1300)
-666. 二楼电梯口暂不放行。先把一楼 104 黑板残留和 105 讲台回放都登记完。
+667. 这里核对的是电梯停站。先看各层的门机记录，分清实际到站和没有响应的外呼。
    来源：[src/data/chapter4-755.content.json:1289](../src/data/chapter4-755.content.json#L1289)
-667. 一楼两项记录已到。先去三楼参照教室核对标准布局，再回 204。
+668. 204 要用三楼 303 的晨间布局作参照。没记下来的话，可以回去用深色观察补看。
    来源：[src/data/chapter4-755.content.json:1295](../src/data/chapter4-755.content.json#L1295)
-668. 三楼参照已登记。现在可以进 204，按残影恢复讲台和桌椅位置。
+669. 303 的布局记下来了。先核对各层停站，再去 204 对照地上的拖痕，把桌椅按四组归位。
    来源：[src/data/chapter4-755.content.json:1301](../src/data/chapter4-755.content.json#L1301)
-669. 教师
+670. 教师
    来源：[src/data/chapter4-755.content.json:1306](../src/data/chapter4-755.content.json#L1306)；[src/data/chapter4-755.content.json:1312](../src/data/chapter4-755.content.json#L1312)
-670. 这间教室保留标准布局。用深色观察记录讲台、桌椅和入口边界，完成后回二楼 204。
+671. 303 还保留着晨间的标准摆法。把讲台、桌椅和入口边界记下来，下二楼复原 204 时用得上。
    来源：[src/data/chapter4-755.content.json:1307](../src/data/chapter4-755.content.json#L1307)
-671. 标准布局已经记录。二楼 204 需要的是这份参照。
+672. 标准摆法都记下了？去吧，二楼 204 就照这个样子复原。对了，下楼的楼梯要是看着错位，换个角度瞧瞧就能走通了。
    来源：[src/data/chapter4-755.content.json:1313](../src/data/chapter4-755.content.json#L1313)
-672. projection
+673. projection
    来源：[src/data/chapter4-755.content.json:1318](../src/data/chapter4-755.content.json#L1318)
-673. 07:55 / 早到的人还没有开始后悔。
+674. 07:55 —— 赶上早八的人，才刚刚坐稳喘口气。
    来源：[src/data/chapter4-755.content.json:1319](../src/data/chapter4-755.content.json#L1319)
-674. 三楼晨间教室的讲台、桌椅和入口边界已经记录。
+675. 已记下三楼晨间教室的讲台、桌椅与入口边界参照。
    来源：[src/data/chapter4-755.content.json:1325](../src/data/chapter4-755.content.json#L1325)
-675. 每组桌椅原来的位置已经记下来了。
+676. 204 地面四处搬动残影已记录，可以动手把 12 组桌椅按四组归位了。
    来源：[src/data/chapter4-755.content.json:1331](../src/data/chapter4-755.content.json#L1331)
-676. cleaner
+677. cleaner
    来源：[src/data/chapter4-755.content.json:1336](../src/data/chapter4-755.content.json#L1336)；[src/data/chapter4-755.content.json:1344](../src/data/chapter4-755.content.json#L1344)
-677. 报修单上写着“可正常推行”。你听听这轮子。
+678. 后勤报修单上非说这保洁车“可正常推行”——你听听这轮子卡得吱哇乱叫的，还把大厅旧钟的底座给顶住了！
    来源：[src/data/chapter4-755.content.json:1337](../src/data/chapter4-755.content.json#L1337)
-678. 我看看轮罩里面。
+679. 我先看看车轮为什么卡住。找准故障，再拿工具打开轮罩。
    来源：[src/data/chapter4-755.content.json:1341](../src/data/chapter4-755.content.json#L1341)
-679. 能把这响声弄停就行。表我不想再填了。
+680. 那感情好！只要能把这刺耳的动静弄停、把车挪开，我今晚就不用再填第三遍报修表了。
    来源：[src/data/chapter4-755.content.json:1345](../src/data/chapter4-755.content.json#L1345)
-680. 时间校准至 07:54。
+681. 时针与齿轮啮合完毕。当前大厅旧钟已回调至——07:54！
    来源：[src/data/chapter4-755.content.json:1351](../src/data/chapter4-755.content.json#L1351)
-681. 差一分钟。
+682. 等等，怎么卡在 07:54 跳闸了？！离早八签到还差最后一分钟啊！
    来源：[src/data/chapter4-755.content.json:1355](../src/data/chapter4-755.content.json#L1355)
-682. 纸条把最后一分钟带走了。定位结果：阶梯教室。
+683. 是那张签到纸！它趁刚才断电，把分针的黄铜组件连同最后一分钟一起拆走，顺着东走廊躲进二楼 202 阶梯教室了！
    来源：[src/data/chapter4-755.content.json:1359](../src/data/chapter4-755.content.json#L1359)
-683. guard
+684. guard
    来源：[src/data/chapter4-755.content.json:1364](../src/data/chapter4-755.content.json#L1364)；[src/data/chapter4-755.content.json:1370](../src/data/chapter4-755.content.json#L1370)；[src/data/chapter4-755.content.json:1376](../src/data/chapter4-755.content.json#L1376)；[src/data/chapter4-755.content.json:1382](../src/data/chapter4-755.content.json#L1382)
-684. 同学，站住。离旧钟远一点。
-   来源：[src/data/chapter4-755.content.json:1365](../src/data/chapter4-755.content.json#L1365)；[src/data/pursuit.audio.content.json:87](../src/data/pursuit.audio.content.json#L87)
-685. 我看到你了。停下。
-   来源：[src/data/chapter4-755.content.json:1371](../src/data/chapter4-755.content.json#L1371)；[src/data/pursuit.audio.content.json:115](../src/data/pursuit.audio.content.json#L115)
-686. 同学，停下！前面的，听见没有？
-   来源：[src/data/chapter4-755.content.json:1377](../src/data/chapter4-755.content.json#L1377)；[src/data/pursuit.audio.content.json:101](../src/data/pursuit.audio.content.json#L101)
-687. 出去。
+685. 那边的同学，站住！大半夜的不回寝室，猫在大厅钟底下捣鼓什么呢？！
+   来源：[src/data/chapter4-755.content.json:1365](../src/data/chapter4-755.content.json#L1365)
+686. 手电筒都照着你后背了，还跑！赶紧停下！
+   来源：[src/data/chapter4-755.content.json:1371](../src/data/chapter4-755.content.json#L1371)
+687. 往二楼跑了是吧？二楼这会儿早锁门了，听见没有，快下来！
+   来源：[src/data/chapter4-755.content.json:1377](../src/data/chapter4-755.content.json#L1377)
+688. 抓着你了啊！大晚上的在楼梯间百米冲刺，先跟我回一楼大厅登记！
    来源：[src/data/chapter4-755.content.json:1383](../src/data/chapter4-755.content.json#L1383)
-688. 保安把你带回大厅，钟上还是 07:54。
+689. 被清楼保安带回了一楼大厅，旧钟依旧停在 07:54。调整呼吸，再冲一次！
    来源：[src/data/chapter4-755.content.json:1387](../src/data/chapter4-755.content.json#L1387)
-689. 被清楼保安拦下了，已回到一楼大厅重来。
+690. 被清楼保安拦下了，已回到一楼大厅起点重来。
    来源：[src/data/chapter4-755.content.json:1393](../src/data/chapter4-755.content.json#L1393)
-690. 门闩已落下，保安被挡在 202 门外。
+691. 咔哒——202 的防盗门闩落下了，保安大叔暂时被挡在了门外。
    来源：[src/data/chapter4-755.content.json:1399](../src/data/chapter4-755.content.json#L1399)
-691. 不跑了？
+692. （扶着膝盖喘气）这下三面都是阶梯座椅……我看你还往哪跑？
    来源：[src/data/chapter4-755.content.json:1405](../src/data/chapter4-755.content.json#L1405)
-692. paper
+693. paper
    来源：[src/data/chapter4-755.content.json:1408](../src/data/chapter4-755.content.json#L1408)
-693. 本人马上回来。
+694. 本人马上回来。
    来源：[src/data/chapter4-755.content.json:1409](../src/data/chapter4-755.content.json#L1409)
-694. 它回来了。
+695. 它不再扑腾了。这句写在纸上的“马上回来”困了它整整三天，现在，终于有人替它把这段错位的时间走完了。
    来源：[src/data/chapter4-755.content.json:1413](../src/data/chapter4-755.content.json#L1413)
-695. 黄铜分针组件和签到纸条都已取回。
+696. 「黄铜分针组件」与「07:55 签到记录纸」已全部取回！走主楼梯回一楼大厅吧。
    来源：[src/data/chapter4-755.content.json:1419](../src/data/chapter4-755.content.json#L1419)
-696. 门厅旧钟已到 07:55。
+697. 分针归位——铛！大厅旧钟与手机屏幕同时跳到了 07:55！
    来源：[src/data/chapter4-755.content.json:1425](../src/data/chapter4-755.content.json#L1425)
-697. 签到成功。时间：07:55。地点：段永平教学楼 A1。状态：本人来过。
+698. 叮——考勤核验通过！时间：07:55。地点：段永平教学楼 A1。状态：本人来过。
    来源：[src/data/chapter4-755.content.json:1431](../src/data/chapter4-755.content.json#L1431)
-698. 现在算准时吗？
+699. ……从图书馆、食堂、剧场、启真湖一路追到北教，折腾了十四个小时，我这到底算准时，还是算迟到？
    来源：[src/data/chapter4-755.content.json:1435](../src/data/chapter4-755.content.json#L1435)
-699. 从时间角度，算。
+700. 只要旧钟和教务系统写着 07:55，你就是准时的。恭喜你，同学，平时分保住了。
    来源：[src/data/chapter4-755.content.json:1439](../src/data/chapter4-755.content.json#L1439)
-700. 外面亮了一下。
-   来源：[src/data/chapter4-755.content.json:1445](../src/data/chapter4-755.content.json#L1445)；[src/modules/ChapterFourTemporalMazeController.ts:1704](../src/modules/ChapterFourTemporalMazeController.ts#L1704)；[src/modules/ChapterFourTemporalMazeController.ts:1733](../src/modules/ChapterFourTemporalMazeController.ts#L1733)
-701. 这次真的结束了？
+701. 北教楼外的「灿若星辰」灯亮起了微光。
+   来源：[src/data/chapter4-755.content.json:1445](../src/data/chapter4-755.content.json#L1445)
+702. 这次……是真的结束了吧？不会再有什么长腿的纸条飞出来了吧？
    来源：[src/data/chapter4-755.content.json:1449](../src/data/chapter4-755.content.json#L1449)
-702. 结束了，签到记录已归档。
+703. 结束了。07:55 的所有错位记录都已归档——去吃顿热乎的早饭吧，祝你今天早八愉快。
    来源：[src/data/chapter4-755.content.json:1453](../src/data/chapter4-755.content.json#L1453)
-703. 窗侧时间刻痕区
+704. 窗侧时间刻痕区
    来源：[src/data/chapter4-755.content.json:1557](../src/data/chapter4-755.content.json#L1557)
-704. 窗沿粉尘断线与前三处桌面亮边位于同一水平带。
+705. 窗沿粉尘断线与前三处桌面亮边位于同一水平带。
    来源：[src/data/chapter4-755.content.json:1559](../src/data/chapter4-755.content.json#L1559)
-705. 中央拖痕区
+706. 中央拖痕区
    来源：[src/data/chapter4-755.content.json:1583](../src/data/chapter4-755.content.json#L1583)
-706. 中央地面的三段平行拖痕具有相同间距。
+707. 中央地面的三段平行拖痕具有相同间距。
    来源：[src/data/chapter4-755.content.json:1585](../src/data/chapter4-755.content.json#L1585)
-707. 讲台投影边缘区
+708. 讲台投影边缘区
    来源：[src/data/chapter4-755.content.json:1609](../src/data/chapter4-755.content.json#L1609)
-708. 讲台投影边缘经过三处桌脚留下的浅色缺口。
+709. 讲台投影边缘经过三处桌脚留下的浅色缺口。
    来源：[src/data/chapter4-755.content.json:1611](../src/data/chapter4-755.content.json#L1611)
-709. 门侧纸痕区
+710. 门侧纸痕区
    来源：[src/data/chapter4-755.content.json:1635](../src/data/chapter4-755.content.json#L1635)
-710. 门侧纸屑压痕在三处桌脚位置连续出现。
+711. 门侧纸屑压痕在三处桌脚位置连续出现。
    来源：[src/data/chapter4-755.content.json:1637](../src/data/chapter4-755.content.json#L1637)
-711. 西走廊
+712. 西走廊
    来源：[src/data/chapter4-755.content.json:1685](../src/data/chapter4-755.content.json#L1685)
-712. 东走廊
+713. 东走廊
    来源：[src/data/chapter4-755.content.json:1695](../src/data/chapter4-755.content.json#L1695)
-713. 面包店后场
+714. 面包坊后场
    来源：[src/data/chapter4-755.content.json:1715](../src/data/chapter4-755.content.json#L1715)
-714. 表盘刻度锁定
+715. 把旧钟拨向 07:55
+   来源：[src/data/chapter4-755.content.json:1769](../src/data/chapter4-755.content.json#L1769)
+716. 表盘刻度锁定
    来源：[src/data/chapter4-755.content.json:2283](../src/data/chapter4-755.content.json#L2283)
-715. 22:45 → 12:25
+717. 22:45 → 12:25
    来源：[src/data/chapter4-755.content.json:2284](../src/data/chapter4-755.content.json#L2284)
-716. 钟摆恢复摆动，窗外光线收紧，远处传来一段断续的机械声。
+718. 钟摆恢复摆动，窗外光线收紧，远处传来一段断续的机械声。
    来源：[src/data/chapter4-755.content.json:2285](../src/data/chapter4-755.content.json#L2285)
-717. 时针重新咬合
+719. 时针重新咬合
    来源：[src/data/chapter4-755.content.json:2301](../src/data/chapter4-755.content.json#L2301)
-718. 12:25 → 18:50
+720. 12:25 → 18:50
    来源：[src/data/chapter4-755.content.json:2302](../src/data/chapter4-755.content.json#L2302)
-719. 窗外光线转暗，走廊照明逐段亮起，楼内设备留下新的运行声。
+721. 窗外光线转暗，走廊照明逐段亮起，楼内设备留下新的运行声。
    来源：[src/data/chapter4-755.content.json:2303](../src/data/chapter4-755.content.json#L2303)
-720. 定位片完成校正
+722. 定位片完成校正
    来源：[src/data/chapter4-755.content.json:2319](../src/data/chapter4-755.content.json#L2319)
-721. 18:50 → 22:45
+723. 18:50 → 22:45
    来源：[src/data/chapter4-755.content.json:2320](../src/data/chapter4-755.content.json#L2320)
-722. 照明切换为夜间亮度，地面出现尚未干透的轮印和油光。
+724. 照明切换为夜间亮度，地面出现尚未干透的轮印和油光。
    来源：[src/data/chapter4-755.content.json:2321](../src/data/chapter4-755.content.json#L2321)
-723. 校准发生偏移
+725. 校准发生偏移
    来源：[src/data/chapter4-755.content.json:2337](../src/data/chapter4-755.content.json#L2337)
-724. 22:45 → 07:54
+726. 22:45 → 07:54
    来源：[src/data/chapter4-755.content.json:2338](../src/data/chapter4-755.content.json#L2338)
-725. 整层照明熄灭，签到纸从表盘边缘卷离，分针停在下一格之前。
+727. 整层照明熄灭，签到纸从表盘边缘卷离，分针停在下一格之前。
    来源：[src/data/chapter4-755.content.json:2339](../src/data/chapter4-755.content.json#L2339)
-726. 最后一分钟归位
+728. 最后一分钟归位
    来源：[src/data/chapter4-755.content.json:2385](../src/data/chapter4-755.content.json#L2385)
-727. 07:54 → 07:55
+729. 07:54 → 07:55
    来源：[src/data/chapter4-755.content.json:2386](../src/data/chapter4-755.content.json#L2386)
-728. 旧钟分针向前扣合一格，手机状态栏随即更新为相同读数。
+730. 旧钟分针向前扣合一格，手机状态栏随即更新为相同读数。
    来源：[src/data/chapter4-755.content.json:2387](../src/data/chapter4-755.content.json#L2387)
-729. 学习天地资料索引帖
+731. 学习天地资料索引帖
    来源：[src/data/chapter4-cc98.content.json:3](../src/data/chapter4-cc98.content.json#L3)
-730. 学习天地
+732. 学习天地
    来源：[src/data/chapter4-cc98.content.json:4](../src/data/chapter4-cc98.content.json#L4)
-731. 课程资料整理员
+733. 课程资料整理员
    来源：[src/data/chapter4-cc98.content.json:7](../src/data/chapter4-cc98.content.json#L7)
-732. 汇总：历年课程与年份资料索引整理
+734. 汇总：历年课程与年份资料索引整理
    来源：[src/data/chapter4-cc98.content.json:10](../src/data/chapter4-cc98.content.json#L10)
-733. 26-07-10 22:18
+735. 26-07-10 22:18
    来源：[src/data/chapter4-cc98.content.json:11](../src/data/chapter4-cc98.content.json#L11)
-734. 本帖归档各学期课程、年份课件与旧自习讨论。段永平教学楼A2各房间具体路线请务必实地核验，即时变动参考麦斯威夜间自习群。
+736. 本帖归档各学期课程、年份课件与旧自习讨论。段永平教学楼A2各房间具体路线请务必实地核验，即时变动参考麦斯威夜间自习群。
    来源：[src/data/chapter4-cc98.content.json:12](../src/data/chapter4-cc98.content.json#L12)
-735. 课程资料
+737. 课程资料
    来源：[src/data/chapter4-cc98.content.json:14](../src/data/chapter4-cc98.content.json#L14)
-736. 年份入口
+738. 年份入口
    来源：[src/data/chapter4-cc98.content.json:15](../src/data/chapter4-cc98.content.json#L15)
-737. 旧自习讨论
+739. 旧自习讨论
    来源：[src/data/chapter4-cc98.content.json:16](../src/data/chapter4-cc98.content.json#L16)
-738. 高数周三晚
+740. 高数周三晚
    来源：[src/data/chapter4-cc98.content.json:22](../src/data/chapter4-cc98.content.json#L22)
-739. 22:21
+741. 22:21
    来源：[src/data/chapter4-cc98.content.json:23](../src/data/chapter4-cc98.content.json#L23)
-740. 2楼
+742. 2楼
    来源：[src/data/chapter4-cc98.content.json:24](../src/data/chapter4-cc98.content.json#L24)
-741. 课程
+743. 课程
    来源：[src/data/chapter4-cc98.content.json:25](../src/data/chapter4-cc98.content.json#L25)
-742. 顺着2023秋季高数的归档翻了下，课件和自习室旧帖都在，不过旧状态不能直接套今天。
+744. 顺着2023秋季高数的归档翻了下，课件和自习室旧帖都在，不过旧状态不能直接套今天。
    来源：[src/data/chapter4-cc98.content.json:26](../src/data/chapter4-cc98.content.json#L26)
-743. 打印室常客
+745. 打印室常客
    来源：[src/data/chapter4-cc98.content.json:30](../src/data/chapter4-cc98.content.json#L30)
-744. 22:24
+746. 22:24
    来源：[src/data/chapter4-cc98.content.json:31](../src/data/chapter4-cc98.content.json#L31)
-745. 3楼
+747. 3楼
    来源：[src/data/chapter4-cc98.content.json:32](../src/data/chapter4-cc98.content.json#L32)
-746. 打印
+748. 打印
    来源：[src/data/chapter4-cc98.content.json:33](../src/data/chapter4-cc98.content.json#L33)
-747. 刚跑了趟西区打印室，搜两个字反而好找，按年份筛选后再下能省不少翻找时间。
+749. 刚跑了趟西区打印室，搜两个字反而好找，按年份筛选后再下能省不少翻找时间。
    来源：[src/data/chapter4-cc98.content.json:34](../src/data/chapter4-cc98.content.json#L34)
-748. 麦斯威靠窗位
+750. 麦斯威靠窗位
    来源：[src/data/chapter4-cc98.content.json:38](../src/data/chapter4-cc98.content.json#L38)
-749. 22:27
+751. 22:27
    来源：[src/data/chapter4-cc98.content.json:39](../src/data/chapter4-cc98.content.json#L39)
-750. 4楼
+752. 4楼
    来源：[src/data/chapter4-cc98.content.json:40](../src/data/chapter4-cc98.content.json#L40)
-751. 自习
+753. 自习
    来源：[src/data/chapter4-cc98.content.json:41](../src/data/chapter4-cc98.content.json#L41)
-752. 刚才21:50拐进麦斯威看了一眼，靠窗第三张桌早就坐了人，平时走动多位置变得快。
+754. 刚才21:50拐进麦斯威看了一眼，靠窗第三张桌早就坐了人，平时走动多位置变得快。
    来源：[src/data/chapter4-cc98.content.json:42](../src/data/chapter4-cc98.content.json#L42)
-753. 资料夹分层
+755. 资料夹分层
    来源：[src/data/chapter4-cc98.content.json:46](../src/data/chapter4-cc98.content.json#L46)
-754. 22:30
+756. 22:30
    来源：[src/data/chapter4-cc98.content.json:47](../src/data/chapter4-cc98.content.json#L47)
-755. 5楼
+757. 5楼
    来源：[src/data/chapter4-cc98.content.json:48](../src/data/chapter4-cc98.content.json#L48)
-756. 整理
+758. 整理
    来源：[src/data/chapter4-cc98.content.json:49](../src/data/chapter4-cc98.content.json#L49)
-757. 我把2022和2024年的分成了两个文件夹，单独留出旧讨论，方便比对当年的说法。
+759. 我把2022和2024年的分成了两个文件夹，单独留出旧讨论，方便比对当年的说法。
    来源：[src/data/chapter4-cc98.content.json:50](../src/data/chapter4-cc98.content.json#L50)
-758. A2 晚课生
+760. A2 晚课生
    来源：[src/data/chapter4-cc98.content.json:54](../src/data/chapter4-cc98.content.json#L54)
-759. 22:34
+761. 22:34
    来源：[src/data/chapter4-cc98.content.json:55](../src/data/chapter4-cc98.content.json#L55)
-760. 6楼
+762. 6楼
    来源：[src/data/chapter4-cc98.content.json:56](../src/data/chapter4-cc98.content.json#L56)
-761. 现场
+763. 现场
    来源：[src/data/chapter4-cc98.content.json:57](../src/data/chapter4-cc98.content.json#L57)
-762. 我下了课才发现，A2夜间的房间和走廊其实是会变的。资料索引只能帮你认个入口，当晚要想走对，必须在现场挨个核对门牌和通道。
+764. 我下了课才发现，A2夜间的房间和走廊其实是会变的。资料索引只能帮你认个入口，当晚要想走对，必须在现场挨个核对门牌和通道。
    来源：[src/data/chapter4-cc98.content.json:58](../src/data/chapter4-cc98.content.json#L58)
-763. 群里等消息
+765. 群里等消息
    来源：[src/data/chapter4-cc98.content.json:62](../src/data/chapter4-cc98.content.json#L62)
-764. 22:38
+766. 22:38
    来源：[src/data/chapter4-cc98.content.json:63](../src/data/chapter4-cc98.content.json#L63)
-765. 7楼
+767. 7楼
    来源：[src/data/chapter4-cc98.content.json:64](../src/data/chapter4-cc98.content.json#L64)
-766. 提醒
+768. 提醒
    来源：[src/data/chapter4-cc98.content.json:65](../src/data/chapter4-cc98.content.json#L65)
-767. 论坛导进群文件的是课程和年份静态旧档，现场实时动态还得盯紧群里聊天，去段永平教学楼前分清来源。
+769. 论坛导进群文件的是课程和年份静态旧档，现场实时动态还得盯紧群里聊天，去段永平教学楼前分清来源。
    来源：[src/data/chapter4-cc98.content.json:66](../src/data/chapter4-cc98.content.json#L66)
-768. 导入到麦斯威夜间自习群
+770. 导入到麦斯威夜间自习群
    来源：[src/data/chapter4-cc98.content.json:70](../src/data/chapter4-cc98.content.json#L70)
-769. 把课程年份入口和旧自习讨论带进自习群
+771. 把课程年份入口和旧自习讨论带进自习群
    来源：[src/data/chapter4-cc98.content.json:71](../src/data/chapter4-cc98.content.json#L71)
-770. 已导入学习天地资料索引。课程和年份入口会留在群文件，段永平教学楼 A2 的房间与东西侧路线仍需到现场核验。
+772. 已导入学习天地资料索引。课程和年份入口会留在群文件，段永平教学楼 A2 的房间与东西侧路线仍需到现场核验。
    来源：[src/data/chapter4-cc98.content.json:72](../src/data/chapter4-cc98.content.json#L72)
-771. 这份学习天地资料索引已经导入麦斯威夜间自习群，群文件不会重复添加。现场消息仍请查看聊天记录。
+773. 这份学习天地资料索引已经导入麦斯威夜间自习群，群文件不会重复添加。现场消息仍请查看聊天记录。
    来源：[src/data/chapter4-cc98.content.json:73](../src/data/chapter4-cc98.content.json#L73)
-772. 当前章节还没到段永平教学楼 A2，暂时不能导入学习天地资料。先完成前面的现场调查，再回来查看。
+774. 当前章节还没到段永平教学楼 A2，暂时不能导入学习天地资料。先完成前面的现场调查，再回来查看。
    来源：[src/data/chapter4-cc98.content.json:74](../src/data/chapter4-cc98.content.json#L74)
-773. 完成启真湖段落并进入第四章后，学习天地资料索引才会开放。
+775. 完成启真湖段落并进入第四章后，学习天地资料索引才会开放。
    来源：[src/data/chapter4-cc98.content.json:75](../src/data/chapter4-cc98.content.json#L75)
-774. 麦斯威夜间自习群
+776. 麦斯威夜间自习群
    来源：[src/data/chapter4-cc98.content.json:78](../src/data/chapter4-cc98.content.json#L78)；[src/data/chapter4-wechat.content.json:98](../src/data/chapter4-wechat.content.json#L98)
-775. 资料索引已放进群文件。群聊继续接收今晚的现场消息，A2 房间核验与东西侧路线以现场和群聊记录为准。
+777. 资料索引已放进群文件。群聊继续接收今晚的现场消息，A2 房间核验与东西侧路线以现场和群聊记录为准。
    来源：[src/data/chapter4-cc98.content.json:79](../src/data/chapter4-cc98.content.json#L79)
-776. CC98 的课程、年份入口和旧自习讨论只用于查资料，不能替代微信现场消息。
+778. CC98 的课程、年份入口和旧自习讨论只用于查资料，不能替代微信现场消息。
    来源：[src/data/chapter4-cc98.content.json:80](../src/data/chapter4-cc98.content.json#L80)
-777. 打开麦斯威夜间自习群，查看刚导入的资料索引和最新现场消息。
+779. 打开麦斯威夜间自习群，查看刚导入的资料索引和最新现场消息。
    来源：[src/data/chapter4-cc98.content.json:81](../src/data/chapter4-cc98.content.json#L81)
-778. 校时终端
+780. 校时终端
    来源：[src/data/chapter4-clock.content.json:3](../src/data/chapter4-clock.content.json#L3)
-779. 本机时间冻结在 07:55:23。B2-04 的签到终端只接受经三路设备共同确认的 08:00:00。
+781. 本机时间冻结在 07:55:23。B2-04 的签到终端只接受经三路设备共同确认的 08:00:00。
    来源：[src/data/chapter4-clock.content.json:4](../src/data/chapter4-clock.content.json#L4)
-780. 档案
+782. 档案
    来源：[src/data/chapter4-clock.content.json:6](../src/data/chapter4-clock.content.json#L6)
-781. 机芯
+783. 机芯
    来源：[src/data/chapter4-clock.content.json:7](../src/data/chapter4-clock.content.json#L7)
-782. 漂移
+784. 漂移
    来源：[src/data/chapter4-clock.content.json:8](../src/data/chapter4-clock.content.json#L8)
-783. 放行
+785. 放行
    来源：[src/data/chapter4-clock.content.json:9](../src/data/chapter4-clock.content.json#L9)
-784. 重建签到档案
+786. 重建签到档案
    来源：[src/data/chapter4-clock.content.json:12](../src/data/chapter4-clock.content.json#L12)
-785. B2-04 异常记录
+787. B2-04 异常记录
    来源：[src/data/chapter4-clock.content.json:13](../src/data/chapter4-clock.content.json#L13)
-786. 先从六条混杂记录中选出互相支持的三条证据，再据此选择目标时刻。缺少证据或选错时刻都会被终端拒绝。
+788. 先从六条混杂记录中选出互相支持的三条证据，再据此选择目标时刻。缺少证据或选错时刻都会被终端拒绝。
    来源：[src/data/chapter4-clock.content.json:14](../src/data/chapter4-clock.content.json#L14)
-787. 门厅残影
+789. 门厅残影
    来源：[src/data/chapter4-clock.content.json:16](../src/data/chapter4-clock.content.json#L16)；[src/data/chapter4-clock.content.json:27](../src/data/chapter4-clock.content.json#L27)
-788. 纸条最后进入 B2-04，门牌没有发生位移。
+790. 纸条最后进入 B2-04，门牌没有发生位移。
    来源：[src/data/chapter4-clock.content.json:16](../src/data/chapter4-clock.content.json#L16)
-789. 课程调整
+791. 课程调整
    来源：[src/data/chapter4-clock.content.json:17](../src/data/chapter4-clock.content.json#L17)
-790. 临时教室开放时间提前到 08:00。
+792. 临时教室开放时间提前到 08:00。
    来源：[src/data/chapter4-clock.content.json:17](../src/data/chapter4-clock.content.json#L17)
-791. 签到日志
+793. 签到日志
    来源：[src/data/chapter4-clock.content.json:18](../src/data/chapter4-clock.content.json#L18)
-792. B2-04 终端在整点首次接受学生签到。
+794. B2-04 终端在整点首次接受学生签到。
    来源：[src/data/chapter4-clock.content.json:18](../src/data/chapter4-clock.content.json#L18)
-793. 闭馆广播
+795. 闭馆广播
    来源：[src/data/chapter4-clock.content.json:19](../src/data/chapter4-clock.content.json#L19)
-794. 该记录来自基础图书馆，与本楼终端无关。
+796. 该记录来自基础图书馆，与本楼终端无关。
    来源：[src/data/chapter4-clock.content.json:19](../src/data/chapter4-clock.content.json#L19)
-795. 剧场放票
+797. 剧场放票
    来源：[src/data/chapter4-clock.content.json:20](../src/data/chapter4-clock.content.json#L20)
-796. 手机缓存中的剧场票务时间。
+798. 手机缓存中的剧场票务时间。
    来源：[src/data/chapter4-clock.content.json:20](../src/data/chapter4-clock.content.json#L20)
-797. 0755 是窗口暗号，无法作为教学楼时间。
+799. 0755 是窗口暗号，无法作为教学楼时间。
    来源：[src/data/chapter4-clock.content.json:21](../src/data/chapter4-clock.content.json#L21)
-798. 食堂取餐
+800. 食堂取餐
    来源：[src/data/chapter4-clock.content.json:21](../src/data/chapter4-clock.content.json#L21)
-799. 07:55
+801. 07:55
    来源：[src/data/chapter4-clock.content.json:24](../src/data/chapter4-clock.content.json#L24)
-800. 当前停留
+802. 当前停留
    来源：[src/data/chapter4-clock.content.json:24](../src/data/chapter4-clock.content.json#L24)
-801. 冻结
+803. 冻结
    来源：[src/data/chapter4-clock.content.json:24](../src/data/chapter4-clock.content.json#L24)
-802. 手机异常
+804. 手机异常
    来源：[src/data/chapter4-clock.content.json:24](../src/data/chapter4-clock.content.json#L24)
-803. 08:00
+805. 08:00
    来源：[src/data/chapter4-clock.content.json:25](../src/data/chapter4-clock.content.json#L25)
-804. 签到开放
+806. 签到开放
    来源：[src/data/chapter4-clock.content.json:25](../src/data/chapter4-clock.content.json#L25)
-805. 早间
+807. 早间
    来源：[src/data/chapter4-clock.content.json:25](../src/data/chapter4-clock.content.json#L25)
-806. B2-04
+808. B2-04
    来源：[src/data/chapter4-clock.content.json:25](../src/data/chapter4-clock.content.json#L25)；[src/data/chapter4-clock.content.json:51](../src/data/chapter4-clock.content.json#L51)；[src/data/chapter4-clock.content.json:61](../src/data/chapter4-clock.content.json#L61)
-807. 08:32
+809. 08:32
    来源：[src/data/chapter4-clock.content.json:26](../src/data/chapter4-clock.content.json#L26)
-808. 剧场
+810. 剧场
    来源：[src/data/chapter4-clock.content.json:26](../src/data/chapter4-clock.content.json#L26)
-809. 票务缓存
+811. 票务缓存
    来源：[src/data/chapter4-clock.content.json:26](../src/data/chapter4-clock.content.json#L26)
-810. 外部记录
+812. 外部记录
    来源：[src/data/chapter4-clock.content.json:26](../src/data/chapter4-clock.content.json#L26)
-811. 22:45
+813. 22:45
    来源：[src/data/chapter4-clock.content.json:27](../src/data/chapter4-clock.content.json#L27)
-812. 闭楼
+814. 闭楼
    来源：[src/data/chapter4-clock.content.json:27](../src/data/chapter4-clock.content.json#L27)
-813. 进入时刻
+815. 进入时刻
    来源：[src/data/chapter4-clock.content.json:27](../src/data/chapter4-clock.content.json#L27)
-814. 锁定双机芯
+816. 锁定双机芯
    来源：[src/data/chapter4-clock.content.json:31](../src/data/chapter4-clock.content.json#L31)
-815. 小时轮与分钟轮拥有独立锁扣。先把对应数字调到目标值，再分别锁定；已经锁定的机芯不能继续旋转。
+817. 小时轮与分钟轮拥有独立锁扣。先把对应数字调到目标值，再分别锁定；已经锁定的机芯不能继续旋转。
    来源：[src/data/chapter4-clock.content.json:32](../src/data/chapter4-clock.content.json#L32)
-816. 小时机芯
+818. 小时机芯
    来源：[src/data/chapter4-clock.content.json:34](../src/data/chapter4-clock.content.json#L34)
-817. 分钟机芯
+819. 分钟机芯
    来源：[src/data/chapter4-clock.content.json:35](../src/data/chapter4-clock.content.json#L35)
-818. 锁定机芯
+820. 锁定机芯
    来源：[src/data/chapter4-clock.content.json:36](../src/data/chapter4-clock.content.json#L36)
-819. 已锁定
+821. 已锁定
    来源：[src/data/chapter4-clock.content.json:37](../src/data/chapter4-clock.content.json#L37)
-820. 爆炸视图
+822. 爆炸视图
    来源：[src/data/chapter4-clock.content.json:38](../src/data/chapter4-clock.content.json#L38)
-821. 装配视图
+823. 装配视图
    来源：[src/data/chapter4-clock.content.json:39](../src/data/chapter4-clock.content.json#L39)
-822. 复位视角
+824. 复位视角
    来源：[src/data/chapter4-clock.content.json:40](../src/data/chapter4-clock.content.json#L40)
-823. 上下拖动机芯齿轮、滚轮或点按 ± 调节读数,对准 08:00 后锁定对应机芯。
+825. 上下拖动机芯齿轮、滚轮或点按 ± 调节读数,对准 08:00 后锁定对应机芯。
    来源：[src/data/chapter4-clock.content.json:41](../src/data/chapter4-clock.content.json#L41)
-824. 目标 08:00
+826. 目标 08:00
    来源：[src/data/chapter4-clock.content.json:42](../src/data/chapter4-clock.content.json#L42)
-825. 消除三路设备漂移
+827. 消除三路设备漂移
    来源：[src/data/chapter4-clock.content.json:46](../src/data/chapter4-clock.content.json#L46)
-826. 校门、电梯和教室终端记录了不同方向的秒差。逐条选择反向修正值，三路归零后才能形成 08:00:00。
+828. 校门、电梯和教室终端记录了不同方向的秒差。逐条选择反向修正值，三路归零后才能形成 08:00:00。
    来源：[src/data/chapter4-clock.content.json:47](../src/data/chapter4-clock.content.json#L47)
-827. 校门闸机
+829. 校门闸机
    来源：[src/data/chapter4-clock.content.json:49](../src/data/chapter4-clock.content.json#L49)
-828. 通过三种放行协议
+830. 通过三种放行协议
    来源：[src/data/chapter4-clock.content.json:56](../src/data/chapter4-clock.content.json#L56)
-829. 三轮拥有不同速度与有效窗口：校门宽窗、主梯窄窗、教室反向扫描。每轮只需命中一次，失败会回到第一轮。
+831. 三轮拥有不同速度与有效窗口：校门宽窗、主梯窄窗、教室反向扫描。每轮只需命中一次，失败会回到第一轮。
    来源：[src/data/chapter4-clock.content.json:57](../src/data/chapter4-clock.content.json#L57)
-830. 宽窗 / 常速
+832. 宽窗 / 常速
    来源：[src/data/chapter4-clock.content.json:59](../src/data/chapter4-clock.content.json#L59)
-831. 校门
+833. 校门
    来源：[src/data/chapter4-clock.content.json:59](../src/data/chapter4-clock.content.json#L59)
-832. 窄窗 / 加速
+834. 窄窗 / 加速
    来源：[src/data/chapter4-clock.content.json:60](../src/data/chapter4-clock.content.json#L60)
-833. 主梯
+835. 主梯
    来源：[src/data/chapter4-clock.content.json:60](../src/data/chapter4-clock.content.json#L60)
-834. 偏置窗 / 反扫
+836. 偏置窗 / 反扫
    来源：[src/data/chapter4-clock.content.json:61](../src/data/chapter4-clock.content.json#L61)
-835. 07:55 冻结已解除
+837. 07:55 冻结已解除
    来源：[src/data/chapter4-clock.content.json:65](../src/data/chapter4-clock.content.json#L65)
-836. 三路设备同时写入 08:00:00，B2-04 签到终端恢复。
+838. 三路设备同时写入 08:00:00，B2-04 签到终端恢复。
    来源：[src/data/chapter4-clock.content.json:66](../src/data/chapter4-clock.content.json#L66)
-837. 校时权限尚未开放
+839. 校时权限尚未开放
    来源：[src/data/chapter4-clock.content.json:69](../src/data/chapter4-clock.content.json#L69)
-838. 先完成教学楼内的十二个时间节点，再回到手机处理 B2-04。
+840. 先完成教学楼内的十二个时间节点，再回到手机处理 B2-04。
    来源：[src/data/chapter4-clock.content.json:70](../src/data/chapter4-clock.content.json#L70)
-839. 档案证据不足，或所选时刻与三条有效记录不一致。
+841. 档案证据不足，或所选时刻与三条有效记录不一致。
    来源：[src/data/chapter4-clock.content.json:73](../src/data/chapter4-clock.content.json#L73)
-840. 当前机芯或漂移修正仍未满足这一关的条件。
+842. 当前机芯或漂移修正仍未满足这一关的条件。
    来源：[src/data/chapter4-clock.content.json:74](../src/data/chapter4-clock.content.json#L74)
-841. 本轮放行失败，协议进度已回到校门。
+843. 本轮放行失败，协议进度已回到校门。
    来源：[src/data/chapter4-clock.content.json:75](../src/data/chapter4-clock.content.json#L75)
-842. 该操作当前不可用，检查本关已经锁定的部分。
+844. 该操作当前不可用，检查本关已经锁定的部分。
    来源：[src/data/chapter4-clock.content.json:76](../src/data/chapter4-clock.content.json#L76)
-843. 校时已经完成。
+845. 校时已经完成。
    来源：[src/data/chapter4-clock.content.json:77](../src/data/chapter4-clock.content.json#L77)
-844. 三条档案证据成立，08:00 已设为校准目标。
+846. 三条档案证据成立，08:00 已设为校准目标。
    来源：[src/data/chapter4-clock.content.json:78](../src/data/chapter4-clock.content.json#L78)
-845. 双机芯锁定，开始核对三路设备漂移。
+847. 双机芯锁定，开始核对三路设备漂移。
    来源：[src/data/chapter4-clock.content.json:79](../src/data/chapter4-clock.content.json#L79)
-846. 三路漂移全部归零，进入最终放行。
+848. 三路漂移全部归零，进入最终放行。
    来源：[src/data/chapter4-clock.content.json:80](../src/data/chapter4-clock.content.json#L80)
-847. 三种协议均已通过，冻结解除。
+849. 三种协议均已通过，冻结解除。
    来源：[src/data/chapter4-clock.content.json:81](../src/data/chapter4-clock.content.json#L81)
-848. 系统：三路设备已归零。等待三种协议放行。
+850. 系统：三路设备已归零。等待三种协议放行。
    来源：[src/data/chapter4-clock.content.json:83](../src/data/chapter4-clock.content.json#L83)
-849. 玩家：三路记录同时变成了 08:00。
+851. 玩家：三路记录同时变成了 08:00。
    来源：[src/data/chapter4-clock.content.json:85](../src/data/chapter4-clock.content.json#L85)
-850. 系统：校时确认。B2-04 签到终端恢复。
+852. 系统：校时确认。B2-04 签到终端恢复。
    来源：[src/data/chapter4-clock.content.json:86](../src/data/chapter4-clock.content.json#L86)
-851. 玩家：07:55 的冻结解除了。
+853. 玩家：07:55 的冻结解除了。
    来源：[src/data/chapter4-clock.content.json:87](../src/data/chapter4-clock.content.json#L87)
-852. 系统：校时完成。07:55 的冻结已解除。
+854. 系统：校时完成。07:55 的冻结已解除。
    来源：[src/data/chapter4-clock.content.json:89](../src/data/chapter4-clock.content.json#L89)
-853. 完成四关校时
+855. 完成四关校时
    来源：[src/data/chapter4-clock.content.json:91](../src/data/chapter4-clock.content.json#L91)
-854. 筛选三条有效档案，再选择对应时刻。
+856. 筛选三条有效档案，再选择对应时刻。
    来源：[src/data/chapter4-clock.content.json:93](../src/data/chapter4-clock.content.json#L93)
-855. 分别校准并锁定小时、分钟两组机芯。
+857. 分别校准并锁定小时、分钟两组机芯。
    来源：[src/data/chapter4-clock.content.json:94](../src/data/chapter4-clock.content.json#L94)
-856. 为校门、电梯和 B2-04 选择反向漂移修正。
+858. 为校门、电梯和 B2-04 选择反向漂移修正。
    来源：[src/data/chapter4-clock.content.json:95](../src/data/chapter4-clock.content.json#L95)
-857. 依次通过三种速度与窗口不同的放行协议。
+859. 依次通过三种速度与窗口不同的放行协议。
    来源：[src/data/chapter4-clock.content.json:96](../src/data/chapter4-clock.content.json#L96)
-858. 校时已完成。
+860. 校时已完成。
    来源：[src/data/chapter4-clock.content.json:97](../src/data/chapter4-clock.content.json#L97)
-859. 又断了。
+861. 又断了。
    来源：[src/data/chapter4-prologue-voice.audio.content.json:35](../src/data/chapter4-prologue-voice.audio.content.json#L35)；[src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts:69](../src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts#L69)
-860. It broke again.
+862. It broke again.
    来源：[src/data/chapter4-prologue-voice.audio.content.json:36](../src/data/chapter4-prologue-voice.audio.content.json#L36)
-861. 湖面没有留下它。夜风把它送进了仍然亮着灯的教学楼。
+863. 湖面没有留下它。夜风把它送进了仍然亮着灯的教学楼。
    来源：[src/data/chapter4-prologue-voice.audio.content.json:49](../src/data/chapter4-prologue-voice.audio.content.json#L49)；[src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts:77](../src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts#L77)
-862. The lake did not keep it. The night wind carried it into the teaching building that was still lit.
+864. The lake did not keep it. The night wind carried it into the teaching building that was still lit.
    来源：[src/data/chapter4-prologue-voice.audio.content.json:50](../src/data/chapter4-prologue-voice.audio.content.json#L50)
-863. 小心，刚拖过。那张纸往里去了。
+865. 小心，刚拖过。那张纸往里去了。
    来源：[src/data/chapter4-prologue-voice.audio.content.json:63](../src/data/chapter4-prologue-voice.audio.content.json#L63)；[src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts:85](../src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts#L85)
-864. Careful, I just mopped. That paper went inside.
+866. Careful, I just mopped. That paper went inside.
    来源：[src/data/chapter4-prologue-voice.audio.content.json:64](../src/data/chapter4-prologue-voice.audio.content.json#L64)
-865. 同学，北教要清楼了，请收好东西。
+867. 同学，北教要清楼了，请收好东西。
    来源：[src/data/chapter4-prologue-voice.audio.content.json:79](../src/data/chapter4-prologue-voice.audio.content.json#L79)；[src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts:93](../src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts#L93)
-866. The North Teaching Building is closing. Please pack up.
+868. The North Teaching Building is closing. Please pack up.
    来源：[src/data/chapter4-prologue-voice.audio.content.json:80](../src/data/chapter4-prologue-voice.audio.content.json#L80)
-867. 段永平教学楼时间迷宫
+869. 段永平教学楼时间迷宫
    来源：[src/data/chapter4-temporal-maze.content.json:3](../src/data/chapter4-temporal-maze.content.json#L3)
-868. 进入一楼门厅，确认湿纸留下的气流轨迹
+870. 进入一楼门厅，确认湿纸留下的气流轨迹
    来源：[src/data/chapter4-temporal-maze.content.json:5](../src/data/chapter4-temporal-maze.content.json#L5)；[src/data/chapter4-temporal-maze.content.json:120](../src/data/chapter4-temporal-maze.content.json#L120)
-869. 深色观察可查看门厅中央的断续水迹。
+871. 深色观察可查看门厅中央的断续水迹。
    来源：[src/data/chapter4-temporal-maze.content.json:6](../src/data/chapter4-temporal-maze.content.json#L6)
-870. 恢复纸条进入主电梯厅的风路
+872. 恢复纸条进入主电梯厅的风路
    来源：[src/data/chapter4-temporal-maze.content.json:9](../src/data/chapter4-temporal-maze.content.json#L9)；[src/data/chapter4-temporal-maze.content.json:121](../src/data/chapter4-temporal-maze.content.json#L121)
-871. 深色观察：地面水迹从玻璃门延伸到迈斯威卷帘门。
+873. 深色观察：地面水迹从玻璃门延伸到迈斯威卷帘门。
    来源：[src/data/chapter4-temporal-maze.content.json:10](../src/data/chapter4-temporal-maze.content.json#L10)
-872. 浅色操作：到迈斯威卷帘门前，借助暖风把纸条送向主电梯。
+874. 浅色操作：到迈斯威卷帘门前，借助暖风把纸条送向主电梯。
    来源：[src/data/chapter4-temporal-maze.content.json:11](../src/data/chapter4-temporal-maze.content.json#L11)
-873. 已记录气流轨迹。浅色操作可在迈斯威卷帘门前恢复风路。
+875. 已记录气流轨迹。浅色操作可在迈斯威卷帘门前恢复风路。
    来源：[src/data/chapter4-temporal-maze.content.json:12](../src/data/chapter4-temporal-maze.content.json#L12)
-874. 暖风重新接上水迹，湿纸进入主电梯厅。
+876. 暖风重新接上水迹，湿纸进入主电梯厅。
    来源：[src/data/chapter4-temporal-maze.content.json:13](../src/data/chapter4-temporal-maze.content.json#L13)
-875. 在主电梯厅同步纸条留下的历史轨道
-   来源：[src/data/chapter4-temporal-maze.content.json:16](../src/data/chapter4-temporal-maze.content.json#L16)；[src/data/chapter4-temporal-maze.content.json:122](../src/data/chapter4-temporal-maze.content.json#L122)
-876. 深色观察：读取轿厢、门体与玩家进入窗口三条历史轨道。
+877. 校准主电梯开门轨道，乘电梯上三楼（A3）
+   来源：[src/data/chapter4-temporal-maze.content.json:16](../src/data/chapter4-temporal-maze.content.json#L16)
+878. 深色观察：读取「轿厢到站、门体打开、人员走入」三条历史轨道，注意进梯需要整整 6 秒。
    来源：[src/data/chapter4-temporal-maze.content.json:17](../src/data/chapter4-temporal-maze.content.json#L17)
-877. 浅色操作：拖动轿厢轨道，让一楼开门区间完整覆盖六秒进入窗口。
+879. 浅色操作：将重放起点调至 22:43:31，让一楼 8 秒开门区间完整包住 6 秒进梯窗口。
    来源：[src/data/chapter4-temporal-maze.content.json:18](../src/data/chapter4-temporal-maze.content.json#L18)
-878. 当前校准动作需要浅色操作；深色观察可独立读取三条历史轨道。
+880. 请先切到「浅色操作」拖动轨道起点；在「深色观察」下可以随时复查三条轨道的时长。
    来源：[src/data/chapter4-temporal-maze.content.json:19](../src/data/chapter4-temporal-maze.content.json#L19)
-879. 三轨已经对齐。电梯返回一楼，等待门体完全打开。
+881. 三条轨道已对齐在 22:43:31。请在六秒进梯窗口内走进电梯，等回放结束。
    来源：[src/data/chapter4-temporal-maze.content.json:20](../src/data/chapter4-temporal-maze.content.json#L20)
-880. 开门区间没有完整覆盖进入窗口。调整重放起点后再试。
+882. 开门区间没能完整覆盖六秒进梯窗口，请把重放起点微调到 22:43:31 再试。
    来源：[src/data/chapter4-temporal-maze.content.json:21](../src/data/chapter4-temporal-maze.content.json#L21)
-881. 开门窗口已经结束。再次启动历史重放。
+883. 六秒进梯窗口已经过去。重新启动回放，趁窗口开放时走进轿厢。
    来源：[src/data/chapter4-temporal-maze.content.json:22](../src/data/chapter4-temporal-maze.content.json#L22)
-882. 历史片段继续运行，已到达 A2。
+884. 电梯越过未响应的二楼（A2），已实际停靠并抵达三楼（A3）。
    来源：[src/data/chapter4-temporal-maze.content.json:23](../src/data/chapter4-temporal-maze.content.json#L23)
-883. 深色观察：记录同一时间片内经过门口和停留区的人员残影。
+885. 深色观察：记录同一时间片内经过门口和停留区的人员残影。
    来源：[src/data/chapter4-temporal-maze.content.json:51](../src/data/chapter4-temporal-maze.content.json#L51)
-884. 三组人员时刻已记录。浅色操作可处理可见隔断。
+886. 三组人员时刻已记录。浅色操作可处理可见隔断。
    来源：[src/data/chapter4-temporal-maze.content.json:52](../src/data/chapter4-temporal-maze.content.json#L52)
-885. 浅色操作：依照已记录的空档逐一移动两组可见隔断。
+887. 浅色操作：依照已记录的空档逐一移动两组可见隔断。
    来源：[src/data/chapter4-temporal-maze.content.json:56](../src/data/chapter4-temporal-maze.content.json#L56)
-886. 人员时刻证据尚未完整；两种现实模式的交互入口都保持开放。
+888. 人员时刻证据尚未完整；两种现实模式的交互入口都保持开放。
    来源：[src/data/chapter4-temporal-maze.content.json:57](../src/data/chapter4-temporal-maze.content.json#L57)
-887. 内圈支路已接通，开放学习区现在可达。
+889. 内圈支路已接通，开放学习区现在可达。
    来源：[src/data/chapter4-temporal-maze.content.json:58](../src/data/chapter4-temporal-maze.content.json#L58)
-888. 在开放学习区取得两块导视碎片。
+890. 在开放学习区取得两块导视碎片。
    来源：[src/data/chapter4-temporal-maze.content.json:66](../src/data/chapter4-temporal-maze.content.json#L66)
-889. 深色观察：读取旧导视残影。
+891. 深色观察：读取旧导视残影。
    来源：[src/data/chapter4-temporal-maze.content.json:67](../src/data/chapter4-temporal-maze.content.json#L67)
-890. 旧导视残影已记录。浅色操作可重建导视板。
+892. 旧导视残影已记录。浅色操作可重建导视板。
    来源：[src/data/chapter4-temporal-maze.content.json:68](../src/data/chapter4-temporal-maze.content.json#L68)
-891. 浅色操作：比较当前导视照片、旧残影与二楼入口方向，自行判断缺失槽位和两块碎片的位置。
+893. 浅色操作：比较当前导视照片、旧残影与二楼入口方向，自行判断缺失槽位和两块碎片的位置。
    来源：[src/data/chapter4-temporal-maze.content.json:69](../src/data/chapter4-temporal-maze.content.json#L69)
-892. 碎片与当前历史记录不一致，重新检查已记录的导视痕迹。
+894. 碎片与当前历史记录不一致，重新检查已记录的导视痕迹。
    来源：[src/data/chapter4-temporal-maze.content.json:70](../src/data/chapter4-temporal-maze.content.json#L70)
-893. 导视板恢复了一段可验证记录。返回已访问楼层继续取证。
+895. 导视板恢复了一段可验证记录。返回已访问楼层继续取证。
    来源：[src/data/chapter4-temporal-maze.content.json:71](../src/data/chapter4-temporal-maze.content.json#L71)
-894. 导视板恢复后，切到深色观察并读取入口开合与人员经过留下的历史痕迹。
+896. 导视板恢复后，切到深色观察并读取入口开合与人员经过留下的历史痕迹。
    来源：[src/data/chapter4-temporal-maze.content.json:75](../src/data/chapter4-temporal-maze.content.json#L75)
-895. 连廊历史已记录，可与导视碎片交叉核对。
+897. 连廊历史已记录，可与导视碎片交叉核对。
    来源：[src/data/chapter4-temporal-maze.content.json:76](../src/data/chapter4-temporal-maze.content.json#L76)
-896. 回到已访问区域，检查新出现的取证窗口。
+898. 回到已访问区域，检查新出现的取证窗口。
    来源：[src/data/chapter4-temporal-maze.content.json:82](../src/data/chapter4-temporal-maze.content.json#L82)
-897. 当前历史窗口尚未形成，继续核对已有证据。
+899. 当前历史窗口尚未形成，继续核对已有证据。
    来源：[src/data/chapter4-temporal-maze.content.json:83](../src/data/chapter4-temporal-maze.content.json#L83)
-898. 新的取证窗口已经开放，当前安全位置已保存。
+900. 新的取证窗口已经开放，当前安全位置已保存。
    来源：[src/data/chapter4-temporal-maze.content.json:84](../src/data/chapter4-temporal-maze.content.json#L84)
-899. 当前交通核心不能到达该楼层。
+901. 当前交通核心不能到达该楼层。
    来源：[src/data/chapter4-temporal-maze.content.json:87](../src/data/chapter4-temporal-maze.content.json#L87)
-900. 仍缺当前步骤所需的证据。
+902. 仍缺当前步骤所需的证据。
    来源：[src/data/chapter4-temporal-maze.content.json:88](../src/data/chapter4-temporal-maze.content.json#L88)
-901. 切换现实模式后再执行当前动作。
+903. 切换现实模式后再执行当前动作。
    来源：[src/data/chapter4-temporal-maze.content.json:89](../src/data/chapter4-temporal-maze.content.json#L89)
-902. 当前路线条件尚未满足。
+904. 当前路线条件尚未满足。
    来源：[src/data/chapter4-temporal-maze.content.json:90](../src/data/chapter4-temporal-maze.content.json#L90)
-903. 四项外部记录
+905. 四项外部记录
    来源：[src/data/chapter4-temporal-maze.content.json:99](../src/data/chapter4-temporal-maze.content.json#L99)
-904. 大厅旧钟
+906. 大厅旧钟
    来源：[src/data/chapter4-temporal-maze.content.json:100](../src/data/chapter4-temporal-maze.content.json#L100)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10398](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10398)
-905. 手机已同步
+907. 手机已同步
    来源：[src/data/chapter4-temporal-maze.content.json:103](../src/data/chapter4-temporal-maze.content.json#L103)
-906. 手机未同步，当前读数不可信
+908. 手机未同步，当前读数不可信
    来源：[src/data/chapter4-temporal-maze.content.json:104](../src/data/chapter4-temporal-maze.content.json#L104)
-907. 完成启真湖逃脱并进入教学楼
+909. 完成启真湖逃脱并进入教学楼
    来源：[src/data/chapter4-temporal-maze.content.json:119](../src/data/chapter4-temporal-maze.content.json#L119)
-908. 根据夜间人员动线重建纸条路线
+910. 在主电梯厅同步纸条留下的历史轨道
+   来源：[src/data/chapter4-temporal-maze.content.json:122](../src/data/chapter4-temporal-maze.content.json#L122)
+911. 根据夜间人员动线重建纸条路线
    来源：[src/data/chapter4-temporal-maze.content.json:123](../src/data/chapter4-temporal-maze.content.json#L123)
-909. 重建二楼走廊等待区
+912. 重建二楼走廊等待区
    来源：[src/data/chapter4-temporal-maze.content.json:124](../src/data/chapter4-temporal-maze.content.json#L124)
-910. 拼合楼层导视碎片
+913. 拼合楼层导视碎片
    来源：[src/data/chapter4-temporal-maze.content.json:125](../src/data/chapter4-temporal-maze.content.json#L125)
-911. 确认连廊只位于三楼
+914. 确认连廊只位于三楼
    来源：[src/data/chapter4-temporal-maze.content.json:126](../src/data/chapter4-temporal-maze.content.json#L126)
-912. 记录下层回声，旋转折返楼梯并接通 B2
+915. 记录下层回声，旋转折返楼梯并接通 B2
    来源：[src/data/chapter4-temporal-maze.content.json:127](../src/data/chapter4-temporal-maze.content.json#L127)
-913. 剪合多机位监控记录
+916. 剪合多机位监控记录
    来源：[src/data/chapter4-temporal-maze.content.json:128](../src/data/chapter4-temporal-maze.content.json#L128)
-914. 录制可在复位后重放的动作回声
+917. 录制可在复位后重放的动作回声
    来源：[src/data/chapter4-temporal-maze.content.json:129](../src/data/chapter4-temporal-maze.content.json#L129)
-915. 用两部电梯运输大型签到板
+918. 用两部电梯运输大型签到板
    来源：[src/data/chapter4-temporal-maze.content.json:130](../src/data/chapter4-temporal-maze.content.json#L130)
-916. 在迈斯威暖风中控制纸条含水量
+919. 在迈斯威暖风中控制纸条含水量
    来源：[src/data/chapter4-temporal-maze.content.json:131](../src/data/chapter4-temporal-maze.content.json#L131)
-917. 从 23:30 复位点恢复第二循环
+920. 从 23:30 复位点恢复第二循环
    来源：[src/data/chapter4-temporal-maze.content.json:132](../src/data/chapter4-temporal-maze.content.json#L132)
-918. 安排第二循环的逆向运输路线
+921. 安排第二循环的逆向运输路线
    来源：[src/data/chapter4-temporal-maze.content.json:133](../src/data/chapter4-temporal-maze.content.json#L133)
-919. 校准 07:55 相位并打开 B2-04
+922. 校准 07:55 相位并打开 B2-04
    来源：[src/data/chapter4-temporal-maze.content.json:134](../src/data/chapter4-temporal-maze.content.json#L134)
-920. 读取异常签到记录
+923. 读取异常签到记录
    来源：[src/data/chapter4-temporal-maze.content.json:135](../src/data/chapter4-temporal-maze.content.json#L135)
-921. preserve\_required\_walkable
+924. preserve\_required\_walkable
    来源：[src/data/chapter4-three-floor-maze.layout.json:46](../src/data/chapter4-three-floor-maze.layout.json#L46)
-922. preserve\_report\_hall\_doorway\_and\_east\_wall
+925. preserve\_report\_hall\_doorway\_and\_east\_wall
    来源：[src/data/chapter4-three-floor-maze.layout.json:62](../src/data/chapter4-three-floor-maze.layout.json#L62)
-923. exclude\_two\_visible\_stair\_rails\_while\_preserving\_connected\_passages
+926. exclude\_two\_visible\_stair\_rails\_while\_preserving\_connected\_passages
    来源：[src/data/chapter4-three-floor-maze.layout.json:80](../src/data/chapter4-three-floor-maze.layout.json#L80)
-924. 门框局部 / 楼层差 1
+927. 门框局部 / 楼层差 1
    来源：[src/data/chapter4-three-floor-maze.layout.json:2124](../src/data/chapter4-three-floor-maze.layout.json#L2124)
-925. 空气墙
+928. 空气墙
    来源：[src/data/chapter4-three-floor-maze.layout.json:3304](../src/data/chapter4-three-floor-maze.layout.json#L3304)；[src/data/chapter4-three-floor-maze.layout.json:3313](../src/data/chapter4-three-floor-maze.layout.json#L3313)；[src/data/chapter4-three-floor-maze.layout.json:3331](../src/data/chapter4-three-floor-maze.layout.json#L3331)；[src/data/chapter4-three-floor-maze.layout.json:3340](../src/data/chapter4-three-floor-maze.layout.json#L3340)；[src/data/chapter4-three-floor-maze.layout.json:3349](../src/data/chapter4-three-floor-maze.layout.json#L3349)；[src/data/chapter4-three-floor-maze.layout.json:3358](../src/data/chapter4-three-floor-maze.layout.json#L3358)；[src/data/chapter4-three-floor-maze.layout.json:3367](../src/data/chapter4-three-floor-maze.layout.json#L3367)；[src/data/chapter4-three-floor-maze.layout.json:3376](../src/data/chapter4-three-floor-maze.layout.json#L3376)；[src/data/chapter4-three-floor-maze.layout.json:3385](../src/data/chapter4-three-floor-maze.layout.json#L3385)；[src/data/chapter4-three-floor-maze.layout.json:3394](../src/data/chapter4-three-floor-maze.layout.json#L3394)；[src/data/chapter4-three-floor-maze.layout.json:4138](../src/data/chapter4-three-floor-maze.layout.json#L4138)；[src/data/chapter4-three-floor-maze.layout.json:4147](../src/data/chapter4-three-floor-maze.layout.json#L4147)；[src/data/chapter4-three-floor-maze.layout.json:4156](../src/data/chapter4-three-floor-maze.layout.json#L4156)；[src/data/chapter4-three-floor-maze.layout.json:4171](../src/data/chapter4-three-floor-maze.layout.json#L4171)；[src/data/chapter4-three-floor-maze.layout.json:4180](../src/data/chapter4-three-floor-maze.layout.json#L4180)；[src/data/chapter4-three-floor-maze.layout.json:4189](../src/data/chapter4-three-floor-maze.layout.json#L4189)；[src/data/chapter4-three-floor-maze.layout.json:4198](../src/data/chapter4-three-floor-maze.layout.json#L4198)；[src/data/chapter4-three-floor-maze.layout.json:4207](../src/data/chapter4-three-floor-maze.layout.json#L4207)；[src/data/chapter4-three-floor-maze.layout.json:4216](../src/data/chapter4-three-floor-maze.layout.json#L4216)；[src/data/chapter4-three-floor-maze.layout.json:4231](../src/data/chapter4-three-floor-maze.layout.json#L4231)；[src/data/chapter4-three-floor-maze.layout.json:4240](../src/data/chapter4-three-floor-maze.layout.json#L4240)；[src/data/chapter4-three-floor-maze.layout.json:4263](../src/data/chapter4-three-floor-maze.layout.json#L4263)；[src/data/chapter4-three-floor-maze.layout.json:4278](../src/data/chapter4-three-floor-maze.layout.json#L4278)；[src/data/chapter4-three-floor-maze.layout.json:4293](../src/data/chapter4-three-floor-maze.layout.json#L4293)；[src/data/chapter4-three-floor-maze.layout.json:4302](../src/data/chapter4-three-floor-maze.layout.json#L4302)；[src/data/chapter4-three-floor-maze.layout.json:4311](../src/data/chapter4-three-floor-maze.layout.json#L4311)；[src/data/chapter4-three-floor-maze.layout.json:4320](../src/data/chapter4-three-floor-maze.layout.json#L4320)；[src/data/chapter4-three-floor-maze.layout.json:4329](../src/data/chapter4-three-floor-maze.layout.json#L4329)；[src/data/chapter4-three-floor-maze.layout.json:4338](../src/data/chapter4-three-floor-maze.layout.json#L4338)；[src/data/chapter4-three-floor-maze.layout.json:4347](../src/data/chapter4-three-floor-maze.layout.json#L4347)；[src/data/chapter4-three-floor-maze.layout.json:4356](../src/data/chapter4-three-floor-maze.layout.json#L4356)；[src/data/chapter4-three-floor-maze.layout.json:4365](../src/data/chapter4-three-floor-maze.layout.json#L4365)；[src/data/chapter4-three-floor-maze.layout.json:4374](../src/data/chapter4-three-floor-maze.layout.json#L4374)；[src/data/chapter4-three-floor-maze.layout.json:4752](../src/data/chapter4-three-floor-maze.layout.json#L4752)；[src/data/chapter4-three-floor-maze.layout.json:4761](../src/data/chapter4-three-floor-maze.layout.json#L4761)；[src/data/chapter4-three-floor-maze.layout.json:4770](../src/data/chapter4-three-floor-maze.layout.json#L4770)；[src/data/chapter4-three-floor-maze.layout.json:4788](../src/data/chapter4-three-floor-maze.layout.json#L4788)；[src/data/chapter4-three-floor-maze.layout.json:4797](../src/data/chapter4-three-floor-maze.layout.json#L4797)；[src/data/chapter4-three-floor-maze.layout.json:4806](../src/data/chapter4-three-floor-maze.layout.json#L4806)；[src/data/chapter4-three-floor-maze.layout.json:4815](../src/data/chapter4-three-floor-maze.layout.json#L4815)；[src/data/chapter4-three-floor-maze.layout.json:4824](../src/data/chapter4-three-floor-maze.layout.json#L4824)；[src/data/chapter4-three-floor-maze.layout.json:4833](../src/data/chapter4-three-floor-maze.layout.json#L4833)；[src/data/chapter4-three-floor-maze.layout.json:4842](../src/data/chapter4-three-floor-maze.layout.json#L4842)；[src/data/chapter4-three-floor-maze.layout.json:4851](../src/data/chapter4-three-floor-maze.layout.json#L4851)；[src/data/chapter4-three-floor-maze.layout.json:4860](../src/data/chapter4-three-floor-maze.layout.json#L4860)；[src/data/chapter4-three-floor-maze.layout.json:4875](../src/data/chapter4-three-floor-maze.layout.json#L4875)
-926. 104/105 隔墙实体底边
+929. 104/105 隔墙实体底边
    来源：[src/data/chapter4-three-floor-maze.layout.json:3322](../src/data/chapter4-three-floor-maze.layout.json#L3322)
-927. 面包坊北墙实体底边
+930. 面包坊北墙实体底边
    来源：[src/data/chapter4-three-floor-maze.layout.json:3403](../src/data/chapter4-three-floor-maze.layout.json#L3403)
-928. 104 北墙实体底边
+931. 104 北墙实体底边
    来源：[src/data/chapter4-three-floor-maze.layout.json:3412](../src/data/chapter4-three-floor-maze.layout.json#L3412)
-929. 前台柜台空气墙
+932. 前台柜台空气墙
    来源：[src/data/chapter4-three-floor-maze.layout.json:3421](../src/data/chapter4-three-floor-maze.layout.json#L3421)
-930. 面包坊柜台空气墙
+933. 面包坊柜台空气墙
    来源：[src/data/chapter4-three-floor-maze.layout.json:3430](../src/data/chapter4-three-floor-maze.layout.json#L3430)
-931. 104 教室讲台桌前沿空气墙
+934. 104 教室讲台桌前沿空气墙
    来源：[src/data/chapter4-three-floor-maze.layout.json:3439](../src/data/chapter4-three-floor-maze.layout.json#L3439)
-932. 前台左侧座椅阻挡
+935. 前台左侧座椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3448](../src/data/chapter4-three-floor-maze.layout.json#L3448)
-933. 前台右侧座椅与盆栽阻挡
+936. 前台右侧座椅与盆栽阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3457](../src/data/chapter4-three-floor-maze.layout.json#L3457)
-934. 主楼梯右侧边缘阻挡
+937. 主楼梯右侧边缘阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3466](../src/data/chapter4-three-floor-maze.layout.json#L3466)；[src/data/chapter4-three-floor-maze.layout.json:5034](../src/data/chapter4-three-floor-maze.layout.json#L5034)
-935. 主楼梯左侧边缘阻挡
+938. 主楼梯左侧边缘阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3475](../src/data/chapter4-three-floor-maze.layout.json#L3475)；[src/data/chapter4-three-floor-maze.layout.json:5025](../src/data/chapter4-three-floor-maze.layout.json#L5025)
-936. 104 教室第一排第一组桌椅阻挡
+939. 104 教室第一排第一组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3484](../src/data/chapter4-three-floor-maze.layout.json#L3484)
-937. 104 教室第一排第二组桌椅阻挡
+940. 104 教室第一排第二组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3493](../src/data/chapter4-three-floor-maze.layout.json#L3493)
-938. 104 教室第一排第三组桌椅阻挡
+941. 104 教室第一排第三组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3502](../src/data/chapter4-three-floor-maze.layout.json#L3502)
-939. 104 教室第一排第四组桌椅阻挡
+942. 104 教室第一排第四组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3511](../src/data/chapter4-three-floor-maze.layout.json#L3511)
-940. 104 教室第二排第四组桌椅阻挡
+943. 104 教室第二排第四组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3520](../src/data/chapter4-three-floor-maze.layout.json#L3520)
-941. 104 教室第二排第三组桌椅阻挡
+944. 104 教室第二排第三组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3529](../src/data/chapter4-three-floor-maze.layout.json#L3529)
-942. 104 教室第二排第二组桌椅阻挡
+945. 104 教室第二排第二组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3538](../src/data/chapter4-three-floor-maze.layout.json#L3538)
-943. 104 教室第二排第一组桌椅阻挡
+946. 104 教室第二排第一组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3547](../src/data/chapter4-three-floor-maze.layout.json#L3547)
-944. 104 教室第三排第一组桌椅阻挡
+947. 104 教室第三排第一组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3556](../src/data/chapter4-three-floor-maze.layout.json#L3556)
-945. 104 教室第三排第二组桌椅阻挡
+948. 104 教室第三排第二组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3565](../src/data/chapter4-three-floor-maze.layout.json#L3565)
-946. 104 教室第三排第三组桌椅阻挡
+949. 104 教室第三排第三组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3574](../src/data/chapter4-three-floor-maze.layout.json#L3574)
-947. 104 教室第三排第四组桌椅阻挡
+950. 104 教室第三排第四组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3583](../src/data/chapter4-three-floor-maze.layout.json#L3583)
-948. 105 教室第一排第一组桌椅阻挡
+951. 105 教室第一排第一组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3592](../src/data/chapter4-three-floor-maze.layout.json#L3592)
-949. 105 教室第一排第二组桌椅阻挡
+952. 105 教室第一排第二组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3601](../src/data/chapter4-three-floor-maze.layout.json#L3601)
-950. 105 教室第一排第三组桌椅阻挡
+953. 105 教室第一排第三组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3610](../src/data/chapter4-three-floor-maze.layout.json#L3610)
-951. 105 教室第一排第四组桌椅阻挡
+954. 105 教室第一排第四组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3619](../src/data/chapter4-three-floor-maze.layout.json#L3619)
-952. 105 教室第二排第四组桌椅阻挡
+955. 105 教室第二排第四组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3628](../src/data/chapter4-three-floor-maze.layout.json#L3628)
-953. 105 教室第二排第三组桌椅阻挡
+956. 105 教室第二排第三组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3637](../src/data/chapter4-three-floor-maze.layout.json#L3637)
-954. 105 教室第二排第二组桌椅阻挡
+957. 105 教室第二排第二组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3646](../src/data/chapter4-three-floor-maze.layout.json#L3646)
-955. 105 教室第二排第一组桌椅阻挡
+958. 105 教室第二排第一组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3655](../src/data/chapter4-three-floor-maze.layout.json#L3655)
-956. 105 教室第三排第一组桌椅阻挡
+959. 105 教室第三排第一组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3664](../src/data/chapter4-three-floor-maze.layout.json#L3664)
-957. 105 教室第三排第二组桌椅阻挡
+960. 105 教室第三排第二组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3673](../src/data/chapter4-three-floor-maze.layout.json#L3673)
-958. 105 教室第三排第三组桌椅阻挡
+961. 105 教室第三排第三组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3682](../src/data/chapter4-three-floor-maze.layout.json#L3682)
-959. 105 教室第三排第四组桌椅阻挡
+962. 105 教室第三排第四组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3691](../src/data/chapter4-three-floor-maze.layout.json#L3691)
-960. 面包坊门洞
+963. 面包坊门洞
    来源：[src/data/chapter4-three-floor-maze.layout.json:3702](../src/data/chapter4-three-floor-maze.layout.json#L3702)
-961. 必须可通行
+964. 必须可通行
    来源：[src/data/chapter4-three-floor-maze.layout.json:3712](../src/data/chapter4-three-floor-maze.layout.json#L3712)；[src/data/chapter4-three-floor-maze.layout.json:3722](../src/data/chapter4-three-floor-maze.layout.json#L3722)；[src/data/chapter4-three-floor-maze.layout.json:3732](../src/data/chapter4-three-floor-maze.layout.json#L3732)；[src/data/chapter4-three-floor-maze.layout.json:3742](../src/data/chapter4-three-floor-maze.layout.json#L3742)；[src/data/chapter4-three-floor-maze.layout.json:3752](../src/data/chapter4-three-floor-maze.layout.json#L3752)；[src/data/chapter4-three-floor-maze.layout.json:3762](../src/data/chapter4-three-floor-maze.layout.json#L3762)；[src/data/chapter4-three-floor-maze.layout.json:4385](../src/data/chapter4-three-floor-maze.layout.json#L4385)；[src/data/chapter4-three-floor-maze.layout.json:4395](../src/data/chapter4-three-floor-maze.layout.json#L4395)；[src/data/chapter4-three-floor-maze.layout.json:4405](../src/data/chapter4-three-floor-maze.layout.json#L4405)；[src/data/chapter4-three-floor-maze.layout.json:4415](../src/data/chapter4-three-floor-maze.layout.json#L4415)；[src/data/chapter4-three-floor-maze.layout.json:4425](../src/data/chapter4-three-floor-maze.layout.json#L4425)；[src/data/chapter4-three-floor-maze.layout.json:5408](../src/data/chapter4-three-floor-maze.layout.json#L5408)；[src/data/chapter4-three-floor-maze.layout.json:5418](../src/data/chapter4-three-floor-maze.layout.json#L5418)；[src/data/chapter4-three-floor-maze.layout.json:5458](../src/data/chapter4-three-floor-maze.layout.json#L5458)；[src/data/chapter4-three-floor-maze.layout.json:5468](../src/data/chapter4-three-floor-maze.layout.json#L5468)；[src/data/chapter4-three-floor-maze.layout.json:5478](../src/data/chapter4-three-floor-maze.layout.json#L5478)
-962. 前景遮挡
+965. 前景遮挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:3774](../src/data/chapter4-three-floor-maze.layout.json#L3774)；[src/data/chapter4-three-floor-maze.layout.json:3788](../src/data/chapter4-three-floor-maze.layout.json#L3788)；[src/data/chapter4-three-floor-maze.layout.json:3816](../src/data/chapter4-three-floor-maze.layout.json#L3816)；[src/data/chapter4-three-floor-maze.layout.json:3829](../src/data/chapter4-three-floor-maze.layout.json#L3829)；[src/data/chapter4-three-floor-maze.layout.json:3842](../src/data/chapter4-three-floor-maze.layout.json#L3842)；[src/data/chapter4-three-floor-maze.layout.json:3855](../src/data/chapter4-three-floor-maze.layout.json#L3855)；[src/data/chapter4-three-floor-maze.layout.json:3868](../src/data/chapter4-three-floor-maze.layout.json#L3868)；[src/data/chapter4-three-floor-maze.layout.json:4437](../src/data/chapter4-three-floor-maze.layout.json#L4437)；[src/data/chapter4-three-floor-maze.layout.json:4450](../src/data/chapter4-three-floor-maze.layout.json#L4450)；[src/data/chapter4-three-floor-maze.layout.json:4463](../src/data/chapter4-three-floor-maze.layout.json#L4463)；[src/data/chapter4-three-floor-maze.layout.json:4476](../src/data/chapter4-three-floor-maze.layout.json#L4476)；[src/data/chapter4-three-floor-maze.layout.json:4489](../src/data/chapter4-three-floor-maze.layout.json#L4489)；[src/data/chapter4-three-floor-maze.layout.json:4502](../src/data/chapter4-three-floor-maze.layout.json#L4502)；[src/data/chapter4-three-floor-maze.layout.json:5490](../src/data/chapter4-three-floor-maze.layout.json#L5490)；[src/data/chapter4-three-floor-maze.layout.json:5503](../src/data/chapter4-three-floor-maze.layout.json#L5503)
-963. 104/105 隔墙局部人物淡化
+966. 104/105 隔墙局部人物淡化
    来源：[src/data/chapter4-three-floor-maze.layout.json:3802](../src/data/chapter4-three-floor-maze.layout.json#L3802)
-964. 北侧西段肖像墙前景
+967. 北侧西段肖像墙前景
    来源：[src/data/chapter4-three-floor-maze.layout.json:3881](../src/data/chapter4-three-floor-maze.layout.json#L3881)
-965. 北侧东段肖像墙前景
+968. 北侧东段肖像墙前景
    来源：[src/data/chapter4-three-floor-maze.layout.json:3895](../src/data/chapter4-three-floor-maze.layout.json#L3895)
-966. 麦思威面包坊餐厅
+969. 麦思威面包坊餐厅
    来源：[src/data/chapter4-three-floor-maze.layout.json:3910](../src/data/chapter4-three-floor-maze.layout.json#L3910)
-967. 一楼校友头像长廊
+970. 一楼校友头像长廊
    来源：[src/data/chapter4-three-floor-maze.layout.json:3920](../src/data/chapter4-three-floor-maze.layout.json#L3920)
-968. 104 教室门厅
+971. 104 教室门厅
    来源：[src/data/chapter4-three-floor-maze.layout.json:3930](../src/data/chapter4-three-floor-maze.layout.json#L3930)
-969. 105 教室门厅
+972. 105 教室门厅
    来源：[src/data/chapter4-three-floor-maze.layout.json:3940](../src/data/chapter4-three-floor-maze.layout.json#L3940)
-970. 104 黑板擦痕残留
+973. 104 黑板擦痕残留
    来源：[src/data/chapter4-three-floor-maze.layout.json:3950](../src/data/chapter4-three-floor-maze.layout.json#L3950)
-971. 105 讲台回放终端
+974. 105 讲台回放终端
    来源：[src/data/chapter4-three-floor-maze.layout.json:3960](../src/data/chapter4-three-floor-maze.layout.json#L3960)
-972. 一楼前台值班助理
+975. 一楼前台值班助理
    来源：[src/data/chapter4-three-floor-maze.layout.json:3970](../src/data/chapter4-three-floor-maze.layout.json#L3970)
-973. 一楼前台值班签到板
+976. 一楼前台值班签到板
    来源：[src/data/chapter4-three-floor-maze.layout.json:3980](../src/data/chapter4-three-floor-maze.layout.json#L3980)
-974. 教学楼主入口
+977. 教学楼主入口
    来源：[src/data/chapter4-three-floor-maze.layout.json:3990](../src/data/chapter4-three-floor-maze.layout.json#L3990)
-975. 公告栏前的签到记录纸条
+978. 公告栏前的签到记录纸条
    来源：[src/data/chapter4-three-floor-maze.layout.json:4000](../src/data/chapter4-three-floor-maze.layout.json#L4000)
-976. 一楼旧钟
+979. 一楼旧钟
    来源：[src/data/chapter4-three-floor-maze.layout.json:4010](../src/data/chapter4-three-floor-maze.layout.json#L4010)
-977. 旧钟时针插槽
+980. 旧钟时针插槽
    来源：[src/data/chapter4-three-floor-maze.layout.json:4020](../src/data/chapter4-three-floor-maze.layout.json#L4020)；[src/scenes/rpg/RpgInteractionContract.ts:618](../src/scenes/rpg/RpgInteractionContract.ts#L618)
-978. 旧钟定位盘插槽
+981. 旧钟定位盘插槽
    来源：[src/data/chapter4-three-floor-maze.layout.json:4030](../src/data/chapter4-three-floor-maze.layout.json#L4030)
-979. 旧钟齿轮
+982. 旧钟齿轮
    来源：[src/data/chapter4-three-floor-maze.layout.json:4040](../src/data/chapter4-three-floor-maze.layout.json#L4040)；[src/scenes/rpg/RpgInteractionContract.ts:891](../src/scenes/rpg/RpgInteractionContract.ts#L891)
-980. 大厅旧钟表盘
+983. 大厅旧钟表盘
    来源：[src/data/chapter4-three-floor-maze.layout.json:4050](../src/data/chapter4-three-floor-maze.layout.json#L4050)；[src/scenes/rpg/RpgInteractionContract.ts:902](../src/scenes/rpg/RpgInteractionContract.ts#L902)；[src/scenes/rpg/RpgItemUseGuidance.ts:85](../src/scenes/rpg/RpgItemUseGuidance.ts#L85)
-981. 一楼配电面板
+984. 一楼配电面板
    来源：[src/data/chapter4-three-floor-maze.layout.json:4060](../src/data/chapter4-three-floor-maze.layout.json#L4060)；[src/scenes/rpg/RpgInteractionContract.ts:926](../src/scenes/rpg/RpgInteractionContract.ts#L926)
-982. 202 教室黑板下沿脚部通行边界
+985. 202 教室黑板下沿脚部通行边界
    来源：[src/data/chapter4-three-floor-maze.layout.json:4249](../src/data/chapter4-three-floor-maze.layout.json#L4249)
-983. 201 创客工坊
+986. 201 创客工坊
    来源：[src/data/chapter4-three-floor-maze.layout.json:4516](../src/data/chapter4-three-floor-maze.layout.json#L4516)
-984. 201 定位板校准夹具
+987. 201 定位板校准夹具
    来源：[src/data/chapter4-three-floor-maze.layout.json:4526](../src/data/chapter4-three-floor-maze.layout.json#L4526)
-985. 204 研讨教室
+988. 204 研讨教室
    来源：[src/data/chapter4-three-floor-maze.layout.json:4536](../src/data/chapter4-three-floor-maze.layout.json#L4536)
-986. 202 阶梯教室
+989. 202 阶梯教室
    来源：[src/data/chapter4-three-floor-maze.layout.json:4546](../src/data/chapter4-three-floor-maze.layout.json#L4546)
-987. 203 计算机教室
+990. 203 计算机教室
    来源：[src/data/chapter4-three-floor-maze.layout.json:4556](../src/data/chapter4-three-floor-maze.layout.json#L4556)
-988. 203 五区拓扑终端
+991. 203 五区拓扑终端
    来源：[src/data/chapter4-three-floor-maze.layout.json:4566](../src/data/chapter4-three-floor-maze.layout.json#L4566)
-989. 二楼开放学习区
+992. 二楼开放学习区
    来源：[src/data/chapter4-three-floor-maze.layout.json:4576](../src/data/chapter4-three-floor-maze.layout.json#L4576)
-990. 202 至主楼梯疏散路线板
+993. 202 至主楼梯疏散路线板
    来源：[src/data/chapter4-three-floor-maze.layout.json:4586](../src/data/chapter4-three-floor-maze.layout.json#L4586)
-991. 二楼校友纪念长廊
+994. 二楼校友纪念长廊
    来源：[src/data/chapter4-three-floor-maze.layout.json:4596](../src/data/chapter4-three-floor-maze.layout.json#L4596)
-992. 二楼电梯口值班安全员
+995. 二楼电梯口值班安全员
    来源：[src/data/chapter4-three-floor-maze.layout.json:4606](../src/data/chapter4-three-floor-maze.layout.json#L4606)
-993. 204 教室残影组
+996. 204 教室残影组
    来源：[src/data/chapter4-three-floor-maze.layout.json:4616](../src/data/chapter4-three-floor-maze.layout.json#L4616)
-994. 204 讲台抽屉里的定位盘
+997. 204 讲台抽屉里的定位盘
    来源：[src/data/chapter4-three-floor-maze.layout.json:4626](../src/data/chapter4-three-floor-maze.layout.json#L4626)
-995. 进入 202 并关门
+998. 进入 202 并关门
    来源：[src/data/chapter4-three-floor-maze.layout.json:4636](../src/data/chapter4-three-floor-maze.layout.json#L4636)；[src/scenes/rpg/RpgInteractionContract.ts:941](../src/scenes/rpg/RpgInteractionContract.ts#L941)
-996. 202 阶梯座椅间的黄铜分针组件
+999. 202 阶梯座椅间的黄铜分针组件
    来源：[src/data/chapter4-three-floor-maze.layout.json:4646](../src/data/chapter4-three-floor-maze.layout.json#L4646)；[src/scenes/rpg/RpgInteractionContract.ts:953](../src/scenes/rpg/RpgInteractionContract.ts#L953)
-997. 301 档案展北墙
+1000. 301 档案展北墙
    来源：[src/data/chapter4-three-floor-maze.layout.json:4743](../src/data/chapter4-three-floor-maze.layout.json#L4743)
-998. 302 媒体工作室西墙
+1001. 302 媒体工作室西墙
    来源：[src/data/chapter4-three-floor-maze.layout.json:4779](../src/data/chapter4-three-floor-maze.layout.json#L4779)
-999. 校友荣誉门厅南墙
+1002. 校友荣誉门厅南墙
    来源：[src/data/chapter4-three-floor-maze.layout.json:4890](../src/data/chapter4-three-floor-maze.layout.json#L4890)
-1000. 304 报告厅北墙
+1003. 304 报告厅北墙
    来源：[src/data/chapter4-three-floor-maze.layout.json:4899](../src/data/chapter4-three-floor-maze.layout.json#L4899)
-1001. 304 报告厅西墙
+1004. 304 报告厅西墙
    来源：[src/data/chapter4-three-floor-maze.layout.json:4908](../src/data/chapter4-three-floor-maze.layout.json#L4908)
-1002. 304 报告厅南墙西段
+1005. 304 报告厅南墙西段
    来源：[src/data/chapter4-three-floor-maze.layout.json:4917](../src/data/chapter4-three-floor-maze.layout.json#L4917)
-1003. 304 报告厅南墙东段
+1006. 304 报告厅南墙东段
    来源：[src/data/chapter4-three-floor-maze.layout.json:4926](../src/data/chapter4-three-floor-maze.layout.json#L4926)
-1004. 304 报告厅东墙
+1007. 304 报告厅东墙
    来源：[src/data/chapter4-three-floor-maze.layout.json:4935](../src/data/chapter4-three-floor-maze.layout.json#L4935)
-1005. 303 智慧教室北墙西段
+1008. 303 智慧教室北墙西段
    来源：[src/data/chapter4-three-floor-maze.layout.json:4944](../src/data/chapter4-three-floor-maze.layout.json#L4944)
-1006. 303 智慧教室北墙东段
+1009. 303 智慧教室北墙东段
    来源：[src/data/chapter4-three-floor-maze.layout.json:4953](../src/data/chapter4-three-floor-maze.layout.json#L4953)
-1007. 303 智慧教室西墙
+1010. 303 智慧教室西墙
    来源：[src/data/chapter4-three-floor-maze.layout.json:4962](../src/data/chapter4-three-floor-maze.layout.json#L4962)
-1008. 303 智慧教室东墙
+1011. 303 智慧教室东墙
    来源：[src/data/chapter4-three-floor-maze.layout.json:4971](../src/data/chapter4-three-floor-maze.layout.json#L4971)
-1009. A3 建筑南侧外墙
+1012. A3 建筑南侧外墙
    来源：[src/data/chapter4-three-floor-maze.layout.json:4980](../src/data/chapter4-three-floor-maze.layout.json#L4980)
-1010. 301 北侧第三组校史展柜阻挡
+1013. 301 北侧第三组校史展柜阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:4989](../src/data/chapter4-three-floor-maze.layout.json#L4989)
-1011. 301 中央档案展台阻挡
+1014. 301 中央档案展台阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:4998](../src/data/chapter4-three-floor-maze.layout.json#L4998)
-1012. 301 南侧左组展柜阻挡
+1015. 301 南侧左组展柜阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5007](../src/data/chapter4-three-floor-maze.layout.json#L5007)
-1013. 301 南侧右组展柜阻挡
+1016. 301 南侧右组展柜阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5016](../src/data/chapter4-three-floor-maze.layout.json#L5016)
-1014. 304 报告厅左侧座席阻挡
+1017. 304 报告厅左侧座席阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5043](../src/data/chapter4-three-floor-maze.layout.json#L5043)
-1015. 304 报告厅右侧座席阻挡
+1018. 304 报告厅右侧座席阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5052](../src/data/chapter4-three-floor-maze.layout.json#L5052)
-1016. 301 北侧第一组校史展柜阻挡
+1019. 301 北侧第一组校史展柜阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5061](../src/data/chapter4-three-floor-maze.layout.json#L5061)
-1017. 303 教室第一排第一组桌椅阻挡
+1020. 303 教室第一排第一组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5070](../src/data/chapter4-three-floor-maze.layout.json#L5070)
-1018. 303 教室第一排第二组桌椅阻挡
+1021. 303 教室第一排第二组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5079](../src/data/chapter4-three-floor-maze.layout.json#L5079)
-1019. 303 教室第一排第三组桌椅阻挡
+1022. 303 教室第一排第三组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5088](../src/data/chapter4-three-floor-maze.layout.json#L5088)
-1020. 303 教室第二排第一组桌椅阻挡
+1023. 303 教室第二排第一组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5097](../src/data/chapter4-three-floor-maze.layout.json#L5097)
-1021. 303 教室第二排第二组桌椅阻挡
+1024. 303 教室第二排第二组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5106](../src/data/chapter4-three-floor-maze.layout.json#L5106)
-1022. 303 教室第二排第三组桌椅阻挡
+1025. 303 教室第二排第三组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5115](../src/data/chapter4-three-floor-maze.layout.json#L5115)
-1023. 303 教室第一排第四组桌椅阻挡
+1026. 303 教室第一排第四组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5124](../src/data/chapter4-three-floor-maze.layout.json#L5124)
-1024. 303 教室第一排第五组桌椅阻挡
+1027. 303 教室第一排第五组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5133](../src/data/chapter4-three-floor-maze.layout.json#L5133)
-1025. 303 教室第一排第六组桌椅阻挡
+1028. 303 教室第一排第六组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5142](../src/data/chapter4-three-floor-maze.layout.json#L5142)
-1026. 303 教室第二排第四组桌椅阻挡
+1029. 303 教室第二排第四组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5151](../src/data/chapter4-three-floor-maze.layout.json#L5151)
-1027. 303 教室第二排第五组桌椅阻挡
+1030. 303 教室第二排第五组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5160](../src/data/chapter4-three-floor-maze.layout.json#L5160)
-1028. 303 教室第二排第六组桌椅阻挡
+1031. 303 教室第二排第六组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5169](../src/data/chapter4-three-floor-maze.layout.json#L5169)
-1029. 301 北侧第二组校史展柜阻挡
+1032. 301 北侧第二组校史展柜阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5178](../src/data/chapter4-three-floor-maze.layout.json#L5178)
-1030. 303 教室第三排第一组桌椅阻挡
+1033. 303 教室第三排第一组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5187](../src/data/chapter4-three-floor-maze.layout.json#L5187)
-1031. 303 教室第三排第二组桌椅阻挡
+1034. 303 教室第三排第二组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5196](../src/data/chapter4-three-floor-maze.layout.json#L5196)
-1032. 303 教室第三排第三组桌椅阻挡
+1035. 303 教室第三排第三组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5205](../src/data/chapter4-three-floor-maze.layout.json#L5205)
-1033. 303 教室第三排第四组桌椅阻挡
+1036. 303 教室第三排第四组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5214](../src/data/chapter4-three-floor-maze.layout.json#L5214)
-1034. 303 教室第三排第五组桌椅阻挡
+1037. 303 教室第三排第五组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5223](../src/data/chapter4-three-floor-maze.layout.json#L5223)
-1035. 303 教室第三排第六组桌椅阻挡
+1038. 303 教室第三排第六组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5232](../src/data/chapter4-three-floor-maze.layout.json#L5232)
-1036. 303 教室第四排第一组桌椅阻挡
+1039. 303 教室第四排第一组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5241](../src/data/chapter4-three-floor-maze.layout.json#L5241)
-1037. 303 教室第四排第二组桌椅阻挡
+1040. 303 教室第四排第二组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5250](../src/data/chapter4-three-floor-maze.layout.json#L5250)
-1038. 303 教室第四排第三组桌椅阻挡
+1041. 303 教室第四排第三组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5259](../src/data/chapter4-three-floor-maze.layout.json#L5259)
-1039. 303 教室第四排第四组桌椅阻挡
+1042. 303 教室第四排第四组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5268](../src/data/chapter4-three-floor-maze.layout.json#L5268)
-1040. 303 教室第四排第六组桌椅阻挡
+1043. 303 教室第四排第六组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5277](../src/data/chapter4-three-floor-maze.layout.json#L5277)
-1041. 303 教室第四排第五组桌椅阻挡
+1044. 303 教室第四排第五组桌椅阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5286](../src/data/chapter4-three-floor-maze.layout.json#L5286)
-1042. 校史人物门厅右侧展柜阻挡
+1045. 校史人物门厅右侧展柜阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5295](../src/data/chapter4-three-floor-maze.layout.json#L5295)
-1043. 校史人物门厅左侧展柜阻挡
+1046. 校史人物门厅左侧展柜阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5304](../src/data/chapter4-three-floor-maze.layout.json#L5304)
-1044. 304 报告厅讲台阻挡
+1047. 304 报告厅讲台阻挡
    来源：[src/data/chapter4-three-floor-maze.layout.json:5313](../src/data/chapter4-three-floor-maze.layout.json#L5313)
-1045. A3 西侧外墙实体
+1048. A3 西侧外墙实体
    来源：[src/data/chapter4-three-floor-maze.layout.json:5322](../src/data/chapter4-three-floor-maze.layout.json#L5322)
-1046. A3 东侧外墙实体
+1049. A3 东侧外墙实体
    来源：[src/data/chapter4-three-floor-maze.layout.json:5336](../src/data/chapter4-three-floor-maze.layout.json#L5336)
-1047. A3 北侧外墙封边
+1050. A3 北侧外墙封边
    来源：[src/data/chapter4-three-floor-maze.layout.json:5350](../src/data/chapter4-three-floor-maze.layout.json#L5350)
-1048. A3 南侧窗带外墙实体
+1051. A3 南侧窗带外墙实体
    来源：[src/data/chapter4-three-floor-maze.layout.json:5364](../src/data/chapter4-three-floor-maze.layout.json#L5364)
-1049. A3 大厅北墙西段墙脚
+1052. A3 大厅北墙西段墙脚
    来源：[src/data/chapter4-three-floor-maze.layout.json:5378](../src/data/chapter4-three-floor-maze.layout.json#L5378)
-1050. A3 大厅北墙东段墙脚
+1053. A3 大厅北墙东段墙脚
    来源：[src/data/chapter4-three-floor-maze.layout.json:5392](../src/data/chapter4-three-floor-maze.layout.json#L5392)
-1051. 电梯出口平台必须可通行
+1054. 电梯出口平台必须可通行
    来源：[src/data/chapter4-three-floor-maze.layout.json:5428](../src/data/chapter4-three-floor-maze.layout.json#L5428)
-1052. 主楼梯中央踏步必须可通行
+1055. 主楼梯中央踏步必须可通行
    来源：[src/data/chapter4-three-floor-maze.layout.json:5438](../src/data/chapter4-three-floor-maze.layout.json#L5438)
-1053. 楼梯栏杆下沿连接区必须可通行
+1056. 楼梯栏杆下沿连接区必须可通行
    来源：[src/data/chapter4-three-floor-maze.layout.json:5448](../src/data/chapter4-three-floor-maze.layout.json#L5448)
-1054. 301 校史档案展
+1057. 301 校史档案展
    来源：[src/data/chapter4-three-floor-maze.layout.json:5517](../src/data/chapter4-three-floor-maze.layout.json#L5517)
-1055. 301 胶片索引抽屉
+1058. 301 胶片索引抽屉
    来源：[src/data/chapter4-three-floor-maze.layout.json:5527](../src/data/chapter4-three-floor-maze.layout.json#L5527)
-1056. 302 媒体工作室
+1059. 302 媒体工作室
    来源：[src/data/chapter4-three-floor-maze.layout.json:5537](../src/data/chapter4-three-floor-maze.layout.json#L5537)
-1057. 302 新旧影像对齐扫描台
+1060. 302 新旧影像对齐扫描台
    来源：[src/data/chapter4-three-floor-maze.layout.json:5547](../src/data/chapter4-three-floor-maze.layout.json#L5547)
-1058. 304 报告厅
+1061. 304 报告厅
    来源：[src/data/chapter4-three-floor-maze.layout.json:5557](../src/data/chapter4-three-floor-maze.layout.json#L5557)
-1059. 303 智慧教室
+1062. 303 智慧教室
    来源：[src/data/chapter4-three-floor-maze.layout.json:5567](../src/data/chapter4-three-floor-maze.layout.json#L5567)
-1060. 三楼校史人物荣誉门厅
+1063. 三楼校史人物荣誉门厅
    来源：[src/data/chapter4-three-floor-maze.layout.json:5577](../src/data/chapter4-three-floor-maze.layout.json#L5577)
-1061. 校史人物·苏步青
+1064. 校史人物·苏步青
    来源：[src/data/chapter4-three-floor-maze.layout.json:5587](../src/data/chapter4-three-floor-maze.layout.json#L5587)
-1062. 校史人物·竺可桢
+1065. 校史人物·竺可桢
    来源：[src/data/chapter4-three-floor-maze.layout.json:5597](../src/data/chapter4-three-floor-maze.layout.json#L5597)
-1063. 校史人物·路甬祥
+1066. 校史人物·路甬祥
    来源：[src/data/chapter4-three-floor-maze.layout.json:5607](../src/data/chapter4-three-floor-maze.layout.json#L5607)
-1064. 校史人物·陈建功
+1067. 校史人物·陈建功
    来源：[src/data/chapter4-three-floor-maze.layout.json:5617](../src/data/chapter4-three-floor-maze.layout.json#L5617)
-1065. 校史人物·谈家桢
+1068. 校史人物·谈家桢
    来源：[src/data/chapter4-three-floor-maze.layout.json:5627](../src/data/chapter4-three-floor-maze.layout.json#L5627)
-1066. 校史人物·程开甲
+1069. 校史人物·程开甲
    来源：[src/data/chapter4-three-floor-maze.layout.json:5637](../src/data/chapter4-three-floor-maze.layout.json#L5637)
-1067. 三楼校友头像长廊
+1070. 三楼校友头像长廊
    来源：[src/data/chapter4-three-floor-maze.layout.json:5647](../src/data/chapter4-three-floor-maze.layout.json#L5647)
-1068. 三楼参照教室教师
+1071. 三楼参照教室教师
    来源：[src/data/chapter4-three-floor-maze.layout.json:5657](../src/data/chapter4-three-floor-maze.layout.json#L5657)
-1069. 三楼晨间教室布置参照
+1072. 三楼晨间教室布置参照
    来源：[src/data/chapter4-three-floor-maze.layout.json:5667](../src/data/chapter4-three-floor-maze.layout.json#L5667)
-1070. 校园后勤服务
+1073. 校园后勤服务
    来源：[src/data/chapter4-wechat.content.json:3](../src/data/chapter4-wechat.content.json#L3)
-1071. 公众号
+1074. 公众号
    来源：[src/data/chapter4-wechat.content.json:4](../src/data/chapter4-wechat.content.json#L4)
-1072. 段永平教学楼夜间运行提醒
+1075. 段永平教学楼夜间运行提醒
    来源：[src/data/chapter4-wechat.content.json:5](../src/data/chapter4-wechat.content.json#L5)
-1073. 夜间清楼期间，部分通道将分时关闭，主电梯停靠状态可能调整。
+1076. 夜间清楼期间，部分通道将分时关闭，主电梯停靠状态可能调整。
    来源：[src/data/chapter4-wechat.content.json:7](../src/data/chapter4-wechat.content.json#L7)
-1074. 教学楼自 22:45 起按楼层分区清楼。
+1077. 教学楼自 22:45 起按楼层分区清楼。
    来源：[src/data/chapter4-wechat.content.json:9](../src/data/chapter4-wechat.content.json#L9)
-1075. 主电梯停靠状态以轿厢显示和现场提示音为准。
+1078. 主电梯停靠状态以轿厢显示和现场提示音为准。
    来源：[src/data/chapter4-wechat.content.json:10](../src/data/chapter4-wechat.content.json#L10)
-1076. 部分通道可能临时关闭，请留意楼层公告。
+1079. 部分通道可能临时关闭，请留意楼层公告。
    来源：[src/data/chapter4-wechat.content.json:11](../src/data/chapter4-wechat.content.json#L11)
-1077. 现场广播和安全指引优先于本推送。
+1080. 现场广播和安全指引优先于本推送。
    来源：[src/data/chapter4-wechat.content.json:12](../src/data/chapter4-wechat.content.json#L12)
-1078. 读完并保存通知
+1081. 读完并保存通知
    来源：[src/data/chapter4-wechat.content.json:14](../src/data/chapter4-wechat.content.json#L14)
-1079. 校园楼宇与生活服务
+1082. 校园楼宇与生活服务
    来源：[src/data/chapter4-wechat.content.json:15](../src/data/chapter4-wechat.content.json#L15)
-1080. 楼宇小事
+1083. 楼宇小事
    来源：[src/data/chapter4-wechat.content.json:19](../src/data/chapter4-wechat.content.json#L19)
-1081. 雨天的伞先放哪儿
+1084. 雨天的伞先放哪儿
    来源：[src/data/chapter4-wechat.content.json:20](../src/data/chapter4-wechat.content.json#L20)
-1082. 收伞、取伞和寻找失物的几个细节，能少留一地水，也能少拿错一把黑伞。
+1085. 收伞、取伞和寻找失物的几个细节，能少留一地水，也能少拿错一把黑伞。
    来源：[src/data/chapter4-wechat.content.json:22](../src/data/chapter4-wechat.content.json#L22)
-1083. 雨天的楼道口总会多出几把伞。午后从图书馆回来，伞尖还滴着水，带进教室容易把地砖踩出一串湿脚印。教学区入口旁的暂存架放了吸水垫，伞可以合好后靠边摆，伞柄别挂在消防门上。
+1086. 雨天的楼道口总会多出几把伞。午后从图书馆回来，伞尖还滴着水，带进教室容易把地砖踩出一串湿脚印。教学区入口旁的暂存架放了吸水垫，伞可以合好后靠边摆，伞柄别挂在消防门上。
    来源：[src/data/chapter4-wechat.content.json:26](../src/data/chapter4-wechat.content.json#L26)
-1084. 傍晚取伞时，先看看伞带和手柄上的小标记。黑伞排在一起，三分钟足够让人怀疑自己的记忆，也很容易拿错。没有找到的同学可以在服务台登记颜色、伞柄样式和大致时间。工作人员整理时会把散落的伞移到失物架，雨停后记得领走。
+1087. 傍晚取伞时，先看看伞带和手柄上的小标记。黑伞排在一起，三分钟足够让人怀疑自己的记忆，也很容易拿错。没有找到的同学可以在服务台登记颜色、伞柄样式和大致时间。工作人员整理时会把散落的伞移到失物架，雨停后记得领走。
    来源：[src/data/chapter4-wechat.content.json:27](../src/data/chapter4-wechat.content.json#L27)
-1085. 夜读提示
+1088. 夜读提示
    来源：[src/data/chapter4-wechat.content.json:32](../src/data/chapter4-wechat.content.json#L32)
-1086. 晚自习收尾的半分钟
+1089. 晚自习收尾的半分钟
    来源：[src/data/chapter4-wechat.content.json:33](../src/data/chapter4-wechat.content.json#L33)
-1087. 带走桌边的充电线，把椅子推进去，夜间清洁经过时能少绕几次。
+1090. 带走桌边的充电线，把椅子推进去，夜间清洁经过时能少绕几次。
    来源：[src/data/chapter4-wechat.content.json:35](../src/data/chapter4-wechat.content.json#L35)
-1088. 晚间自习临近结束时，走廊里的打印机通常还在吐最后几页，充电线也最容易留在桌角。离开前花半分钟看一眼座位下方，再把椅子轻轻推进去，清洁设备经过时能少绕几次。
+1091. 晚间自习临近结束时，走廊里的打印机通常还在吐最后几页，充电线也最容易留在桌角。离开前花半分钟看一眼座位下方，再把椅子轻轻推进去，清洁设备经过时能少绕几次。
    来源：[src/data/chapter4-wechat.content.json:39](../src/data/chapter4-wechat.content.json#L39)
-1089. 入口、电梯和可通行楼层以当晚现场提示为准。准备继续学习的同学，请把水杯、电脑和个人物品带在身边。临时找不到同伴时，可以先到大厅等候，别在正在清洁的楼层里来回找插座。
+1092. 入口、电梯和可通行楼层以当晚现场提示为准。准备继续学习的同学，请把水杯、电脑和个人物品带在身边。临时找不到同伴时，可以先到大厅等候，别在正在清洁的楼层里来回找插座。
    来源：[src/data/chapter4-wechat.content.json:40](../src/data/chapter4-wechat.content.json#L40)
-1090. 食堂顺手事
+1093. 食堂顺手事
    来源：[src/data/chapter4-wechat.content.json:45](../src/data/chapter4-wechat.content.json#L45)
-1091. 餐盘回收台前少等一会儿
+1094. 餐盘回收台前少等一会儿
    来源：[src/data/chapter4-wechat.content.json:46](../src/data/chapter4-wechat.content.json#L46)
-1092. 餐盘放稳，筷子和纸巾分开，下一位同学就能早一点离开回收台。
+1095. 餐盘放稳，筷子和纸巾分开，下一位同学就能早一点离开回收台。
    来源：[src/data/chapter4-wechat.content.json:48](../src/data/chapter4-wechat.content.json#L48)
-1093. 午餐高峰过去后，回收台上常剩几只装着汤勺的餐盘。餐具回收口前有时只差两步，大家端着餐盘聊天，队伍就会停在转角。餐盘放稳后再把筷子和纸巾分开，后面的人能少等一会儿。
+1096. 午餐高峰过去后，回收台上常剩几只装着汤勺的餐盘。餐具回收口前有时只差两步，大家端着餐盘聊天，队伍就会停在转角。餐盘放稳后再把筷子和纸巾分开，后面的人能少等一会儿。
    来源：[src/data/chapter4-wechat.content.json:52](../src/data/chapter4-wechat.content.json#L52)
-1094. 汤碗和剩菜请先倒净，整杯饮料也别塞进餐盘缝里。纸巾掉进残渣桶时不用弯腰去捞，可以交给现场工作人员处理。吃完把桌面收干净，下一位同学就能直接坐下。
+1097. 汤碗和剩菜请先倒净，整杯饮料也别塞进餐盘缝里。纸巾掉进残渣桶时不用弯腰去捞，可以交给现场工作人员处理。吃完把桌面收干净，下一位同学就能直接坐下。
    来源：[src/data/chapter4-wechat.content.json:53](../src/data/chapter4-wechat.content.json#L53)
-1095. 校园慢行
+1098. 校园慢行
    来源：[src/data/chapter4-wechat.content.json:58](../src/data/chapter4-wechat.content.json#L58)
-1096. 把共享单车摆正以后
+1099. 把共享单车摆正以后
    来源：[src/data/chapter4-wechat.content.json:59](../src/data/chapter4-wechat.content.json#L59)
-1097. 把车停进线内，给盲道、坡道和拖着行李的人多留一点通过空间。
+1100. 把车停进线内，给盲道、坡道和拖着行李的人多留一点通过空间。
    来源：[src/data/chapter4-wechat.content.json:61](../src/data/chapter4-wechat.content.json#L61)
-1098. 早八前后，教学区路边经常出现同一种停车方式。车头朝里，后轮卡在树池边，旁边只够一个人侧身通过。赶时间可以理解，拎着早餐或拖着行李经过的人也确实容易被绊住。
+1101. 早八前后，教学区路边经常出现同一种停车方式。车头朝里，后轮卡在树池边，旁边只够一个人侧身通过。赶时间可以理解，拎着早餐或拖着行李经过的人也确实容易被绊住。
    来源：[src/data/chapter4-wechat.content.json:65](../src/data/chapter4-wechat.content.json#L65)
-1099. 骑到目的地后，把车停进线内，再把挡住盲道、坡道和楼门的车辆顺手移开一点。遇到倒下的车，可以先扶正后再结束用车。多花十秒，清洁车和轮椅都能顺着走。
+1102. 骑到目的地后，把车停进线内，再把挡住盲道、坡道和楼门的车辆顺手移开一点。遇到倒下的车，可以先扶正后再结束用车。多花十秒，清洁车和轮椅都能顺着走。
    来源：[src/data/chapter4-wechat.content.json:66](../src/data/chapter4-wechat.content.json#L66)
-1100. 湖边观察
+1103. 湖边观察
    来源：[src/data/chapter4-wechat.content.json:71](../src/data/chapter4-wechat.content.json#L71)
-1101. 在启真湖边看水鸟
+1104. 在启真湖边看水鸟
    来源：[src/data/chapter4-wechat.content.json:72](../src/data/chapter4-wechat.content.json#L72)
-1102. 镜头可以拉近，脚步和食物要离远一些。安静观察，常能看到更多。
+1105. 镜头可以拉近，脚步和食物要离远一些。安静观察，常能看到更多。
    来源：[src/data/chapter4-wechat.content.json:74](../src/data/chapter4-wechat.content.json#L74)
-1103. 启真湖边最近多了几只停在浅水处的水鸟。有人隔着栏杆拍照，也有人带着面包走近。鸟一受惊就会游向水面中央，岸边的人越多，等待的时间也越长。
+1106. 启真湖边最近多了几只停在浅水处的水鸟。有人隔着栏杆拍照，也有人带着面包走近。鸟一受惊就会游向水面中央，岸边的人越多，等待的时间也越长。
    来源：[src/data/chapter4-wechat.content.json:78](../src/data/chapter4-wechat.content.json#L78)
-1104. 看鸟时留在步道上，把镜头拉近就够了。不要投喂面包、薯片和含糖饮料，也别追着鸟群跑。可以留意羽色、脚蹼和活动方向，声音放低一些。安静站一会儿，有时能看到它们靠近岸边。
+1107. 看鸟时留在步道上，把镜头拉近就够了。不要投喂面包、薯片和含糖饮料，也别追着鸟群跑。可以留意羽色、脚蹼和活动方向，声音放低一些。安静站一会儿，有时能看到它们靠近岸边。
    来源：[src/data/chapter4-wechat.content.json:79](../src/data/chapter4-wechat.content.json#L79)
-1105. 失物招领
+1108. 失物招领
    来源：[src/data/chapter4-wechat.content.json:84](../src/data/chapter4-wechat.content.json#L84)
-1106. 失物架上那只耳机
+1109. 失物架上那只耳机
    来源：[src/data/chapter4-wechat.content.json:85](../src/data/chapter4-wechat.content.json#L85)
-1107. 水杯、卡套和耳机常出现在服务台，多留几个特征就能少跑几趟。
+1110. 水杯、卡套和耳机常出现在服务台，多留几个特征就能少跑几趟。
    来源：[src/data/chapter4-wechat.content.json:87](../src/data/chapter4-wechat.content.json#L87)
-1108. 楼宇服务台的失物架上，最常见的是水杯、门禁卡套和单只耳机。难找的是没有写名字的充电盒，外观看起来接近，型号、贴纸和磨损位置各有不同。
+1111. 楼宇服务台的失物架上，最常见的是水杯、门禁卡套和单只耳机。难找的是没有写名字的充电盒，外观看起来接近，型号、贴纸和磨损位置各有不同。
    来源：[src/data/chapter4-wechat.content.json:91](../src/data/chapter4-wechat.content.json#L91)
-1109. 捡到物品后，交给就近服务台时尽量补一句地点和时间。失主来问时，颜色、贴纸和磨损位置都能帮上忙。要找失物的同学可以先准备这些特征，再留一个可联系的方式。
+1112. 捡到物品后，交给就近服务台时尽量补一句地点和时间。失主来问时，颜色、贴纸和磨损位置都能帮上忙。要找失物的同学可以先准备这些特征，再留一个可联系的方式。
    来源：[src/data/chapter4-wechat.content.json:92](../src/data/chapter4-wechat.content.json#L92)
-1110. 203 还开着吗？我电脑没关。
+1113. 203 还开着吗？我电脑没关。
    来源：[src/data/chapter4-wechat.content.json:101](../src/data/chapter4-wechat.content.json#L101)
-1111. 林昊
+1114. 林昊
    来源：[src/data/chapter4-wechat.content.json:101](../src/data/chapter4-wechat.content.json#L101)
-1112. 陈嘉
+1115. 陈嘉
    来源：[src/data/chapter4-wechat.content.json:102](../src/data/chapter4-wechat.content.json#L102)
-1113. 刚看见保安从东边过去。
+1116. 刚看见保安从东边过去。
    来源：[src/data/chapter4-wechat.content.json:102](../src/data/chapter4-wechat.content.json#L102)
-1114. 东边不是已经封了吗？
+1117. 东边不是已经封了吗？
    来源：[src/data/chapter4-wechat.content.json:103](../src/data/chapter4-wechat.content.json#L103)
-1115. 周琪
+1118. 周琪
    来源：[src/data/chapter4-wechat.content.json:103](../src/data/chapter4-wechat.content.json#L103)
-1116. 室友
+1119. 室友
    来源：[src/data/chapter4-wechat.content.json:104](../src/data/chapter4-wechat.content.json#L104)
-1117. 我在西侧看见保洁推车，应该还能走。
+1120. 我在西侧看见保洁推车，应该还能走。
    来源：[src/data/chapter4-wechat.content.json:104](../src/data/chapter4-wechat.content.json#L104)
-1118. 陈嘉撤回了一条消息
+1121. 陈嘉撤回了一条消息
    来源：[src/data/chapter4-wechat.content.json:106](../src/data/chapter4-wechat.content.json#L106)
-1119. 算了，我去楼梯口看看。
+1122. 算了，我去楼梯口看看。
    来源：[src/data/chapter4-wechat.content.json:107](../src/data/chapter4-wechat.content.json#L107)
-1120. 保存路线讨论截图
+1123. 保存路线讨论截图
    来源：[src/data/chapter4-wechat.content.json:108](../src/data/chapter4-wechat.content.json#L108)
-1121. 文件传输助手
+1124. 文件传输助手
    来源：[src/data/chapter4-wechat.content.json:111](../src/data/chapter4-wechat.content.json#L111)
-1122. 还没有第四章现场资料。
+1125. 还没有第四章现场资料。
    来源：[src/data/chapter4-wechat.content.json:112](../src/data/chapter4-wechat.content.json#L112)
-1123. 夜间运行通知
+1126. 夜间运行通知
    来源：[src/data/chapter4-wechat.content.json:113](../src/data/chapter4-wechat.content.json#L113)
-1124. 主电梯到站提示音 00:07
+1127. 主电梯到站提示音 00:07
    来源：[src/data/chapter4-wechat.content.json:114](../src/data/chapter4-wechat.content.json#L114)
-1125. 麦斯威夜间自习群路线讨论
+1128. 麦斯威夜间自习群路线讨论
    来源：[src/data/chapter4-wechat.content.json:115](../src/data/chapter4-wechat.content.json#L115)
-1126. 三楼新旧导视板对照照片
+1129. 三楼新旧导视板对照照片
    来源：[src/data/chapter4-wechat.content.json:116](../src/data/chapter4-wechat.content.json#L116)
-1127. 把现在使用的导视板和残留的旧导视板都发我。
+1130. 把现在使用的导视板和残留的旧导视板都发我。
    来源：[src/data/chapter4-wechat.content.json:119](../src/data/chapter4-wechat.content.json#L119)
-1128. \[图片\] 三楼新旧导视板
+1131. \[图片\] 三楼新旧导视板
    来源：[src/data/chapter4-wechat.content.json:120](../src/data/chapter4-wechat.content.json#L120)
-1129. 两张图的二楼箭头方向相反。去现场核对仍保留旧编号的一侧，再调整导视板。
+1132. 两张图的二楼箭头方向相反。去现场核对仍保留旧编号的一侧，再调整导视板。
    来源：[src/data/chapter4-wechat.content.json:121](../src/data/chapter4-wechat.content.json#L121)
-1130. 对照两张照片
+1133. 对照两张照片
    来源：[src/data/chapter4-wechat.content.json:122](../src/data/chapter4-wechat.content.json#L122)
-1131. 苏步青
+1134. 苏步青
    来源：[src/data/ChapterFourAlumniHonorWall.ts:102](../src/data/ChapterFourAlumniHonorWall.ts#L102)
-1132. 数学家、教育家
+1135. 数学家、教育家
    来源：[src/data/ChapterFourAlumniHonorWall.ts:104](../src/data/ChapterFourAlumniHonorWall.ts#L104)；[src/data/ChapterFourAlumniHonorWall.ts:161](../src/data/ChapterFourAlumniHonorWall.ts#L161)；[src/data/ChapterFourAlumniHonorWall.ts:259](../src/data/ChapterFourAlumniHonorWall.ts#L259)
-1133. 1931年回国后任浙江大学数学系副教授、教授及系主任。
+1136. 1931年回国后任浙江大学数学系副教授、教授及系主任。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:106](../src/data/ChapterFourAlumniHonorWall.ts#L106)
-1134. 与陈建功共同形成有影响力的“陈苏学派”，培养了一批数学人才。
+1137. 与陈建功共同形成有影响力的“陈苏学派”，培养了一批数学人才。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:107](../src/data/ChapterFourAlumniHonorWall.ts#L107)
-1135. 抗战时期随浙江大学西迁，在艰苦条件下继续教学与研究。
+1138. 抗战时期随浙江大学西迁，在艰苦条件下继续教学与研究。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:108](../src/data/ChapterFourAlumniHonorWall.ts#L108)
-1136. 浙江大学·求是大家
+1139. 浙江大学·求是大家
    来源：[src/data/ChapterFourAlumniHonorWall.ts:110](../src/data/ChapterFourAlumniHonorWall.ts#L110)；[src/data/ChapterFourAlumniHonorWall.ts:227](../src/data/ChapterFourAlumniHonorWall.ts#L227)；[src/data/ChapterFourAlumniHonorWall.ts:246](../src/data/ChapterFourAlumniHonorWall.ts#L246)；[src/data/ChapterFourAlumniHonorWall.ts:265](../src/data/ChapterFourAlumniHonorWall.ts#L265)；[src/data/ChapterFourAlumniHonorWall.ts:341](../src/data/ChapterFourAlumniHonorWall.ts#L341)；[src/data/ChapterFourAlumniHonorWall.ts:379](../src/data/ChapterFourAlumniHonorWall.ts#L379)
-1137. 竺可桢
+1140. 竺可桢
    来源：[src/data/ChapterFourAlumniHonorWall.ts:121](../src/data/ChapterFourAlumniHonorWall.ts#L121)
-1138. 气象学家、地理学家、教育家
+1141. 气象学家、地理学家、教育家
    来源：[src/data/ChapterFourAlumniHonorWall.ts:123](../src/data/ChapterFourAlumniHonorWall.ts#L123)
-1139. 1936—1949年任浙江大学校长，领导学校完成西迁并坚持办学。
+1142. 1936—1949年任浙江大学校长，领导学校完成西迁并坚持办学。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:125](../src/data/ChapterFourAlumniHonorWall.ts#L125)
-1140. 任内学校由 3 个学院、16 个系发展为 7 个学院、27 个系。
+1143. 任内学校由 3 个学院、16 个系发展为 7 个学院、27 个系。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:126](../src/data/ChapterFourAlumniHonorWall.ts#L126)
-1141. 他在新生入学时提出两个问题，要求学生思考求学目的与成人方向。
+1144. 他在新生入学时提出两个问题，要求学生思考求学目的与成人方向。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:127](../src/data/ChapterFourAlumniHonorWall.ts#L127)
-1142. 浙江大学国际联合学院·竺老两问
+1145. 浙江大学国际联合学院·竺老两问
    来源：[src/data/ChapterFourAlumniHonorWall.ts:129](../src/data/ChapterFourAlumniHonorWall.ts#L129)
-1143. 路甬祥
+1146. 路甬祥
    来源：[src/data/ChapterFourAlumniHonorWall.ts:140](../src/data/ChapterFourAlumniHonorWall.ts#L140)
-1144. 流体传动与控制学家、教育家
+1147. 流体传动与控制学家、教育家
    来源：[src/data/ChapterFourAlumniHonorWall.ts:142](../src/data/ChapterFourAlumniHonorWall.ts#L142)
-1145. 1964年毕业于浙江大学机械系，后留校任教并长期从事流体传动与控制研究。
+1148. 1964年毕业于浙江大学机械系，后留校任教并长期从事流体传动与控制研究。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:144](../src/data/ChapterFourAlumniHonorWall.ts#L144)
-1146. 1988—1995年任浙江大学校长，推动学校教育、科研与管理改革。
+1149. 1988—1995年任浙江大学校长，推动学校教育、科研与管理改革。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:145](../src/data/ChapterFourAlumniHonorWall.ts#L145)
-1147. 1991年当选中国科学院学部委员，1994年当选中国工程院院士。
+1150. 1991年当选中国科学院学部委员，1994年当选中国工程院院士。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:146](../src/data/ChapterFourAlumniHonorWall.ts#L146)
-1148. 浙江大学·历任校长
+1151. 浙江大学·历任校长
    来源：[src/data/ChapterFourAlumniHonorWall.ts:148](../src/data/ChapterFourAlumniHonorWall.ts#L148)；[src/data/ChapterFourAlumniHonorWall.ts:303](../src/data/ChapterFourAlumniHonorWall.ts#L303)
-1149. 陈建功
+1152. 陈建功
    来源：[src/data/ChapterFourAlumniHonorWall.ts:159](../src/data/ChapterFourAlumniHonorWall.ts#L159)
-1150. 1929年起在浙江大学任教，主持数学系建设与人才培养。
+1153. 1929年起在浙江大学任教，主持数学系建设与人才培养。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:163](../src/data/ChapterFourAlumniHonorWall.ts#L163)
-1151. 与苏步青共同培育了中国现代数学的重要学术群体。
+1154. 与苏步青共同培育了中国现代数学的重要学术群体。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:164](../src/data/ChapterFourAlumniHonorWall.ts#L164)
-1152. 西迁时期坚持教学和研究，奠定了浙大数学学科的早期基础。
+1155. 西迁时期坚持教学和研究，奠定了浙大数学学科的早期基础。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:165](../src/data/ChapterFourAlumniHonorWall.ts#L165)
-1153. 浙江大学档案馆·俊彩星驰长廊
+1156. 浙江大学档案馆·俊彩星驰长廊
    来源：[src/data/ChapterFourAlumniHonorWall.ts:167](../src/data/ChapterFourAlumniHonorWall.ts#L167)；[src/data/ChapterFourAlumniHonorWall.ts:436](../src/data/ChapterFourAlumniHonorWall.ts#L436)
-1154. 谈家桢
+1157. 谈家桢
    来源：[src/data/ChapterFourAlumniHonorWall.ts:179](../src/data/ChapterFourAlumniHonorWall.ts#L179)
-1155. 遗传学家、教育家
+1158. 遗传学家、教育家
    来源：[src/data/ChapterFourAlumniHonorWall.ts:181](../src/data/ChapterFourAlumniHonorWall.ts#L181)
-1156. 曾任浙江大学生物系教授，在西迁途中继续组织遗传学教学与实验。
+1159. 曾任浙江大学生物系教授，在西迁途中继续组织遗传学教学与实验。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:183](../src/data/ChapterFourAlumniHonorWall.ts#L183)
-1157. 在缺少自来水、电灯和专业设备的条件下，带领学生用简易器材坚持研究。
+1160. 在缺少自来水、电灯和专业设备的条件下，带领学生用简易器材坚持研究。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:184](../src/data/ChapterFourAlumniHonorWall.ts#L184)
-1158. 后长期推动中国现代遗传学的学科建设与人才培养。
+1161. 后长期推动中国现代遗传学的学科建设与人才培养。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:185](../src/data/ChapterFourAlumniHonorWall.ts#L185)
-1159. 浙江大学·求是精神薪火相传
+1162. 浙江大学·求是精神薪火相传
    来源：[src/data/ChapterFourAlumniHonorWall.ts:187](../src/data/ChapterFourAlumniHonorWall.ts#L187)
-1160. 程开甲
+1163. 程开甲
    来源：[src/data/ChapterFourAlumniHonorWall.ts:199](../src/data/ChapterFourAlumniHonorWall.ts#L199)
-1161. 核物理学家、人民科学家
+1164. 核物理学家、人民科学家
    来源：[src/data/ChapterFourAlumniHonorWall.ts:201](../src/data/ChapterFourAlumniHonorWall.ts#L201)
-1162. 1937级浙江大学物理系校友，1941年毕业。
+1165. 1937级浙江大学物理系校友，1941年毕业。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:203](../src/data/ChapterFourAlumniHonorWall.ts#L203)
-1163. 是我国核武器研究的领导者之一，也是核试验事业的开拓者。
+1166. 是我国核武器研究的领导者之一，也是核试验事业的开拓者。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:204](../src/data/ChapterFourAlumniHonorWall.ts#L204)
-1164. 获两弹一星功勋奖章、国家最高科学技术奖、八一勋章与人民科学家国家荣誉称号。
+1167. 获两弹一星功勋奖章、国家最高科学技术奖、八一勋章与人民科学家国家荣誉称号。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:205](../src/data/ChapterFourAlumniHonorWall.ts#L205)
-1165. 浙江大学·程开甲先生诞辰 105 周年纪念会
+1168. 浙江大学·程开甲先生诞辰 105 周年纪念会
    来源：[src/data/ChapterFourAlumniHonorWall.ts:207](../src/data/ChapterFourAlumniHonorWall.ts#L207)
-1166. 王淦昌
+1169. 王淦昌
    来源：[src/data/ChapterFourAlumniHonorWall.ts:219](../src/data/ChapterFourAlumniHonorWall.ts#L219)
-1167. 核物理学家、两弹一星功勋科学家
+1170. 核物理学家、两弹一星功勋科学家
    来源：[src/data/ChapterFourAlumniHonorWall.ts:221](../src/data/ChapterFourAlumniHonorWall.ts#L221)
-1168. 1936年起任浙江大学物理系教授，并随学校西迁坚持教学与研究。
+1171. 1936年起任浙江大学物理系教授，并随学校西迁坚持教学与研究。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:223](../src/data/ChapterFourAlumniHonorWall.ts#L223)
-1169. 长期从事核物理研究，是我国核科学与核武器研制的重要开拓者之一。
+1172. 长期从事核物理研究，是我国核科学与核武器研制的重要开拓者之一。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:224](../src/data/ChapterFourAlumniHonorWall.ts#L224)
-1170. 1999年获追授两弹一星功勋奖章。
+1173. 1999年获追授两弹一星功勋奖章。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:225](../src/data/ChapterFourAlumniHonorWall.ts#L225)
-1171. 贝时璋
+1174. 贝时璋
    来源：[src/data/ChapterFourAlumniHonorWall.ts:238](../src/data/ChapterFourAlumniHonorWall.ts#L238)
-1172. 生物学家、生物物理学奠基人
+1175. 生物学家、生物物理学奠基人
    来源：[src/data/ChapterFourAlumniHonorWall.ts:240](../src/data/ChapterFourAlumniHonorWall.ts#L240)
-1173. 1930年在浙江大学创建生物学系，并在西迁时期持续组织教学与研究。
+1176. 1930年在浙江大学创建生物学系，并在西迁时期持续组织教学与研究。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:242](../src/data/ChapterFourAlumniHonorWall.ts#L242)
-1174. 1958年参与创建中国科学院生物物理研究所并任首任所长。
+1177. 1958年参与创建中国科学院生物物理研究所并任首任所长。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:243](../src/data/ChapterFourAlumniHonorWall.ts#L243)
-1175. 长期推动我国细胞学、实验生物学与生物物理学发展。
+1178. 长期推动我国细胞学、实验生物学与生物物理学发展。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:244](../src/data/ChapterFourAlumniHonorWall.ts#L244)
-1176. 谷超豪
+1179. 谷超豪
    来源：[src/data/ChapterFourAlumniHonorWall.ts:257](../src/data/ChapterFourAlumniHonorWall.ts#L257)
-1177. 1943年进入浙江大学龙泉分校，后在数学系学习并任教。
+1180. 1943年进入浙江大学龙泉分校，后在数学系学习并任教。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:261](../src/data/ChapterFourAlumniHonorWall.ts#L261)
-1178. 在偏微分方程、微分几何和数学物理等领域取得系统成果。
+1181. 在偏微分方程、微分几何和数学物理等领域取得系统成果。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:262](../src/data/ChapterFourAlumniHonorWall.ts#L262)
-1179. 2009年获国家最高科学技术奖。
+1182. 2009年获国家最高科学技术奖。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:263](../src/data/ChapterFourAlumniHonorWall.ts#L263)
-1180. 李政道
+1183. 李政道
    来源：[src/data/ChapterFourAlumniHonorWall.ts:276](../src/data/ChapterFourAlumniHonorWall.ts#L276)
-1181. 物理学家、诺贝尔物理学奖获得者
+1184. 物理学家、诺贝尔物理学奖获得者
    来源：[src/data/ChapterFourAlumniHonorWall.ts:278](../src/data/ChapterFourAlumniHonorWall.ts#L278)
-1182. 1943年进入迁至湄潭的浙江大学物理系学习。
+1185. 1943年进入迁至湄潭的浙江大学物理系学习。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:280](../src/data/ChapterFourAlumniHonorWall.ts#L280)
-1183. 求学期间受到束星北、王淦昌等先生指导，奠定理论物理基础。
+1186. 求学期间受到束星北、王淦昌等先生指导，奠定理论物理基础。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:281](../src/data/ChapterFourAlumniHonorWall.ts#L281)
-1184. 长期支持中国基础科学研究与青年人才培养。
+1187. 长期支持中国基础科学研究与青年人才培养。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:282](../src/data/ChapterFourAlumniHonorWall.ts#L282)
-1185. 浙江大学·李政道纪念
+1188. 浙江大学·李政道纪念
    来源：[src/data/ChapterFourAlumniHonorWall.ts:284](../src/data/ChapterFourAlumniHonorWall.ts#L284)
-1186. 潘云鹤
+1189. 潘云鹤
    来源：[src/data/ChapterFourAlumniHonorWall.ts:295](../src/data/ChapterFourAlumniHonorWall.ts#L295)
-1187. 计算机应用专家、教育家
+1190. 计算机应用专家、教育家
    来源：[src/data/ChapterFourAlumniHonorWall.ts:297](../src/data/ChapterFourAlumniHonorWall.ts#L297)
-1188. 1981年在浙江大学获得硕士学位后留校任教。
+1191. 1981年在浙江大学获得硕士学位后留校任教。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:299](../src/data/ChapterFourAlumniHonorWall.ts#L299)
-1189. 1995—2006年任浙江大学校长，参与推动四校合并后的学科建设。
+1192. 1995—2006年任浙江大学校长，参与推动四校合并后的学科建设。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:300](../src/data/ChapterFourAlumniHonorWall.ts#L300)
-1190. 长期研究人工智能、计算机美术与智能城市。
+1193. 长期研究人工智能、计算机美术与智能城市。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:301](../src/data/ChapterFourAlumniHonorWall.ts#L301)
-1191. 韩祯祥
+1194. 韩祯祥
    来源：[src/data/ChapterFourAlumniHonorWall.ts:314](../src/data/ChapterFourAlumniHonorWall.ts#L314)
-1192. 电力系统专家、教育家
+1195. 电力系统专家、教育家
    来源：[src/data/ChapterFourAlumniHonorWall.ts:316](../src/data/ChapterFourAlumniHonorWall.ts#L316)
-1193. 1951年毕业于浙江大学电机系并留校任教。
+1196. 1951年毕业于浙江大学电机系并留校任教。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:318](../src/data/ChapterFourAlumniHonorWall.ts#L318)
-1194. 1984—1988年任浙江大学校长，推动教学、科研与国际交流。
+1197. 1984—1988年任浙江大学校长，推动教学、科研与国际交流。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:319](../src/data/ChapterFourAlumniHonorWall.ts#L319)
-1195. 长期从事电力系统稳定、控制与人才培养。
+1198. 长期从事电力系统稳定、控制与人才培养。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:320](../src/data/ChapterFourAlumniHonorWall.ts#L320)
-1196. 浙江大学·韩祯祥院士纪念
+1199. 浙江大学·韩祯祥院士纪念
    来源：[src/data/ChapterFourAlumniHonorWall.ts:322](../src/data/ChapterFourAlumniHonorWall.ts#L322)
-1197. 夏道行
+1200. 夏道行
    来源：[src/data/ChapterFourAlumniHonorWall.ts:333](../src/data/ChapterFourAlumniHonorWall.ts#L333)
-1198. 数学家
+1201. 数学家
    来源：[src/data/ChapterFourAlumniHonorWall.ts:335](../src/data/ChapterFourAlumniHonorWall.ts#L335)；[src/data/ChapterFourAlumniHonorWall.ts:373](../src/data/ChapterFourAlumniHonorWall.ts#L373)
-1199. 1952年进入浙江大学数学系攻读研究生，师从陈建功先生。
+1202. 1952年进入浙江大学数学系攻读研究生，师从陈建功先生。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:337](../src/data/ChapterFourAlumniHonorWall.ts#L337)
-1200. 在泛函分析、广义函数和数学物理等领域作出重要贡献。
+1203. 在泛函分析、广义函数和数学物理等领域作出重要贡献。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:338](../src/data/ChapterFourAlumniHonorWall.ts#L338)
-1201. 1980年当选中国科学院学部委员。
+1204. 1980年当选中国科学院学部委员。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:339](../src/data/ChapterFourAlumniHonorWall.ts#L339)
-1202. 潘镜芙
+1205. 潘镜芙
    来源：[src/data/ChapterFourAlumniHonorWall.ts:352](../src/data/ChapterFourAlumniHonorWall.ts#L352)
-1203. 船舶设计专家
+1206. 船舶设计专家
    来源：[src/data/ChapterFourAlumniHonorWall.ts:354](../src/data/ChapterFourAlumniHonorWall.ts#L354)
-1204. 1952年毕业于浙江大学电机系。
+1207. 1952年毕业于浙江大学电机系。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:356](../src/data/ChapterFourAlumniHonorWall.ts#L356)
-1205. 长期主持我国导弹驱逐舰研制，推动舰船总体设计与系统集成发展。
+1208. 长期主持我国导弹驱逐舰研制，推动舰船总体设计与系统集成发展。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:357](../src/data/ChapterFourAlumniHonorWall.ts#L357)
-1206. 1995年当选中国工程院院士。
+1209. 1995年当选中国工程院院士。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:358](../src/data/ChapterFourAlumniHonorWall.ts#L358)
-1207. 浙江大学档案馆·潘镜芙
+1210. 浙江大学档案馆·潘镜芙
    来源：[src/data/ChapterFourAlumniHonorWall.ts:360](../src/data/ChapterFourAlumniHonorWall.ts#L360)
-1208. 王元
+1211. 王元
    来源：[src/data/ChapterFourAlumniHonorWall.ts:371](../src/data/ChapterFourAlumniHonorWall.ts#L371)
-1209. 1952年毕业于浙江大学数学系。
+1212. 1952年毕业于浙江大学数学系。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:375](../src/data/ChapterFourAlumniHonorWall.ts#L375)
-1210. 在数论、数值分析与组合设计等领域取得重要成果。
+1213. 在数论、数值分析与组合设计等领域取得重要成果。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:376](../src/data/ChapterFourAlumniHonorWall.ts#L376)
-1211. 与华罗庚共同发展的数论方法被称为华—王方法。
+1214. 与华罗庚共同发展的数论方法被称为华—王方法。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:377](../src/data/ChapterFourAlumniHonorWall.ts#L377)
-1212. 陈宜张
+1215. 陈宜张
    来源：[src/data/ChapterFourAlumniHonorWall.ts:390](../src/data/ChapterFourAlumniHonorWall.ts#L390)
-1213. 神经生理学家、医学教育家
+1216. 神经生理学家、医学教育家
    来源：[src/data/ChapterFourAlumniHonorWall.ts:392](../src/data/ChapterFourAlumniHonorWall.ts#L392)
-1214. 1952年毕业于浙江大学医学院，是学院首届毕业生之一。
+1217. 1952年毕业于浙江大学医学院，是学院首届毕业生之一。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:394](../src/data/ChapterFourAlumniHonorWall.ts#L394)
-1215. 长期研究神经生理学与神经内分泌调控。
+1218. 长期研究神经生理学与神经内分泌调控。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:395](../src/data/ChapterFourAlumniHonorWall.ts#L395)
-1216. 曾任浙江医科大学校长并推动医学教育发展。
+1219. 曾任浙江医科大学校长并推动医学教育发展。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:396](../src/data/ChapterFourAlumniHonorWall.ts#L396)
-1217. 浙江大学·陈宜张
+1220. 浙江大学·陈宜张
    来源：[src/data/ChapterFourAlumniHonorWall.ts:398](../src/data/ChapterFourAlumniHonorWall.ts#L398)
-1218. 林俊德
+1221. 林俊德
    来源：[src/data/ChapterFourAlumniHonorWall.ts:409](../src/data/ChapterFourAlumniHonorWall.ts#L409)
-1219. 爆炸力学与核试验工程专家
+1222. 爆炸力学与核试验工程专家
    来源：[src/data/ChapterFourAlumniHonorWall.ts:411](../src/data/ChapterFourAlumniHonorWall.ts#L411)
-1220. 1960年毕业于浙江大学机械系。
+1223. 1960年毕业于浙江大学机械系。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:413](../src/data/ChapterFourAlumniHonorWall.ts#L413)
-1221. 扎根大漠五十余年，参加我国全部核试验并负责关键测试技术。
+1224. 扎根大漠五十余年，参加我国全部核试验并负责关键测试技术。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:414](../src/data/ChapterFourAlumniHonorWall.ts#L414)
-1222. 1993年当选中国工程院院士，2018年被列入全军挂像英模。
+1225. 1993年当选中国工程院院士，2018年被列入全军挂像英模。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:415](../src/data/ChapterFourAlumniHonorWall.ts#L415)
-1223. 浙江大学·林俊德院士纪念
+1226. 浙江大学·林俊德院士纪念
    来源：[src/data/ChapterFourAlumniHonorWall.ts:417](../src/data/ChapterFourAlumniHonorWall.ts#L417)
-1224. 谭其骧
+1227. 谭其骧
    来源：[src/data/ChapterFourAlumniHonorWall.ts:428](../src/data/ChapterFourAlumniHonorWall.ts#L428)
-1225. 历史地理学家
+1228. 历史地理学家
    来源：[src/data/ChapterFourAlumniHonorWall.ts:430](../src/data/ChapterFourAlumniHonorWall.ts#L430)
-1226. 1940—1950年在浙江大学史地系任教。
+1229. 1940—1950年在浙江大学史地系任教。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:432](../src/data/ChapterFourAlumniHonorWall.ts#L432)
-1227. 在历史地理、疆域沿革与人口迁移研究方面影响深远。
+1230. 在历史地理、疆域沿革与人口迁移研究方面影响深远。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:433](../src/data/ChapterFourAlumniHonorWall.ts#L433)
-1228. 主持编绘《中国历史地图集》，推动现代历史地理学科建设。
+1231. 主持编绘《中国历史地图集》，推动现代历史地理学科建设。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:434](../src/data/ChapterFourAlumniHonorWall.ts#L434)
-1229. 郑树森
+1232. 郑树森
    来源：[src/data/ChapterFourAlumniHonorWall.ts:447](../src/data/ChapterFourAlumniHonorWall.ts#L447)
-1230. 器官移植专家
+1233. 器官移植专家
    来源：[src/data/ChapterFourAlumniHonorWall.ts:449](../src/data/ChapterFourAlumniHonorWall.ts#L449)
-1231. 长期在浙江大学从事肝胆胰外科与器官移植临床、科研和教学。
+1234. 长期在浙江大学从事肝胆胰外科与器官移植临床、科研和教学。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:451](../src/data/ChapterFourAlumniHonorWall.ts#L451)
-1232. 推动我国肝移植、多器官联合移植与相关技术体系发展。
+1235. 推动我国肝移植、多器官联合移植与相关技术体系发展。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:452](../src/data/ChapterFourAlumniHonorWall.ts#L452)
-1233. 2001年当选中国工程院院士。
+1236. 2001年当选中国工程院院士。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:453](../src/data/ChapterFourAlumniHonorWall.ts#L453)
-1234. 浙江大学个人主页·郑树森
+1237. 浙江大学个人主页·郑树森
    来源：[src/data/ChapterFourAlumniHonorWall.ts:455](../src/data/ChapterFourAlumniHonorWall.ts#L455)
-1235. 杨卫
+1238. 杨卫
    来源：[src/data/ChapterFourAlumniHonorWall.ts:466](../src/data/ChapterFourAlumniHonorWall.ts#L466)
-1236. 固体力学专家、教育家
+1239. 固体力学专家、教育家
    来源：[src/data/ChapterFourAlumniHonorWall.ts:468](../src/data/ChapterFourAlumniHonorWall.ts#L468)
-1237. 长期在浙江大学从事固体力学、微纳米力学与交叉力学研究。
+1240. 长期在浙江大学从事固体力学、微纳米力学与交叉力学研究。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:470](../src/data/ChapterFourAlumniHonorWall.ts#L470)
-1238. 2006—2013年任浙江大学校长，推动学科交叉与工程教育发展。
+1241. 2006—2013年任浙江大学校长，推动学科交叉与工程教育发展。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:471](../src/data/ChapterFourAlumniHonorWall.ts#L471)
-1239. 2003年当选中国科学院院士。
+1242. 2003年当选中国科学院院士。
    来源：[src/data/ChapterFourAlumniHonorWall.ts:472](../src/data/ChapterFourAlumniHonorWall.ts#L472)
-1240. 浙江大学个人主页·杨卫
+1243. 浙江大学个人主页·杨卫
    来源：[src/data/ChapterFourAlumniHonorWall.ts:474](../src/data/ChapterFourAlumniHonorWall.ts#L474)
-1241. 第一问：到浙大来做什么？
+1244. 第一问：到浙大来做什么？
    来源：[src/data/ChapterFourAlumniHonorWall.ts:493](../src/data/ChapterFourAlumniHonorWall.ts#L493)
-1242. 追问事实与方法
+1245. 追问事实与方法
    来源：[src/data/ChapterFourAlumniHonorWall.ts:495](../src/data/ChapterFourAlumniHonorWall.ts#L495)
-1243. 用所学解决真实问题
+1246. 用所学解决真实问题
    来源：[src/data/ChapterFourAlumniHonorWall.ts:496](../src/data/ChapterFourAlumniHonorWall.ts#L496)
-1244. 为公共需要承担责任
+1247. 为公共需要承担责任
    来源：[src/data/ChapterFourAlumniHonorWall.ts:497](../src/data/ChapterFourAlumniHonorWall.ts#L497)
-1245. 第二问：将来毕业后要做什么样的人？
+1248. 第二问：将来毕业后要做什么样的人？
    来源：[src/data/ChapterFourAlumniHonorWall.ts:502](../src/data/ChapterFourAlumniHonorWall.ts#L502)
-1246. 对工作和他人负责
+1249. 对工作和他人负责
    来源：[src/data/ChapterFourAlumniHonorWall.ts:504](../src/data/ChapterFourAlumniHonorWall.ts#L504)
-1247. 保持独立判断与证据诚实
+1250. 保持独立判断与证据诚实
    来源：[src/data/ChapterFourAlumniHonorWall.ts:505](../src/data/ChapterFourAlumniHonorWall.ts#L505)
-1248. 把能力放到社会需要上
+1251. 把能力放到社会需要上
    来源：[src/data/ChapterFourAlumniHonorWall.ts:506](../src/data/ChapterFourAlumniHonorWall.ts#L506)
-1249. 打开前台值班签到板
+1252. 打开前台值班签到板
    来源：[src/data/ChapterFourInteractionContent.ts:92](../src/data/ChapterFourInteractionContent.ts#L92)
-1250. 前台签到板留有三个空位，可以把已确认的值班牌放回去。
+1253. 前台签到板留有三个空位，可以把已确认的值班牌放回去。
    来源：[src/data/ChapterFourInteractionContent.ts:101](../src/data/ChapterFourInteractionContent.ts#L101)
-1251. 三个夹痕的磨损不同，分别对应 104、105 与主电梯。
+1254. 三个夹痕的磨损不同，分别对应 104、105 与主电梯。
    来源：[src/data/ChapterFourInteractionContent.ts:102](../src/data/ChapterFourInteractionContent.ts#L102)
-1252. 查看 201 创客工坊
+1255. 查看 201 创客工坊
    来源：[src/data/ChapterFourInteractionContent.ts:107](../src/data/ChapterFourInteractionContent.ts#L107)
-1253. 201 工具都挂回原位了。门边登记板已签“封闭”，灯还亮着。
+1256. 201 工具都挂回原位了。门边登记板已签“封闭”，灯还亮着。
    来源：[src/data/ChapterFourInteractionContent.ts:117](../src/data/ChapterFourInteractionContent.ts#L117)
-1254. 操作台边缘保留着较早的手部动作残影，当前房间没有新增活动轨迹。
+1257. 操作台边缘保留着较早的手部动作残影，当前房间没有新增活动轨迹。
    来源：[src/data/ChapterFourInteractionContent.ts:118](../src/data/ChapterFourInteractionContent.ts#L118)
-1255. 工坊午休，切割垫上还压着没装完的校园模型。开放时间先结束，模型下次再装。
+1258. 工坊午休，切割垫上还压着没装完的校园模型。开放时间先结束，模型下次再装。
    来源：[src/data/ChapterFourInteractionContent.ts:121](../src/data/ChapterFourInteractionContent.ts#L121)
-1256. 模型零件周围有连续取放残影，时间间隔与午休人流一致。
+1259. 模型零件周围有连续取放残影，时间间隔与午休人流一致。
    来源：[src/data/ChapterFourInteractionContent.ts:122](../src/data/ChapterFourInteractionContent.ts#L122)
-1257. 工坊台面清完了，焊台还亮着余温警示。签离场表可以，伸手碰还不行。
+1260. 工坊台面清完了，焊台还亮着余温警示。签离场表可以，伸手碰还不行。
    来源：[src/data/ChapterFourInteractionContent.ts:125](../src/data/ChapterFourInteractionContent.ts#L125)
-1258. 焊台上方的动作残影在 18:50 前停止，随后没有人继续使用设备。
+1261. 焊台上方的动作残影在 18:50 前停止，随后没有人继续使用设备。
    来源：[src/data/ChapterFourInteractionContent.ts:126](../src/data/ChapterFourInteractionContent.ts#L126)
-1259. 维修时段的总电源已经断开，工具柜保持封签状态。
+1262. 维修时段的总电源已经断开，工具柜保持封签状态。
    来源：[src/data/ChapterFourInteractionContent.ts:129](../src/data/ChapterFourInteractionContent.ts#L129)
-1260. 工具柜没有被开启的残影，走廊异常并非来自这间工坊。
+1263. 工具柜没有被开启的残影，走廊异常并非来自这间工坊。
    来源：[src/data/ChapterFourInteractionContent.ts:130](../src/data/ChapterFourInteractionContent.ts#L130)
-1261. 应急照明只覆盖出口，工坊设备仍保持断电。
+1264. 应急照明只覆盖出口，工坊设备仍保持断电。
    来源：[src/data/ChapterFourInteractionContent.ts:133](../src/data/ChapterFourInteractionContent.ts#L133)
-1262. 门口出现一段短暂停留残影，没有进入操作区。
+1265. 门口出现一段短暂停留残影，没有进入操作区。
    来源：[src/data/ChapterFourInteractionContent.ts:134](../src/data/ChapterFourInteractionContent.ts#L134)
-1263. 晨间开放检查已完成，工具数量与登记表一致。
+1266. 晨间开放检查已完成，工具数量与登记表一致。
    来源：[src/data/ChapterFourInteractionContent.ts:137](../src/data/ChapterFourInteractionContent.ts#L137)
-1264. 昨夜残影已经淡去，设备状态回到正常的早班记录。
+1267. 昨夜残影已经淡去，设备状态回到正常的早班记录。
    来源：[src/data/ChapterFourInteractionContent.ts:138](../src/data/ChapterFourInteractionContent.ts#L138)
-1265. 查看 202 阶梯教室
+1268. 查看 202 阶梯教室
    来源：[src/data/ChapterFourInteractionContent.ts:144](../src/data/ChapterFourInteractionContent.ts#L144)
-1266. 202 幕布收了，座椅全折着。刚才坐过多少人，得去别的表上查。
+1269. 202 幕布收了，座椅全折着。刚才坐过多少人，得去别的表上查。
    来源：[src/data/ChapterFourInteractionContent.ts:154](../src/data/ChapterFourInteractionContent.ts#L154)
-1267. 最后一排到门口有一段连贯离场残影，讲台附近没有停留。
+1270. 最后一排到门口有一段连贯离场残影，讲台附近没有停留。
    来源：[src/data/ChapterFourInteractionContent.ts:155](../src/data/ChapterFourInteractionContent.ts#L155)
-1268. 讲座还没开始，前排资料已经放好，翻开全是空白页。内容等主讲人来。
+1271. 讲座还没开始，前排资料已经放好，翻开全是空白页。内容等主讲人来。
    来源：[src/data/ChapterFourInteractionContent.ts:158](../src/data/ChapterFourInteractionContent.ts#L158)
-1269. 座位间只有短暂经过的残影，没有形成完整听课轨迹。
+1272. 座位间只有短暂经过的残影，没有形成完整听课轨迹。
    来源：[src/data/ChapterFourInteractionContent.ts:159](../src/data/ChapterFourInteractionContent.ts#L159)
-1270. 202 人走光了，投影机风扇刚停。门槛上还留着散场脚印。
+1273. 202 人走光了，投影机风扇刚停。门槛上还留着散场脚印。
    来源：[src/data/ChapterFourInteractionContent.ts:162](../src/data/ChapterFourInteractionContent.ts#L162)
-1271. 座位残影从前排向出口逐段消失，散场时间集中在 18:50 前后。
+1274. 座位残影从前排向出口逐段消失，散场时间集中在 18:50 前后。
    来源：[src/data/ChapterFourInteractionContent.ts:163](../src/data/ChapterFourInteractionContent.ts#L163)
-1272. 维修许可牌挂在门外，室内设备保持关机。
+1275. 维修许可牌挂在门外，室内设备保持关机。
    来源：[src/data/ChapterFourInteractionContent.ts:166](../src/data/ChapterFourInteractionContent.ts#L166)
-1273. 讲台投影区保留一段独立画面残留，与普通授课记录不连续。
+1276. 讲台投影区保留一段独立画面残留，与普通授课记录不连续。
    来源：[src/data/ChapterFourInteractionContent.ts:167](../src/data/ChapterFourInteractionContent.ts#L167)
-1274. 停电后安全出口灯正常，阶梯通道没有障碍物。
+1277. 停电后安全出口灯正常，阶梯通道没有障碍物。
    来源：[src/data/ChapterFourInteractionContent.ts:170](../src/data/ChapterFourInteractionContent.ts#L170)
-1275. 投影区残影仍在，亮度不随停电状态变化。
+1278. 投影区残影仍在，亮度不随停电状态变化。
    来源：[src/data/ChapterFourInteractionContent.ts:171](../src/data/ChapterFourInteractionContent.ts#L171)
-1276. 202 已完成晨检，投影和座椅等待第一节课。
+1279. 202 已完成晨检，投影和座椅等待第一节课。
    来源：[src/data/ChapterFourInteractionContent.ts:174](../src/data/ChapterFourInteractionContent.ts#L174)
-1277. 夜间残留停止更新，教室回到正常的晨间时间轨。
+1280. 夜间残留停止更新，教室回到正常的晨间时间轨。
    来源：[src/data/ChapterFourInteractionContent.ts:175](../src/data/ChapterFourInteractionContent.ts#L175)
-1278. 查看 203 计算机教室
+1281. 查看 203 计算机教室
    来源：[src/data/ChapterFourInteractionContent.ts:181](../src/data/ChapterFourInteractionContent.ts#L181)
-1279. 203 学生机都关了，教师机还显示维护清单。最后一项也是“关机”。
+1282. 203 学生机都关了，教师机还显示维护清单。最后一项也是“关机”。
    来源：[src/data/ChapterFourInteractionContent.ts:191](../src/data/ChapterFourInteractionContent.ts#L191)
-1280. 屏幕前的残影按座位顺序消失，没有人在关机后返回。
+1283. 屏幕前的残影按座位顺序消失，没有人在关机后返回。
    来源：[src/data/ChapterFourInteractionContent.ts:192](../src/data/ChapterFourInteractionContent.ts#L192)
-1281. 午间机房处于节能待机，靠门终端正在安装课程环境。
+1284. 午间机房处于节能待机，靠门终端正在安装课程环境。
    来源：[src/data/ChapterFourInteractionContent.ts:195](../src/data/ChapterFourInteractionContent.ts#L195)
-1282. 键盘上方的输入残影很短，属于自动部署前的检查动作。
+1285. 键盘上方的输入残影很短，属于自动部署前的检查动作。
    来源：[src/data/ChapterFourInteractionContent.ts:196](../src/data/ChapterFourInteractionContent.ts#L196)
-1283. 账号都退出了，第三排还有一把椅子没推回。软件能批量处理，椅子还得靠人。
+1286. 账号都退出了，第三排还有一把椅子没推回。软件能批量处理，椅子还得靠人。
    来源：[src/data/ChapterFourInteractionContent.ts:199](../src/data/ChapterFourInteractionContent.ts#L199)
-1284. 第三排的离座残影比其他位置晚六秒，但随后直接离开机房。
+1287. 第三排的离座残影比其他位置晚六秒，但随后直接离开机房。
    来源：[src/data/ChapterFourInteractionContent.ts:200](../src/data/ChapterFourInteractionContent.ts#L200)
-1285. 机房交换机仍在线，学生终端全部断开。
+1288. 机房交换机仍在线，学生终端全部断开。
    来源：[src/data/ChapterFourInteractionContent.ts:203](../src/data/ChapterFourInteractionContent.ts#L203)
-1286. 网络指示残影连续，设备没有出现异常重启。
+1289. 网络指示残影连续，设备没有出现异常重启。
    来源：[src/data/ChapterFourInteractionContent.ts:204](../src/data/ChapterFourInteractionContent.ts#L204)
-1287. 后备电源只维持交换机，显示器和主机均已关闭。
+1290. 后备电源只维持交换机，显示器和主机均已关闭。
    来源：[src/data/ChapterFourInteractionContent.ts:207](../src/data/ChapterFourInteractionContent.ts#L207)
-1288. 设备断电时间一致，没有单独延迟的终端。
+1291. 设备断电时间一致，没有单独延迟的终端。
    来源：[src/data/ChapterFourInteractionContent.ts:208](../src/data/ChapterFourInteractionContent.ts#L208)
-1289. 机房已按早课配置启动，座位状态与预约名单一致。
+1292. 机房已按早课配置启动，座位状态与预约名单一致。
    来源：[src/data/ChapterFourInteractionContent.ts:211](../src/data/ChapterFourInteractionContent.ts#L211)
-1290. 夜间设备残影已经结束，当前只有晨检人员的短时轨迹。
+1293. 夜间设备残影已经结束，当前只有晨检人员的短时轨迹。
    来源：[src/data/ChapterFourInteractionContent.ts:212](../src/data/ChapterFourInteractionContent.ts#L212)
-1291. 检查 202 疏散路线板
+1294. 检查 202 疏散路线板
    来源：[src/data/ChapterFourInteractionContent.ts:218](../src/data/ChapterFourInteractionContent.ts#L218)
-1292. 路线板缺少从 202 到主楼梯的连续箭头，四块磁贴仍可调整。
+1295. 路线板缺少从 202 到主楼梯的连续箭头，四块磁贴仍可调整。
    来源：[src/data/ChapterFourInteractionContent.ts:228](../src/data/ChapterFourInteractionContent.ts#L228)
-1293. 202 门外与楼梯黄线内留有同一种鞋底纹，中间两段需要根据朝向接续。
+1296. 202 门外与楼梯黄线内留有同一种鞋底纹，中间两段需要根据朝向接续。
    来源：[src/data/ChapterFourInteractionContent.ts:229](../src/data/ChapterFourInteractionContent.ts#L229)
-1294. 查看 301 校史档案展
+1297. 查看 301 校史档案展
    来源：[src/data/ChapterFourInteractionContent.ts:234](../src/data/ChapterFourInteractionContent.ts#L234)
-1295. 301 的档案柜按年代编号，展签强调记录需要保留原始时间。
+1298. 301 的档案柜按年代编号，展签强调记录需要保留原始时间。
    来源：[src/data/ChapterFourInteractionContent.ts:244](../src/data/ChapterFourInteractionContent.ts#L244)
-1296. 翻阅残影停在同一页：校史记录同时注明事件、地点与记录人。
+1299. 翻阅残影停在同一页：校史记录同时注明事件、地点与记录人。
    来源：[src/data/ChapterFourInteractionContent.ts:245](../src/data/ChapterFourInteractionContent.ts#L245)
-1297. 午间展厅开放，玻璃柜中的教学日志按日期排放。
+1300. 午间展厅开放，玻璃柜中的教学日志按日期排放。
    来源：[src/data/ChapterFourInteractionContent.ts:248](../src/data/ChapterFourInteractionContent.ts#L248)
-1298. 访客残影在日志柜前停留最久，随后依次查看人物档案。
+1301. 访客残影在日志柜前停留最久，随后依次查看人物档案。
    来源：[src/data/ChapterFourInteractionContent.ts:249](../src/data/ChapterFourInteractionContent.ts#L249)
-1299. 301 停止接待了，扫描台还显示今日校验结果，档案逐页核完，等明天的人来签名。
+1302. 301 停止接待了，扫描台还显示今日校验结果，档案逐页核完，等明天的人来签名。
    来源：[src/data/ChapterFourInteractionContent.ts:252](../src/data/ChapterFourInteractionContent.ts#L252)
-1300. 扫描动作在 18:50 前完成，每页都保留来源编号。
+1303. 扫描动作在 18:50 前完成，每页都保留来源编号。
    来源：[src/data/ChapterFourInteractionContent.ts:253](../src/data/ChapterFourInteractionContent.ts#L253)
-1301. 恒温柜运行正常，维修记录没有涉及档案展区。
+1304. 恒温柜运行正常，维修记录没有涉及档案展区。
    来源：[src/data/ChapterFourInteractionContent.ts:256](../src/data/ChapterFourInteractionContent.ts#L256)
-1302. 展柜周围没有异常移动残影，档案位置保持不变。
+1305. 展柜周围没有异常移动残影，档案位置保持不变。
    来源：[src/data/ChapterFourInteractionContent.ts:257](../src/data/ChapterFourInteractionContent.ts#L257)
-1303. 停电时档案柜自动上锁，应急照明覆盖疏散通道。
+1306. 停电时档案柜自动上锁，应急照明覆盖疏散通道。
    来源：[src/data/ChapterFourInteractionContent.ts:260](../src/data/ChapterFourInteractionContent.ts#L260)
-1304. 锁定动作同时发生，没有单独开启的柜门。
+1307. 锁定动作同时发生，没有单独开启的柜门。
    来源：[src/data/ChapterFourInteractionContent.ts:261](../src/data/ChapterFourInteractionContent.ts#L261)
-1305. 晨检完成后，档案展恢复开放状态。
+1308. 晨检完成后，档案展恢复开放状态。
    来源：[src/data/ChapterFourInteractionContent.ts:264](../src/data/ChapterFourInteractionContent.ts#L264)
-1306. 早班记录从 07:55 开始，昨夜时间轨已经封存。
+1309. 早班记录从 07:55 开始，昨夜时间轨已经封存。
    来源：[src/data/ChapterFourInteractionContent.ts:265](../src/data/ChapterFourInteractionContent.ts#L265)
-1307. 查看 302 媒体工作室
+1310. 查看 302 媒体工作室
    来源：[src/data/ChapterFourInteractionContent.ts:271](../src/data/ChapterFourInteractionContent.ts#L271)
-1308. 302 的录音设备已关闭，时间码发生器保留最后一次同步结果。
+1311. 302 的录音设备已关闭，时间码发生器保留最后一次同步结果。
    来源：[src/data/ChapterFourInteractionContent.ts:281](../src/data/ChapterFourInteractionContent.ts#L281)
-1309. 剪辑台残影显示素材被逐段核对，没有一次性覆盖原始文件。
+1312. 剪辑台残影显示素材被逐段核对，没有一次性覆盖原始文件。
    来源：[src/data/ChapterFourInteractionContent.ts:282](../src/data/ChapterFourInteractionContent.ts#L282)
-1310. 午间工作室正在导出校园活动素材，监听音量保持在低档。
+1313. 午间工作室正在导出校园活动素材，监听音量保持在低档。
    来源：[src/data/ChapterFourInteractionContent.ts:285](../src/data/ChapterFourInteractionContent.ts#L285)
-1311. 录音棚里的说话残影与波形段落对应，停顿位置清晰。
+1314. 录音棚里的说话残影与波形段落对应，停顿位置清晰。
    来源：[src/data/ChapterFourInteractionContent.ts:286](../src/data/ChapterFourInteractionContent.ts#L286)
-1312. 晚间录制已经结束，场记板停在 18:50 的收尾镜次。
+1315. 晚间录制已经结束，场记板停在 18:50 的收尾镜次。
    来源：[src/data/ChapterFourInteractionContent.ts:289](../src/data/ChapterFourInteractionContent.ts#L289)
-1313. 最后一段人声结束后仍有六秒环境声，随后才停止录制。
+1316. 最后一段人声结束后仍有六秒环境声，随后才停止录制。
    来源：[src/data/ChapterFourInteractionContent.ts:290](../src/data/ChapterFourInteractionContent.ts#L290)
-1314. 工作室断开外部输入，存储阵列继续执行校验。
+1317. 工作室断开外部输入，存储阵列继续执行校验。
    来源：[src/data/ChapterFourInteractionContent.ts:293](../src/data/ChapterFourInteractionContent.ts#L293)
-1315. 设备残影只显示自动校验，没有新的录制动作。
+1318. 设备残影只显示自动校验，没有新的录制动作。
    来源：[src/data/ChapterFourInteractionContent.ts:294](../src/data/ChapterFourInteractionContent.ts#L294)
-1316. 后备电源保留时间码和存储阵列，其他设备已经关闭。
+1319. 后备电源保留时间码和存储阵列，其他设备已经关闭。
    来源：[src/data/ChapterFourInteractionContent.ts:297](../src/data/ChapterFourInteractionContent.ts#L297)
-1317. 时间码在停电期间连续，没有发生跳秒。
+1320. 时间码在停电期间连续，没有发生跳秒。
    来源：[src/data/ChapterFourInteractionContent.ts:298](../src/data/ChapterFourInteractionContent.ts#L298)
-1318. 工作室完成晨间同步，所有设备采用同一时间源。
+1321. 工作室完成晨间同步，所有设备采用同一时间源。
    来源：[src/data/ChapterFourInteractionContent.ts:301](../src/data/ChapterFourInteractionContent.ts#L301)
-1319. 当前残影只有开机检查，时间轨从 07:55 重新开始。
+1322. 当前残影只有开机检查，时间轨从 07:55 重新开始。
    来源：[src/data/ChapterFourInteractionContent.ts:302](../src/data/ChapterFourInteractionContent.ts#L302)
-1320. 查看 304 报告厅
+1323. 查看 304 报告厅
    来源：[src/data/ChapterFourInteractionContent.ts:308](../src/data/ChapterFourInteractionContent.ts#L308)
-1321. 304 的报告题目仍留在侧屏：判断需要来源、时间和可复核记录。
+1324. 304 的报告题目仍留在侧屏：判断需要来源、时间和可复核记录。
    来源：[src/data/ChapterFourInteractionContent.ts:318](../src/data/ChapterFourInteractionContent.ts#L318)
-1322. 观众残影在提问环节集中出现，讲台记录保留了每次修改。
+1325. 观众残影在提问环节集中出现，讲台记录保留了每次修改。
    来源：[src/data/ChapterFourInteractionContent.ts:319](../src/data/ChapterFourInteractionContent.ts#L319)
-1323. 水杯和翻页器摆好了，主讲人还没到。设备已检查完，听众还在等。
+1326. 水杯和翻页器摆好了，主讲人还没到。设备已检查完，听众还在等。
    来源：[src/data/ChapterFourInteractionContent.ts:322](../src/data/ChapterFourInteractionContent.ts#L322)
-1324. 前排只有布场人员的短时残影，座位区尚未形成观众轨迹。
+1327. 前排只有布场人员的短时残影，座位区尚未形成观众轨迹。
    来源：[src/data/ChapterFourInteractionContent.ts:323](../src/data/ChapterFourInteractionContent.ts#L323)
-1325. 报告结束了，侧屏停在末页，底下还有一行小字“修改记录请勿删除”。
+1328. 报告结束了，侧屏停在末页，底下还有一行小字“修改记录请勿删除”。
    来源：[src/data/ChapterFourInteractionContent.ts:326](../src/data/ChapterFourInteractionContent.ts#L326)
-1326. 散场残影从后排开始，讲台人员最后离开。
+1329. 散场残影从后排开始，讲台人员最后离开。
    来源：[src/data/ChapterFourInteractionContent.ts:327](../src/data/ChapterFourInteractionContent.ts#L327)
-1327. 报告厅完成设备巡检，扩声与投影均处于关机状态。
+1330. 报告厅完成设备巡检，扩声与投影均处于关机状态。
    来源：[src/data/ChapterFourInteractionContent.ts:330](../src/data/ChapterFourInteractionContent.ts#L330)
-1328. 设备周围没有异常操作残影，巡检记录连续。
+1331. 设备周围没有异常操作残影，巡检记录连续。
    来源：[src/data/ChapterFourInteractionContent.ts:331](../src/data/ChapterFourInteractionContent.ts#L331)
-1329. 应急广播接管报告厅，所有出口指示正常。
+1332. 应急广播接管报告厅，所有出口指示正常。
    来源：[src/data/ChapterFourInteractionContent.ts:334](../src/data/ChapterFourInteractionContent.ts#L334)
-1330. 广播启用与停电同时发生，没有额外控制动作。
+1333. 广播启用与停电同时发生，没有额外控制动作。
    来源：[src/data/ChapterFourInteractionContent.ts:335](../src/data/ChapterFourInteractionContent.ts#L335)
-1331. 报告厅开始晨间准备，侧屏切换为当日安排。
+1334. 报告厅开始晨间准备，侧屏切换为当日安排。
    来源：[src/data/ChapterFourInteractionContent.ts:338](../src/data/ChapterFourInteractionContent.ts#L338)
-1332. 当前只有布场人员的残影，昨夜报告已经归档。
+1335. 当前只有布场人员的残影，昨夜报告已经归档。
    来源：[src/data/ChapterFourInteractionContent.ts:339](../src/data/ChapterFourInteractionContent.ts#L339)
-1333. 签到记录纸
+1336. 签到记录纸
    来源：[src/data/itemCatalog.ts:210](../src/data/itemCatalog.ts#L210)
-1334. 待补全
+1337. 待补全
    来源：[src/data/itemCatalog.ts:212](../src/data/itemCatalog.ts#L212)
-1335. 状态
+1338. 状态
    来源：[src/data/itemCatalog.ts:212](../src/data/itemCatalog.ts#L212)
-1336. 教学楼签到
+1339. 教学楼签到
    来源：[src/data/itemCatalog.ts:213](../src/data/itemCatalog.ts#L213)
-1337. 纸面记录停在 07:55 前后，签字栏还空着。
+1340. 纸面记录停在 07:55 前后，签字栏还空着。
    来源：[src/data/itemCatalog.ts:216](../src/data/itemCatalog.ts#L216)
-1338. 提交时须另验校园卡。纸面有记录，签字栏里还缺本人。
+1341. 提交时须另验校园卡。纸面有记录，签字栏里还缺本人。
    来源：[src/data/itemCatalog.ts:217](../src/data/itemCatalog.ts#L217)
-1339. 边缘有多次折返留下的旧压痕。
+1342. 边缘有多次折返留下的旧压痕。
    来源：[src/data/itemCatalog.ts:219](../src/data/itemCatalog.ts#L219)
-1340. 左岸快到了。稳住节奏。
+1343. 左岸快到了。稳住节奏。
    来源：[src/data/pursuit.audio.content.json:73](../src/data/pursuit.audio.content.json#L73)
-1341. The left bank is close. Hold the rhythm.
+1344. The left bank is close. Hold the rhythm.
    来源：[src/data/pursuit.audio.content.json:74](../src/data/pursuit.audio.content.json#L74)
-1342. Stop! Step away from the clock.
+1345. 同学，站住。离旧钟远一点。
+   来源：[src/data/pursuit.audio.content.json:87](../src/data/pursuit.audio.content.json#L87)
+1346. Stop! Step away from the clock.
    来源：[src/data/pursuit.audio.content.json:88](../src/data/pursuit.audio.content.json#L88)
-1343. You there, stop! Can you hear me?
+1347. 同学，停下！前面的，听见没有？
+   来源：[src/data/pursuit.audio.content.json:101](../src/data/pursuit.audio.content.json#L101)
+1348. You there, stop! Can you hear me?
    来源：[src/data/pursuit.audio.content.json:102](../src/data/pursuit.audio.content.json#L102)
-1344. I can see you. Stop!
+1349. 我看到你了。停下。
+   来源：[src/data/pursuit.audio.content.json:115](../src/data/pursuit.audio.content.json#L115)
+1350. I can see you. Stop!
    来源：[src/data/pursuit.audio.content.json:116](../src/data/pursuit.audio.content.json#L116)
-1345. 门厅 · 教室层
+1351. 门厅 · 教室层
    来源：[src/modules/ChapterFourElevatorFloorInvestigation.ts:21](../src/modules/ChapterFourElevatorFloorInvestigation.ts#L21)
-1346. 104 / 105 / 旧钟门厅
+1352. 104 / 105 / 旧钟门厅
    来源：[src/modules/ChapterFourElevatorFloorInvestigation.ts:22](../src/modules/ChapterFourElevatorFloorInvestigation.ts#L22)
-1347. 起行与门体轨
+1353. 起行与门体轨
    来源：[src/modules/ChapterFourElevatorFloorInvestigation.ts:23](../src/modules/ChapterFourElevatorFloorInvestigation.ts#L23)
-1348. 一楼门体持续开放八秒，完整覆盖六秒进入窗口。
+1354. 一楼门体持续开放八秒，完整覆盖六秒进入窗口。
    来源：[src/modules/ChapterFourElevatorFloorInvestigation.ts:26](../src/modules/ChapterFourElevatorFloorInvestigation.ts#L26)
-1349. 门体闭合后，轿厢指示立即由 1F 转为上行。
+1355. 门体闭合后，轿厢指示立即由 1F 转为上行。
    来源：[src/modules/ChapterFourElevatorFloorInvestigation.ts:27](../src/modules/ChapterFourElevatorFloorInvestigation.ts#L27)
-1350. 204 · 创客层
+1356. 204 · 创客层
    来源：[src/modules/ChapterFourElevatorFloorInvestigation.ts:34](../src/modules/ChapterFourElevatorFloorInvestigation.ts#L34)
-1351. 201 / 203 / 204 / 开放自习区
+1357. 201 / 203 / 204 / 开放自习区
    来源：[src/modules/ChapterFourElevatorFloorInvestigation.ts:35](../src/modules/ChapterFourElevatorFloorInvestigation.ts#L35)
-1352. 外呼与门机对照
+1358. 外呼与门机对照
    来源：[src/modules/ChapterFourElevatorFloorInvestigation.ts:36](../src/modules/ChapterFourElevatorFloorInvestigation.ts#L36)
-1353. 二楼下行外呼在 18:50:04 被按下，按钮持续亮到 18:50:12。
+1359. 二楼下行外呼在 18:50:04 被按下，按钮持续亮到 18:50:12。
    来源：[src/modules/ChapterFourElevatorFloorInvestigation.ts:39](../src/modules/ChapterFourElevatorFloorInvestigation.ts#L39)
-1354. 同一时间段没有二楼门机开启记录，层显由 1F 直接跳到 3F。
+1360. 同一时间段没有二楼门机开启记录，层显由 1F 直接跳到 3F。
    来源：[src/modules/ChapterFourElevatorFloorInvestigation.ts:40](../src/modules/ChapterFourElevatorFloorInvestigation.ts#L40)
-1355. 荣誉墙 · 档案层
+1361. 荣誉墙 · 档案层
    来源：[src/modules/ChapterFourElevatorFloorInvestigation.ts:47](../src/modules/ChapterFourElevatorFloorInvestigation.ts#L47)
-1356. 301 / 302 / 303 / 304 / 荣誉墙
+1362. 301 / 302 / 303 / 304 / 荣誉墙
    来源：[src/modules/ChapterFourElevatorFloorInvestigation.ts:48](../src/modules/ChapterFourElevatorFloorInvestigation.ts#L48)
-1357. 到站铃与开门轨
+1363. 到站铃与开门轨
    来源：[src/modules/ChapterFourElevatorFloorInvestigation.ts:49](../src/modules/ChapterFourElevatorFloorInvestigation.ts#L49)
-1358. 三楼到站铃在 18:50:12 响起，随后门机完整开启。
+1364. 三楼到站铃在 18:50:12 响起，随后门机完整开启。
    来源：[src/modules/ChapterFourElevatorFloorInvestigation.ts:52](../src/modules/ChapterFourElevatorFloorInvestigation.ts#L52)
-1359. 轿厢内没有第二次起步记录，这里是离开一楼后的实际到站层。
+1365. 轿厢内没有第二次起步记录，这里是离开一楼后的实际到站层。
    来源：[src/modules/ChapterFourElevatorFloorInvestigation.ts:53](../src/modules/ChapterFourElevatorFloorInvestigation.ts#L53)
-1360. 值班牌重建
+1366. 值班牌重建
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:93](../src/modules/ChapterFourInsertedPuzzleModel.ts#L93)
-1361. A1 前台
+1367. A1 前台
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:94](../src/modules/ChapterFourInsertedPuzzleModel.ts#L94)
-1362. 三段痕迹分别停在 104、105 与主电梯；夹痕由左向右逐渐变新。
+1368. 三段痕迹分别停在 104、105 与主电梯；夹痕由左向右逐渐变新。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:95](../src/modules/ChapterFourInsertedPuzzleModel.ts#L95)
-1363. 把三张值班牌按痕迹先后放回签到板。
+1369. 把三张值班牌按痕迹先后放回签到板。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:96](../src/modules/ChapterFourInsertedPuzzleModel.ts#L96)
-1364. A1 的三处调查已汇成一条值班记录。
+1370. A1 的三处调查已汇成一条值班记录。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:97](../src/modules/ChapterFourInsertedPuzzleModel.ts#L97)
-1365. 胶片索引
+1371. 胶片索引
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:103](../src/modules/ChapterFourInsertedPuzzleModel.ts#L103)
-1366. A3 · 301 校史档案展
+1372. A3 · 301 校史档案展
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:104](../src/modules/ChapterFourInsertedPuzzleModel.ts#L104)
-1367. 残留索引指向九十年代末、A3 层，并标记为入口导视用途。
+1373. 残留索引指向九十年代末、A3 层，并标记为入口导视用途。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:105](../src/modules/ChapterFourInsertedPuzzleModel.ts#L105)
-1368. 用年份、楼层和用途缩小抽屉范围，取出唯一胶片。
+1374. 用年份、楼层和用途缩小抽屉范围，取出唯一胶片。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:106](../src/modules/ChapterFourInsertedPuzzleModel.ts#L106)
-1369. 旧导视胶片已从索引抽屉取出。
+1375. 旧导视胶片已从索引抽屉取出。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:107](../src/modules/ChapterFourInsertedPuzzleModel.ts#L107)
-1370. 新旧影像对齐
+1376. 新旧影像对齐
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:113](../src/modules/ChapterFourInsertedPuzzleModel.ts#L113)
-1371. A3 · 302 媒体工作室
+1377. A3 · 302 媒体工作室
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:114](../src/modules/ChapterFourInsertedPuzzleModel.ts#L114)
-1372. 旧影像的入口轮廓向右偏两格、向上一格，并顺时针转过四分之一圈。
+1378. 旧影像的入口轮廓向右偏两格、向上一格，并顺时针转过四分之一圈。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:115](../src/modules/ChapterFourInsertedPuzzleModel.ts#L115)
-1373. 平移并旋转胶片，让入口、楼梯与荣誉墙三个轮廓同时重合。
+1379. 平移并旋转胶片，让入口、楼梯与荣誉墙三个轮廓同时重合。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:116](../src/modules/ChapterFourInsertedPuzzleModel.ts#L116)
-1374. 旧导视影像已与当前楼层坐标重合。
+1380. 旧导视影像已与当前楼层坐标重合。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:117](../src/modules/ChapterFourInsertedPuzzleModel.ts#L117)
-1375. 定位板校准
+1381. 定位板校准
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:123](../src/modules/ChapterFourInsertedPuzzleModel.ts#L123)
-1376. A2 · 201 创客工坊
+1382. A2 · 201 创客工坊
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:124](../src/modules/ChapterFourInsertedPuzzleModel.ts#L124)
-1377. 压力痕迹显示横向回退两格、纵向前推一格，第三档压力留下完整压印。
+1383. 压力痕迹显示横向回退两格、纵向前推一格，第三档压力留下完整压印。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:125](../src/modules/ChapterFourInsertedPuzzleModel.ts#L125)
-1378. 调整横向、纵向与压力，让三处触点同时落入旧痕。
+1384. 调整横向、纵向与压力，让三处触点同时落入旧痕。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:126](../src/modules/ChapterFourInsertedPuzzleModel.ts#L126)
-1379. 定位板已完成三轴校准。
+1385. 定位板已完成三轴校准。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:127](../src/modules/ChapterFourInsertedPuzzleModel.ts#L127)
-1380. 五区拓扑恢复
+1386. 五区拓扑恢复
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:133](../src/modules/ChapterFourInsertedPuzzleModel.ts#L133)
-1381. A2 · 203 计算机教室
+1387. A2 · 203 计算机教室
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:134](../src/modules/ChapterFourInsertedPuzzleModel.ts#L134)
-1382. 五区形成一个闭合环：大厅连两侧走廊，两侧分别接后区与教室区，末端再相连。
+1388. 五区形成一个闭合环：大厅连两侧走廊，两侧分别接后区与教室区，末端再相连。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:135](../src/modules/ChapterFourInsertedPuzzleModel.ts#L135)
-1383. 只保留停电前存在的五条相邻连线。
+1389. 只保留停电前存在的五条相邻连线。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:136](../src/modules/ChapterFourInsertedPuzzleModel.ts#L136)
-1384. 五区供电拓扑已恢复到停电前状态。
+1390. 五区供电拓扑已恢复到停电前状态。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:137](../src/modules/ChapterFourInsertedPuzzleModel.ts#L137)
-1385. 202 夜间疏散图
+1391. 202 夜间疏散图
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:143](../src/modules/ChapterFourInsertedPuzzleModel.ts#L143)
-1386. A2 · 开放自习区路线板
+1392. A2 · 开放自习区路线板
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:144](../src/modules/ChapterFourInsertedPuzzleModel.ts#L144)
-1387. 图面没有完整箭头。比较四处鞋印的朝向、连续纹路和收束位置。
+1393. 图面没有完整箭头。比较四处鞋印的朝向、连续纹路和收束位置。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:145](../src/modules/ChapterFourInsertedPuzzleModel.ts#L145)
-1388. 从 202 门口开始，把四块磁贴排成连续通路；终点必须落在主楼梯下行口。
+1394. 从 202 门口开始，把四块磁贴排成连续通路；终点必须落在主楼梯下行口。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:146](../src/modules/ChapterFourInsertedPuzzleModel.ts#L146)
-1389. 202 到主楼梯的夜间疏散路线已记录。
+1395. 202 到主楼梯的夜间疏散路线已记录。
    来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:147](../src/modules/ChapterFourInsertedPuzzleModel.ts#L147)
-1390. 金属时针已经归位，外圈多出一处能够稳定停住的刻度。
+1396. 一楼前台值班板归位
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:153](../src/modules/ChapterFourInsertedPuzzleModel.ts#L153)
+1397. A1 · 前台签到板
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:154](../src/modules/ChapterFourInsertedPuzzleModel.ts#L154)
+1398. 板上留着三道夹痕：104 的最旧，105 的在中间，主电梯的最新。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:155](../src/modules/ChapterFourInsertedPuzzleModel.ts#L155)
+1399. 按夹痕从旧到新，把 104、105、主电梯三张值班牌依次从左到右放回板上，再检查印泥接缝。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:156](../src/modules/ChapterFourInsertedPuzzleModel.ts#L156)
+1400. 104、105 与主电梯的三段记录已按先后顺序归档。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:157](../src/modules/ChapterFourInsertedPuzzleModel.ts#L157)
+1401. 旧导视胶片检索
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:160](../src/modules/ChapterFourInsertedPuzzleModel.ts#L160)
+1402. 抽屉上的借阅印记指向 1991–1998 年档、A3 层、入口导视用途。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:161](../src/modules/ChapterFourInsertedPuzzleModel.ts#L161)
+1403. 选择「1991–1998」「A3」和「入口导视」，从索引柜取出对应的旧胶片。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:162](../src/modules/ChapterFourInsertedPuzzleModel.ts#L162)
+1404. 已从 301 档案柜取出 A3 旧导视胶片。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:163](../src/modules/ChapterFourInsertedPuzzleModel.ts#L163)
+1405. 三楼新旧导视影像对齐
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:166](../src/modules/ChapterFourInsertedPuzzleModel.ts#L166)
+1406. 旧胶片上的入口比现今位置偏左两格、偏下一格，还逆时针歪了四分之一圈。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:167](../src/modules/ChapterFourInsertedPuzzleModel.ts#L167)
+1407. 先摆好灯罩，再把胶片向右移两格、向上移一格，顺时针转 90°。入口、楼梯与荣誉墙的轮廓都重合后再录下影像。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:168](../src/modules/ChapterFourInsertedPuzzleModel.ts#L168)
+1408. 三楼旧导视胶片已与当前楼层的三个轮廓重合。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:169](../src/modules/ChapterFourInsertedPuzzleModel.ts#L169)
+1409. 钟面定位片三轴压痕校准
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:172](../src/modules/ChapterFourInsertedPuzzleModel.ts#L172)
+1410. 底座的旧压痕显示：横向回退两格，纵向前推一格。第三档压力留下了完整压印。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:173](../src/modules/ChapterFourInsertedPuzzleModel.ts#L173)
+1411. 先把从 204 取出的定位片放进夹具，再调到横向 −2、纵向 +1、压力 3 档，让三处触点同时压进旧痕。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:174](../src/modules/ChapterFourInsertedPuzzleModel.ts#L174)
+1412. 三处旧压痕已校准。取回定位片，带它回一楼旧钟。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:175](../src/modules/ChapterFourInsertedPuzzleModel.ts#L175)
+1413. 五区供电环路恢复
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:178](../src/modules/ChapterFourInsertedPuzzleModel.ts#L178)
+1414. 停电前的线路是一个环：大厅、西走廊、面包坊后场、教室区、东走廊，最后接回大厅。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:179](../src/modules/ChapterFourInsertedPuzzleModel.ts#L179)
+1415. 推动接线块留守触点，对照五区环路检查哪几段接通。通道打开后，亲自走到出口完成检验。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:180](../src/modules/ChapterFourInsertedPuzzleModel.ts#L180)
+1416. 北教五区供电环路已恢复，配电面板的联动规律已记录。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:181](../src/modules/ChapterFourInsertedPuzzleModel.ts#L181)
+1417. 202 至主楼梯往返疏散验证
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:184](../src/modules/ChapterFourInsertedPuzzleModel.ts#L184)
+1418. 鞋印从 202 门口出发，沿东走廊到交通核心转角，最后收在主楼梯下行口。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:185](../src/modules/ChapterFourInsertedPuzzleModel.ts#L185)
+1419. 用物件留守触点，沿鞋印走到记录点，再带回工具并返回入口。去程留出的通道也得能走回来。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:186](../src/modules/ChapterFourInsertedPuzzleModel.ts#L186)
+1420. 202 至主楼梯下行口的夜间往返路线已验证。
+   来源：[src/modules/ChapterFourInsertedPuzzleModel.ts:187](../src/modules/ChapterFourInsertedPuzzleModel.ts#L187)
+1421. 金属时针已经归位，外圈多出一处能够稳定停住的刻度。
    来源：[src/modules/ChapterFourStagePresentation.ts:127](../src/modules/ChapterFourStagePresentation.ts#L127)
-1391. 定位片已经归位，外圈另一处原本回弹的刻度保持不动。
+1422. 定位片已经归位，外圈另一处原本回弹的刻度保持不动。
    来源：[src/modules/ChapterFourStagePresentation.ts:129](../src/modules/ChapterFourStagePresentation.ts#L129)
-1392. 纸条抓取 {{facts.has("opening\_paper\_caught") ? 1 : 0}}/1
+1423. 纸条抓取 {{facts.has("opening\_paper\_caught") ? 1 : 0}}/1
    来源：[src/modules/ChapterFourStagePresentation.ts:154](../src/modules/ChapterFourStagePresentation.ts#L154)
-1393. 时间核对 {{facts.has("external\_time\_rejected") ? 1 : 0}}/1
+1424. 时间核对 {{facts.has("external\_time\_rejected") ? 1 : 0}}/1
    来源：[src/modules/ChapterFourStagePresentation.ts:156](../src/modules/ChapterFourStagePresentation.ts#L156)
-1394. 旧钟检查 {{facts.has("hall\_clock\_inspected") ? 1 : 0}}/1
+1425. 旧钟检查 {{facts.has("hall\_clock\_inspected") ? 1 : 0}}/1
    来源：[src/modules/ChapterFourStagePresentation.ts:158](../src/modules/ChapterFourStagePresentation.ts#L158)
-1395. 旧时针流程 {{countFacts(facts, \[ "bakery\_conveyor\_lamp\_inspected", "bakery\_hour\_hand\_exposed", "bakery\_hour\_hand\_collected", "hour\_hand\_installed" \])}}/4
+1426. 旧时针流程 {{countFacts(facts, \[ "bakery\_conveyor\_lamp\_inspected", "bakery\_hour\_hand\_exposed", "bakery\_hour\_hand\_collected", "hour\_hand\_installed" \])}}/4
    来源：[src/modules/ChapterFourStagePresentation.ts:160](../src/modules/ChapterFourStagePresentation.ts#L160)
-1396. 交通与参照 {{countFacts(facts, \[ "classroom\_104\_chalk\_residual\_observed", "classroom\_105\_terminal\_replay\_checked", "elevator\_history\_observed", "elevator\_history\_calibrated", "a3\_reference\_observed", "misaligned\_stair\_solved", "room204\_residual\_observed" \])}}/7 · 复原 {{countCompletedRoom204Groups( state.chapter4.room204Placements )}}/{{ROOM204\_GROUP\_ORDER.length}}
+1427. 交通与参照 {{countFacts(facts, \[ "classroom\_104\_chalk\_residual\_observed", "classroom\_105\_terminal\_replay\_checked", "elevator\_history\_observed", "elevator\_history\_calibrated", "a3\_reference\_observed", "misaligned\_stair\_solved", "room204\_residual\_observed" \])}}/7 · 复原 {{countCompletedRoom204Groups( state.chapter4.room204Placements )}}/{{ROOM204\_GROUP\_ORDER.length}}
    来源：[src/modules/ChapterFourStagePresentation.ts:167](../src/modules/ChapterFourStagePresentation.ts#L167)
-1397. 维修流程 {{countMaintenanceMilestones(facts)}}/3
+1428. 维修流程 {{countMaintenanceMilestones(facts)}}/3
    来源：[src/modules/ChapterFourStagePresentation.ts:179](../src/modules/ChapterFourStagePresentation.ts#L179)
-1398. 必要灯区 {{progress.satisfied}}/{{progress.total}}
+1429. 必要灯区 {{progress.satisfied}}/{{progress.total}}
    来源：[src/modules/ChapterFourStagePresentation.ts:182](../src/modules/ChapterFourStagePresentation.ts#L182)
-1399. 抵达 202 0/1
+1430. 抵达 202 0/1
    来源：[src/modules/ChapterFourStagePresentation.ts:185](../src/modules/ChapterFourStagePresentation.ts#L185)
-1400. 分针组件 {{facts.has("final\_minute\_recovered") ? 1 : 0}}/1
+1431. 分针组件 {{facts.has("final\_minute\_recovered") ? 1 : 0}}/1
    来源：[src/modules/ChapterFourStagePresentation.ts:187](../src/modules/ChapterFourStagePresentation.ts#L187)
-1401. 抵达一楼 0/1
+1432. 抵达一楼 0/1
    来源：[src/modules/ChapterFourStagePresentation.ts:189](../src/modules/ChapterFourStagePresentation.ts#L189)
-1402. 抵达一楼 1/1
+1433. 抵达一楼 1/1
    来源：[src/modules/ChapterFourStagePresentation.ts:189](../src/modules/ChapterFourStagePresentation.ts#L189)
-1403. 签到确认 {{countFacts(facts, \["checkin\_card\_accepted", "checkin\_paper\_accepted"\])}}/2
+1434. 签到确认 {{countFacts(facts, \["checkin\_card\_accepted", "checkin\_paper\_accepted"\])}}/2
    来源：[src/modules/ChapterFourStagePresentation.ts:191](../src/modules/ChapterFourStagePresentation.ts#L191)
-1404. 收束确认 {{facts.has("exterior\_closure\_acknowledged") ? 1 : 0}}/1
+1435. 收束确认 {{facts.has("exterior\_closure\_acknowledged") ? 1 : 0}}/1
    来源：[src/modules/ChapterFourStagePresentation.ts:193](../src/modules/ChapterFourStagePresentation.ts#L193)
-1405. 章节完成 1/1
+1436. 章节完成 1/1
    来源：[src/modules/ChapterFourStagePresentation.ts:195](../src/modules/ChapterFourStagePresentation.ts#L195)
-1406. duplicate
+1437. duplicate
    来源：[src/modules/ChapterFourTemporalMazeController.ts:378](../src/modules/ChapterFourTemporalMazeController.ts#L378)
-1407. resolved
+1438. resolved
    来源：[src/modules/ChapterFourTemporalMazeController.ts:382](../src/modules/ChapterFourTemporalMazeController.ts#L382)
-1408. failed
+1439. failed
    来源：[src/modules/ChapterFourTemporalMazeController.ts:384](../src/modules/ChapterFourTemporalMazeController.ts#L384)
-1409. accepted
+1440. accepted
    来源：[src/modules/ChapterFourTemporalMazeController.ts:854](../src/modules/ChapterFourTemporalMazeController.ts#L854)；[src/modules/ChapterFourTemporalMazeController.ts:865](../src/modules/ChapterFourTemporalMazeController.ts#L865)；[src/scenes/phone/P08_Settings/index.tsx:106](../src/scenes/phone/P08_Settings/index.tsx#L106)；[src/scenes/phone/P08_Settings/index.tsx:125](../src/scenes/phone/P08_Settings/index.tsx#L125)；[src/scenes/phone/P19_Clock/index.tsx:149](../src/scenes/phone/P19_Clock/index.tsx#L149)；[src/scenes/phone/P19_Clock/index.tsx:156](../src/scenes/phone/P19_Clock/index.tsx#L156)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8013](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8013)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8126](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8126)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8142](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8142)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8154](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8154)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8163](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8163)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8267](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8267)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8277](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8277)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8287](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8287)
-1410. invalid\_request
+1441. 外面亮了一下。
+   来源：[src/modules/ChapterFourTemporalMazeController.ts:1704](../src/modules/ChapterFourTemporalMazeController.ts#L1704)；[src/modules/ChapterFourTemporalMazeController.ts:1733](../src/modules/ChapterFourTemporalMazeController.ts#L1733)
+1442. invalid\_request
    来源：[src/modules/ChapterFourTemporalMazeController.ts:2193](../src/modules/ChapterFourTemporalMazeController.ts#L2193)；[src/modules/ChapterFourTemporalMazeController.ts:2200](../src/modules/ChapterFourTemporalMazeController.ts#L2200)；[src/modules/ChapterFourTemporalMazeController.ts:2203](../src/modules/ChapterFourTemporalMazeController.ts#L2203)
-1411. invalid\_intent
+1443. invalid\_intent
    来源：[src/modules/ChapterFourTemporalMazeController.ts:2206](../src/modules/ChapterFourTemporalMazeController.ts#L2206)；[src/modules/ChapterFourTemporalMazeController.ts:2210](../src/modules/ChapterFourTemporalMazeController.ts#L2210)
-1412. 查看校园后勤服务的夜间运行通知
+1444. 查看校园后勤服务的夜间运行通知
    来源：[src/modules/ChapterFourWechatModel.ts:80](../src/modules/ChapterFourWechatModel.ts#L80)
-1413. 打开微信中的“校园后勤服务”公众号，保存段永平教学楼夜间运行提醒。
+1445. 打开微信中的“校园后勤服务”公众号，保存段永平教学楼夜间运行提醒。
    来源：[src/modules/ChapterFourWechatModel.ts:81](../src/modules/ChapterFourWechatModel.ts#L81)
-1414. 归档主电梯历史提示音
+1446. 归档主电梯历史提示音
    来源：[src/modules/ChapterFourWechatModel.ts:87](../src/modules/ChapterFourWechatModel.ts#L87)
-1415. 打开微信的文件传输助手，保存刚刚在深色观察中记录的电梯提示音。
+1447. 打开微信的文件传输助手，保存刚刚在深色观察中记录的电梯提示音。
    来源：[src/modules/ChapterFourWechatModel.ts:88](../src/modules/ChapterFourWechatModel.ts#L88)
-1416. 从 CC98 导入学习天地资料索引
+1448. 从 CC98 导入学习天地资料索引
    来源：[src/modules/ChapterFourWechatModel.ts:97](../src/modules/ChapterFourWechatModel.ts#L97)
-1417. 打开 CC98 的学习天地资料索引帖，选出课程年份、旧讨论和现场核验三项，再导入自习群。
+1449. 打开 CC98 的学习天地资料索引帖，选出课程年份、旧讨论和现场核验三项，再导入自习群。
    来源：[src/modules/ChapterFourWechatModel.ts:98](../src/modules/ChapterFourWechatModel.ts#L98)
-1418. 保存麦斯威夜间自习群的路线讨论
+1450. 保存麦斯威夜间自习群的路线讨论
    来源：[src/modules/ChapterFourWechatModel.ts:103](../src/modules/ChapterFourWechatModel.ts#L103)
-1419. 打开微信学生群，保存包含东西两侧矛盾描述的群聊截图。
+1451. 打开微信学生群，保存包含东西两侧矛盾描述的群聊截图。
    来源：[src/modules/ChapterFourWechatModel.ts:104](../src/modules/ChapterFourWechatModel.ts#L104)
-1420. 归档三楼新旧导视板照片
+1452. 归档三楼新旧导视板照片
    来源：[src/modules/ChapterFourWechatModel.ts:112](../src/modules/ChapterFourWechatModel.ts#L112)
-1421. 打开文件传输助手，将当前导视板和深色残影保存在同一组记录中。
+1453. 打开文件传输助手，将当前导视板和深色残影保存在同一组记录中。
    来源：[src/modules/ChapterFourWechatModel.ts:113](../src/modules/ChapterFourWechatModel.ts#L113)
-1422. 请朋友对照新旧导视板
+1454. 请朋友对照新旧导视板
    来源：[src/modules/ChapterFourWechatModel.ts:119](../src/modules/ChapterFourWechatModel.ts#L119)
-1423. 在微信朋友聊天中对照两张照片，记下二楼箭头的方向差异。
+1455. 在微信朋友聊天中对照两张照片，记下二楼箭头的方向差异。
    来源：[src/modules/ChapterFourWechatModel.ts:120](../src/modules/ChapterFourWechatModel.ts#L120)
-1424. already\_complete
+1456. already\_complete
    来源：[src/scenes/phone/P08_Settings/index.tsx:106](../src/scenes/phone/P08_Settings/index.tsx#L106)；[src/scenes/phone/P08_Settings/index.tsx:125](../src/scenes/phone/P08_Settings/index.tsx#L125)
-1425. 旧桌面排布已核对，辅助记录已保存。
+1457. 旧桌面排布已核对，辅助记录已保存。
    来源：[src/scenes/phone/P08_Settings/index.tsx:107](../src/scenes/phone/P08_Settings/index.tsx#L107)
-1426. incorrect
+1458. incorrect
    来源：[src/scenes/phone/P08_Settings/index.tsx:108](../src/scenes/phone/P08_Settings/index.tsx#L108)；[src/scenes/phone/P08_Settings/index.tsx:127](../src/scenes/phone/P08_Settings/index.tsx#L127)
-1427. 第一排仍不对。旧截图从左到右是微信、浙大钉、照片、CC98。
+1459. 第一排仍不对。旧截图从左到右是微信、浙大钉、照片、CC98。
    来源：[src/scenes/phone/P08_Settings/index.tsx:109](../src/scenes/phone/P08_Settings/index.tsx#L109)
-1428. 进入第四章后才能核对这张旧桌面截图。
+1460. 进入第四章后才能核对这张旧桌面截图。
    来源：[src/scenes/phone/P08_Settings/index.tsx:110](../src/scenes/phone/P08_Settings/index.tsx#L110)
-1429. 三条 07:55 异常记录已归档。照片索引、时钟唤醒和 A2 定位共用同一时刻。
+1461. 三条 07:55 异常记录已归档。照片索引、时钟唤醒和 A2 定位共用同一时刻。
    来源：[src/scenes/phone/P08_Settings/index.tsx:126](../src/scenes/phone/P08_Settings/index.tsx#L126)
-1430. 记录还混着正常刷新。只保留同时发生在 07:55 的三条异常活动。
+1462. 记录还混着正常刷新。只保留同时发生在 07:55 的三条异常活动。
    来源：[src/scenes/phone/P08_Settings/index.tsx:128](../src/scenes/phone/P08_Settings/index.tsx#L128)
-1431. 第四章尚未开始，这里只有普通后台记录。
+1463. 第四章尚未开始，这里只有普通后台记录。
    来源：[src/scenes/phone/P08_Settings/index.tsx:129](../src/scenes/phone/P08_Settings/index.tsx#L129)
-1432. 打开控制中心切换网络
+1464. 打开控制中心切换网络
    来源：[src/scenes/phone/P08_Settings/index.tsx:134](../src/scenes/phone/P08_Settings/index.tsx#L134)
-1433. 当前网络
+1465. 当前网络
    来源：[src/scenes/phone/P08_Settings/index.tsx:134](../src/scenes/phone/P08_Settings/index.tsx#L134)
-1434. 等待校园网
+1466. 等待校园网
    来源：[src/scenes/phone/P08_Settings/index.tsx:134](../src/scenes/phone/P08_Settings/index.tsx#L134)
-1435. 可访问
+1467. 可访问
    来源：[src/scenes/phone/P08_Settings/index.tsx:134](../src/scenes/phone/P08_Settings/index.tsx#L134)
-1436. 离线
+1468. 离线
    来源：[src/scenes/phone/P08_Settings/index.tsx:134](../src/scenes/phone/P08_Settings/index.tsx#L134)
-1437. 校园网络与移动数据
+1469. 校园网络与移动数据
    来源：[src/scenes/phone/P08_Settings/index.tsx:134](../src/scenes/phone/P08_Settings/index.tsx#L134)
-1438. 移动数据
+1470. 移动数据
    来源：[src/scenes/phone/P08_Settings/index.tsx:134](../src/scenes/phone/P08_Settings/index.tsx#L134)
-1439. 背景音乐
+1471. 背景音乐
    来源：[src/scenes/phone/P08_Settings/index.tsx:135](../src/scenes/phone/P08_Settings/index.tsx#L135)
-1440. 开启
+1472. 开启
    来源：[src/scenes/phone/P08_Settings/index.tsx:135](../src/scenes/phone/P08_Settings/index.tsx#L135)
-1441. 声音与振动
+1473. 声音与振动
    来源：[src/scenes/phone/P08_Settings/index.tsx:135](../src/scenes/phone/P08_Settings/index.tsx#L135)
-1442. 语音与操作音效保持开启
+1474. 语音与操作音效保持开启
    来源：[src/scenes/phone/P08_Settings/index.tsx:135](../src/scenes/phone/P08_Settings/index.tsx#L135)
-1443. 微信
+1475. 微信
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:447](../src/scenes/phone/P13_PhoneHome/index.tsx#L447)；[src/scenes/phone/P13_PhoneHome/index.tsx:450](../src/scenes/phone/P13_PhoneHome/index.tsx#L450)；[src/scenes/phone/P13_PhoneHome/index.tsx:807](../src/scenes/phone/P13_PhoneHome/index.tsx#L807)
-1444. 微信，待处理：{{chapterFourWechatObjective.label}}
+1476. 微信，待处理：{{chapterFourWechatObjective.label}}
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:450](../src/scenes/phone/P13_PhoneHome/index.tsx#L450)
-1445. 浙大体艺
+1477. 浙大体艺
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:455](../src/scenes/phone/P13_PhoneHome/index.tsx#L455)
-1446. 浙大钉
+1478. 浙大钉
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:461](../src/scenes/phone/P13_PhoneHome/index.tsx#L461)
-1447. CC98
+1479. CC98
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:505](../src/scenes/phone/P13_PhoneHome/index.tsx#L505)；[src/scenes/phone/P13_PhoneHome/index.tsx:508](../src/scenes/phone/P13_PhoneHome/index.tsx#L508)
-1448. CC98，待处理：{{chapterFourWechatObjective?.label ?? "学习天地资料索引"}}
+1480. CC98，待处理：{{chapterFourWechatObjective?.label ?? "学习天地资料索引"}}
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:508](../src/scenes/phone/P13_PhoneHome/index.tsx#L508)
-1449. 控制中心
+1481. 控制中心
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:513](../src/scenes/phone/P13_PhoneHome/index.tsx#L513)
-1450. 时钟
+1482. 时钟
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:522](../src/scenes/phone/P13_PhoneHome/index.tsx#L522)
-1451. 新增照片「看不清的书脊」
+1483. 新增照片「看不清的书脊」
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:787](../src/scenes/phone/P13_PhoneHome/index.tsx#L787)
-1452. 照片
+1484. 照片
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:787](../src/scenes/phone/P13_PhoneHome/index.tsx#L787)；[src/scenes/phone/P13_PhoneHome/index.tsx:813](../src/scenes/phone/P13_PhoneHome/index.tsx#L813)
-1453. 打开 CC98 学习天地资料索引帖
+1485. 打开 CC98 学习天地资料索引帖
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:798](../src/scenes/phone/P13_PhoneHome/index.tsx#L798)
-1454. 课程年份入口与旧自习讨论待导入
+1486. 课程年份入口与旧自习讨论待导入
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:801](../src/scenes/phone/P13_PhoneHome/index.tsx#L801)
-1455. CC98 · 学习天地
+1487. CC98 · 学习天地
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:801](../src/scenes/phone/P13_PhoneHome/index.tsx#L801)
-1456. IMG\_0755 的识别结果仍需现场核验
+1488. IMG\_0755 的识别结果仍需现场核验
    来源：[src/scenes/phone/P13_PhoneHome/index.tsx:813](../src/scenes/phone/P13_PhoneHome/index.tsx#L813)
-1457. 这份资料已经保存。
+1489. 这份资料已经保存。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:451](../src/scenes/phone/P14_Wechat/index.tsx#L451)
-1458. 夜间运行通知已保存。
+1490. 夜间运行通知已保存。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:460](../src/scenes/phone/P14_Wechat/index.tsx#L460)
-1459. 第四章开始后才能查看这条运行通知。
+1491. 第四章开始后才能查看这条运行通知。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:461](../src/scenes/phone/P14_Wechat/index.tsx#L461)
-1460. 主电梯提示音已归档。
+1492. 主电梯提示音已归档。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:468](../src/scenes/phone/P14_Wechat/index.tsx#L468)
-1461. 文件传输助手尚未收到一楼电梯历史提示音记录。
+1493. 文件传输助手尚未收到一楼电梯历史提示音记录。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:469](../src/scenes/phone/P14_Wechat/index.tsx#L469)
-1462. 路线讨论已保存。
+1494. 路线讨论已保存。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:476](../src/scenes/phone/P14_Wechat/index.tsx#L476)
-1463. 先去 CC98 学习天地，把课程年份入口、旧讨论和现场核验三项导入群文件。
+1495. 先去 CC98 学习天地，把课程年份入口、旧讨论和现场核验三项导入群文件。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:478](../src/scenes/phone/P14_Wechat/index.tsx#L478)
-1464. 先阅读公众号通知，并抵达二楼清楼阶段。
+1496. 先阅读公众号通知，并抵达二楼清楼阶段。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:479](../src/scenes/phone/P14_Wechat/index.tsx#L479)
-1465. 新旧导视板照片已归档。
+1497. 新旧导视板照片已归档。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:486](../src/scenes/phone/P14_Wechat/index.tsx#L486)
-1466. 文件传输助手尚未收到三楼旧导视板残影记录。
+1498. 文件传输助手尚未收到三楼旧导视板残影记录。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:487](../src/scenes/phone/P14_Wechat/index.tsx#L487)
-1467. 照片对照完成。
+1499. 照片对照完成。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:494](../src/scenes/phone/P14_Wechat/index.tsx#L494)
-1468. 先把三楼新旧导视板照片保存到文件传输助手。
+1500. 先把三楼新旧导视板照片保存到文件传输助手。
    来源：[src/scenes/phone/P14_Wechat/index.tsx:495](../src/scenes/phone/P14_Wechat/index.tsx#L495)
-1469. 朋友
+1501. 朋友
    来源：[src/scenes/phone/P14_Wechat/index.tsx:642](../src/scenes/phone/P14_Wechat/index.tsx#L642)
-1470. 返回公众号主页
+1502. 返回公众号主页
    来源：[src/scenes/phone/P14_Wechat/index.tsx:651](../src/scenes/phone/P14_Wechat/index.tsx#L651)
-1471. 返回聊天列表
+1503. 返回聊天列表
    来源：[src/scenes/phone/P14_Wechat/index.tsx:651](../src/scenes/phone/P14_Wechat/index.tsx#L651)
-1472. official
+1504. official
    来源：[src/scenes/phone/P14_Wechat/index.tsx:651](../src/scenes/phone/P14_Wechat/index.tsx#L651)
-1473. 麦斯威夜间自习群聊天记录
+1505. 麦斯威夜间自习群聊天记录
    来源：[src/scenes/phone/P14_Wechat/index.tsx:661](../src/scenes/phone/P14_Wechat/index.tsx#L661)
-1474. 22:47 ·
+1506. 22:47 ·
    来源：[src/scenes/phone/P14_Wechat/index.tsx:662](../src/scenes/phone/P14_Wechat/index.tsx#L662)
-1475. 人
+1507. 人
    来源：[src/scenes/phone/P14_Wechat/index.tsx:662](../src/scenes/phone/P14_Wechat/index.tsx#L662)
-1476. 路线讨论已保存
+1508. 路线讨论已保存
    来源：[src/scenes/phone/P14_Wechat/index.tsx:689](../src/scenes/phone/P14_Wechat/index.tsx#L689)
-1477. 第四章现场资料
+1509. 第四章现场资料
    来源：[src/scenes/phone/P14_Wechat/index.tsx:694](../src/scenes/phone/P14_Wechat/index.tsx#L694)
-1478. 公众号推送 · 22:40
+1510. 公众号推送 · 22:40
    来源：[src/scenes/phone/P14_Wechat/index.tsx:697](../src/scenes/phone/P14_Wechat/index.tsx#L697)
-1479. 已读
+1511. 已读
    来源：[src/scenes/phone/P14_Wechat/index.tsx:697](../src/scenes/phone/P14_Wechat/index.tsx#L697)
-1480. 群文件 · 学习天地
+1512. 群文件 · 学习天地
    来源：[src/scenes/phone/P14_Wechat/index.tsx:701](../src/scenes/phone/P14_Wechat/index.tsx#L701)
-1481. 课程年份入口与旧自习讨论
+1513. 课程年份入口与旧自习讨论
    来源：[src/scenes/phone/P14_Wechat/index.tsx:702](../src/scenes/phone/P14_Wechat/index.tsx#L702)
-1482. 已从 CC98 导入
+1514. 已从 CC98 导入
    来源：[src/scenes/phone/P14_Wechat/index.tsx:703](../src/scenes/phone/P14_Wechat/index.tsx#L703)
-1483. 现场录音 · 1F
+1515. 现场录音 · 1F
    来源：[src/scenes/phone/P14_Wechat/index.tsx:708](../src/scenes/phone/P14_Wechat/index.tsx#L708)
-1484. 保存照片
+1516. 保存照片
    来源：[src/scenes/phone/P14_Wechat/index.tsx:718](../src/scenes/phone/P14_Wechat/index.tsx#L718)
-1485. 已归档
+1517. 已归档
    来源：[src/scenes/phone/P14_Wechat/index.tsx:718](../src/scenes/phone/P14_Wechat/index.tsx#L718)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7072](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7072)
-1486. 朋友导视板对照聊天
+1518. 朋友导视板对照聊天
    来源：[src/scenes/phone/P14_Wechat/index.tsx:724](../src/scenes/phone/P14_Wechat/index.tsx#L724)
-1487. 新旧导视板照片
+1519. 新旧导视板照片
    来源：[src/scenes/phone/P14_Wechat/index.tsx:729](../src/scenes/phone/P14_Wechat/index.tsx#L729)
-1488. 2F →
+1520. 2F →
    来源：[src/scenes/phone/P14_Wechat/index.tsx:730](../src/scenes/phone/P14_Wechat/index.tsx#L730)
-1489. 当前导视
+1521. 当前导视
    来源：[src/scenes/phone/P14_Wechat/index.tsx:730](../src/scenes/phone/P14_Wechat/index.tsx#L730)
-1490. ← 2F
+1522. ← 2F
    来源：[src/scenes/phone/P14_Wechat/index.tsx:731](../src/scenes/phone/P14_Wechat/index.tsx#L731)
-1491. 历史残影
+1523. 历史残影
    来源：[src/scenes/phone/P14_Wechat/index.tsx:731](../src/scenes/phone/P14_Wechat/index.tsx#L731)
-1492. {{label}} −
+1524. {{label}} −
    来源：[src/scenes/phone/P19_Clock/ClockMovement3D.tsx:378](../src/scenes/phone/P19_Clock/ClockMovement3D.tsx#L378)
-1493. {{label}} +
+1525. {{label}} +
    来源：[src/scenes/phone/P19_Clock/ClockMovement3D.tsx:388](../src/scenes/phone/P19_Clock/ClockMovement3D.tsx#L388)
-1494. {{strings.assemble}} / {{strings.explode}}
+1526. {{strings.assemble}} / {{strings.explode}}
    来源：[src/scenes/phone/P19_Clock/ClockMovement3D.tsx:512](../src/scenes/phone/P19_Clock/ClockMovement3D.tsx#L512)
-1495. 系统
+1527. 系统
    来源：[src/scenes/phone/P19_Clock/index.tsx:30](../src/scenes/phone/P19_Clock/index.tsx#L30)
-1496. 玩家
+1528. 玩家
    来源：[src/scenes/phone/P19_Clock/index.tsx:32](../src/scenes/phone/P19_Clock/index.tsx#L32)
-1497. 我
+1529. 我
    来源：[src/scenes/phone/P19_Clock/index.tsx:32](../src/scenes/phone/P19_Clock/index.tsx#L32)；[src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts:70](../src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts#L70)
-1498. {{currentRound.label}}协议通过，进入下一轮。
+1530. {{currentRound.label}}协议通过，进入下一轮。
    来源：[src/scenes/phone/P19_Clock/index.tsx:104](../src/scenes/phone/P19_Clock/index.tsx#L104)
-1499. 这条记录属于其他场景，无法写入 B2-04 档案。
+1531. 这条记录属于其他场景，无法写入 B2-04 档案。
    来源：[src/scenes/phone/P19_Clock/index.tsx:134](../src/scenes/phone/P19_Clock/index.tsx#L134)
-1500. {{unit === "hour" ? "小时" : "分钟"}}机芯已锁定。
+1532. {{unit === "hour" ? "小时" : "分钟"}}机芯已锁定。
    来源：[src/scenes/phone/P19_Clock/index.tsx:149](../src/scenes/phone/P19_Clock/index.tsx#L149)
-1501. {{channel.label}}漂移已归零。
+1533. {{channel.label}}漂移已归零。
    来源：[src/scenes/phone/P19_Clock/index.tsx:156](../src/scenes/phone/P19_Clock/index.tsx#L156)
-1502. 返回手机主页
+1534. 返回手机主页
    来源：[src/scenes/phone/P19_Clock/index.tsx:167](../src/scenes/phone/P19_Clock/index.tsx#L167)；[src/scenes/phone/P19_Clock/index.tsx:228](../src/scenes/phone/P19_Clock/index.tsx#L228)；[src/scenes/rpg/RpgGameHost.tsx:2608](../src/scenes/rpg/RpgGameHost.tsx#L2608)；[src/scenes/rpg/RpgGameHost.tsx:2712](../src/scenes/rpg/RpgGameHost.tsx#L2712)
-1503. B2-04 / TIME REPAIR
+1535. B2-04 / TIME REPAIR
    来源：[src/scenes/phone/P19_Clock/index.tsx:168](../src/scenes/phone/P19_Clock/index.tsx#L168)
-1504. 校时状态
+1536. 校时状态
    来源：[src/scenes/phone/P19_Clock/index.tsx:172](../src/scenes/phone/P19_Clock/index.tsx#L172)
-1505. 四关校时流程
+1537. 四关校时流程
    来源：[src/scenes/phone/P19_Clock/index.tsx:176](../src/scenes/phone/P19_Clock/index.tsx#L176)
-1506. 返回当前任务
+1538. 返回当前任务
    来源：[src/scenes/phone/P19_Clock/index.tsx:180](../src/scenes/phone/P19_Clock/index.tsx#L180)
-1507. ACCESS DENIED
+1539. ACCESS DENIED
    来源：[src/scenes/phone/P19_Clock/index.tsx:180](../src/scenes/phone/P19_Clock/index.tsx#L180)
-1508. /3 证据
+1540. /3 证据
    来源：[src/scenes/phone/P19_Clock/index.tsx:183](../src/scenes/phone/P19_Clock/index.tsx#L183)
-1509. 01 / ARCHIVE REBUILD
+1541. 01 / ARCHIVE REBUILD
    来源：[src/scenes/phone/P19_Clock/index.tsx:183](../src/scenes/phone/P19_Clock/index.tsx#L183)
-1510. 提交档案与时刻
+1542. 提交档案与时刻
    来源：[src/scenes/phone/P19_Clock/index.tsx:190](../src/scenes/phone/P19_Clock/index.tsx#L190)
-1511. /2 LOCKED
+1543. /2 LOCKED
    来源：[src/scenes/phone/P19_Clock/index.tsx:194](../src/scenes/phone/P19_Clock/index.tsx#L194)
-1512. 02 / DUAL MOVEMENT
+1544. 02 / DUAL MOVEMENT
    来源：[src/scenes/phone/P19_Clock/index.tsx:194](../src/scenes/phone/P19_Clock/index.tsx#L194)
-1513. 00 分机芯
+1545. 00 分机芯
    来源：[src/scenes/phone/P19_Clock/index.tsx:205](../src/scenes/phone/P19_Clock/index.tsx#L205)
-1514. 08 时机芯
+1546. 08 时机芯
    来源：[src/scenes/phone/P19_Clock/index.tsx:205](../src/scenes/phone/P19_Clock/index.tsx#L205)
-1515. 23 秒暂存
+1547. 23 秒暂存
    来源：[src/scenes/phone/P19_Clock/index.tsx:205](../src/scenes/phone/P19_Clock/index.tsx#L205)
-1516. 进入漂移核对
+1548. 进入漂移核对
    来源：[src/scenes/phone/P19_Clock/index.tsx:206](../src/scenes/phone/P19_Clock/index.tsx#L206)
-1517. /3 ONLINE
+1549. /3 ONLINE
    来源：[src/scenes/phone/P19_Clock/index.tsx:210](../src/scenes/phone/P19_Clock/index.tsx#L210)
-1518. 03 / DRIFT MATRIX
+1550. 03 / DRIFT MATRIX
    来源：[src/scenes/phone/P19_Clock/index.tsx:210](../src/scenes/phone/P19_Clock/index.tsx#L210)
-1519. 已归零
+1551. 已归零
    来源：[src/scenes/phone/P19_Clock/index.tsx:214](../src/scenes/phone/P19_Clock/index.tsx#L214)
-1520. 应用反向修正
+1552. 应用反向修正
    来源：[src/scenes/phone/P19_Clock/index.tsx:214](../src/scenes/phone/P19_Clock/index.tsx#L214)
-1521. 生成 08:00:00
+1553. 生成 08:00:00
    来源：[src/scenes/phone/P19_Clock/index.tsx:216](../src/scenes/phone/P19_Clock/index.tsx#L216)
-1522. 04 / THREE PROTOCOLS
+1554. 04 / THREE PROTOCOLS
    来源：[src/scenes/phone/P19_Clock/index.tsx:220](../src/scenes/phone/P19_Clock/index.tsx#L220)
-1523. 执行本轮放行
+1555. 执行本轮放行
    来源：[src/scenes/phone/P19_Clock/index.tsx:225](../src/scenes/phone/P19_Clock/index.tsx#L225)
-1524. 放行尝试
+1556. 放行尝试
    来源：[src/scenes/phone/P19_Clock/index.tsx:228](../src/scenes/phone/P19_Clock/index.tsx#L228)
-1525. 漂移尝试
+1557. 漂移尝试
    来源：[src/scenes/phone/P19_Clock/index.tsx:228](../src/scenes/phone/P19_Clock/index.tsx#L228)
-1526. 四关校时
+1558. 四关校时
    来源：[src/scenes/phone/P19_Clock/index.tsx:228](../src/scenes/phone/P19_Clock/index.tsx#L228)
-1527. TIME AXIS / RELEASED
+1559. TIME AXIS / RELEASED
    来源：[src/scenes/phone/P19_Clock/index.tsx:228](../src/scenes/phone/P19_Clock/index.tsx#L228)
-1528. P01 起床
+1560. P01 起床
    来源：[src/scenes/phone/registry.tsx:30](../src/scenes/phone/registry.tsx#L30)
-1529. 再睡5分钟 → 旁白 → 起床蠢货！！！ → 手机主界面。
+1561. 再睡5分钟 → 旁白 → 起床蠢货！！！ → 手机主界面。
    来源：[src/scenes/phone/registry.tsx:31](../src/scenes/phone/registry.tsx#L31)
-1530. P13 手机主界面
+1562. P13 手机主界面
    来源：[src/scenes/phone/registry.tsx:34](../src/scenes/phone/registry.tsx#L34)
-1531. 主屏：设置齿轮/塔楼钥匙孔/天气水滴/盆栽入口/微信弹窗。
+1563. 主屏：设置齿轮/塔楼钥匙孔/天气水滴/盆栽入口/微信弹窗。
    来源：[src/scenes/phone/registry.tsx:35](../src/scenes/phone/registry.tsx#L35)
-1532. P08 设置
+1564. P08 设置
    来源：[src/scenes/phone/registry.tsx:38](../src/scenes/phone/registry.tsx#L38)
-1533. 真实系统设置、桌面编排、可选应用恢复与第四章后台活动取证。
+1565. 真实系统设置、桌面编排、可选应用恢复与第四章后台活动取证。
    来源：[src/scenes/phone/registry.tsx:39](../src/scenes/phone/registry.tsx#L39)
-1534. P14 微信
+1566. P14 微信
    来源：[src/scenes/phone/registry.tsx:42](../src/scenes/phone/registry.tsx#L42)
-1535. 朋友聊天触发小影散码；列表中朋友头像藏斜线谜题（P03）。
+1567. 朋友聊天触发小影散码；列表中朋友头像藏斜线谜题（P03）。
    来源：[src/scenes/phone/registry.tsx:43](../src/scenes/phone/registry.tsx#L43)
-1536. P02 CC98
+1568. P02 CC98
    来源：[src/scenes/phone/registry.tsx:46](../src/scenes/phone/registry.tsx#L46)
-1537. 仅校园网可进入；热门话题列表与剧情帖子记录跟随游戏进度。
+1569. 仅校园网可进入；热门话题列表与剧情帖子记录跟随游戏进度。
    来源：[src/scenes/phone/registry.tsx:47](../src/scenes/phone/registry.tsx#L47)
-1538. P15 浙大钉
+1570. P15 浙大钉
    来源：[src/scenes/phone/registry.tsx:50](../src/scenes/phone/registry.tsx#L50)
-1539. 仅校园网可进入；承载系统入口、图书馆预约和移动图书馆证据流程。
+1571. 仅校园网可进入；承载系统入口、图书馆预约和移动图书馆证据流程。
    来源：[src/scenes/phone/registry.tsx:51](../src/scenes/phone/registry.tsx#L51)
-1540. P06 浙大体艺
+1572. P06 浙大体艺
    来源：[src/scenes/phone/registry.tsx:54](../src/scenes/phone/registry.tsx#L54)
-1541. 仅流量可进入；先开启课外锻炼，图书馆阶段再核对 7 / 47 / 3 到馆材料。
+1573. 仅流量可进入；先开启课外锻炼，图书馆阶段再核对 7 / 47 / 3 到馆材料。
    来源：[src/scenes/phone/registry.tsx:55](../src/scenes/phone/registry.tsx#L55)
-1542. 准备离开教学楼的学生像素立绘
+1574. 准备离开教学楼的学生像素立绘
    来源：[src/scenes/rpg/chapter4-prologue/ProloguePortraitAssets.ts:13](../src/scenes/rpg/chapter4-prologue/ProloguePortraitAssets.ts#L13)
-1543. 迈斯威 →
+1575. 迈斯威 →
    来源：[src/scenes/rpg/chapter4-prologue/PrologueRenderer.ts:1365](../src/scenes/rpg/chapter4-prologue/PrologueRenderer.ts#L1365)
-1544. 旁白
+1576. 旁白
    来源：[src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts:78](../src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts#L78)
-1545. 保洁员
+1577. 保洁员
    来源：[src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts:86](../src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts#L86)
-1546. 第四章序幕：纸条进入段永平教学楼
+1578. 第四章序幕：纸条进入段永平教学楼
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:652](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L652)
-1547. 夜色中，湿纸条离开启真湖，经过街机厅进入段永平教学楼，沿大厅进入熄灯后的走廊
+1579. 夜色中，湿纸条离开启真湖，经过街机厅进入段永平教学楼，沿大厅进入熄灯后的走廊
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:675](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L675)
-1548. 由四项手机证据恢复的现场回放
+1580. 由四项手机证据恢复的现场回放
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:678](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L678)
-1549. RECOVERED TIMELINE
+1581. RECOVERED TIMELINE
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:679](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L679)
-1550. SOURCE 4 / 4
+1582. SOURCE 4 / 4
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:680](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L680)
-1551. 跳过恢复回放
+1583. 跳过恢复回放
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:685](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L685)
-1552. CHAPTER 03.5 · COMPLETE
+1584. CHAPTER 03.5 · COMPLETE
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:712](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L712)
-1553. 第四章：时间迷宫
+1585. 第四章：时间迷宫
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:713](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L713)
-1554. 现场定位
+1586. 现场定位
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:716](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L716)
-1555. 段永平教学楼玻璃门
+1587. 段永平教学楼玻璃门
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:717](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L717)
-1556. 追踪进入教学楼的异常签到纸
+1588. 追踪进入教学楼的异常签到纸
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:721](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L721)
-1557. 正在提交任务……
+1589. 正在提交任务……
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:735](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L735)
-1558. 正在同步教学楼现场……
+1590. 正在同步教学楼现场……
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:737](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L737)
-1559. 重试进入第四章
+1591. 重试进入第四章
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:739](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L739)
-1560. 收下任务，进入第四章
+1592. 收下任务，进入第四章
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:740](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L740)
-1561. 重播过场
+1593. 重播过场
    来源：[src/scenes/rpg/Chapter4PrologueOverlay.tsx:747](../src/scenes/rpg/Chapter4PrologueOverlay.tsx#L747)
-1562. 二楼走廊
+1594. 二楼走廊
    来源：[src/scenes/rpg/ChapterFourChaseStairwellScene.ts:83](../src/scenes/rpg/ChapterFourChaseStairwellScene.ts#L83)
-1563. 沿平台继续上行，再进入上方楼梯口。
+1595. 沿平台继续上行，再进入上方楼梯口。
    来源：[src/scenes/rpg/ChapterFourChaseStairwellScene.ts:97](../src/scenes/rpg/ChapterFourChaseStairwellScene.ts#L97)
-1564. 你在这里干什么？已经这么晚了，快点回去，要清楼了。
+1596. 你在这里干什么？已经这么晚了，快点回去，要清楼了。
    来源：[src/scenes/rpg/ChapterFourGuardPresentation.ts:5](../src/scenes/rpg/ChapterFourGuardPresentation.ts#L5)
-1565. 保安
+1597. 保安
    来源：[src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts:94](../src/scenes/rpg/chapter4-prologue/PrologueTimeline.ts#L94)；[src/scenes/rpg/ChapterFourGuardPresentation.ts:9](../src/scenes/rpg/ChapterFourGuardPresentation.ts#L9)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5516](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5516)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5534](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5534)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5745](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5745)
-1566. 一张迟到的记录
+1598. 一张迟到的记录
    来源：[src/scenes/rpg/ChapterFourPaperPickupPresentation.ts:21](../src/scenes/rpg/ChapterFourPaperPickupPresentation.ts#L21)
-1567. 第四章 / 7:55
+1599. 第四章 / 7:55
    来源：[src/scenes/rpg/ChapterFourPaperPickupPresentation.ts:22](../src/scenes/rpg/ChapterFourPaperPickupPresentation.ts#L22)
-1568. 此刻 · 教学楼
+1600. 此刻 · 教学楼
    来源：[src/scenes/rpg/ChapterFourPaperPickupPresentation.ts:25](../src/scenes/rpg/ChapterFourPaperPickupPresentation.ts#L25)
-1569. 夜还没有结束
+1601. 夜还没有结束
    来源：[src/scenes/rpg/ChapterFourPaperPickupPresentation.ts:28](../src/scenes/rpg/ChapterFourPaperPickupPresentation.ts#L28)
-1570. 签 到 记 录
+1602. 签 到 记 录
    来源：[src/scenes/rpg/ChapterFourPaperPickupPresentation.ts:69](../src/scenes/rpg/ChapterFourPaperPickupPresentation.ts#L69)
-1571. 已找回的纸条
+1603. 已找回的纸条
    来源：[src/scenes/rpg/ChapterFourPaperPickupPresentation.ts:70](../src/scenes/rpg/ChapterFourPaperPickupPresentation.ts#L70)
-1572. 手机停留在
+1604. 手机停留在
    来源：[src/scenes/rpg/ChapterFourPaperPickupPresentation.ts:71](../src/scenes/rpg/ChapterFourPaperPickupPresentation.ts#L71)
-1573. 纸条回来了，时间没有。
+1605. 纸条回来了，时间没有。
    来源：[src/scenes/rpg/ChapterFourPaperPickupPresentation.ts:73](../src/scenes/rpg/ChapterFourPaperPickupPresentation.ts#L73)
-1574. 时间不符
+1606. 时间不符
    来源：[src/scenes/rpg/ChapterFourPaperPickupPresentation.ts:80](../src/scenes/rpg/ChapterFourPaperPickupPresentation.ts#L80)
-1575. 签到记录已收好
+1607. 签到记录已收好
    来源：[src/scenes/rpg/ChapterFourPaperPickupPresentation.ts:82](../src/scenes/rpg/ChapterFourPaperPickupPresentation.ts#L82)
-1576. 楼梯的空间关系发生错位。
+1608. 楼梯的空间关系发生错位。
    来源：[src/scenes/rpg/ChapterFourStairAlignmentScene.ts:87](../src/scenes/rpg/ChapterFourStairAlignmentScene.ts#L87)
-1577. B2 已接通
+1609. B2 已接通
    来源：[src/scenes/rpg/ChapterFourStairAlignmentScene.ts:220](../src/scenes/rpg/ChapterFourStairAlignmentScene.ts#L220)
-1578. 空格键 记录下层回声
+1610. 空格键 记录下层回声
    来源：[src/scenes/rpg/ChapterFourStairAlignmentScene.ts:222](../src/scenes/rpg/ChapterFourStairAlignmentScene.ts#L222)
-1579. 下层回声已记录
+1611. 下层回声已记录
    来源：[src/scenes/rpg/ChapterFourStairAlignmentScene.ts:222](../src/scenes/rpg/ChapterFourStairAlignmentScene.ts#L222)
-1580. 端点已对齐 · 空格键通过
+1612. 端点已对齐 · 空格键通过
    来源：[src/scenes/rpg/ChapterFourStairAlignmentScene.ts:224](../src/scenes/rpg/ChapterFourStairAlignmentScene.ts#L224)
-1581. A / ← 左转 · D / → 右转 · 让两端发光后通过
+1613. A / ← 左转 · D / → 右转 · 让两端发光后通过
    来源：[src/scenes/rpg/ChapterFourStairAlignmentScene.ts:225](../src/scenes/rpg/ChapterFourStairAlignmentScene.ts#L225)
-1582. 错位折返楼梯
+1614. 错位折返楼梯
    来源：[src/scenes/rpg/ChapterFourStairAlignmentScene.ts:269](../src/scenes/rpg/ChapterFourStairAlignmentScene.ts#L269)
-1583. A1 · 麦思威面包坊与门厅
+1615. A1 · 麦思威面包坊与门厅
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:734](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L734)
-1584. A2 · 教室与开放学习区
+1616. A2 · 教室与开放学习区
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:735](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L735)
-1585. A3 · 校友荣誉门厅
+1617. A3 · 校友荣誉门厅
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:736](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L736)
-1586. 楼梯上行口
+1618. 楼梯上行口
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1052](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1052)
-1587. 楼梯下行口
+1619. 楼梯下行口
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1052](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1052)
-1588. up
+1620. up
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1052](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1052)
-1589. A1 入口
+1621. A1 入口
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1099](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1099)
-1590. 电梯与楼层
+1622. 电梯与楼层
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1100](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1100)
-1591. 维修与追逐
+1623. 维修与追逐
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1101](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1101)
-1592. 收束场景
+1624. 收束场景
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1102](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1102)
-1593. unknown
+1625. unknown
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:1937](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L1937)
-1594. 资料依据：{{figure.sourceLabel}}
+1626. 资料依据：{{figure.sourceLabel}}
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:2471](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L2471)
-1595. Space / Enter · 返回 Esc · 返回
+1627. Space / Enter · 返回 Esc · 返回
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:2498](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L2498)
-1596. 返回地图
+1628. 返回地图
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:2504](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L2504)
-1597. 进度已恢复，请重试当前操作。
+1629. 进度已恢复，请重试当前操作。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:3646](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L3646)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6025](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6025)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7535](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7535)
-1598. 回路稳定
+1630. 回路稳定
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:4626](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L4626)
-1599. 校园卡
+1631. 校园卡
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5118](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5118)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5141](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5141)
-1600. 纸条
+1632. 纸条
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5124](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5124)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5149](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5149)
-1601. 已刷卡
+1633. 已刷卡
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5141](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5141)
-1602. 已签到
+1634. 已签到
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5149](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5149)
-1603. 关门 \[Space\]
+1635. 关门 \[Space\]
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5460](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5460)
-1604. chase.close
+1636. chase.close
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5514](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5514)
-1605. chase.floor\_changed
+1637. chase.floor\_changed
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5532](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5532)
-1606. 门禁已落锁
+1638. 门禁已落锁
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5620](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5620)
-1607. maintenance.cleaner
+1639. maintenance.cleaner
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5736](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5736)
-1608. chase.started
+1640. chase.started
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5743](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5743)
-1609. morning.entry
+1641. morning.entry
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5751](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5751)
-1610. exterior.closure
+1642. exterior.closure
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5758](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5758)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8296](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8296)
-1611. 记录叠合
+1643. 记录叠合
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5956](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5956)
-1612. 边缘未重合
+1644. 边缘未重合
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5962](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5962)
-1613. 18:44
+1645. 18:44
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5969](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5969)
-1614. 18:50
+1646. 18:50
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5970](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5970)
-1615. 6s/8s
+1647. 6s/8s
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5971](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5971)
-1616. A3
+1648. A3
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5972](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5972)
-1617. 边缘偏移
+1649. 边缘偏移
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:5999](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L5999)
-1618. Space · 复原{{this.nearbyStoryTarget.contract.label}}
+1650. Space · 复原{{this.nearbyStoryTarget.contract.label}}
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6322](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6322)
-1619. 切到浅色操作后处理这片痕迹
+1651. 切到浅色操作后处理这片痕迹
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6323](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6323)
-1620. Space · 查看{{this.nearbyAlumniFigure.name}}生平
+1652. Space · 查看{{this.nearbyAlumniFigure.name}}生平
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6328](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6328)
-1621. 把对应道具拖到{{this.nearbyStoryTarget.contract.label}}
+1653. 把对应道具拖到{{this.nearbyStoryTarget.contract.label}}
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6335](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6335)
-1622. Space · 调节大厅旧钟
+1654. Space · 调节大厅旧钟
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6340](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6340)
-1623. 请从道具栏拖动道具到{{storyTarget.contract.label}}。
+1655. 请从道具栏拖动道具到{{storyTarget.contract.label}}。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6696](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6696)
-1624. final\_chase
+1656. final\_chase
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6711](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6711)
-1625. 追逐中电梯已锁，请进入主楼梯。
+1657. 追逐中电梯已锁，请进入主楼梯。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6712](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6712)
-1626. 停电状态下电梯无法返程。带着黄铜分针组件，从二楼主楼梯下到一楼大厅。
+1658. 停电状态下电梯无法返程。带着黄铜分针组件，从二楼主楼梯下到一楼大厅。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6713](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6713)
-1627. 当前可继续观察；轿厢重放校准需要浅色操作。
+1659. 当前可继续观察；轿厢重放校准需要浅色操作。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6725](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6725)
-1628. 电梯的历史片段只保留上行记录。请从三楼主楼梯返回二楼。
+1660. 电梯的历史片段只保留上行记录。请从三楼主楼梯返回二楼。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6732](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6732)
-1629. 先在三楼晨间教室记录桌椅、入口与投影边界。
+1661. 先在三楼晨间教室记录桌椅、入口与投影边界。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6744](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6744)
-1630. A 楼主电梯
+1662. A 楼主电梯
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6797](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6797)
-1631. 18:50 运行复核
+1663. 18:50 运行复核
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6800](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6800)
-1632. ↑↓ 选层 · Enter 执行 · Space 复核 · Esc 离开
+1664. ↑↓ 选层 · Enter 执行 · Space 复核 · Esc 离开
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6872](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6872)
-1633. 18:50 / 一号电梯运行档案
+1665. 18:50 / 一号电梯运行档案
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6890](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6890)
-1634. 同步一楼开门记录
+1666. 同步一楼开门记录
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6894](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6894)
-1635. 调整蓝色门体区间，让它完整覆盖黄色人物进入区间。
+1667. 调整蓝色门体区间，让它完整覆盖黄色人物进入区间。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6897](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6897)
-1636. 门体开放
+1668. 门体开放
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6901](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6901)
-1637. 人物进入
+1669. 人物进入
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6904](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6904)
-1638. 记录起点
+1670. 记录起点
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6907](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6907)
-1639. 记录结束
+1671. 记录结束
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6910](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6910)
-1640. 提前 1 秒
+1672. 提前 1 秒
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6949](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6949)
-1641. 重放并校验
+1673. 重放并校验
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6950](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6950)
-1642. 延后 1 秒
+1674. 延后 1 秒
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6951](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6951)
-1643. ← / → 调整重放起点 Enter 校验 Esc 返回
+1675. ← / → 调整重放起点 Enter 校验 Esc 返回
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:6952](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L6952)
-1644. 当前门体记录 {{formatClock(doorStart)}}—{{formatClock(doorEnd)}} / 8 秒
+1676. 当前门体记录 {{formatClock(doorStart)}}—{{formatClock(doorEnd)}} / 8 秒
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7002](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7002)
-1645. 人物进入记录 {{formatClock(playerStart)}}—{{formatClock(playerEnd)}} / 6 秒
+1677. 人物进入记录 {{formatClock(playerStart)}}—{{formatClock(playerEnd)}} / 6 秒
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7003](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7003)
-1646. 校验结果：覆盖不完整，请调整重放起点。
+1678. 校验结果：覆盖不完整，请调整重放起点。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7005](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7005)
-1647. 白线：轿厢于 {{formatClock(doorStart + CHAPTER\_FOUR\_ELEVATOR.riseOffsetSeconds)}} 开始上行。
+1679. 白线：轿厢于 {{formatClock(doorStart + CHAPTER\_FOUR\_ELEVATOR.riseOffsetSeconds)}} 开始上行。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7006](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7006)
-1648. 当前层
+1680. 当前层
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7070](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7070)
-1649. 可直达
+1681. 可直达
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7074](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7074)
-1650. 楼梯绕行
+1682. 楼梯绕行
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7075](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7075)
-1651. 跨层档案 {{recordCount}}/3{{chainSolved ? " · 已复核" : ""}}
+1683. 跨层档案 {{recordCount}}/3{{chainSolved ? " · 已复核" : ""}}
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7085](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7085)
-1652. □ 一楼记录来自门外三条时间轨。
+1684. □ 一楼记录来自门外三条时间轨。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7095](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7095)
-1653. 离开轿厢后切到深色观察，在门前完成记录。
+1685. 离开轿厢后切到深色观察，在门前完成记录。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7095](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7095)
-1654. □ 本层门机日志尚未归档。
+1686. □ 本层门机日志尚未归档。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7097](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7097)
-1655. 当前可直接读取，记录后不会限制其他楼层的调查顺序。
+1687. 当前可直接读取，记录后不会限制其他楼层的调查顺序。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7098](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7098)
-1656. 离开轿厢切到深色观察，再进入电梯读取本层记录。
+1688. 离开轿厢切到深色观察，再进入电梯读取本层记录。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7099](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7099)
-1657. □ 到达该层后可读取门机记录。
+1689. □ 到达该层后可读取门机记录。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7101](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7101)
-1658. 线索归档顺序不影响楼层通行。
+1690. 线索归档顺序不影响楼层通行。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7101](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7101)
-1659. □ 轿厢没有该层的历史开门记录。
+1691. □ 轿厢没有该层的历史开门记录。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7102](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7102)
-1660. 先乘到三楼，再从主楼梯完成空间校准并进入二楼。
+1692. 先乘到三楼，再从主楼梯完成空间校准并进入二楼。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7102](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7102)
-1661. 本层记录已归档
+1693. 本层记录已归档
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7106](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7106)
-1662. 离开轿厢读取一楼门体轨
+1694. 离开轿厢读取一楼门体轨
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7108](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7108)
-1663. 读取{{record.recordTitle}}
+1695. 读取{{record.recordTitle}}
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7110](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7110)
-1664. 需切换深色观察
+1696. 需切换深色观察
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7111](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7111)
-1665. 前往 {{record.displayFloor}}F
+1697. 前往 {{record.displayFloor}}F
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7113](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7113)
-1666. 查看主楼梯绕行说明
+1698. 查看主楼梯绕行说明
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7114](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7114)
-1667. 停靠链已复核
+1699. 停靠链已复核
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7121](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7121)
-1668. 复核停靠链
+1700. 复核停靠链
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7123](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7123)
-1669. 运行复核 {{recordCount}}/3
+1701. 运行复核 {{recordCount}}/3
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7124](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7124)
-1670. 二楼外呼存在，但轿厢没有开门记录。先乘到三楼，再从错位主楼梯进入二楼。
+1702. 二楼外呼存在，但轿厢没有开门记录。先乘到三楼，再从错位主楼梯进入二楼。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7161](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7161)
-1671. 当前已在 {{targetFloor}}F
+1703. 当前已在 {{targetFloor}}F
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7165](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7165)
-1672. 拨钟操作已取消，旧钟和纸条均已恢复，可重试。
+1704. 拨钟操作已取消，旧钟和纸条均已恢复，可重试。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7297](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7297)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7330](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7330)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7345](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7345)
-1673. 最终拨钟条件尚未满足，可重试。
+1705. 最终拨钟条件尚未满足，可重试。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7390](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7390)
-1674. 时间校准至 07:54。纸条带走了最后一分钟。
+1706. 时间校准至 07:54。纸条带走了最后一分钟。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7435](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7435)
-1675. 传送带停机确认超时，已恢复到当前进度，将自动重试。
+1707. 传送带停机确认超时，已恢复到当前进度，将自动重试。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7737](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7737)
-1676. 记录叠合确认超时，已回到已完成的教室布局，将自动重试。
+1708. 记录叠合确认超时，已回到已完成的教室布局，将自动重试。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7743](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7743)
-1677. 最终拨钟确认超时，已恢复转动的旧钟和签到纸条，可重试。
+1709. 最终拨钟确认超时，已恢复转动的旧钟和签到纸条，可重试。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7750](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7750)
-1678. 旧钟没有响应，请再次确认当前刻度。
+1710. 旧钟没有响应，请再次确认当前刻度。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7767](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7767)
-1679. 当前楼层状态已经同步。
+1711. 当前楼层状态已经同步。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7850](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7850)
-1680. 请切回浅色操作后再移动。
+1712. 请切回浅色操作后再移动。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7851](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7851)
-1681. 当前剧情阶段没有开放这条楼层通道。
+1713. 当前剧情阶段没有开放这条楼层通道。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7852](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7852)
-1682. 当前无法前往该楼层。
+1714. 当前无法前往该楼层。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7853](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7853)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7858](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7858)
-1683. 当前剧情条件尚未满足。
+1715. 当前剧情条件尚未满足。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7877](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7877)；[src/scenes/rpg/RpgGameHost.tsx:465](../src/scenes/rpg/RpgGameHost.tsx#L465)
-1684. 两条区间边缘仍未对齐，调整重放起点后再试。
+1716. 两条区间边缘仍未对齐，调整重放起点后再试。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7894](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7894)
-1685. {{detail}}已恢复到当前进度，将自动重试。
+1717. {{detail}}已恢复到当前进度，将自动重试。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7912](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7912)
-1686. {{detail}}已回到已完成的教室布局，将自动重试。
+1718. {{detail}}已回到已完成的教室布局，将自动重试。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7918](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7918)
-1687. {{detail}}已恢复转动的旧钟和签到纸条，可重试。
+1719. {{detail}}已恢复转动的旧钟和签到纸条，可重试。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7925](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7925)
-1688. oldClockHourHand
+1720. oldClockHourHand
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7934](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7934)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8012](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8012)
-1689. finalMinute
+1721. finalMinute
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7938](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7938)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8266](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8266)
-1690. campusCard
+1722. campusCard
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7942](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7942)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8276](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8276)
-1691. attendanceRecordPaper
+1723. attendanceRecordPaper
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7946](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7946)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8286](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8286)
-1692. shortPryBar
+1724. shortPryBar
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7950](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7950)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8141](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8141)
-1693. universalLubricatingOil
+1725. universalLubricatingOil
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7955](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7955)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8153](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8153)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8162](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8162)
-1694. 传送带停机结果缺少已提交记录，已恢复到当前进度，将自动重试。
+1726. 传送带停机结果缺少已提交记录，已恢复到当前进度，将自动重试。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:7997](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L7997)
-1695. 金属时针已装回，钟面多出一处能够稳定停住的刻度。
+1727. 金属时针已装回，钟面多出一处能够稳定停住的刻度。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8014](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8014)
-1696. classroom104.chalk\_residual
+1728. classroom104.chalk\_residual
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8055](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8055)
-1697. classroom105.terminal\_replay
+1729. classroom105.terminal\_replay
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8063](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8063)
-1698. 已记录门体开放、人物进入和轿厢上行三条时间轨。轿厢重放校准可独立在浅色操作中完成。
+1730. 已记录门体开放、人物进入和轿厢上行三条时间轨。轿厢重放校准可独立在浅色操作中完成。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8071](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8071)
-1699. room204.a3\_reference\_recorded
+1731. room204.a3\_reference\_recorded
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8085](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8085)
-1700. room204.residual\_recorded
+1732. room204.residual\_recorded
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8093](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8093)
-1701. 已复原 {{countCompletedRoom204Groups( this.bridge.getState().chapter4.room204Placements )}}/{{ROOM204\_GROUP\_ORDER.length}}
+1733. 已复原 {{countCompletedRoom204Groups( this.bridge.getState().chapter4.room204Placements )}}/{{ROOM204\_GROUP\_ORDER.length}}
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8101](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8101)
-1702. 记录叠合结果缺少已提交记录，将自动重试。
+1734. 记录叠合结果缺少已提交记录，将自动重试。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8111](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8111)
-1703. clockPositioningPlate
+1735. clockPositioningPlate
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8125](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8125)
-1704. 定位片已归位，钟面另一处刻度不再回弹。
+1736. 定位片已归位，钟面另一处刻度不再回弹。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8127](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8127)
-1705. 轮罩已打开，油瓶已取出，短撬棍已消耗。
+1737. 轮罩已打开，油瓶已取出，短撬棍已消耗。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8143](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8143)
-1706. 保洁车轮与旧钟齿轮已完成维修，润滑油已用完。
+1738. 保洁车轮与旧钟齿轮已完成维修，润滑油已用完。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8155](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8155)
-1707. 旧钟齿轮已恢复转动。
+1739. 旧钟齿轮已恢复转动。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8164](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8164)
-1708. 已回到大厅安全点。维修进度和道具均已保留。
+1740. 已回到大厅安全点。维修进度和道具均已保留。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8177](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8177)
-1709. 偷走最后一分钟的提交不完整，已恢复旧钟和纸条，可重试。
+1741. 偷走最后一分钟的提交不完整，已恢复旧钟和纸条，可重试。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8195](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8195)
-1710. chase.retry
+1742. chase.retry
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8240](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8240)
-1711. lecture.recovered\_result
+1743. lecture.recovered\_result
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8251](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8251)
-1712. 最后一分钟已装回旧钟。时间已恢复到 07:55。
+1744. 最后一分钟已装回旧钟。时间已恢复到 07:55。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8268](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8268)
-1713. 校园卡已通过签到校验。
+1745. 校园卡已通过签到校验。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8278](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8278)
-1714. 签到记录已提交。
+1746. 签到记录已提交。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8288](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8288)
-1715. 跨层运行链已复核：轿厢从一楼直达三楼，二楼外呼没有得到开门响应。定位片的楼层基准已确认。
+1747. 跨层运行链已复核：轿厢从一楼直达三楼，二楼外呼没有得到开门响应。定位片的楼层基准已确认。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8310](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8310)
-1716. {{record.displayFloor}}F {{record.recordTitle}}已归档。{{record.evidence\[0\]}}
+1748. {{record.displayFloor}}F {{record.recordTitle}}已归档。{{record.evidence\[0\]}}
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8322](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8322)
-1717. 三层运行记录已经齐全。切回浅色操作后，可在面板中复核停靠链。
+1749. 三层运行记录已经齐全。切回浅色操作后，可在面板中复核停靠链。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8327](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8327)
-1718. 当前教室没有新增状态记录。
+1750. 当前教室没有新增状态记录。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8349](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8349)
-1719. 记录回来了，你没有回到记录发生的时候。
+1751. 记录回来了，你没有回到记录发生的时候。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8548](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8548)
-1720. 旧钟停在 22:45。表盘能被拨动，但响应方向和幅度都不对。
+1752. 旧钟停在 22:45。表盘能被拨动，但响应方向和幅度都不对。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8578](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8578)
-1721. 旧钟停在 12:25。
+1753. 旧钟停在 12:25。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8660](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8660)
-1722. 无法使用该道具。
+1754. 无法使用该道具。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8867](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8867)
-1723. invalid\_item
+1755. invalid\_item
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8868](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8868)
-1724. 未命中有效目标。
+1756. 未命中有效目标。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8876](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8876)
-1725. missed\_target
+1757. missed\_target
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8876](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8876)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8890](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8890)
-1726. 未命中当前阶段的可见道具目标。
+1758. 未命中当前阶段的可见道具目标。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8890](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8890)
-1727. {{target.contract.label}}需要另一件道具。
+1759. {{target.contract.label}}需要另一件道具。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8896](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8896)
-1728. wrong\_item
+1760. wrong\_item
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:8896](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L8896)
-1729. 交互失败，请重新靠近目标后重试。
+1761. 交互失败，请重新靠近目标后重试。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:9015](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L9015)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:9020](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L9020)；[src/scenes/rpg/RpgGameHost.tsx:1228](../src/scenes/rpg/RpgGameHost.tsx#L1228)
-1730. locked
+1762. locked
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:9015](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L9015)
-1731. {{CHAPTER\_FOUR\_WARMUP\_PHASE\_LABELS\[failedPhase\]}}资源准备失败（{{failedCount}} 项）· R 重试
+1763. {{CHAPTER\_FOUR\_WARMUP\_PHASE\_LABELS\[failedPhase\]}}资源准备失败（{{failedCount}} 项）· R 重试
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:9963](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L9963)
-1732. 比较三段记录，再分别确认实际到站层和未响应外呼层。
+1764. 比较三段记录，再分别确认实际到站层和未响应外呼层。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10058](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10058)
-1733. 停靠链已复核：1F 起行，轿厢越过 2F 后在 3F 到站；2F 外呼未得到响应。
+1765. 停靠链已复核：1F 起行，轿厢越过 2F 后在 3F 到站；2F 外呼未得到响应。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10078](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10078)
-1734. 还缺 {{3 - chapterFourElevatorCollectedRecordCount(state.chapter4.factIds)}} 段楼层记录。三段可按任意顺序归档。
+1766. 还缺 {{3 - chapterFourElevatorCollectedRecordCount(state.chapter4.factIds)}} 段楼层记录。三段可按任意顺序归档。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10082](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10082)
-1735. 记录已经齐全。离开轿厢切回浅色操作，再打开面板完成运行复核。
+1767. 记录已经齐全。离开轿厢切回浅色操作，再打开面板完成运行复核。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10086](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10086)
-1736. 复原 18:50 停靠链
+1768. 复原 18:50 停靠链
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10097](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10097)
-1737. 3/3 记录齐全
+1769. 3/3 记录齐全
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10100](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10100)
-1738. 门开八秒；18:50:06 转为上行
+1770. 门开八秒；18:50:06 转为上行
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10105](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10105)
-1739. 下行外呼亮起；门机没有开门记录
+1771. 下行外呼亮起；门机没有开门记录
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10106](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10106)
-1740. 到站铃响；随后门机完整开启
+1772. 到站铃响；随后门机完整开启
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10107](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10107)
-1741. 轿厢离开 1F 后实际到站：
+1773. 轿厢离开 1F 后实际到站：
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10136](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10136)
-1742. 有外呼但未得到开门响应：
+1774. 有外呼但未得到开门响应：
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10139](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10139)
-1743. 提交运行复核
+1775. 提交运行复核
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10179](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10179)
-1744. ←→ 选择实际到站 · ↑↓ 选择未响应层 · Enter 提交 · Esc 返回
+1776. ←→ 选择实际到站 · ↑↓ 选择未响应层 · Enter 提交 · Esc 返回
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10182](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10182)
-1745. 二楼没有历史开门记录。先到三楼记录晨间教室布局，再从主楼梯完成空间校准进入二楼。
+1777. 二楼没有历史开门记录。先到三楼记录晨间教室布局，再从主楼梯完成空间校准进入二楼。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10199](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10199)
-1746. {{record.displayFloor}}F {{record.recordTitle}}已经归档。
+1778. {{record.displayFloor}}F {{record.recordTitle}}已经归档。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10208](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10208)
-1747. 一楼起行记录位于电梯门外。离开轿厢后切到深色观察，在门前读取三条时间轨。
+1779. 一楼起行记录位于电梯门外。离开轿厢后切到深色观察，在门前读取三条时间轨。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10214](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10214)
-1748. 门机旧记录只在深色观察中可读。离开轿厢切换模式后再进入电梯。
+1780. 门机旧记录只在深色观察中可读。离开轿厢切换模式后再进入电梯。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10219](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10219)
-1749. × 返回
+1781. × 返回
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10264](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10264)；[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10412](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10412)
-1750. 旧钟已经停在这一格；另一圈刻痕刚刚变得清晰。
+1782. 旧钟已经停在这一格；另一圈刻痕刚刚变得清晰。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10291](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10291)
-1751. 这处刻度仍会回弹。
+1783. 这处刻度仍会回弹。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10295](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10295)
-1752. 齿轮正在咬合……
+1784. 齿轮正在咬合……
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10298](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10298)
-1753. 当前
+1785. 当前
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10342](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10342)
-1754. 刻痕清晰
+1786. 刻痕清晰
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10342](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10342)
-1755. 钟面暂时没有出现新的稳定刻度。
+1787. 钟面暂时没有出现新的稳定刻度。
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10378](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10378)
-1756. 转动外圈，比较能够停住的刻度
+1788. 转动外圈，比较能够停住的刻度
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10403](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10403)
-1757. 固定这一刻度
+1789. 固定这一刻度
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10504](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10504)
-1758. 暂不调节
+1790. 暂不调节
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10508](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10508)
-1759. ← / → 选择刻度 · Enter 确认 · Esc 返回
+1791. ← / → 选择刻度 · Enter 确认 · Esc 返回
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10512](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10512)
-1760. 传递过程
+1792. 传递过程
    来源：[src/scenes/rpg/ChapterFourTemporalMazeScene.ts:10841](../src/scenes/rpg/ChapterFourTemporalMazeScene.ts#L10841)
-1761. 当前目标需要另一件道具。
+1793. 当前目标需要另一件道具。
    来源：[src/scenes/rpg/RpgGameHost.tsx:461](../src/scenes/rpg/RpgGameHost.tsx#L461)
-1762. 距离目标太远，请靠近可见交互区域。
+1794. 距离目标太远，请靠近可见交互区域。
    来源：[src/scenes/rpg/RpgGameHost.tsx:462](../src/scenes/rpg/RpgGameHost.tsx#L462)
-1763. 当前组合与已记录的线索不一致。
+1795. 当前组合与已记录的线索不一致。
    来源：[src/scenes/rpg/RpgGameHost.tsx:463](../src/scenes/rpg/RpgGameHost.tsx#L463)
-1764. ready
+1796. ready
    来源：[src/scenes/rpg/RpgGameHost.tsx:651](../src/scenes/rpg/RpgGameHost.tsx#L651)
-1765. 三楼参照记录尚未完成，请先在深色观察中保存桌影边缘与墙面中心。
+1797. 三楼参照记录尚未完成，请先在深色观察中保存桌影边缘与墙面中心。
    来源：[src/scenes/rpg/RpgGameHost.tsx:805](../src/scenes/rpg/RpgGameHost.tsx#L805)
-1766. 正在写入二楼到达记录…
+1798. 正在写入二楼到达记录…
    来源：[src/scenes/rpg/RpgGameHost.tsx:857](../src/scenes/rpg/RpgGameHost.tsx#L857)
-1767. 楼梯校准结果未能写入，请重试。
+1799. 楼梯校准结果未能写入，请重试。
    来源：[src/scenes/rpg/RpgGameHost.tsx:875](../src/scenes/rpg/RpgGameHost.tsx#L875)
-1768. 四层错位楼梯已连通，当前位置已经更新。
+1800. 四层错位楼梯已连通，当前位置已经更新。
    来源：[src/scenes/rpg/RpgGameHost.tsx:881](../src/scenes/rpg/RpgGameHost.tsx#L881)
-1769. 灯光播放记录未能确认，正在重新播放本段。
+1801. 灯光播放记录未能确认，正在重新播放本段。
    来源：[src/scenes/rpg/RpgGameHost.tsx:914](../src/scenes/rpg/RpgGameHost.tsx#L914)
-1770. 正在确认最终收束…
+1802. 正在确认最终收束…
    来源：[src/scenes/rpg/RpgGameHost.tsx:919](../src/scenes/rpg/RpgGameHost.tsx#L919)
-1771. 回答未能保存，请重试。
+1803. 回答未能保存，请重试。
    来源：[src/scenes/rpg/RpgGameHost.tsx:942](../src/scenes/rpg/RpgGameHost.tsx#L942)
-1772. 最终收束未能确认，灯光将重新播放。
+1804. 最终收束未能确认，灯光将重新播放。
    来源：[src/scenes/rpg/RpgGameHost.tsx:963](../src/scenes/rpg/RpgGameHost.tsx#L963)
-1773. 教学楼交互请求缺少有效编号或包含多余字段。请重试。
+1805. 教学楼交互请求缺少有效编号或包含多余字段。请重试。
    来源：[src/scenes/rpg/RpgGameHost.tsx:1253](../src/scenes/rpg/RpgGameHost.tsx#L1253)
-1774. 当前教学楼交互请求无效。
+1806. 当前教学楼交互请求无效。
    来源：[src/scenes/rpg/RpgGameHost.tsx:1254](../src/scenes/rpg/RpgGameHost.tsx#L1254)
-1775. 这次教学楼交互已经处理，未重复写入。
+1807. 这次教学楼交互已经处理，未重复写入。
    来源：[src/scenes/rpg/RpgGameHost.tsx:1260](../src/scenes/rpg/RpgGameHost.tsx#L1260)；[src/scenes/rpg/RpgGameHost.tsx:1346](../src/scenes/rpg/RpgGameHost.tsx#L1346)
-1776. 第四章序幕交接仅由 App gate 提交。
+1808. 第四章序幕交接仅由 App gate 提交。
    来源：[src/scenes/rpg/RpgGameHost.tsx:1267](../src/scenes/rpg/RpgGameHost.tsx#L1267)
-1777. 当前交互位置无法由活动场景重新确认，请靠近可见目标后重试。
+1809. 当前交互位置无法由活动场景重新确认，请靠近可见目标后重试。
    来源：[src/scenes/rpg/RpgGameHost.tsx:1294](../src/scenes/rpg/RpgGameHost.tsx#L1294)
-1778. 无目标交互不得携带运行时几何。
+1810. 无目标交互不得携带运行时几何。
    来源：[src/scenes/rpg/RpgGameHost.tsx:1337](../src/scenes/rpg/RpgGameHost.tsx#L1337)
-1779. 教学楼交互处理失败，请重试。
+1811. 教学楼交互处理失败，请重试。
    来源：[src/scenes/rpg/RpgGameHost.tsx:1350](../src/scenes/rpg/RpgGameHost.tsx#L1350)
-1780. superseded
+1812. superseded
    来源：[src/scenes/rpg/RpgGameHost.tsx:1371](../src/scenes/rpg/RpgGameHost.tsx#L1371)
-1781. 配电请求未被接受，请重试。
+1813. 配电请求未被接受，请重试。
    来源：[src/scenes/rpg/RpgGameHost.tsx:1458](../src/scenes/rpg/RpgGameHost.tsx#L1458)
-1782. 区域供电状态已同步。
+1814. 区域供电状态已同步。
    来源：[src/scenes/rpg/RpgGameHost.tsx:1467](../src/scenes/rpg/RpgGameHost.tsx#L1467)
-1783. 当前组合与现场痕迹不一致，可以继续调整。
+1815. 当前组合与现场痕迹不一致，可以继续调整。
    来源：[src/scenes/rpg/RpgGameHost.tsx:2348](../src/scenes/rpg/RpgGameHost.tsx#L2348)
-1784. 三项判断中仍有矛盾，请重新核对现场现象。
+1816. 三项判断中仍有矛盾，请重新核对现场现象。
    来源：[src/scenes/rpg/RpgGameHost.tsx:2416](../src/scenes/rpg/RpgGameHost.tsx#L2416)
-1785. loading
+1817. loading
    来源：[src/scenes/rpg/RpgGameHost.tsx:2458](../src/scenes/rpg/RpgGameHost.tsx#L2458)
-1786. 7:55 RPG runtime
+1818. 7:55 RPG runtime
    来源：[src/scenes/rpg/RpgGameHost.tsx:2525](../src/scenes/rpg/RpgGameHost.tsx#L2525)
-1787. 7:55 横屏游戏
+1819. 7:55 横屏游戏
    来源：[src/scenes/rpg/RpgGameHost.tsx:2545](../src/scenes/rpg/RpgGameHost.tsx#L2545)
-1788. 场景资源
+1820. 场景资源
    来源：[src/scenes/rpg/RpgGameHost.tsx:2582](../src/scenes/rpg/RpgGameHost.tsx#L2582)
-1789. 地图资源没有完整载入
+1821. 地图资源没有完整载入
    来源：[src/scenes/rpg/RpgGameHost.tsx:2584](../src/scenes/rpg/RpgGameHost.tsx#L2584)
-1790. 正在准备地图
+1822. 正在准备地图
    来源：[src/scenes/rpg/RpgGameHost.tsx:2584](../src/scenes/rpg/RpgGameHost.tsx#L2584)
-1791. 本次缺少
+1823. 本次缺少
    来源：[src/scenes/rpg/RpgGameHost.tsx:2588](../src/scenes/rpg/RpgGameHost.tsx#L2588)
-1792. 项资源。网络恢复后重试，当前存档不会变化。
+1824. 项资源。网络恢复后重试，当前存档不会变化。
    来源：[src/scenes/rpg/RpgGameHost.tsx:2588](../src/scenes/rpg/RpgGameHost.tsx#L2588)
-1793. 聚焦手机
+1825. 聚焦手机
    来源：[src/scenes/rpg/RpgGameHost.tsx:2608](../src/scenes/rpg/RpgGameHost.tsx#L2608)；[src/scenes/rpg/RpgGameHost.tsx:2712](../src/scenes/rpg/RpgGameHost.tsx#L2712)
-1794. 全屏
+1826. 全屏
    来源：[src/scenes/rpg/RpgGameHost.tsx:2713](../src/scenes/rpg/RpgGameHost.tsx#L2713)
-1795. 地图视角
+1827. 地图视角
    来源：[src/scenes/rpg/RpgGameHost.tsx:2718](../src/scenes/rpg/RpgGameHost.tsx#L2718)
-1796. 定位人物
+1828. 定位人物
    来源：[src/scenes/rpg/RpgGameHost.tsx:2719](../src/scenes/rpg/RpgGameHost.tsx#L2719)
-1797. 放大地图
+1829. 放大地图
    来源：[src/scenes/rpg/RpgGameHost.tsx:2720](../src/scenes/rpg/RpgGameHost.tsx#L2720)
-1798. 地图物品栏
+1830. 地图物品栏
    来源：[src/scenes/rpg/RpgGameHost.tsx:2774](../src/scenes/rpg/RpgGameHost.tsx#L2774)
-1799. 物品栏
+1831. 物品栏
    来源：[src/scenes/rpg/RpgGameHost.tsx:2775](../src/scenes/rpg/RpgGameHost.tsx#L2775)
-1800. 查看电子校园卡
+1832. 查看电子校园卡
    来源：[src/scenes/rpg/RpgGameHost.tsx:2780](../src/scenes/rpg/RpgGameHost.tsx#L2780)
-1801. 单击查看校园卡信息，双击查看完整详情
+1833. 单击查看校园卡信息，双击查看完整详情
    来源：[src/scenes/rpg/RpgGameHost.tsx:2781](../src/scenes/rpg/RpgGameHost.tsx#L2781)
-1802. 已连接
+1834. 已连接
    来源：[src/scenes/rpg/RpgGameHost.tsx:2806](../src/scenes/rpg/RpgGameHost.tsx#L2806)
-1803. 待登记姓名
+1835. 待登记姓名
    来源：[src/scenes/rpg/RpgGameHost.tsx:2808](../src/scenes/rpg/RpgGameHost.tsx#L2808)
-1804. 待开始锻炼
+1836. 待开始锻炼
    来源：[src/scenes/rpg/RpgGameHost.tsx:2809](../src/scenes/rpg/RpgGameHost.tsx#L2809)
-1805. 启真湖垂钓：左右控线与收竿
+1837. 启真湖垂钓：左右控线与收竿
    来源：[src/scenes/rpg/RpgGameHost.tsx:2846](../src/scenes/rpg/RpgGameHost.tsx#L2846)
-1806. 按住收线，松手放线或起鱼
+1838. 按住收线，松手放线或起鱼
    来源：[src/scenes/rpg/RpgGameHost.tsx:2849](../src/scenes/rpg/RpgGameHost.tsx#L2849)
-1807. 向右控线
+1839. 向右控线
    来源：[src/scenes/rpg/RpgGameHost.tsx:2849](../src/scenes/rpg/RpgGameHost.tsx#L2849)
-1808. 向左控线
+1840. 向左控线
    来源：[src/scenes/rpg/RpgGameHost.tsx:2849](../src/scenes/rpg/RpgGameHost.tsx#L2849)
-1809. hook
+1841. hook
    来源：[src/scenes/rpg/RpgGameHost.tsx:2849](../src/scenes/rpg/RpgGameHost.tsx#L2849)
-1810. left
+1842. left
    来源：[src/scenes/rpg/RpgGameHost.tsx:2849](../src/scenes/rpg/RpgGameHost.tsx#L2849)
-1811. 交互
+1843. 交互
    来源：[src/scenes/rpg/RpgGameHost.tsx:2890](../src/scenes/rpg/RpgGameHost.tsx#L2890)
-1812. RPG操作键，键盘使用 WASD 移动和空格键交互
+1844. RPG操作键，键盘使用 WASD 移动和空格键交互
    来源：[src/scenes/rpg/RpgGameHost.tsx:2897](../src/scenes/rpg/RpgGameHost.tsx#L2897)
-1813. 204 教室空槽位
+1845. 204 教室空槽位
    来源：[src/scenes/rpg/RpgInteractionContract.ts:449](../src/scenes/rpg/RpgInteractionContract.ts#L449)
-1814. 烤箱旁的检修灯
+1846. 烤箱旁的检修灯
    来源：[src/scenes/rpg/RpgInteractionContract.ts:569](../src/scenes/rpg/RpgInteractionContract.ts#L569)
-1815. 面包坊传送带边缘
+1847. 面包坊传送带边缘
    来源：[src/scenes/rpg/RpgInteractionContract.ts:585](../src/scenes/rpg/RpgInteractionContract.ts#L585)
-1816. 传送带旁的金属时针
+1848. 传送带旁的金属时针
    来源：[src/scenes/rpg/RpgInteractionContract.ts:601](../src/scenes/rpg/RpgInteractionContract.ts#L601)
-1817. 清洁车卡住的轮罩
+1849. 清洁车卡住的轮罩
    来源：[src/scenes/rpg/RpgInteractionContract.ts:825](../src/scenes/rpg/RpgInteractionContract.ts#L825)
-1818. 面包店后场短撬棍
+1850. 面包店后场短撬棍
    来源：[src/scenes/rpg/RpgInteractionContract.ts:841](../src/scenes/rpg/RpgInteractionContract.ts#L841)
-1819. 清洁车轮罩
+1851. 清洁车轮罩
    来源：[src/scenes/rpg/RpgInteractionContract.ts:852](../src/scenes/rpg/RpgInteractionContract.ts#L852)
-1820. 清洁车里的通用润滑油
+1852. 清洁车里的通用润滑油
    来源：[src/scenes/rpg/RpgInteractionContract.ts:866](../src/scenes/rpg/RpgInteractionContract.ts#L866)
-1821. 清洁车车轮
+1853. 清洁车车轮
    来源：[src/scenes/rpg/RpgInteractionContract.ts:877](../src/scenes/rpg/RpgInteractionContract.ts#L877)
-1822. 签到校园卡读卡器
+1854. 签到校园卡读卡器
    来源：[src/scenes/rpg/RpgInteractionContract.ts:970](../src/scenes/rpg/RpgInteractionContract.ts#L970)；[src/scenes/rpg/RpgItemUseGuidance.ts:76](../src/scenes/rpg/RpgItemUseGuidance.ts#L76)
-1823. 签到记录纸槽
+1855. 签到记录纸槽
    来源：[src/scenes/rpg/RpgInteractionContract.ts:986](../src/scenes/rpg/RpgInteractionContract.ts#L986)；[src/scenes/rpg/RpgItemUseGuidance.ts:82](../src/scenes/rpg/RpgItemUseGuidance.ts#L82)
-1824. 先把黄铜分针组件装回大厅旧钟，再去签到口。
+1856. 先把黄铜分针组件装回大厅旧钟，再去签到口。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:85](../src/scenes/rpg/RpgItemUseGuidance.ts#L85)
-1825. 旧钟接近 07:55 时，这张纸会被剧情自动带走。
+1857. 旧钟接近 07:55 时，这张纸会被剧情自动带走。
    来源：[src/scenes/rpg/RpgItemUseGuidance.ts:88](../src/scenes/rpg/RpgItemUseGuidance.ts#L88)
 
 ## 结局
@@ -11871,27 +11935,27 @@
    来源：[src/data/items.config.json:404](../src/data/items.config.json#L404)
 1500. 签到记录纸
    来源：[src/data/items.config.json:410](../src/data/items.config.json#L410)
-1501. 一路追回的签到记录纸。签到处还要另验校园卡；为了证明来过，你已经来回跑了好几趟。
+1501. 从图书馆 022 一路追到北教大厅的早八签到条。边角还沾着启真湖的水气，纸上写着“本人马上回来”。等旧钟走到 07:55，把它交到一楼签到台右侧纸槽。
    来源：[src/data/items.config.json:411](../src/data/items.config.json#L411)
 1502. 旧时针
    来源：[src/data/items.config.json:417](../src/data/items.config.json#L417)
-1503. 从面包坊传送带里取出的旧时针，轴孔与大厅旧钟相配。不在配料表上，得赶紧装回去。
+1503. 从一楼面包坊传送带缝里取出的金属短针，轴孔正好匹配大厅旧钟。背面有一枚「书页刻印」，旁边刻着一行小字：晚课 18:30 开始。
    来源：[src/data/items.config.json:418](../src/data/items.config.json#L418)
 1504. 钟面定位片
    来源：[src/data/items.config.json:424](../src/data/items.config.json#L424)
-1505. 204 讲台抽屉里的透明定位片，边缘有两条短刻度，可装回大厅旧钟。缺这么一小片，校准还要跑好几个房间。
+1505. 从 204 讲台抽屉取出的透明定位片。带到 201 对齐旧压痕后，可以用它消除旧钟指针的晃动。背面的「扳手刻印」注明：夜间检修从 22:00 开始。
    来源：[src/data/items.config.json:425](../src/data/items.config.json#L425)
 1506. 短撬棍
    来源：[src/data/items.config.json:431](../src/data/items.config.json#L431)
-1507. 短撬棍，扁头能伸进保洁车轮罩的缝。工具已经找到，维修申请暂时省了。
+1507. 一把扁头短撬棍，撬头刚好能插进大厅保洁车的金属轮罩窄缝。
    来源：[src/data/items.config.json:432](../src/data/items.config.json#L432)
 1508. 通用润滑油
    来源：[src/data/items.config.json:438](../src/data/items.config.json#L438)
-1509. 一小瓶润滑油，能处理轮轴和旧钟齿轮的卡滞。“通用”限于机械，不含门禁权限。
+1509. 半瓶机械润滑油。撬开保洁车轮罩后滴在干涩的轮轴上，轮轴恢复转动时，旧钟的传动齿轮也会重新咬合。
    来源：[src/data/items.config.json:439](../src/data/items.config.json#L439)
 1510. 黄铜分针组件
    来源：[src/data/items.config.json:445](../src/data/items.config.json#L445)
-1511. 从 202 座椅间取回的黄铜分针组件，轴座磨损与大厅旧钟吻合。现在有了最后一分钟，还得自己带下楼。
+1511. 从二楼 202 阶梯座椅间找回的黄铜分针与卡簧。纸条用它带走了 07:54 到 07:55 的最后一分钟。带回一楼大厅装上旧钟，早八就真正到了。
    来源：[src/data/items.config.json:446](../src/data/items.config.json#L446)
 1512. 窗边豆浆
    来源：[src/data/phonePhotoCatalog.ts:41](../src/data/phonePhotoCatalog.ts#L41)

@@ -148,6 +148,54 @@ export const CHAPTER_FOUR_INSERTED_PUZZLES = Object.freeze({
   }
 } as const satisfies Readonly<Record<ChapterFourInsertedPuzzleId, ChapterFourInsertedPuzzleDefinition>>);
 
+const NATIVE_PUZZLE_COPY = {
+  duty_board: {
+    title: "一楼前台值班板归位",
+    locationLabel: "A1 · 前台签到板",
+    darkPrompt: "板上留着三道夹痕：104 的最旧，105 的在中间，主电梯的最新。",
+    lightPrompt: "按夹痕从旧到新，把 104、105、主电梯三张值班牌依次从左到右放回板上，再检查印泥接缝。",
+    successText: "104、105 与主电梯的三段记录已按先后顺序归档。"
+  },
+  archive_index: {
+    title: "旧导视胶片检索",
+    darkPrompt: "抽屉上的借阅印记指向 1991–1998 年档、A3 层、入口导视用途。",
+    lightPrompt: "选择「1991–1998」「A3」和「入口导视」，从索引柜取出对应的旧胶片。",
+    successText: "已从 301 档案柜取出 A3 旧导视胶片。"
+  },
+  media_alignment: {
+    title: "三楼新旧导视影像对齐",
+    darkPrompt: "旧胶片上的入口比现今位置偏左两格、偏下一格，还逆时针歪了四分之一圈。",
+    lightPrompt: "先摆好灯罩，再把胶片向右移两格、向上移一格，顺时针转 90°。入口、楼梯与荣誉墙的轮廓都重合后再录下影像。",
+    successText: "三楼旧导视胶片已与当前楼层的三个轮廓重合。"
+  },
+  positioning_calibration: {
+    title: "钟面定位片三轴压痕校准",
+    darkPrompt: "底座的旧压痕显示：横向回退两格，纵向前推一格。第三档压力留下了完整压印。",
+    lightPrompt: "先把从 204 取出的定位片放进夹具，再调到横向 −2、纵向 +1、压力 3 档，让三处触点同时压进旧痕。",
+    successText: "三处旧压痕已校准。取回定位片，带它回一楼旧钟。"
+  },
+  power_topology: {
+    title: "五区供电环路恢复",
+    darkPrompt: "停电前的线路是一个环：大厅、西走廊、面包坊后场、教室区、东走廊，最后接回大厅。",
+    lightPrompt: "推动接线块留守触点，对照五区环路检查哪几段接通。通道打开后，亲自走到出口完成检验。",
+    successText: "北教五区供电环路已恢复，配电面板的联动规律已记录。"
+  },
+  evacuation_route: {
+    title: "202 至主楼梯往返疏散验证",
+    darkPrompt: "鞋印从 202 门口出发，沿东走廊到交通核心转角，最后收在主楼梯下行口。",
+    lightPrompt: "用物件留守触点，沿鞋印走到记录点，再带回工具并返回入口。去程留出的通道也得能走回来。",
+    successText: "202 至主楼梯下行口的夜间往返路线已验证。"
+  }
+} as const;
+
+export function getChapterFourNativePuzzleDefinitions(): Record<ChapterFourInsertedPuzzleId, ChapterFourInsertedPuzzleDefinition> {
+  const definitions = {} as Record<ChapterFourInsertedPuzzleId, ChapterFourInsertedPuzzleDefinition>;
+  for (const id of CHAPTER_FOUR_INSERTED_PUZZLE_IDS) {
+    definitions[id] = { ...CHAPTER_FOUR_INSERTED_PUZZLES[id], ...NATIVE_PUZZLE_COPY[id] };
+  }
+  return definitions;
+}
+
 const DUTY_ORDER: readonly ChapterFourDutyBoardCardId[] = [
   "classroom_104",
   "classroom_105",
