@@ -11,8 +11,10 @@ const Ui = preload("res://scripts/ui/native_ui_theme.gd")
 const HASH_BLOCK_BYTES := 64 * 1024
 const HASH_SLICE_BYTES := 256 * 1024
 const HASH_SLICE_USEC := 1500
-const REQUIRED_HASH_SLICE_BYTES := 1024 * 1024
-const REQUIRED_HASH_SLICE_USEC := 6000
+# Required content owns a loading cover. Give it one frame-sized CPU budget:
+# a 6 ms slice amplified every hash step into a 100–250 ms Web render wait.
+const REQUIRED_HASH_SLICE_BYTES := 4 * 1024 * 1024
+const REQUIRED_HASH_SLICE_USEC := 16000
 var _verifications: Dictionary = {}
 var _host: Variant
 var _callback: JavaScriptObject
