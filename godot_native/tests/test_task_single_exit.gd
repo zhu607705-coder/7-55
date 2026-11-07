@@ -78,15 +78,14 @@ func run() -> void:
 				check(state.d.native.page==page,"return keeps originating phone page: "+page)
 				check(JSON.stringify(state.d)==original,"task open/return grants no progress or preference change")
 				check(shell.find_children("NativeModalOverlay","",true,false).is_empty(),"no stale overlay survives repeat dismissal")
-		# Real earned-card model is seeded only in this isolated presentation
-		# fixture. Subpage Back remains distinct from the sole top-level exit.
+		# Earned items and long history exercise the full journal in isolation.
 		await prepare_phone(dimensions)
 		state.d.items.headphone=true;state.d.items.waterDrop=true
 		state.d.native.log=[]
 		for index in 90:state.d.native.log.append({"text":"测试历史 %d：仅展示已知记录。"%index,"time":"fixture"})
 		var original: String=JSON.stringify(state.d)
 		await open_task();assert_single_exit()
-		check(find("JournalObservationCompare")!=null,"available earned cards keep optional clue comparison")
+		check(find("JournalObservationCompare")==null and find("JournalCluesCard")==null,"earned items never add a comparison section")
 		var controls: Array[Control]=[]
 		shell._modal_focus_controls(shell.modal,controls)
 		for index in controls.size()+2:
@@ -103,29 +102,8 @@ func run() -> void:
 		await take("%dx%d-single-task-exit-long-history"%[dimensions.x,dimensions.y])
 		await click(find("JournalResume"));await frames(5)
 		check(not is_instance_valid(shell.modal),"fixed return remains clickable at end of long history")
-		await open_task()
-		await click(await reveal_control("JournalObservationCompare"));await frames(8)
-		check(find("ObservationComparison")!=null,"task opens actual clue comparison subpage")
-		check(find("ObservationJournalReturn")!=null,"subpage retains distinct Back to journal")
-		check(find("PhoneNav_close")!=null,"comparison keeps shared close independently of Back")
-		await take("%dx%d-clue-back-preserved"%[dimensions.x,dimensions.y])
-		await click(await reveal_control("ObservationChoice_item_headphone"));await frames(5)
-		await click(await reveal_control("ObservationChoice_item_waterDrop"));await frames(5)
-		await click(await reveal_control("ObservationCompare"));await frames(5)
-		check(shell.observation_comparison_session.stage=="comparison","actual clue comparison still works")
-		check(find("ObservationReturn")!=null,"clue result retains its separate try-idea return")
-		var chosen: Array=shell.observation_comparison_session.selected.duplicate()
-		await click(await reveal_control("ObservationJournalReturn"));await frames(8)
-		assert_single_exit()
-		check(find("NativeJournal")!=null,"clue Back returns to task rather than exiting game overlay")
-		await take("%dx%d-single-task-exit-after-clue-back"%[dimensions.x,dimensions.y])
-		await click(await reveal_control("JournalObservationCompare"));await frames(8)
-		check(shell.observation_comparison_session.selected==chosen,"subpage round trip preserves selected clues")
-		await keyboard(KEY_ESCAPE)
-		check(not is_instance_valid(shell.modal),"clue Escape keeps original dismiss semantics")
-		check(JSON.stringify(state.d)==original,"history and clue navigation remain read-only")
-	# Keep the same open journal and clue sessions across portrait/landscape
-	# relayout. No re-mount, scroll ownership change or duplicate return is needed.
+		check(JSON.stringify(state.d)==original,"history navigation remains read-only")
+	# Keep the same open journal across portrait/landscape relayout.
 	await prepare_phone(Vector2i(390,844))
 	state.d.items.headphone=true;state.d.items.waterDrop=true
 	await open_task()
@@ -135,15 +113,6 @@ func run() -> void:
 		root.size=dimensions;shell.size=Vector2(dimensions);shell._layout();await frames(8)
 		assert_single_exit()
 		check(find("NativeJournal")==mounted,"resize retains the current task instance")
-	await click(await reveal_control("JournalObservationCompare"));await frames(8)
-	var comparison: Control=find("ObservationComparison")
-	for dimensions: Vector2i in [Vector2i(844,390),Vector2i(320,568),Vector2i(390,844)]:
-		if capture_enabled:DisplayServer.window_set_size(dimensions)
-		root.size=dimensions;shell.size=Vector2(dimensions);shell._layout();await frames(8)
-		check(find("ObservationComparison")==comparison,"resize retains the independent clue instance")
-		check(Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(shell.modal_panel.get_global_rect()),"clue sheet stays in resized viewport")
-	await click(await reveal_control("ObservationJournalReturn"));await frames(8)
-	assert_single_exit()
 	await keyboard(KEY_ESCAPE)
 	check(not is_instance_valid(shell.modal),"resized task still exits exactly once")
 	await shell.shutdown();shell.queue_free();await frames()

@@ -32,7 +32,8 @@ func slot(id: String) -> Control: return shell.inventory_buttons.get_node_or_nul
 func reveal(id: String) -> Control:
 	var item:=slot(id);shell.inventory_scroll.ensure_control_visible(item);await frames();return item
 func world_screen(local: Vector2) -> Vector2:
-	return shell.world_view.get_global_transform_with_canvas()*(local*shell.world_view.size/Vector2(shell.world_viewport.size))
+	var display: Rect2=shell.world_view.get_global_rect()
+	return display.position+local*display.size/shell.world.size
 func floor_touch_point(direction:=Vector2.RIGHT,distance:=64.0,allow_turn:=true) -> Vector2:
 	# Read authoritative geometry only to locate visible clear floor. The real
 	# root release still owns picking, path planning, collisions and movement.
@@ -112,9 +113,8 @@ func fixture(dimensions: Vector2i) -> void:
 	check(not shell.inventory_handle.visible and shell.inventory_dock.visible,"items are directly available without a bag toggle")
 	check(shell.world_view.get_global_rect().encloses(shell.inventory_dock.get_global_rect()),"inline items stay inside the actual game image")
 	check(shell.inventory_dock.visible and not slot("gamepad").disabled,"world owns a visible enabled item source")
-	# Compact exploration fills its physical frame; desktop retains 960x540.
-	var expected_viewport:Vector2i=Vector2i(shell.world_frame.size-Vector2(4,4)) if dimensions.x<1100 else Vector2i(960,540)
-	check(shell.world_viewport.size==expected_viewport and is_equal_approx(shell.world_frame.scale.x,shell.world_frame.scale.y),"active exploration viewport and uniform scale retained")
+	var rendered: Rect2 = root.get_final_transform()*shell.world_view.get_global_rect()
+	check(shell.world.size==Vector2(960,540) and rendered.size.is_equal_approx(Vector2(shell.world_viewport.size)) and is_equal_approx(shell.world_frame.scale.x,shell.world_frame.scale.y),"active exploration keeps its logical size and renders uniformly at display resolution")
 	check(shell.world_view.get_global_rect().encloses(shell.inventory_dock.get_global_rect()),"inventory overlays the actual map without resizing it")
 	check(Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(shell.inventory_dock.get_global_rect()),"bag fits physical screen")
 	check(slot("gamepad").get_global_rect().size.y>=44,"item retains44px physical height")

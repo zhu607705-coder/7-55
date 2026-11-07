@@ -567,12 +567,19 @@ async function assertLayout(label) {
   check(Math.abs(geometry.dpr - active.dpr) < .01, `${label}: actual browser pixel ratio matches the test`, geometry);
   check(Math.abs(s.viewport.width - geometry.canvas.width) <= 2 && Math.abs(s.viewport.height - geometry.canvas.height) <= 2, `${label}: logical Godot layout uses CSS dimensions on high-density screens`, { viewport: s.viewport, geometry });
   check(Math.abs(geometry.canvas.pixelWidth - geometry.canvas.width * geometry.dpr) <= 2 && Math.abs(geometry.canvas.pixelHeight - geometry.canvas.height * geometry.dpr) <= 2, `${label}: high-density rendering keeps the full backing resolution`, geometry);
+  if (s.world?.visible && !s.content?.blocking) {
+    const { rect, renderSize } = s.world;
+    const width = rect.width * geometry.canvas.pixelWidth / s.viewport.width;
+    const height = rect.height * geometry.canvas.pixelHeight / s.viewport.height;
+    check(renderSize && Math.abs(renderSize.x - width) <= 2 && Math.abs(renderSize.y - height) <= 2 && renderSize.x * 9 === renderSize.y * 16,
+      `${label}: world render target matches the visible physical pixels`, { rect, renderSize, width, height });
+  }
   if (s.activity?.kind === 'flc') {
     check(!phone || Object.keys(phone).length === 0, `${label}: optional FLC has no hidden story phone`, phone);
   } else if (phone) {
     check(Math.abs(phone.width / phone.height - .5) < .01, `${label}: phone has uniform 1:2 aspect`, phone);
     check(phone.x >= 0 && phone.y >= 0 && phone.x + phone.width <= s.viewport.width + 1 && phone.y + phone.height <= s.viewport.height + 1, `${label}: phone and its hit areas stay inside the logical viewport`, phone);
-    check(phone.height >= geometry.height * .85 || phone.width >= geometry.width * .9, `${label}: phone uses the available height or portrait width instead of shrinking to physical pixels`, { phone, geometry });
+    if (!s.world?.visible) check(phone.height >= geometry.height * .85 || phone.width >= geometry.width * .9, `${label}: phone uses the available height or portrait width instead of shrinking to physical pixels`, { phone, geometry });
   }
   return geometry;
 }
@@ -1706,6 +1713,7 @@ async function mobileWorldCase() {
     check(mobileDistance(before, value.world.player) > 1 && worldTarget(value, 'exit_door').distance <= worldTarget(value, 'exit_door').radius, 'desktop direction input moves the actual actor while the earned door remains nearby');
     await press(' ', 'Space');
     value = await poll(async () => { const s = await snapshot(); return s?.world?.scene_id === 'campus_bootstrap' ? s : null; }, 'PC Space retains the existing proximity-gated dorm exit', 60000);
+    await assertLayout(`${active.id} campus after dorm exit`);
     active.mobileWorld.coverage.push('PC direction + Space');
     active.mobileWorld.completed = true;
     active.screenshots.push(await screenshot(`${active.id}-pc-space-campus`));

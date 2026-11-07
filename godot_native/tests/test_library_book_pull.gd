@@ -40,7 +40,10 @@ func rejected_pull(dimensions:Vector2i,kind:String)->void:
 	check(state.d.items==items and not state.d.ui.libraryFinalsPuzzle.archivedRuleCollected,"dragging alone cannot grant evidence")
 	if kind=="hidden":shell.world.hide();await frames();shell.world.show()
 	elif kind=="focus":shell.world._notification(Control.NOTIFICATION_WM_WINDOW_FOCUS_OUT)
-	elif kind=="mode":state.toggle_mode()
+	elif kind=="mode":
+		# Exercise a mode change in a later visit, when the switch is available.
+		state.d.native.chapter=3
+		state.toggle_mode()
 	elif kind=="state":state.d=state.d.duplicate(true);shell.world.refresh_world()
 	await end_pull(end,touch,kind=="touch cancel")
 	check(not shell.world.library_layers.book.pulling and shell.world.library_layers.book.offset==0,"incomplete or canceled book returns to its slot")

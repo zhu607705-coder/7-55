@@ -127,7 +127,8 @@ func fixture(dimensions: Vector2i,reduced: bool=false) -> void:
 	reader_openings=0; action_start=actions.size()
 func world_screen(point: Vector2) -> Vector2:
 	var local: Vector2=(point-shell.world.camera)*shell.world.zoom+shell.world.size/2
-	return shell.world_view.get_global_transform_with_canvas()*(local*shell.world_view.size/Vector2(shell.world_viewport.size))
+	var display: Rect2=shell.world_view.get_global_rect()
+	return display.position+local*display.size/shell.world.size
 func shelf_screen() -> Vector2:
 	# Pick the actual rendered source cabinet polygon, not the legacy target
 	# radius or a target chosen because it accepts this particular item.

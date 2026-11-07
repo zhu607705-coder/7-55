@@ -3,7 +3,7 @@ const View=preload("res://scripts/presentation/library_story_view.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
 const Selected=preload("res://scripts/ui/selected_ui_theme.gd")
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
-const PaperInk=preload("res://scripts/ui/paper_ink_material.gd")
+const Notice=preload("res://scripts/ui/native_phone_notice.gd")
 var checks:=0
 var failures:=0
 class Line extends RefCounted:
@@ -28,10 +28,10 @@ func run()->void:
 				check(view.prompt.text==("点击 / 空格 / 回车确认" if confirmation else "点击 / 空格 / 回车继续"),"prompt follows actual source confirmation state")
 				for field:Label in [view.speaker,view.body,view.prompt]:
 					check(field.get_theme_font("font")==Selected.font("dialogue","heading" if field==view.speaker else "tip" if field==view.prompt else "body"),"render and layout use actual body font")
-				check(view.speaker.get_theme_color("font_color")==Selected.color("dialogue","heading"),"selected heading color")
+				check(view.speaker.get_theme_color("font_color")==Notice.INK,"speaker uses shared ink")
 				var paper:StyleBox=view.panel.get_theme_stylebox("panel")
-				check(paper is StyleBoxFlat and paper.bg_color==PaperInk.PAPER and paper.get_minimum_size()==Vector2.ZERO,"paper is drawn inside the original dialogue rectangle without layout padding")
-				check(Ui._contrast(view.body.get_theme_color("font_color"),PaperInk.PAPER)>=4.5,"dialogue body ink remains readable on paper")
+				check(paper is StyleBoxFlat and paper.bg_color==Notice.PAPER and paper.border_color==Notice.INK and paper.get_minimum_size()==Vector2.ZERO,"library paper matches the shared notice and existing rectangle")
+				check(Ui._contrast(view.body.get_theme_color("font_color"),Notice.PAPER)>=4.5,"dialogue body ink remains readable on paper")
 				check(view.mouse_filter==Control.MOUSE_FILTER_STOP and view.panel.mouse_filter==Control.MOUSE_FILTER_IGNORE,"existing modal pointer ownership retained")
 		view.session=null;view.tick();check(not view.visible,"empty session hides panel")
 		host.free()

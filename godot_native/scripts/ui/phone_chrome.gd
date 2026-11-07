@@ -143,6 +143,7 @@ var inventory_slots: VBoxContainer
 var inventory_tip: Label
 var brightness_veil: ColorRect
 var brightness_grade: Control
+var display_effects: Control
 var pixel_grid: PixelGrid
 var acquisition: Panel
 var inventory_open := false
@@ -269,10 +270,11 @@ func _build() -> void:
 	inventory_count=_label(inventory_handle,"0",9,Color.WHITE); inventory_count.name="InventoryCount"; inventory_count.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	inventory_count.add_theme_stylebox_override("normal",_style(RED,Color("101116"),2))
 	# Phone glass sits above apps, Control Center and phone documents without owning input.
-	brightness_veil=ColorRect.new(); brightness_veil.name="BrightnessVeil"; brightness_veil.mouse_filter=Control.MOUSE_FILTER_IGNORE; brightness_veil.z_index=200; brightness_veil.size=CONTENT_SIZE; add_child(brightness_veil)
+	display_effects=Control.new(); display_effects.name="PhoneDisplayEffects"; display_effects.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(display_effects)
+	brightness_veil=ColorRect.new(); brightness_veil.name="BrightnessVeil"; brightness_veil.mouse_filter=Control.MOUSE_FILTER_IGNORE; brightness_veil.z_index=200; brightness_veil.size=CONTENT_SIZE; display_effects.add_child(brightness_veil)
 	# Capture and calibrate the completed phone after apps, artwork, notices,
 	# Control Center, documents and the manual dimmer have all been composed.
-	brightness_grade=DisplayGrade.new(); brightness_grade.name="PhoneDisplayGrade"; brightness_grade.size=CONTENT_SIZE; brightness_grade.z_index=201; add_child(brightness_grade)
+	brightness_grade=DisplayGrade.new(); brightness_grade.name="PhoneDisplayGrade"; brightness_grade.size=CONTENT_SIZE; brightness_grade.z_index=201; display_effects.add_child(brightness_grade)
 	pixel_grid=PixelGrid.new(); pixel_grid.name="PixelGrid"; pixel_grid.size=CONTENT_SIZE; pixel_grid.z_index=60; add_child(pixel_grid)
 	acquisition=Panel.new(); acquisition.name="InventoryAcquisition"; acquisition.mouse_filter=Control.MOUSE_FILTER_IGNORE; acquisition.size=Vector2(42,42); acquisition.pivot_offset=Vector2(21,21); acquisition.z_index=4; acquisition.visible=false
 	acquisition.add_theme_stylebox_override("panel",_style(Color("f7f1d7"),Color("101116"),2)); inventory.add_child(acquisition)
@@ -280,6 +282,9 @@ func _build() -> void:
 	for i in 3:
 		var particle:=ColorRect.new(); particle.color=Color("f0d54e"); particle.size=Vector2(6,6); particle.position=[Vector2(-12,4),Vector2(-20,18),Vector2(-8,31)][i]; particle.mouse_filter=Control.MOUSE_FILTER_IGNORE; acquisition.add_child(particle); _flight_particles.append(particle)
 	set_process(true)
+
+func set_display_covered(covered: bool) -> void:
+	if is_instance_valid(display_effects): display_effects.visible=not covered
 
 func set_display_brightness(value: float) -> void:
 	if is_instance_valid(brightness_veil):

@@ -40,11 +40,11 @@ export type RpgRealityMode = "light" | "dark";
  */
 export const RPG_REALITY_MODE_CONTRACT = {
   dark: {
-    label: "深色观察",
+    label: "深色模式",
     shortHint: "深色模式只读取线索和异常，不执行实体操作。"
   },
   light: {
-    label: "浅色操作",
+    label: "浅色模式",
     shortHint: "浅色模式执行移动、拖放、清洁、付款和设备操作。"
   }
 } as const satisfies Record<RpgRealityMode, {

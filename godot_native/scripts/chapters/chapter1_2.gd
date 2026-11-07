@@ -442,7 +442,8 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 			return _ok("系统要求你找回道具栏。校园地图里的寝室已经开放。")
 		"c2_enter_dorm":
 			if not a.dormHubUnlocked: return _ok("寝室尚未开放。")
-			return _scene(s, "dorm_hub", "蓝田六舍 · W12\n室友留言：你的校园卡压在右边书桌那摞纸旁边。")
+			var dorm_title: String = _content("act-one-bootstrap.content.json").dorm.title
+			return _scene(s, "dorm_hub", dorm_title + "\n室友留言：你的校园卡压在右边书桌那摞纸旁边。")
 		"c2_dorm_prop":
 			if s.native.scene!="dorm_hub" or not a.dormHubUnlocked or str(value) not in ["cabinet_open","lamp_01_on","lamp_03_on"]:return _ok("")
 			if not s.native.has("dorm_props"):s.native.dorm_props={"cabinet_open":false,"lamp_01_on":false,"lamp_03_on":false}

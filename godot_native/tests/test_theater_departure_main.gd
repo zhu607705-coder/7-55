@@ -50,7 +50,8 @@ func interact(using_touch:bool)->Control:
 	check(shell.world.nearby.get("id","")=="theater_exit","original physical exit is the actual nearby target")
 	if using_touch:
 		var local:Vector2=(Vector2(836,842)-shell.world.camera)*shell.world.zoom+shell.world.size/2
-		var point:Vector2=shell.world_view.get_global_transform_with_canvas()*(local*shell.world_view.size/Vector2(shell.world_viewport.size))
+		var display: Rect2=shell.world_view.get_global_rect()
+		var point:Vector2=display.position+local*display.size/shell.world.size
 		touch(point,true);await process_frame;touch(point,false)
 	else:
 		key(true);await process_frame;key(false)

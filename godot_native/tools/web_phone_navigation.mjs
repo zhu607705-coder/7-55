@@ -73,10 +73,15 @@ export async function phoneNavigationCase(h) {
   await click('HomeApp_cc98'); await page('cc98');
   await h.poll(async () => find(await read(), 'Cc98LoginExit'), 'unified authentication form');
   s = await read();
-  h.check(!s.visibleControls.some(c => /^Cc98HintFragment_/.test(c.name)), `${h.id}: no explicit password answer cards`);
+  h.check(!find(s, 'Cc98AttendantRemark') && !find(s, 'Cc98RevealHint'), `${h.id}: password hints start hidden`);
   await shot('auth-initial');
   await scrollTo('Cc98ReadCampusCard'); await click('Cc98ReadCampusCard');
   await h.poll(async () => (await read()).state.actOne.cc98Login.studentIdDiscovered, 'campus card read by original controller');
+  await click('Cc98AttendantIcon');
+  h.check(!find(await read(), 'Cc98AttendantRemark'), `${h.id}: one activation leaves the password hints hidden`);
+  await click('Cc98AttendantIcon');
+  await h.poll(async () => find(await read(), 'Cc98AttendantRemark'), 'second activation reveals the attendant');
+  h.check(find(await read(), 'Cc98LoginFeedback')?.text === '你惊动了认证值班员。', `${h.id}: landing shows the discovery line`);
   for (let index = 0; index < 3; index++) {
     await scrollTo('Cc98RevealHint'); await click('Cc98RevealHint');
     s = await h.poll(async () => { const v = await read(); return v.state.actOne.cc98Login.revealedHintCount === index + 1 ? v : null; }, `auth dialogue ${index + 1}`);

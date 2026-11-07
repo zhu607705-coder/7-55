@@ -13,18 +13,25 @@ const project=path.resolve(import.meta.dirname,'..'),root=path.dirname(project);
 const legacy=createValidationCatalog(project,'/fake/godot',{registrations:[]});
 const baseline=JSON.parse(fs.readFileSync(new URL('./fixtures/native_validation_baseline_33cc499.json',import.meta.url)));
 const baselineIds=new Set(baseline.stageIds);
+const retiredClueComparison=new Set(['test_observation_comparison_design.gd','test_observation_comparison_model.gd']);
 const historicalTimings=JSON.parse(fs.readFileSync(new URL('./fixtures/native_validation_timings_33cc499.json',import.meta.url))).durationMs;
 function assertHistoricalSubset(stages,base){
- // Preserve the immutable historical golden, allowing only this reviewed
- // runtime scheduling change. Its current value is checked before comparison.
+ // Compare against the immutable golden. Retired feature tests are absent
+ // from the live plan and reconstructed only for the historical digests.
  const subset=stages.filter(stage=>baselineIds.has(stage.id)).map(stage=>{
-  if(stage.id!=='test_canteen_queue_floor_tap.gd')return stage;
+  const portable=stage.command===process.execPath?{...stage,command:'node'}:stage;
+  if(stage.id!=='test_canteen_queue_floor_tap.gd')return portable;
   assert.equal(stage.exclusive,true,'The reviewed latency suite must retain its runtime barrier');
-  return {...stage,exclusive:false};
+  return {...portable,exclusive:false};
  });
- assert.deepEqual(subset.map(stage=>stage.id),baseline.stageIds,'Every historical stage remains, in historical relative order');
- assert.equal(digest(subset.map(stage=>stageDescriptor(stage,base))),baseline.descriptorSha256);
- assert.equal(createShardPlan(subset,base,{count:6,durations:historicalTimings}).sha256,baseline.partitionSha256);
+ assert.deepEqual(subset.map(stage=>stage.id),baseline.stageIds.filter(id=>!retiredClueComparison.has(id)),'Historical order allows only the retired clue comparison stages to be absent');
+ const byId=new Map(subset.map(stage=>[stage.id,stage]));
+ const history=baseline.stageIds.map(id=>byId.get(id)??{
+  id, label:id, command:'/fake/godot', args:['--headless','--path',path.join(base,'godot_native'),'--script',`res://tests/${id}`],
+  exclusive:false, dependencies:[],
+ });
+ assert.equal(digest(history.map(stage=>stageDescriptor(stage,base))),baseline.descriptorSha256);
+ assert.equal(createShardPlan(history,base,{count:6,durations:historicalTimings}).sha256,baseline.partitionSha256);
 }
 
 const spec=(id,extra={})=>({id,execution:'node',entry:`godot_native/tests/registered/${id}.mjs`,inputs:[`godot_native/tests/registered/${id}.mjs`],outputs:[],dependencies:[],...extra});
@@ -163,7 +170,7 @@ test('registered inputs precede prose and exact-test shortcuts; dependency consu
  assert.equal(unrelated.stages.length,5);assert.equal(unrelated.effectiveProfile,'changed');
 });
 
-test('historical comparison allows only the reviewed timing barrier, not other descriptor drift',()=>{
+test('historical comparison rejects descriptor drift beyond the reviewed changes',()=>{
  const target='test_canteen_queue_floor_tap.gd';
  for(const mutate of [
   stages=>{stages.find(s=>s.id===target).exclusive=false;},

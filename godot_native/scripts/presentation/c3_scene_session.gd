@@ -5,7 +5,7 @@ const PAPER_ORIGIN := Vector2(1053,302)
 const TRIGGER_RADIUS := 360.0
 const LibraryTextTiming = preload("res://scripts/presentation/library_story_session.gd")
 const CAPTIONS := {
-	"record_scan":"短暂加载后：", "mode_unlock":"获得功能：外观模式切换",
+	"record_scan":"短暂加载后：", "mode_unlock":"",
 	"paper_burst":"纸条突然从 022 座位详情页弹出，贴着图书馆窗缝飞走。",
 	"exit_observation":"切到深色模式，看到纸条脚印通向出口。",
 	"cart_clear":"切回浅色模式，发现出口被书车挡住。",

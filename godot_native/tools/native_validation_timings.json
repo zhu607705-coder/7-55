@@ -345,8 +345,6 @@
     "test_north_preview_gate.gd": 1675,
     "test_north_prop_fail_closed.gd": 1481,
     "test_notice_queue_lifecycle.gd": 3142,
-    "test_observation_comparison_design.gd": 1013,
-    "test_observation_comparison_model.gd": 732,
     "test_opening_audio_parity.gd": 4362,
     "test_phone_anchor01_absence.gd": 4176,
     "test_phone_anchor02_tiyi.gd": 4833,
