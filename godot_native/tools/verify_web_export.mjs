@@ -973,7 +973,14 @@ async function scrollLibraryRuleToClose() {
     const close = controls(value).find(c => c.name === 'LibraryWorldDocumentClose');
     if (!scroll || !close) throw new Error('The world rule document has no live scroll surface or close control');
     const s = scroll.rect, c = close.rect;
-    if (!close.disabled && c.y >= s.y && c.y + c.height <= s.y + s.height) return value;
+    if (!close.disabled && c.y >= s.y && c.y + c.height <= s.y + s.height) {
+      if (active.touch) {
+        const topLeft = await renderPoint({ x: c.x, y: c.y }, value);
+        const bottomRight = await renderPoint({ x: c.x + c.width, y: c.y + c.height }, value);
+        check(bottomRight.x - topLeft.x >= 44 && bottomRight.y - topLeft.y >= 44, `${active.id}: visible rule close control retains a 44 CSS-pixel touch target`, { topLeft, bottomRight });
+      }
+      return value;
+    }
     const from = await renderPoint({x: s.x + s.width * .8, y: s.y + s.height * .8}, value);
     const to = await renderPoint({x: s.x + s.width * .8, y: s.y + s.height * .25}, value);
     if (active.touch) {
@@ -1574,7 +1581,7 @@ async function directWorldCase(value) {
     check(value.world.zoom < beforeZoom && mobileFacts(value) === facts && mobileDistance(value.world.player, player) < .5, `${active.id}: ordinary pinch changes only the camera framing`, { beforeZoom, zoom: value.world.zoom });
   }
   const input = value.world.input, target = worldTarget(value), start = value.world.player;
-  check(value.world.mobile_exploration && input.stick === null && !input.stickRect.width && !input.confirmRect.width, `${active.id}: local direct scene has no fixed joystick or confirmation button`);
+  check(value.world.mobile_exploration && input.stick !== null && input.stickRect.width >= 44 && !input.confirmRect.width, `${active.id}: local direct scene has a visible movement stick and no confirmation button`);
   check(target.distance > target.radius && inRect(target.point, value.world.rect, 8), `${active.id}: real lamp begins visible and beyond its source proximity`, target);
   const beforeActions = input.dormPropActions, beforeLamp = lampOn(value);
   const css = await renderPoint(target.point, value);
@@ -1660,6 +1667,36 @@ async function directWorldCase(value) {
     check(value.world.input.dormPropActions === oldActions + 2 && lampOn(value) !== beforeLamp, `${active.id}: landscape direct target tap still submits exactly one action`);
     value = await assertBottomPlaque(value, 'direct-landscape-return');
   }
+  // Coexisting locomotion uses the same ordinary touch path at every configured
+  // DPR. Never select the retired no-approach branch to test the stick.
+  const stickFacts = mobileFacts(value), stickStartPlayer = value.world.player;
+  const stickRect = value.world.input.stickRect;
+  check(inRect({ x: stickRect.x, y: stickRect.y }, value.world.rect) && inRect({ x: stickRect.x + stickRect.width, y: stickRect.y + stickRect.height }, value.world.rect), `${active.id}: painted stick lies inside the actual playfield`);
+  await stickStart(value, { x: -1, y: 0 });
+  value = await assertStickHeld(value, 'direct-world locomotion');
+  value = await poll(async () => { const next = await snapshot(); return next?.sampleFrame > value.sampleFrame && mobileDistance(next.world.player, stickStartPlayer) > 1 ? next : null; }, 'ordinary joystick moves the real actor', 5000);
+  await worldTouches('touchEnd'); value = await assertWorldStopped(value, 'direct-stick-release');
+  check(mobileFacts(value) === stickFacts, `${active.id}: movement and release never confirm a source object or consume an item`);
+  await stickStart(value); value = await assertStickHeld(value, 'direct stick cancellation');
+  await worldTouches('touchCancel'); value = await assertWorldStopped(value, 'direct-stick-cancel');
+  await stickStart(value); value = await assertStickHeld(value, 'direct stick modal interruption');
+  await press('F10');
+  value = await poll(async () => { const next = await snapshot(); return next?.world?.input?.modalVisible ? next : null; }, 'settings opens while locomotion finger is held');
+  value = await assertWorldStopped(value, 'direct-stick-modal-before-release');
+  await worldTouches('touchEnd'); await clickControl('关闭'); value = await mobileSample(value);
+  await stickStart(value); value = await assertStickHeld(value, 'direct stick rotation');
+  // Neutralize while retaining the real owner, so rotation's no-teleport
+  // assertion does not count the last legitimate pre-resize walking frame.
+  const neutral = await renderPoint(value.world.input.stick, value);
+  await worldTouches('touchMove', [{ ...neutral, id: 1 }]);
+  value = await mobileSample(value);
+  check(value.world.input.owners.some(owner => owner.role === 'stick') && mobileDistance(value.world.touch_axis, { x: 0, y: 0 }) < .001, `${active.id}: rotation retains a real neutral stick owner`);
+  value = await rotateMobileWorld(value, true, 'direct-stick-portrait');
+  value = await assertWorldStopped(value, 'direct-stick-rotation');
+  await worldTouches('touchCancel'); await acceptPortraitFallback();
+  value = await rotateMobileWorld(value, false, 'direct-stick-landscape');
+  check(mobileFacts(value) === stickFacts, `${active.id}: stick interruption and rotation preserve all earned facts`);
+  active.mobileWorld.coverage.push('coexisting joystick movement and release', 'stick touchCancel', 'held stick modal cancellation', 'held stick rotation cancellation');
   const beforePhone = mobileFacts(value), playerBeforePhone = value.world.player;
   await clickControl('WorldPhoneButton', 'name');
   value = await poll(async () => { const next = await snapshot(); return next?.world?.visible === false && state(next)?.native?.page === 'phone_home' ? next : null; }, 'ordinary world corner returns to phone home');
