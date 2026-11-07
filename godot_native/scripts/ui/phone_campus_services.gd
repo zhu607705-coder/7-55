@@ -22,8 +22,8 @@ class Classroom extends Control:
 		draw_rect(Rect2(0,0,320,182),Color("e8e5db"))
 		draw_rect(Rect2(32,12,256,70),Color("455c51"));draw_rect(Rect2(32,12,256,70),Color("bcab87"),false,4)
 		var font=Type.body_font()
-		draw_string(font,Vector2(50,38),"f(x) = x²",HORIZONTAL_ALIGNMENT_LEFT,-1,17,Color("f3f1dc"))
-		draw_string(font,Vector2(50,63),"f′(x) = 2x",HORIZONTAL_ALIGNMENT_LEFT,-1,15,Color("f3f1dc"))
+		draw_string(font,Vector2(50,38),"f(x) = x²e²ˣ + ln(1+x³)",HORIZONTAL_ALIGNMENT_LEFT,-1,17,Color("f3f1dc"))
+		draw_string(font,Vector2(50,63),"f⁽⁶⁾(0) = ?",HORIZONTAL_ALIGNMENT_LEFT,-1,15,Color("f3f1dc"))
 		draw_line(Vector2(212,68),Vector2(212,25),Color("d2dccd"),1,true);draw_line(Vector2(195,63),Vector2(264,63),Color("d2dccd"),1,true)
 		var curve=PackedVector2Array()
 		for x in range(-17,37):curve.append(Vector2(212+x,62-x*x*.025))
@@ -109,7 +109,9 @@ func language(b,list: Control) -> void:
 	label(list,language_copy.ui.title,23)
 	label(list,language_copy.ui.subtitle,13,Color("60728a"))
 	var search=LineEdit.new();search.name="LanguageSearch";search.placeholder_text=language_copy.ui.search_placeholder
-	search.clear_button_enabled=true;search.custom_minimum_size.y=44;search.max_length=64;Type.apply_body(search)
+	search.clear_button_enabled=true;search.custom_minimum_size.y=44
+	Type.apply_body(search)
+	Ui.apply_input(search,Color.WHITE,Color("344349"),Color("e3e9eb"),20,14,Vector2(12,7));search.max_length=64;Type.apply_body(search)
 	Ui.apply_input(search,Color.WHITE,Color("263d56"),Color("c4d5eb"),7,roundi(15*scale),Vector2(12,10))
 	list.add_child(search)
 	var empty=label(list,language_copy.ui.no_results,15,Color("60728a"));empty.name="LanguageNoResults";empty.visible=false
@@ -144,37 +146,282 @@ func language(b,list: Control) -> void:
 			found=found or matches
 		empty.visible=not found)
 
+const CLASSROOM_ACCENT := Color("087f90")
+const CLASSROOM_DAY := 1793923200 # 2026-11-06 00:00 UTC, in-game calendar reference.
+
+# day, course, teacher, room, start minutes, end minutes, periods, status
+const LESSONS := [
+	[0,"微积分（甲）","苏老师","紫金港西1-201",480,575,"第1–2节","可回放"],
+	[1,"大学英语四","莫老师","紫金港东1-105",600,695,"第3–4节","已结束"],
+	[1,"工程图学","严老师","紫金港西2-308",810,1015,"第6–9节","已结束"],
+	[2,"线性代数","庄老师","紫金港东2-203",480,575,"第1–2节","已结束"],
+	[3,"中国近代史纲要","鲁老师","紫金港西2-101",810,905,"第6–7节","已结束"],
+	[4,"微积分（甲）","苏老师","紫金港西1-201",480,575,"第1–2节","上课中"],
+]
+const SLIDES := [
+	["00:01:15","高阶导数与泰勒展开","乘积与复合函数的高阶求导\n莱布尼茨公式与泰勒级数法\n随堂求解：指定点处的六阶导数"],
+	["00:09:30","莱布尼茨与展开公式","(uv)⁽ⁿ⁾ = Σ C(n,k) u⁽ᵏ⁾ v⁽ⁿ⁻ᵏ⁾\nf⁽ⁿ⁾(0) = n! · aₙ\nln(1+u) = u − u²/2 + u³/3 + O(u⁴)"],
+	["00:21:10","随堂求解六阶导数值","设 f(x) = x²e²ˣ + ln(1+x³)，求 f⁽⁶⁾(0)。\n乘积项：15 × 2 × 2⁴ = 480。\n对数项：6! × (−1/2) = −360。\n两项相加，得到多少？"],
+	["00:38:45","高阶求导方法小结","多项式乘积：用莱布尼茨公式截断零项。\n高次复合：从麦克劳林展开提取系数。\n下节：微分中值定理与洛必达法则。"],
+]
+const TRANSCRIPT := [
+	["00:01:15","同学们好，今天用高阶导数与泰勒公式解决复杂求值问题。"],
+	["00:09:30","直接连求六次计算量很大。遇到乘积用莱布尼茨公式，遇到复合可以试试泰勒展开。"],
+	["00:15:40","零点的 n 阶导数，等于麦克劳林展开中 x 的 n 次方项的系数乘以 n 的阶乘。"],
+	["00:21:10","来看随堂题，计算这个函数在零点的六阶导数。"],
+	["00:26:50","第一项在零点只剩 k 等于 2 的一项，算出来是 480。"],
+	["00:32:15","把 x 三次方代入对数展开，六次方项系数是负二分之一，乘上六的阶乘得到负 360。"],
+	["00:38:45","两部分相加，480 减去 360 等于 120，这就是随堂题的答案。"],
+	["00:43:20","课后请再推导一遍两种方法。下节课进入微分中值定理。"],
+]
+var classroom_lesson: int = 0
+
+func _lesson_time(minutes: int) -> String:
+	return "%02d:%02d" % [minutes / 60, minutes % 60]
+
+func _open_lesson(b, index: int, origin: String) -> void:
+	classroom_lesson=index
+	classroom_origin=origin
+	classroom_slide=0
+	_classroom_refresh(b,"class_ppt" if LESSONS[index][7]=="可回放" else "class_info")
+
+func _classroom_refresh(b, detail: String) -> void:
+	b.zjuding_detail=detail
+	b.action_requested.emit("phone_refresh",{})
+
+func _classroom_tabs(parent: Control, titles: Array, selected: int, choose: Callable) -> void:
+	var tabs := HBoxContainer.new()
+	tabs.add_theme_constant_override("separation",0)
+	parent.add_child(tabs)
+	for index in titles.size():
+		var tab := button(tabs,titles[index],"SmartClassroomTab_%d" % index,choose.bind(index))
+		tab.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+		Ui.apply_button(tab,Color.WHITE,CLASSROOM_ACCENT if selected==index else Color("242b30"),Color.TRANSPARENT,0,0,roundi(14*scale),Vector2(5,8))
+		tab.toggle_mode=true
+		tab.set_pressed_no_signal(selected==index)
+		if selected==index:
+			var indicator:=ColorRect.new()
+			indicator.color=Color("06aabd")
+			indicator.mouse_filter=Control.MOUSE_FILTER_IGNORE
+			tab.add_child(indicator)
+			indicator.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+			indicator.offset_left=-11;indicator.offset_right=11;indicator.offset_top=-3
+
 func classroom(b,list: Control) -> void:
+	if b.zjuding_detail in ["class_info","class_speech","class_ppt","record","board"]:
+		_classroom_detail(b,list)
+		return
+	list.position=Vector2.ZERO
+	list.size.x=378
+	list.add_theme_constant_override("separation",0)
+	var hero:=Control.new()
+	hero.custom_minimum_size.y=108
+	list.add_child(hero)
+	b._panel(hero,Rect2(0,0,378,108),Color("00a8bd"))
+	var wave:=Polygon2D.new()
+	wave.color=Color("09b5c7")
+	wave.polygon=PackedVector2Array([Vector2(155,108),Vector2(286,49),Vector2(335,40),Vector2(378,49),Vector2(378,108)])
+	hero.add_child(wave)
+	b._label(hero,"智云课堂",Rect2(18,18,207,42),27,Color.WHITE)
+	b._label(hero,"课程直播与随堂回放",Rect2(18,65,318,26),14,Color.WHITE)
+	var all_courses: bool=b.zjuding_detail=="class_all"
+	for index in 3:
+		var shortcut: Button=b._button(hero,["⌕","▦","●"][index],Rect2(231+index*43,23,38,36),func():
+			match index:
+				0: _classroom_refresh(b,"class_all")
+				1: _classroom_refresh(b,"")
+				2: b._zju_open("profile")
+		,Color("00a8bd"),Color.WHITE,0,Color.TRANSPARENT)
+		shortcut.tooltip_text=["查找课程","我的课程","校园身份"][index]
+	_classroom_tabs(list,["全部课程","我的课程"],0 if all_courses else 1,func(index: int):
+		_classroom_refresh(b,"class_all" if index==0 else ""))
+	if all_courses: _classroom_catalog(b,list)
+	else: _classroom_schedule(b,list)
+
+var classroom_week: int = 0
+var classroom_day: int = 0
+var classroom_origin: String = ""
+
+func _classroom_date(unix_time: int) -> String:
+	var d:=Time.get_datetime_dict_from_unix_time(unix_time)
+	return "%02d/%02d" % [d.month,d.day]
+
+func _classroom_calendar(b,list: Control,weekly: bool) -> void:
+	var bar:=HBoxContainer.new()
+	list.add_child(bar)
+	var day_offset:=classroom_week*7-4 if weekly else classroom_day
+	var start:=CLASSROOM_DAY+day_offset*86400
+	var date_text:=_classroom_date(start)+"–"+_classroom_date(start+6*86400) if weekly else Time.get_date_string_from_unix_time(start)
+	var back:=button(bar,"上一周" if weekly else "前一天","SmartClassroomPrevious",func():
+		if weekly: classroom_week-=1
+		else: classroom_day-=1
+		_classroom_refresh(b,"" if weekly else "class_all"))
+	var date:=label(bar,date_text,16,CLASSROOM_ACCENT)
+	date.autowrap_mode=TextServer.AUTOWRAP_OFF
+	date.size_flags_horizontal=Control.SIZE_EXPAND_FILL;date.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	var forward:=button(bar,"下一周" if weekly else "后一天","SmartClassroomNext",func():
+		if weekly: classroom_week+=1
+		else: classroom_day+=1
+		_classroom_refresh(b,"" if weekly else "class_all"))
+	for control in [back,forward]:
+		control.custom_minimum_size.x=70
+		Ui.apply_button(control,Color("f6f7f8"),Color("41474a"),Color.TRANSPARENT,0,0,14,Vector2(9,6))
+
+func _classroom_schedule(b,list: Control) -> void:
+	_classroom_calendar(b,list,true)
+	var horizontal:=ScrollContainer.new()
+	horizontal.custom_minimum_size.y=1002
+	horizontal.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	horizontal.name="SmartClassroomWeekGrid"
+	list.add_child(horizontal)
+	var grid:=Control.new()
+	grid.custom_minimum_size=Vector2(44+7*82,990)
+	grid.mouse_filter=Control.MOUSE_FILTER_PASS
+	horizontal.add_child(grid)
+	b._panel(grid,Rect2(Vector2.ZERO,grid.custom_minimum_size),Color.WHITE).mouse_filter=Control.MOUSE_FILTER_IGNORE
+	var monday:=CLASSROOM_DAY+(classroom_week*7-4)*86400
+	b._label(grid,"%d月" % Time.get_datetime_dict_from_unix_time(monday).month,Rect2(4,0,40,46),13)
+	for index in 7:
+		var date:=Time.get_datetime_dict_from_unix_time(monday+index*86400)
+		b._label(grid,"周%s %02d" % [["一","二","三","四","五","六","日"][index],date.day],Rect2(44+index*82,0,82,46),13,Color("252b30"),HORIZONTAL_ALIGNMENT_CENTER)
+	for hour in range(7,18):
+		var y:=48+(hour-7)*93
+		b._label(grid,"%02d:00" % hour,Rect2(3,y-10,41,22),12)
+		b._panel(grid,Rect2(44,y,7*82,1),Color("e8eaec")).mouse_filter=Control.MOUSE_FILTER_IGNORE
+	if classroom_week==0:
+		for index in LESSONS.size():
+			var lesson: Array=LESSONS[index]
+			var x: int=46+lesson[0]*82
+			var y: float=48+(lesson[4]-420)*93.0/60.0
+			var height: float=(lesson[5]-lesson[4])*93.0/60.0
+			var fill:=Color("e1f2f8") if lesson[4]<720 else Color("eeebfa")
+			b._panel(grid,Rect2(x,y,78,height),fill,Color.TRANSPARENT,5)
+			b._label(grid,"%s\n%s\n%s–%s" % [lesson[1],lesson[2],_lesson_time(lesson[4]),_lesson_time(lesson[5])],Rect2(x+5,y+5,68,84),12,Color("243945"))
+			var replay: Button=b._button(grid,"查看回放" if lesson[7]=="可回放" else lesson[7],Rect2(x+4,y+height-37,70,32),_open_lesson.bind(b,index,""),fill,CLASSROOM_ACCENT,4,CLASSROOM_ACCENT)
+			replay.name="SmartClassroomReplay_%d" % index
+			replay.add_theme_font_size_override("font_size",12)
+	else:
+		b._label(grid,"本周暂无课程",Rect2(54,90,260,32),15,Color("59656c"))
+
+func _classroom_catalog(b,list: Control) -> void:
+	var toolbar:=HBoxContainer.new()
+	list.add_child(toolbar)
+	var search:=LineEdit.new()
+	search.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	search.placeholder_text="搜索课程名、教师或教室"
+	search.custom_minimum_size.y=44
+	Type.apply_body(search)
+	Ui.apply_input(search,Color.WHITE,Color("344349"),Color("e3e9eb"),20,14,Vector2(12,7))
+	search.name="SmartClassroomSearch"
+	toolbar.add_child(search)
+	var filter:=OptionButton.new()
+	filter.name="SmartClassroomFilter"
+	filter.add_item("全部状态")
+	filter.add_item("正在上课")
+	filter.add_item("包含回放")
+	filter.add_item("尚未开始")
+	filter.select(0)
+	Type.apply_body(filter)
+	Ui.apply_button(filter,Color("f5f6f7"),Color("33474b"),Color("e3e9eb"),7,1,14,Vector2(8,6))
+	toolbar.add_child(filter)
+	_classroom_calendar(b,list,false)
+	var groups:=VBoxContainer.new()
+	groups.add_theme_constant_override("separation",5)
+	list.add_child(groups)
+	var rows: Dictionary={}
+	for period in 3:
+		var section:=card(groups)
+		var title:=label(section,["第一时段","第二时段","第三时段"][period],17,[Color("237b9c"),Color("257c64"),Color("a3484e")][period])
+		title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+		for index in LESSONS.size():
+			var lesson: Array=LESSONS[index]
+			var slot: int=0 if lesson[4]<600 else 1 if lesson[4]<720 else 2
+			if lesson[0]!=classroom_day+4 or slot!=period: continue
+			rows[index]=button(section,"%s · %s\n%s · %s · %s" % [lesson[1],lesson[7],lesson[2],lesson[3],lesson[6]],"SmartClassroomCourse" if rows.is_empty() else "SmartClassroomCourse_%d" % index,_open_lesson.bind(b,index,"class_all"))
+	var empty:=label(groups,"今日暂无课程安排。",14,Color("59656c"))
+	var update:=func(value: String):
+		var query:=value.strip_edges().to_lower()
+		var status: String=["","上课中","可回放","未开始"][filter.selected]
+		var found:=false
+		for index in rows:
+			var lesson: Array=LESSONS[index]
+			var matches: bool=(status.is_empty() or lesson[7]==status) and (query.is_empty() or (lesson[1]+lesson[2]+lesson[3]).to_lower().contains(query))
+			rows[index].visible=matches
+			found=found or matches
+		empty.visible=not found
+		empty.text="今日暂无课程安排。" if rows.is_empty() else "未找到匹配的课程。"
+	search.text_changed.connect(update)
+	filter.item_selected.connect(func(_index: int):update.call(search.text))
+	update.call("")
+
+var classroom_slide: int = 0
+
+func _classroom_detail(b,list: Control) -> void:
+	var lesson: Array=LESSONS[classroom_lesson]
+	button(list,"‹  "+str(lesson[1]),"SmartClassroomCourseBack",func():_classroom_refresh(b,classroom_origin))
+	var video:=Classroom.new()
+	video.name="SmartClassroomScene"
+	video.custom_minimum_size.y=166
+	video.reduced=true
+	list.add_child(video)
+	var keys:=["class_info","class_speech","class_ppt"]
+	var tab:=maxi(0,keys.find(b.zjuding_detail))
+	_classroom_tabs(list,["课程信息","语音识别","PPT识别"],tab,func(index: int):_classroom_refresh(b,keys[index]))
+	var has_replay: bool=lesson[7]=="可回放"
+	match tab:
+		0:
+			label(list,"%s · %s · %s" % [lesson[2],lesson[3],lesson[6]],14)
+			if lesson[1]=="微积分（甲）":
+				label(list,"本节讲解一元函数高阶导数与泰勒公式，结合莱布尼茨公式和麦克劳林展开，求指定点的高阶导数值。",15)
+			if lesson[7]=="上课中": _classroom_attendance(b,list)
+		1:
+			if not has_replay: label(card(list),"本节课暂无可用的语音识别字幕。",15)
+			else:
+				for cue in TRANSCRIPT:
+					var row:=card(list)
+					label(row,cue[0],12,CLASSROOM_ACCENT)
+					label(row,cue[1],15)
+		2:
+			if not has_replay:
+				label(card(list),"课堂回放生成中，请课后查看。",15)
+				return
+			var strip:=HBoxContainer.new()
+			list.add_child(strip)
+			for index in SLIDES.size():
+				var tile:=button(strip,"第 %d 页" % (index+1),"SmartClassroomSlide_%d" % index,func():
+					classroom_slide=index
+					_classroom_refresh(b,"class_ppt"))
+				tile.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+				if index==classroom_slide: Ui.apply_button(tile,Color("dff5f7"),CLASSROOM_ACCENT,CLASSROOM_ACCENT,4,1,14,Vector2(6,8))
+			var slide:=card(list,Color("eef8fa"))
+			label(slide,SLIDES[classroom_slide][0],12,CLASSROOM_ACCENT)
+			label(slide,SLIDES[classroom_slide][1],19)
+			label(slide,SLIDES[classroom_slide][2],16)
+
+func _classroom_attendance(b,list: Control) -> void:
 	var c: Dictionary=copy.classroom
-	var current=b.s.actOne.phase=="prologue"
-	var signed=bool(b.s.flags.checkinDone)
-	var column=card(list)
-	label(column,c.course_name,21)
-	label(column,c.teacher+" · "+c.time_and_venue,13)
-	var image=Classroom.new();image.name="SmartClassroomScene";image.custom_minimum_size.y=182;image.reduced=b.s.native.get("settings",{}).get("reduced_motion",false);column.add_child(image)
-	label(column,c.board_content_current if current else c.board_content_replay,13).name="SmartClassroomStatus"
-	button(column,c.tab_board,"SmartClassroomBoard",func():
-		b.zjuding_detail="" if b.zjuding_detail=="board" else "board";b.action_requested.emit("phone_refresh",{}))
-	if b.zjuding_detail=="board":
-		label(column,"f(x) = x²\nf′(x) = 2x",27,Color("3c6752"))
+	var current: bool=b.s.actOne.phase=="prologue"
+	var signed:=bool(b.s.flags.checkinDone)
 	var attendance=card(list)
 	label(attendance,c.tab_activities,18)
-	label(attendance,c.status_signed if signed else c.status_not_signed if current else c.status_finished,15).name="SmartClassroomAttendance"
+	label(attendance,"已签到" if signed else "未签到" if current else "签到已关闭",15).name="SmartClassroomAttendance"
+	if current and not signed: label(attendance,"教师已发起随堂签到，请选择签到方式。",13)
 	button(attendance,c.method_code_btn,"SmartClassroomCode",func():
 		if current and not signed:b.checkin_return="smart_classroom";b.page_requested.emit("checkin")
 		else:b.zjuding_detail="record";b.action_requested.emit("phone_refresh",{}))
 	var radar=Radar.new();radar.name="SmartClassroomRadar";radar.custom_minimum_size.y=140;radar.reduced=b.s.native.get("settings",{}).get("reduced_motion",false)
 	var trigger=button(attendance,c.method_radar_btn,"SmartClassroomScan",func():pass)
 	attendance.add_child(radar);radar.visible=false
-	var result=label(attendance,c.status_signed if signed else c.status_finished if not current else c.status_not_signed,14)
-	result.name="SmartClassroomRadarResult";result.visible=false
-	Notice.style_inline(result,"system",roundi(14*scale))
 	trigger.pressed.connect(func():
-		radar.visible=true;result.visible=true
-		reveal_result(result)
-		if not current or signed:result.text=c.status_signed if signed else c.status_finished;Notice.style_inline(result,"success" if signed else "system",roundi(14*scale));return
-		trigger.disabled=true;result.text=c.radar_scanning;Notice.style_inline(result,"system",roundi(14*scale))
-		radar.begin(func():result.text=c.radar_failed_reason;Notice.style_inline(result,"error",roundi(14*scale));trigger.disabled=false;reveal_result(result)))
+		if not current or signed:
+			b.action_requested.emit("smart_classroom_notice","签到成功，已记录本次随堂出勤。" if signed else "当前课程已下课，随堂签到通道已关闭。")
+			return
+		radar.visible=true
+		trigger.disabled=true
+		b.action_requested.emit("smart_classroom_notice","正在获取当前位置并检测签到雷达……")
+		radar.begin(func():
+			b.action_requested.emit("smart_classroom_notice","当前位于寝室区域，超出教室签到有效范围。")
+			trigger.disabled=false))
 	if b.zjuding_detail=="record":label(attendance,c.status_signed if signed else c.status_finished,15)
 	button(attendance,"返回学在浙大","SmartClassroomLearn",func():b._zju_open("learn"))
 

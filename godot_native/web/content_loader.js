@@ -109,8 +109,12 @@
       },
       async pace(bytes,signal,required) {
         checkSignal(signal);
+        // A persistent low frame rate must reduce optional work, not postpone
+        // it forever. Allow at most one bounded slice after one second of
+        // pressure; subsequent calls start a new wait and cannot bank credit.
+        const pressureDeadline=now()+1000;
         while(!required()) {
-          const delay=Math.max(nextAt,quietUntil)-now();
+          const delay=Math.max(nextAt,Math.min(quietUntil,pressureDeadline))-now();
           if(delay<=0)break;
           waits++;const began=now();await sleep(Math.min(delay,250),signal);waitMs+=now()-began;checkSignal(signal);
         }
@@ -252,7 +256,9 @@
         let saved=cached[index%8], legacy=false;cached[index%8]=null;
         if(!saved){saved=await operation('readonly',store=>store.get(key(resource,index)));legacy=!!saved;}
         const bytes=saved && saved.bytes instanceof ArrayBuffer?new Uint8Array(saved.bytes):null;
-        if(options.pace)await options.pace(0,signal);
+        // Missing cache entries do not consume content bytes. Deferring each
+        // miss would delay the first network request by the whole chunk count.
+        if(bytes && options.pace)await options.pace(0,signal);
         if(bytes && bytes.byteLength===chunk.bytes && await verifyBytes(bytes,signal,!!options.pace)===chunk.sha256) {
           if(legacy) {
             const migrated=await operation('readwrite',store=>store.put({bytes:bytes.buffer,digest:chunk.sha256},canonical));
@@ -598,7 +604,8 @@
       startPrefetch: () => {
         // Two frames leave the first chapter's first paint and input ahead of
         // optional work. One paced background body; foreground keeps its three
-        // boot/chunk workers. Whole-PCK copy/hash/mount remains indivisible.
+        // boot/chunk workers. Whole-PCK copy/mount remains indivisible; native
+        // SHA admission is separately sliced by the Godot content coordinator.
         requestAnimationFrame(() => requestAnimationFrame(() => { if(!disposed&&!background){background = true;requestAnimationFrame(frame);pump();} }));
       },
       snapshot: () => JSON.stringify({ background, saveData:saveData(), backgroundBudget:budget.snapshot(), prefetchFamilies: [...prefetchFamilies], active: active ? active.record.pack.id : '', resourceCache: resourceCache.snapshot(), packs: Array.from(records.values(), r => ({ id: r.pack.id, family: r.pack.family, status: r.status, received: r.received, bytes: r.pack.bytes, error: r.error, source: r.source, attempts: r.attempts, timings: r.timings || {} })) }),

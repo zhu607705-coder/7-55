@@ -86,9 +86,27 @@ func _run() -> void:
 	expect(node("ZjudingMapRefresh")!=null and s.actOne.phase=="prologue","Early map explains dorm status without opening world")
 	await click(node("ZjudingMapBack"));await show("zjuding")
 	await click(node("ZjudingApp_smart_classroom"));await show("zjuding")
+	expect(node("SmartClassroomWeekGrid")!=null,"Classroom opens the weekly schedule")
+	await click(node("SmartClassroomReplay_0"));await show("zjuding")
+	expect(node("SmartClassroomSlide_0")!=null,"Weekly replay opens the PPT detail")
+	await click(node("SmartClassroomSlide_1"));await show("zjuding")
+	expect(p.campus_services.classroom_slide==1,"PPT selection changes the preview")
+	await click(node("SmartClassroomSlide_2"));await show("zjuding")
+	expect(p.campus_services.classroom_slide==2 and p.campus_services.SLIDES[2][2].contains("得到多少") and not p.campus_services.SLIDES[2][2].contains("120"),"Third slide leaves the final arithmetic for the player")
+	await click(node("SmartClassroomTab_1"));await show("zjuding")
+	expect(p.zjuding_detail=="class_speech" and p.campus_services.TRANSCRIPT[6][1].contains("120"),"Transcript offers the exact answer after the lesson")
+
+	await click(node("SmartClassroomCourseBack"));await show("zjuding")
+	await click(node("SmartClassroomTab_0"));await show("zjuding")
+	expect(node("SmartClassroomCourse").visible,"Current catalog shows the authored course before searching")
+	var course_search: LineEdit=node("SmartClassroomSearch")
+	course_search.text_changed.emit("无匹配课程")
+	expect(not node("SmartClassroomCourse").visible,"Course search filters unmatched rows")
+	course_search.text_changed.emit("微积分")
+	await click(node("SmartClassroomCourse"));await show("zjuding")
 	expect(node("SmartClassroomScene")!=null and node("SmartClassroomCode")!=null,"Classroom has a scene and original code entrance")
 	await click(node("SmartClassroomScan"));await create_timer(2.25).timeout
-	expect(node("SmartClassroomRadarResult").text.contains("寝室") and not s.flags.checkinDone,"Radar reports physical mismatch and never grants attendance")
+	expect(actions.has(["smart_classroom_notice","当前位于寝室区域，超出教室签到有效范围。"]) and node("SmartClassroomRadarResult")==null and not s.flags.checkinDone,"Radar reports physical mismatch and never grants attendance")
 	await click(nav("back"));await show("zjuding")
 	s=fresh(); await show("zjuding")
 	await click(node("ZjudingTab_contacts")); await show("zjuding")
@@ -217,6 +235,18 @@ func _run() -> void:
 	if "--capture" in OS.get_cmdline_user_args() and DisplayServer.get_name()!="headless":
 		surface.scale=Vector2.ONE; await show("weather"); await process_frame; await process_frame; root.get_texture().get_image().save_png("/tmp/phone-weather-native.png")
 		p.zjuding_page="hub"; p.zjuding_panel=""; await show("zjuding"); await process_frame; await process_frame; root.get_texture().get_image().save_png("/tmp/phone-zjuding-native.png")
+		p.zjuding_panel="smart_classroom"
+		for variant in [["week",""],["catalog","class_all"],["replay","class_ppt"]]:
+			p.zjuding_detail=variant[1]
+			await show("zjuding")
+			await process_frame
+			await RenderingServer.frame_post_draw
+			root.get_texture().get_image().save_png("/tmp/755-classroom-"+variant[0]+".png")
+		surface.scale=Vector2.ONE*(390.0/424.0)
+		p.zjuding_detail=""
+		await show("zjuding")
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png("/tmp/755-classroom-mobile.png")
 	body.queue_free(); await process_frame
 	print("PHONE_NAVIGATION_TESTS: %d checks; %d failures" % [checks,failed])
 	quit(1 if failed else 0)

@@ -10,7 +10,7 @@ import crypto from 'node:crypto';
 const source=fs.readFileSync(new URL('../web/content_loader.js',import.meta.url),'utf8');
 const hash=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
 const block=1024*1024;
-function fixture({chunked=true,bytes=block*3+129,loader=source,bodyFallback=false,noCrypto=false,copyDelayMs=0}={}) {
+function fixture({chunked=true,bytes=block*3+129,loader=source,bodyFallback=false,noCrypto=false,copyDelayMs=0,cacheLookupDelayMs=0}={}) {
   const data=Buffer.alloc(bytes);for(let i=0;i<bytes;i++)data[i]=(i*37+(i>>>10))&255;
   const pack={id:'chapter2_fixture',family:'chapter2',bytes,sha256:hash(data)};
   pack.file=`content/${pack.id}-${pack.sha256.slice(0,16)}.pck`;
@@ -46,6 +46,7 @@ function fixture({chunked=true,bytes=block*3+129,loader=source,bodyFallback=fals
         body:bodyFallback?null:{getReader:()=>({async read(){const item=await reader.read();if(item.done)end();return item;},async cancel(){end();await reader.cancel();}})},
         async arrayBuffer(){const out=await new Response(bytes).arrayBuffer();end();return out;}};
     }};
+  if(cacheLookupDelayMs)context.caches={open:async()=>({match:()=>new Promise(resolve=>context.setTimeout(()=>resolve(null),cacheLookupDelayMs)),delete:async()=>true})};
   vm.runInNewContext(loader,context);
   const host=context.window.Godot755Content.create({manifest,engine:{copyToFS(path,buffer){time+=copyDelayMs;copies.push({at:time,bytes:Buffer.from(buffer),path});}}});
   host.install((id,path,error)=>events.push({id,path,error,at:time}));
@@ -124,12 +125,35 @@ test('ordinary HTTP without WebCrypto remains verified and interruptible',async(
   assert.equal(f.events[0].error,'');assert.deepEqual(f.copies[0].bytes,f.data);assert(f.now()>3000);f.host.dispose();
 });
 
-test('persistent low FPS defers optional work, but never blocks explicit foreground input',async()=>{
+for(const frameMs of [50,100])test(`persistent ${frameMs} ms frames retain bounded optional progress without bursts`,async()=>{
+  const f=fixture({chunked:false,bytes:65536*3,cacheLookupDelayMs:300});f.host.startPrefetch();
+  for(let elapsed=0;!f.events.length&&elapsed<9000;elapsed+=frameMs)await f.step(frameMs);
+  assert.equal(f.events.length,1,'sustained frame pressure must not starve optional content');
+  assert.equal(f.events[0].error,'');assert.deepEqual(f.copies[0].bytes,f.data);
+  assert.equal(f.maximum(),1);assert.equal(f.snapshot().backgroundBudget.framePressure,true);
+  const changed=f.samples.filter((sample,index)=>sample.bytes>(f.samples[index-1]?.bytes||0));
+  assert.equal(changed.length,3,'each byte slice must yield independently');
+  for(let index=1;index<changed.length;index++) {
+    assert(changed[index].at-changed[index-1].at>=1000,'pressure keeps consumption conservative');
+    assert(changed[index].bytes-changed[index-1].bytes<=65536,'no catch-up burst');
+  }
+  f.host.dispose();
+});
+
+test('cold chunk cache under sustained pressure reaches a real optional failure promptly',async()=>{
+  const f=fixture({bytes:block*8,cacheLookupDelayMs:300});f.fail(true);f.host.startPrefetch();
+  for(let elapsed=0;!f.events.length&&elapsed<3000;elapsed+=50)await f.step(50);
+  assert.equal(f.requests.length,1,'cache misses must not each consume a pressure delay before fetching');
+  assert.equal(f.events.length,1);assert.match(f.events[0].error,/offline fixture/);
+  assert.equal(f.copies.length,0);f.host.dispose();
+});
+
+test('foreground promotion bypasses sustained frame pressure without restarting',async()=>{
   const f=fixture({chunked:false});await f.start();await f.until(()=>f.snapshot().backgroundBudget.consumedBytes>=65536);await f.step();
-  const before=f.snapshot().backgroundBudget.consumedBytes;
-  for(let i=0;i<20;i++)await f.step(50);
-  assert.equal(f.snapshot().backgroundBudget.consumedBytes,before);
-  f.demand();await f.until(()=>f.events.length>0,1000);assert.equal(f.requests.length,1);assert.equal(f.events[0].error,'');f.host.dispose();
+  for(let i=0;i<4;i++)await f.step(50);
+  f.demand();
+  for(let elapsed=0;!f.events.length&&elapsed<1000;elapsed+=50)await f.step(50);
+  assert.equal(f.events.length,1);assert.equal(f.requests.length,1);assert.equal(f.events[0].error,'');f.host.dispose();
 });
 
 test('stage timings separate response preparation, synchronous FS copy and native acknowledgement',async()=>{

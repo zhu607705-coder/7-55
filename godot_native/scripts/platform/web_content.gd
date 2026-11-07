@@ -6,6 +6,14 @@ const FAMILIES := ["chapter2", "chapter3", "chapter35", "chapter4", "flc_activit
 const STORY_FAMILIES := ["chapter2", "chapter3", "chapter35", "chapter4"]
 const ReleaseContent = preload("res://scripts/release_content_policy.gd")
 const Ui = preload("res://scripts/ui/native_ui_theme.gd")
+# Bound native verification as well as JS consumption. This is a byte/time
+# admission budget, not a guarantee about OS scheduling or PCK mount duration.
+const HASH_BLOCK_BYTES := 64 * 1024
+const HASH_SLICE_BYTES := 256 * 1024
+const HASH_SLICE_USEC := 1500
+const REQUIRED_HASH_SLICE_BYTES := 1024 * 1024
+const REQUIRED_HASH_SLICE_USEC := 6000
+var _verifications: Dictionary = {}
 var _host: Variant
 var _callback: JavaScriptObject
 var _enabled := false
@@ -32,6 +40,7 @@ var _retry: Button
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	set_process(false)
 	if not OS.has_feature("web"): return
 	_host = JavaScriptBridge.get_interface("__GODOT_755_CONTENT_HOST__")
 	if not _require_web_host(_host): return
@@ -84,6 +93,7 @@ func _valid_id(value: Variant) -> bool:
 func _configure_manifest(value: Dictionary, host: Variant, supports_window: bool = false, supports_snapshot: bool = false) -> bool:
 	# Also exercised with an isolated transport in tests. No test hook is exposed
 	# through the browser's read-only public observation surface.
+	_cancel_verifications()
 	_enabled = true
 	_fatal_error = "游戏资源目录无法读取，请重新打开页面。"
 	if value.get("schema") != "755-web-content-v1" or not value.get("core") is Dictionary or not _valid_file(value.core) or not value.get("packs") is Array or not value.get("backgroundOrder") is Array: return false
@@ -230,50 +240,116 @@ func _expected_path(id: String) -> String:
 func _mount_pack(filename: String) -> bool:
 	return ProjectSettings.load_resource_pack(filename, false)
 
+func _cancel_verifications() -> void:
+	for job: Dictionary in _verifications.values():
+		job.file.close()
+	_verifications.clear()
+	set_process(false)
+
+func _exit_tree() -> void:
+	_cancel_verifications()
+
+func _process(_delta: float) -> void:
+	# The production host has one outstanding mount ACK. Keep the native side
+	# bounded too, even if a legacy host delivers several distinct packs at once.
+	if not _verifications.is_empty():
+		_advance_verification(_verifications.values()[0])
+
+func _advance_verification(job: Dictionary) -> void:
+	var file: FileAccess = job.file
+	var timing: Dictionary = job.timings
+	var began := Time.get_ticks_usec()
+	var consumed := 0
+	var error := ""
+	# Required content owns the loading cover and may use a larger bounded slice.
+	# Promotion continues this exact digest rather than reading the pack again.
+	var required: bool = job.id in _waiting_ids()
+	var byte_limit := REQUIRED_HASH_SLICE_BYTES if required else HASH_SLICE_BYTES
+	var time_limit := REQUIRED_HASH_SLICE_USEC if required else HASH_SLICE_USEC
+	while file.get_position() < int(job.record.bytes):
+		var wanted := mini(HASH_BLOCK_BYTES, int(job.record.bytes) - file.get_position())
+		var bytes := file.get_buffer(wanted)
+		if bytes.size() != wanted or job.hash.update(bytes) != OK:
+			error = "资源尚未下载完整，请重试。"
+			break
+		consumed += bytes.size()
+		if consumed >= byte_limit or Time.get_ticks_usec() - began >= time_limit: break
+	var elapsed := (Time.get_ticks_usec() - began) / 1000.0
+	timing.sha256Ms += elapsed
+	timing.sha256Slices += 1
+	timing.sha256MaxSliceMs = maxf(timing.sha256MaxSliceMs, elapsed)
+	if error.is_empty() and file.get_position() < int(job.record.bytes): return
+	if error.is_empty() and (file.get_length() != int(job.record.bytes) or job.hash.finish().hex_encode() != job.record.sha256):
+		error = "资源内容校验失败，请重试。"
+	file.close()
+	_verifications.erase(job.id)
+	set_process(not _verifications.is_empty())
+	_finish_received(job, error)
+
+func _finish_received(job: Dictionary, error: String) -> void:
+	var id: String = job.id
+	var record: Dictionary = job.record
+	var timings: Dictionary = job.timings
+	var already_ready: bool = record.status == "ready"
+	if error.is_empty() and not already_ready:
+		var mount_started := Time.get_ticks_usec()
+		var mounted := _mount_pack(job.filename)
+		timings.mountMs = (Time.get_ticks_usec() - mount_started) / 1000.0
+		if not mounted: error = "资源暂时无法打开，请重试。"
+	# A bad late duplicate cannot retire a verified mounted pack. No caller can
+	# observe readiness or an accepted ACK before the complete digest and mount.
+	if not already_ready:
+		record.status = "ready" if error.is_empty() else "error"
+		record.error = error
+	record.stageTimings = timings
+	if _host != null: _host.acknowledge(id, error.is_empty(), error)
+	_update_overlay()
+	content_changed.emit()
+	# Includes frame waits and resumed listeners; sha256Ms counts active slices.
+	timings.receiveMs = (Time.get_ticks_usec() - int(job.began)) / 1000.0
+
 func _on_pack_received(args: Array) -> void:
 	var receive_started := Time.get_ticks_usec()
 	if args.size() != 3 or not args[0] is String or not _packs.has(args[0]): return
 	var id: String = args[0]
+	# A repeated callback joins the in-flight verification. A premature ACK would
+	# let the host release/replace its MEMFS bytes while they are still being read.
+	if _verifications.has(id): return
 	var record: Dictionary = _packs[id]
 	# Last recognized callback only. Null means the stage did not run.
 	# PCK mounting is not resource loading, texture decoding or GPU upload.
 	var timings := {"sha256Ms": null, "mountMs": null, "receiveMs": null}
-	var already_ready: bool = record.status == "ready"
+	var job := {"id": id, "record": record, "timings": timings, "began": receive_started, "filename": ""}
 	var error := ""
 	if not args[2] is String or not str(args[2]).is_empty(): error = "网络暂时不可用，请重试。"
 	elif not args[1] is String or str(args[1]) != _expected_path(id): error = "资源位置校验失败，请重试。"
 	else:
 		var filename: String = args[1]
+		job.filename = filename
 		var file := FileAccess.open(filename, FileAccess.READ)
 		if file == null: error = "资源尚未下载完整，请重试。"
 		else:
 			var actual_bytes := file.get_length()
-			file.close()
-			if actual_bytes != int(record.bytes): error = "资源长度校验失败，请重试。"
+			if actual_bytes != int(record.bytes):
+				file.close()
+				error = "资源长度校验失败，请重试。"
 			else:
-				var sha_started := Time.get_ticks_usec()
-				var actual_digest := FileAccess.get_sha256(filename)
-				timings.sha256Ms = (Time.get_ticks_usec() - sha_started) / 1000.0
-				if actual_digest != record.sha256: error = "资源内容校验失败，请重试。"
-				elif not already_ready:
-					var mount_started := Time.get_ticks_usec()
-					var mounted := _mount_pack(filename)
-					timings.mountMs = (Time.get_ticks_usec() - mount_started) / 1000.0
-					if not mounted: error = "资源暂时无法打开，请重试。"
-	# A bad late duplicate is rejected for caching but cannot retire a mounted
-	# pack that was already verified. Mount each accepted pack at most once.
-	if not already_ready:
-		_packs[id].status = "ready" if error.is_empty() else "error"
-		_packs[id].error = error
-	# Publish before external callbacks; keep only a local dictionary reference
-	# afterward so a listener can reenter, reconfigure or queue this coordinator for deletion.
-	record.stageTimings = timings
-	if _host != null: _host.acknowledge(id, error.is_empty(), error)
-	_update_overlay()
-	content_changed.emit()
-	# Inclusive callback time: ACK, overlay and synchronous resumed listeners.
-	# The total becomes available when this callback returns, not during emit.
-	timings.receiveMs = (Time.get_ticks_usec() - receive_started) / 1000.0
+				var hash := HashingContext.new()
+				if hash.start(HashingContext.HASH_SHA256) != OK:
+					file.close()
+					error = "资源内容校验失败，请重试。"
+				else:
+					job.file = file; job.hash = hash
+					timings.sha256Ms = 0.0
+					timings.sha256Slices = 0
+					timings.sha256MaxSliceMs = 0.0
+					_verifications[id] = job
+					set_process(true)
+					# Tiny receipts retain synchronous behavior. Larger content starts
+					# on the next frame, after the host's whole-pack MEMFS copy.
+					if actual_bytes <= HASH_BLOCK_BYTES: _advance_verification(job)
+					return
+	_finish_received(job, error)
 
 func start_prefetch() -> void:
 	if not _enabled or not _fatal_error.is_empty() or _prefetch_started or _host == null or not _prefetch_window_supported: return

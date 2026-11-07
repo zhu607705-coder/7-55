@@ -58,6 +58,12 @@ func scroll_to(id: String, position: int) -> void:
 	var scroll: ScrollContainer=node(id); scroll.scroll_vertical=position; await process_frame; await process_frame
 func set_input(id: String,text: String) -> void:
 	var input: LineEdit=node(id); input.text=text; input.text_changed.emit(text)
+func type_text(text: String) -> void:
+	for character: String in text:
+		for down: bool in [true,false]:
+			var event:=InputEventKey.new();event.pressed=down;event.unicode=character.unicode_at(0)
+			root.push_input(event,true)
+		await create_timer(.12).timeout
 func capture(name: String) -> void:
 	if not "--capture" in OS.get_cmdline_user_args() or DisplayServer.get_name()=="headless": return
 	await process_frame; await process_frame; await RenderingServer.frame_post_draw
@@ -87,6 +93,19 @@ func run() -> void:
 		expect(s.actOne.cc98Login.revealedHintCount==i+1,"Hint count remains controller-owned")
 		expect(node("Cc98AttendantRemark").text.contains(["ZheJiang University","1897","气势来!"][i]),"Each controller-owned clue is embedded in the next spoken remark")
 	expect(node("Cc98RevealHint").disabled and node("Cc98ReturnToForm").visible,"Finished conversation offers return to the form, without more hint writes")
+	await click(node("Cc98ReturnToForm"))
+	expect(root.gui_get_focus_owner()==node("Cc98LoginPassword"),"Return to form gives the real password editor focus")
+	await type_text("ZJU1897!")
+	expect(node("Cc98LoginPassword").text=="ZJU1897!","Password accepts continuous real key events after return")
+	for down: bool in [true,false]:
+		var erase:=InputEventKey.new();erase.keycode=KEY_BACKSPACE;erase.pressed=down;root.push_input(erase,true)
+	await process_frame
+	expect(node("Cc98LoginPassword").text=="ZJU1897","Backspace remains functional after continuous input")
+	var login_scroll: ScrollContainer=node("Cc98LoginScroll")
+	var before_wheel:=login_scroll.scroll_vertical
+	var wheel:=InputEventMouseButton.new();wheel.position=node("Cc98LoginPassword").get_global_rect().get_center();wheel.global_position=wheel.position
+	wheel.button_index=MOUSE_BUTTON_WHEEL_DOWN;wheel.pressed=true;root.push_input(wheel,true);await process_frame
+	expect(login_scroll.scroll_vertical>before_wheel,"Authentication scroll wheel remains functional after text entry")
 	set_input("Cc98LoginPassword","draft-kept")
 	await show("control_center"); await show("cc98")
 	expect(node("Cc98LoginPassword").text=="draft-kept","Control Center preserves underlying authentication draft")
