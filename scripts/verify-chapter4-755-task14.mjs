@@ -429,8 +429,8 @@ assert(
 assert(
   /phaseCount:\s*13/.test(stagePresentationSource)
     && /timeStateCount:\s*6/.test(stagePresentationSource)
-    && /现场 22:45 · 手机 07:55:23 未同步/.test(stagePresentationSource)
-    && /旧钟 22:45 · 维修时段 · 手机已同步/.test(stagePresentationSource),
+    && /北教现场 22:45 · 手机卡在 07:55:23（未同步）/.test(stagePresentationSource)
+    && /旧钟 22:45 · 夜间检修切电 · 手机已同步/.test(stagePresentationSource),
   "stage presentation selector must lock 13 phases, 6 time states and two distinct 22:45 states"
 );
 
@@ -562,8 +562,8 @@ try {
   const openingPresentation = selectChapterFourStagePresentation(createDeveloperCheckpointState("c4-755-opening"));
   const maintenancePresentation = selectChapterFourStagePresentation(createDeveloperCheckpointState("c4-755-maintenance-2245"));
   assert(
-    openingPresentation?.timeStateLabel === "现场 22:45 · 手机 07:55:23 未同步"
-      && maintenancePresentation?.timeStateLabel === "旧钟 22:45 · 维修时段 · 手机已同步"
+    openingPresentation?.timeStateLabel === "北教现场 22:45 · 手机卡在 07:55:23（未同步）"
+      && maintenancePresentation?.timeStateLabel === "旧钟 22:45 · 夜间检修切电 · 手机已同步"
       && openingPresentation.timeSource !== maintenancePresentation.timeSource
       && openingPresentation.trustState !== maintenancePresentation.trustState,
     "the two 22:45 stages must remain visibly and semantically distinct"

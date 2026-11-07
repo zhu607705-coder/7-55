@@ -34,7 +34,7 @@ func run():
    check(Rect2(Vector2.ZERO,subject.graph.size).encloses(b.get_rect()),"Complete zone bounds "+b.name+str(dimensions))
    var lines:=b.text.split("\n")
    for line:String in lines:check(subject.font.get_string_size(line,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x+12<=b.size.x,"Full source label fits "+line+str(dimensions))
- check(subject.status_label.text=="按动柜内开关，比较各区灯光与走线。","Basic operation remains legible without spelling out the coupling rule")
+ check(subject.status_label.text=="点亮大厅、东走廊、教室区；西走廊、面包坊后场保持熄灭。","The panel names the route goal without spelling out the switching sequence")
  check(subject.buttons[0].text.contains("大厅") and subject.buttons[0].text.ends_with("暗"),"Hall off from real mask")
  var before:=JSON.stringify(fixture)
  subject.toggle(0);check(toggles==["hall"] and subject.pending,"One intent sent; synchronous pending")

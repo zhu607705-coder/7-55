@@ -3584,61 +3584,61 @@
       "id": "duty_board",
       "factId": "a1_duty_board_reconstructed",
       "targetId": "a1_front_desk_duty_board_context",
-      "title": "值班牌重建",
-      "locationLabel": "A1 前台",
-      "darkPrompt": "三段痕迹分别停在 104、105 与主电梯；夹痕由左向右逐渐变新。",
-      "lightPrompt": "把三张值班牌按痕迹先后放回签到板。",
-      "successText": "A1 的三处调查已汇成一条值班记录。"
+      "title": "一楼前台值班板归位",
+      "locationLabel": "A1 · 前台签到板",
+      "darkPrompt": "板上留着三道夹痕：104 的最旧，105 的在中间，主电梯的最新。",
+      "lightPrompt": "按夹痕从旧到新，把 104、105、主电梯三张值班牌依次从左到右放回板上，再检查印泥接缝。",
+      "successText": "104、105 与主电梯的三段记录已按先后顺序归档。"
     },
     "archive_index": {
       "id": "archive_index",
       "factId": "a3_archive_film_retrieved",
       "targetId": "a3_archive_exhibition_301_context",
-      "title": "胶片索引",
+      "title": "旧导视胶片检索",
       "locationLabel": "A3 · 301 校史档案展",
-      "darkPrompt": "残留索引指向九十年代末、A3 层，并标记为入口导视用途。",
-      "lightPrompt": "用年份、楼层和用途缩小抽屉范围，取出唯一胶片。",
-      "successText": "旧导视胶片已从索引抽屉取出。"
+      "darkPrompt": "抽屉上的借阅印记指向 1991–1998 年档、A3 层、入口导视用途。",
+      "lightPrompt": "选择「1991–1998」「A3」和「入口导视」，从索引柜取出对应的旧胶片。",
+      "successText": "已从 301 档案柜取出 A3 旧导视胶片。"
     },
     "media_alignment": {
       "id": "media_alignment",
       "factId": "a3_media_alignment_completed",
       "targetId": "a3_media_studio_302_context",
-      "title": "新旧影像对齐",
+      "title": "三楼新旧导视影像对齐",
       "locationLabel": "A3 · 302 媒体工作室",
-      "darkPrompt": "旧影像的入口轮廓向右偏两格、向上一格，并顺时针转过四分之一圈。",
-      "lightPrompt": "平移并旋转胶片，让入口、楼梯与荣誉墙三个轮廓同时重合。",
-      "successText": "旧导视影像已与当前楼层坐标重合。"
+      "darkPrompt": "旧胶片上的入口比现今位置偏左两格、偏下一格，还逆时针歪了四分之一圈。",
+      "lightPrompt": "先摆好灯罩，再把胶片向右移两格、向上移一格，顺时针转 90°。入口、楼梯与荣誉墙的轮廓都重合后再录下影像。",
+      "successText": "三楼旧导视胶片已与当前楼层的三个轮廓重合。"
     },
     "positioning_calibration": {
       "id": "positioning_calibration",
       "factId": "a2_positioning_plate_calibrated",
       "targetId": "a2_maker_workshop_201_context",
-      "title": "定位板校准",
+      "title": "钟面定位片三轴压痕校准",
       "locationLabel": "A2 · 201 创客工坊",
-      "darkPrompt": "压力痕迹显示横向回退两格、纵向前推一格，第三档压力留下完整压印。",
-      "lightPrompt": "调整横向、纵向与压力，让三处触点同时落入旧痕。",
-      "successText": "定位板已完成三轴校准。"
+      "darkPrompt": "底座的旧压痕显示：横向回退两格，纵向前推一格。第三档压力留下了完整压印。",
+      "lightPrompt": "先把从 204 取出的定位片放进夹具，再调到横向 −2、纵向 +1、压力 3 档，让三处触点同时压进旧痕。",
+      "successText": "三处旧压痕已校准。取回定位片，带它回一楼旧钟。"
     },
     "power_topology": {
       "id": "power_topology",
       "factId": "a2_power_topology_recovered",
       "targetId": "a2_computer_room_203_context",
-      "title": "五区拓扑恢复",
+      "title": "五区供电环路恢复",
       "locationLabel": "A2 · 203 计算机教室",
-      "darkPrompt": "五区形成一个闭合环：大厅连两侧走廊，两侧分别接后区与教室区，末端再相连。",
-      "lightPrompt": "只保留停电前存在的五条相邻连线。",
-      "successText": "五区供电拓扑已恢复到停电前状态。"
+      "darkPrompt": "停电前的线路是一个环：大厅、西走廊、面包坊后场、教室区、东走廊，最后接回大厅。",
+      "lightPrompt": "推动接线块留守触点，对照五区环路检查哪几段接通。通道打开后，亲自走到出口完成检验。",
+      "successText": "北教五区供电环路已恢复，配电面板的联动规律已记录。"
     },
     "evacuation_route": {
       "id": "evacuation_route",
       "factId": "a2_evacuation_route_confirmed",
       "targetId": "a2_open_study_evacuation_context",
-      "title": "202 夜间疏散图",
+      "title": "202 至主楼梯往返疏散验证",
       "locationLabel": "A2 · 开放自习区路线板",
-      "darkPrompt": "图面没有完整箭头。比较四处鞋印的朝向、连续纹路和收束位置。",
-      "lightPrompt": "从 202 门口开始，把四块磁贴排成连续通路；终点必须落在主楼梯下行口。",
-      "successText": "202 到主楼梯的夜间疏散路线已记录。"
+      "darkPrompt": "鞋印从 202 门口出发，沿东走廊到交通核心转角，最后收在主楼梯下行口。",
+      "lightPrompt": "用物件留守触点，沿鞋印走到记录点，再带回工具并返回入口。去程留出的通道也得能走回来。",
+      "successText": "202 至主楼梯下行口的夜间往返路线已验证。"
     }
   },
   "registration": {

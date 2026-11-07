@@ -441,7 +441,7 @@ try {
   }));
   const classroomController = new ChapterFourTemporalMazeController(classroomStore, new EventBus());
   assert(
-    selectQuestViewModel(classroomStore.getState()).objective === "查完一楼剩下的记录",
+    selectQuestViewModel(classroomStore.getState()).objective === "核对一楼教室、电梯与前台值班板",
     "task drawer must group the remaining A1 investigations before exposing the A3 objective"
   );
   const blockedBeforeChecks = classroomController.resolve755Intent({
@@ -495,7 +495,7 @@ try {
   );
   const classroomQuest = selectQuestViewModel(classroomStore.getState());
   assert(
-    classroomQuest.objective === "查完一楼剩下的记录",
+    classroomQuest.objective === "核对一楼教室、电梯与前台值班板",
     "task drawer must keep elevator observation and calibration inside the order-free A1 group"
   );
   const classroomProjection = selectChapterFourMazeProjection(classroomStore.getState());
@@ -519,7 +519,7 @@ try {
   const elevatorObserved = classroomController.resolve755Intent({ type: "observe_elevator_history" });
   assert(elevatorObserved.accepted && elevatorObserved.changed, "dark observation must record elevator history once");
   assert(
-    selectQuestViewModel(classroomStore.getState()).objective === "查完一楼剩下的记录",
+    selectQuestViewModel(classroomStore.getState()).objective === "核对一楼教室、电梯与前台值班板",
     "one completed elevator branch must keep the grouped order-free A1 task visible"
   );
   classroomController.resolve755Intent({ type: "set_mode", mode: "light" });
@@ -569,7 +569,7 @@ try {
     "A1 duty-board evidence must remain collectable after the authored A3 route opens"
   );
   assert(
-    selectQuestViewModel(deferredDutyBoardStore.getState()).objective !== "查完一楼剩下的记录",
+    selectQuestViewModel(deferredDutyBoardStore.getState()).objective !== "核对一楼教室、电梯与前台值班板",
     "the task drawer must follow the player into the A3 investigation while the deferred A1 clue remains unconsumed"
   );
 
@@ -2000,7 +2000,7 @@ try {
     "gear repair must keep the power panel and Task12+ targets closed"
   );
   assert(
-    selectQuestViewModel(gearRepairedState).objective === "把旧钟拨向 07:55",
+    selectQuestViewModel(gearRepairedState).objective === "把修好的大厅旧钟拨向 07:55",
     "gear repair must hand off to the exact Task11 clock objective"
   );
   assert(
@@ -2334,7 +2334,7 @@ try {
   assert(!repeatedMinuteTheft.accepted && !repeatedMinuteTheft.changed, "Task11 repeated minute-theft completion must reject");
   assert(snapshot(maintenanceStore.getState()) === afterMinuteTheft, "Task11 repeated minute-theft completion must be zero-write");
   assert(
-    selectQuestViewModel(blackoutState).objective === "点亮追赶所需的通路"
+    selectQuestViewModel(blackoutState).objective === "操作配电面板：点亮大厅、东走廊与教室区"
       && !/(?:0b|mask|掩码|01101|1101|东走廊.*教室.*面包坊)/i.test(selectQuestViewModel(blackoutState).objective),
     "Task11 blackout must state the route objective without publishing the solution mask or switch sequence"
   );
@@ -2537,7 +2537,7 @@ try {
     "corrupted primary must recover and migrate a valid v29 post-grid backup"
   );
   assert(
-    selectQuestViewModel(finalChaseState).objective === "追进 202，关好门",
+    selectQuestViewModel(finalChaseState).objective === "甩开保安，沿主楼梯冲进二楼 202 落闩",
     "Task11 chase must expose the approved Room202 door goal, with successful entry verified below through the controller"
   );
   const finalChaseProjection = selectChapterFourMazeProjection(finalChaseState);
