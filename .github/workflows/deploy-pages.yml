@@ -236,6 +236,8 @@ jobs:
         run: |
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           node godot_native/tests/test_web_acceptance_workflow.mjs
+          node godot_native/tools/test_web_content_packing.mjs
+          node godot_native/tools/test_web_content_chunks.mjs
           node godot_native/tests/test_web_consumer_source_closure.mjs
           node godot_native/tests/test_web_source_inventory.mjs
           node godot_native/tests/test_preparation_pipeline.mjs

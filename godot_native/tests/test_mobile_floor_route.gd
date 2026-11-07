@@ -149,15 +149,21 @@ func run() -> void:
 	check(planner.segment_hits(Vector2(0,0),Vector2(10,0),Rect2(4,-1,.01,2)),"swept segment cannot tunnel thin obstacle")
 	check(not planner.segment_hits(Vector2(0,1),Vector2(10,1),Rect2(4,-1,1,2)),"exact tangency retains unchanged rectangle semantics")
 	check(planner.segment_hits(Vector2(5,0),Vector2(5,3),Rect2(4,-1,2,2)),"starting inside obstacle is blocked")
-	# Synthetic mask-only corridor isolates the exact five-foot-sample sweep.
-	# These are temporary fixture values, never authored source edits.
-	w.collisions=[];w.mask_meta={"cellSize":10,"gridWidth":50,"gridHeight":50}
-	w.mask.resize(313);w.mask.fill(255);w.world_size=Vector2(500,500);w._floor_bounds=Rect2(40,40,400,400)
+	# A separate mask-only world prevents the real campus's reviewed lawn
+	# support from filling this artificial source-mask gap. Keep campus feet.
+	var mask_world=load("res://scripts/world.gd").new()
+	mask_world.scene_id="campus_bootstrap";mask_world.campus_layers.ready=true
+	mask_world.mask_meta={"cellSize":10,"gridWidth":50,"gridHeight":50}
+	mask_world.mask.resize(313);mask_world.mask.fill(255)
+	mask_world.world_size=Vector2(500,500);mask_world._floor_bounds=Rect2(40,40,400,400)
 	for row in range(50):
-		var bit:=row*50+20;w.mask[bit/8]&=~(1<<(bit%8))
-	check(w.can_stand(Vector2(100,200)) and w.can_stand(Vector2(300,200)),"mask sweep endpoints are both legal")
-	check(not w._floor_segment_clear(Vector2(100,200),Vector2(300,200)),"mask-cell crossing catches blocked interval between legal endpoints")
-	check(w._floor_segment_clear(Vector2(100,200),Vector2(150,200)),"mask sweep permits wholly legal segment")
+		var bit:=row*50+20;mask_world.mask[bit/8]&=~(1<<(bit%8))
+	check(mask_world.can_stand(Vector2(100,200)) and mask_world.can_stand(Vector2(300,200)),"mask sweep endpoints are both legal")
+	check(not mask_world.can_stand(Vector2(205,200)),"mask-only fixture has a genuinely unsupported whole-foot midpoint")
+	check(not mask_world._floor_segment_clear(Vector2(100,200),Vector2(300,200)),"mask-cell crossing catches blocked interval between legal endpoints")
+	check(not mask_world._floor_segment_clear(Vector2(300,200),Vector2(100,200)),"reverse mask-cell crossing catches the same blocked interval")
+	check(mask_world._floor_segment_clear(Vector2(100,200),Vector2(150,200)),"mask sweep permits wholly legal segment")
+	mask_world.free()
 	await route_fixture(Vector2i(390,844));await tap_ground(goal)
 	var tick:=Time.get_ticks_usec()
 	var obstacles: Array=w._floor_obstacles()

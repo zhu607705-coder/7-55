@@ -51,12 +51,13 @@ try {
   // Force the planner to inspect this real late-loaded script. Its art must
   // stay delayed after preload was replaced by configure-time load(ART_PATH).
   records.set('scripts/ui/chapter4_power_panel.gd', Buffer.from('classification fixture; planner reads checked-in GDScript'));
+  // The archive panel is admitted and loaded only on its Chapter 4 entry.
+  resource('assets/rpg/interiors/finale/chapter4-755/props/chapter4_a3_archive_film_v01.png', 'chapter4');
   // A later asset with a real transitive boot preload must still be core.
-  resource('assets/rpg/interiors/finale/chapter4-755/props/chapter4_a3_archive_film_v01.png', 'core');
   resource('assets/native/kayak/hull.svg', 'core');
   resource('assets/native/north_objects_20261025/student_desk.png', 'chapter4');
   resource('assets/native/north_objects_20261025/wall_face.png', 'chapter4');
-  resource('assets/ui/tiyi_main.png', 'core');
+  resource('assets/ui/tiyi_main.png', 'phone_tiyi');
   // Raw PNG tiles are runtime-loaded; preserve their chapter ownership.
   records.set('assets/native/campus_layered/test/0_0.png', Buffer.from('layer tile fixture'));
   expected.set('assets/native/campus_layered/test/0_0.png', 'chapter2');
@@ -83,7 +84,8 @@ try {
   for (const [name, family] of expected) assert.equal(owners.get(name) ?? 'core', family, `Wrong lifecycle ownership: ${name}`);
   assert.equal(report.groups.reduce((sum, group) => sum + group.count, 0), entries.length, 'Every source entry retains one owner');
   assert.equal(report.totalPayloadBytes, offset, 'Planning never removes source bytes');
-  assert.ok(report.startupPromotions.some(entry => entry.logicalPath.endsWith('chapter4_a3_archive_film_v01.png')), 'Real transitive preload wins over late-chapter classification');
+  assert.ok(report.startupPromotions.some(entry => entry.logicalPath === 'assets/native/kayak/hull.svg' && entry.from === 'chapter35'), 'Real transitive script/scene preload wins over late-chapter classification');
+  assert.ok(!report.startupPromotions.some(entry => entry.logicalPath.endsWith('chapter4_a3_archive_film_v01.png')), 'Deferred archive art must not return to the boot preload chain');
   assert.ok(report.unresolved.some(entry => entry.path === 'assets/unknown_owner.bin'), 'Unknown resource is reported and retained');
   for (const late of ['scripts/ui/chapter3_phone_pages.gd', 'scripts/presentation/library_story_host.gd', 'scripts/presentation/c3_scene_host.gd', 'scripts/presentation/c3_narrative_host.gd'])
     assert.ok(!report.startupParsedScripts.includes(late), `Deferred host pulled back into boot: ${late}`);
