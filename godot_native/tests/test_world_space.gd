@@ -11,6 +11,16 @@ func check(ok:bool,label:String)->void:
 	if not ok:failures+=1;push_error("WORLD_SPACE: "+label)
 func polygon(area:Rect2)->PackedVector2Array:
 	return PackedVector2Array([area.position,Vector2(area.end.x,area.position.y),area.end,Vector2(area.position.x,area.end.y)])
+func ground_support_covers_body(world:Control,body:Rect2)->bool:
+	if world.scene_id!="campus_bootstrap":return world.world_space.allows_body(body)
+	# Campus has reviewed replacements/support in addition to the source mask.
+	# Require the entire scene-specific body, common ground bounds and physical
+	# hazard checks; a retired source floor must not authorize an override area.
+	if not world.world_space.allows_ground(body) or not world.campus_layers.ready:return false
+	if world.campus_layers.navigation_decision(body,Callable(),true)==0:return false
+	if world.campus_layers.source_floor_override_intersects(body):
+		return world.campus_layers.reviewed_support_covers(body,world.mask,world.mask_meta)
+	return world.world_space.allows_body(body) or world.campus_layers.reviewed_support_covers(body,world.mask,world.mask_meta)
 func run()->void:
 	create_timer(40).timeout.connect(func():push_error("WORLD_SPACE watchdog");quit(2))
 	var ground:RefCounted=PolygonGround.new()
@@ -51,15 +61,15 @@ func run()->void:
 		var label:String=world.world_space.variant
 		check(world.world_space.active,label+" registers one common ground authority")
 		check(world.can_stand(world.player),label+" actual safe spawn remains physically valid")
-		var body:Rect2=world.kayak_collision_rect(world.player,world.kayak.heading) if world.kayak else Body.foot_rect(world.player)
-		check(world.world_space.allows_body(body),label+" complete physical body stays on source ground/water")
+		var body:Rect2=world.kayak_collision_rect(world.player,world.kayak.heading) if world.kayak else Body.foot_rect(world.player,world.scene_id)
+		check(ground_support_covers_body(world,body),label+" complete physical body stays on authorized ground/water")
 		check(not world.can_stand(Vector2(0,0)),label+" outer north-west perimeter blocks full body")
 		var before:=JSON.stringify(state.d)
 		if not world.kayak:
 			for motion:Vector2 in [Vector2(-20000,0),Vector2(20000,0),Vector2(0,-20000),Vector2(0,20000)]:
 				var contact:Vector2=world._axis_destination(world.player,motion)
 				check(world.can_stand(contact),label+" held direction reaches legal contact without crossing geometry")
-				check(world.world_space.allows_body(Body.foot_rect(contact)),label+" foot rectangle remains on ground at contact")
+				check(ground_support_covers_body(world,Body.foot_rect(contact,world.scene_id)),label+" full scene-specific foot rectangle remains on authorized ground at contact")
 		else:
 			for heading:float in [0.0,PI/4,PI/2,PI]:
 				var water:Rect2=world.world_space.regions[0]

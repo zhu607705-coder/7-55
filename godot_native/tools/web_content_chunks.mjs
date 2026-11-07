@@ -1,5 +1,5 @@
 // Deferred resources keep their original PCK bytes and paths. Only a pack that
-// cannot fit the ordinary target receives static, independently cached slices.
+// exceeds the ordinary target receives static, independently cached slices.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -8,6 +8,7 @@ export const CONTENT_PACK_TARGET = 6_000_000;
 export const CONTENT_PACK_LIMIT = 24_000_000;
 export const CONTENT_CHUNK_BYTES = 1024 * 1024;
 export const CONTENT_PACK_POLICY = Object.freeze({ targetBytes: CONTENT_PACK_TARGET, hardLimitBytes: CONTENT_PACK_LIMIT, oversized: 'single-resource', transportChunkBytes: CONTENT_CHUNK_BYTES });
+export const CONTENT_PRESSURE_PACK_POLICY = Object.freeze({ ...CONTENT_PACK_POLICY, countBudget: { maxPacks: 100, strategy: 'smallest-same-family-pairs-v1' } });
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const filename = (id, index, hash) => `content/chunks/${id}-${String(index + 1).padStart(4, '0')}-${hash.slice(0, 16)}.bin`;
 function readExact(fd, bytes, offset) {

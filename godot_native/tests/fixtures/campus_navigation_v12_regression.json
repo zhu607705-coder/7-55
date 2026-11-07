@@ -1,0 +1,778 @@
+{
+  "schema": "755-campus-navigation-v10-fixture-v1",
+  "coordinateConvention": "world-foot-center",
+  "footSize": [
+    16,
+    10
+  ],
+  "footCenterOffset": [
+    0,
+    36.5625
+  ],
+  "groups": [
+    {
+      "id": "yinquan_grass_path_seam",
+      "routes": [
+        {
+          "id": "screenshot_lawn_to_path",
+          "points": [
+            [
+              450,
+              580
+            ],
+            [
+              500,
+              580
+            ]
+          ],
+          "footCenters": true,
+          "v8": {
+            "sampleCount": 101,
+            "rejectedCount": 47,
+            "firstRejected": [
+              [
+                470.5,
+                580.0
+              ],
+              [
+                471.00000000000006,
+                580.0
+              ],
+              [
+                471.5,
+                580.0
+              ]
+            ]
+          },
+          "minimal": {
+            "sampleCount": 101,
+            "rejectedCount": 0,
+            "firstRejected": []
+          },
+          "connected": {
+            "sampleCount": 101,
+            "rejectedCount": 0,
+            "firstRejected": []
+          }
+        },
+        {
+          "id": "lower_lawn_to_main_road",
+          "points": [
+            [
+              450,
+              580
+            ],
+            [
+              450,
+              650
+            ]
+          ],
+          "footCenters": true,
+          "v8": {
+            "sampleCount": 141,
+            "rejectedCount": 0,
+            "firstRejected": []
+          },
+          "minimal": {
+            "sampleCount": 141,
+            "rejectedCount": 0,
+            "firstRejected": []
+          },
+          "connected": {
+            "sampleCount": 141,
+            "rejectedCount": 0,
+            "firstRejected": []
+          }
+        },
+        {
+          "id": "path_to_main_road",
+          "points": [
+            [
+              500,
+              580
+            ],
+            [
+              500,
+              650
+            ]
+          ],
+          "footCenters": true,
+          "v8": {
+            "sampleCount": 141,
+            "rejectedCount": 0,
+            "firstRejected": []
+          },
+          "minimal": {
+            "sampleCount": 141,
+            "rejectedCount": 0,
+            "firstRejected": []
+          },
+          "connected": {
+            "sampleCount": 141,
+            "rejectedCount": 0,
+            "firstRejected": []
+          }
+        },
+        {
+          "id": "south_paved_band_to_path",
+          "points": [
+            [
+              300,
+              530
+            ],
+            [
+              500,
+              530
+            ]
+          ],
+          "footCenters": true,
+          "v8": {
+            "sampleCount": 401,
+            "rejectedCount": 388,
+            "firstRejected": [
+              [
+                300.0,
+                530.0
+              ],
+              [
+                300.5,
+                530.0000000000001
+              ],
+              [
+                301.0,
+                530.0
+              ]
+            ]
+          },
+          "minimal": {
+            "sampleCount": 401,
+            "rejectedCount": 388,
+            "firstRejected": [
+              [
+                300.0,
+                530.0
+              ],
+              [
+                300.5,
+                530.0000000000001
+              ],
+              [
+                301.0,
+                530.0
+              ]
+            ]
+          },
+          "connected": {
+            "sampleCount": 401,
+            "rejectedCount": 0,
+            "firstRejected": []
+          }
+        },
+        {
+          "id": "across_lawn_top",
+          "points": [
+            [
+              270,
+              538
+            ],
+            [
+              500,
+              538
+            ]
+          ],
+          "footCenters": true,
+          "v8": {
+            "sampleCount": 461,
+            "rejectedCount": 448,
+            "firstRejected": [
+              [
+                270.0,
+                538.0
+              ],
+              [
+                270.5,
+                538.0
+              ],
+              [
+                271.0,
+                538.0
+              ]
+            ]
+          },
+          "minimal": {
+            "sampleCount": 461,
+            "rejectedCount": 448,
+            "firstRejected": [
+              [
+                270.0,
+                538.0
+              ],
+              [
+                270.5,
+                538.0
+              ],
+              [
+                271.0,
+                538.0
+              ]
+            ]
+          },
+          "connected": {
+            "sampleCount": 461,
+            "rejectedCount": 0,
+            "firstRejected": []
+          }
+        },
+        {
+          "id": "lawn_to_south_paved_band",
+          "points": [
+            [
+              350,
+              570
+            ],
+            [
+              350,
+              528
+            ]
+          ],
+          "footCenters": true,
+          "v8": {
+            "sampleCount": 85,
+            "rejectedCount": 39,
+            "firstRejected": [
+              [
+                350.0,
+                547.0
+              ],
+              [
+                350.0,
+                546.5
+              ],
+              [
+                350.0,
+                546.0
+              ]
+            ]
+          },
+          "minimal": {
+            "sampleCount": 85,
+            "rejectedCount": 39,
+            "firstRejected": [
+              [
+                350.0,
+                547.0
+              ],
+              [
+                350.0,
+                546.5
+              ],
+              [
+                350.0,
+                546.0
+              ]
+            ]
+          },
+          "connected": {
+            "sampleCount": 85,
+            "rejectedCount": 0,
+            "firstRejected": []
+          }
+        },
+        {
+          "id": "north_bridge_to_existing_east_landing",
+          "points": [
+            [
+              780,
+              145
+            ],
+            [
+              914,
+              145
+            ]
+          ],
+          "coverageNote": "Crosses complete real bridge848..907 onto existing east landing. Does not claim downstream east-path connection beyond support925."
+        },
+        {
+          "id": "middle_bridge_both_directions",
+          "points": [
+            [
+              790,
+              351
+            ],
+            [
+              880,
+              351
+            ]
+          ]
+        }
+      ],
+      "blocked": [
+        {
+          "point": [
+            320,
+            511
+          ],
+          "v8": false,
+          "connected": false,
+          "id": "negative_0"
+        },
+        {
+          "point": [
+            300,
+            475
+          ],
+          "v8": false,
+          "connected": false,
+          "id": "negative_1"
+        },
+        {
+          "point": [
+            450,
+            485
+          ],
+          "v8": false,
+          "connected": false,
+          "id": "negative_2"
+        },
+        {
+          "point": [
+            540,
+            550
+          ],
+          "v8": false,
+          "connected": false,
+          "id": "negative_3"
+        },
+        {
+          "id": "true_water",
+          "point": [
+            830,
+            420
+          ]
+        },
+        {
+          "id": "north_bridge_beyond_existing_east_landing",
+          "point": [
+            925,
+            145
+          ],
+          "kind": "unsupported_ground"
+        }
+      ],
+      "open": [
+        {
+          "point": [
+            500,
+            528
+          ],
+          "v8": true,
+          "connected": true,
+          "id": "open_4"
+        }
+      ]
+    },
+    {
+      "id": "main_library_visible_perimeter_land",
+      "routes": [
+        {
+          "id": "main_library_visible_perimeter_land_0",
+          "points": [
+            [
+              1940,
+              1390
+            ],
+            [
+              1940,
+              1420
+            ],
+            [
+              1940,
+              1712
+            ],
+            [
+              2110,
+              1712
+            ],
+            [
+              2270,
+              1712
+            ],
+            [
+              2270,
+              1420
+            ],
+            [
+              1980,
+              1420
+            ],
+            [
+              1940,
+              1420
+            ]
+          ]
+        }
+      ],
+      "blocked": [
+        {
+          "point": [
+            1977,
+            1635
+          ],
+          "feature": "西南花槽树干",
+          "id": "西南花槽树干"
+        },
+        {
+          "point": [
+            2238,
+            1658
+          ],
+          "feature": "东南花槽",
+          "id": "东南花槽"
+        },
+        {
+          "point": [
+            2086,
+            1644
+          ],
+          "feature": "左门柱",
+          "id": "左门柱"
+        },
+        {
+          "point": [
+            2100,
+            1745
+          ],
+          "feature": "南湖真水",
+          "id": "南湖真水"
+        }
+      ]
+    },
+    {
+      "id": "west_research_courtyard_open_lawn",
+      "routes": [
+        {
+          "id": "west_research_courtyard_open_lawn_0",
+          "points": [
+            [
+              1470,
+              1600
+            ],
+            [
+              1500,
+              1600
+            ],
+            [
+              1650,
+              1600
+            ],
+            [
+              1650,
+              1520
+            ]
+          ]
+        },
+        {
+          "id": "west_research_courtyard_open_lawn_1",
+          "points": [
+            [
+              1500,
+              1600
+            ],
+            [
+              1500,
+              1680
+            ],
+            [
+              1775,
+              1680
+            ],
+            [
+              1775,
+              1600
+            ],
+            [
+              1650,
+              1600
+            ]
+          ]
+        },
+        {
+          "id": "west_research_courtyard_open_lawn_2",
+          "points": [
+            [
+              1500,
+              1600
+            ],
+            [
+              1500,
+              1420
+            ],
+            [
+              1500,
+              1390
+            ]
+          ]
+        }
+      ],
+      "blocked": [
+        {
+          "point": [
+            1580,
+            1550
+          ],
+          "feature": "西南楼底",
+          "id": "西南楼底"
+        },
+        {
+          "point": [
+            1700,
+            1548
+          ],
+          "feature": "东树床",
+          "id": "东树床"
+        },
+        {
+          "point": [
+            1525,
+            1518
+          ],
+          "feature": "西边树干",
+          "id": "西边树干"
+        },
+        {
+          "point": [
+            1808,
+            1650
+          ],
+          "feature": "东侧真水",
+          "id": "东侧真水"
+        }
+      ]
+    },
+    {
+      "id": "central_long_middle_plaza_continuity",
+      "routes": [
+        {
+          "id": "central_long_middle_plaza_continuity_0",
+          "points": [
+            [
+              2310,
+              2128
+            ],
+            [
+              2830,
+              2128
+            ],
+            [
+              2855,
+              2128
+            ]
+          ]
+        },
+        {
+          "id": "central_long_middle_plaza_continuity_1",
+          "points": [
+            [
+              2518,
+              2128
+            ],
+            [
+              2518,
+              2080
+            ],
+            [
+              2825,
+              2080
+            ],
+            [
+              2825,
+              2128
+            ]
+          ]
+        },
+        {
+          "id": "central_long_middle_plaza_continuity_2",
+          "points": [
+            [
+              2650,
+              2128
+            ],
+            [
+              2650,
+              2164
+            ],
+            [
+              2572,
+              2164
+            ]
+          ]
+        },
+        {
+          "id": "central_long_middle_plaza_continuity_3",
+          "points": [
+            [
+              2825,
+              2128
+            ],
+            [
+              2825,
+              2164
+            ]
+          ]
+        }
+      ],
+      "blocked": [
+        {
+          "point": [
+            2460,
+            2100
+          ],
+          "feature": "西北树床",
+          "id": "西北树床"
+        },
+        {
+          "point": [
+            2580,
+            2060
+          ],
+          "feature": "棕楼南花槽",
+          "id": "棕楼南花槽"
+        },
+        {
+          "point": [
+            2480,
+            2180
+          ],
+          "feature": "蓝厂房",
+          "id": "蓝厂房"
+        },
+        {
+          "point": [
+            2776,
+            2187
+          ],
+          "feature": "东南树床",
+          "id": "东南树床"
+        }
+      ]
+    },
+    {
+      "id": "central_long_south_planter_paving_network",
+      "routes": [
+        {
+          "id": "central_long_south_planter_paving_network_0",
+          "points": [
+            [
+              2315,
+              2850
+            ],
+            [
+              2855,
+              2850
+            ]
+          ]
+        },
+        {
+          "id": "central_long_south_planter_paving_network_1",
+          "points": [
+            [
+              2407,
+              2850
+            ],
+            [
+              2407,
+              2790
+            ]
+          ]
+        },
+        {
+          "id": "central_long_south_planter_paving_network_2",
+          "points": [
+            [
+              2462,
+              2850
+            ],
+            [
+              2462,
+              2790
+            ]
+          ]
+        },
+        {
+          "id": "central_long_south_planter_paving_network_3",
+          "points": [
+            [
+              2754,
+              2850
+            ],
+            [
+              2754,
+              2790
+            ]
+          ]
+        },
+        {
+          "id": "central_long_south_planter_paving_network_4",
+          "points": [
+            [
+              2828,
+              2850
+            ],
+            [
+              2828,
+              2790
+            ]
+          ]
+        },
+        {
+          "id": "central_long_south_planter_paving_network_5",
+          "points": [
+            [
+              2585,
+              2850
+            ],
+            [
+              2585,
+              2890
+            ]
+          ]
+        }
+      ],
+      "blocked": [
+        {
+          "point": [
+            2488,
+            2818
+          ],
+          "feature": "长花池西树干",
+          "id": "长花池西树干"
+        },
+        {
+          "point": [
+            2580,
+            2818
+          ],
+          "feature": "长花池中段",
+          "id": "长花池中段"
+        },
+        {
+          "point": [
+            2438,
+            2818
+          ],
+          "feature": "西独立花池",
+          "id": "西独立花池"
+        },
+        {
+          "point": [
+            2788,
+            2816
+          ],
+          "feature": "东独立花池",
+          "id": "东独立花池"
+        }
+      ]
+    }
+  ],
+  "stepPixels": 2
+}

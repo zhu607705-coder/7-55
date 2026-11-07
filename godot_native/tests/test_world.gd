@@ -16,7 +16,9 @@ func _run() -> void:
 		state.d.rpgCheckpoint = ""
 		state.d.native.positions = {}
 		world.refresh_world()
-		check(world.background != null,scene+" background resource loads")
+		if scene == "campus_bootstrap":
+			check(world.campus_layers.ready and world.background == null, "campus uses independent layers without old plate")
+		else: check(world.background != null,scene+" background resource loads")
 		check(world.can_stand(world.player),scene+" safe spawn is not blocked")
 		check(not world.can_stand(Vector2(-1,0)),scene+" rejects outside world")
 		if scene == "canteen_interior":

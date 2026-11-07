@@ -10,6 +10,7 @@ var corner_limit := MAX_CORNERS
 var edge_limit := MAX_EDGES
 var edge_checks := 0
 var corner_count := 0
+var _detour_candidates:Array[Vector2]=[]
 
 static func segment_hits(a: Vector2,b: Vector2,box: Rect2) -> bool:
 	# Open slabs match Rect2.intersects: tangency alone does not collide.
@@ -42,6 +43,15 @@ func plan(start: Vector2,goal: Vector2,boxes: Array,allowed: Rect2,stand: Callab
 				corner_count=nodes.size()-2
 				return none
 			nodes.append(point)
+	# Extra geometry is only a source of graph candidates, never rectangular
+	# collision authority. The original stand/clear callables validate every
+	# endpoint and edge against true campus polygons and the full footprint.
+	var candidates:=_detour_candidates.duplicate()
+	candidates.sort_custom(func(a:Vector2,b:Vector2)->bool: return start.distance_to(a)+a.distance_to(goal)<start.distance_to(b)+b.distance_to(goal))
+	for point:Vector2 in candidates:
+		if nodes.size()-2>=MAX_CORNERS:break
+		if not allowed.has_point(point) or nodes.has(point) or not stand.call(point):continue
+		nodes.append(point)
 	corner_count=nodes.size()-2
 	var costs: Array[float]=[]
 	var previous: Array[int]=[]
@@ -71,3 +81,12 @@ func plan(start: Vector2,goal: Vector2,boxes: Array,allowed: Rect2,stand: Callab
 				edge_checks+=1; edges[key]=bool(clear.call(nodes[current],nodes[next]))
 			if edges[key]: costs[next]=cost; previous[next]=current
 	return none
+
+func plan_with_candidates(start:Vector2,goal:Vector2,boxes:Array,allowed:Rect2,stand:Callable,clear:Callable,candidates:Array[Vector2])->Array[Vector2]:
+	# Preserve the existing six-argument virtual plan API and restore local
+	# state immediately; non-campus callers/subclasses remain unchanged.
+	var previous:=_detour_candidates
+	_detour_candidates=candidates
+	var result:=plan(start,goal,boxes,allowed,stand,clear)
+	_detour_candidates=previous
+	return result

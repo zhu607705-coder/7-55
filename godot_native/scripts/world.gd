@@ -32,6 +32,8 @@ const Room301Layout=preload("res://scripts/objects/room301_exhibit_layout.gd")
 var room301_exhibit:Node2D
 var elevator_button:Node2D
 var north_props:Node2D
+const CampusLayeredMap = preload("res://scripts/presentation/campus_layered_map.gd")
+var campus_layers: RefCounted = CampusLayeredMap.new()
 const SourceTiledTexture=preload("res://scripts/presentation/source_tiled_texture.gd")
 # This chapter-owned script and its setup textures are loaded only after the
 # incoming scene's WebContent pack is ready. An inactive canteen is retained
@@ -197,6 +199,9 @@ func _ensure_scene_visuals(incoming: String) -> void:
 	# Called only after the Web content gate. The hidden first-chapter world
 	# must not decode actors, the dorm plate or the fourth-chapter guard.
 	if incoming.is_empty(): return
+	if incoming == "campus_bootstrap":
+		if not campus_layers.configure(): push_error("Campus layer loading failed: " + str(campus_layers.errors))
+	elif campus_layers.ready: campus_layers.release()
 	if player_frames.is_empty():
 		for direction in ["down","up","side","left"]:
 			var frames: Array = []
@@ -355,7 +360,12 @@ func refresh_world() -> void:
 	# one oversized GPU texture. Only the explicit lossless adapter opts in;
 	# all ordinary interiors retain their original Texture2D path and depth.
 	background_is_tiled=SourceTiledTexture.supports(image_path)
-	if background_is_tiled:
+	if scene_id == "campus_bootstrap":
+		# Fail closed: never silently show the retired flattened plate.
+		background = null
+		background_is_tiled = false
+		background_tiles = SourceTiledTexture.new()
+	elif background_is_tiled:
 		background=null
 		background_tiles.configure(image_path)
 	else:
@@ -421,10 +431,17 @@ func can_stand(point: Vector2, kayak_heading: float=NAN) -> bool:
 	var boat: Rect2 = kayak_collision_rect(point,heading)
 	var visual: Rect2 = boat if boating else PlayerMetrics.visual_rect(point,display_scale_at(point))
 	if visual.position.x < 0 or visual.position.y < 0 or visual.end.x > world_size.x or visual.end.y > world_size.y: return false
-	var feet: Rect2 = boat if boating else PlayerMetrics.foot_rect(point)
+	var feet: Rect2 = boat if boating else PlayerMetrics.foot_rect(point,scene_id)
+	if scene_id == "campus_bootstrap":
+		if not campus_layers.ready: return false
+		# Measured water and solids reject before reviewed floor support.
+		if campus_layers.navigation_decision(feet, Callable(), true) == 0: return false
 	if world_space.scene_id==scene_id:
 		if not world_space.visual_bounds.encloses(visual) or not world_space.allows_ground(feet):return false
-	if not mask.is_empty() and not SpatialRules.mask_allows_rect(feet,mask,mask_meta):return false
+	if not mask.is_empty() and ((scene_id == "campus_bootstrap" and campus_layers.source_floor_override_intersects(feet)) or not SpatialRules.mask_allows_rect(feet,mask,mask_meta)):
+		# Only a reviewed bridge/path can supplement the original floor mask.
+		# Full-foot coverage is required; subsequent collisions/doors still run.
+		if scene_id != "campus_bootstrap" or not campus_layers.reviewed_support_covers(feet, mask, mask_meta): return false
 	if is_instance_valid(native_canteen) and native_canteen.is_active():return not native_canteen.blocks_feet(feet)
 	if boating and world_space.scene_id!=scene_id:
 		var contained := false
@@ -450,7 +467,7 @@ func _door_collision_rects()->Array[Rect2]:
 func _library_shelf_static_clearance(destination:Vector2)->bool:
 	# Check the entire short push against all other bodies and exact ground.
 	# Only the cabinet causing this contact is excluded from this path query.
-	var feet:Rect2=PlayerMetrics.foot_rect(player).merge(PlayerMetrics.foot_rect(destination))
+	var feet:Rect2=PlayerMetrics.foot_rect(player,scene_id).merge(PlayerMetrics.foot_rect(destination,scene_id))
 	var visual:Rect2=PlayerMetrics.visual_rect(player,display_scale_at(player)).merge(PlayerMetrics.visual_rect(destination,display_scale_at(destination)))
 	if not Rect2(Vector2.ZERO,world_size).encloses(visual):return false
 	if world_space.scene_id==scene_id and (not world_space.visual_bounds.encloses(visual) or not world_space.allows_ground(feet)):return false
@@ -469,7 +486,7 @@ func _resolve_library_shelf_contact()->bool:
 	if current==_library_shelf_applied_offset:return false
 	var previous:float=_library_shelf_applied_offset
 	_library_shelf_applied_offset=current
-	var feet:Rect2=PlayerMetrics.foot_rect(player)
+	var feet:Rect2=PlayerMetrics.foot_rect(player,scene_id)
 	var was_legal:bool=_library_shelf_static_clearance(player)
 	var touching:=false
 	var allow_left:=true;var allow_right:=true
@@ -502,15 +519,16 @@ func _resolve_library_shelf_contact()->bool:
 func interior_door_snapshot()->Dictionary:
 	# Detached measurements for ordinary input acceptance; no mutation port.
 	if scene_id=="library_interior":
-		return {"scene":scene_id,"opening":Rect2(644,681,212,86),"progress":library_door.progress,"visualProgress":library_door.progress,"sensorOpen":library_door.sensor_open,"accessGranted":library_door.access_granted,"leafRects":library_door.leaf_rects(),"collisionRects":library_door.collision_rects(),"playerFoot":PlayerMetrics.foot_rect(player),"departureHeld":false,"routeStatus":_floor_status,"routeWaypointCount":_floor_route.size()}
+		return {"scene":scene_id,"opening":Rect2(644,681,212,86),"progress":library_door.progress,"visualProgress":library_door.progress,"sensorOpen":library_door.sensor_open,"accessGranted":library_door.access_granted,"leafRects":library_door.leaf_rects(),"collisionRects":library_door.collision_rects(),"playerFoot":PlayerMetrics.foot_rect(player,scene_id),"departureHeld":false,"routeStatus":_floor_status,"routeWaypointCount":_floor_route.size()}
 	if scene_id=="theater_interior" and chapter3_layers!=null:
 		var door:RefCounted=chapter3_layers.doors
-		return {"scene":scene_id,"opening":door.opening,"progress":door.progress,"visualProgress":door.visual_progress,"sensorOpen":door.sensor_open,"passable":door.passable(),"leafRects":door.leaf_rects(),"collisionRects":door.collision_rects(),"playerFoot":PlayerMetrics.foot_rect(player),"departureHeld":door.departure_held,"clockOwned":door.departure_clock_owned,"routeStatus":_floor_status,"routeWaypointCount":_floor_route.size()}
+		return {"scene":scene_id,"opening":door.opening,"progress":door.progress,"visualProgress":door.visual_progress,"sensorOpen":door.sensor_open,"passable":door.passable(),"leafRects":door.leaf_rects(),"collisionRects":door.collision_rects(),"playerFoot":PlayerMetrics.foot_rect(player,scene_id),"departureHeld":door.departure_held,"clockOwned":door.departure_clock_owned,"routeStatus":_floor_status,"routeWaypointCount":_floor_route.size()}
 	return {}
 
 func background_plate_snapshot()->Dictionary:
 	# Detached presentation measurements for browser acceptance, never a scene
 	# selector or a progression write port.
+	if scene_id == "campus_bootstrap": return campus_layers.snapshot()
 	if background_is_tiled:
 		var snapshot:Dictionary=background_tiles.snapshot();snapshot["tiled"]=true
 		return snapshot
@@ -570,7 +588,7 @@ func _distance(target: Dictionary) -> float:
 
 func _distance_at(target:Dictionary,anchor:Vector2)->float:
 	if target.get("follow_player",false): return 0.0
-	var point := PlayerMetrics.foot_rect(anchor).get_center() if scene_id=="duan_yongping_temporal_maze" else anchor
+	var point := PlayerMetrics.foot_rect(anchor,scene_id).get_center() if scene_id=="duan_yongping_temporal_maze" else anchor
 	if target.has("bounds"):
 		var b = target.bounds
 		var rect: Rect2
@@ -630,7 +648,7 @@ func _try_interact(target: Dictionary = {}) -> void:
 					State.act(action)
 				return
 			var chair: Rect2 = library_layers.objects.areas[library_layers.CHAIR_IDS[chair_id]]
-			var approach := Vector2(chair.get_center().x, chair.end.y - PlayerMetrics.FOOT_CENTER_OFFSET.y)
+			var approach := Vector2(chair.get_center().x, chair.end.y - PlayerMetrics.foot_center_offset(scene_id).y)
 			if player.y < approach.y - 12.0 or player.distance_to(approach) > 58.0:
 				State.feedback.emit("请从椅子后面靠近再坐下。")
 				return
@@ -1230,7 +1248,12 @@ func _draw_base_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	var origin: Vector2=layer_context.origin
 	canvas.draw_rect(Rect2(Vector2.ZERO,size),Color("0c1b24"))
 	if scene_id.is_empty(): return
-	if background_is_tiled:
+	if scene_id == "campus_bootstrap":
+		if campus_layers.ready:
+			campus_layers.draw_background(canvas,origin,zoom,size,0.0 if bool(State.d.native.settings.reduced_motion) else Time.get_ticks_msec(),PlayerMetrics.depth_y(player))
+		else:
+			canvas.draw_string(ThemeDB.fallback_font,Vector2(32,80),"地图图层加载失败，请重新打开试玩。旧地图未替代显示。",HORIZONTAL_ALIGNMENT_LEFT,-1,18,Color.WHITE)
+	elif background_is_tiled:
 		if background_tiles.ensure_loaded():background_tiles.draw_region(canvas,Rect2(origin+background_rect.position*zoom,background_rect.size*zoom),Rect2(Vector2.ZERO,background_tiles.get_size()))
 	elif background:
 		var visual_plate:Texture2D=north_source_objects.clean_plate if is_instance_valid(north_source_objects) and north_source_objects.active else background
@@ -1301,7 +1324,9 @@ func _draw_actor_foreground_prefix(canvas: CanvasItem,layer_context: Dictionary)
 
 func _draw_actor_foreground_suffix(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	var origin:Vector2=layer_context.origin
-	if background or background_is_tiled:
+	if scene_id == "campus_bootstrap":
+		campus_layers.draw_foreground(canvas,origin,zoom,size,PlayerMetrics.depth_y(player),mode_mix)
+	elif background or background_is_tiled:
 		for cover in foreground:
 			if north_objects.owns_cover(cover):continue
 			if scene_id=="theater_interior" and chapter3_layers!=null and chapter3_layers.theater_rebuild.owns_legacy_cover(cover): continue
@@ -1766,7 +1791,7 @@ func _update_guard(delta: float) -> void:
 	var walls: Array=[]
 	for box in collisions: walls.append(_rect(box))
 	if world_space.scene_id==scene_id:walls.append_array(world_space.voids)
-	var feet: Rect2=PlayerMetrics.foot_rect(player)
+	var feet: Rect2=PlayerMetrics.foot_rect(player,scene_id)
 	var foot: Vector2=feet.get_center()
 	var velocity:=Vector2.ZERO
 	if mode=="patrol":
@@ -2089,7 +2114,7 @@ func _floor_visible_rect() -> Rect2:
 	return Rect2(camera+(local.position-size/2)/zoom,local.size/zoom).intersection(Rect2(Vector2.ZERO,world_size))
 
 func _floor_anchor_bounds(visible: Rect2) -> Rect2:
-	var feet:=PlayerMetrics.foot_rect(Vector2.ZERO)
+	var feet:=PlayerMetrics.foot_rect(Vector2.ZERO,scene_id)
 	return Rect2(visible.position-feet.position,visible.size-feet.size)
 
 func _floor_obstacles() -> Array:
@@ -2098,7 +2123,7 @@ func _floor_obstacles() -> Array:
 	var library_objects:bool=scene_id=="library_interior" and library_layers!=null and library_layers.objects.ready
 	_floor_planner.corner_limit=320 if library_objects else MobileFloorRoute.MAX_CORNERS
 	_floor_planner.edge_limit=8192 if library_objects else MobileFloorRoute.MAX_EDGES
-	var feet:=PlayerMetrics.foot_rect(Vector2.ZERO)
+	var feet:=PlayerMetrics.foot_rect(Vector2.ZERO,scene_id)
 	var native_furniture:bool=is_instance_valid(native_canteen) and native_canteen.is_active()
 	# Append route-local doors/voids without mutating the native geometry cache.
 	var obstacles:Array=native_canteen.navigation_obstacles(feet).duplicate() if native_furniture else []
@@ -2114,20 +2139,105 @@ func _floor_obstacles() -> Array:
 		for rect:Rect2 in world_space.voids:obstacles.append(Rect2(rect.position-feet.end,rect.size+feet.size))
 	return obstacles
 
+func _floor_campus_detour_nodes(goal:Vector2, local_support_only:bool=false) -> Array[Vector2]:
+	var points:Array[Vector2]=[]
+	if scene_id!="campus_bootstrap" or not campus_layers.ready:return points
+	var feet:=PlayerMetrics.foot_rect(Vector2.ZERO,scene_id)
+	for polygon:PackedVector2Array in campus_layers.solid_polygons:
+		if polygon.is_empty():continue
+		var bounds:=Rect2(polygon[0],Vector2.ZERO)
+		for vertex:Vector2 in polygon:bounds=bounds.expand(vertex)
+		var box:=Rect2(bounds.position-feet.end,bounds.size+feet.size).grow(MobileFloorRoute.CORNER_CLEARANCE)
+		if not box.intersects(_floor_bounds):continue
+		# Only objects in the local start/goal corridor contribute candidates.
+		# Remote viewport trees otherwise create quadratic, long support scans.
+		# A blocking building still contributes all its outer corners, even
+		# when the needed detour extends beyond this corridor.
+		var corridor:=Rect2(player,Vector2.ZERO).expand(goal).grow(32.0)
+		if not box.intersects(corridor):continue
+		# Bounding corners propose detours only. They are NOT inserted into
+		# _floor_obstacles: concave polygons never become new air-wall boxes.
+		for point:Vector2 in [box.position,Vector2(box.end.x,box.position.y),box.end,Vector2(box.position.x,box.end.y)]:
+			if not points.has(point):points.append(point)
+	# Reviewed path points contribute graph candidates only. They do not
+	# grant floor, pre-approve an edge, mutate the player, or bypass a gate.
+	# The first attempt keeps support candidates near this tap. A failed local
+	# graph retries all visible bends of relevant supports, preserving U-shaped
+	# routes without paying for every remote path point on ordinary short taps.
+	var support_corridor := PlayerMetrics.foot_rect(player,scene_id).merge(PlayerMetrics.foot_rect(goal,scene_id)).grow(32.0)
+	for support: Dictionary in campus_layers.walk_supports:
+		if not support.bounds.intersects(support_corridor): continue
+		for foot_center: Vector2 in support.get("routeCandidateFootCenters", PackedVector2Array()):
+			if local_support_only and not support_corridor.has_point(foot_center): continue
+			var point := PlayerMetrics.anchor_from_foot_center(foot_center,scene_id)
+			if _floor_bounds.has_point(point) and not points.has(point): points.append(point)
+	return points
+
+func _floor_plan(goal:Vector2,obstacles:Array)->Array[Vector2]:
+	var clear:Callable=func(a:Vector2,b:Vector2)->bool:return _floor_segment_clear(a,b,obstacles,true)
+	if scene_id=="campus_bootstrap" and campus_layers.ready:
+		# Both attempts are synchronous against one unchanged collision state.
+		# Reuse exact directed-edge proofs across retries, but never across taps
+		# or movement frames. Combined real checks retain the existing budget.
+		var edge_cache: Dictionary = {}
+		var cached_clear: Callable = func(a:Vector2,b:Vector2)->bool:
+			var key := Vector4(a.x,a.y,b.x,b.y)
+			if edge_cache.has(key): return bool(edge_cache[key])
+			if edge_cache.size() >= MobileFloorRoute.MAX_EDGES: return false
+			var result := bool(clear.call(a,b))
+			edge_cache[key] = result
+			return result
+		var local_candidates := _floor_campus_detour_nodes(goal,true)
+		var route := _floor_planner.plan_with_candidates(player,goal,obstacles,_floor_bounds,_floor_stand,cached_clear,local_candidates)
+		if not route.is_empty(): return route
+		var all_candidates := _floor_campus_detour_nodes(goal)
+		if all_candidates == local_candidates: return route
+		return _floor_planner.plan_with_candidates(player,goal,obstacles,_floor_bounds,_floor_stand,cached_clear,all_candidates)
+	return _floor_planner.plan(player,goal,obstacles,_floor_bounds,_floor_stand,clear)
+
 func _floor_stand(point: Vector2) -> bool:
 	return _floor_bounds.has_point(point) and can_stand(point)
+
+func _floor_campus_sweep_clear(a: Vector2,b: Vector2) -> bool:
+	if scene_id!="campus_bootstrap" or not campus_layers.ready: return true
+	# Source-mask cell crossings do not describe the new measured polygon
+	# boundaries. Sweep the entire foot rectangle, including sub-pixel corners,
+	# rather than hoping a 4px mask sampling interval intersects the solid.
+	var local_feet:=PlayerMetrics.foot_rect(Vector2.ZERO,scene_id)
+	var swept_bounds:=PlayerMetrics.foot_rect(a,scene_id).merge(PlayerMetrics.foot_rect(b,scene_id))
+	for region: Dictionary in campus_layers.water_regions:
+		if not swept_bounds.intersects(region.bounds): continue
+		for water: Rect2 in region.rects:
+			var blocked_anchor:=Rect2(water.position-local_feet.end,water.size+local_feet.size)
+			if MobileFloorRoute.segment_hits(a,b,blocked_anchor): return false
+	var corners:=PackedVector2Array()
+	for anchor: Vector2 in [a,b]:
+		var feet:=PlayerMetrics.foot_rect(anchor,scene_id)
+		corners.append_array(PackedVector2Array([feet.position,Vector2(feet.end.x,feet.position.y),feet.end,Vector2(feet.position.x,feet.end.y)]))
+	var swept:=Geometry2D.convex_hull(corners)
+	for polygon: PackedVector2Array in campus_layers.solid_polygons:
+		if not Geometry2D.intersect_polygons(swept,polygon).is_empty(): return false
+	return true
 
 func _floor_segment_clear(a: Vector2,b: Vector2,planned_obstacles: Array=[],validated_nodes: bool=false) -> bool:
 	# Planning is synchronous and has already checked each graph node. Walking
 	# always takes the default branch and reads current collisions every frame.
 	if not validated_nodes and (not _floor_stand(a) or not _floor_stand(b)): return false
+	if not _floor_campus_sweep_clear(a,b): return false
 	for obstacle: Rect2 in (planned_obstacles if validated_nodes else _floor_obstacles()):
 		if MobileFloorRoute.segment_hits(a,b,obstacle): return false
 	if mask.is_empty(): return true
+	# Exact conservative fast path: if the ENTIRE swept bounding rectangle
+	# is supported and hazard-free, every intermediate whole foot is too.
+	# Nonrectangular corridors fall through to the unchanged pixel-edge sweep.
+	# Real polygon/water sweeps and legacy/story obstacles were checked above.
+	if scene_id=="campus_bootstrap" and campus_layers.ready:
+		var envelope:=PlayerMetrics.foot_rect(a,scene_id).merge(PlayerMetrics.foot_rect(b,scene_id))
+		if campus_layers.reviewed_support_covers(envelope,mask,mask_meta):return true
 	# Full footprint occupancy only changes as a foot edge crosses a cell edge.
 	# Test every such interval, including narrow holes between the old samples.
 	var cuts: Array[float]=[0.0,1.0]
-	var feet:=PlayerMetrics.foot_rect(Vector2.ZERO)
+	var feet:=PlayerMetrics.foot_rect(Vector2.ZERO,scene_id)
 	var change:=b-a
 	var cell:=float(mask_meta.cellSize)
 	for offset: Vector2 in [feet.get_center(),feet.position,Vector2(feet.end.x,feet.position.y),Vector2(feet.position.x,feet.end.y),feet.end]:
@@ -2138,9 +2248,27 @@ func _floor_segment_clear(a: Vector2,b: Vector2,planned_obstacles: Array=[],vali
 			for index in range(int(floor(minf(first,last)/cell))+1,int(floor(maxf(first,last)/cell))+1):
 				var fraction: float=(index*cell-first)/change[axis]
 				if fraction>0 and fraction<1: cuts.append(fraction)
+	# Refine only paths crossing the reviewed 1px support domain. The old
+	# source-cell spacing alone can skip a one-pixel unsupported hole.
+	if scene_id == "campus_bootstrap" and campus_layers.walk_support_intersects(PlayerMetrics.foot_rect(a,scene_id).merge(PlayerMetrics.foot_rect(b,scene_id))):
+		for offset: Vector2 in [feet.position,Vector2(feet.end.x,feet.position.y),Vector2(feet.position.x,feet.end.y),feet.end]:
+			for axis in [0,1]:
+				if absf(change[axis]) < .000001: continue
+				var first: float = (a+offset)[axis]
+				var last: float = (b+offset)[axis]
+				for edge in range(floori(minf(first,last))+1,floori(maxf(first,last))+1):
+					var fraction: float = (float(edge)-first)/change[axis]
+					if fraction > 0 and fraction < 1: cuts.append(fraction)
 	cuts.sort()
+	var previous_cut := cuts[0]
 	for index in range(1,cuts.size()):
-		if not can_stand(a.lerp(b,cuts[index])) or not can_stand(a.lerp(b,(cuts[index-1]+cuts[index])*.5)): return false
+		var current_cut := cuts[index]
+		# The same foot-edge event appears for paired corners and source/1px
+		# grids. Only exact duplicates are redundant; keep every unique endpoint
+		# and interval midpoint, including arbitrarily narrow unsupported strips.
+		if current_cut == previous_cut: continue
+		if not can_stand(a.lerp(b,current_cut)) or not can_stand(a.lerp(b,(previous_cut+current_cut)*.5)): return false
+		previous_cut = current_cut
 	return true
 
 func _floor_empty_destination(point: Vector2) -> bool:
@@ -2159,11 +2287,11 @@ func _canteen_floor_goal(goal: Vector2,obstacles: Array) -> Vector2:
 	# Exact legal goals, including disconnected ones, keep their original intent.
 	_canteen_floor_tap.candidate_count=0
 	if scene_id!="canteen_interior" or not mask.is_empty() or _floor_stand(goal): return goal
-	var point:=goal+PlayerMetrics.FOOT_CENTER_OFFSET
+	var point:=goal+PlayerMetrics.foot_center_offset(scene_id)
 	for obstacle: Dictionary in collisions:
 		if _rect(obstacle).has_point(point): return goal
 	if not Rect2(Vector2.ZERO,world_size).encloses(PlayerMetrics.visual_rect(goal,display_scale_at(goal))): return goal
-	return _canteen_floor_tap.nearest(goal,CanteenFloorTap.PIXEL_RADIUS/zoom,obstacles,_floor_stand,func(anchor: Vector2): return _floor_empty_destination(anchor+PlayerMetrics.FOOT_CENTER_OFFSET))
+	return _canteen_floor_tap.nearest(goal,CanteenFloorTap.PIXEL_RADIUS/zoom,obstacles,_floor_stand,func(anchor: Vector2): return _floor_empty_destination(anchor+PlayerMetrics.foot_center_offset(scene_id)))
 
 func _floor_phase_context()->Array:
 	var n:Dictionary=State.d.get("native",{});var ui:Dictionary=State.d.get("ui",{})
@@ -2192,14 +2320,14 @@ func _queue_target_approach(target:Dictionary)->bool:
 		elif raw is Array and raw.size()>=2:authored=Vector2(float(raw[0]),float(raw[1]))
 		if scene_id=="dorm_hub" and authored.is_finite():authored=authored*.5+Vector2(245,0)
 	_floor_bounds=_floor_anchor_bounds(_floor_visible_rect())
-	var offset:Vector2=PlayerMetrics.FOOT_CENTER_OFFSET if scene_id=="duan_yongping_temporal_maze" else Vector2.ZERO
+	var offset:Vector2=PlayerMetrics.foot_center_offset(scene_id) if scene_id=="duan_yongping_temporal_maze" else Vector2.ZERO
 	var obstacles:Array=_floor_obstacles();var attempts:=0
 	for goal:Vector2 in TargetApproach.candidates(player,area,limit,offset,authored):
 		if not _floor_stand(goal) or _distance_at(target,goal)>limit:continue
 		attempts+=1
-		var route:Array[Vector2]=_floor_planner.plan(player,goal,obstacles,_floor_bounds,_floor_stand,func(a:Vector2,b:Vector2):return _floor_segment_clear(a,b,obstacles,true))
+		var route:Array[Vector2]=_floor_plan(goal,obstacles)
 		if not route.is_empty():
-			_floor_route=route;_floor_goal=goal+PlayerMetrics.FOOT_CENTER_OFFSET;_floor_status="moving"
+			_floor_route=route;_floor_goal=goal+PlayerMetrics.foot_center_offset(scene_id);_floor_status="moving"
 			_floor_world_key=world_key;_floor_view_size=size;_floor_view_zoom=zoom;_floor_expected_camera=camera
 			_floor_intent_state=State.d
 			_floor_pending_interaction={"target":target.duplicate(true),"world_key":world_key,"phase":_floor_phase_context()}
@@ -2241,15 +2369,15 @@ func _mobile_floor_tap(local: Vector2) -> void:
 	_floor_bounds=_floor_anchor_bounds(_floor_visible_rect())
 	_floor_goal=point
 	_floor_world_key=world_key; _floor_view_size=size; _floor_view_zoom=zoom; _floor_expected_camera=camera
-	# Tap/marker denote the exact collision-foot center, not the sprite origin
-	# or its shadow at +39. Object and inventory hit coordinates are unchanged.
-	var goal:=point-PlayerMetrics.FOOT_CENTER_OFFSET
+	# Tap/marker denote the scene-specific collision-foot center, not the
+	# sprite origin. Object and inventory hit coordinates are unchanged.
+	var goal:=PlayerMetrics.anchor_from_foot_center(point,scene_id)
 	var obstacles:=_floor_obstacles()
 	var resolved:=_canteen_floor_goal(goal,obstacles)
 	if resolved!=goal:
 		goal=resolved
-		_floor_goal=goal+PlayerMetrics.FOOT_CENTER_OFFSET
-	_floor_route=_floor_planner.plan(player,goal,obstacles,_floor_bounds,_floor_stand,func(a: Vector2,b: Vector2): return _floor_segment_clear(a,b,obstacles,true))
+		_floor_goal=goal+PlayerMetrics.foot_center_offset(scene_id)
+	_floor_route=_floor_plan(goal,obstacles)
 	if _floor_route.is_empty(): _stop_floor_route()
 	else: _floor_status="moving"
 	grab_focus(); queue_redraw()
@@ -2258,9 +2386,9 @@ func _draw_floor_route(origin: Vector2, canvas: CanvasItem=null) -> void:
 	if canvas==null: canvas=self
 	if _floor_goal==Vector2.INF or capture_mode or presentation_actor_hidden: return
 	var color:=Color(.74,.87,.77,.9)
-	var previous: Vector2=origin+PlayerMetrics.foot_rect(player).get_center()*zoom
+	var previous: Vector2=origin+PlayerMetrics.foot_rect(player,scene_id).get_center()*zoom
 	for anchor: Vector2 in _floor_route:
-		var next: Vector2=origin+PlayerMetrics.foot_rect(anchor).get_center()*zoom
+		var next: Vector2=origin+PlayerMetrics.foot_rect(anchor,scene_id).get_center()*zoom
 		canvas.draw_line(previous,next,Color(.74,.87,.77,.23),1.0,true); previous=next
 	var point:=origin+_floor_goal*zoom
 	if _floor_status=="blocked":
