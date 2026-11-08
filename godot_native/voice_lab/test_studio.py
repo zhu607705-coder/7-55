@@ -15,7 +15,7 @@ class VoiceContracts(unittest.TestCase):
     def test_every_eligible_line_has_scene_and_exact_source(self):
         plan = studio.build_plan(self.direction, self.data)
         self.assertEqual(plan["counts"], {"catalog": 152, "eligibleCatalog": 57,
-                                        "directMemoSpeech": 4, "silent": 95, "auditions": 10})
+                                        "directMemoSpeech": 6, "silent": 95, "auditions": 10})
         for take in plan["auditions"]:
             self.assertEqual(take["prompt"], take["text"])
             self.assertEqual(take["reference"]["role"], take["role"])

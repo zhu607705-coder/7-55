@@ -1,8 +1,14 @@
 [
-  { "id": "late-printer", "nickname": "晚八点打印机", "avatar": "printer", "signature": "时间戳和打印队都要记清。" },
-  { "id": "yuquan-wind", "nickname": "玉泉风很大", "avatar": "wind", "signature": "路过带图，顺手报告风向和人流。" },
-  { "id": "socket-observer", "nickname": "二南插座观察员", "avatar": "socket", "signature": "盯着座位、插座和没人取走的东西。" },
-  { "id": "qiushi-rider", "nickname": "求是潮逆行者", "avatar": "cyclist", "signature": "每天经过求是潮，偶尔能走出去。" },
-  { "id": "six-cent-rich", "nickname": "六分钱富豪", "avatar": "coin", "signature": "余额 0.06 元，账目记录完整。" },
-  { "id": "wild-auditor", "nickname": "紫金港野生审核员", "avatar": "auditor", "signature": "没有审核权限，只保留证据和结论。" }
+  {"id": "late-printer", "nickname": "晚八点打印机", "avatar": "printer", "signature": "时间戳和打印队都要记清。"},
+  {"id": "yuquan-wind", "nickname": "玉泉风很大", "avatar": "wind", "signature": "路过带图，顺手报告风向和人流。"},
+  {"id": "socket-observer", "nickname": "二南插座观察员", "avatar": "socket", "signature": "盯着座位、插座和没人取走的东西。"},
+  {"id": "qiushi-rider", "nickname": "求是潮逆行者", "avatar": "cyclist", "signature": "每天经过求是潮，偶尔能走出去。"},
+  {"id": "six-cent-rich", "nickname": "六分钱富豪", "avatar": "coin", "signature": "余额 0.06 元，账目记录完整。"},
+  {"id": "wild-auditor", "nickname": "紫金港野生审核员", "avatar": "auditor", "signature": "没有审核权限，只保留证据和结论。"},
+  {"id": "north-203-modeler", "nickname": "北教203炼丹师", "avatar": "socket", "signature": "203 的模型还在跑，清楼前记得存一份。", "wechatSender": "林昊"},
+  {"id": "maxwell-americano", "nickname": "麦斯威美式续命", "avatar": "coin", "signature": "夜里靠冰美式续命，顺路看一眼哪扇门还开着。", "wechatSender": "陈嘉"},
+  {"id": "danqing-night-owl", "nickname": "丹青熬夜冠军", "avatar": "wind", "signature": "等夜宵的时候刷会儿 98。", "wechatSender": "周琪"},
+  {"id": "baisha-feeder", "nickname": "白沙投喂专员", "avatar": "cyclist", "signature": "白沙楼下的猫和启真湖的鹅我都认得。"},
+  {"id": "early-class-dropper", "nickname": "早八退选专家", "avatar": "auditor", "signature": "补退选别卡最后一分钟。"},
+  {"id": "east-two-food-radar", "nickname": "东二干饭雷达", "avatar": "printer", "signature": "东二三号窗叫到几号了？"}
 ]

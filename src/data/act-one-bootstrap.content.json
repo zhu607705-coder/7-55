@@ -83,31 +83,31 @@
   "audioNarration": {
     "act1_locked_entry": {
       "text": "Excellent. You opened the game. Now kindly apply for permission to operate yourself.",
-      "subtitleZh": "很好，你打开了游戏。现在请先去申请操作自己。",
+      "subtitleZh": "游戏开了。想接管角色，先给自己办个手续。",
       "tone": "xiaoying",
       "delivery": "dry female system voice, mock approval followed by weary bureaucratic disbelief"
     },
     "act1_identity_verified": {
       "text": "Identity verified. The character finally has a name. The network remains unconvinced.",
-      "subtitleZh": "登录成功。这个角色终于有名字了，仍然没联网。",
+      "subtitleZh": "身份核验通过。角色有名字了，网还没连上。",
       "tone": "xiaoying",
       "delivery": "formal confirmation with a resigned, cutting final sentence"
     },
     "act1_phone_linked": {
       "text": "Call connected. Using a student ID as a phone number is distressingly on brand.",
-      "subtitleZh": "电话接通。用学号当电话号码，很有校园特色。",
+      "subtitleZh": "电话通了。用十位学号给自己打电话，也就校园内网想得出来。",
       "tone": "xiaoying",
       "delivery": "matter-of-fact female system voice, tired emphasis on distressingly"
     },
     "act1_controls_installed": {
       "text": "The controls have arrived. Sports has not yet approved the act of walking.",
-      "subtitleZh": "方向键到货。体艺还没批准你走路。",
+      "subtitleZh": "手柄到了。浙大体艺还没批你走路。",
       "tone": "xiaoying",
       "delivery": "dry status report with restrained disbelief at the second sentence"
     },
     "act1_movement_enabled": {
       "text": "Exercise started. Congratulations. You are now officially permitted to walk.",
-      "subtitleZh": "锻炼开始。恭喜，你现在被允许步行。",
+      "subtitleZh": "锻炼记上了。恭喜，你的腿现在可以用了。",
       "tone": "xiaoying",
       "delivery": "mock ceremony, controlled sarcasm, slightly tired final clause"
     },
@@ -125,11 +125,11 @@
     },
     "prologue_narrator_intro": {
       "text": "Pfft, oh, sorry. I did not mean anything by it. It is just... this does not look like a success, does it? I suppose you will have to get up, drag yourself to class, and deal with it. Good luck, kid! I am leaving!",
-      "subtitleZh": "噗，哦抱歉，我没别的意思，只是……这看起来不像成功了对吧。我想你只好乖乖起来滚去上课了。祝你好运，孩子！我要走了！",
+      "subtitleZh": "噗……抱歉，没忍住。这弹窗看着像是签到成功了吗？同学，还是起床去教室吧。祝你好运，我先走了！",
       "subtitleSegmentsZh": [
-        "噗，哦抱歉，我没别的意思，只是……这看起来不像成功了对吧。",
-        "我想你只好乖乖起来滚去上课了。",
-        "祝你好运，孩子！我要走了！"
+        "噗……抱歉，没忍住。这弹窗看着像是签到成功了吗？",
+        "同学，还是起床去教室吧。",
+        "祝你好运，我先走了！"
       ],
       "tone": "xiaoying",
       "delivery": "British male narrator, dry and condescending; suppress a laugh at the opening, savour the failed result, offer conspicuously false concern, then exit with weary self-preservation",
@@ -159,37 +159,37 @@
     },
     "prologue_narrator_caught": {
       "text": "Hey! What exactly do you think you are doing? Let go of me!",
-      "subtitleZh": "嘿！你到底在干什么？放开我！",
+      "subtitleZh": "喂，你拿报错框卡我干什么？快松手！",
       "tone": "xiaoying",
       "delivery": "British male narrator losing composure, offended panic with a sharp final command"
     },
     "prologue_narrator_bargain": {
       "text": "Oh, fine, fine! But first, take your hand off me!",
-      "subtitleZh": "哦，好吧，好吧！但你先把手放开！",
+      "subtitleZh": "行行行，我帮你。先把锁定松开！",
       "tone": "xiaoying",
       "delivery": "British male narrator, exasperated surrender; stretch the final command through clenched impatience"
     },
     "act2_system_found_intro": {
       "text": "Oh, damn it. You win, kid.",
-      "subtitleZh": "哦，该死。你赢了，孩子。",
+      "subtitleZh": "……算你狠，同学。我帮还不行吗？",
       "tone": "xiaoying",
       "delivery": "exasperated concession, restrained irritation, short pause before kid"
     },
     "act2_system_inventory_demand": {
       "text": "Fine. Bring out your inventory.",
-      "subtitleZh": "行。把你的道具栏拿出来。",
+      "subtitleZh": "行吧，先把道具栏打开。",
       "tone": "xiaoying",
       "delivery": "dry command, controlled, slightly reluctant"
     },
     "act2_system_inventory_missing": {
       "text": "Wait. Where is your inventory? You cannot expect me to work empty-handed!",
-      "subtitleZh": "等等，你的道具栏呢？你总不能指望我空手干活！",
+      "subtitleZh": "等等，你连道具栏都丢了？你指望我空着手给你改记录？",
       "tone": "xiaoying",
       "delivery": "incredulous escalation, quick second sentence, sharp final stress"
     },
     "act2_system_just_find_it": {
       "text": "Just. Find it.",
-      "subtitleZh": "去。找。到。它。",
+      "subtitleZh": "回寝室把校园卡和道具栏找回来。",
       "tone": "xiaoying",
       "delivery": "clipped impatience, one deliberate beat between words"
     },
@@ -201,25 +201,25 @@
     },
     "act2_system_confession": {
       "text": "I should be honest. I do not have permission to edit attendance records.",
-      "subtitleZh": "我得说实话了，我没有修改记录权限",
+      "subtitleZh": "先说清楚，我没权限改考勤记录。",
       "tone": "xiaoying",
       "delivery": "reluctant confession, lower register, slower second sentence"
     },
     "act2_system_friend": {
       "text": "But I have a friend who might.",
-      "subtitleZh": "但我有一个朋友她或许能做到",
+      "subtitleZh": "基础馆有个老朋友，她也许有办法。",
       "tone": "xiaoying",
       "delivery": "quiet confidence, hint of secrecy, soft ending"
     },
     "act2_system_library": {
       "text": "If we still want your participation grade, we need to find her in the library.",
-      "subtitleZh": "如果我们还想要平时分，就得去图书馆找她",
+      "subtitleZh": "还想要平时分的话，就去图书馆找她。",
       "tone": "xiaoying",
       "delivery": "practical urgency, clear emphasis on participation grade and library"
     },
     "act2_system_move_now": {
       "text": "Understood? Then move.",
-      "subtitleZh": "明白了？那就快行动吧！",
+      "subtitleZh": "听明白了？那就赶紧动身。",
       "tone": "xiaoying",
       "delivery": "sharp check followed by a firm command"
     },
@@ -267,13 +267,13 @@
     },
     "act2_balance_shifted": {
       "text": "The decimal point moved two places right. Six cents has temporarily acquired the dignity of six yuan.",
-      "subtitleZh": "小数点向右移动了两位。六分钱暂时获得了六元钱的尊严。",
+      "subtitleZh": "小数点往右挪了两位。六分钱，变六块了。",
       "tone": "xiaoying",
       "delivery": "mock triumph, restrained delight on six yuan"
     },
     "act2_gamepad_purchase_rejected": {
       "text": "You only have zero point zero six yuan. The seller rejected your hundred-installment plan.",
-      "subtitleZh": "你只有零点零六元。卖家拒绝了你分一百期付款的方案。",
+      "subtitleZh": "卡里就剩六分钱，卖家不接一百期。",
       "tone": "xiaoying",
       "delivery": "dismissive first sentence, deadpan punchline"
     },

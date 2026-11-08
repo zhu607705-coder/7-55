@@ -39,7 +39,7 @@ func view(page: String, s: Dictionary) -> Dictionary:
 		"c3_lake_catalog": return {"title":"馆藏检索","body":prose("chapter3-qizhen-lake.content","locationSearch.catalog.query")+"\n"+prose("chapter3-qizhen-lake.content","locationSearch.catalog.fields")}
 		"c3_lake_wechat": return {"title":"朋友","body":prose("chapter3-qizhen-lake.content","locationSearch.wechat")}
 		"c3_lake": return {"title":"启真湖 · "+{"dock":"小码头","open_water":"大湖","channel":"浮排河道","swan_cove":"黑天鹅围栏"}.get(q.zone,""),"body":lake_guidance(s)+"\n翻船次数：%d" % int(q.capsizeCount),"body_inset":12,"art":"res://assets/rpg/interiors/qizhen_lake_"+str(q.zone)+".png"}
-		"c3_weather": return {"title":"天气 · 小雨","body":prose("chapter3-qizhen-lake.content","dock.afterRainProof")+"\n吹风机可以对三层云带施加方向控制。"}
+		"c3_weather": return {"title":"天气 · "+("放晴" if q.rainSafetyCleared else "小雨"),"body":prose("chapter3-qizhen-lake.content","dock.afterRainProof") if q.rainSafetyCleared else "吹风机可以对三层云带施加方向控制。"}
 	return {}
 
 func lake_guidance(s: Dictionary) -> String:
@@ -172,7 +172,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			q.rainSafetyCleared=true
 			q.phase="boarding_tutorial"
 			q.weatherControlBestMoves=int(value.moves) if q.weatherControlBestMoves==0 else mini(int(q.weatherControlBestMoves),int(value.moves))
-			return response(prose("chapter3-qizhen-lake.content","dock.safetyCleared"))
+			return response(prose("chapter3-qizhen-lake.content","dock.afterRainProof"))
 		"c3_rain_rescue_result": return rain_rescue_result(s,value)
 		"c3_kayak_result": return kayak_result(s,value)
 		"c3_fishing_result": return fishing_result(s,value)
@@ -225,7 +225,7 @@ func complete_swan_branch(s: Dictionary) -> Dictionary:
 	q.fishCaught=true
 	q.swanFed=true
 	q.phase="tool_chain"
-	return branch_result("accepted","浮排边的旧饲料盒被捞起并撬开。\n饲料撒入围栏，黑天鹅把一枚磁性扣推到船边。")
+	return branch_result("accepted",prose("chapter3-qizhen-lake.content","swan.reward"))
 
 func branch_result(status: String, message: String="这里暂时没有要处理的事。") -> Dictionary:
 	var result: Dictionary=response(message)
@@ -319,7 +319,9 @@ func physical(s: Dictionary, id: String) -> Dictionary:
 			return response(net_frame_location())
 		if light(s): return response(prose("chapter3-qizhen-lake.content","reflection.lightWater"))
 		unique(q.observedFishingSpotIds,selected.value)
-		if selected.value=="paper": q.reflectionLocationObserved=true
+		if selected.value=="paper" and not q.reflectionLocationObserved:
+			q.reflectionLocationObserved=true
+			return response(prose("chapter3-qizhen-lake.content","reflection.dialogue"))
 		return response(prose("chapter3-qizhen-lake.content","reflection.correct"))
 	if not light(s): return locked(prose("chapter3-qizhen-lake.content","prompts.needLight" if kind in ["board","outfit"] else "lake.darkPrompt"))
 	match kind:
@@ -336,6 +338,7 @@ func physical(s: Dictionary, id: String) -> Dictionary:
 		"safety_officer":
 			if not (q.kayakEquipped and q.leftPaddleEquipped and q.rightPaddleEquipped): return locked(prose("chapter3-qizhen-lake.content","dock.outfitPrompt"))
 			if q.rainSafetyCleared: return response(prose("chapter3-qizhen-lake.content","dock.safetyCleared"))
+			if q.rainWarningSeen: return response(prose("chapter3-qizhen-lake.content","dock.safetyWarningRepeated"))
 			q.rainWarningSeen=true
 			return response(prose("chapter3-qizhen-lake.content","dock.safetyRainBlock"))
 		"board":
@@ -544,7 +547,9 @@ func world_stroke(s: Dictionary,host: Node,side: String,reverse: bool=false) -> 
 			q.boardingTutorialCompleted=true; q.phase="lake_exploration"; q.zone="open_water"; q.safeSpawnId="open_water_entry"
 			pending_entry={"from":"dock","to":"open_water"}; s.rpgCheckpoint="qizhen_open_water"
 			cues.append({"cueId":"qizhen_boarding_completed","payload":payload})
-			return _fishing_audio(enter(s,"qizhen_lake","c3_lake","qizhen_open_water"),cues)
+			var result: Dictionary=enter(s,"qizhen_lake","c3_lake","qizhen_open_water")
+			result.message=prose("chapter3-qizhen-lake.content","boarding.complete")
+			return _fishing_audio(result,cues)
 		cues.append({"cueId":"qizhen_boarding_stroke_recorded","payload":payload})
 	return _fishing_audio(response(),cues)
 
@@ -585,7 +590,9 @@ func world_tick(s: Dictionary,host: Node,delta: float) -> Dictionary:
 			if q.phase=="boarding_tutorial": q.boardingStrokeCount=0; q.boardingLastSide=null; q.safeSpawnId="dock_kayak"; s.rpgCheckpoint="qizhen_dock"
 			result.message=prose("chapter3-qizhen-lake.content","boarding.capsizeSameSide")+(prose("chapter3-qizhen-lake.content","chase.failed") if q.phase=="swan_chase" else "")
 			cues.append({"cueId":"qizhen_capsize_recovered","payload":{"reason":reason,"zone":q.zone,"count":q.capsizeCount}})
-			if q.capsizeCount==6: cues.append({"cueId":"qizhen_capsize_loss_subtitle_unlocked","payload":{"count":6}})
+			if q.capsizeCount==6:
+				result.message+="\n"+prose("chapter3-qizhen-lake.content","boarding.capsizeLossSubtitle")
+				cues.append({"cueId":"qizhen_capsize_loss_subtitle_unlocked","payload":{"count":6}})
 		session.acknowledge_attempt(s)
 	if event.get("finished",false): return complete_live_escape(s,host,session,cues)
 	return _fishing_audio(result,cues)

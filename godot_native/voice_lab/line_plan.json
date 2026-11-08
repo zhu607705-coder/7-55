@@ -13,16 +13,16 @@
     "seed": 755202610
   },
   "sourceHashes": {
-    "godot_native/data/native/audio-director-source.json": "638155654e8da354bf236ecbd73ce30ffc743c8ca16dcc8e81f1e6648661831e",
-    "src/data/chapter3-interlude-voice-memos.audio.content.json": "62a3ca6d83f5626281c5b071655e459f0070ff383a30c236e6400a78f20d5a51",
-    "src/data/chapter3-interlude-voice-memos.audio.generated.json": "ddbf58c2e3b03631edda675bfd6c00d6bd4db2c8e630a86403c25ed9a837a47a",
+    "godot_native/data/native/audio-director-source.json": "21ffca28c6f5c5fb7ae44faaf89a8a4a362f055481cfa1e74ae015906f5dd2a5",
+    "src/data/chapter3-interlude-voice-memos.audio.content.json": "b7de87e73051d11b8434f408e6e8aa6b31a4ca156de4be8259a308dea33149e0",
+    "src/data/chapter3-interlude-voice-memos.audio.generated.json": "98201129e904d62d6979420ff3799c670b4bc40680f116656c89738b16b529f9",
     "src/data/chapter4-prologue-voice.audio.content.json": "efdae96a42cbc4292d7400ba0b643318b9061e46d5168e01a97a967f0b912d77"
   },
   "directionSha256": "078482e433ad9b9ba709dcf77892685d119f182faa4a0cfcc470d27fb41fd8f6",
   "counts": {
     "catalog": 152,
     "eligibleCatalog": 57,
-    "directMemoSpeech": 4,
+    "directMemoSpeech": 6,
     "silent": 95,
     "auditions": 10
   },
@@ -1063,12 +1063,12 @@
       "pointer": "/speech/0",
       "assetId": "vo_ch35_lake_player",
       "originalPath": "godot_native/assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_lake_player.mp3",
-      "originalSha256": "d69593d69d422a40e93fb228931ce02970cd349b340c82f1281aa9d895ca852c",
-      "originalGenerator": "MiniMax speech-2.8-hd English_Diligent_Man",
-      "originalDurationMs": 1997,
+      "originalSha256": "297569932ea0e14fda1b34032b87d9b5883d9525eddf53afd5b541cc26422a56",
+      "originalGenerator": "Built with Fish Audio · local Drama 3 MLX 4-bit",
+      "originalDurationMs": 2268,
       "sourceMaxDurationMs": 3200,
       "runtimeCutoffMs": null,
-      "sourceLineSha256": "f6339894cb070c12d9aab83d88a6e96b9886a004b6e22264b790cccee7d87b13",
+      "sourceLineSha256": "40b971457528e4f13ced62fb09f1776c28978ef8b92144c845437fb6ca3ab2a3",
       "scene": "phone_memo"
     },
     {
@@ -1081,12 +1081,12 @@
       "pointer": "/speech/1",
       "assetId": "vo_ch35_decoy_canteen",
       "originalPath": "godot_native/assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_decoy_canteen.mp3",
-      "originalSha256": "01722ce6c0b3ab212bc6f770fe43f8da867491d6c8540236bf1b11d776b0319e",
-      "originalGenerator": "MiniMax speech-2.8-hd English_Graceful_Lady",
-      "originalDurationMs": 4138,
+      "originalSha256": "2efab76687a47e0ade7bb78d6b3d5ffb5cfb91eea8b2125ab441efb70e97c0da",
+      "originalGenerator": "Built with Fish Audio · local Drama 3 MLX 4-bit",
+      "originalDurationMs": 4284,
       "sourceMaxDurationMs": 4700,
       "runtimeCutoffMs": null,
-      "sourceLineSha256": "ebf414c6385940e75ef6a45eaf2510095df2fd2d8030313b7073454fc1639ac1",
+      "sourceLineSha256": "295425e7f904cef773ca2f796edea4e6a61446d5fa3ef983545aa87ef5bde81d",
       "scene": "broadcast"
     },
     {
@@ -1099,12 +1099,12 @@
       "pointer": "/speech/2",
       "assetId": "vo_ch35_decoy_theater",
       "originalPath": "godot_native/assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_decoy_theater.mp3",
-      "originalSha256": "d8e09061895cca21a806036fe7202b4725892e4b9412ac2fbd99349fa03e0d48",
-      "originalGenerator": "MiniMax speech-2.8-hd English_Graceful_Lady",
-      "originalDurationMs": 4310,
+      "originalSha256": "73e54464b32d7e161b247fd24aa62beb6b1cc03bf0b179c87bb2517d62be96e1",
+      "originalGenerator": "Built with Fish Audio · local Drama 3 MLX 4-bit",
+      "originalDurationMs": 4680,
       "sourceMaxDurationMs": 4700,
       "runtimeCutoffMs": null,
-      "sourceLineSha256": "82d922eb777c842346f4b05c3de0b0c449900f6475c5b5e2dc06c89cd8890cb7",
+      "sourceLineSha256": "740e0e49eb1d517942cc6dc39a97d5e9cfdceb0f30877c1237a50524203934c8",
       "scene": "broadcast"
     },
     {
@@ -1117,13 +1117,49 @@
       "pointer": "/speech/3",
       "assetId": "vo_ch35_decoy_library",
       "originalPath": "godot_native/assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_decoy_library.mp3",
-      "originalSha256": "2287f84da16260d8fa4a8a782eb1fca8a64e6f32dffc5642bd18859ae8de8e6a",
-      "originalGenerator": "MiniMax speech-2.8-hd English_Graceful_Lady",
-      "originalDurationMs": 4485,
+      "originalSha256": "98117773de8e3c165a58cb6ff49159bd3ce19c63a4407c2234012f7456a14820",
+      "originalGenerator": "Built with Fish Audio · local Drama 3 MLX 4-bit",
+      "originalDurationMs": 4680,
       "sourceMaxDurationMs": 4700,
       "runtimeCutoffMs": null,
-      "sourceLineSha256": "c0f79e17dc722341cab5ff19ef2c16453cb087333df6d64b7974ee65125bae07",
+      "sourceLineSha256": "11f7d361e40c3da449106fcc10517c104a98560a245fc44dbbeb04c8b37f9697",
       "scene": "broadcast"
+    },
+    {
+      "kind": "memo",
+      "key": "lobby_cleaner",
+      "role": "female_cleaner",
+      "text": "Careful, I just mopped. That paper went inside.",
+      "subtitleZh": "小心，刚拖过。那张纸往里去了。",
+      "source": "src/data/chapter3-interlude-voice-memos.audio.content.json",
+      "pointer": "/speech/4",
+      "assetId": "vo_ch35_lobby_cleaner",
+      "originalPath": "godot_native/assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_lobby_cleaner.mp3",
+      "originalSha256": "1301144e1f61a082d3ac2a81d887f46f0458b6cdf520832948daa6aa9eb38e0d",
+      "originalGenerator": "Built with Fish Audio · local Drama 3 MLX 4-bit",
+      "originalDurationMs": 2880,
+      "sourceMaxDurationMs": 3650,
+      "runtimeCutoffMs": null,
+      "sourceLineSha256": "d5337df52cd9197727db52c4db133698d238a11ac888247c57375b4fda127ff8",
+      "scene": "cleaner_warning"
+    },
+    {
+      "kind": "memo",
+      "key": "closing_guard",
+      "role": "male_guard",
+      "text": "The North Teaching Building is closing. Please pack up.",
+      "subtitleZh": "同学，北教要清楼了，请收好东西。",
+      "source": "src/data/chapter3-interlude-voice-memos.audio.content.json",
+      "pointer": "/speech/5",
+      "assetId": "vo_ch35_closing_guard",
+      "originalPath": "godot_native/assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_closing_guard.mp3",
+      "originalSha256": "de7e8f7f06c2271f4fd8619a49a5ea409fa64903b1de1234c26316aa216977fd",
+      "originalGenerator": "Built with Fish Audio · local Drama 3 MLX 4-bit",
+      "originalDurationMs": 2484,
+      "sourceMaxDurationMs": 2750,
+      "runtimeCutoffMs": null,
+      "sourceLineSha256": "d86eac5483b723d63d34e90a5e73f79fb404cd2d6c3bd4252fe3f1d8f8b5c5b8",
+      "scene": "guard_closing"
     }
   ],
   "silent": [
@@ -1870,12 +1906,12 @@
         "pointer": "/speech/0",
         "assetId": "vo_ch35_lake_player",
         "originalPath": "godot_native/assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_lake_player.mp3",
-        "originalSha256": "d69593d69d422a40e93fb228931ce02970cd349b340c82f1281aa9d895ca852c",
-        "originalGenerator": "MiniMax speech-2.8-hd English_Diligent_Man",
-        "originalDurationMs": 1997,
+        "originalSha256": "297569932ea0e14fda1b34032b87d9b5883d9525eddf53afd5b541cc26422a56",
+        "originalGenerator": "Built with Fish Audio · local Drama 3 MLX 4-bit",
+        "originalDurationMs": 2268,
         "sourceMaxDurationMs": 3200,
         "runtimeCutoffMs": null,
-        "sourceLineSha256": "f6339894cb070c12d9aab83d88a6e96b9886a004b6e22264b790cccee7d87b13"
+        "sourceLineSha256": "40b971457528e4f13ced62fb09f1776c28978ef8b92144c845437fb6ca3ab2a3"
       },
       "performanceTarget": {
         "role": "沿用自然男声，短促近场自语；保留轻微疲惫，不表演成英雄宣言。",
@@ -1897,7 +1933,7 @@
         "topP": 0.7,
         "topK": 30
       },
-      "configurationSha256": "8d1f6f0a0fe11bfd12dbcffce5c339f52792f63f2f70b23e82c7c3f97b7df199"
+      "configurationSha256": "a0da8185058668623b90bc59b156e6d645065f5d1d2a0c6896b886af1bd3adfc"
     },
     {
       "kind": "catalog",
@@ -2086,12 +2122,12 @@
       "pointer": "/speech/0",
       "assetId": "vo_ch35_lake_player",
       "originalPath": "godot_native/assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_lake_player.mp3",
-      "originalSha256": "d69593d69d422a40e93fb228931ce02970cd349b340c82f1281aa9d895ca852c",
-      "originalGenerator": "MiniMax speech-2.8-hd English_Diligent_Man",
-      "originalDurationMs": 1997,
+      "originalSha256": "297569932ea0e14fda1b34032b87d9b5883d9525eddf53afd5b541cc26422a56",
+      "originalGenerator": "Built with Fish Audio · local Drama 3 MLX 4-bit",
+      "originalDurationMs": 2268,
       "sourceMaxDurationMs": 3200,
       "runtimeCutoffMs": null,
-      "sourceLineSha256": "f6339894cb070c12d9aab83d88a6e96b9886a004b6e22264b790cccee7d87b13",
+      "sourceLineSha256": "40b971457528e4f13ced62fb09f1776c28978ef8b92144c845437fb6ca3ab2a3",
       "scene": "phone_memo",
       "id": "09_player_memo",
       "prompt": "The wind's picking up. I should head back.",
@@ -2106,12 +2142,12 @@
         "pointer": "/speech/0",
         "assetId": "vo_ch35_lake_player",
         "originalPath": "godot_native/assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_lake_player.mp3",
-        "originalSha256": "d69593d69d422a40e93fb228931ce02970cd349b340c82f1281aa9d895ca852c",
-        "originalGenerator": "MiniMax speech-2.8-hd English_Diligent_Man",
-        "originalDurationMs": 1997,
+        "originalSha256": "297569932ea0e14fda1b34032b87d9b5883d9525eddf53afd5b541cc26422a56",
+        "originalGenerator": "Built with Fish Audio · local Drama 3 MLX 4-bit",
+        "originalDurationMs": 2268,
         "sourceMaxDurationMs": 3200,
         "runtimeCutoffMs": null,
-        "sourceLineSha256": "f6339894cb070c12d9aab83d88a6e96b9886a004b6e22264b790cccee7d87b13"
+        "sourceLineSha256": "40b971457528e4f13ced62fb09f1776c28978ef8b92144c845437fb6ca3ab2a3"
       },
       "performanceTarget": {
         "role": "沿用自然男声，短促近场自语；保留轻微疲惫，不表演成英雄宣言。",
@@ -2133,7 +2169,7 @@
         "topP": 0.7,
         "topK": 30
       },
-      "configurationSha256": "111c5710b8ce07d1cee6b4ba697bcb89b6bfa574522cefdabe4cd11aaeafda36"
+      "configurationSha256": "2a443adf095191dade32f269af1127f8a849d6cdafb67100cabc06eb0e65e206"
     },
     {
       "kind": "memo",
@@ -2145,12 +2181,12 @@
       "pointer": "/speech/1",
       "assetId": "vo_ch35_decoy_canteen",
       "originalPath": "godot_native/assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_decoy_canteen.mp3",
-      "originalSha256": "01722ce6c0b3ab212bc6f770fe43f8da867491d6c8540236bf1b11d776b0319e",
-      "originalGenerator": "MiniMax speech-2.8-hd English_Graceful_Lady",
-      "originalDurationMs": 4138,
+      "originalSha256": "2efab76687a47e0ade7bb78d6b3d5ffb5cfb91eea8b2125ab441efb70e97c0da",
+      "originalGenerator": "Built with Fish Audio · local Drama 3 MLX 4-bit",
+      "originalDurationMs": 4284,
       "sourceMaxDurationMs": 4700,
       "runtimeCutoffMs": null,
-      "sourceLineSha256": "ebf414c6385940e75ef6a45eaf2510095df2fd2d8030313b7073454fc1639ac1",
+      "sourceLineSha256": "295425e7f904cef773ca2f796edea4e6a61446d5fa3ef983545aa87ef5bde81d",
       "scene": "broadcast",
       "id": "10_campus_broadcast",
       "prompt": "East Canteen is closing. Please collect your belongings.",
@@ -2165,12 +2201,12 @@
         "pointer": "/speech/3",
         "assetId": "vo_ch35_decoy_library",
         "originalPath": "godot_native/assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_decoy_library.mp3",
-        "originalSha256": "2287f84da16260d8fa4a8a782eb1fca8a64e6f32dffc5642bd18859ae8de8e6a",
-        "originalGenerator": "MiniMax speech-2.8-hd English_Graceful_Lady",
-        "originalDurationMs": 4485,
+        "originalSha256": "98117773de8e3c165a58cb6ff49159bd3ce19c63a4407c2234012f7456a14820",
+        "originalGenerator": "Built with Fish Audio · local Drama 3 MLX 4-bit",
+        "originalDurationMs": 4680,
         "sourceMaxDurationMs": 4700,
         "runtimeCutoffMs": null,
-        "sourceLineSha256": "c0f79e17dc722341cab5ff19ef2c16453cb087333df6d64b7974ee65125bae07"
+        "sourceLineSha256": "11f7d361e40c3da449106fcc10517c104a98560a245fc44dbbeb04c8b37f9697"
       },
       "performanceTarget": {
         "role": "沿用原广播录音；中性、均匀、礼貌，与系统的讽刺表演区分。",
@@ -2192,7 +2228,7 @@
         "topP": 0.7,
         "topK": 30
       },
-      "configurationSha256": "a18a9030b47e2dc3c143bbc8a8828009169b96c9d19b3ac3e5c8d57af09e295f"
+      "configurationSha256": "0a084e08f2f9f92baa2acbaf81d6e17b5285c5fc8fdcb6848b2c526bf78be9e8"
     }
   ],
   "unvoicedScenes": [

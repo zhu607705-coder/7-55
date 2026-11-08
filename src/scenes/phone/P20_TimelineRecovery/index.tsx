@@ -1,3 +1,4 @@
+import interludeCopy from "../../../data/chapter3-interlude-copy.json";
 import { Button } from "../../../components/Button";
 import { useState } from "react";
 import { InvestigationRing } from "../../../components/InvestigationRing";
@@ -15,12 +16,6 @@ import {
   type ChapterThreeInterludeParallelBranchView
 } from "../../../modules/ChapterThreeInterludeModel";
 import { kit } from "../../../modules/GameKit";
-
-const DECOY_RESULT_COPY: Readonly<Record<ChapterThreeInterludeDecoyId, string>> = {
-  canteen_0755: "0755 是取餐编号，不能作为夜间时间。",
-  theater_0832: "08:32 来自更早的独立抢票记录。",
-  status_clock_075523: "07:55:23 是未同步的本机时钟值。"
-};
 
 const DECOY_REASONS: ReadonlyArray<{ id: ChapterThreeInterludeDecoyReasonId; label: string }> = [
   { id: "number_not_time", label: "这是编号，不是本段记录的时间" },
@@ -67,7 +62,7 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
   function verifyDestination(candidateId: ChapterThreeInterludeDestinationCandidateId) {
     const result = kit.chapterThreeInterlude.verifyDestination(candidateId);
     if (result === "accepted") {
-      setFeedback("地点与四项证据一致，恢复结果已确认。");
+      setFeedback(interludeCopy.destinationConfirmed);
       return;
     }
     if (result === "locked") {
@@ -92,7 +87,7 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
   function rejectDecoy(decoyId: ChapterThreeInterludeDecoyId, reasonId: ChapterThreeInterludeDecoyReasonId) {
     const result = kit.chapterThreeInterlude.rejectDecoy(decoyId, reasonId);
     setFeedback(result === "accepted" || result === "already_complete"
-      ? DECOY_RESULT_COPY[decoyId]
+      ? interludeCopy.exclusionCopy[decoyId]
       : result === "incorrect"
         ? "这条理由与记录来源不匹配。"
         : "四项证据还没收齐。"
@@ -115,8 +110,8 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
         {interlude.phase === "reboot" && !interlude.recoveryOpened ? (
           <section className="interlude-reboot-card">
             <span className="interlude-reboot-wave" aria-hidden="true"><i /><i /><i /><i /></span>
-            <h2>检测到 7 分 55 秒未同步记录</h2>
-            <p>启真湖的离开记录仍在，后面的去向没有写入。手机时钟与带来源的记录不一致，不能直接采用。</p>
+            <h2>{interludeCopy.intro.heading}</h2>
+            <p>{interludeCopy.intro.detail}</p>
             <dl className="interlude-reboot-diagnostics">
               <div><dt>媒体缓存</dt><dd>7 帧</dd></div>
               <div><dt>短会话</dt><dd>3 条</dd></div>
@@ -124,8 +119,8 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
               <div><dt>时间索引</dt><dd>异常</dd></div>
             </dl>
             <div className="interlude-reboot-dialogue">
-              <p><b>林星宇</b>我离开湖边以后，去了哪里？</p>
-              <p><b>系统</b>照片、录音、消息都存了，就是没记清你去了哪。先看还能读出的。</p>
+              <p><b>林星宇</b>{interludeCopy.intro.player}</p>
+              <p><b>系统</b>{interludeCopy.intro.system}</p>
             </div>
             <Button variant="primary" type="button" onClick={openRecovery}>打开恢复工具</Button>
           </section>
@@ -179,7 +174,7 @@ export function TimelineRecoveryScene({ state, router }: SceneComponentProps) {
                   return (
                     <article key={decoy.id} className={rejected ? "is-rejected" : ""}>
                       <header><strong>{decoy.label}</strong><small>{rejected ? "已排除" : "选择排除理由"}</small></header>
-                      {rejected ? <p>{DECOY_RESULT_COPY[decoy.id]}</p> : (
+                      {rejected ? <p>{interludeCopy.exclusionCopy[decoy.id]}</p> : (
                         <div className="interlude-decoy-reasons">
                           {DECOY_REASONS.map((reason) => (
                             <Button variant="secondary"

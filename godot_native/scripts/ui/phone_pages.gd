@@ -1351,7 +1351,7 @@ func _cc98_text_height(text: String, width: float, font_size: int) -> float:
 	return ceil(Typography.body_font().get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,width,font_size,-1,TextServer.BREAK_MANDATORY|TextServer.BREAK_WORD_BOUND|TextServer.BREAK_ADAPTIVE).y)+4
 
 func _cc98_thread(post: Dictionary) -> Control:
-	var replies: Array=post.get("threadReplies",[])
+	var replies: Array=Posts.thread_replies(post)
 	var root=_base(Color("eef0f3"),APP_HEIGHT)
 	root.set_meta("handles_all_actions",true)
 	_panel(root,Rect2(0,0,378,56),Color("28769b"))
@@ -1384,9 +1384,16 @@ func _cc98_thread(post: Dictionary) -> Control:
 	var visible_replies=0
 	for reply in replies:
 		# Source generic threads do not show bd reply artwork outside the investigation.
-		if reply.has("image") or str(reply.get("text","")).to_lower().contains("bd"): continue
-		var persona: Dictionary=personas.get(reply.get("personaId",""),{})
-		var heading=str(persona.get("nickname",reply.get("personaId","")))+"　"+str(reply.get("floor",""))
+		if not str(reply.get("image","")).is_empty(): continue
+		var persona_id: String=str(reply.get("personaId",""))
+		var persona: Dictionary=personas.get(persona_id,{})
+		var is_owner := persona_id == "thread-owner"
+		var anonymous_owner: bool = is_owner and post.author == "匿名用户"
+		var fallback_name := "匿名用户" if persona_id == "anonymous-user" else persona_id
+		var reply_author := str(reply.get("author", persona.get("nickname", fallback_name)))
+		if is_owner:
+			reply_author = "匿名楼主" if anonymous_owner else str(post.author)
+		var heading := reply_author + ("　楼主" if is_owner and not anonymous_owner else "") + "　" + str(reply.get("floor", ""))
 		var heading_height=_cc98_text_height(heading,text_width,15)
 		var reply_height=_cc98_text_height(str(reply.get("text","")),text_width,17)
 		var metadata=str(reply.get("time",""))+"　♡ "+str(reply.get("likes","0"))

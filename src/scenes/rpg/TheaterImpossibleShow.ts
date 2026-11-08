@@ -275,7 +275,7 @@ export class TheaterImpossibleShow {
       } else if (this.screen === "awaiting") {
         this.overlayTitle.setText("正在收下这场演出"); this.overlayBody.setText(""); this.primaryLabel.setText("稍等一下");
       } else {
-        this.overlayTitle.setText(this.approved ? this.finalAct ? "全体观众，都被演出了" : "这一幕已经无法撤回" : (s.round===2?"光被舞台上的障碍碰散了":"影子把这场演出吃掉了"));
+        this.overlayTitle.setText(this.approved ? this.finalAct ? "三幕演出结束" : "这一幕演完了" : (s.round===2?"光束撞上舞台道具，从这一幕重来。":"追光被影子截住了，从这一幕重来。"));
         this.overlayBody.setText(this.approved ? this.finalAct ? "灯光谢幕。台上只剩下一张湿节目单。" : "收下这一幕。下一幕的规则会变。" : "已经完成的幕次保留。\n再演一次，这一幕从头开始。");
         this.primaryLabel.setText(this.approved ? this.finalAct ? "拉开最后的幕布" : "下一幕" : "重演这一幕");
       }

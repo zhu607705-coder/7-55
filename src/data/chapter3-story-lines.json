@@ -17,7 +17,7 @@
       "key": "c3_canteen_queue_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：它可能只是来体验一下排队，很多东西在食堂都会排队。",
+      "subtitleZh": "系统：连一张逃跑的签到纸进了东区食堂都得排队。",
       "voiceTextEn": "Maybe it only came to experience the queue. Many things end up queuing in a cafeteria.",
       "speed": 1.05,
       "pitch": -1
@@ -26,7 +26,7 @@
       "key": "c3_canteen_labor_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：因为你现在需要钱，而它们需要劳动力。",
+      "subtitleZh": "系统：你没零钱，收餐口正好缺人收盘子。",
       "voiceTextEn": "Because you need money, and they need labor.",
       "speed": 1.02,
       "pitch": -1
@@ -35,7 +35,7 @@
       "key": "c3_canteen_bun_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：它看起来不像纸条会吃的东西，虽然纸条也不该吃东西。",
+      "subtitleZh": "系统：这玩意儿喝一口就醒了。摆到宣传板上，没准能把队伍劝退。",
       "voiceTextEn": "That does not look like something a paper slip would eat. Admittedly, paper should not eat at all.",
       "speed": 1.06,
       "pitch": -1
@@ -44,7 +44,7 @@
       "key": "c3_canteen_breakfast_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：不是，是一份比较真实的早饭。",
+      "subtitleZh": "系统：想多了，就是个肉包，没夹纸。",
       "voiceTextEn": "No. It is merely a disappointingly real breakfast.",
       "speed": 1.03,
       "pitch": -1
@@ -53,7 +53,7 @@
       "key": "c3_canteen_paper_chicken_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：纸包鸡。我知道的至少前两个字很有嫌疑。",
+      "subtitleZh": "系统：纸包鸡。光看前两个字就很可疑。",
       "voiceTextEn": "Paper-wrapped chicken. At least the first word is suspicious.",
       "speed": 1.01,
       "pitch": -1
@@ -62,7 +62,7 @@
       "key": "c3_canteen_packaging_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：一份线索。鸡只是包装。",
+      "subtitleZh": "系统：先看包着鸡的那张纸。",
       "voiceTextEn": "One clue. The chicken is only packaging.",
       "speed": 1.04,
       "pitch": 0
@@ -71,7 +71,7 @@
       "key": "c3_canteen_cold_clue_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：这份粥很热，但线索很冷。",
+      "subtitleZh": "系统：粥是烫的。纸条没往一号窗口钻。",
       "voiceTextEn": "The congee is hot. The clue is cold.",
       "speed": 1.04,
       "pitch": -1
@@ -80,7 +80,7 @@
       "key": "c3_canteen_worldview_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：请不要拓展世界观。",
+      "subtitleZh": "系统：打住。换个窗口验票。",
       "voiceTextEn": "Please do not expand the worldbuilding.",
       "speed": 1.08,
       "pitch": -1
@@ -98,7 +98,7 @@
       "key": "c3_canteen_paper_angry_narrator",
       "speaker": "narrator",
       "voiceRole": "male_narrator",
-      "subtitleZh": "纸条急了，它开始不尊重取餐流程。",
+      "subtitleZh": "纸条从窗口弹出来，绕开队伍，直奔食堂大门。",
       "voiceTextEn": "The paper is getting desperate. It has stopped respecting the pickup procedure.",
       "speed": 1.02,
       "pitch": -4
@@ -107,7 +107,7 @@
       "key": "c3_canteen_self_service_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：自助服务发展到这一步，我有点害怕。",
+      "subtitleZh": "系统：餐盘车还能堵门。后勤看见得给你发张奖状。",
       "voiceTextEn": "Self-service has advanced too far. I am mildly concerned.",
       "speed": 1.01,
       "pitch": -1
@@ -125,7 +125,7 @@
       "key": "c3_bike_human_speed_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：你正在以“没吃早饭的人类速度”移动。",
+      "subtitleZh": "系统：你这速度追不上。路边有辆共享单车。",
       "voiceTextEn": "You are moving at the speed of a human who skipped breakfast.",
       "speed": 1.04,
       "pitch": -1
@@ -134,7 +134,7 @@
       "key": "c3_bike_gpa_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：它没有绩点负担。",
+      "subtitleZh": "系统：人家没有绩点负担，飞得当然比你快。",
       "voiceTextEn": "It carries no grade-point burden.",
       "speed": 1.04,
       "pitch": -1
@@ -152,7 +152,7 @@
       "key": "c3_theater_failure_narrator",
       "speaker": "narrator",
       "voiceRole": "male_narrator",
-      "subtitleZh": "旁白：失败得很慷慨。",
+      "subtitleZh": "旁白：摔得挺干脆。车没坏，起来还能追。",
       "voiceTextEn": "A remarkably generous failure.",
       "speed": 0.94,
       "pitch": -4
@@ -206,7 +206,7 @@
       "key": "c3_qizhen_cc98_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：CC98 提供了一个非常精确的范围：不是厕所。",
+      "subtitleZh": "系统：98 那几个目击帖说的是靠桥的水边。再找一条能对上的记录。",
       "voiceTextEn": "CC98 has provided a highly precise range: not the restroom.",
       "speed": 1.03,
       "pitch": -1
@@ -215,7 +215,7 @@
       "key": "c3_qizhen_catalog_system",
       "speaker": "system",
       "voiceRole": "female_system",
-      "subtitleZh": "系统：意思是它现在比我们更艺术。",
+      "subtitleZh": "系统：馆藏写着只在水面倒影里出现。它还真挑地方。",
       "voiceTextEn": "It means the paper is currently more artistic than we are.",
       "speed": 1.02,
       "pitch": -1

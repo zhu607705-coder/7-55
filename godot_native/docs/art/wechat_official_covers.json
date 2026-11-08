@@ -1,0 +1,80 @@
+{
+  "role": "游戏内「校园后勤服务」公众号文章插图",
+  "tool": "OpenAI ImageGen built-in",
+  "masterReference": [
+    "src/assets/rpg/interiors/finale/chapter4-755/states/a1_2245_opening.png",
+    "src/assets/ui/photo-evidence/campus-life/life_study_room_late_snack.webp"
+  ],
+  "familyReference": "exec-06be930f-78ee-4394-91f3-16db51945618.png",
+  "promptDirection": "细像素、正交斜俯视、连续的哑光色块与台阶轮廓。灰蓝阴影、灰石、木色和橄榄绿为主，夜景只留小面积暖光。避免泛光、镜面反光和细碎亮点。横构图 16:9，画面无文字、界面或人物。",
+  "normalization": "等比裁切到 960×540，依明度和材质映射到 755-campus-morning-32。保留地砖接缝，去除孤立点，无抖动，无损 WebP。",
+  "size": [
+    960,
+    540
+  ],
+  "assets": [
+    {
+      "file": "src/assets/ui/wechat/official/notice.webp",
+      "subject": "夜间教学楼大厅、长花池、木前台和一盏低亮壁灯",
+      "master": "exec-06be930f-78ee-4394-91f3-16db51945618.png",
+      "masterSha256": "581961538c015bf3d4c7d3c13a159362eff9ee80154c87d6beca0cfc02ad8ad9",
+      "sha256": "a0ed56955467e58bf4ce08840e76b1ec64c7f542be2ddedd8c044844afbc27e1",
+      "bytes": 27528,
+      "colors": 16
+    },
+    {
+      "file": "src/assets/ui/wechat/official/umbrella.webp",
+      "subject": "雨天教学楼门厅，伞架、玻璃门和灰色雨迹",
+      "master": "exec-05a540cf-41c4-496a-90d5-e75faa43a8c4.png",
+      "masterSha256": "06a3d70d122a6d7c0728a5f487324f4a586a5ce6ee6c8d9f304975ddd6c9e7e2",
+      "sha256": "4a8530c61062d9a9935876478dc40c07c0d769aedb13b659f81a144326f8a58c",
+      "bytes": 23718,
+      "colors": 19
+    },
+    {
+      "file": "src/assets/ui/wechat/official/study.webp",
+      "subject": "晚自习散场的空教室、课桌和一把未收回的椅子",
+      "master": "exec-bc8e19d4-eb0b-4344-8dda-186c6771e041.png",
+      "masterSha256": "69a8066c4f64fa870fb504f54d8afe5acda965f57bf5517e805d7d5f0ce0e9d0",
+      "sha256": "7f6679bd83cdef79c937ad36ee4e302538b9187e471e13feb8eceda3d71fdbae",
+      "bytes": 24222,
+      "colors": 16
+    },
+    {
+      "file": "src/assets/ui/wechat/official/tray.webp",
+      "subject": "食堂哑光餐盘回收台，餐盘、碗和餐具分区",
+      "master": "exec-8b1d2517-fa0d-4aba-9cba-e20f4c61f047.png",
+      "masterSha256": "bf09d34877dceb27f4ed4e61acc55c8411229314e07738ed192031b5021500b4",
+      "sha256": "0b6a0c3450e803e3bc8808497a614e52a4dd876bdf30501ef79fc1d2ce52257b",
+      "bytes": 31108,
+      "colors": 22
+    },
+    {
+      "file": "src/assets/ui/wechat/official/bike.webp",
+      "subject": "阴天校园步道、树池和停在线内的共享单车",
+      "master": "exec-a2a176c4-69ae-483b-8289-a34e3cc98c95.png",
+      "masterSha256": "c21bbb14973939112942f47cb33cfc52fc757275fb5700d8b5a4e8bfeb6276c1",
+      "sha256": "792f35d2ca2c8c5549e5a1b8408d266a775a2bb5a3ec923be9d95f571407e308",
+      "bytes": 44598,
+      "colors": 16
+    },
+    {
+      "file": "src/assets/ui/wechat/official/lake.webp",
+      "subject": "启真湖栏杆与垂柳，灰蓝水面上的黑天鹅和另一只水鸟",
+      "master": "exec-5bd7e47b-44d2-421f-9978-6a49c908e813.png",
+      "masterSha256": "2dddc469b0fdad9f604f866cfbdbb62be55d45d3212dca9f30d6222d3a706ed8",
+      "sha256": "a3789260b2fda4fc961e4299127c6889b72f37caa8a55535d30b5d5d3d68cb96",
+      "bytes": 32664,
+      "colors": 17
+    },
+    {
+      "file": "src/assets/ui/wechat/official/lost.webp",
+      "subject": "失物筐中的单只耳机和卡套，旁边是一只水瓶",
+      "master": "exec-c724592c-b96a-477a-a19f-adcb4f4e0953.png",
+      "masterSha256": "68abc0883f505f04be03724856c0870177bcea8c99c5edc5a98fe6f3dadb695b",
+      "sha256": "a011435b9b60609aed169b058037c05ea1bd19f461ef7855ba7685fdcd7254c5",
+      "bytes": 23876,
+      "colors": 21
+    }
+  ]
+}

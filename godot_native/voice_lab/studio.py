@@ -122,7 +122,12 @@ def source_line(kind, key, data):
 
 def scene_for(line, direction):
     if line["kind"] == "memo":
-        return "broadcast" if line["role"] == "campus_broadcast" else "phone_memo"
+        return {
+            "campus_broadcast": "broadcast",
+            "male_player": "phone_memo",
+            "female_cleaner": "cleaner_warning",
+            "male_guard": "guard_closing",
+        }[line["role"]]
     for rule in direction["sceneRules"]:
         if line["key"] in rule.get("keys", []) or (rule.get("prefix") and line["key"].startswith(rule["prefix"])):
             return rule["scene"]

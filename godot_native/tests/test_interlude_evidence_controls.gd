@@ -122,12 +122,13 @@ func run():
 	for code in ["FRM B2","FRM 91","FRM 4C"]:await click(code)
 	await click("确认照片顺序");await back();await click("消息线索")
 	await click("保存通知");await click("麦斯威夜间自习群")
-	await click("选择","203 还开着吗");await click("选择","刚看见保安");await click("保存路线截图")
+	var route_copy: Dictionary=controller.interlude.copy_data().routeMessages
+	await click("选择",route_copy.computer_left_on);await click("选择",route_copy.guard_east);await click("保存路线截图")
 	check(not state.d.chapterThreeInterlude.routeScreenshotSaved,"wrong route pair remains unresolved")
-	check(find_button(find_card(main.page_body,"东边入口已经封了"),"选择").disabled,"full route selection disables a third candidate")
+	check(find_button(find_card(main.page_body,route_copy.east_closed),"选择").disabled,"full route selection disables a third candidate")
 	check(state.d.native.c35_route_selection.size()==2 and not state.d.native.c35_route_selection.has("east_closed"),"route selection limit preserves existing pair")
-	await click("已选","203 还开着吗");await click("已选","刚看见保安")
-	await click("选择","我在西侧看见保洁推车");await click("选择","东边入口已经封了");await click("保存路线截图")
+	await click("已选",route_copy.computer_left_on);await click("已选",route_copy.guard_east)
+	await click("选择",route_copy.west_cleaner);await click("选择",route_copy.east_closed);await click("保存路线截图")
 	check(state.d.chapterThreeInterlude.routeScreenshotSaved,"route pair accepted in reverse selection order")
 	await back();await back();await click("网络记录");await create_timer(1.6).timeout;await frames()
 	for record in ["22:44:31","22:43:11","22:44:12"]:

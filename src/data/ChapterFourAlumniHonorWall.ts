@@ -492,18 +492,18 @@ export const CHAPTER_FOUR_ZHU_QUESTIONS = Object.freeze([
     id: "purpose",
     prompt: "第一问：到浙大来做什么？",
     options: [
-      { id: "seek_truth", label: "追问事实与方法" },
-      { id: "solve_real_problems", label: "用所学解决真实问题" },
-      { id: "serve_public", label: "为公共需要承担责任" }
+      { id: "seek_truth", label: "在混乱的痕迹里追问事实与方法" },
+      { id: "solve_real_problems", label: "用亲手校准的所学去解决真实的问题" },
+      { id: "serve_public", label: "哪怕从六分钱起步，也不敷衍眼前的每一堂课" }
     ]
   },
   {
     id: "person",
     prompt: "第二问：将来毕业后要做什么样的人？",
     options: [
-      { id: "responsible", label: "对工作和他人负责" },
-      { id: "clear_minded", label: "保持独立判断与证据诚实" },
-      { id: "public_service", label: "把能力放到社会需要上" }
+      { id: "responsible", label: "不拿“马上回来”糊弄时间，对经手的事与人负责" },
+      { id: "clear_minded", label: "在众声喧哗里保持独立判断，如实面对证据" },
+      { id: "public_service", label: "把一身本事放到真正需要亮光的地方去" }
     ]
   }
 ] as const);

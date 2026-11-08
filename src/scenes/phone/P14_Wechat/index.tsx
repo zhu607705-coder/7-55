@@ -1,3 +1,4 @@
+import interludeCopy from "../../../data/chapter3-interlude-copy.json";
 import { Button } from "../../../components/Button";
 import { useEffect, useRef, useState } from "react";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
@@ -24,16 +25,54 @@ type InterludeWechatView = "inbox" | "official" | "group";
 
 type OfficialAccountMenu = "daily" | "archive";
 
+const articleCoverUrls = import.meta.glob<string>("../../../assets/ui/wechat/official/*.webp", {
+  eager: true,
+  import: "default",
+  query: "?url"
+});
+
+function CampusArticleCover({ article, decorative = false, thumbnail = false }: {
+  article: { coverTone: string; coverAlt: string };
+  decorative?: boolean;
+  thumbnail?: boolean;
+}) {
+  return <img
+    className={thumbnail ? "wx-campus-cover wx-lore-thumb" : "wx-campus-cover"}
+    src={articleCoverUrls[`../../../assets/ui/wechat/official/${article.coverTone}.webp`]}
+    alt={decorative || thumbnail ? "" : article.coverAlt}
+    width={960}
+    height={540}
+    loading={thumbnail ? "lazy" : "eager"}
+  />;
+}
+
+function OfficialArticleComments({ comments }: {
+  comments: ReadonlyArray<{ author: string; likes: string; text: string; reply?: string }>;
+}) {
+  return (
+    <section className="wx-article-comments" aria-label="精选留言">
+      <h3>精选留言</h3>
+      {comments.map(({ author, likes, text, reply }) => (
+        <div className="wx-article-comment" key={author}>
+          <div className="wx-article-comment-meta"><b>{author}</b><span>{likes} 赞</span></div>
+          <p>{text}</p>
+          {reply && <p className="wx-article-reply"><b>作者回复</b>{reply}</p>}
+        </div>
+      ))}
+    </section>
+  );
+}
+
 const INTERLUDE_ROUTE_MESSAGES: ReadonlyArray<{
   id: ChapterThreeInterludeRouteMessageId;
   author: string;
   text: string;
   withdrawn?: boolean;
 }> = [
-  { id: "computer_left_on", author: "林昊", text: "203 还开着吗？我电脑没关。" },
-  { id: "guard_east", author: "陈嘉", text: "刚看见保安从东边过去。" },
-  { id: "east_closed", author: "周琪", text: "东边入口已经封了，别再往那边走。" },
-  { id: "west_cleaner", author: "室友", text: "我在西侧看见保洁推车，大厅主入口应该还能进。" },
+  { id: "computer_left_on", author: "林昊", text: interludeCopy.routeMessages.computer_left_on },
+  { id: "guard_east", author: "陈嘉", text: interludeCopy.routeMessages.guard_east },
+  { id: "east_closed", author: "周琪", text: interludeCopy.routeMessages.east_closed },
+  { id: "west_cleaner", author: "室友", text: interludeCopy.routeMessages.west_cleaner },
   { id: "withdrawn", author: "陈嘉", text: "陈嘉撤回了一条消息", withdrawn: true }
 ];
 
@@ -86,7 +125,7 @@ function InterludeWechatEvidence({ state, router }: Pick<SceneComponentProps, "s
           <article className="interlude-official-notice">
             <small>校园楼宇运行通知</small>
             <h2>夜间闭楼与入口调整</h2>
-            <div className="interlude-building-plate" aria-hidden="true"><b>{destinationCopyUnlocked ? "A1" : "A?"}</b><i /><i /><i /></div>
+            <CampusArticleCover article={chapterFourWechatContent.official} />
             <p>22:45 起，{destinationCopyUnlocked ? "段永平教学楼" : "北教学区一处楼宇"}进入夜间清楼。A 楼一层东侧入口暂停通行，人员请从大厅主入口进入。</p>
             <p>主电梯保留运行，楼层开放情况以现场提示为准。</p>
             <Button variant="primary" type="button" onClick={saveOfficialNotice}>
@@ -237,7 +276,6 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
       setAttackPhase(4);
       kit.flags.setFlag("codeScattered", true);
       events.emit("code_scattered");
-      kit.flags.toast("任务更新：找回四位签到码", "task");
     };
     const continueAfterAttack = () => {
       if (cancelled || attackAdvanced) {
@@ -297,9 +335,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
         playSfx("07_");
       }, 1550),
       window.setTimeout(() => {
-        if (kit.actOne.completeFriendExchange()) {
-          kit.flags.toast("任务更新：找到系统", "task");
-        }
+        kit.actOne.completeFriendExchange();
       }, 2150)
     ];
     return () => timers.forEach((timer) => window.clearTimeout(timer));
@@ -536,7 +572,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
         <article className="wx-official-article wx-official-story-reader">
           <small>{chapterFourWechatContent.official.accountType} · {chapterFourWechatContent.official.publishedAt}</small>
           <h2>{chapterFourWechatContent.official.articleTitle}</h2>
-          <div className="wx-official-cover" aria-hidden="true"><i /><b>1F</b><i /></div>
+          <CampusArticleCover article={chapterFourWechatContent.official} />
           <p>{chapterFourWechatContent.official.summary}</p>
           <ul>
             {chapterFourWechatContent.official.details.map((line) => <li key={line}>{line}</li>)}
@@ -544,6 +580,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
           <Button variant="primary" type="button" className="wx-evidence-action" onClick={readOfficialNotice}>
             {chapterFourWechat.officialNoticeRead ? "已保存通知" : chapterFourWechatContent.official.readAction}
           </Button>
+          <OfficialArticleComments comments={chapterFourWechatContent.official.comments} />
         </article>
       );
     }
@@ -551,14 +588,12 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
     if (selectedArticle) {
       return (
         <article className="wx-official-reader" aria-label={selectedArticle.title}>
-          <div className={`wx-lore-cover is-${selectedArticle.coverTone}`} aria-hidden="true">
-            <span>{selectedArticle.section}</span>
-            <i /><i /><i />
-          </div>
           <small>{selectedArticle.publishedAt} · {chapterFourWechatContent.official.name}</small>
           <h2>{selectedArticle.title}</h2>
+          <CampusArticleCover article={selectedArticle} />
           {selectedArticle.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           <footer>阅读 {selectedArticle.readCount} · 校园日常记录</footer>
+          <OfficialArticleComments comments={selectedArticle.comments} />
         </article>
       );
     }
@@ -583,7 +618,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
           className="wx-official-featured"
           onClick={() => setOfficialArticleId("night-notice")}
         >
-          <span className="wx-official-featured-cover" aria-hidden="true"><i /><b>1F</b><i /></span>
+          <CampusArticleCover article={chapterFourWechatContent.official} decorative />
           <span>
             <small>夜间通知 · {chapterFourWechatContent.official.publishedAt}</small>
             <strong>{chapterFourWechatContent.official.articleTitle}</strong>
@@ -604,7 +639,7 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
               key={article.id}
               onClick={() => setOfficialArticleId(article.id)}
             >
-              <span className={`wx-lore-thumb is-${article.coverTone}`} aria-hidden="true"><i /><i /></span>
+              <CampusArticleCover article={article} thumbnail />
               <span>
                 <small>{article.section} · {article.publishedAt}</small>
                 <strong>{article.title}</strong>
@@ -653,7 +688,10 @@ export function WechatScene({ state, router, events }: SceneComponentProps) {
           <h1>{titles[view]}</h1>
           <span className="wx-header-tools" aria-hidden="true">…</span>
         </header>
-        <div className={`wx-chat-body ${view === "official" ? "is-official-account" : ""}`.trim()}>
+        <div
+          key={view === "official" ? officialArticleId ?? "official-account" : view}
+          className={`wx-chat-body ${view === "official" ? "is-official-account" : ""}`.trim()}
+        >
           {view === "official" ? (
             renderOfficialAccount()
           ) : null}

@@ -3,7 +3,7 @@
   "execution": "Original extracted TypeScript texture and scene methods, recording graphics and bridge ports",
   "sources": {
     "src/scenes/rpg/BootScene.ts": "6535c74791a7441e24cb17d6856e9a085ddad2a81e2d8999c41d0156d8a8770d",
-    "src/data/chapter3-canteen.content.json": "7275d5f68000b59a14844d991288024e375f5fe95173eb615a46263f5792c55e",
+    "src/data/chapter3-canteen.content.json": "842b6ac2b6a6cb800297e6f743e416011390e7e4a623e5858b7f632849a34e16",
     "src/data/maps/zijingang-campus-runtime.json": "f27ecc3f98a057ac9c16d914f58013db2c0308da9c96cd7ee48ffceac90f7abe"
   },
   "extracted": {

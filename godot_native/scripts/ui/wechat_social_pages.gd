@@ -6,7 +6,8 @@ const NativeUi=preload("res://scripts/ui/native_ui_theme.gd")
 const Chrome=preload("res://scripts/ui/wechat_chrome.gd")
 const Bubble=preload("res://scripts/ui/wechat_message_bubble.gd")
 const TiyiAccess=preload("res://scripts/chapters/tiyi_access.gd")
-var campus: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/chapter4-wechat.content.json")).official
+const CAMPUS_CONTENT="res://data/source/chapter4-wechat.content.json"
+var campus: Dictionary=load_campus_content()
 var social_copy: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/wechat-social-content.json"))
 var tab="chats"
 var search_open=false
@@ -17,6 +18,22 @@ var history_open=false
 var likes: Dictionary={}
 var scrolls: Dictionary={}
 var owner: Dictionary={}
+
+static func load_campus_content() -> Dictionary:
+	return JSON.parse_string(FileAccess.get_file_as_string(CAMPUS_CONTENT)).official
+
+static func article_cover(item: Dictionary, minimum_size: Vector2) -> TextureRect:
+	var cover := TextureRect.new()
+	cover.name="WechatArticleCover"
+	cover.texture=load("res://assets/ui/wechat/official/%s.webp" % item.coverTone)
+	cover.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
+	cover.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+	cover.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	cover.custom_minimum_size=minimum_size
+	cover.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	cover.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	cover.accessibility_name=str(item.coverAlt)
+	return cover
 
 func word(key: String) -> String:
 	return str(social_copy.ui[key])
@@ -30,6 +47,19 @@ func campus_articles() -> Array:
 			if revised.id==item.id:item.merge(revised,true);break
 		articles.append(item)
 	return articles
+
+func night_notice() -> Dictionary:
+	var item: Dictionary=campus.duplicate()
+	item.merge({
+		"id":"night-notice",
+		"section":"夜间通知",
+		"title":campus.articleTitle,
+		"body":[campus.summary]+campus.details
+	})
+	return item
+
+func can_browse_night_notice(b) -> bool:
+	return int(b.s.native.get("chapter",1))>=4
 
 func route(state: Dictionary, page: String, previous: String) -> void:
 	if not is_same(owner,state):
@@ -114,6 +144,20 @@ func open_panel(b, value: String) -> void:
 
 func article_link(b, parent: Control, item: Dictionary, destination: String) -> void:
 	var column:=card(parent)
+	if item.has("coverTone"):
+		if item.id=="night-notice":
+			column.add_child(article_cover(item,Vector2(0,183)))
+		else:
+			var row:=HBoxContainer.new()
+			row.add_theme_constant_override("separation",10)
+			column.add_child(row)
+			var thumbnail:=article_cover(item,Vector2(88,50))
+			thumbnail.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
+			thumbnail.size_flags_vertical=Control.SIZE_SHRINK_BEGIN
+			row.add_child(thumbnail)
+			column=VBoxContainer.new()
+			column.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+			row.add_child(column)
 	copy(column,str(item.get("section","历史文章")),font_size(b,12),Palette.MUTED)
 	button(column,str(item.title),func(): article=str(item.id);article_parent=destination;refresh(b),"WechatArticle_"+str(item.id))
 	if item.has("summary"):copy(column,str(item.summary),font_size(b,15),Palette.MUTED)
@@ -125,11 +169,24 @@ func show_article(b, item: Dictionary) -> Control:
 	var column=feed(b,root,57,0,"article:"+str(item.id))
 	copy(column,str(item.title),font_size(b,23))
 	copy(column,("浙大体育与艺术" if article_parent=="tiyi" else str(campus.name))+" · "+str(item.get("publishedAt",item.get("section","历史文章"))),font_size(b,12),Palette.MUTED)
+	if item.has("coverTone"):
+		column.add_child(article_cover(item,Vector2(0,199)))
 	for paragraph in item.body:copy(column,str(paragraph),font_size(b,18))
+	if item.has("comments"):
+		copy(column,"精选留言",font_size(b,17))
+		for entry: Dictionary in item.comments:
+			var comment:=card(column)
+			copy(comment,"%s  ·  %s 赞" % [entry.author,entry.likes],font_size(b,13),Palette.MUTED)
+			copy(comment,str(entry.text),font_size(b,16))
+			if entry.has("reply"):
+				copy(comment,"作者回复",font_size(b,13),Palette.ACCENT)
+				copy(comment,str(entry.reply),font_size(b,16))
 	return root
 
 func build_extra(b) -> Control:
 	if not article.is_empty():
+		if article_parent=="campus" and article=="night-notice" and can_browse_night_notice(b):
+			return show_article(b,night_notice())
 		for item in social_copy.tiyi_articles if article_parent=="tiyi" else campus_articles():
 			if item.id==article:return show_article(b,item)
 	if panel=="officials":return accounts(b)
@@ -171,6 +228,7 @@ func campus_account(b) -> Control:
 	var root=b._base(Palette.BACKGROUND,b.APP_HEIGHT)
 	header(b,root,str(campus.name),func():open_panel(b,"officials"))
 	var column=feed(b,root,57,0,"campus")
+	if can_browse_night_notice(b):article_link(b,column,night_notice(),"campus")
 	copy(column,"公众号 · 历史文章",font_size(b,13),Palette.MUTED)
 	for item in campus_articles():article_link(b,column,item,"campus")
 	return root

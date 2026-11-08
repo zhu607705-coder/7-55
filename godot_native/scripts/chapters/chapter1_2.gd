@@ -98,8 +98,8 @@ func view(page: String, s: Dictionary) -> Dictionary:
 			if _movement(s) and not s.actOne.mentorLineReleased: body += "\n导师头像：两枚卡扣封住了一条竖线，胶缝里似乎缺一点能流动的东西。"
 			return {"title":"微信", "body":body}
 		"system_chat":
-			var body = "系统：哦，该死。你赢了，孩子。\n玩家：拜托了，帮我改一下签到记录\n系统：行。把你的道具栏拿出来。\n系统：等等，你的道具栏呢？你总不能指望我空手干活！\n系统：去。找。到。它。"
-			if s.actOne.phase == "system_return_required": body = "系统：你找到了，那就太好了，我们出发吧！\n玩家：？\n系统：我得说实话了，我没有修改记录权限。\n系统：但我有一个朋友她或许能做到。\n系统：如果我们还想要平时分，就得去图书馆找她。\n系统：明白了？那就快行动吧！"
+			var body = "系统：……算你狠，同学。我帮还不行吗？\n玩家：拜托了，帮我改一下签到记录\n系统：行吧，先把道具栏打开。\n系统：等等，你连道具栏都丢了？你指望我空着手给你改记录？\n系统：回寝室把校园卡和道具栏找回来。"
+			if s.actOne.phase == "system_return_required": body = "系统：你找到了，那就太好了，我们出发吧！\n玩家：？\n系统：先说清楚，我没权限改考勤记录。。\n系统：基础馆有个老朋友，她也许有办法。。\n系统：还想要平时分的话，就去图书馆找她。。\n系统：听明白了？那就赶紧动身。"
 			if s.actOne.phase == "reservation_briefing_required": body = "系统：别打扰我……哦，你已经完事了，速度还挺快的\n系统：我以为你要在寝室“就再睡一会儿”呢\n系统：你知道的，去图书馆要先完成座位预约。\n系统：基础馆一层书库022，记住了。"
 			return {"title":"系统", "body":body}
 		"checkin": return {"title":"学在浙大 · 校务签到", "body":"本周缺勤 0 次\n请输入四位签到码\n签到需使用校园网"}
@@ -284,7 +284,7 @@ func _chapter_one(s: Dictionary, action: String, value: Variant) -> Dictionary:
 			if int(value.get("elapsedMs",0))<required_ms or int(value.get("phase",0))!=4: return _ok("")
 			f.codeScattered=true
 			s.native.friend_scatter_pending=false
-			return _ok("任务更新：找回四位签到码")
+			return _ok("")
 		"c1_absence":
 			if not f.codeScattered: return _ok("本周缺勤 0 次。")
 			f.cardZeroTaken = true
@@ -430,9 +430,9 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 	if _prologue(s): return _ok("序章尚未结束。")
 	match action:
 		"c2_friend_exchange":
-			if a.phase != "friend_message_required": return _ok("朋友：？")
+			if a.phase != "friend_message_required": return _ok("")
 			a.phase = "system_required"
-			return _ok("朋友：签上了吗？？\n玩家：没赶上。但我刚把弹窗卡死了，正在逼系统给我改后台。\n朋友：？你没睡醒吧")
+			return _ok("")
 		"c2_open_system": return _page(s, "system_chat")
 		"c2_confront_system":
 			if not ["system_required", "inventory_required", "system_return_required"].has(a.phase): return _ok("系统暂时没有新的要求。")
@@ -526,7 +526,7 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 			if a.balanceShifted: return _ok("小数点已经移动过了。")
 			a.balanceShifted = true
 			s.wallet.campusCardCents = 600
-			return _ok("小数点右移两位！0.06 秒变 6.00 元——趁财务系统还没反应过来，赶紧去98把二手手柄付了！")
+			return _ok("小数点往右挪了两位。0.06 元变成了 6.00 元，够买手柄了。")
 		"c2_login_hint":
 			a.cc98Login.revealedHintCount = mini(3, int(a.cc98Login.revealedHintCount) + 1)
 			return _ok("认证提示已展开。")
@@ -534,7 +534,7 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 		"c2_purchase_gamepad":
 			if not _movement(s) or s.networkMode != "campus_wifi" or not a.cc98Login.authenticated: return _ok("请先在校园网完成统一身份认证。")
 			if a.gamepadPurchased: return _ok("手柄已经购买，不会重复扣款。")
-			if not a.balanceShifted or int(s.wallet.campusCardCents) < 600: return _ok("全身上下六分钱，还想跟98卖家分一百期买手柄？人家直接把你拒了。")
+			if not a.balanceShifted or int(s.wallet.campusCardCents) < 600: return _ok("卡里就剩六分钱，卖家不接一百期。")
 			s.wallet.campusCardCents -= 600
 			a.gamepadPurchased = true
 			items.gamepad = true

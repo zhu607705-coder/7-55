@@ -118,7 +118,7 @@ export const CHAPTER_FOUR_CONTEXT_INTERACTIONS = Object.freeze([
         dark: "操作台边缘保留着较早的手部动作残影，当前房间没有新增活动轨迹。"
       },
       "1225_bakery": {
-        light: "工坊午休，切割垫上还压着没装完的校园模型。开放时间先结束，模型下次再装。",
+        light: "工坊午休。绿色切割垫上还压着半座校园模型，旁边是三轴夹具。有人在台边贴了张便签：“先对压痕，别硬压。”",
         dark: "模型零件周围有连续取放残影，时间间隔与午休人流一致。"
       },
       "1850_evening": {
@@ -188,7 +188,7 @@ export const CHAPTER_FOUR_CONTEXT_INTERACTIONS = Object.freeze([
     repeatPolicy: "repeatable",
     textByTimeState: {
       "2245_opening": {
-        light: "203 学生机都关了，教师机还显示维护清单。最后一项也是“关机”。",
+        light: "203 的学生机都黑屏了，里侧主机旁还贴着林昊的便签：“跑模型，千万别重启！”教师机的维护清单上，最后一项是“关机”。",
         dark: "屏幕前的残影按座位顺序消失，没有人在关机后返回。"
       },
       "1225_bakery": {
@@ -196,7 +196,7 @@ export const CHAPTER_FOUR_CONTEXT_INTERACTIONS = Object.freeze([
         dark: "键盘上方的输入残影很短，属于自动部署前的检查动作。"
       },
       "1850_evening": {
-        light: "账号都退出了，第三排还有一把椅子没推回。软件能批量处理，椅子还得靠人。",
+        light: "上机课刚散。账号都退了，第三排几把转椅还横在过道上，桌角垂着一根没人带走的 Type-C 线。",
         dark: "第三排的离座残影比其他位置晚六秒，但随后直接离开机房。"
       },
       "2245_maintenance": {
@@ -253,7 +253,7 @@ export const CHAPTER_FOUR_CONTEXT_INTERACTIONS = Object.freeze([
         dark: "扫描动作在 18:50 前完成，每页都保留来源编号。"
       },
       "2245_maintenance": {
-        light: "恒温柜运行正常，维修记录没有涉及档案展区。",
+        light: "档案柜按年代分格。索引抽屉贴着便签：“核对二楼箭头方向，请取旧导视胶片，到隔壁 302 叠像。”",
         dark: "展柜周围没有异常移动残影，档案位置保持不变。"
       },
       "0754_blackout": {

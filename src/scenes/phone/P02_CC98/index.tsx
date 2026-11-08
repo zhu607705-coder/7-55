@@ -1,3 +1,4 @@
+import interludeCopy from "../../../data/chapter3-interlude-copy.json";
 import { Button } from "../../../components/Button";
 import { useEffect, useMemo, useState } from "react";
 import defaultPostData from "../../../data/cc98.posts.json";
@@ -48,7 +49,10 @@ const CHAPTER_FOUR_STUDY_LEGACY_POST_ID = "p03";
 const NETWORK_REJECT_DELAY_MS = 1600;
 const NETWORK_CRASH_DELAY_MS = 620;
 const DEFAULT_POSTS = defaultPostData as Cc98Post[];
-const POST_DEFAULT_HISTORY = postDefaultHistoryData.posts as Record<string, Partial<Record<"title" | "body", string[]>>>;
+const HISTORICAL_POST_FIELDS = ["author", "avatar", "title", "body", "replies"] as const;
+const POST_DEFAULT_HISTORY = postDefaultHistoryData.posts as Record<
+  string, Partial<Record<(typeof HISTORICAL_POST_FIELDS)[number], string[]>>
+>;
 const BOARD_SNAPSHOTS = new Map(
   (boardSnapshotData.boards as Cc98BoardSnapshot[]).map((snapshot) => [snapshot.board, snapshot])
 );
@@ -108,6 +112,7 @@ const CHAPTER_FOUR_STUDY_POST: Cc98Post = {
       "qiushi-rider",
       "yuquan-wind"
     ][index] ?? "socket-observer",
+    author: reply.author,
     time: `今天 ${reply.time}`,
     floor: reply.floor,
     role: reply.role,
@@ -266,7 +271,7 @@ function loadPosts() {
       const savedPost = savedById.get(defaults.id);
       const savedFields: Partial<Cc98Post> = { ...savedPost };
       // Older editors persisted untouched defaults alongside the player's edits.
-      for (const field of ["title", "body"] as const) {
+      for (const field of HISTORICAL_POST_FIELDS) {
         const value = savedFields[field];
         if (typeof value === "string" && POST_DEFAULT_HISTORY[defaults.id]?.[field]?.includes(value)) {
           delete savedFields[field];
@@ -475,8 +480,8 @@ function InterludeJournalCloseout({
               checked={summaryChoice === "safe_return"}
               onChange={() => setSummaryChoice("safe_return")}
             />
-            <strong>安全返航</strong>
-            <span>船和人都回来了。湖上的事先记到这里，剩下的等我整理。</span>
+            <strong>{interludeCopy.journalReplies.safe_return.label}</strong>
+            <span>{interludeCopy.journalReplies.safe_return.body}</span>
           </label>
           <label className={summaryChoice === "details_withheld" ? "is-selected" : ""}>
             <input
@@ -485,8 +490,8 @@ function InterludeJournalCloseout({
               checked={summaryChoice === "details_withheld"}
               onChange={() => setSummaryChoice("details_withheld")}
             />
-            <strong>细节暂不公开</strong>
-            <span>最后一段发生了点不适合写进划船记录的事。人已上岸，其他细节暂时保留。</span>
+            <strong>{interludeCopy.journalReplies.details_withheld.label}</strong>
+            <span>{interludeCopy.journalReplies.details_withheld.body}</span>
           </label>
         </fieldset>
         <Button variant="primary" type="button" className="interlude-primary-action" onClick={closeThread}>发布收尾并保存时间</Button>

@@ -192,7 +192,7 @@ func refresh() -> void:
 		"paused": overlay_title.text="演出暂停，影子也停下了"; overlay_body.text="按继续后再演。计时和动作都从暂停处恢复。"; start_button.text="继续演出"
 		"awaiting": overlay_title.text="正在收下这场演出"; overlay_body.text=""; start_button.text="稍等一下"
 		"result":
-			overlay_title.text=("全体观众，都被演出了" if final_act else "这一幕已经无法撤回") if approved else ("光被舞台上的障碍碰散了" if state.round==2 else "影子把这场演出吃掉了")
+			overlay_title.text=("三幕演出结束" if final_act else "这一幕演完了") if approved else ("光束撞上舞台道具，从这一幕重来。" if state.round==2 else "追光被影子截住了，从这一幕重来。")
 			overlay_body.text=("灯光谢幕。台上只剩下一张湿节目单。" if final_act else "收下这一幕。下一幕的规则会变。") if approved else "已经完成的幕次保留。\n再演一次，这一幕从头开始。"
 			start_button.text=("拉开最后的幕布" if final_act else "下一幕") if approved else "重演这一幕"
 	if is_instance_valid(stage_view):stage_view.sync(self)

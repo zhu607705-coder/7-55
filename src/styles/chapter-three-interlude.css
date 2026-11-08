@@ -659,21 +659,6 @@
   background: #145b6e;
   font: inherit;
 }
-.interlude-building-plate {
-  position: relative;
-  height: 128px;
-  overflow: hidden;
-  border: 2px solid #273843;
-  background: linear-gradient(#8aadb5 0 32%, #d8d6c7 32% 100%);
-}
-.interlude-building-plate::before {
-  content: "";
-  position: absolute;
-  inset: 48px 20px 0;
-  border: 3px solid #344955;
-  background: repeating-linear-gradient(90deg, #7894a0 0 18px, #d8d4c4 18px 28px);
-}
-.interlude-building-plate b { position: absolute; z-index: 2; top: 54px; left: 50%; transform: translateX(-50%); padding: 4px 9px; color: #e8cc69; background: #172633; }
 
 .interlude-chat-thread article {
   max-width: 84%;

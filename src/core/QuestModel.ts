@@ -66,12 +66,12 @@ function chapterOneQuest(state: GameState): QuestViewModel {
       id: "chapter_one_find_code",
       label: `找签到码（${digitCount}/4）`,
       hints: [
-        "先检查浙大体艺、设置齿轮和盆栽相关界面。",
-        "道具可以拖拽合并。",
-        "浙大体艺打不开时，试试换一种网络。",
-        "微信界面也用“自动旋转”",
-        "光照在控制中心拖动调节",
-        "还有一个在签到页面"
+        "四位签到码散到了手机里。先看看学在浙大、浙大体艺、桌面齿轮和盆栽。",
+        "看看捡到的零件能不能接起来。在道具栏里把一件拖到另一件上试试。",
+        "浙大体艺打不开？到控制中心切成移动数据，再进一次。",
+        "齿轮能靠自动旋转晃松。回微信看看朋友头像上的斜线会不会跟着动。",
+        "盆栽缺水、肥和光。试试用耳机盛水，从壁纸钟楼取肥，再到控制中心调高亮度。",
+        "第一位藏在签到页。看看本周缺勤次数。"
       ],
       targetSurface: "phone",
       recommendedScene: "phone_home"
@@ -287,15 +287,15 @@ function libraryQuest(state: GameState): QuestViewModel {
     {
       id: "chapter_two_go_library",
       label: "去图书馆",
-      hints: ["地图缩放仔细找"],
+      hints: ["在校园地图上找到基础图书馆。走到大门前就能进馆。"],
       targetSurface: "rpg"
     },
     {
       id: "chapter_two_confirm_seat",
       label: "确认座位状态",
       hints: [
-        "去 RPG 图书馆地图找 022。",
-        "检查 022 上的东西和旁边的纸条。"
+        "先查看闸机小屏。入馆和到座是两条时间记录，都记下来。",
+        "进一层书库找 022。看看桌上的书包，再拿起旁边的纸条。"
       ],
       targetSurface: "rpg"
     },
@@ -303,9 +303,9 @@ function libraryQuest(state: GameState): QuestViewModel {
       id: "chapter_two_check_rules",
       label: "查清占座规则",
       hints: [
-        "纸条提到了一个更吵的地方。",
-        "CC98 里有人讨论过 022。",
-        "用占座纸条搜索 CC98，再顺着帖子找旧规则。"
+        "纸条上写着“临时离座规则详见 CC98”。",
+        "把占座纸条拖到 CC98 搜索框，打开 022 的调查帖。",
+        "从帖子里找书名，再去馆藏检索终端查旧规则放在哪排书架。"
       ],
       targetSurface: "phone",
       recommendedScene: "cc98"
@@ -314,9 +314,9 @@ function libraryQuest(state: GameState): QuestViewModel {
       id: "chapter_two_collect_materials",
       label: `凑齐恢复材料（${proofCount}/3）`,
       hints: [
-        "照片、座位夹缝和体艺都能帮上忙。",
-        "照片曝光了就把光调小（控制中心光条）",
-        "体艺 7,47,3"
+        "需要书包非本人证明、022 座位小票和本人来过证明。分别查照片、桌面夹缝和体艺补录。",
+        "拍书包后调低屏幕亮度，核对旧照再生成报告，带去前台盖章。桌缝里的小票可以用右移箭头拨出来。",
+        "切到移动数据进体艺。补录三项分别看入馆到座的时间差、楼主编辑里的公示编号、旧规要求的证明类别数。"
       ],
       targetSurface: "phone",
       recommendedScene: "phone_home"
@@ -324,21 +324,25 @@ function libraryQuest(state: GameState): QuestViewModel {
     {
       id: "chapter_two_make_post_visible",
       label: "让帖子被看见",
-      hints: ["3027，为什么自己想"],
+      hints: [
+        "先把四份证据上传到 CC98 调查帖。",
+        "按上传栏从上到下，在楼下选四条数字回复点 bd。",
+        "依次取旧规的证明类别数、书包通过的身份核验项数、小票座位号末位、入馆到座的分钟数。"
+      ],
       targetSurface: "phone",
       recommendedScene: "cc98"
     },
     {
       id: "chapter_two_submit_recovery",
       label: "提交恢复申请",
-      hints: ["在浙大钉->图书馆->pass申请"],
+      hints: ["公开确认后，打开浙大钉的图书馆服务，进入 022 恢复申请，提交三份证明。"],
       targetSurface: "phone",
       recommendedScene: "zjuding"
     },
     {
       id: "chapter_two_return_022",
       label: "回到 022",
-      hints: ["字面意思。"],
+      hints: ["带着解除占座 PASS 回到一层书库，把它用在 022 的书包上。"],
       targetSurface: "rpg"
     }
   ];

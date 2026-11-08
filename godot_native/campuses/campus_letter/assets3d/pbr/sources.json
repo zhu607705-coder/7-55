@@ -1,0 +1,127 @@
+{
+  "license": "https://docs.ambientcg.com/license/",
+  "assets": [
+    {
+      "asset": "Wood051",
+      "source": "https://ambientcg.com/view?id=Wood051",
+      "download": "https://ambientcg.com/get?file=Wood051_1K-JPG.zip",
+      "license": "CC0-1.0",
+      "files": [
+        "Wood051_1K-JPG_Color.jpg",
+        "Wood051_1K-JPG_NormalGL.jpg",
+        "Wood051_1K-JPG_Roughness.jpg"
+      ],
+      "archive_sha256": "debf3d60f69a09c30613dc95a94da49c8116160ab8a29f77ac8e32cc33f1a1c3",
+      "runtime_files": [
+        {
+          "file": "Wood051_1K-JPG_Color.jpg",
+          "sha256": "23e6c0f680bd1ccaa9468377ff137232c1f5e80e1aa4a938b1c4dd445992238d",
+          "provenance_metadata_embedded": true
+        },
+        {
+          "file": "Wood051_1K-JPG_NormalGL.jpg",
+          "sha256": "3e0e96eefae83d5ee2442612fbbe15967d2a39942c513642e4ed74107c4ff4df",
+          "provenance_metadata_embedded": true
+        },
+        {
+          "file": "Wood051_1K-JPG_Roughness.jpg",
+          "sha256": "a63bf786c9c51dfaf81d34b17973e287ebb98402e8715224c5284d8a42a8fe1d",
+          "provenance_metadata_embedded": true
+        }
+      ]
+    },
+    {
+      "asset": "Concrete034",
+      "source": "https://ambientcg.com/view?id=Concrete034",
+      "download": "https://ambientcg.com/get?file=Concrete034_1K-JPG.zip",
+      "license": "CC0-1.0",
+      "files": [
+        "Concrete034_1K-JPG_Color.jpg",
+        "Concrete034_1K-JPG_NormalGL.jpg",
+        "Concrete034_1K-JPG_Roughness.jpg"
+      ],
+      "archive_sha256": "5839d284d94ffb8d2a56df742ec522b13dd311c52dbd42b8fd33f0409ceedb81",
+      "runtime_files": [
+        {
+          "file": "Concrete034_1K-JPG_Color.jpg",
+          "sha256": "a57c05a1ba0fd80278ef4d9ae6e92f15f8f89f9b606e11ee263ad284d15c3397",
+          "provenance_metadata_embedded": true
+        },
+        {
+          "file": "Concrete034_1K-JPG_NormalGL.jpg",
+          "sha256": "d4319cfafd9702582d0704d7d23cc15eda08ae335108e4ca3c73170b86760348",
+          "provenance_metadata_embedded": true
+        },
+        {
+          "file": "Concrete034_1K-JPG_Roughness.jpg",
+          "sha256": "5cddfbe2749142e36d51ee04b44cf59c4b233e4c21b618e209afa493f6934e18",
+          "provenance_metadata_embedded": true
+        }
+      ]
+    },
+    {
+      "asset": "Metal032",
+      "source": "https://ambientcg.com/view?id=Metal032",
+      "download": "https://ambientcg.com/get?file=Metal032_1K-JPG.zip",
+      "license": "CC0-1.0",
+      "files": [
+        "Metal032_1K-JPG_Color.jpg",
+        "Metal032_1K-JPG_Metalness.jpg",
+        "Metal032_1K-JPG_NormalGL.jpg",
+        "Metal032_1K-JPG_Roughness.jpg"
+      ],
+      "archive_sha256": "9e4f363905a647958c273154fa125d2a6440892d0e583f9b3af24bb08b5afc3c",
+      "runtime_files": [
+        {
+          "file": "Metal032_1K-JPG_Color.jpg",
+          "sha256": "3811c31a2e7b69d67d86bfc49fec1fb890716a2639589760f428d4d3a5cc91a3",
+          "provenance_metadata_embedded": true
+        },
+        {
+          "file": "Metal032_1K-JPG_Metalness.jpg",
+          "sha256": "4b9416537fd7e25a6d8a760ea31de55eb3d41e4d19d0caac320c15b1547cae07",
+          "provenance_metadata_embedded": true
+        },
+        {
+          "file": "Metal032_1K-JPG_NormalGL.jpg",
+          "sha256": "13c235bf040286988538b3915b91742837797821b642804d81a1717787b93abb",
+          "provenance_metadata_embedded": true
+        },
+        {
+          "file": "Metal032_1K-JPG_Roughness.jpg",
+          "sha256": "59bdbf9fbf1f7032030f2ef61dec1b71d4b8864bb21f3468f9fed793eaf6c497",
+          "provenance_metadata_embedded": true
+        }
+      ]
+    },
+    {
+      "asset": "Fabric041",
+      "source": "https://ambientcg.com/view?id=Fabric041",
+      "download": "https://ambientcg.com/get?file=Fabric041_1K-JPG.zip",
+      "license": "CC0-1.0",
+      "files": [
+        "Fabric041_1K-JPG_Color.jpg",
+        "Fabric041_1K-JPG_NormalGL.jpg",
+        "Fabric041_1K-JPG_Roughness.jpg"
+      ],
+      "archive_sha256": "4597421c2bca4ed743d6f96af5efd6f4f93dec725b7b4a9c1ec8cd98d5a3f122",
+      "runtime_files": [
+        {
+          "file": "Fabric041_1K-JPG_Color.jpg",
+          "sha256": "8cdd93b0340a2f07a7d8b681fd087b4ecd14cb55fb9f0249b1b024bf99d29cba",
+          "provenance_metadata_embedded": true
+        },
+        {
+          "file": "Fabric041_1K-JPG_NormalGL.jpg",
+          "sha256": "fcc7e500b201a0c46160f9746df0a9e4d499d2e7d94cbe22e17bf3745ca98cc7",
+          "provenance_metadata_embedded": true
+        },
+        {
+          "file": "Fabric041_1K-JPG_Roughness.jpg",
+          "sha256": "1e308316b1409b1416b0d144e14ddaa66cbe2dea69b6339621775e7504fd138c",
+          "provenance_metadata_embedded": true
+        }
+      ]
+    }
+  ]
+}

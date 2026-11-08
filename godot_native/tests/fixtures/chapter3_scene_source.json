@@ -3,27 +3,27 @@
   "normal": [
     {
       "phase": "conversation",
-      "durationMs": 1200,
+      "durationMs": 1336,
       "lineIndex": 0
     },
     {
       "phase": "conversation",
-      "durationMs": 1200,
+      "durationMs": 1720,
       "lineIndex": 1
     },
     {
       "phase": "conversation",
-      "durationMs": 1200,
+      "durationMs": 1624,
       "lineIndex": 2
     },
     {
       "phase": "conversation",
-      "durationMs": 1240,
+      "durationMs": 1480,
       "lineIndex": 3
     },
     {
       "phase": "conversation",
-      "durationMs": 1336,
+      "durationMs": 1900,
       "lineIndex": 4
     },
     {
@@ -38,7 +38,7 @@
     },
     {
       "phase": "conversation",
-      "durationMs": 1480,
+      "durationMs": 1900,
       "lineIndex": 7
     },
     {
@@ -49,17 +49,17 @@
     },
     {
       "phase": "record_escape",
-      "durationMs": 1720,
+      "durationMs": 1900,
       "lineIndex": 8
     },
     {
       "phase": "record_escape",
-      "durationMs": 1200,
+      "durationMs": 1432,
       "lineIndex": 9
     },
     {
       "phase": "record_escape",
-      "durationMs": 1432,
+      "durationMs": 1900,
       "lineIndex": 10
     },
     {
@@ -74,22 +74,22 @@
     },
     {
       "phase": "record_escape",
-      "durationMs": 1624,
+      "durationMs": 1900,
       "lineIndex": 13
     },
     {
       "phase": "record_escape",
-      "durationMs": 1200,
+      "durationMs": 1336,
       "lineIndex": 14
     },
     {
       "phase": "record_escape",
-      "durationMs": 1288,
+      "durationMs": 1200,
       "lineIndex": 15
     },
     {
       "phase": "record_escape",
-      "durationMs": 1432,
+      "durationMs": 1336,
       "lineIndex": 16
     },
     {
@@ -147,27 +147,27 @@
   "reduced": [
     {
       "phase": "conversation",
-      "durationMs": 1200,
+      "durationMs": 1336,
       "lineIndex": 0
     },
     {
       "phase": "conversation",
-      "durationMs": 1200,
+      "durationMs": 1720,
       "lineIndex": 1
     },
     {
       "phase": "conversation",
-      "durationMs": 1200,
+      "durationMs": 1624,
       "lineIndex": 2
     },
     {
       "phase": "conversation",
-      "durationMs": 1240,
+      "durationMs": 1480,
       "lineIndex": 3
     },
     {
       "phase": "conversation",
-      "durationMs": 1336,
+      "durationMs": 1900,
       "lineIndex": 4
     },
     {
@@ -182,7 +182,7 @@
     },
     {
       "phase": "conversation",
-      "durationMs": 1480,
+      "durationMs": 1900,
       "lineIndex": 7
     },
     {
@@ -193,17 +193,17 @@
     },
     {
       "phase": "record_escape",
-      "durationMs": 1720,
+      "durationMs": 1900,
       "lineIndex": 8
     },
     {
       "phase": "record_escape",
-      "durationMs": 1200,
+      "durationMs": 1432,
       "lineIndex": 9
     },
     {
       "phase": "record_escape",
-      "durationMs": 1432,
+      "durationMs": 1900,
       "lineIndex": 10
     },
     {
@@ -218,22 +218,22 @@
     },
     {
       "phase": "record_escape",
-      "durationMs": 1624,
+      "durationMs": 1900,
       "lineIndex": 13
     },
     {
       "phase": "record_escape",
-      "durationMs": 1200,
+      "durationMs": 1336,
       "lineIndex": 14
     },
     {
       "phase": "record_escape",
-      "durationMs": 1288,
+      "durationMs": 1200,
       "lineIndex": 15
     },
     {
       "phase": "record_escape",
-      "durationMs": 1432,
+      "durationMs": 1336,
       "lineIndex": 16
     },
     {

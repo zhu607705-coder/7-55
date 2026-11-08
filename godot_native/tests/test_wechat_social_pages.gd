@@ -60,6 +60,9 @@ func run() -> void:
 	check(not has_text("22:45"),"early account does not disclose the later night-clearance clue")
 	await press("WechatArticle_umbrella-stand")
 	check(has_text("伞") and not has_text("22:45"),"article opens its full content without the locked notice")
+	var cover := node("WechatArticleCover") as TextureRect
+	check(cover!=null and cover.texture!=null and cover.texture.get_size()==Vector2(960,540),"archive reader loads a full-size cover")
+	check(has_text("雨伞认错三次") and has_text("精选留言"),"archive reader displays the supplied comments")
 	await press("WechatLocalBack")
 	check(node("WechatArticle_lost-found")!=null,"article back returns to same account")
 	await press("WechatLocalBack");await press("WechatLocalBack")
@@ -92,6 +95,15 @@ func run() -> void:
 		state.native.settings={"text_scale":font_scale}
 		for outer_scale in [1.0,390.0/430.0]:
 			await render();surface.scale*=outer_scale;await frames();check_bubbles()
+	pages.friend_open=false
+	await render()
+	await press("WechatPublicAccounts");await press("WechatCampusAccount")
+	var before_night_notice=JSON.stringify(state)
+	await press("WechatArticle_night-notice")
+	cover=node("WechatArticleCover") as TextureRect
+	check(cover!=null and cover.texture!=null and cover.texture.resource_path.ends_with("/notice.webp"),"night notice loads the shared cover")
+	check(has_text("22:45") and has_text("作者回复"),"later account can read the full notice and its reply")
+	check(JSON.stringify(state)==before_night_notice,"reading the later article does not grant story facts")
 	if is_instance_valid(surface):surface.free()
 	var column=VBoxContainer.new();column.size=Vector2(378,720);root.add_child(column)
 	for outgoing in [false,true]:

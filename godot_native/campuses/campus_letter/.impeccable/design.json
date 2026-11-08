@@ -1,0 +1,404 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-07T06:58:40.323266+00:00",
+  "title": "Design System: 7:55 校园来信三维样段",
+  "extensions": {
+    "colorMeta": {
+      "navigation-ink": {
+        "role": "primary",
+        "displayName": "深青导航文字",
+        "canonical": "#24464c",
+        "tonalRamp": [
+          "oklch(0.15 0.0204 210.16)",
+          "oklch(0.25 0.0341 210.16)",
+          "oklch(0.35 0.0409 210.16)",
+          "oklch(0.45 0.0409 210.16)",
+          "oklch(0.55 0.0409 210.16)",
+          "oklch(0.68 0.0409 210.16)",
+          "oklch(0.82 0.0245 210.16)",
+          "oklch(0.95 0.0068 210.16)"
+        ]
+      },
+      "navigation-paper": {
+        "role": "neutral",
+        "displayName": "浅灰纸色导航面",
+        "canonical": "#e7e8dd",
+        "tonalRamp": [
+          "oklch(0.15 0.0073 110.89)",
+          "oklch(0.25 0.0122 110.89)",
+          "oklch(0.35 0.0147 110.89)",
+          "oklch(0.45 0.0147 110.89)",
+          "oklch(0.55 0.0147 110.89)",
+          "oklch(0.68 0.0147 110.89)",
+          "oklch(0.82 0.0088 110.89)",
+          "oklch(0.95 0.0024 110.89)"
+        ]
+      },
+      "navigation-selected": {
+        "role": "primary",
+        "displayName": "浅灰绿选中面",
+        "canonical": "#cbded6",
+        "tonalRamp": [
+          "oklch(0.15 0.0115 168.67)",
+          "oklch(0.25 0.0192 168.67)",
+          "oklch(0.35 0.0230 168.67)",
+          "oklch(0.45 0.0230 168.67)",
+          "oklch(0.55 0.0230 168.67)",
+          "oklch(0.68 0.0230 168.67)",
+          "oklch(0.82 0.0138 168.67)",
+          "oklch(0.95 0.0038 168.67)"
+        ]
+      },
+      "navigation-hover": {
+        "role": "neutral",
+        "displayName": "白色悬停面",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(0.15 0.0000 89.88)",
+          "oklch(0.25 0.0000 89.88)",
+          "oklch(0.35 0.0000 89.88)",
+          "oklch(0.45 0.0000 89.88)",
+          "oklch(0.55 0.0000 89.88)",
+          "oklch(0.68 0.0000 89.88)",
+          "oklch(0.82 0.0000 89.88)",
+          "oklch(0.95 0.0000 89.88)"
+        ]
+      },
+      "navigation-pressed": {
+        "role": "neutral",
+        "displayName": "灰绿按下面",
+        "canonical": "#c1d3cc",
+        "tonalRamp": [
+          "oklch(0.15 0.0108 170.52)",
+          "oklch(0.25 0.0181 170.52)",
+          "oklch(0.35 0.0217 170.52)",
+          "oklch(0.45 0.0217 170.52)",
+          "oklch(0.55 0.0217 170.52)",
+          "oklch(0.68 0.0217 170.52)",
+          "oklch(0.82 0.0130 170.52)",
+          "oklch(0.95 0.0036 170.52)"
+        ]
+      },
+      "navigation-focus": {
+        "role": "neutral",
+        "displayName": "浅灰绿焦点面",
+        "canonical": "#d1dfd9",
+        "tonalRamp": [
+          "oklch(0.15 0.0085 168.45)",
+          "oklch(0.25 0.0142 168.45)",
+          "oklch(0.35 0.0171 168.45)",
+          "oklch(0.45 0.0171 168.45)",
+          "oklch(0.55 0.0171 168.45)",
+          "oklch(0.68 0.0171 168.45)",
+          "oklch(0.82 0.0102 168.45)",
+          "oklch(0.95 0.0028 168.45)"
+        ]
+      },
+      "focus-ring": {
+        "role": "primary",
+        "displayName": "深青焦点边",
+        "canonical": "#26636a",
+        "tonalRamp": [
+          "oklch(0.15 0.0314 205.65)",
+          "oklch(0.25 0.0524 205.65)",
+          "oklch(0.35 0.0628 205.65)",
+          "oklch(0.45 0.0628 205.65)",
+          "oklch(0.55 0.0628 205.65)",
+          "oklch(0.68 0.0628 205.65)",
+          "oklch(0.82 0.0377 205.65)",
+          "oklch(0.95 0.0105 205.65)"
+        ]
+      },
+      "disabled-ink": {
+        "role": "neutral",
+        "displayName": "灰青禁用文字",
+        "canonical": "#596b69",
+        "tonalRamp": [
+          "oklch(0.15 0.0109 188.28)",
+          "oklch(0.25 0.0182 188.28)",
+          "oklch(0.35 0.0219 188.28)",
+          "oklch(0.45 0.0219 188.28)",
+          "oklch(0.55 0.0219 188.28)",
+          "oklch(0.68 0.0219 188.28)",
+          "oklch(0.82 0.0131 188.28)",
+          "oklch(0.95 0.0036 188.28)"
+        ]
+      },
+      "enamel": {
+        "role": "secondary",
+        "displayName": "石墨青金属漆",
+        "canonical": "#283b3f",
+        "tonalRamp": [
+          "oklch(0.15 0.0126 212.12)",
+          "oklch(0.25 0.0211 212.12)",
+          "oklch(0.35 0.0253 212.12)",
+          "oklch(0.45 0.0253 212.12)",
+          "oklch(0.55 0.0253 212.12)",
+          "oklch(0.68 0.0253 212.12)",
+          "oklch(0.82 0.0152 212.12)",
+          "oklch(0.95 0.0042 212.12)"
+        ]
+      },
+      "woven-sage": {
+        "role": "secondary",
+        "displayName": "灰绿织物",
+        "canonical": "#56655c",
+        "tonalRamp": [
+          "oklch(0.15 0.0116 159.10)",
+          "oklch(0.25 0.0193 159.10)",
+          "oklch(0.35 0.0232 159.10)",
+          "oklch(0.45 0.0232 159.10)",
+          "oklch(0.55 0.0232 159.10)",
+          "oklch(0.68 0.0232 159.10)",
+          "oklch(0.82 0.0139 159.10)",
+          "oklch(0.95 0.0039 159.10)"
+        ]
+      },
+      "brushed-steel": {
+        "role": "neutral",
+        "displayName": "拉丝钢本色",
+        "canonical": "#bec5c9",
+        "tonalRamp": [
+          "oklch(0.15 0.0048 232.40)",
+          "oklch(0.25 0.0080 232.40)",
+          "oklch(0.35 0.0096 232.40)",
+          "oklch(0.45 0.0096 232.40)",
+          "oklch(0.55 0.0096 232.40)",
+          "oklch(0.68 0.0096 232.40)",
+          "oklch(0.82 0.0057 232.40)",
+          "oklch(0.95 0.0016 232.40)"
+        ]
+      },
+      "bronze": {
+        "role": "secondary",
+        "displayName": "黄铜配件",
+        "canonical": "#af8956",
+        "tonalRamp": [
+          "oklch(0.15 0.0411 73.71)",
+          "oklch(0.25 0.0686 73.71)",
+          "oklch(0.35 0.0823 73.71)",
+          "oklch(0.45 0.0823 73.71)",
+          "oklch(0.55 0.0823 73.71)",
+          "oklch(0.68 0.0823 73.71)",
+          "oklch(0.82 0.0494 73.71)",
+          "oklch(0.95 0.0137 73.71)"
+        ]
+      },
+      "stone-tint": {
+        "role": "neutral",
+        "displayName": "浅灰石材着色",
+        "canonical": "#dddcd7",
+        "tonalRamp": [
+          "oklch(0.15 0.0034 97.36)",
+          "oklch(0.25 0.0057 97.36)",
+          "oklch(0.35 0.0068 97.36)",
+          "oklch(0.45 0.0068 97.36)",
+          "oklch(0.55 0.0068 97.36)",
+          "oklch(0.68 0.0068 97.36)",
+          "oklch(0.82 0.0041 97.36)",
+          "oklch(0.95 0.0011 97.36)"
+        ]
+      },
+      "plaster": {
+        "role": "neutral",
+        "displayName": "灰白墙面",
+        "canonical": "#dfdcd4",
+        "tonalRamp": [
+          "oklch(0.15 0.0056 89.73)",
+          "oklch(0.25 0.0094 89.73)",
+          "oklch(0.35 0.0113 89.73)",
+          "oklch(0.45 0.0113 89.73)",
+          "oklch(0.55 0.0113 89.73)",
+          "oklch(0.68 0.0113 89.73)",
+          "oklch(0.82 0.0068 89.73)",
+          "oklch(0.95 0.0019 89.73)"
+        ]
+      },
+      "joystick-well": {
+        "role": "neutral",
+        "displayName": "半透明青色摇杆井",
+        "canonical": "#22474a55",
+        "tonalRamp": [
+          "oklch(0.15 0.0213 202.40 / 0.333)",
+          "oklch(0.25 0.0355 202.40 / 0.333)",
+          "oklch(0.35 0.0426 202.40 / 0.333)",
+          "oklch(0.45 0.0426 202.40 / 0.333)",
+          "oklch(0.55 0.0426 202.40 / 0.333)",
+          "oklch(0.68 0.0426 202.40 / 0.333)",
+          "oklch(0.82 0.0256 202.40 / 0.333)",
+          "oklch(0.95 0.0071 202.40 / 0.333)"
+        ]
+      },
+      "joystick-rim": {
+        "role": "neutral",
+        "displayName": "半透明浅色外圈",
+        "canonical": "#eff3e7aa",
+        "tonalRamp": [
+          "oklch(0.15 0.0082 121.77 / 0.667)",
+          "oklch(0.25 0.0137 121.77 / 0.667)",
+          "oklch(0.35 0.0164 121.77 / 0.667)",
+          "oklch(0.45 0.0164 121.77 / 0.667)",
+          "oklch(0.55 0.0164 121.77 / 0.667)",
+          "oklch(0.68 0.0164 121.77 / 0.667)",
+          "oklch(0.82 0.0098 121.77 / 0.667)",
+          "oklch(0.95 0.0027 121.77 / 0.667)"
+        ]
+      },
+      "joystick-knob": {
+        "role": "neutral",
+        "displayName": "浅色摇杆旋钮",
+        "canonical": "#e5e8dcdd",
+        "tonalRamp": [
+          "oklch(0.15 0.0082 118.14 / 0.867)",
+          "oklch(0.25 0.0136 118.14 / 0.867)",
+          "oklch(0.35 0.0163 118.14 / 0.867)",
+          "oklch(0.45 0.0163 118.14 / 0.867)",
+          "oklch(0.55 0.0163 118.14 / 0.867)",
+          "oklch(0.68 0.0163 118.14 / 0.867)",
+          "oklch(0.82 0.0098 118.14 / 0.867)",
+          "oklch(0.95 0.0027 118.14 / 0.867)"
+        ]
+      },
+      "joystick-center": {
+        "role": "neutral",
+        "displayName": "深青摇杆中心",
+        "canonical": "#446664",
+        "tonalRamp": [
+          "oklch(0.15 0.0197 191.29)",
+          "oklch(0.25 0.0328 191.29)",
+          "oklch(0.35 0.0394 191.29)",
+          "oklch(0.45 0.0394 191.29)",
+          "oklch(0.55 0.0394 191.29)",
+          "oklch(0.68 0.0394 191.29)",
+          "oklch(0.82 0.0236 191.29)",
+          "oklch(0.95 0.0066 191.29)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "navigation": {
+        "displayName": "原生导航",
+        "purpose": "常规横屏的必要导航文字，字体内部名称已核对。"
+      },
+      "navigation-compact": {
+        "displayName": "紧凑窗口导航",
+        "purpose": "实际窗口宽度小于 1000 像素时放大逻辑字号。"
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "navigation-state",
+        "value": "immediate",
+        "purpose": "共享按钮即时切换底色，所有活动状态保持深青文字。"
+      },
+      {
+        "name": "first-person-walk",
+        "value": "2.2 world units per second",
+        "purpose": "原生第一人称移动速度；非屏幕装饰动效。"
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact-native-window",
+        "value": "1000px"
+      },
+      {
+        "name": "portrait-guide",
+        "value": "(orientation: portrait)"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Navigation Button",
+      "kind": "button",
+      "refersTo": "navigation-button",
+      "description": "原生必要导航按钮的外观示意；尺寸是逻辑最小值。",
+      "html": "<button class=\"ds-button\">空着的座位</button>",
+      "css": ".ds-button{font-family:\"Selected UI Coverage\",sans-serif;font-size:18px;font-weight:400;color:#24464c;background:#e7e8dd;border:0;border-radius:5px;padding:8px 12px;min-width:100px;min-height:40px;cursor:pointer}.ds-button:hover{background:#ffffff;color:#24464c}.ds-button:active{background:#c1d3cc;color:#24464c}.ds-button:focus-visible{background:#d1dfd9;color:#24464c;outline:1px solid #26636a;outline-offset:0}.ds-button:disabled{color:#596b69;cursor:default}"
+    },
+    {
+      "name": "Selected Scene Button",
+      "kind": "button",
+      "refersTo": "navigation-button-selected",
+      "description": "当前场景，仅用浅灰绿表面区分。",
+      "html": "<button class=\"ds-button ds-selected\" aria-current=\"page\">母校之光</button>",
+      "css": ".ds-button{font-family:\"Selected UI Coverage\",sans-serif;font-size:18px;font-weight:400;color:#24464c;background:#e7e8dd;border:0;border-radius:5px;padding:8px 12px;min-width:100px;min-height:40px;cursor:pointer}.ds-button:hover{background:#ffffff;color:#24464c}.ds-button:active{background:#c1d3cc;color:#24464c}.ds-button:focus-visible{background:#d1dfd9;color:#24464c;outline:1px solid #26636a;outline-offset:0}.ds-button:disabled{color:#596b69;cursor:default}.ds-selected{background:#cbded6}.ds-selected:hover{background:#fff}.ds-selected:active{background:#c1d3cc}.ds-selected:focus-visible{background:#d1dfd9}"
+    },
+    {
+      "name": "Scene Navigation",
+      "kind": "nav",
+      "refersTo": "navigation-button",
+      "description": "透明容器承载四个场景，不附加标题或常驻说明。",
+      "html": "<nav class=\"ds-nav\" aria-label=\"场景\"><button class=\"ds-button\">空着的座位</button><button class=\"ds-button\">柳湖交接</button><button class=\"ds-button\">纸桥来信</button><button class=\"ds-button ds-selected\" aria-current=\"page\">母校之光</button></nav>",
+      "css": ".ds-button{font-family:\"Selected UI Coverage\",sans-serif;font-size:18px;font-weight:400;color:#24464c;background:#e7e8dd;border:0;border-radius:5px;padding:8px 12px;min-width:100px;min-height:40px;cursor:pointer}.ds-button:hover{background:#ffffff;color:#24464c}.ds-button:active{background:#c1d3cc;color:#24464c}.ds-button:focus-visible{background:#d1dfd9;color:#24464c;outline:1px solid #26636a;outline-offset:0}.ds-button:disabled{color:#596b69;cursor:default}.ds-nav{display:flex;justify-content:flex-end;gap:16px;background:transparent}.ds-selected{background:#cbded6}.ds-selected:hover{background:#fff}.ds-selected:active{background:#c1d3cc}.ds-selected:focus-visible{background:#d1dfd9}"
+    },
+    {
+      "name": "View Toggle",
+      "kind": "button",
+      "refersTo": "view-toggle",
+      "description": "同一控件在总览和返回第一人称之间切换；面板展示两个状态。",
+      "html": "<div class=\"ds-states\"><button class=\"ds-button\">场景总览</button><button class=\"ds-button\">返回第一人称</button></div>",
+      "css": ".ds-button{font-family:\"Selected UI Coverage\",sans-serif;font-size:18px;font-weight:400;color:#24464c;background:#e7e8dd;border:0;border-radius:5px;padding:8px 12px;min-width:100px;min-height:40px;cursor:pointer}.ds-button:hover{background:#ffffff;color:#24464c}.ds-button:active{background:#c1d3cc;color:#24464c}.ds-button:focus-visible{background:#d1dfd9;color:#24464c;outline:1px solid #26636a;outline-offset:0}.ds-button:disabled{color:#596b69;cursor:default}.ds-states{display:flex;gap:16px}"
+    },
+    {
+      "name": "Restart Button",
+      "kind": "button",
+      "refersTo": "restart-button",
+      "description": "沿用同一按钮，只收窄最小宽度。",
+      "html": "<button class=\"ds-button ds-restart\">重来</button>",
+      "css": ".ds-button{font-family:\"Selected UI Coverage\",sans-serif;font-size:18px;font-weight:400;color:#24464c;background:#e7e8dd;border:0;border-radius:5px;padding:8px 12px;min-width:100px;min-height:40px;cursor:pointer}.ds-button:hover{background:#ffffff;color:#24464c}.ds-button:active{background:#c1d3cc;color:#24464c}.ds-button:focus-visible{background:#d1dfd9;color:#24464c;outline:1px solid #26636a;outline-offset:0}.ds-button:disabled{color:#596b69;cursor:default}.ds-restart{min-width:60px}"
+    },
+    {
+      "name": "Walk Joystick",
+      "kind": "custom",
+      "refersTo": "walk-joystick",
+      "description": "132×132 原生触摸区的静止外观示意；实际指针归属和拖动在 Godot 中实现。",
+      "html": "<div class=\"ds-pad\" role=\"img\" aria-label=\"移动摇杆\"><span class=\"ds-pad-well\"></span><span class=\"ds-pad-knob\"><span class=\"ds-pad-center\"></span></span></div>",
+      "css": ".ds-pad{position:relative;width:132px;height:132px}.ds-pad-well{position:absolute;left:12px;top:12px;width:108px;height:108px;border-radius:50%;background:#22474a55;outline:2px solid #eff3e7aa}.ds-pad-knob{position:absolute;left:45px;top:45px;width:42px;height:42px;border-radius:50%;background:#e5e8dcdd}.ds-pad-center{position:absolute;left:14px;top:14px;width:14px;height:14px;border-radius:50%;background:#446664}"
+    }
+  ],
+  "narrative": {
+    "northStar": "亲手走入的校园",
+    "overview": "这个局部系统只约束 `campuses/campus_letter/` 的三维样段。画面以大学公共空间和可辨认的实物为主体：木桌、椅垫、手轮、砝码、纸张与灯具保留各自的几何、材质和操作范围。第一人称以人的眼高观察物件，第三人称提供可返回的空间总览。当前四个样段不加载被用户否决的校园人物模型及其坐姿、总览复用，移动体保留但不绘制人偶。既有正式主线的像素美术不由本文件改写。\n\n界面保持克制。右上方只保留场景切换、总览与重来，左下方是移动摇杆。用户本轮要求默认不显示玩法说明，因此没有物体表面文字、悬浮标签、底部解说或常驻操作提示。浅色导航与深色文字保持可读，场景体积由真实几何、材质反光和光照产生。",
+    "keyCharacteristics": [
+      "第一人称操作与第三人称总览分开。",
+      "独立物件、细化曲面和真实材料参考；当前样段不渲染被否决的校园人物模型。",
+      "必要导航之外，默认画面不放说明文字。",
+      "同一横屏逻辑画面等比适配桌面与触摸设备。"
+    ],
+    "rules": [
+      {
+        "name": "The Physical Material Rule",
+        "body": "木材、石材、织物和金属通过各自的共享 PBR 材质区分；不把导航底色当成场景物体的统一涂色。",
+        "section": "colors"
+      },
+      {
+        "name": "The Navigation Text Rule",
+        "body": "文字用于必要导航，不写在物体上，也不作为悬浮标签覆盖物件。当前隐藏的说明字号不属于可复用排版层级。",
+        "section": "typography"
+      },
+      {
+        "name": "The Geometric Depth Rule",
+        "body": "轮廓、倒角、接缝和光影来自三维对象与光源；屏幕导航保持平面，不复制场景阴影作为按钮装饰。",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do 以第一人称距离检查模型轮廓、木纹尺度、织物法线和金属反光。",
+      "Do 复用共享材质，保留独立物件节点、操作轴与简化拾取体之间的一致性。",
+      "Do 将第三人称用于场景总览，并在返回时恢复玩家的第一人称位置。",
+      "Do 在桌面与横屏触摸尺寸检查普通操作、拖拽取消、焦点丢失和总览返回。",
+      "Do 使用有来源记录的实物参考与素材，材质许可及原始文件记录保存在 REFERENCES.md 和 assets3d/pbr/sources.json。"
+    ],
+    "donts": [
+      "Don't 在物品表面或上方叠加说明文字。",
+      "Don't 把当前隐藏的标题、底部解说、帮助面板和悬停说明重新当成默认画面组件。",
+      "Don't 用像素背景、远距离模型台镜头或一排屏幕操作按钮替代这组样段的第一人称物件操作。",
+      "Don't 以增加面数本身代替近景轮廓与材质质量，也不把某张截图的偏暗区域固化成品牌要求。",
+      "Don't 把已移除的校园人物换到坐姿、其他样段或总览里继续渲染，也不留下隐形人物交互。",
+      "Don't 让材质、相机或演出写入第二套进度，也不把这套局部视觉约束推广到未改动的正式主线。"
+    ]
+  }
+}

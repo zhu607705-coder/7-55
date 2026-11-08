@@ -1,7 +1,7 @@
 {
   "sourceCommit": "39ccde029b0cd25a6011739a4e4f98f8c898b2c3",
-  "assetCount": 724,
-  "totalBytes": 626642438,
+  "assetCount": 733,
+  "totalBytes": 626949800,
   "assets": [
     {
       "path": "assets/anim/.gitkeep",
@@ -464,54 +464,64 @@
       "sha256": "c0cf0871546be98f3dec4d96fa33e69ba4ffb743605b8d580b6f73883dd87605"
     },
     {
+      "path": "assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_closing_guard.mp3",
+      "bytes": 40320,
+      "sha256": "de7e8f7f06c2271f4fd8619a49a5ea409fa64903b1de1234c26316aa216977fd"
+    },
+    {
       "path": "assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_decoy_canteen.mp3",
-      "bytes": 67392,
-      "sha256": "01722ce6c0b3ab212bc6f770fe43f8da867491d6c8540236bf1b11d776b0319e"
+      "bytes": 69120,
+      "sha256": "2efab76687a47e0ade7bb78d6b3d5ffb5cfb91eea8b2125ab441efb70e97c0da"
     },
     {
       "path": "assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_decoy_library.mp3",
-      "bytes": 73152,
-      "sha256": "2287f84da16260d8fa4a8a782eb1fca8a64e6f32dffc5642bd18859ae8de8e6a"
+      "bytes": 75456,
+      "sha256": "98117773de8e3c165a58cb6ff49159bd3ce19c63a4407c2234012f7456a14820"
     },
     {
       "path": "assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_decoy_theater.mp3",
-      "bytes": 70272,
-      "sha256": "d8e09061895cca21a806036fe7202b4725892e4b9412ac2fbd99349fa03e0d48"
+      "bytes": 75456,
+      "sha256": "73e54464b32d7e161b247fd24aa62beb6b1cc03bf0b179c87bb2517d62be96e1"
     },
     {
       "path": "assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_lake_player.mp3",
-      "bytes": 33408,
-      "sha256": "d69593d69d422a40e93fb228931ce02970cd349b340c82f1281aa9d895ca852c"
+      "bytes": 36864,
+      "sha256": "297569932ea0e14fda1b34032b87d9b5883d9525eddf53afd5b541cc26422a56"
+    },
+    {
+      "path": "assets/audio/chapter3-interlude/voice-memos/components/vo_ch35_lobby_cleaner.mp3",
+      "bytes": 46656,
+      "sha256": "1301144e1f61a082d3ac2a81d887f46f0458b6cdf520832948daa6aa9eb38e0d"
     },
     {
       "path": "assets/audio/chapter3-interlude/voice-memos/voice_memo_ch35_broadcast.mp3",
       "bytes": 84672,
-      "sha256": "2c3235c3425a5d413e509b9ab710321227c935f00173e9e8901936f2890b5acc"
+      "sha256": "1e6944457324d593de0f917a79e48a1c7401f04c7bdbafbd4885b095a8dfeb61"
     },
     {
       "path": "assets/audio/chapter3-interlude/voice-memos/voice_memo_ch35_decoy_canteen.mp3",
       "bytes": 84672,
-      "sha256": "537116f080a91fbb981a283f6c3c6a3fdb9ae0140bf473f026e1389b9a7c391d"
+      "sha256": "79773703e71928dfdc7b7efd39e9227b4cd5507b4a30ddf488e33854b3af043e"
     },
     {
       "path": "assets/audio/chapter3-interlude/voice-memos/voice_memo_ch35_decoy_library.mp3",
       "bytes": 84672,
-      "sha256": "d28fb4b954fc019926f2ca8e88317e8f1197016dafdf29e3c252888d6b23e89e"
+      "sha256": "e9432471ea60d019a7e3753623d9dda7e3a132862aad7cd8553cde2dd000d699"
     },
     {
       "path": "assets/audio/chapter3-interlude/voice-memos/voice_memo_ch35_decoy_theater.mp3",
       "bytes": 84672,
-      "sha256": "ab69a57d0e3f0a3d934dda088f859687e1461591ce8332ad326928005766a57c"
+      "sha256": "7a2517d3e7e7e318734c2a51c4376ec59d483ac586e58dd4cf351fa4212f2ad3"
     },
     {
       "path": "assets/audio/chapter3-interlude/voice-memos/voice_memo_ch35_lake.mp3",
       "bytes": 84672,
-      "sha256": "674b62d2a8b11f04f02217f56acd7da03ddd40299d77e0124b98b522a9deff58"
+      "sha256": "b660090c925e7bc58de5a210f041f89a441bd8aef43e461325727b4bb057762d"
     },
     {
       "path": "assets/audio/chapter3-interlude/voice-memos/voice_memo_ch35_lobby.mp3",
       "bytes": 84672,
-      "sha256": "596aa3b5d6b9f05c49da197e7d4277e225a474e169b061fe15ebe84720f19742"
+      "sha256": "e4a94d6d7adc706780ec17193c9db933e854bd53f75ea5dc72a948ce6ac7891c"
     },
     {
       "path": "assets/audio/chapter3-interlude/voice-memos/voice_memo_ch35_stone.mp3",
@@ -3607,6 +3617,41 @@
       "path": "assets/ui/tiyi_main.png",
       "bytes": 1252142,
       "sha256": "ff9fedbc37f95ad6b38c3b92b30913c62e8ccbdc3855091c767e083b716a1375"
+    },
+    {
+      "path": "assets/ui/wechat/official/bike.webp",
+      "bytes": 44598,
+      "sha256": "792f35d2ca2c8c5549e5a1b8408d266a775a2bb5a3ec923be9d95f571407e308"
+    },
+    {
+      "path": "assets/ui/wechat/official/lake.webp",
+      "bytes": 32664,
+      "sha256": "a3789260b2fda4fc961e4299127c6889b72f37caa8a55535d30b5d5d3d68cb96"
+    },
+    {
+      "path": "assets/ui/wechat/official/lost.webp",
+      "bytes": 23876,
+      "sha256": "a011435b9b60609aed169b058037c05ea1bd19f461ef7855ba7685fdcd7254c5"
+    },
+    {
+      "path": "assets/ui/wechat/official/notice.webp",
+      "bytes": 27528,
+      "sha256": "a0ed56955467e58bf4ce08840e76b1ec64c7f542be2ddedd8c044844afbc27e1"
+    },
+    {
+      "path": "assets/ui/wechat/official/study.webp",
+      "bytes": 24222,
+      "sha256": "7f6679bd83cdef79c937ad36ee4e302538b9187e471e13feb8eceda3d71fdbae"
+    },
+    {
+      "path": "assets/ui/wechat/official/tray.webp",
+      "bytes": 31108,
+      "sha256": "0b6a0c3450e803e3bc8808497a614e52a4dd876bdf30501ef79fc1d2ce52257b"
+    },
+    {
+      "path": "assets/ui/wechat/official/umbrella.webp",
+      "bytes": 23718,
+      "sha256": "4a8530c61062d9a9935876478dc40c07c0d769aedb13b659f81a144326f8a58c"
     },
     {
       "path": "assets/ui/zjuding.png",

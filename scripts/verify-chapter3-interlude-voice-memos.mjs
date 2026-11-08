@@ -27,6 +27,8 @@ const CORRECT_ORDER = ["lake", "stone", "lobby", "broadcast"];
 const DECOY_IDS = ["decoy_canteen", "decoy_theater", "decoy_library"];
 const EXPECTED_SPEECH_ASSETS = [
   "vo_ch35_lake_player",
+  "vo_ch35_lobby_cleaner",
+  "vo_ch35_closing_guard",
   "vo_ch35_decoy_canteen",
   "vo_ch35_decoy_theater",
   "vo_ch35_decoy_library"
@@ -92,8 +94,8 @@ function probeAudio(path) {
 }
 
 const content = readJson(contentPath, "content catalog");
-if (content.version !== 1 || content.model !== "speech-2.8-hd") fail("unexpected content version or model");
-if (!Array.isArray(content.speech) || content.speech.length !== 4) fail("content must contain exactly four MiniMax speech lines");
+if (content.version !== 1 || content.model !== "mlx-community/fish-audio-drama-3-4bit") fail("unexpected content version or model");
+if (!Array.isArray(content.speech) || content.speech.length !== 6) fail("content must contain exactly six local Drama 3 speech lines");
 if (!Array.isArray(content.recordings) || content.recordings.length !== 7) fail("content must contain exactly seven recordings");
 
 const recordingIds = content.recordings.map(({ id }) => id);
@@ -114,12 +116,12 @@ if (decoyIds.length !== 3 || !sameMembers(decoyIds, DECOY_IDS)) {
 if (content.recordings.some(({ targetDurationMs }) => targetDurationMs !== 5200)) fail("all recordings must target 5200ms");
 
 const speechAssets = content.speech.map(({ asset }) => asset);
-if (!sameMembers(speechAssets, EXPECTED_SPEECH_ASSETS)) fail("unexpected MiniMax speech asset set");
-if (new Set(content.speech.map(({ voiceTextEn }) => voiceTextEn)).size !== 4) fail("MiniMax speech lines must be unique");
-if (new Set(content.speech.map(({ subtitleZh }) => subtitleZh)).size !== 4) fail("Chinese transcriptions must be unique");
+if (!sameMembers(speechAssets, EXPECTED_SPEECH_ASSETS)) fail("unexpected local Drama 3 speech asset set");
+if (new Set(content.speech.map(({ voiceTextEn }) => voiceTextEn)).size !== 6) fail("English speech lines must be unique");
+if (new Set(content.speech.map(({ subtitleZh }) => subtitleZh)).size !== 6) fail("Chinese transcriptions must be unique");
 for (const line of content.speech) {
   const voice = content.voices?.[line.voiceRole];
-  if (!voice?.id || voice.language !== "English" || line.emotion !== "calm") {
+  if (!voice?.id || voice.language !== "English" || !line.localTake) {
     fail(`invalid voice contract for ${line.asset}`);
   }
 }
@@ -179,7 +181,7 @@ const generated = readJson(generatedPath, "generated manifest");
 const manifestAssets = generated.assets ?? {};
 const expectedManifestAssets = [...EXPECTED_SPEECH_ASSETS, ...recordingAssets];
 if (!sameMembers(Object.keys(manifestAssets), expectedManifestAssets)) {
-  fail("generated manifest must contain exactly four dry voices and seven mixed recordings");
+  fail("generated manifest must contain exactly six dry voices and seven mixed recordings");
 }
 
 const outputHashes = new Set();
@@ -231,6 +233,11 @@ for (const assetName of expectedManifestAssets) {
     if (!speech || metadata.durationMs > speech.maxDurationMs || entry.durationMs > speech.maxDurationMs) {
       fail(`${assetName} exceeds its authored speech duration budget`);
     }
+    if (entry.sha256 !== speech.localTake.sha256
+      || entry.sourceTextHash !== createHash("sha256").update(speech.voiceTextEn).digest("hex")
+      || !entry.source.includes("local Drama 3")) {
+      fail(`${assetName} does not match its local take provenance`);
+    }
   }
 }
 if (outputPaths.size !== 7 || outputHashes.size !== 7) {
@@ -276,5 +283,5 @@ if (!audioDirectorSource.includes("cue.asset && !cue.subtitleKey")) fail("AudioD
 process.stdout.write(
   `Chapter 3.5 voice memo validation passed: ${content.recordings.length} recordings, `
   + `${correctIds.length} canonical, ${decoyIds.length} decoys, `
-  + `${WAVEFORM_BIN_COUNT} RMS bins per final MP3, ${content.speech.length} MiniMax speech assets.\n`
+  + `${WAVEFORM_BIN_COUNT} RMS bins per final MP3, ${content.speech.length} local Drama 3 speech assets.\n`
 );

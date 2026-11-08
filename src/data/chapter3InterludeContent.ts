@@ -1,3 +1,4 @@
+import interludeCopy from "./chapter3-interlude-copy.json";
 import voiceMemoAudioContent from "./chapter3-interlude-voice-memos.audio.content.json";
 import type {
   ChapterThreeInterludeDecoyId,
@@ -100,11 +101,7 @@ export const chapterThreeInterludePublicContent = {
     { id: "basic_library_south", label: "基础图书馆南侧" },
     { id: "duan_yongping_a1", label: "段永平教学楼 A 楼一层" }
   ] satisfies ReadonlyArray<{ id: ChapterThreeInterludeDestinationCandidateId; label: string }>,
-  destinationConflictCopy: {
-    qizhen_lake_dock: "录音末段出现室内广播和断电声，湖面环境无法解释这组声音。",
-    theater_lobby: "末段短会话的接入点编号与剧场网络记录不一致。",
-    basic_library_south: "闭楼通知和入口截图指向另一组楼宇入口规则。"
-  } satisfies Readonly<Record<
+  destinationConflictCopy: interludeCopy.destinationConflictCopy satisfies Readonly<Record<
     Exclude<ChapterThreeInterludeDestinationCandidateId, "duan_yongping_a1">,
     string
   >>,

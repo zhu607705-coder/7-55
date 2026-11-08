@@ -64,21 +64,21 @@ const DORM_HAIR_DRYER_VISIBLE_CENTER = { x: 41 / 128, y: 44 / 128 } as const;
 const DORM_HAIR_DRYER_DOCK_SCREEN_RATIO = { x: 900 / 960, y: 470 / 540 } as const;
 
 const INTERACTION_COPY: Record<DormInteractionTargetId, string> = {
-  upper_bunk: "床帘后只有一床叠得过分认真的被子。",
-  lower_bunk: "枕头下面没有捷径，只有一张过期的外卖券。",
-  window: "窗外很亮。七点五十五分不会因此晚一点。",
-  window_cabinet: "柜门打开了。里面整齐地保存着一片空白。",
-  shoe_shelf: "鞋都在，人也该在。这个推理暂时没有帮助。",
-  laundry_bin: "洗衣篮拒绝提供任何关于签到记录的证词。",
+  upper_bunk: "床帘拉得严严实实，后面只有一床叠成豆腐块的被子。",
+  lower_bunk: "枕头底下压着张满 25 减 5 的夜宵券，昨天过期。",
+  window: "窗玻璃上还挂着雨水，拉开帘子，天光一下晃进来。",
+  window_cabinet: "柜里剩半包受潮的纸巾和一条军训皮带。",
+  shoe_shelf: "球鞋和洗澡拖鞋都在架上，球鞋底还沾着干泥。",
+  laundry_bin: "篮里堆着前天打球换下来的 T 恤。",
   desk_01: "蓝色台灯亮了。桌面终于像有人认真学习过。",
   desk_02: "书翻到夹着便签的一页：先找到名字，再谈方向。",
-  desk_03: "这是你的书桌。校园卡压在桌面的纸张旁边。",
-  desk_04: "抽屉里有三支没墨的笔，以及非常稳定的失望。",
+  desk_03: "微积分草稿旁边压着你的校园卡。",
+  desk_04: "抽屉里有三支断墨的笔、半块橡皮，还有两张写满演算的坐标纸。",
   hair_dryer: "吹风机还能正常工作。",
   wash_basin: "水龙头还能出水。至少寝室里有一个系统响应正常。",
   lower_shelf: "书脊按课程排好，最薄的那本写着《平时分自救》。",
-  floor_backpack: "不是你的包。拉链上挂着一句很明确的‘别翻’。",
-  exit_door: "门没有意见，流程有。"
+  floor_backpack: "室友的电脑包。拉链上挂着块牌子，写着“高数作业，别动”。",
+  exit_door: "先在浙大钉约好图书馆的座位，再从这儿出门。"
 };
 
 export class DormHubScene extends Phaser.Scene {

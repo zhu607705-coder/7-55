@@ -46,8 +46,8 @@ static func load_posts() -> Array:
 			var authored_replies=post.get("threadReplies")
 			var edits: Dictionary = _editable(by_id[post.id])
 			var previous: Dictionary = history.get(post.id,{})
-			# Older editors saved every default row; only exact known prose follows source updates.
-			for field in ["title","body"]:
+			# Older editors saved every default row. Only exact known defaults follow the source.
+			for field in ["author","title","body","replies"]:
 				if previous.get(field) is Array and edits.get(field) in previous[field]: edits.erase(field)
 			post.merge(edits,true)
 			post.merge(_auxiliary(by_id[post.id]),true)
@@ -62,6 +62,19 @@ static func load_posts() -> Array:
 		record.merge(_auxiliary(by_id[id]),true)
 		baseline.append(record)
 	return baseline
+
+static func thread_replies(post: Dictionary) -> Array:
+	if post.get("threadReplies") is Array: return post.threadReplies
+	var pool: Array=source("cc98.fallback-replies")
+	var key: String=str(post.get("id",post.get("title","")))
+	var seed: int=0
+	for i in range(key.length()): seed+=key.unicode_at(i)
+	var replies: Array=[]
+	for i in range(2+seed%3):
+		var entry: Dictionary=pool[(seed+i*5)%pool.size()].duplicate()
+		entry.merge({"time":str(post.get("time","")),"floor":"%d楼"%(i+2),"likes":"0","dislikes":"0"})
+		replies.append(entry)
+	return replies
 
 static func load_quest_overrides() -> Dictionary:
 	var parsed = _read(quest_path,{})
@@ -194,7 +207,7 @@ static func _auxiliary(post: Dictionary) -> Dictionary:
 		for reply in post.threadReplies:
 			if not reply is Dictionary: continue
 			var clean: Dictionary={}
-			for key in ["personaId","time","floor","role","text","image","caption","likes","dislikes"]:
+			for key in ["personaId","author","time","floor","role","text","image","caption","likes","dislikes"]:
 				if reply.get(key) is String and str(reply[key]).length()<=200000: clean[key]=reply[key]
 			if clean.has("text") and clean.has("personaId"): replies.append(clean)
 		result.threadReplies=replies

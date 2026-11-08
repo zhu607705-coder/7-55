@@ -42,16 +42,21 @@ func _run() -> void:
 	expect(Store.restore_defaults()==OK,"isolated test stores start writable")
 	var default_posts: Array=Store.defaults()
 	var historical: Dictionary=Store.source("cc98.post-default-history").posts
-	var legacy_posts: Array=default_posts.duplicate(true)
+	var legacy_posts: Array=default_posts.filter(func(post): return historical.has(post.id)).duplicate(true)
 	for post in legacy_posts:
-		post.title=historical[post.id].title[0];post.body=historical[post.id].body[0]
+		for field in ["title", "body", "replies", "author"]:
+			var values: Array = historical[post.id].get(field, [])
+			if not values.is_empty():
+				post[field] = values[0]
 	legacy_posts[0].author="player author";legacy_posts[0].time="player time"
 	legacy_posts[1].title+=" ";legacy_posts[1].body+="\n"
 	legacy_posts[2].body="player body";legacy_posts[3].title="player title"
 	var explicit_quest: Dictionary={"title":legacy_posts[0].title,"body":legacy_posts[0].body}
-	expect(historical.size()==52 and not historical.has("act-two-gamepad-market"),"default prose history covers only52 ordinary posts")
+	expect(not historical.has("act-two-gamepad-market"), "default copy history excludes quest posts")
 	expect(Store.import_bundle({"posts":legacy_posts,"questPostOverrides":{"act-two-gamepad-market":explicit_quest}})==OK,"whole-row old editor store imports normally")
 	var upgraded_posts: Array=Store.load_posts()
+	expect(upgraded_posts.size()==86 and upgraded_posts[0].replies==default_posts[0].replies,"legacy feeds receive the current corpus and updated reply counts")
+	expect(upgraded_posts[1].author=="匿名用户" and upgraded_posts[2].author=="匿名用户", "historical default authors migrate to anonymous posting")
 	var follows_source: bool=true
 	for index in range(upgraded_posts.size()):
 		if index in [1,2,3]:continue
@@ -62,6 +67,10 @@ func _run() -> void:
 	expect(upgraded_posts[2].title==default_posts[2].title and upgraded_posts[2].body=="player body" and upgraded_posts[3].title=="player title" and upgraded_posts[3].body==default_posts[3].body,"title and body upgrades preserve the other independently edited field")
 	expect(Store.load_quest_overrides().get("act-two-gamepad-market")==explicit_quest,"explicit quest overrides are never upgraded even when text matches old defaults")
 	expect(Store.restore_defaults()==OK,"default upgrade checks leave a fresh isolated editor store")
+	var missing_replies={"id":"test-custom-thread","time":"刚刚"}
+	var generated: Array=Store.thread_replies(missing_replies)
+	expect(generated.size() in [2,3,4] and generated==Store.thread_replies(missing_replies),"custom posts get repeatable fallback replies")
+	expect(Store.thread_replies({"id":"test-empty-thread","threadReplies":[]}).is_empty(),"explicit empty replies stay empty")
 	await show("settings")
 	node("SettingsSearch").text="桌面"
 	node("SettingsSearch").text_changed.emit("桌面")
@@ -130,8 +139,47 @@ func _run() -> void:
 	expect(node("Cc98EditToggle")==null,"post editor remains unavailable in formal play")
 	var search=node("Cc98Search"); search.text="待办清单"; search.text_changed.emit(search.text)
 	expect(node("Post_mood-room-01").visible and not node("Post_mood-room-02").visible,"real CC98 search filters title and body")
+	await process_frame
+	await click(node("OpenPost_mood-room-01")); await show("cc98")
+	expect(node("Cc98ThreadReply_3")!=null and "bd" in node("Cc98ThreadReply_3").text,"ordinary bd copy displays through the actual detail entry")
+	var owner_label: bool=false
+	for label: Label in body.find_children("*","Label",true,false):
+		if "想把今天过完　楼主　3楼" == label.text: owner_label=true
+	expect(owner_label,"follow-up floor shows the real thread author")
+	await click(node("Cc98BackToFeed")); await show("cc98")
+	search = node("Cc98Search"); search.text = "材料下午点完提交"; search.text_changed.emit(search.text)
+	await process_frame
+	await click(node("OpenPost_mood-room-02")); await show("cc98")
+	var anonymous_alias_visible := false
+	for label: Label in body.find_children("*", "Label", true, false):
+		if label.text == "匿名用户 [甲]　3楼": anonymous_alias_visible = true
+	expect(anonymous_alias_visible, "anonymous reply retains its authored floor alias")
+	await click(node("Cc98BackToFeed")); await show("cc98")
+	search = node("Cc98Search"); search.text = "怕室友也刷98"; search.text_changed.emit(search.text)
+	await process_frame
+	await click(node("OpenPost_mood-room-03")); await show("cc98")
+	var headings: Array[String] = []
+	for label: Label in body.find_children("*", "Label", true, false):
+		headings.append(label.text)
+	expect("匿名楼主　3楼" in headings, "anonymous follow-up uses the anonymous owner label")
+	expect("麦斯威美式续命　5楼" in headings, "new persona resolves to its authored forum nickname")
+	await click(node("Cc98BackToFeed")); await show("cc98")
+	search=node("Cc98Search"); search.text="翻面章鱼"; search.text_changed.emit(search.text)
+	expect(node("Post_daily-ex-16").visible and not node("Post_mood-room-01").visible,"new campus post participates in existing search")
+	await process_frame
+	await click(node("OpenPost_daily-ex-16")); await show("cc98")
+	expect(node("Cc98ThreadTitle")!=null and "翻面章鱼" in node("Cc98ThreadTitle").text,"new campus post opens as a normal thread")
+	await click(node("Cc98BackToFeed")); await show("cc98")
+	search=node("Cc98Search")
 	search.text=""; search.text_changed.emit("")
-	await click(node("OpenPost_act-two-gamepad-market"))
+	await process_frame
+	var market: Control=node("OpenPost_act-two-gamepad-market")
+	var feed_scroll: Node=market.get_parent()
+	while feed_scroll!=null and not feed_scroll is ScrollContainer: feed_scroll=feed_scroll.get_parent()
+	if feed_scroll is ScrollContainer:
+		feed_scroll.ensure_control_visible(market)
+		await process_frame
+	await click(market)
 	expect(p.cc98_post=="act-two-gamepad-market","feed opens source market thread")
 	await show("cc98")
 	await click(node("Cc98BackToFeed"))

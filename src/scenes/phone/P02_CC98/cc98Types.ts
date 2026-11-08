@@ -20,6 +20,7 @@ export interface Cc98Post {
   threadMetrics?: { favorites: string; likes: string; dislikes: string };
   threadReplies?: Array<{
     personaId: string;
+    author?: string;
     time: string;
     floor: string;
     role?: string;
@@ -33,6 +34,7 @@ export interface Cc98Post {
 
 export interface ThreadReply {
   personaId: string;
+  author?: string;
   time: string;
   floor: string;
   role?: string;
@@ -44,6 +46,7 @@ export interface ThreadReply {
 }
 
 export interface ThreadPost {
+  id?: string;
   author: string;
   title: string;
   body: string;

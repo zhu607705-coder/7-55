@@ -3,9 +3,9 @@ export const THEATER_SHOW_STEP_MS = 50;
 export const THEATER_SHOW_MAX_TICKS = 1600;
 export const THEATER_SHOW_BOUNDS = { left: 58, right: 902, top: 132, bottom: 409 } as const;
 export const THEATER_SHOW_ACTS = [
-  { title: "椅子申请当月亮", subtitle: "追上游走的逗号。预判轨迹，绕开走动的椅子。", glyph: "，", color: 0xffcf68, count: 4 },
-  { title: "你的影子迟到了", subtitle: "两枚问号成一组。先点亮任一枚，及时把光接到另一枚。", glyph: "？", color: 0x94f3d0, count: 5 },
-  { title: "观众席正在退潮", subtitle: "同色标点成对亮起。", glyph: "！", color: 0xff94bc, count: 6 }
+  { title: "第一幕：错位排练场", subtitle: "追上游走的逗号。预判轨迹，绕开走动的椅子。", glyph: "，", color: 0xffcf68, count: 4 },
+  { title: "第二幕：追光与暗影", subtitle: "两枚问号成一组。先点亮任一枚，及时把光接到另一枚。", glyph: "？", color: 0x94f3d0, count: 5 },
+  { title: "第三幕：三次散场风波", subtitle: "同色标点成对亮起。", glyph: "！", color: 0xff94bc, count: 6 }
 ] as const;
 export interface TheaterShowPoint { x: number; y: number }
 export interface TheaterShowInput { x: number; y: number; dash: boolean }

@@ -15,12 +15,13 @@ const FRAMES: Array=[
 	{"id":"paper_left","label":"FRM B2","image":"paper_left"},
 	{"id":"mirrored_b","label":"FRM E8","image":"paper_left","mirror":true}
 ]
-const MESSAGES: Array=[
-	{"id":"computer_left_on","author":"林昊","text":"203 还开着吗？我电脑没关。"},
-	{"id":"guard_east","author":"陈嘉","text":"刚看见保安从东边过去。"},
-	{"id":"east_closed","author":"周琪","text":"东边入口已经封了，别再往那边走。"},
-	{"id":"west_cleaner","author":"室友","text":"我在西侧看见保洁推车，大厅主入口应该还能进。"},
-	{"id":"withdrawn","author":"陈嘉","text":"陈嘉撤回了一条消息"}
+const COPY_FILE = "chapter3-interlude-copy"
+const MESSAGE_SPEAKERS: Array=[
+	{"id":"computer_left_on","author":"林昊"},
+	{"id":"guard_east","author":"陈嘉"},
+	{"id":"east_closed","author":"周琪"},
+	{"id":"west_cleaner","author":"室友"},
+	{"id":"withdrawn","author":"陈嘉"}
 ]
 const RECORDS: Array=[
 	{"id":"record_0755","label":"22:44:57 · 北教学区 A 区","detail":"AP-DYP-A1-03 · 3 秒 · 未知设备 · 身份来源待核验"},
@@ -29,6 +30,15 @@ const RECORDS: Array=[
 	{"id":"record_qizhen_dock","label":"22:44:12 · 启真湖小码头","detail":"AP-QZL-DOCK-02 · 3 秒 · 未知设备"}
 ]
 const DESTINATIONS: Array=[{"id":"qizhen_lake_dock","label":"启真湖小码头"},{"id":"theater_lobby","label":"剧场前厅"},{"id":"basic_library_south","label":"基础图书馆南侧"},{"id":"duan_yongping_a1","label":"段永平教学楼 A 楼一层"}]
+
+func copy_data() -> Dictionary:
+	return content(COPY_FILE)
+
+func route_messages() -> Array:
+	var messages: Array=MESSAGE_SPEAKERS.duplicate(true)
+	for message: Dictionary in messages:
+		message.text=copy_data().routeMessages.get(message.id,"陈嘉撤回了一条消息")
+	return messages
 
 func pages(s: Dictionary) -> Array:
 	if s.qizhenLake.phase!="complete" or s.chapterThreeInterlude.completed: return []
@@ -42,7 +52,8 @@ func view(page: String, s: Dictionary) -> Dictionary:
 	var c: Dictionary=s.chapterThreeInterlude
 	match page:
 		"c35_recovery":
-			var body: String="检测到 7 分 55 秒未同步记录\n启真湖的离开记录仍在，后面的去向没有写入。手机时钟与带来源的记录不一致，不能直接采用。\n林星宇：我离开湖边以后，去了哪里？\n系统：照片、录音、消息都存了，就是没记清你去了哪。先看还能读出的。"
+			var intro: Dictionary=copy_data().intro
+			var body: String="\n".join([intro.heading,intro.detail,"林星宇："+intro.player,"系统："+intro.system])
 			if c.recoveryOpened:
 				body="待核验时间窗：%s — %s\n已恢复 %d / 4 类证据" % ["22:37:05" if c.evidenceIds.has("journal_start") else "待恢复","22:45:00" if c.voiceSequenceSolved else "待恢复",c.evidenceIds.size()]
 				if c.evidenceIds.size()==4: body+="\n食堂 0755 · 剧场 08:32 · 状态栏 07:55:23\n这些数字分别记的是什么？"
@@ -63,7 +74,7 @@ func view(page: String, s: Dictionary) -> Dictionary:
 		"c35_official": return {"title":"紫金港楼宇服务 · 22:40","body":"校园楼宇运行通知\n夜间闭楼与入口调整\n22:45 起，北教学区一处楼宇进入夜间清楼。A 楼一层东侧入口暂停通行，人员请从大厅主入口进入。\n主电梯保留运行，楼层开放情况以现场提示为准。"}
 		"c35_messages":
 			var body: String="群聊 · 18人"
-			for entry: Dictionary in MESSAGES: body+="\n"+entry.author+"："+entry.text
+			for entry: Dictionary in route_messages(): body+="\n"+entry.author+"："+entry.text
 			return {"title":"麦斯威夜间自习群","body":body}
 		"c35_network":
 			var body: String="夜间短会话 · 保存候选记录后，再与其他来源核对。"
@@ -100,7 +111,7 @@ func actions(page: String, s: Dictionary) -> Array:
 		"c35_official": list.append(command("c35_official","保存通知"))
 		"c35_messages":
 			var opts: Array=[]
-			for entry: Dictionary in MESSAGES: opts.append(option(entry.id,entry.author+"："+entry.text))
+			for entry: Dictionary in route_messages(): opts.append(option(entry.id,entry.author+"："+entry.text))
 			list.append(order_action("c35_route","保存路线截图",2,opts))
 		"c35_network": list.append(field("c35_network","保存候选接入记录",RECORDS))
 	return list
@@ -197,7 +208,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 		elif action=="c35_select_voice":
 			for recording: Dictionary in content("chapter3-interlude-voice-memos.audio.content").recordings: permitted.append(recording.id)
 		else:
-			for message: Dictionary in MESSAGES: permitted.append(message.id)
+			for message: Dictionary in route_messages(): permitted.append(message.id)
 		if str(value) not in permitted: return locked()
 		var selection: Array=s.native.get(key,[]).duplicate()
 		if selection.has(value): selection.erase(value)
@@ -268,11 +279,11 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 		"c35_destination":
 			if not exclusions_ready(c): return locked("先完成四类证据与旧时间核验。")
 			if c.networkRecordId!="record_0755": return response("保存的接入记录对不上这个地点，再看一遍网络记录。")
-			if str(value)!="duan_yongping_a1": return response({"qizhen_lake_dock":"录音末段出现室内广播和断电声，湖面环境无法解释这组声音。","theater_lobby":"末段短会话的接入点编号与剧场网络记录不一致。","basic_library_south":"闭楼通知和入口截图指向另一组楼宇入口规则。"}.get(str(value),"当前证据还不足以确认这个地点。"))
+			if str(value)!="duan_yongping_a1": return response(copy_data().destinationConflictCopy.get(str(value),"当前证据还不足以确认这个地点。"))
 			c.destinationId="duan_yongping_a1"
 			c.timelineOrder=EVIDENCE.duplicate()
 			c.phase="destination_verified"
-			return response("地点与四项证据一致，恢复结果已确认。")
+			return response(copy_data().destinationConfirmed)
 		"c35_replay":
 			if c.destinationId!="duan_yongping_a1" or not exclusions_ready(c): return locked()
 			c.replayUnlocked=true
@@ -285,7 +296,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 		unique(c.rejectedDecoyIds,id)
 		if id=="status_clock_075523": c.statusClockMarkedUntrusted=true
 		if exclusions_ready(c): c.timelineOrder=EVIDENCE.duplicate()
-		return response({"canteen_0755":"0755 是取餐编号，不能作为夜间时间。","theater_0832":"08:32 来自更早的独立抢票记录。","status_clock_075523":"07:55:23 是未同步的本机时钟值。"}[id])
+		return response(copy_data().exclusionCopy[id])
 	return locked()
 
 func objective(s: Dictionary) -> String:

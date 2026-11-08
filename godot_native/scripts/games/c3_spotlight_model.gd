@@ -1,9 +1,9 @@
 extends RefCounted
 ## Deterministic rule port of TheaterSpotlightModel.ts. Fixed 50 ms ticks and full replay validation.
 const ACTS: Array = [
-	{"title":"椅子申请当月亮","subtitle":"追上游走的逗号。预判轨迹，绕开走动的椅子。","glyph":"，","count":4},
-	{"title":"你的影子迟到了","subtitle":"两枚问号成一组。先点亮任一枚，及时把光接到另一枚。","glyph":"？","count":5},
-	{"title":"观众席正在退潮","subtitle":"同色标点成对亮起。","glyph":"！","count":6}
+	{"title":"第一幕：错位排练场","subtitle":"追上游走的逗号。预判轨迹，绕开走动的椅子。","glyph":"，","count":4},
+	{"title":"第二幕：追光与暗影","subtitle":"两枚问号成一组。先点亮任一枚，及时把光接到另一枚。","glyph":"？","count":5},
+	{"title":"第三幕：三次散场风波","subtitle":"同色标点成对亮起。","glyph":"！","count":6}
 ]
 const FOOD: Array = [Vector2(300,193),Vector2(515,341),Vector2(738,187),Vector2(800,361),Vector2(346,344),Vector2(567,178)]
 

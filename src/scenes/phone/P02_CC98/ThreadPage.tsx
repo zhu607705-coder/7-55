@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { PhoneNavButton } from "../../../components/PhoneNavButton";
 import forumTreasureUrl from "../../../assets/ui/cc98_forum_treasure.png";
 import personaData from "../../../data/cc98.thread-personas.json";
+import fallbackReplies from "../../../data/cc98.fallback-replies.json";
 import type { ThreadPost, ThreadReply } from "./cc98Types";
 
 interface Cc98ThreadPageProps {
@@ -34,57 +35,24 @@ const thread = {
   },
   replyTitle: "热门回复",
   replyFilter: "只看楼主",
-  pagination: "1/11",
-  comments: [
-    {
-      id: "ordinary-reply-2",
-      author: "晚八点打印机",
-      time: "今天 08:24",
-      role: "2楼",
-      floor: "2楼",
-      text: "先 bd 留言。问题能不能解决不确定，队形必须先完整。",
-      likes: "47",
-      dislikes: "1"
-    },
-    {
-      id: "ordinary-reply-3",
-      author: "玉泉风很大",
-      time: "今天 08:27",
-      role: "3楼",
-      floor: "3楼",
-      text: "bd 图先补上，楼主今晚大概能收到一点抽象支援。",
-      image: "cc98_forum_treasure",
-      caption: "bd",
-      likes: "98",
-      dislikes: "0"
-    }
-  ]
-} satisfies {
-  appTitle: string;
-  hotBadge: string;
-  mainTime: string;
-  ownerRole: string;
-  mainFloor: string;
-  operation: { user: string; action: string; reason: string };
-  metrics: { views: string; favorites: string; likes: string; dislikes: string };
-  replyTitle: string;
-  replyFilter: string;
-  pagination: string;
-  comments: Array<{
-    id: string;
-    author: string;
-    time: string;
-    role?: string;
-    floor: string;
-    text: string;
-    image?: "cc98_forum_treasure";
-    caption?: string;
-    likes: string;
-    dislikes: string;
-  }>;
+  pagination: "1/11"
 };
 
 const personas = new Map(personaData.map((persona) => [persona.id, persona]));
+
+function buildFallbackReplies(post: ThreadPost): ThreadReply[] {
+  let seed = 0;
+  for (const character of post.id ?? post.title) {
+    seed += character.codePointAt(0)!;
+  }
+  return Array.from({ length: 2 + seed % 3 }, (_, index) => ({
+    ...fallbackReplies[(seed + index * 5) % fallbackReplies.length],
+    time: post.time,
+    floor: `${index + 2}楼`,
+    likes: "0",
+    dislikes: "0"
+  }));
+}
 
 /** 普通帖子保持独立论坛详情外观；剧情调查内容由交互区提供。 */
 export function Cc98ThreadPage({
@@ -104,17 +72,8 @@ export function Cc98ThreadPage({
     likes: post.threadMetrics?.likes ?? thread.metrics.likes,
     dislikes: post.threadMetrics?.dislikes ?? thread.metrics.dislikes
   };
-  const comments: ThreadReply[] = (post.threadReplies ?? thread.comments.map((comment, index) => ({
-    time: comment.time,
-    floor: comment.floor,
-    role: comment.role,
-    text: comment.text,
-    image: comment.image,
-    caption: comment.caption,
-    likes: comment.likes,
-    dislikes: comment.dislikes,
-    personaId: index === 0 ? "late-printer" : "yuquan-wind"
-  }))).filter((comment) => showBdContent || (!comment.image && !/\bbd\b/i.test(comment.text)));
+  const comments = (post.threadReplies ?? buildFallbackReplies(post))
+    .filter((comment) => showBdContent || !comment.image);
 
   return (
     <section className="cc98-thread-page" aria-label={`CC98帖子：${post.title}`}>
@@ -213,15 +172,18 @@ export function Cc98ThreadPage({
 
             {comments.map((comment, index) => {
               const persona = personas.get(comment.personaId);
+              const owner = comment.personaId === "thread-owner";
+              const anonymousOwner = owner && post.author === "匿名用户";
+              const author = owner ? post.author : comment.author ?? persona?.nickname ?? `匿名用户${index + 1}`;
               return (
               <article key={`${comment.personaId}-${comment.floor}`} className="cc98-thread-card">
                 <header className="cc98-floor-header">
                   <span className={`cc98-thread-avatar persona-${persona?.avatar ?? "anonymous"}`} aria-hidden="true" />
                   <div>
-                    <strong>{persona?.nickname ?? `匿名用户${index + 1}`}</strong>
+                    <strong>{anonymousOwner ? "匿名楼主" : author}</strong>
                     <small>{comment.time}</small>
                   </div>
-                  {comment.role ? <em>{comment.role}</em> : null}
+                  {!anonymousOwner && (owner || comment.role) ? <em>{owner ? "楼主" : comment.role}</em> : null}
                   <b>{comment.floor}</b>
                 </header>
                 <p>{comment.text}</p>

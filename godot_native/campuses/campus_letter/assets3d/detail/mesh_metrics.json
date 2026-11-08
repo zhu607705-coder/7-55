@@ -1,0 +1,50 @@
+{
+  "bridge_support": {
+    "triangles": 101660,
+    "bytes": 1929300
+  },
+  "calibration_weight": {
+    "triangles": 26096,
+    "bytes": 504340
+  },
+  "campus_bench": {
+    "triangles": 62744,
+    "bytes": 1226500
+  },
+  "letter_box": {
+    "triangles": 32976,
+    "bytes": 669044
+  },
+  "projection_lamp": {
+    "triangles": 75728,
+    "bytes": 1469472
+  },
+  "reading_book": {
+    "triangles": 6828,
+    "bytes": 150796
+  },
+  "reading_chair": {
+    "triangles": 70368,
+    "bytes": 1362716
+  },
+  "reading_lamp": {
+    "triangles": 53968,
+    "bytes": 1086632
+  },
+  "sculpture_hands": {
+    "triangles": 41632,
+    "bytes": 805304
+  },
+  "study_desk": {
+    "triangles": 39008,
+    "bytes": 753432
+  },
+  "survey_wheel": {
+    "triangles": 19944,
+    "bytes": 407700
+  },
+  "worktable": {
+    "triangles": 51252,
+    "bytes": 985184
+  }
+}

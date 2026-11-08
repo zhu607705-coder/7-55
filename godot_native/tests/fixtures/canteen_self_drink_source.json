@@ -2,7 +2,7 @@
   "sources": [
     {
       "path": "src/scenes/rpg/CanteenInteriorScene.ts",
-      "sha256": "8e564a232e7eac0ab10278386a6901fceb6dd8a275443cf9cecaf48c09e4b6eb"
+      "sha256": "a0d660c6c7da8275b7fce1d50c2ca250f4027c778189ecad393462da0317f15e"
     },
     {
       "path": "src/modules/ChapterThreeCanteenController.ts",
@@ -14,7 +14,7 @@
     },
     {
       "path": "src/data/chapter3-canteen.content.json",
-      "sha256": "7275d5f68000b59a14844d991288024e375f5fe95173eb615a46263f5792c55e"
+      "sha256": "842b6ac2b6a6cb800297e6f743e416011390e7e4a623e5858b7f632849a34e16"
     }
   ],
   "geometry": [
@@ -1077,8 +1077,8 @@
   ],
   "dialogue": {
     "lines": [
-      "玩家：这也能卖？",
-      "系统：你已完成试饮。无退款项目。"
+      "玩家：呕……黑咖啡和板蓝根是一个味的吗？",
+      "系统：先把杯子腾出来。再调一次，这回按货架顺序倒。"
     ],
     "atMs": [
       0,

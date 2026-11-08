@@ -9,8 +9,8 @@ import {
   rmSync,
   writeFileSync
 } from "node:fs";
-import { homedir, tmpdir } from "node:os";
-import { delimiter, dirname, join, relative, resolve, sep } from "node:path";
+import { tmpdir } from "node:os";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
@@ -39,13 +39,13 @@ const previousAssets = {
 };
 const tempDir = mkdtempSync(join(tmpdir(), "seven-fifty-five-chapter35-voice-memos-"));
 
-const MODEL = "speech-2.8-hd";
+const MODEL = "mlx-community/fish-audio-drama-3-4bit";
 const MIX_PROFILE = "phone_memo_field_recording_v1";
 const MIX_FILTER_VERSION = 1;
 const TARGET_SAMPLE_RATE = 32000;
 const TARGET_CHANNELS = 1;
 const TARGET_BITRATE = 128000;
-const EXPECTED_SPEECH_COUNT = 4;
+const EXPECTED_SPEECH_COUNT = 6;
 const EXPECTED_RECORDING_COUNT = 7;
 const EXPECTED_CORRECT_COUNT = 4;
 const EXPECTED_DECOY_COUNT = 3;
@@ -53,20 +53,9 @@ const TARGET_RECORDING_DURATION_MS = 5200;
 const RECORDING_DURATION_TOLERANCE_MS = 90;
 const WAVEFORM_BIN_COUNT = 32;
 const WAVEFORM_SAMPLE_RATE = 8000;
-const REQUEST_GAP_MS = 2200;
-const VALID_EMOTIONS = new Set([
-  "happy",
-  "sad",
-  "angry",
-  "fearful",
-  "disgusted",
-  "surprised",
-  "calm",
-  "fluent",
-  "whisper"
-]);
 const ID_PATTERN = /^[a-z0-9]+(?:_[a-z0-9]+)*$/;
 const ASSET_PATTERN = /^(?:vo|voice_memo)_ch35_[a-z0-9]+(?:_[a-z0-9]+)*$/;
+const SHA256_PATTERN = /^[a-f0-9]{64}$/;
 const VALID_EVENT_DISTANCES = new Set(["near", "mid", "far"]);
 const VALID_SPEECH_DENSITIES = new Set(["none", "sparse", "moderate", "dense"]);
 const FORBIDDEN_EVENT_LABEL_PATTERN = /正确|错误|干扰|顺序|答案|目的地|段永平|北教|A1/i;
@@ -111,7 +100,7 @@ function runBuffer(command, args, label) {
   return result.stdout;
 }
 
-function extractWaveformBins(path, label = path) {
+function analyzeRecording(path, label = path) {
   const pcm = runBuffer("ffmpeg", [
     "-v", "error",
     "-i", path,
@@ -141,49 +130,10 @@ function extractWaveformBins(path, label = path) {
   if (!Number.isFinite(peakRms) || peakRms <= 0) {
     throw new Error(`${label} produced a silent or invalid waveform.`);
   }
-  return rmsBins.map((rms) => Number((rms / peakRms).toFixed(3)));
-}
-
-function findMmx() {
-  const pathCandidates = (process.env.PATH ?? "")
-    .split(delimiter)
-    .filter(Boolean)
-    .map((directory) => join(directory, "mmx"));
-  const candidates = [
-    process.env.MMX_BIN,
-    ...pathCandidates,
-    join(homedir(), ".hermes/node/bin/mmx"),
-    "/opt/homebrew/bin/mmx",
-    "/usr/local/bin/mmx"
-  ].filter(Boolean);
-  const found = candidates.find((candidate) => existsSync(candidate));
-  if (!found) {
-    throw new Error("MiniMax CLI not found. Set MMX_BIN to an executable mmx path.");
-  }
-  return found;
-}
-
-function wait(milliseconds) {
-  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, milliseconds);
-}
-
-function runMmx(args, label) {
-  let lastError;
-  for (let attempt = 1; attempt <= 4; attempt += 1) {
-    try {
-      run(findMmx(), [...args, "--timeout", "180", "--non-interactive", "--quiet"], label);
-      wait(REQUEST_GAP_MS);
-      return;
-    } catch (error) {
-      lastError = error;
-      const message = error instanceof Error ? error.message : String(error);
-      const retryable = /timed out|timeout|network request failed|econnreset|enotfound|socket hang up|fetch failed|rate limit exceeded|too many requests|\brpm\b|\b429\b/i.test(message);
-      if (!retryable || attempt === 4) throw error;
-      process.stderr.write(`${label} attempt ${attempt} did not complete; retrying.\n`);
-      wait(attempt * 15000);
-    }
-  }
-  throw lastError;
+  return {
+    durationMs: Math.round(sampleCount * 1000 / WAVEFORM_SAMPLE_RATE),
+    waveformBins: rmsBins.map((rms) => Number((rms / peakRms).toFixed(3)))
+  };
 }
 
 function probeAudio(path, label = path) {
@@ -285,6 +235,7 @@ function validateContent() {
     content.version !== 1
     || content.chapterId !== "chapter-3-interlude-voice-memos"
     || content.model !== MODEL
+    || !/^[a-f0-9]{40}$/.test(content.modelRevision)
     || content.mixProfile !== MIX_PROFILE
     || !content.voices
     || !Array.isArray(content.speech)
@@ -300,6 +251,7 @@ function validateContent() {
   const speechTexts = new Set();
   for (const speech of content.speech) {
     const voice = content.voices[speech.voiceRole];
+    const take = speech.localTake;
     if (
       typeof speech.id !== "string"
       || !ID_PATTERN.test(speech.id)
@@ -310,19 +262,23 @@ function validateContent() {
       || !voice
       || typeof voice.id !== "string"
       || voice.language !== "English"
+      || !ID_PATTERN.test(voice.referenceAsset)
+      || !SHA256_PATTERN.test(voice.referenceSha256)
       || typeof speech.deliveryPromptZh !== "string"
       || speech.deliveryPromptZh.trim().length < 12
       || typeof speech.subtitleZh !== "string"
       || speech.subtitleZh.trim().length < 4
       || typeof speech.voiceTextEn !== "string"
       || speech.voiceTextEn.trim().length < 8
-      || !Number.isFinite(speech.speed)
-      || speech.speed < 0.5
-      || speech.speed > 2
-      || !Number.isInteger(speech.pitch)
-      || speech.pitch < -12
-      || speech.pitch > 12
-      || !VALID_EMOTIONS.has(speech.emotion)
+      || !take
+      || !SHA256_PATTERN.test(take.sha256)
+      || take.sourceTextHash !== hash(speech.voiceTextEn)
+      || !Number.isSafeInteger(take.seed)
+      || !Number.isFinite(take.temperature)
+      || !(take.temperature > 0 && take.temperature <= 2)
+      || !Number.isFinite(take.topP)
+      || !(take.topP > 0 && take.topP <= 1)
+      || (take.topK !== null && (!Number.isSafeInteger(take.topK) || take.topK < 1))
       || !Number.isInteger(speech.maxDurationMs)
       || speech.maxDurationMs < 500
       || speech.maxDurationMs > TARGET_RECORDING_DURATION_MS
@@ -438,95 +394,27 @@ function validateContent() {
     );
   }
   for (const speech of content.speech) {
-    if (!recordingIds.has(speech.clipId)) {
-      throw new Error(`Dry speech ${speech.id} refers to unknown recording ${speech.clipId}.`);
-    }
-    if (!content.recordings.some((recording) => recording.layers.some(
-      (layer) => layer.kind === "speech" && layer.asset === speech.asset
-    ))) {
-      throw new Error(`Dry speech ${speech.asset} is not used by any recording.`);
+    const recording = content.recordings.find(({ id }) => id === speech.clipId);
+    if (!recording?.layers.some((layer) => layer.kind === "speech" && layer.asset === speech.asset)) {
+      throw new Error(`Dry speech ${speech.asset} is missing from recording ${speech.clipId}.`);
     }
   }
-}
-
-function speechSourceConfig(speech) {
-  const voice = content.voices[speech.voiceRole];
-  return {
-    kind: "minimax-speech",
-    model: MODEL,
-    voiceId: voice.id,
-    language: voice.language,
-    speed: speech.speed,
-    volume: 1,
-    pitch: speech.pitch,
-    emotion: speech.emotion,
-    sampleRate: TARGET_SAMPLE_RATE,
-    bitrate: TARGET_BITRATE,
-    channels: TARGET_CHANNELS,
-    voiceTextEn: speech.voiceTextEn,
-    normalization: {
-      silenceThresholdDb: -48,
-      integratedLoudness: -16,
-      truePeakDb: -1.5,
-      loudnessRange: 7
-    }
-  };
-}
-
-function normalizeSpeech(input, output) {
-  run("ffmpeg", [
-    "-y",
-    "-hide_banner",
-    "-loglevel", "error",
-    "-i", input,
-    "-af",
-    "silenceremove=start_periods=1:start_duration=0.04:start_threshold=-48dB,"
-      + "areverse,silenceremove=start_periods=1:start_duration=0.08:start_threshold=-48dB,areverse,"
-      + "highpass=f=80,lowpass=f=10500,"
-      + "acompressor=threshold=0.12:ratio=2.2:attack=5:release=100:makeup=1.6,"
-      + "loudnorm=I=-16:TP=-1.5:LRA=7",
-    "-map_metadata", "-1",
-    "-id3v2_version", "0",
-    "-codec:a", "libmp3lame",
-    "-ar", String(TARGET_SAMPLE_RATE),
-    "-ac", String(TARGET_CHANNELS),
-    "-b:a", "128k",
-    output
-  ], `Normalize ${output}`);
-}
-
-function generateSpeech(speech, output) {
-  const voice = content.voices[speech.voiceRole];
-  const raw = join(tempDir, `${speech.asset}.raw.mp3`);
-  const normalized = join(tempDir, `${speech.asset}.normalized.mp3`);
-  runMmx([
-    "speech", "synthesize",
-    "--model", MODEL,
-    "--voice", voice.id,
-    "--language", voice.language,
-    "--speed", String(speech.speed),
-    "--volume", "1",
-    "--pitch", String(speech.pitch),
-    "--emotion", speech.emotion,
-    "--sample-rate", String(TARGET_SAMPLE_RATE),
-    "--bitrate", String(TARGET_BITRATE),
-    "--channels", String(TARGET_CHANNELS),
-    "--text", speech.voiceTextEn,
-    "--out", raw
-  ], `MiniMax Chapter 3.5 dry speech ${speech.asset}`);
-  normalizeSpeech(raw, normalized);
-  probeGeneratedAudio(normalized, {
-    label: speech.asset,
-    maxDurationMs: speech.maxDurationMs
-  });
-  replaceValidatedFile(normalized, output);
 }
 
 function relativeAudioPath(path) {
   return relative(audioRoot, path).replaceAll("\\", "/");
 }
 
-function makeSpeechManifestEntry(speech, output, sourceConfigHash) {
+function makeSpeechManifestEntry(speech, output) {
+  if (!existsSync(output) || fileHash(output) !== speech.localTake.sha256) {
+    throw new Error(`Missing or changed local Drama 3 take: ${speech.asset}`);
+  }
+  const sourceConfigHash = hash(JSON.stringify({
+    model: MODEL,
+    modelRevision: content.modelRevision,
+    voice: content.voices[speech.voiceRole],
+    localTake: speech.localTake
+  }));
   const metadata = probeGeneratedAudio(output, {
     label: speech.asset,
     maxDurationMs: speech.maxDurationMs
@@ -535,10 +423,10 @@ function makeSpeechManifestEntry(speech, output, sourceConfigHash) {
     kind: "speech",
     path: relativeAudioPath(output),
     ...metadata,
-    sha256: fileHash(output),
-    sourceTextHash: hash(speech.voiceTextEn),
+    sha256: speech.localTake.sha256,
+    sourceTextHash: speech.localTake.sourceTextHash,
     sourceConfigHash,
-    source: `MiniMax ${MODEL} ${content.voices[speech.voiceRole].id}`
+    source: "Built with Fish Audio · local Drama 3 MLX 4-bit"
   };
 }
 
@@ -570,6 +458,16 @@ function resolveRecordingLayers(recording, speechAssets, inputProbeCache) {
       ? join(audioRoot, speechAssets[layer.asset].path)
       : ensureInsideAudioRoot(join(audioRoot, layer.path), `${recording.id} layer`);
     if (!existsSync(input)) throw new Error(`Missing source layer for ${recording.id}: ${key}`);
+    if (layer.kind === "speech") {
+      const voiceEvent = recording.soundEvents.find(({ category }) => category === "voice");
+      const speechEndMs = layer.startMs + speechAssets[layer.asset].durationMs;
+      const powerCut = recording.soundEvents.find(({ category }) => category === "power");
+      if (!voiceEvent || voiceEvent.startMs !== layer.startMs
+        || speechEndMs > voiceEvent.endMs + 36
+        || speechEndMs > (powerCut?.startMs ?? recording.targetDurationMs)) {
+        throw new Error(`Local take ${key} does not fit its voice event in ${recording.id}.`);
+      }
+    }
     if (!inputProbeCache.has(input)) inputProbeCache.set(input, probeAudio(input, key));
     const sha256 = fileHash(input);
     componentAssetHashes[key] = sha256;
@@ -662,6 +560,11 @@ function makeRecordingManifestEntry(recording, output, sourceConfigHash, compone
     label: recording.asset,
     targetDurationMs: recording.targetDurationMs
   });
+  const analysis = analyzeRecording(output, recording.asset);
+  // MP3 container duration includes encoder delay and padding on some ffprobe builds.
+  if (analysis.durationMs !== recording.targetDurationMs) {
+    throw new Error(`${recording.asset} decodes to ${analysis.durationMs}ms, expected ${recording.targetDurationMs}ms.`);
+  }
   return {
     kind: recording.correct ? "correct" : "decoy",
     path: relativeAudioPath(output),
@@ -669,7 +572,7 @@ function makeRecordingManifestEntry(recording, output, sourceConfigHash, compone
     sha256: fileHash(output),
     sourceConfigHash,
     source: `FFmpeg ${MIX_PROFILE} mix`,
-    waveformBins: extractWaveformBins(output, recording.asset),
+    ...analysis,
     soundEvents: recording.soundEvents.map((event) => ({ ...event })),
     componentAssetHashes
   };
@@ -722,6 +625,9 @@ function manifestAssetsMatch(actualAssets) {
       return reportManifestMismatch(`${asset} waveform presence differs`);
     }
     if (manifestWaveform) {
+      if (manifestEntry.durationMs !== actualEntry.durationMs) {
+        return reportManifestMismatch(`${asset} decoded duration differs`);
+      }
       if (manifestWaveform.length !== actualWaveform.length) {
         return reportManifestMismatch(`${asset} waveform bin count differs`);
       }
@@ -784,30 +690,11 @@ function main() {
   }
 
   const assets = {};
-  const generatedSpeech = [];
   const rebuiltRecordings = [];
 
   for (const speech of content.speech) {
     const output = join(componentDir, `${speech.asset}.mp3`);
-    const sourceConfigHash = hash(JSON.stringify(speechSourceConfig(speech)));
-    const reusable = cachedEntryIsReusable({
-      asset: speech.asset,
-      output,
-      sourceConfigHash,
-      probe: (path) => probeGeneratedAudio(path, {
-        label: speech.asset,
-        maxDurationMs: speech.maxDurationMs
-      })
-    });
-    if (!reusable) {
-      if (verifyOnly) {
-        throw new Error(`Chapter 3.5 dry speech requires regeneration: ${speech.asset}`);
-      }
-      generateSpeech(speech, output);
-      generatedSpeech.push(speech.asset);
-    }
-    assets[speech.asset] = makeSpeechManifestEntry(speech, output, sourceConfigHash);
-    if (!verifyOnly) writeCheckpoint(assets);
+    assets[speech.asset] = makeSpeechManifestEntry(speech, output);
   }
 
   const speechAssets = Object.fromEntries(
@@ -851,7 +738,7 @@ function main() {
   if (verifyOnly && !manifestAssetsMatch(assets)) {
     throw new Error("Chapter 3.5 generated manifest does not match the verified audio files.");
   }
-  if (!verifyOnly && (!manifestAssetsMatch(assets) || generatedSpeech.length || rebuiltRecordings.length)) {
+  if (!verifyOnly && (!manifestAssetsMatch(assets) || rebuiltRecordings.length)) {
     writeJsonAtomic(generatedPath, {
       version: 1,
       generatedAt: new Date().toISOString(),
@@ -861,11 +748,11 @@ function main() {
   if (!verifyOnly) rmSync(checkpointPath, { force: true });
 
   process.stdout.write(`${JSON.stringify({
-    generatedSpeech,
+    verifiedLocalSpeech: Object.keys(speechAssets),
     rebuiltRecordings,
     verified: Object.keys(assets),
     manifest: generatedPath,
-    networkUsed: generatedSpeech.length > 0
+    networkUsed: false
   }, null, 2)}\n`);
 }
 

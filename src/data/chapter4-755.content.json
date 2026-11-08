@@ -371,8 +371,8 @@
         "nextAction": "留在当前痕迹区并重新执行一次复原。"
       },
       "room204_group_conflict": {
-        "reason": "这组三处位置含有旧存档中的占用记录。",
-        "nextAction": "先处理其他痕迹区；当前组会保留原记录。"
+        "reason": "这组三处已经记过位置。",
+        "nextAction": "这组先留在原位。去看看教室里其他留着残影的地方。"
       },
       "room204_group_already_placed": {
         "reason": "这组三处桌椅已经复原。",
@@ -383,24 +383,24 @@
         "nextAction": "先完成四组复原并确认 07:55 投影。"
       },
       "a1_comparison_required": {
-        "reason": "一楼的时间记录还没有形成可比较的同一组。",
-        "nextAction": "补齐 104、105 与电梯的原始记录，再查看它们共有的时间差。"
+        "reason": "一楼的三处记录还没对齐。",
+        "nextAction": "去看 104 黑板、105 讲台回放和主电梯记录。找出它们都差了多久。"
       },
       "projection_composite_required": {
-        "reason": "投影中的时间、空间和纸痕仍未完成叠合。",
-        "nextAction": "回看教室里四组原始痕迹，确认它们在投影中同时稳定。"
+        "reason": "幕布上的画面还有重影。",
+        "nextAction": "核对四组桌椅的残影，再看投影上的时间和纸痕能不能对上。"
       },
       "maintenance_incident_required": {
-        "reason": "保洁车与旧钟之间的同源碰撞痕迹尚未确认。",
-        "nextAction": "比较教室投影的缺口形状与保洁车轮罩附近的擦痕。"
+        "reason": "保洁车为什么会卡在旧钟旁边，还得再看看。",
+        "nextAction": "对比教室投影里的缺口和保洁车轮罩上的刮痕。"
       },
       "powered_route_required": {
-        "reason": "当前照明还没有确认纸痕经过的连续区域。",
-        "nextAction": "回到配电面板，让先前记录过的三个区域同时保持可见。"
+        "reason": "灯亮了几处，纸条走过的路中间还断着。",
+        "nextAction": "回一楼配电面板，把纸条经过的三个灯区同时点亮。"
       },
       "identity_context_required": {
-        "reason": "身份记录与三楼留下的求学信息尚未形成完整对应。",
-        "nextAction": "查看三楼参照教室与中央信息墙留下的姓名和时间细节。"
+        "reason": "三楼的参照还没看全。",
+        "nextAction": "去三楼的参照教室和中央信息墙，核对留下的姓名和时间。"
       },
       "positioning_plate_required": {
         "reason": "大厅旧钟仍缺少钟面定位片。",

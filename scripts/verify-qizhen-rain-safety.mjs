@@ -455,11 +455,11 @@ try {
       throw new Error(`after-rain puddle foot-point hit test drifted: ${puddle.id}`);
     }
   }
-  if (qizhenContent.dock.afterRainProof !== "这是下过雨的证明") {
+  if (qizhenContent.dock.afterRainProof !== "木栈道上还留着水迹。抬头一看，刚才那三层阴云已经被寝室吹风机吹散了。") {
     throw new Error("after-rain puddle feedback copy must stay exact");
   }
-  if (qizhenContent.dock.safetyRainBlock !== "值班老师：现在天气不能下水。你要坚持，可以继续靠近码头试试。"
-    || qizhenContent.dock.rainReturnBlocked !== "值班老师：衣服还没干，又来？雨没停，先别下水。"
+  if (qizhenContent.dock.safetyRainBlock !== "值班老师：同学，湖面正刮二级西南风下小雨呢，按规定绝不能放行！你要是实在头铁不信邪……往登船边走两步试试就知道风浪多大了。"
+    || qizhenContent.dock.rainReturnBlocked !== "值班老师：不是吧同学，头发还在滴水呢又来？！雨没停之前说什么也不让你下水了，赶紧回寝室拿吹风机吹干！"
     || !qizhenContent.dock.forcedLaunch
     || !qizhenContent.dock.forcedCapsize
     || !qizhenContent.dock.forcedRescue) {

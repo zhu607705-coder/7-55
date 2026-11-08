@@ -186,18 +186,18 @@ const CANTEEN_SEATED_TABLE_CROPS = [
 ] as const;
 const CANTEEN_RETURN_NPC_POSITION = { x: 1515, y: 610 } as const;
 const CANTEEN_QUEUE_NPC_DIALOGUE = [
-  "前面没动，我也没动。大家都很稳定。",
-  "你说的对。虽然不知道你说了什么。",
-  "是啊，吃什么。",
-  "今天有气泡水喝吗？",
-  "早十不慌，先来个西红柿鸡蛋。",
-  "为什么早上吃西红柿鸡蛋。"
+  "三号窗口怎么排这么长？纸包鸡不会卖完了吧。",
+  "别问我，我看前面三个都点西芹炒肉，就跟着排了。",
+  "早八逃犯？巧了，我也是。",
+  "听说水吧今天拿黑咖啡兑柠檬茶。谁想出来的？",
+  "早十不急。先来两笼小笼包，再要杯热豆浆。",
+  "刚才谁把半杯奶茶搁餐盘缝里了？差点溅我一身。"
 ] as const;
 const CANTEEN_SEATED_NPC_DIALOGUE = [
-  "刚才有张纸过去了。它没拿餐盘。",
-  "看手机。",
-  "依旧看手机。",
-  "不用问了可以坐这里。"
+  "刚才是有张纸贴着地飞过去，比阿姨抖勺还快。",
+  "他在刷 CC98 十大，没抬头。",
+  "她戴着耳机啃鸡腿，手机里还放着流体力学。",
+  "这桌可以坐。旁边那把椅子是我放包的，我挪一下。"
 ] as const;
 const CANTEEN_COUNTER_NPC_DIALOGUE = "要什么？快点，后面排着呢。";
 const CANTEEN_TRAY_KEY = "chapter-3-canteen-tray";

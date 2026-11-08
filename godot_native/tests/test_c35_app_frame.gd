@@ -179,6 +179,10 @@ func run() -> void:
 			if frame.get_script()!=load("res://scripts/ui/phone_app_frame.gd"):
 				check(false,"specialized app is ready: "+page);continue
 			await check_reading_geometry(frame,page+" / "+str(dimensions))
+			if page=="c35_official":
+				var cover := find_control("WechatArticleCover") as TextureRect
+				check(cover!=null and cover.texture!=null and cover.texture.resource_path.ends_with("/notice.webp"),"evidence reader shows the campus notice cover")
+				check(intent("c35_official")!=null,"the notice still has its save action")
 			var header_before := rect(frame.toolbar)
 			frame.scroll.scroll_vertical=10000;await frames()
 			check(rect(frame.toolbar)==header_before,"scroll keeps navigation fixed: "+page)

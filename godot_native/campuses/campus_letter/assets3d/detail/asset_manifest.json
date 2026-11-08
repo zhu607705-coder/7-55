@@ -1,0 +1,57 @@
+{
+  "generator": "Blender 5.2.2",
+  "units": "metres",
+  "text_on_objects": false,
+  "collections": {
+    "reading_chair": {
+      "objects": 26,
+      "vertices": 6892
+    },
+    "study_desk": {
+      "objects": 20,
+      "vertices": 2552
+    },
+    "worktable": {
+      "objects": 23,
+      "vertices": 3496
+    },
+    "bridge_support": {
+      "objects": 41,
+      "vertices": 7136
+    },
+    "calibration_weight": {
+      "objects": 8,
+      "vertices": 8448
+    },
+    "projection_lamp": {
+      "objects": 39,
+      "vertices": 4336
+    },
+    "survey_wheel": {
+      "objects": 7,
+      "vertices": 3072
+    },
+    "reading_lamp": {
+      "objects": 24,
+      "vertices": 8114
+    },
+    "campus_bench": {
+      "objects": 38,
+      "vertices": 3216
+    },
+    "reading_book": {
+      "objects": 10,
+      "vertices": 72
+    },
+    "letter_box": {
+      "objects": 25,
+      "vertices": 1848
+    },
+    "sculpture_hands": {
+      "objects": 4,
+      "vertices": 4129
+    }
+  },
+  "hand_source": "assets/native_755/ride/rodin/campus_student_rigged.glb",
+  "material_source": "ambientCG Wood051, Concrete034, Metal032, Fabric041; CC0-1.0; see assets3d/pbr/sources.json"
+}

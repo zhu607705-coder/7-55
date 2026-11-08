@@ -11,6 +11,7 @@ var journal_builder: RefCounted=JournalPages.new()
 const VoiceProgress=preload("res://scripts/ui/c3_voice_progress.gd")
 const PhotoSequence=preload("res://scripts/ui/c35_photo_sequence.gd")
 const AppFrame=preload("res://scripts/ui/phone_app_frame.gd")
+const WechatSocial=preload("res://scripts/ui/wechat_social_pages.gd")
 var current_view: Dictionary={}
 var footer: VBoxContainer
 var scroll_offsets: Dictionary={}
@@ -101,14 +102,20 @@ func recovery_intro() -> Control:
 	back.set_meta("phone_nav_kind","exit")
 	NativeUi.apply_button(back,Color.TRANSPARENT,AppFrame.INK,Color.TRANSPARENT,0,0,18)
 	back.tooltip_text="返回手机主页";back.pressed.connect(func() -> void:page_requested.emit("phone_home"));root.add_child(back)
-	var chapter := label("第 3.5 章",17,AppFrame.MUTED);chapter.position=Vector2(28,66);chapter.size=Vector2(368,26);root.add_child(chapter)
+	var intro: Dictionary=module.copy_data().intro
+	var chapter := label(intro.heading,17,AppFrame.MUTED);chapter.position=Vector2(28,66);chapter.size=Vector2(368,26);root.add_child(chapter)
 	var title := label("未同步的\n七分五十五秒",39,AppFrame.INK);title.name="C35IntroTitle"
 	title.position=Vector2(26,110);title.size=Vector2(374,116);root.add_child(title)
 	var art := image_node("res://assets/native/chapter35_recovery_20261023/lake_memory.png",Vector2.ZERO)
-	art.name="C35IntroArt";art.position=Vector2(26,252);art.size=Vector2(372,310)
+	art.name="C35IntroArt";art.position=Vector2(26,252);art.size=Vector2(372,238)
 	art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED;root.add_child(art)
-	var copy := label("离开湖边之后，记录中断了。",17,AppFrame.INK)
-	copy.position=Vector2(28,590);copy.size=Vector2(368,30);root.add_child(copy)
+	var copy := VBoxContainer.new()
+	copy.position=Vector2(28,506);copy.size=Vector2(368,190)
+	copy.add_theme_constant_override("separation",6)
+	root.add_child(copy)
+	copy.add_child(label(intro.detail,17,AppFrame.MUTED))
+	copy.add_child(label("林星宇："+intro.player,17,AppFrame.INK))
+	copy.add_child(label("系统："+intro.system,17,AppFrame.INK))
 	var begin := action(root,"开始恢复","c35_begin",null,true);begin.name="C35BeginRecovery"
 	begin.position=Vector2(28,706);begin.size=Vector2(368,56)
 	return root
@@ -200,7 +207,7 @@ func recovery(root: VBoxContainer) -> void:
 	window.add_child(label(("22:37:05" if c.evidenceIds.has("journal_start") else "待恢复")+" — "+("22:45:00" if c.voiceSequenceSolved else "待恢复"),24,GREEN))
 	if not c.evidenceIds.has("journal_start"):
 		window.add_child(label("离湖记录",19))
-		window.add_child(label("划船帖还保留着最后一条回复。",16,MUTED))
+		window.add_child(label(module.copy_data().intro.system,16,MUTED))
 		navigate(window,"查看划船帖","c35_journal")
 		return
 	var sources: Array=[
@@ -238,7 +245,8 @@ func recovery(root: VBoxContainer) -> void:
 	for decoy: Dictionary in [{"id":"canteen_0755","label":"食堂 0755"},{"id":"theater_0832","label":"剧场 08:32"},{"id":"status_clock_075523","label":"状态栏 07:55:23"}]:
 		var row := card(root);row.add_child(label(decoy.label,18))
 		if c.rejectedDecoyIds.has(decoy.id):
-			row.add_child(label("已排除",15,GREEN));continue
+			row.add_child(label("已排除",15,GREEN))
+			row.add_child(label(module.copy_data().exclusionCopy[decoy.id],16,MUTED));continue
 		var choose := OptionButton.new();choose.name="C35Reason_"+decoy.id;choose.fit_to_longest_item=false;choose.clip_text=true;choose.custom_minimum_size.y=44
 		choose.size_flags_horizontal=Control.SIZE_EXPAND_FILL;choose.add_item("选择排除理由…")
 		for reason: Dictionary in reasons:
@@ -280,6 +288,7 @@ func recovery(root: VBoxContainer) -> void:
 	else:
 		var replay := card(root);replay.name="C35RecoveredPath"
 		replay.add_child(label("路径记录已恢复",19))
+		replay.add_child(label(module.copy_data().destinationConfirmed,16))
 		replay.add_child(label("回放会从启真湖最后一帧开始，并在已确认地点结束。",16,MUTED))
 		action(footer,"开始回放","c35_replay",null,true)
 
@@ -296,8 +305,11 @@ func journal(root: VBoxContainer) -> void:
 		footer.add_child(label("收尾回复已发布 · 离湖时间已保存",15,GREEN));return
 	root.add_child(label("回复这条记录",19))
 	var selected: String=state.native.get("c35_summary_choice","details_withheld")
-	action(root,("● " if selected=="safe_return" else "○ ")+"安全返航\n船和人都回来了。湖上的事先记到这里，剩下的等我整理。","c35_summary_select","safe_return")
-	action(root,("● " if selected=="details_withheld" else "○ ")+"细节暂不公开\n最后一段发生了点不适合写进划船记录的事。人已上岸，其他细节暂时保留。","c35_summary_select","details_withheld")
+	for id: String in ["safe_return","details_withheld"]:
+		var reply: Dictionary=module.copy_data().journalReplies[id]
+		var row := card(root)
+		action(row,("● " if selected==id else "○ ")+reply.label,"c35_summary_select",id)
+		row.add_child(label(reply.body,17))
 	action(footer,"发布收尾并保存时间","c35_journal",selected,true)
 
 func photos(root: VBoxContainer) -> void:
@@ -440,6 +452,7 @@ func official(root: VBoxContainer) -> void:
 	box.add_child(label("校园楼宇运行通知",15,MUTED))
 	box.add_child(label("夜间闭楼与入口调整",25))
 	box.add_child(label("紫金港楼宇服务 · 22:40",15,GREEN))
+	box.add_child(WechatSocial.article_cover(WechatSocial.load_campus_content(),Vector2(0,202)))
 	box.add_child(label("22:45 起，北教学区一处楼宇进入夜间清楼。A 楼一层东侧入口暂停通行，人员请从大厅主入口进入。",19))
 	box.add_child(label("主电梯保留运行，楼层开放情况以现场提示为准。",18))
 	var saved: bool=state.chapterThreeInterlude.officialNoticeSaved
@@ -450,7 +463,7 @@ func messages(root: VBoxContainer) -> void:
 	var selected: Array=state.native.get("c35_route_selection",[])
 	var saved: bool=state.chapterThreeInterlude.routeScreenshotSaved
 	var date := label("22:42",15,MUTED);date.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;root.add_child(date)
-	for entry: Dictionary in Interlude.MESSAGES:
+	for entry: Dictionary in module.route_messages():
 		if entry.id=="withdrawn":
 			var removed := label(entry.text,15,MUTED);removed.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;root.add_child(removed);continue
 		var line := HBoxContainer.new();line.add_theme_constant_override("separation",10);root.add_child(line)
