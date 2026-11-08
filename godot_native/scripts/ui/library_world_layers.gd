@@ -4,6 +4,7 @@ const StampMotion=preload("res://scripts/presentation/library_stamp_motion.gd")
 const Picker=preload("res://scripts/world_object_picker.gd")
 const ObjectRebuild=preload("res://scripts/ui/library_object_rebuild.gd")
 const PlayerMetrics=preload("res://scripts/player_metrics.gd")
+const ActorTexture=preload("res://scripts/objects/library_actor_texture.gd")
 const SpatialRules=preload("res://scripts/space/spatial_rules.gd")
 const PrinterObject=preload("res://scripts/ui/library_printer_object.gd")
 const SeatMotion=preload("res://scripts/presentation/library_seat_motion.gd")
@@ -48,6 +49,7 @@ var cue_queue: Array=[]
 var broadcast_index: int=0
 const CHAIR_IDS := {
 	"catalog_terminal": "catalog_terminal_chair",
+	"catalog_terminal_chair": "catalog_terminal_chair",
 	"library_study_chair": "reading_table_1_south_left",
 	"seat_022_chair": "reading_table_4_south_right",
 }
@@ -227,17 +229,23 @@ func align_object_targets(targets:Array)->void:
 		var chair: Rect2 = objects.areas[CHAIR_IDS.library_study_chair]
 		var at := Vector2(chair.get_center().x, chair.end.y - PlayerMetrics.FOOT_CENTER_OFFSET.y)
 		targets.append({"id":"library_study_chair", "label":"开始自习", "action":"library_study", "position":[at.x, at.y], "radius":56.0, "mode":"light"})
+	var catalog_chair: Dictionary = {}
 	for target:Dictionary in targets:
 		if target.id=="seat_022_gap":
 			var at := receipt_anchor()
 			target.position = [at.x, at.y]
 			target.bounds = [at.x - 17, at.y - 8, 34, 20]
+		if target.id=="catalog_terminal":
+			catalog_chair=target.duplicate()
+			catalog_chair.id="catalog_terminal_chair"
+			catalog_chair.label="检索位座椅"
 		if target.id=="library_shelf_755":
 			target.label=ShelfBook.LOCATION
 			var reach:Rect2=book.geometry(objects,shelf_offset).rect
 			reach.position.y=objects.areas.north_display_shelf.end.y-PlayerMetrics.FOOT_CENTER_OFFSET.y-reach.size.y
 			target.position=[reach.get_center().x,reach.get_center().y]
 			target.bounds=[reach.position.x,reach.position.y,reach.size.x,reach.size.y]
+	if not catalog_chair.is_empty(): targets.append(catalog_chair)
 func _stepped(value: float) -> float:
 	# Phaser.Math.Easing.Stepped defaults to one step.
 	return 0.0 if value<=0 else 1.0
@@ -284,7 +292,7 @@ func interaction_snapshot()->Dictionary:
 	return {"ready":interactions.ready,"family":"library_interactions_16","bagFrame":interactions.bag_frame(seat.inspect_ms,seat.inspected,reduced),"paperFrame":interactions.paper_frame(seat.inspect_ms,seat.note_ms,reduced),"staffFrame":interactions.staff_frame(clock_ms,motion.staff_ms,scanning_ms,stamp_ms,reduced)}
 
 func owns_pick_target(id: String) -> bool:
-	return id in ["front_desk","identity_machine","library_shelf_755","occupancy_note",GeometryNotebook.ID] or (objects.ready and id in ["seat_022_gap","seat_022_chair","library_study_chair"]) or ((objects.ready or rebuild.ready) and id in ["catalog_terminal","printer","backpack","bag_photo","backpack_pass"])
+	return id in ["front_desk","identity_machine","library_shelf_755","occupancy_note",GeometryNotebook.ID] or (objects.ready and id in ["entrance_record","seat_022_gap","seat_022_chair","library_study_chair","catalog_terminal_chair"]) or ((objects.ready or rebuild.ready) and id in ["catalog_terminal","printer","backpack","bag_photo","backpack_pass"])
 
 func _context(canvas: CanvasItem,context: Dictionary) -> void:
 	canvas.draw_set_transform(context.get("origin",Vector2.ZERO),0,Vector2.ONE*float(context.get("zoom",1)))
@@ -563,7 +571,10 @@ func _draw_front_desk(canvas: CanvasItem,context: Dictionary,front: bool) -> voi
 	if _in_pass(_floor_depth(pose.position.y),context,front):
 		var texture:Texture2D=interactions.sheets.staff if interactions.ready else staff_art
 		var cell:Rect2=interactions.source("staff",interactions.staff_frame(clock_ms,motion.staff_ms,scanning_ms,stamp_ms,reduced)) if interactions.ready else Rect2(int(pose.frame)*96,0,96,128)
-		var area:=Rect2(Vector2(pose.position)-Vector2(48,128)*scale_value,Vector2(96,128)*scale_value)
+		var origin:Vector2=context.origin
+		var zoom:float=context.zoom
+		var anchor:=ActorTexture.snap_draw_anchor(canvas,origin+Vector2(pose.position)*zoom)
+		var area:=Rect2((anchor-origin)/zoom-Vector2(48,128)*scale_value,Vector2(96,128)*scale_value)
 		Picker.record(canvas,["front_desk"],{"rect":area,"texture":texture,"source":cell})
 		canvas.draw_texture_rect_region(texture,area,cell)
 	var counter_front:bool=SpatialRules.depth_in_front(objects.baseline("front_desk_counter"),float(context.get("player_ground_y",SpatialRules.foot_y(context.player)))) if objects.ready else _in_pass(_floor_depth(float(source.frontDesk.counterBounds.top)+float(source.frontDesk.counterBounds.height)),context,true)

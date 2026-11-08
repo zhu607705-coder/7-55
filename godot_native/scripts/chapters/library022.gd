@@ -94,6 +94,18 @@ func _data() -> Dictionary:
 		if FileAccess.file_exists(path): content = JSON.parse_string(FileAccess.get_file_as_string(path))
 	return content
 
+func _guide(group: String, key: String) -> String:
+	return str(_data().get("guidance",{}).get(group,{}).get(key,""))
+
+func _proofs(s: Dictionary) -> Array:
+	var p: Dictionary = _p(s)
+	var branches: Dictionary = _data().guidance.currentObjectives.stage_08_parallel_evidence.branches
+	var complete: Array = [p.nonPersonProofStamped,p.seatReceiptCollected,p.presenceProofCollected]
+	var rows: Array = []
+	for i in range(RECOVERY.size()):
+		rows.append(branches[RECOVERY[i]]["completed" if complete[i] else "pending"])
+	return rows
+
 func _ok(message: String, extra: Dictionary = {}) -> Dictionary:
 	var r = {"handled":true,"message":message}
 	r.merge(extra, true)
@@ -145,13 +157,14 @@ func view(page: String, s: Dictionary) -> Dictionary:
 	match page:
 		"library_archive":
 			var rows: Array = []
-			if p.occupancyNoteCollected: rows.append({"title":"占座纸条","body":"本人离开三分钟，精神仍在座位上。临时离座规则详见 CC98。"})
+			if p.occupancyNoteCollected: rows.append({"title":"占座纸条","body":d.library.occupationNote.text})
 			if p.archivedRuleRead: rows.append({"title":"旧版离座规则","body":"三项证明：本人到馆、座位凭据、占用物非本人。公开公示后可恢复座位。"})
 			if p.nonPersonProofStamped: rows.append({"title":"书包非本人证明","body":"对象：022 座位占用书包\n认证结论：非本人\n姓名 / 学号：无 / 无\n盖章来源：基础馆物品身份盖章机\n经核验，该书包无姓名、无学号，不具备独立占用座位的身份条件。\n本证明仅证明书包。持有人仍需另交到馆材料。"})
 			if p.seatReceiptCollected: rows.append({"title":"022 座位凭据","body":"座位编号：022\n区域：一层书库\n时间：07:55\n凭据状态：离座中 · 待公示\n当前占用物：书包。恢复处理需提交论坛公示。"})
 			if p.presenceProofCollected: rows.append({"title":"本人来过证明","body":"到馆时长：7 分钟\n公示编号：47\n证明数量：3\n记录状态：补录成功\n访问轨迹与 022 座位凭据的时间记录一致。到馆已确认，座位使用仍需单独申请。"})
-			return {"title":"已取得的材料","body":"材料提交后，内容仍保留在这里。","rows":rows}
-		"library_rule": return {"title":"旧版离座规则", "body":"期末周修订版 · 已归档\n适用范围：座位被非本人随身物持续占用\n目标座位：022\n恢复申请须同时具备三类证明：\n一、本人确实到馆；\n二、目标座位与凭据一致；\n三、当前占用物不具备本人身份。\n规则依据须先完成公开公示。"}
+			return {"title":"已取得的材料","body":"材料提交后，内容仍保留在这里。","rows":rows,
+				"guidance":"\n\n".join(_proofs(s)) if p.archivedRuleRead else ""}
+		"library_rule": return {"title":"旧版离座规则", "body":"\n\n".join(d.library.archivedRuleBook.pages)}
 		"library_catalog":
 			var rows: Array = []
 			if s.native.get("lib_catalog_results", false):
@@ -285,7 +298,8 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			if phase != "library_entered" or not _record_available(s): return _ok("请先刷卡入馆。")
 			p.entranceRecordRead = true
 			_unique(p.clueIds,"arrival_7_minutes")
-			return _ok("门禁记录已记下。022 存在未闭合会话。")
+			_request_story(s,"library_gate_record_checked")
+			return _ok("")
 		"lib_backpack":
 			if not p.entranceRecordRead or phase not in ["library_entered","occupied_seat_found"] or s.native.scene != "library_interior": return _ok("请先在座位预约的「我的」中核对入馆记录。")
 			if p.backpackInspected: return _ok("")
@@ -300,7 +314,8 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			items.occupancyNote = true
 			s.ui.libraryFinalsPhase = "evidence_gathering"
 			_unique(p.clueIds,"occupancy_note")
-			return _ok("获得占座纸条：本人离开三分钟，精神仍在座位上。临时离座规则详见 CC98。")
+			_request_story(s,"library_occupation_note_picked")
+			return _ok("")
 		"lib_investigate":
 			if phase != "evidence_gathering" or not p.occupancyNoteCollected or not items.occupancyNote or str(value) != "occupancyNote": return _ok("搜索框需要那张占座纸条。")
 			p.investigationOpened = true
@@ -350,7 +365,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			items.callNumber755 = true
 			_unique(p.clueIds,"call_number_755")
 			_request_story(s,"library_catalog_match_found")
-			return _ok("获得索书号 I247.55 / 755。")
+			return _ok("")
 		"lib_shelf":
 			if phase != "evidence_gathering" or not p.callNumberCollected or not items.callNumber755 or p.archivedRuleCollected or s.native.scene != "library_interior": return _ok("书架夹层需要对应的索书号。")
 			p.archivedRuleCollected = true
@@ -372,7 +387,8 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			return _go(s,"photos","已保存 IMG_0755.JPG。")
 		"lib_dim_photo":
 			if phase != "evidence_gathering" or not p.photoCaptured: return _ok("还没有书包照片。")
-			if float(s.ui.brightness) > 20: return _ok("标签依然曝光过度。")
+			if float(s.ui.brightness) > float(_data().library.photo.maxBrightness):
+				return _ok(_guide("operationRecovery","photo_brightness_too_high"))
 			p.photoDimmed = true
 			return _ok("标签可读了：对象类型为书包，本人属性不成立。")
 		"lib_photo_filter":
@@ -405,10 +421,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			if not p.nonPersonProofStamped and not p.frontDeskProofRequestSeen:
 				_request_story(s,"library_front_desk_proof_request"); return _ok("")
 			if p.frontDeskProofRequestSeen and not p.itemReportGenerated:
-				var hints: Array=["前台：请出示物品识别报告。","玩家：我用肉眼看不行吗？","前台：肉眼不是本部门认可设备。","系统：你看，眼睛又输了。"]
-				var index: int=clampi(front_desk_hint_index,0,hints.size()-1)
-				front_desk_hint_index=mini(index+1,hints.size()-1)
-				return _ok(hints[index])
+				return _ok(_guide("operationRecovery","front_desk_missing_report"))
 			if int(p.nonPersonProofStamped)+int(p.seatReceiptCollected)+int(p.presenceProofCollected)>=3: return _ok("三项证明已齐，上传给大家看看。")
 			return _ok({"missing_report":"前台：先在照片页面生成物品识别报告，再拿来核验。","ready":"前台：把物品识别报告递到柜台上，我核验后盖章。","scanning":"前台正在核对报告，请等她完成盖章。","stamped":"前台：非本人证明已经盖好，继续补齐另外两项材料。"}.get(p.lostFoundStage,""))
 		"lib_scan":
@@ -424,14 +437,18 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			items.itemRecognitionReport = false
 			items.bagNonPersonProof = true
 			_request_story(s,"library_bag_nonperson_proof_issued",900)
-			return _ok("获得书包非本人证明。")
+			return _ok("")
 		"lib_receipt":
-			if s.native.scene != "library_interior" or not items.rightArrow or p.seatReceiptCollected: return _ok("手指够不到夹缝里的小票。")
+			if s.native.scene != "library_interior" or p.seatReceiptCollected: return _ok("")
+			if not items.rightArrow:
+				_request_story(s,"library_crevice_inspected")
+				return _ok("")
 			p.seatReceiptCollected = true
 			items.rightArrow = false
 			items.seat022Receipt = true
 			_unique(p.libraryVisitedPoints,"seat_022")
-			return _ok("右移箭头把小票推出夹缝。获得 022 座位小票。")
+			_request_story(s,"library_seat_receipt_recovered")
+			return _ok("")
 		"lib_audit_value":
 			if not TiyiAccess.allowed(s): return _ok("")
 			if phase!="evidence_gathering" or not p.investigationOpened or not value is Dictionary: return _ok("")
@@ -454,7 +471,12 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			var parts: Array = value if value is Array else Array(str(value).replace("/"," ").replace(","," ").replace("，"," ").split(" ",false))
 			p.auditAttemptCount += 1
 			if parts.size() != 3 or str(parts[0]) != "7" or str(parts[1]) != "47" or str(parts[2]) != "3":
-				return _ok("补录参数与原始记录不一致。" if p.auditAttemptCount == 1 else "三项分别对应到座耗时、公示编号和旧规的证明数量。" if p.auditAttemptCount == 2 else "请重新核对门禁时间、CC98 楼主编辑与规则原件。")
+				var fields:Array=_data().library.audit.fields
+				var errors:PackedStringArray=[]
+				for i in range(3):
+					if i>=parts.size() or str(parts[i])!=["7","47","3"][i]:
+						errors.append(str(fields[i].errorHint))
+				return _ok("\n".join(errors))
 			p.auditArrivalMinutes = 7
 			p.auditPublicNoticeFloor = 47
 			p.auditProofCount = 3
@@ -493,7 +515,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			p.bdPasswordAttemptCount += 1
 			if p.bdSelectedPostIds != BD_IDS:
 				p.bdSelectedPostIds.clear()
-				return _ok("数字的来源或顺序不匹配。" if p.bdPasswordAttemptCount == 1 else "按上传栏从上到下匹配证据对应的数字，不要混入公示号、索书号或排名。")
+				return _ok(_guide("operationRecovery","bd_wrong_first_try" if p.bdPasswordAttemptCount == 1 else "bd_wrong_repeated"))
 			p.bdCount = 3
 			p.appliedBdReplyIds = ["reply-seat-ticket","reply-visit-proof","reply-bag-nonperson"]
 			s.ui.libraryFinalsPhase = "top_ten_reached"
@@ -510,7 +532,8 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			items[EVIDENCE[e]] = false
 			return _ok("申请材料已收取；原件内容仍可从提交记录查看。")
 		"lib_generate_pass":
-			if phase != "recovery_application" or not _all(p.recoverySubmittedEvidenceIds,RECOVERY) or p.evictionPassGenerated: return _ok("三项申请材料尚未齐全。")
+			if phase != "recovery_application" or not _all(p.recoverySubmittedEvidenceIds,RECOVERY) or p.evictionPassGenerated:
+				return _ok(_guide("operationRecovery","application_missing_proofs").replace("{submittedCount}",str(p.recoverySubmittedEvidenceIds.size())))
 			p.evictionPassGenerated = true
 			items.seatReleasePass = true
 			s.ui.libraryFinalsPhase = "pass_ready"
@@ -555,7 +578,9 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			s.native.page = "phone_home"
 			s.currentScene = "phone_home"
 			s.rpgCheckpoint = "campus_library_gate"
-			return _world(s,"campus_bootstrap","022：深色模式也打开了。")
+			var handoff := _world(s,"campus_bootstrap")
+			handoff["open_world"] = true
+			return handoff
 
 	return _ok("当前阶段没有这个操作。")
 
@@ -576,12 +601,15 @@ func objective(s: Dictionary) -> String:
 			return "在座位预约的「我的」中查看入馆记录" if _record_available(s) else "刷卡进入基础图书馆"
 		"occupied_seat_found": return "检查 022 书包旁的纸条"
 		"evidence_gathering":
-			if not p.investigationOpened: return "用占座纸条调查 CC98"
-			if not p.archivedRuleRead: return "找到并阅读旧版离座规则"
-			return "补齐座位恢复证明，并加入 CC98 公开记录（%s / 4）" % p.cc98UploadedEvidenceIds.size()
-		"bd_briefing", "top_ten_rising": return "根据已上传证据核验数字回复"
-		"top_ten_reached", "recovery_application": return "向图书馆提交座位恢复申请"
-		"pass_ready": return "把解除占座 PASS 用在 022 书包上"
+			if not p.investigationOpened: return _guide("currentObjectives","stage_04_search_cc98")
+			if not p.callNumberCollected: return _guide("currentObjectives","stage_06_query_catalog")
+			if not p.archivedRuleRead: return _guide("currentObjectives","stage_07_fetch_rule_book")
+			if not (p.nonPersonProofStamped and p.seatReceiptCollected and p.presenceProofCollected):
+				return "补齐恢复 022 的申请证明（%d/3）" % (int(p.nonPersonProofStamped)+int(p.seatReceiptCollected)+int(p.presenceProofCollected))
+			return _guide("currentObjectives","stage_09_upload_public_notice").replace("{uploadedCount}",str(p.cc98UploadedEvidenceIds.size()))
+		"bd_briefing", "top_ten_rising": return _guide("currentObjectives","stage_10_bd_password")
+		"top_ten_reached", "recovery_application": return _guide("currentObjectives","stage_11_apply_seat_recovery")
+		"pass_ready": return _guide("currentObjectives","stage_12_use_pass_on_bag")
 		"backpack_removed": return "坐到恢复的 022 座位"
 		"seat_recovered": return "与 022 交谈"
 	return ""

@@ -2,7 +2,7 @@ extends SceneTree
 ## Portable headless Main/input contract; no developer checkpoint or UI callback shortcuts.
 const Chapter=preload("res://scripts/chapters/chapter1_2.gd")
 const DisplayFixture=preload("res://tests/zh_text_fixture.gd")
-const RULE_BODY="期末周修订版 · 已归档\n适用范围：座位被非本人随身物持续占用\n目标座位：022\n恢复申请须同时具备三类证明：\n一、本人确实到馆；\n二、目标座位与凭据一致；\n三、当前占用物不具备本人身份。\n规则依据须先完成公开公示。"
+var RULE_BODY:String="\n\n".join(JSON.parse_string(FileAccess.get_file_as_string("res://data/source/library-finals.content.json")).library.archivedRuleBook.pages)
 var state: Node
 var shell: Control
 var checks=0
@@ -50,8 +50,8 @@ func earned_shelf() -> Dictionary:
 	s.ui.libraryFinalsPhase="library_route_unlocked"
 	var controller=Chapter.new()
 	controller.dispatch(s,"lib_enter"); acknowledge(controller,s)
-	controller.dispatch(s,"lib_register_arrival"); controller.dispatch(s,"lib_record"); controller.dispatch(s,"lib_backpack"); acknowledge(controller,s)
-	controller.dispatch(s,"lib_note"); controller.dispatch(s,"lib_investigate","occupancyNote"); acknowledge(controller,s)
+	controller.dispatch(s,"lib_register_arrival"); controller.dispatch(s,"lib_record"); acknowledge(controller,s); controller.dispatch(s,"lib_backpack"); acknowledge(controller,s)
+	controller.dispatch(s,"lib_note"); acknowledge(controller,s); controller.dispatch(s,"lib_investigate","occupancyNote"); acknowledge(controller,s)
 	controller.dispatch(s,"lib_catalog_terminal"); controller.dispatch(s,"lib_catalog_search","三分钟离座法")
 	controller.dispatch(s,"lib_catalog_select","three-minute-leave-method"); acknowledge(controller,s)
 	check(s.items.callNumber755 and s.ui.libraryFinalsPuzzle.callNumberCollected,"ordinary source actions earn the shelf item")

@@ -6,7 +6,7 @@ const FIELDS=[
 	{"id":"notice","key":"auditPublicNoticeFloor","label":"公示编号","unit":"号","min":1,"max":63,"default":45,"hint":"论坛公示 · 关联记录号"},
 	{"id":"proofs","key":"auditProofCount","label":"证明数量","unit":"项","min":1,"max":5,"default":1,"hint":"旧版规则 · 材料类别"}
 ]
-const LOCATIONS={"entrance":"图书馆入口","seat_022":"022","front_desk":"前台","lost_found":"失物招领","catalog_terminal":"馆藏检索","printer":"打印机","shelf_755":"书架背面"}
+const LOCATIONS={"entrance":"图书馆入口","seat_022":"022","front_desk":"前台","lost_found":"失物招领","catalog_terminal":"馆藏检索终端","printer":"打印机","shelf_755":"06 架南端上层"}
 const INK=Color("23344b")
 const MUTED=Color("4d6076")
 const BLUE=Color("2467ac")

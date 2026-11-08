@@ -50,12 +50,14 @@ func _initialize() -> void: call_deferred("run")
 func run() -> void:
 	fixture=DisplayFixture.library(JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/library_story_source.json")))
 	library=Library.new(); witness=Node.new(); root.add_child(witness); s=fresh()
-	check(fixture.sequenceCount==16 and fixture.lineCount==62,"fixture covers 16 sequences and 62 authored lines")
+	check(fixture.sequenceCount==16,"fixture includes the four new object handoffs")
 	check(fixture.separateOwner.lineCount==20,"final 20-line 022 conversation remains C3-owned")
 	act("lib_enter"); check(s.ui.libraryFinalsPhase=="library_entered","first entry preserves source phase")
 	act("lib_record"); check(not s.ui.libraryFinalsPuzzle.entranceRecordRead,"entry reveal blocks underlying interaction")
-	play("library_entered"); act("lib_register_arrival"); act("lib_record"); act("lib_backpack"); play("library_occupied_seat_found")
-	act("lib_note"); act("lib_investigate","occupancyNote"); play("cc98_occupation_post_opened")
+	play("library_entered"); act("lib_register_arrival"); act("lib_record"); play("library_gate_record_checked")
+	act("lib_backpack"); play("library_occupied_seat_found")
+	act("lib_note"); play("library_occupation_note_picked")
+	act("lib_investigate","occupancyNote"); play("cc98_occupation_post_opened")
 	act("lib_catalog_terminal"); act("lib_catalog_search","三分钟离座法"); act("lib_catalog_select","three-minute-leave-method"); play("library_catalog_match_found")
 	act("lib_shelf"); act("lib_read_rule")
 	check(s.ui.libraryFinalsPuzzle.archivedRuleRead and not s.ui.libraryFinalsPuzzle.archivedRuleBriefingSeen,"reading does not prematurely acknowledge rule briefing")
@@ -70,7 +72,12 @@ func run() -> void:
 	check(library.story_session(s,99)==null,"stamp story still pending at899ms")
 	check(library.story_session(s,1)!=null,"stamp story starts at source900ms")
 	play("library_bag_nonperson_proof_issued")
-	act("lib_receipt"); s.networkMode="cellular"; act("lib_audit",["7","47","3"]); play("tiyi_presence_proof_issued")
+	var parallel_start:Dictionary=s.duplicate(true)
+	s.items.rightArrow=false; act("lib_receipt"); play("library_crevice_inspected")
+	check(not s.ui.libraryFinalsPuzzle.seatReceiptCollected,"crevice inspection cannot grant the receipt")
+	s.items.rightArrow=true; act("lib_receipt"); play("library_seat_receipt_recovered")
+	s.networkMode="cellular"; act("lib_audit",["7","47","3"]); play("tiyi_presence_proof_issued")
+	check(not library.objective(s).contains("补齐"),"receipt-first order directs completed evidence to publicity")
 	s.networkMode="campus_wifi"
 	for id: String in Library.EVIDENCE: act("lib_upload",id)
 	check(s.ui.libraryFinalsPhase=="bd_briefing" and not s.ui.libraryFinalsPuzzle.preBdBriefingSeen,"four evidence uploads queue briefing without unlocking bd")
@@ -95,7 +102,14 @@ func run() -> void:
 	act("lib_sit"); check(not s.ui.libraryFinalsPuzzle.playerSeated,"eviction exchange cannot be skipped by sitting")
 	play("library_backpack_evicted"); act("lib_sit")
 	check(library.story_session(s)==null and library.scene_session(s)!=null,"final022 remains exclusively existing C3 opening")
-	check(covered.size()==12 and covered_lines==53,"all currently connected story sequences traversed end-to-end")
+	check(covered.size()==fixture.sequenceCount and covered_lines==fixture.lineCount,"all authored story sequences traversed end-to-end")
+	# Repeat the parallel branch with the receipt last, as an ordinary earned state.
+	s=parallel_start; library=Library.new(); s.networkMode="cellular"
+	act("lib_audit",["7","47","3"]); play("tiyi_presence_proof_issued")
+	var detail:String=library.view("library_archive",s).guidance
+	check(detail.contains("【待办】在 022 桌面夹缝") and detail.contains("【已备齐·可复查】《本人来过证明》"),"receipt-last route lists its actual remaining proof")
+	act("lib_receipt"); play("library_seat_receipt_recovered")
+	check(library.objective(s).contains("公示") and not library.objective(s).contains("补齐"),"both evidence orders converge on the same public upload objective")
 	# Save replacement and stale capabilities, plus source recovery priority.
 	s=fresh(); s.ui.libraryFinalsPhase="evidence_gathering"; s.ui.libraryFinalsPuzzle.archivedRuleRead=true
 	var stale: RefCounted=library.story_session(s); stale.attach(s,witness)

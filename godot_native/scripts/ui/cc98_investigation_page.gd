@@ -155,8 +155,15 @@ func build(b,view: Dictionary) -> Control:
 	var uploader=Control.new(); uploader.name="Cc98EvidenceUploader"; uploader.position=Vector2(LEFT,y); uploader.size=Vector2(WIDTH,44); uploader.mouse_filter=Control.MOUSE_FILTER_IGNORE; root.add_child(uploader)
 	label(b,root,"楼主编辑：上传证据",y,19,BLUE).name="Cc98EvidenceHeading"
 	y+=height("楼主编辑：上传证据",WIDTH,19)+8
-	label(b,root,"证据完整度：%d/4" % uploaded.size(),y,14,MUTED).name="Cc98EvidenceCount"
+	label(b,root,"公开材料：%d/4" % uploaded.size(),y,14,MUTED).name="Cc98EvidenceCount"
 	y+=height("证据完整度：0/4",WIDTH,14)+12
+	if int(puzzle.bdPasswordAttemptCount)>=2:
+		var clues:PackedStringArray=[]
+		for clue:Dictionary in source.bdPassword.clues:
+			clues.append("%s → %s" % [clue.label,clue.instruction])
+		var comparison:Label=label(b,root,"\n".join(clues),y,14,BLUE)
+		comparison.name="Cc98BdEvidenceComparison"
+		y+=comparison.size.y+16
 	var feedback=label(b,root,feedback_text,y+source.evidenceSlots.size()*112+8,14,Color("963f36"))
 	feedback.name="Cc98EvidenceFeedback"; feedback.size.y=height("这个槽位需要对应名称的纸质材料。",WIDTH,14)
 	# Suppress only the generic upload dropdown. Other fold/briefing actions keep
@@ -165,7 +172,8 @@ func build(b,view: Dictionary) -> Control:
 	for evidence: Dictionary in source.evidenceSlots:
 		var id=str(evidence.id); var item=str(Library.EVIDENCE[id])
 		var done=uploaded.has(id); var owned=bool(b.s.items.get(item,false))
-		var slot=DropButton.new(); slot.name="Cc98EvidenceSlot_"+id; slot.position=Vector2(LEFT,y); slot.size=Vector2(WIDTH,104); slot.focus_mode=Control.FOCUS_NONE
+		var row_height:float=maxf(104,48+height(str(evidence.source),WIDTH-146,14)+12)
+		var slot=DropButton.new(); slot.name="Cc98EvidenceSlot_"+id; slot.position=Vector2(LEFT,y); slot.size=Vector2(WIDTH,row_height); slot.focus_mode=Control.FOCUS_NONE
 		for mode in ["normal","hover","pressed","disabled"]: slot.add_theme_stylebox_override(mode,b._style(Color("edf4ec") if done else Color.WHITE,Color("bfcbd0"),0,1))
 		root.add_child(slot)
 		slot.item_dropped.connect(func(dropped):
@@ -184,7 +192,8 @@ func build(b,view: Dictionary) -> Control:
 		# The entire named material row remains a drop surface, including the
 		# ordinary button area; click/keyboard activation still uses that button.
 		upload.mouse_filter=Control.MOUSE_FILTER_PASS
-		y+=112
+		y+=row_height+8
+	feedback.position.y=y+8
 	y+=feedback.size.y+24
 	root.custom_minimum_size.y=maxf(b.APP_HEIGHT,y); root.size.y=root.custom_minimum_size.y
 	return root

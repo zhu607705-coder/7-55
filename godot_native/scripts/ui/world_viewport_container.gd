@@ -19,6 +19,15 @@ func _drop_data(at_position: Vector2,data: Variant) -> void:
 	if _can_drop_data(at_position,data):
 		world_surface._drop_data(release_source_position(source_position(at_position),data),data)
 
+func drop_inventory_touch(root_position: Vector2,data: Variant) -> bool:
+	if not is_visible_in_tree(): return false
+	var local := get_global_transform_with_canvas().affine_inverse()*root_position
+	var point := source_position(local)
+	if not point.is_finite() or not world_surface.exploration_safe_rect(true).has_point(point): return false
+	if not world_surface._can_drop_data(point,data): return false
+	world_surface._drop_data(point,data)
+	return true
+
 func release_source_position(fallback:Vector2,data:Variant)->Vector2:
 	var release:Variant=Gesture.release_position(data,get_viewport())
 	if release==null:return fallback

@@ -322,7 +322,8 @@ func library() -> void:
 	for i in range(100):
 		if session.status!="playing": break
 		session.advance_current(state.d,witness)
-	await step("lib_opening_complete",session)
+	var handoff: Dictionary = await step("lib_opening_complete",session)
+	check(handoff.get("open_world",false),"022 completion explicitly opens the campus world")
 	if check(state.d.native.chapter==3 and state.d.canteenHunt.active,"continuous library opens chapter3"):
 		completed_chapters.append(2)
 	await boundary("chapter2")

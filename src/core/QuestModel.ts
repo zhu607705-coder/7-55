@@ -6,6 +6,7 @@ import canteenContent from "../data/chapter3-canteen.content.json";
 import theaterContent from "../data/chapter3-theater.content.json";
 import qizhenContent from "../data/chapter3-qizhen-lake.content.json";
 import clockContent from "../data/chapter4-clock.content.json";
+import libraryContent from "../data/library-finals.content.json";
 import chapterFour755Content from "../data/chapter4-755.content.json";
 import chapterFourContent from "../data/chapter4-temporal-maze.content.json";
 import { selectChapterFourWechatObjective } from "../modules/ChapterFourWechatModel";
@@ -278,6 +279,8 @@ function movementQuest(state: GameState): QuestViewModel {
 
 function libraryQuest(state: GameState): QuestViewModel {
   const puzzle = state.ui.libraryFinalsPuzzle;
+  const objectives = libraryContent.guidance.currentObjectives;
+  const branches = objectives.stage_08_parallel_evidence.branches;
   const proofCount = [
     puzzle.nonPersonProofStamped,
     puzzle.seatReceiptCollected,
@@ -287,15 +290,15 @@ function libraryQuest(state: GameState): QuestViewModel {
     {
       id: "chapter_two_go_library",
       label: "去图书馆",
-      hints: ["在校园地图上找到基础图书馆。走到大门前就能进馆。"],
+      hints: [objectives.stage_01_check_gate],
       targetSurface: "rpg"
     },
     {
       id: "chapter_two_confirm_seat",
       label: "确认座位状态",
       hints: [
-        "先查看闸机小屏。入馆和到座是两条时间记录，都记下来。",
-        "进一层书库找 022。看看桌上的书包，再拿起旁边的纸条。"
+        objectives.stage_02_find_022,
+        objectives.stage_03_pick_note
       ],
       targetSurface: "rpg"
     },
@@ -303,9 +306,9 @@ function libraryQuest(state: GameState): QuestViewModel {
       id: "chapter_two_check_rules",
       label: "查清占座规则",
       hints: [
-        "纸条上写着“临时离座规则详见 CC98”。",
-        "把占座纸条拖到 CC98 搜索框，打开 022 的调查帖。",
-        "从帖子里找书名，再去馆藏检索终端查旧规则放在哪排书架。"
+        objectives.stage_04_search_cc98,
+        objectives.stage_06_query_catalog,
+        objectives.stage_07_fetch_rule_book
       ],
       targetSurface: "phone",
       recommendedScene: "cc98"
@@ -314,9 +317,10 @@ function libraryQuest(state: GameState): QuestViewModel {
       id: "chapter_two_collect_materials",
       label: `凑齐恢复材料（${proofCount}/3）`,
       hints: [
-        "需要书包非本人证明、022 座位小票和本人来过证明。分别查照片、桌面夹缝和体艺补录。",
-        "拍书包后调低屏幕亮度，核对旧照再生成报告，带去前台盖章。桌缝里的小票可以用右移箭头拨出来。",
-        "切到移动数据进体艺。补录三项分别看入馆到座的时间差、楼主编辑里的公示编号、旧规要求的证明类别数。"
+        branches.bag_non_person_proof[puzzle.nonPersonProofStamped ? "completed" : "pending"],
+        branches.seat_022_receipt[puzzle.seatReceiptCollected ? "completed" : "pending"],
+        branches.library_presence_proof[puzzle.presenceProofCollected ? "completed" : "pending"],
+        objectives.stage_09_upload_public_notice.replace("{uploadedCount}", String(puzzle.cc98UploadedEvidenceIds.length))
       ],
       targetSurface: "phone",
       recommendedScene: "phone_home"
@@ -324,18 +328,15 @@ function libraryQuest(state: GameState): QuestViewModel {
     {
       id: "chapter_two_make_post_visible",
       label: "让帖子被看见",
-      hints: [
-        "先把四份证据上传到 CC98 调查帖。",
-        "按上传栏从上到下，在楼下选四条数字回复点 bd。",
-        "依次取旧规的证明类别数、书包通过的身份核验项数、小票座位号末位、入馆到座的分钟数。"
-      ],
+      hints: [objectives.stage_10_bd_password,
+        ...(puzzle.bdPasswordAttemptCount >= 2 ? [libraryContent.guidance.operationRecovery.bd_wrong_repeated] : [])],
       targetSurface: "phone",
       recommendedScene: "cc98"
     },
     {
       id: "chapter_two_submit_recovery",
       label: "提交恢复申请",
-      hints: ["公开确认后，打开浙大钉的图书馆服务，进入 022 恢复申请，提交三份证明。"],
+      hints: [objectives.stage_11_apply_seat_recovery],
       targetSurface: "phone",
       recommendedScene: "zjuding"
     },

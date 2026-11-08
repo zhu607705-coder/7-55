@@ -320,7 +320,7 @@ function importFixture({ sourcePage = 'desktop', targetPage = 'bonsai', feedback
     check: (value, label) => assert.ok(value, label), snapshot: async () => copy(reads++ === 0 ? before : after),
     state: value => value?.state, controls: value => value?.visibleControls || [], settings: async () => {}, clickControl: async () => {},
     active: { imports, cdp: { send: async (method, params) => { calls.push({ method, params }); return { root: { nodeId: 1 }, nodeId: 2 }; } } },
-    acceptPortraitFallback: async () => { throw Error('unexpected world fallback'); },
+    enterLandscapeScene: async () => { throw Error('unexpected world fallback'); },
   });
   return { run, calls, imports, get clock() { return clock; } };
 }

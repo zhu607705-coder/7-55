@@ -458,6 +458,7 @@ func show_manager() -> void:
 	if _busy: return
 	var choices: Array=[]
 	if has_save: choices.append(["继续游戏",_continue_current])
+	elif ready_for_play: choices.append(["返回",_resume])
 	choices.append(["立即保存",save_now])
 	if not member_id.is_empty():
 		for key: String in ["previous","beforeRestart"]:

@@ -27,6 +27,9 @@ var _npc_completion_waiting: Dictionary = {}
 const KayakObject = preload("res://scripts/objects/kayak_world_adapter.gd")
 const CampusWayfinding = preload("res://scripts/ui/campus_wayfinding.gd")
 const LibraryTurnstiles = preload("res://scripts/presentation/library_turnstiles.gd")
+const LibraryActorTexture = preload("res://scripts/objects/library_actor_texture.gd")
+const LIBRARY_BASE_ZOOM := 0.85
+const LIBRARY_WIDE_ZOOM := 0.74
 const DirectWorldGestures=preload("res://scripts/direct_world_gestures.gd")
 const TargetApproach=preload("res://scripts/target_approach.gd")
 const NorthObjects=preload("res://scripts/presentation/north_generated_objects.gd")
@@ -60,6 +63,7 @@ var player_left_idle: Texture2D
 var player := Vector2.ZERO
 var camera := Vector2.ZERO
 var zoom := 0.85
+var _library_view_zoom := LIBRARY_BASE_ZOOM
 var world_size := Vector2(960,540)
 var background_rect := Rect2(0,0,960,540)
 var collisions: Array = []
@@ -364,7 +368,7 @@ func refresh_world() -> void:
 			if gate.storyFloor == floor_id and phase_id in gate.get("activePhases",[]) and gate.get("collision",false): collisions.append(gate.bounds)
 		if phase_id == "final_chase" and floor_id == "A1" and not preserve_position: spawn = spec.layout.finalChaseRuntime.playerStart
 		zoom = 0.85
-	else: zoom = 0.85
+	else: zoom = _library_view_zoom if scene_id=="library_interior" and not capture_mode else 0.85
 	world_space.configure(scene_id,spec,State.d,background_rect,mask,mask_meta)
 	foreground.append_array(world_space.source_foregrounds)
 	# Wide source plates keep their exact authored coordinates, but never upload
@@ -614,6 +618,18 @@ func _distance_at(target:Dictionary,anchor:Vector2)->float:
 		return point.distance_to(point.clamp(rect.position,rect.end))
 	return point.distance_to(_target_point(target))
 
+func _library_chair_anchor(target: Dictionary) -> Vector2:
+	if scene_id != "library_interior" or library_layers == null or not library_layers.objects.ready:
+		return Vector2.INF
+	var chair_id := str(target.get("id", ""))
+	if not library_layers.CHAIR_IDS.has(chair_id) or target.get("action") not in ["lib_catalog_terminal", "lib_sit", "library_study"]:
+		return Vector2.INF
+	var chair: Rect2 = library_layers.objects.areas[library_layers.CHAIR_IDS[chair_id]]
+	return Vector2(chair.get_center().x, chair.end.y - PlayerMetrics.FOOT_CENTER_OFFSET.y)
+
+func _library_chair_reachable(chair_anchor: Vector2, from: Vector2) -> bool:
+	return from.y >= chair_anchor.y - 12.0 and from.distance_to(chair_anchor) <= 58.0
+
 func _scene_presentation_blocks() -> bool:
 	if guard_capture.active:return true
 	if scene_id=="library_interior" and library_layers!=null and library_layers.blocks_movement(): return true
@@ -662,18 +678,17 @@ func _try_interact(target: Dictionary = {}) -> void:
 		return
 	if action=="c3_target:theater_exit" and is_instance_valid(host_node) and host_node.has_method("_begin_theater_departure") and host_node._begin_theater_departure():return
 	if scene_id == "library_interior" and library_layers != null and library_layers.objects.ready:
-		var chair_id := str(target.get("id",""))
-		if library_layers.CHAIR_IDS.has(chair_id) and action in ["lib_catalog_terminal", "lib_sit", "library_study"]:
+		var chair_id := "catalog_terminal" if action == "lib_catalog_terminal" else str(target.get("id", ""))
+		var chair_anchor := _library_chair_anchor(target)
+		if chair_anchor.is_finite():
 			if library_layers.local_chair == chair_id:
 				if action == "library_study":
 					library_layers.leave_chair()
 					queue_redraw()
-				elif library_layers.chair_age >= library_layers.SIT_SECONDS and action == "lib_catalog_terminal":
+				elif library_layers.chair_age >= library_layers.SIT_SECONDS and target.id == "catalog_terminal":
 					State.act(action)
 				return
-			var chair: Rect2 = library_layers.objects.areas[library_layers.CHAIR_IDS[chair_id]]
-			var approach := Vector2(chair.get_center().x, chair.end.y - PlayerMetrics.foot_center_offset(scene_id).y)
-			if player.y < approach.y - 12.0 or player.distance_to(approach) > 58.0:
+			if not _library_chair_reachable(chair_anchor, player):
 				State.feedback.emit("请从椅子后面靠近再坐下。")
 				return
 			_cancel_floor_route()
@@ -1039,7 +1054,8 @@ func player_visual() -> Dictionary:
 			if direction=="side" and player_side_idle!=null:texture=player_side_idle
 			elif direction=="left" and player_left_idle!=null:texture=player_left_idle
 	if scene_id=="library_interior" and library_layers!=null and library_layers.animations.ready:
-		var visual:Dictionary={"texture":texture,"flip_h":flip,"direction":direction,"angle":float(pose.angle)}
+		# Turn through the authored facing cels without rotating their pixel grid.
+		var visual:Dictionary={"texture":texture,"flip_h":flip,"direction":direction,"angle":0.0}
 		visual.merge(library_layers.animations.actor(direction,flip,walk_clock*1000,walk_clock>0 and player_turn.is_empty()),true)
 		return visual
 	return {"texture":texture,"flip_h":flip,"direction":direction,"angle":float(pose.angle)}
@@ -1047,8 +1063,12 @@ func player_visual() -> Dictionary:
 func player_geometry() -> Dictionary:
 	var actor:=player_visual()
 	var angle:=deg_to_rad(float(actor.angle))
+	var offset:=Vector2.ZERO
+	if scene_id=="library_interior" and library_layers!=null and library_layers.animations.ready:
+		var anchor:=size/2+(player-camera)*zoom
+		offset=(LibraryActorTexture.snap_draw_anchor(self,anchor)-anchor)/zoom
 	# Rotate the entire original frame about its registered source anchor.
-	return {"rect":PlayerMetrics.visual_rect(player,display_scale_at(player)),"texture":actor.texture,"flip_h":actor.flip_h,"transform":Transform2D(angle,player-player.rotated(angle))}
+	return {"rect":PlayerMetrics.visual_rect(player,display_scale_at(player)),"texture":actor.texture,"flip_h":actor.flip_h,"transform":Transform2D(angle,player-player.rotated(angle)+offset)}
 
 func _apply_guard_motion(motion:Vector2,intent:Vector2,delta:float) -> void:
 	var pose:=CharacterFacing.pose(motion,intent,guard_facing,guard_flip)
@@ -1066,6 +1086,23 @@ func _c4_axis_destination(start:Vector2,motion:Vector2) -> Vector2:
 
 func _axis_destination(start:Vector2,motion:Vector2) -> Vector2:
 	return SpatialRules.sweep_axis(start,motion,can_stand,4.0)
+
+func fit_library_camera(usable_extent: Vector2) -> void:
+	if capture_mode or usable_extent.y <= 0.0: return
+	# Give wider screens more map context only when there is enough height
+	# to keep the objects readable. The game canvas and source geometry stay fixed.
+	var width_room := smoothstep(16.0/9.0,2.3,usable_extent.aspect())
+	var height_room := smoothstep(320.0,390.0,usable_extent.y)
+	var fitted_zoom := lerpf(LIBRARY_BASE_ZOOM,LIBRARY_WIDE_ZOOM,width_room*height_room)
+	if is_equal_approx(fitted_zoom,_library_view_zoom): return
+	var ratio := fitted_zoom/_library_view_zoom
+	_library_view_zoom=fitted_zoom
+	if scene_id!="library_interior": return
+	cancel_exploration_gestures()
+	# Keep any player-selected magnification relative to the new default.
+	zoom=clampf(zoom*ratio,0.45,1.6)
+	_update_camera()
+	queue_redraw()
 
 func _update_camera() -> void:
 	var object_focus: Variant=host_node.get("object_focus") if is_instance_valid(host_node) else null
@@ -1320,13 +1357,16 @@ func _draw_actor_pass(canvas: CanvasItem,layer_context: Dictionary,defer_foregro
 		var frame:Texture2D=actor.texture
 		var visual: Rect2 = PlayerMetrics.visual_rect(drawn_player,display_scale_at(player))
 		var shadow_scale:=display_scale_at(player)/PlayerMetrics.DISPLAY_SCALE if scene_id=="library_interior" else 1.0
+		var draw_anchor:=origin+drawn_player*zoom
+		if scene_id=="library_interior" and library_layers!=null and library_layers.animations.ready:
+			draw_anchor=LibraryActorTexture.snap_draw_anchor(canvas,draw_anchor)
 		if seated_fraction < 0.5:
-			draw_ellipse_shadow(origin+(drawn_player+Vector2(0,39))*zoom,Vector2(19,6)*zoom*shadow_scale,canvas)
+			draw_ellipse_shadow(draw_anchor+Vector2(0,39)*zoom,Vector2(19,6)*zoom*shadow_scale,canvas)
 		var actor_ids: Array=[]
 		for target: Dictionary in targets:
 			if target.get("follow_player",false): actor_ids.push_front(str(target.id))
 		if not actor_ids.is_empty(): register_object_surface(actor_ids,player_geometry())
-		canvas.draw_set_transform(origin+drawn_player*zoom,deg_to_rad(float(actor.angle)),Vector2.ONE*zoom)
+		canvas.draw_set_transform(draw_anchor,deg_to_rad(float(actor.angle)),Vector2.ONE*zoom)
 		if seated_fraction > 0.0:
 			var animations = library_layers.animations
 			# From behind the chair, the calves and shoes fold away under the table.
@@ -1619,14 +1659,14 @@ func _gui_input(event: InputEvent) -> void:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP: zoom = minf(1.6,zoom+.1)
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN: zoom = maxf(.45,zoom-.1)
 		elif event.button_index == MOUSE_BUTTON_LEFT:
+			_cancel_floor_route(); move_target = Vector2.INF
 			var point: Vector2 = (event.position-size/2)/zoom+camera
 			if chapter4_layers != null and scene_id == "duan_yongping_temporal_maze" and not chapter4_layers.pick_drag(point,State.d).is_empty():
 				move_target = Vector2.INF
 				return
 			var clicked: Dictionary = _pick_target(point)
 			if not clicked.is_empty():
-				var limit:float=float(clicked.get("radius",100))*(.5 if scene_id=="dorm_hub" else 1.0)
-				if _distance(clicked)<=limit or not _queue_target_approach(clicked):_try_interact(clicked)
+				_interact_clicked_target(clicked)
 			else:_mobile_floor_tap(event.position)
 		accept_event()
 	if kayak and event is InputEventKey and event.pressed and not event.echo:
@@ -1675,6 +1715,7 @@ func _library_book_input(event:InputEvent)->bool:
 		else:book.drag(point)
 		queue_redraw();return true
 	if not pressed or not book.available() or target.is_empty():return false
+	if not exploration_safe_rect(true).has_point(event.position) or _distance(target)>float(target.radius):return false
 	var hit:Rect2=book.geometry(library_layers.objects,library_layers.shelf_offset).rect.grow(10)
 	if not hit.has_point(point):return false
 	if State.d.native.mode!="light":
@@ -2263,9 +2304,9 @@ func _floor_segment_clear(a: Vector2,b: Vector2,planned_obstacles: Array=[],vali
 	# Planning is synchronous and has already checked each graph node. Walking
 	# always takes the default branch and reads current collisions every frame.
 	if not validated_nodes and (not _floor_stand(a) or not _floor_stand(b)): return false
-	if not _floor_campus_sweep_clear(a,b): return false
+	var segment_bounds := Rect2(a.min(b), (b-a).abs())
 	for obstacle: Rect2 in (planned_obstacles if validated_nodes else _floor_obstacles()):
-		if MobileFloorRoute.segment_hits(a,b,obstacle): return false
+		if segment_bounds.intersects(obstacle, true) and MobileFloorRoute.segment_hits(a,b,obstacle): return false
 	if mask.is_empty(): return true
 	# Exact conservative fast path: if the ENTIRE swept bounding rectangle
 	# is supported and hazard-free, every intermediate whole foot is too.
@@ -2333,6 +2374,25 @@ func _canteen_floor_goal(goal: Vector2,obstacles: Array) -> Vector2:
 	if not Rect2(Vector2.ZERO,world_size).encloses(PlayerMetrics.visual_rect(goal,display_scale_at(goal))): return goal
 	return _canteen_floor_tap.nearest(goal,CanteenFloorTap.PIXEL_RADIUS/zoom,obstacles,_floor_stand,func(anchor: Vector2): return _floor_empty_destination(anchor+PlayerMetrics.foot_center_offset(scene_id)))
 
+func _library_floor_goal(goal: Vector2, obstacles: Array) -> Vector2:
+	if not mask.is_empty() or _floor_stand(goal): return goal
+	var feet := PlayerMetrics.foot_rect(goal)
+	var tap := feet.get_center()
+	# Forgive a partial-foot overlap only when the tap itself was on bare floor.
+	if world_space.scene_id == scene_id and not world_space.allows_ground(feet): return goal
+	for doorway: Rect2 in _door_collision_rects():
+		if feet.intersects(doorway): return goal
+	for obstacle: Dictionary in collisions:
+		var shape: Dictionary = library_layers.replace_collision(obstacle)
+		var base := _rect(shape)
+		if base.has_point(tap): return goal
+		if feet.intersects(base):
+			var id := str(shape.get("id", ""))
+			if not shape.get("nativeLibraryObject", false) or "rail" in id or id.begins_with("entrance_"): return goal
+	if not Rect2(Vector2.ZERO, world_size).encloses(PlayerMetrics.visual_rect(goal, display_scale_at(goal))): return goal
+	return _canteen_floor_tap.nearest(goal, CanteenFloorTap.PIXEL_RADIUS / zoom, obstacles, _floor_stand,
+		func(anchor: Vector2): return _floor_empty_destination(anchor + PlayerMetrics.FOOT_CENTER_OFFSET))
+
 func _floor_phase_context()->Array:
 	var n:Dictionary=State.d.get("native",{});var ui:Dictionary=State.d.get("ui",{})
 	var lake:Dictionary=State.d.get("qizhenLake",{});var chapter:Dictionary=State.d.get("chapter4",{})
@@ -2345,7 +2405,7 @@ func _floor_intent_valid()->bool:
 		if str(target.get("id",""))==str(_floor_pending_interaction.target.get("id","")):return target==_floor_pending_interaction.target
 	return false
 
-func _queue_target_approach(target:Dictionary)->bool:
+func _queue_target_approach(target:Dictionary, interact_on_arrival := true)->bool:
 	if kayak!=null or _interaction_presentation_blocks() or (scene_id=="dorm_hub" and (not State.d.actOne.get("controlsInstalled",false) or not State.d.actOne.get("movementEnabled",false))):return false
 	var limit:float=float(target.get("radius",100))*(.5 if scene_id=="dorm_hub" else 1.0)
 	var area:=Rect2(_target_point(target),Vector2.ZERO)
@@ -2359,18 +2419,24 @@ func _queue_target_approach(target:Dictionary)->bool:
 		if raw is Dictionary:authored=Vector2(float(raw.x),float(raw.y))
 		elif raw is Array and raw.size()>=2:authored=Vector2(float(raw[0]),float(raw[1]))
 		if scene_id=="dorm_hub" and authored.is_finite():authored=authored*.5+Vector2(245,0)
+	var chair_anchor := _library_chair_anchor(target)
+	if chair_anchor.is_finite():
+		# The collision foot must clear the back edge before the sit animation starts.
+		authored = chair_anchor + Vector2.DOWN * (PlayerMetrics.FOOT_SIZE.y / 2.0 + 1.0)
 	_floor_bounds=_floor_anchor_bounds(_floor_visible_rect())
 	var offset:Vector2=PlayerMetrics.foot_center_offset(scene_id) if scene_id=="duan_yongping_temporal_maze" else Vector2.ZERO
 	var obstacles:Array=_floor_obstacles();var attempts:=0
 	for goal:Vector2 in TargetApproach.candidates(player,area,limit,offset,authored):
+		if chair_anchor.is_finite() and not _library_chair_reachable(chair_anchor, goal): continue
 		if not _floor_stand(goal) or _distance_at(target,goal)>limit:continue
 		attempts+=1
 		var route:Array[Vector2]=_floor_plan(goal,obstacles)
 		if not route.is_empty():
 			_floor_route=route;_floor_goal=goal+PlayerMetrics.foot_center_offset(scene_id);_floor_status="moving"
 			_floor_world_key=world_key;_floor_view_size=size;_floor_view_zoom=zoom;_floor_expected_camera=camera
-			_floor_intent_state=State.d
-			_floor_pending_interaction={"target":target.duplicate(true),"world_key":world_key,"phase":_floor_phase_context()}
+			if interact_on_arrival:
+				_floor_intent_state=State.d
+				_floor_pending_interaction={"target":target.duplicate(true),"world_key":world_key,"phase":_floor_phase_context()}
 			grab_focus();queue_redraw();return true
 		if attempts>=TargetApproach.MAX_PLANS:break
 	return false
@@ -2384,6 +2450,21 @@ func _resolve_floor_interaction()->void:
 	_floor_pending_interaction.clear();_floor_intent_state={}
 	if not current.is_empty():_try_interact(current)
 
+func _interact_clicked_target(target: Dictionary) -> void:
+	var limit: float = float(target.get("radius", 100)) * (.5 if scene_id == "dorm_hub" else 1.0)
+	if target.id == "library_shelf_755" and library_layers != null and library_layers.objects.ready and library_layers.book.available():
+		if State.d.native.mode != "light":
+			State.feedback.emit("切换到浅色操作，再向下抽出这本书。")
+		elif _distance(target) <= limit:
+			State.feedback.emit("按住755号书的书脊，向下抽出。")
+		elif not _queue_target_approach(target, false):
+			State.feedback.emit("请沿书架通道靠近书脊。")
+		return
+	var chair_anchor := _library_chair_anchor(target)
+	var needs_chair_approach := chair_anchor.is_finite() and not _library_chair_reachable(chair_anchor, player)
+	if (_distance(target) > limit or needs_chair_approach) and _queue_target_approach(target): return
+	_try_interact(target)
+
 func _mobile_floor_tap(local: Vector2) -> void:
 	_cancel_floor_route(); move_target=Vector2.INF
 	if presentation_actor_hidden or capture_mode or _scene_presentation_blocks() or _shell_input_blocked(): return
@@ -2395,9 +2476,8 @@ func _mobile_floor_tap(local: Vector2) -> void:
 	if chapter4_layers!=null and scene_id=="duan_yongping_temporal_maze" and not chapter4_layers.pick_drag(point,State.d).is_empty(): return
 	var clicked:=_pick_target(point)
 	if not clicked.is_empty():
-		var limit:float=float(clicked.get("radius",100))*(.5 if scene_id=="dorm_hub" else 1.0)
-		if _distance(clicked)>limit and _queue_target_approach(clicked):return
-		_try_interact(clicked);return
+		_interact_clicked_target(clicked)
+		return
 	if kayak or (scene_id=="dorm_hub" and (not State.d.actOne.get("controlsInstalled",false) or not State.d.actOne.get("movementEnabled",false))): return
 	# Painted occluders and actor pixels are not empty floor. Selection stays
 	# entirely with the unchanged picker; this route never chooses a target.
@@ -2413,7 +2493,7 @@ func _mobile_floor_tap(local: Vector2) -> void:
 	# sprite origin. Object and inventory hit coordinates are unchanged.
 	var goal:=PlayerMetrics.anchor_from_foot_center(point,scene_id)
 	var obstacles:=_floor_obstacles()
-	var resolved:=_canteen_floor_goal(goal,obstacles)
+	var resolved := _library_floor_goal(goal, obstacles) if scene_id == "library_interior" else _canteen_floor_goal(goal, obstacles)
 	if resolved!=goal:
 		goal=resolved
 		_floor_goal=goal+PlayerMetrics.foot_center_offset(scene_id)

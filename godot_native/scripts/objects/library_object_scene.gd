@@ -82,6 +82,17 @@ static func fit_art(box: Rect2, image_size: Vector2) -> Rect2:
 	var factor := minf(box.size.x / image_size.x, box.size.y / image_size.y)
 	var dimensions := image_size * factor
 	return Rect2(Vector2(box.get_center().x - dimensions.x / 2, box.end.y - dimensions.y), dimensions)
+func _minified_texture(original:Texture2D)->Texture2D:
+	# Preserve the source grid. Filter architectural trim and book patterns
+	# when the viewport samples below their original resolution.
+	var image:Image=original.get_image()
+	if image==null or image.is_empty():return original
+	if image.is_compressed() and image.decompress()!=OK:return original
+	if not image.has_mipmaps() and image.generate_mipmaps()!=OK:return original
+	var filtered:=CanvasTexture.new()
+	filtered.diffuse_texture=ImageTexture.create_from_image(image)
+	filtered.texture_filter=CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	return filtered
 
 func _solid(id:String,rect:Rect2)->Dictionary:
 	return {"id":id,"nativeLibraryObject":true,"left":rect.position.x,"top":rect.position.y,"right":rect.end.x,"bottom":rect.end.y}

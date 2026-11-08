@@ -56,6 +56,9 @@ const RpgGameHost = lazy(() =>
 const LIBRARY_STORY_SEQUENCE_BY_EVENT: Readonly<Record<string, string>> = {
   library_route_unlocked: "library_route_unlocked",
   library_entered: "library_entered",
+  library_entrance_record_read: "library_gate_record_checked",
+  library_occupancy_note_collected: "library_occupation_note_picked",
+  library_seat_receipt_recovered: "library_seat_receipt_recovered",
   library_occupied_seat_found: "library_occupied_seat_found",
   cc98_occupation_post_opened: "cc98_occupation_post_opened",
   library_catalog_match_found: "library_catalog_match_found",

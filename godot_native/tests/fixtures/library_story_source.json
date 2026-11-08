@@ -2,7 +2,7 @@
   "sources": [
     {
       "path": "src/App.tsx",
-      "sha256": "4f144807b3d981f6476cc70fa037d9829fdd430114ab46362afc0c0e85037bdc"
+      "sha256": "ecaa97125bc9a304fcb0ba5b5bad348cfcaa3da35ae0371a480e0f68796ed13d"
     },
     {
       "path": "src/components/LibraryStoryOverlay.tsx",
@@ -28,6 +28,9 @@
   "eventMap": {
     "library_route_unlocked": "library_route_unlocked",
     "library_entered": "library_entered",
+    "library_entrance_record_read": "library_gate_record_checked",
+    "library_occupancy_note_collected": "library_occupation_note_picked",
+    "library_seat_receipt_recovered": "library_seat_receipt_recovered",
     "library_occupied_seat_found": "library_occupied_seat_found",
     "cc98_occupation_post_opened": "cc98_occupation_post_opened",
     "library_catalog_match_found": "library_catalog_match_found",

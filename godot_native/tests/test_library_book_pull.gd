@@ -79,9 +79,14 @@ func run()->void:
 		await fixture(dimensions)
 		state.select_item("callNumber755")
 		shell.world.player=Vector2(625,355);shell.world._sync_player();shell.world._update_camera();shell.world.queue_redraw();await frames()
-		var start:=await begin_pull(false)
-		check(not shell.world.library_layers.book.pulling and shell.world._floor_pending_interaction.is_empty(),"far press approaches the book without queuing extraction")
-		await end_pull(start,false)
+		var far_position:Vector2=shell.world.player
+		var start:=await begin_pull(true)
+		check(not shell.world.library_layers.book.pulling and shell.world._floor_route.is_empty(),"far touch down starts neither movement nor extraction")
+		await end_pull(start,true,true)
+		check(shell.world._floor_route.is_empty() and shell.world.player==far_position,"canceling a far spine press never walks")
+		start=await begin_pull(true)
+		await end_pull(start,true)
+		check(not shell.world._floor_route.is_empty() and shell.world._floor_pending_interaction.is_empty(),"a completed far tap walks toward the spine with no extraction queued")
 		advance(3200)
 		check(action_count("lib_shelf")==0 and state.d.items.callNumber755 and not state.d.ui.libraryFinalsPuzzle.archivedRuleCollected,"arriving with a selected clue still requires the physical pull")
 	Input.emulate_mouse_from_touch=original_emulation

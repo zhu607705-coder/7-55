@@ -43,6 +43,10 @@ func valid(s: Dictionary) -> bool:
 	if phase in ["idle","friend_contacted"]: return false
 	match sequence_id:
 		"library_entered": return phase=="library_entered"
+		"library_gate_record_checked": return p.get("entranceRecordRead",false)
+		"library_occupation_note_picked": return p.get("occupancyNoteCollected",false)
+		"library_crevice_inspected": return not p.get("seatReceiptCollected",false)
+		"library_seat_receipt_recovered": return p.get("seatReceiptCollected",false)
 		"library_occupied_seat_found": return p.get("backpackInspected",false)
 		"cc98_occupation_post_opened": return p.get("investigationOpened",false)
 		"library_catalog_match_found": return p.get("callNumberCollected",false)

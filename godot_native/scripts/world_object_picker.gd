@@ -44,22 +44,22 @@ func pick(point: Vector2, current_targets: Array, inventory_drop: bool=false) ->
 	for index in range(surfaces.size()-1,-1,-1):
 		var surface: Dictionary=surfaces[index]
 		if not contains(surface.geometry,point): continue
-		# Multiple actions on one rendered object are supplied in state-owned order.
-		# This is independent of the dragged or selected inventory item.
+		# A single visible object can support both a tap and an item drop.
+		# Use the first action for the gesture, without looking at the item ID.
+		var has_action := false
 		for id in surface.ids:
 			if not active.has(str(id)): continue
 			var target: Dictionary=active[str(id)]
-			# A visible non-drop object still occludes objects behind it. Filtering
-			# eligibility must never make a compatible hidden target win instead.
-			if inventory_drop and str(target.get("item","")).is_empty() and target.get("acceptedItems",[]).is_empty(): return {}
+			has_action = true
+			if inventory_drop and str(target.get("item","")).is_empty() and target.get("acceptedItems",[]).is_empty(): continue
 			return target
-		if surface.painted: return {}
+		if surface.painted or has_action: return {}
 	return {}
 
 func pick_near_visible(point: Vector2,current_targets: Array,inventory_drop: bool,tolerance: float,visible: Rect2,covered: Array=[]) -> Dictionary:
 	if not visible.has_point(point) or _covered(point,covered): return {}
 	var exact:=pick(point,current_targets)
-	if not exact.is_empty(): return _drop_eligible(exact,inventory_drop)
+	if not exact.is_empty(): return pick(point,current_targets,true) if inventory_drop else exact
 	# Exact painted occlusion wins over tolerance. No item compatibility or
 	# puzzle requirement is consulted while choosing the physical object.
 	for surface: Dictionary in surfaces:
@@ -69,12 +69,8 @@ func pick_near_visible(point: Vector2,current_targets: Array,inventory_drop: boo
 			var sample:Vector2=point+Vector2.from_angle(TAU*index/16)*tolerance*ring
 			if not visible.has_point(sample) or _covered(sample,covered): continue
 			var candidate:=pick(sample,current_targets)
-			if not candidate.is_empty(): return _drop_eligible(candidate,inventory_drop)
+			if not candidate.is_empty(): return pick(sample,current_targets,true) if inventory_drop else candidate
 	return {}
-
-func _drop_eligible(target: Dictionary,inventory_drop: bool) -> Dictionary:
-	if inventory_drop and str(target.get("item","")).is_empty() and target.get("acceptedItems",[]).is_empty(): return {}
-	return target
 
 func _covered(point: Vector2,rects: Array) -> bool:
 	for rect: Rect2 in rects:

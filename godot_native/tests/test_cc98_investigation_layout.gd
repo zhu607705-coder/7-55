@@ -57,7 +57,7 @@ func earn() -> Dictionary:
 	for intent in [["lib_dim_photo",null],["lib_view_photo","seat_022_clue"],["lib_item_report",null],["lib_scan",null],["lib_scan_result",{"scanMs":720,"identityChecks":[false,false,false],"stamped":true}]]:
 		controller.dispatch(s,intent[0],intent[1])
 	for i in range(10): controller.library.story_session(s,100)
-	acknowledge(controller,s); controller.dispatch(s,"lib_receipt")
+	acknowledge(controller,s); controller.dispatch(s,"lib_receipt"); acknowledge(controller,s)
 	s.networkMode="cellular"; controller.dispatch(s,"lib_audit",["7","47","3"]); acknowledge(controller,s)
 	s.networkMode="campus_wifi"; s.ui.brightness=100; s.native.page="cc98"
 	for item: String in Library.EVIDENCE.values(): check(s.items[item],"source controller earns "+item)

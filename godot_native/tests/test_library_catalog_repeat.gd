@@ -47,7 +47,7 @@ func run() -> void:
 	library.dispatch(s,"lib_catalog_search",source.library.catalogQuery)
 	check(s.ui.libraryFinalsPuzzle.catalogSearchCompleted,"ordinary exact search earns its proof")
 	var acquired=library.dispatch(s,"lib_catalog_select",CORRECT)
-	check(acquired.message=="获得索书号 I247.55 / 755。" and s.items.callNumber755 and s.ui.libraryFinalsPuzzle.callNumberCollected,"first valid selection retains original acquisition behavior")
+	check(acquired.message.is_empty() and library.story_session(s)!=null and s.items.callNumber755 and s.ui.libraryFinalsPuzzle.callNumberCollected,"first valid selection grants once and uses dialogue as its sole confirmation")
 	acknowledge(s,"library_catalog_match_found")
 	for i in range(3): repeat_read_only(s,CORRECT,already)
 	for id: String in records:

@@ -26,4 +26,19 @@ func run() -> void:
 		var local:Vector2=(return_goal-shell.world.camera)*shell.world.zoom+shell.world.size/2
 		check(shell.world_view.get_global_rect().has_point(source_screen(return_goal)) and shell.world.exploration_safe_rect(true).has_point(local) and shell.world._direct_touch_role(local)=="map","return tap stays on actual visible map floor after the frozen camera follows resized controls")
 		await tap_ground(return_goal);await walk_route(return_goal)
+	await route_fixture(Vector2i(740,320),start)
+	var w=shell.world
+	var short_zoom:float=w.zoom
+	var before:=story()
+	await tap_ground(goal)
+	var wide:=Vector2i(1000,430)
+	root.size=wide;shell.size=Vector2(wide);shell._layout();await frames()
+	check(short_zoom==w.LIBRARY_BASE_ZOOM and w.zoom<=.75,"wider library view opens only when the screen has enough height")
+	check(w.size==Vector2(960,540) and w.player==start and story()==before and w._floor_route.is_empty(),"adaptive view preserves source geometry and retires the old tap")
+	await tap_ground(goal);await walk_route(goal)
+	var wide_default:float=w.zoom
+	w.zoom*=1.12
+	var short:=Vector2i(740,320)
+	root.size=short;shell.size=Vector2(short);shell._layout();await frames()
+	check(is_equal_approx(w.zoom/short_zoom,1.12) and wide_default<short_zoom,"resizing preserves player-selected relative zoom")
 	await finish("MOBILE_FLOOR_ROUTE_ORIENTATIONS")

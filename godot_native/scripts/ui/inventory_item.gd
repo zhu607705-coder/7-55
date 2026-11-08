@@ -6,6 +6,7 @@ signal inspection_requested(item: String)
 signal drag_finished(landed: bool)
 var item_id := ""
 var allow_drag := true
+var touch_drop: Callable
 const Gesture=preload("res://scripts/ui/inventory_gesture.gd")
 var gestures := Gesture.new()
 var _touch_index := -1
@@ -116,7 +117,9 @@ func _input(event: InputEvent) -> void:
 			else: _scroll.scroll_vertical=roundi(_scroll_start.y-delta.y/maxf(.001,scroll_scale.y))
 		elif _touch_dragging:
 			var motion:=InputEventMouseMotion.new(); motion.position=event.position; motion.global_position=event.position; motion.button_mask=MOUSE_BUTTON_MASK_LEFT
-			Input.parse_input_event(motion)
+			# This event is already in viewport pixels. Feed it to the GUI that
+			# owns the drag instead of routing it through the browser window again.
+			get_viewport().push_input(motion,true)
 		get_viewport().set_input_as_handled()
 	elif event is InputEventScreenTouch and not event.pressed and event.index==_touch_index:
 		get_viewport().set_input_as_handled()
@@ -125,8 +128,17 @@ func _input(event: InputEvent) -> void:
 		if event.canceled: cancel_gesture()
 		elif _touch_dragging:
 			_touch_index=-1; _touch_dragging=false
+			if touch_drop.is_valid():
+				var viewport := get_viewport()
+				var data: Variant = viewport.gui_get_drag_data()
+				_drag_was_started=false
+				if touch_drop.call(event.position,data):
+					if viewport.gui_is_dragging(): viewport.gui_cancel_drag()
+					drag_finished.emit(true)
+					return
+				_drag_was_started=true
 			var release:=InputEventMouseButton.new(); release.button_index=MOUSE_BUTTON_LEFT; release.position=event.position; release.global_position=event.position
-			Input.parse_input_event(release)
+			get_viewport().push_input(release,true)
 		else:
 			_touch_index=-1
 			var local: Vector2=get_global_transform_with_canvas().affine_inverse()*event.position

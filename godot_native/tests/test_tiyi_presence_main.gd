@@ -50,8 +50,8 @@ func source_fixture() -> Dictionary:
 	# Retain the original library transport; the three update facts use authority.
 	for intent in ["c2_tiyi_discover","c2_tiyi_acquire","c2_tiyi_install"]: controller.dispatch(s,intent)
 	controller.dispatch(s,"lib_enter"); acknowledge(controller,s)
-	controller.dispatch(s,"lib_register_arrival"); controller.dispatch(s,"lib_record"); controller.dispatch(s,"lib_backpack"); acknowledge(controller,s)
-	controller.dispatch(s,"lib_note"); controller.dispatch(s,"lib_investigate","occupancyNote"); acknowledge(controller,s)
+	controller.dispatch(s,"lib_register_arrival"); controller.dispatch(s,"lib_record"); acknowledge(controller,s); controller.dispatch(s,"lib_backpack"); acknowledge(controller,s)
+	controller.dispatch(s,"lib_note"); acknowledge(controller,s); controller.dispatch(s,"lib_investigate","occupancyNote"); acknowledge(controller,s)
 	controller.dispatch(s,"lib_catalog_terminal"); controller.dispatch(s,"lib_catalog_search","三分钟离座法")
 	controller.dispatch(s,"lib_catalog_select","three-minute-leave-method"); acknowledge(controller,s)
 	controller.dispatch(s,"lib_shelf"); controller.dispatch(s,"lib_read_rule"); acknowledge(controller,s)

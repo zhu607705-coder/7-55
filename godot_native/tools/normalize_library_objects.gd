@@ -363,7 +363,9 @@ func _initialize()->void:
 			var chosen:Color=palette[color_cache[key]]
 			pixels[index]=chosen.r8;pixels[index+1]=chosen.g8;pixels[index+2]=chosen.b8
 		image=Image.create_from_data(image.get_width(),image.get_height(),false,Image.FORMAT_RGBA8,pixels)
-		if is_base:apply_floor_joints(image)
+		if is_base:
+			image=quiet_plate(image)
+			apply_floor_joints(image)
 		var destination:=output.path_join(id+".png")
 		if image.save_png(destination)!=OK:quit(1);return
 		var source_label := source_path if source_path.is_absolute_path() else "godot_native/art_source/library_object_depth_20261104/" + source_path
@@ -377,6 +379,32 @@ func _initialize()->void:
 	file.store_string(JSON.stringify(report,"\t"));file.close()
 	print("LIBRARY_NORMALIZE ",1 if turnstile_only else FURNITURE_SIZES.size() if furniture_only else report.assets.size()," assets")
 	quit()
+
+func quiet_plate(plate:Image)->Image:
+	# Work from the same source for every sample. Opposite matching neighbours
+	# on both axes identify specks without breaking one-pixel grout or trim.
+	var width:=plate.get_width()
+	var height:=plate.get_height()
+	var source:=plate.get_data()
+	var pixels:=source.duplicate()
+	for y:int in range(1,height-1):
+		for x:int in range(1,width-1):
+			var at:=(y*width+x)*4
+			var color:=source.decode_u32(at)
+			var surround:=source.decode_u32(at-4)
+			if surround!=color and surround==source.decode_u32(at+4) and surround==source.decode_u32(at-4*width) and surround==source.decode_u32(at+4*width):
+				pixels.encode_u32(at,surround)
+	# Lower the contrast of the brush texture beside the stone apron.
+	# Leave the blue vestibule and its tile seams between these x limits.
+	var blue_fleck:=Color("243f5a").to_abgr32()
+	var quiet_blue:=Color("202b35").to_abgr32()
+	for y:int in range(847,height):
+		for x:int in width:
+			if x>=532 and x<967:continue
+			var at:=(y*width+x)*4
+			if pixels.decode_u32(at)==blue_fleck:
+				pixels.encode_u32(at,quiet_blue)
+	return Image.create_from_data(width,height,false,Image.FORMAT_RGBA8,pixels)
 
 # Project a square floor tile to 40 x 22 world pixels. Only replace the connected
 # sandstone floor; window frames, carpet, threshold and wall courses stay registered.

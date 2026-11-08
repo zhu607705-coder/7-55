@@ -206,7 +206,7 @@ async function evaluate(expression) { const result = await active.cdp.send('Runt
 async function snapshot() { return evaluate('window.__GODOT_755__?.snapshot?.() ?? null'); }
 const state = value => value?.state;
 async function key(key, code, down) { if (active.mobileWorld) active.mobileWorld.inputs.push({ at: Date.now(), method: 'Input.dispatchKeyEvent', key, code, down }); await active.cdp.send('Input.dispatchKeyEvent', { type: down ? 'keyDown' : 'keyUp', key, code, windowsVirtualKeyCode: ({ Enter: 13, Escape: 27, F10: 121, ArrowLeft: 37, ArrowRight: 39, ArrowUp: 38, ArrowDown: 40, Space: 32 })[code] || 0 }); }
-async function press(keyName, code = keyName) { await key(keyName, code, true); await interval(65); await key(keyName, code, false); }
+async function press(keyName, code = keyName) { await enterLandscapeScene(); await key(keyName, code, true); await interval(65); await key(keyName, code, false); }
 async function clickPoint(point, touch = active.touch, trace = null) {
   if (active.mobileWorld) active.mobileWorld.inputs.push({ at: Date.now(), method: touch ? 'ordinaryTouchTap' : 'ordinaryMouseClick', point, touch });
   const send = async (method, params) => {
@@ -229,9 +229,16 @@ async function clickPoint(point, touch = active.touch, trace = null) {
   }
 }
 async function canvasGeometry() { return evaluate(`(()=>{const c=document.getElementById('canvas')||document.querySelector('canvas');if(!c)return null;const r=c.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height,pixelWidth:c.width,pixelHeight:c.height};})()`); }
-async function renderPoint(point, value) { value ||= await snapshot(); const canvas = await canvasGeometry(); const viewport = value.viewport || {}; const width = viewport.width || viewport.size?.x || canvas.pixelWidth; const height = viewport.height || viewport.size?.y || canvas.pixelHeight; return { x: canvas.x + point.x / width * canvas.width, y: canvas.y + point.y / height * canvas.height }; }
+async function renderPoint(point, value) {
+  value ||= await snapshot();
+  const canvas = await canvasGeometry(), viewport = value.viewport || {};
+  const width = viewport.width || viewport.size?.x || canvas.pixelWidth, height = viewport.height || viewport.size?.y || canvas.pixelHeight;
+  point = orientRootRect({ ...point, width: 0, height: 0 }, { width, height }, value.presentation?.rotation);
+  return { x: canvas.x + point.x / width * canvas.width, y: canvas.y + point.y / height * canvas.height };
+}
 function controls(value) { return value?.visibleControls || []; }
 async function clickControl(nameOrText, match = 'either') {
+  await enterLandscapeScene();
   const found = await poll(async () => { const s = await snapshot(); const c = controls(s).find(c => !c.disabled && (match !== 'text' && c.name === nameOrText || match !== 'name' && c.text === nameOrText)); return c ? { s, c } : null; }, `control ${nameOrText}`);
   const r = found.c.rect; const point = await renderPoint({ x: r.x + r.width / 2, y: r.y + r.height / 2 }, found.s);
   if (active.fresh?.recording) active.fresh.inputs.push({ at: Date.now(), text: found.c.text, name: found.c.name, rect: r, point, touch: active.touch, observedMode: state(found.s)?.native?.mode, observedSaveDigest: found.s.saveDigest });
@@ -391,15 +398,23 @@ function saveClickCandidate(value) {
   // All explicit-save callers open Settings afresh. Require its initial label,
   // not a previous success/failure label that an unrelated autosave could reuse.
   if (matches.length !== 1 || control.text !== '保存进度' || control.disabled !== false || control.visible === false || value.documentHidden === true || !Number.isSafeInteger(value.sampleFrame) || value.sampleFrame < 0 || !Number.isSafeInteger(value.savePersistence?.token) || value.savePersistence.token < 0) return null;
-  if (!rect || !viewport || ![rect.x, rect.y, rect.width, rect.height, viewport.width, viewport.height].every(Number.isFinite) || rect.width <= 0 || rect.height <= 0 || viewport.width <= 0 || viewport.height <= 0 || rect.x < 0 || rect.y < 0 || rect.x + rect.width > viewport.width || rect.y + rect.height > viewport.height) return null;
+  if (!rect || !viewport || ![rect.x, rect.y, rect.width, rect.height, viewport.width, viewport.height].every(Number.isFinite) || rect.width <= 0 || rect.height <= 0 || viewport.width <= 0 || viewport.height <= 0) return null;
+  const rotation = value.presentation?.rotation || 0;
+  const screenRect = orientRootRect(rect, viewport, rotation);
+  if (screenRect.x < 0 || screenRect.y < 0 || screenRect.x + screenRect.width > viewport.width || screenRect.y + screenRect.height > viewport.height) return null;
   // Settings now has a fixed frame and a footer notice row. That row can
   // resize/expire without shifting its top-aligned Save action. Still reject
   // unknown, above-action or overlapping notices, including the old layout.
   if (saveBlockingNotice(value, rect)) return null;
   const native = state(value)?.native;
   const context = { chapter: native?.chapter, mode: native?.mode, page: native?.page, scene: native?.scene };
-  return { value, control, rect, viewport, context, frame: value.sampleFrame,
-    key: JSON.stringify([control.name, control.text, rect.x, rect.y, rect.width, rect.height, viewport.width, viewport.height, context]) };
+  return { value, control, rect, screenRect, viewport, context, frame: value.sampleFrame,
+    key: JSON.stringify([control.name, control.text, rect.x, rect.y, rect.width, rect.height, viewport.width, viewport.height, rotation, context]) };
+}
+function orientRootRect(rect, viewport, rotation) {
+  if (rotation === 1) return { x: viewport.width - rect.y - rect.height, y: rect.x, width: rect.height, height: rect.width };
+  if (rotation === -1) return { x: rect.y, y: viewport.height - rect.x - rect.width, width: rect.height, height: rect.width };
+  return rect;
 }
 function saveBlockingNotice(value, rect) {
   return controls(value).find(control => {
@@ -429,8 +444,8 @@ async function clickStableSaveControl(label) {
       // coordinates retained from opening Settings or an earlier native frame.
       const canvas = await evaluate(`(()=>{const c=document.getElementById('canvas')||document.querySelector('canvas');if(!c)return null;const r=c.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height,pixelWidth:c.width,pixelHeight:c.height,windowWidth:innerWidth,windowHeight:innerHeight,documentHidden:document.hidden};})()`);
       if (!canvas || canvas.documentHidden || ![canvas.x, canvas.y, canvas.width, canvas.height, canvas.pixelWidth, canvas.pixelHeight, canvas.windowWidth, canvas.windowHeight].every(Number.isFinite) || [canvas.width, canvas.height, canvas.pixelWidth, canvas.pixelHeight, canvas.windowWidth, canvas.windowHeight].some(size => size <= 0)) { previous = null; return null; }
-      const r = candidate.rect, v = candidate.viewport;
-      const mappedRect = { x: canvas.x + r.x / v.width * canvas.width, y: canvas.y + r.y / v.height * canvas.height, width: r.width / v.width * canvas.width, height: r.height / v.height * canvas.height };
+      const r = candidate.rect, v = candidate.viewport, screen = candidate.screenRect;
+      const mappedRect = { x: canvas.x + screen.x / v.width * canvas.width, y: canvas.y + screen.y / v.height * canvas.height, width: screen.width / v.width * canvas.width, height: screen.height / v.height * canvas.height };
       if (mappedRect.x < 0 || mappedRect.y < 0 || mappedRect.x + mappedRect.width > canvas.windowWidth || mappedRect.y + mappedRect.height > canvas.windowHeight) { previous = null; return null; }
       const point = { x: mappedRect.x + mappedRect.width / 2, y: mappedRect.y + mappedRect.height / 2 };
       Object.assign(input, { preparedAt: Date.now(), stableSampleFrames: [previous.frame, candidate.frame], sampleFrame: candidate.frame,
@@ -564,6 +579,7 @@ async function assertLayout(label) {
   check(!geometry.overflowX && !geometry.overflowY, `${label}: no document overflow`, geometry);
   check(geometry.canvas.width > 0 && geometry.canvas.height > 0 && geometry.canvas.x >= -1 && geometry.canvas.y >= -1 && geometry.canvas.x + geometry.canvas.width <= geometry.width + 1 && geometry.canvas.y + geometry.canvas.height <= geometry.height + 1, `${label}: canvas fits viewport`);
   const s = await snapshot(); const phone = s.phoneRect || s.viewport?.phoneRect;
+  const surface = s.presentation?.surfaceSize || { x: geometry.width, y: geometry.height };
   check(Math.abs(geometry.dpr - active.dpr) < .01, `${label}: actual browser pixel ratio matches the test`, geometry);
   check(Math.abs(s.viewport.width - geometry.canvas.width) <= 2 && Math.abs(s.viewport.height - geometry.canvas.height) <= 2, `${label}: logical Godot layout uses CSS dimensions on high-density screens`, { viewport: s.viewport, geometry });
   check(Math.abs(geometry.canvas.pixelWidth - geometry.canvas.width * geometry.dpr) <= 2 && Math.abs(geometry.canvas.pixelHeight - geometry.canvas.height * geometry.dpr) <= 2, `${label}: high-density rendering keeps the full backing resolution`, geometry);
@@ -576,10 +592,16 @@ async function assertLayout(label) {
   }
   if (s.activity?.kind === 'flc') {
     check(!phone || Object.keys(phone).length === 0, `${label}: optional FLC has no hidden story phone`, phone);
+  } else if (active.touch && s.world?.visible) {
+    const world = s.world.rect;
+    const inside = world.x >= -1 && world.y >= -1 &&
+      world.x + world.width <= surface.x + 1 && world.y + world.height <= surface.y + 1;
+    check(inside && surface.x >= surface.y && Math.abs(world.width / world.height - 16 / 9) < .005 && world.height >= surface.y * .85,
+      `${label}: landscape map fills the available height at 16:9`, { world, geometry });
   } else if (phone) {
     check(Math.abs(phone.width / phone.height - .5) < .01, `${label}: phone has uniform 1:2 aspect`, phone);
-    check(phone.x >= 0 && phone.y >= 0 && phone.x + phone.width <= s.viewport.width + 1 && phone.y + phone.height <= s.viewport.height + 1, `${label}: phone and its hit areas stay inside the logical viewport`, phone);
-    if (!s.world?.visible) check(phone.height >= geometry.height * .85 || phone.width >= geometry.width * .9, `${label}: phone uses the available height or portrait width instead of shrinking to physical pixels`, { phone, geometry });
+    check(phone.x >= 0 && phone.y >= 0 && phone.x + phone.width <= surface.x + 1 && phone.y + phone.height <= surface.y + 1, `${label}: phone and its hit areas stay inside the logical viewport`, phone);
+    check(phone.height >= surface.y * .85 || phone.width >= surface.x * .9, `${label}: phone uses the available height or portrait width instead of shrinking to physical pixels`, { phone, geometry });
   }
   return geometry;
 }
@@ -606,7 +628,7 @@ async function importSave(filename, { expectedPage } = {}) {
   check(s.developerToolsAvailable === false, 'ordinary imported save remains formal progression');
   const completed = await snapshot();
   active.imports.push({ filename: path.basename(filename), sha256: hash(bytes), bytes: bytes.length, chapter: expected.chapter, page: expected.page, scene: expected.scene, firstAcceptedAt, observedAt: Date.now(), saveDigest: completed.saveDigest });
-  if (completed.world?.visible) await acceptPortraitFallback();
+  if (completed.world?.visible && active.touch) { await enterLandscapeScene(); return await snapshot(); }
   return completed;
 }
 // Focused CI scenario: ordinary entry and object input, no fixture/state writes.
@@ -633,7 +655,7 @@ async function flcActivityCase() {
     const loaded=await poll(async()=>{const s=await snapshot();return s?.activity?.kind==='flc'&&!s.content?.blocking?s:null;},'admitted FLC family and actual floor',120000);
     check(loaded.content.readyFamilies.includes('flc_activity'),'FLC lazy family mounted before real floor');
     check(loaded.web===true&&loaded.version==='4.7.1-stable (official)','FLC runs pinned production Web engine');
-    await acceptPortraitFallback();
+    await enterLandscapeScene();
     return await snapshot();
   }
   async function openFormula(value) {
@@ -838,14 +860,16 @@ async function resourceLoadingCase() {
   }
   check(active.chapterResults.length===3,`${active.id}: deferred canteen, lake approach and teaching-building resources are actually loaded by Godot`);
 }
-async function acceptPortraitFallback() {
-    if (!active.touch) return;
-    const orientation = await poll(async () => evaluate("(()=>{const s=window.__GODOT_755_ORIENTATION__?.snapshot();return s?.wanted?s:null})()"), 'landscape preference reaches the mobile browser');
-    if (!orientation.visible) return;
-    const rect = await evaluate("(()=>{const e=document.getElementById('scene-landscape-dismiss'),r=e?.getBoundingClientRect();return r&&r.width>0?{x:r.x,y:r.y,width:r.width,height:r.height}:null})()");
-    check(!!rect, `${active.id}: ordinary portrait fallback is visible`);
-    await clickPoint({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 });
-    await poll(async () => evaluate("window.__GODOT_755_ORIENTATION__?.snapshot()?.visible===false"), 'ordinary portrait fallback closes its orientation prompt');
+async function enterLandscapeScene() {
+  if (!active.touch) return;
+  await poll(async () => {
+    const s = await snapshot();
+    if (!s?.presentation) return true;
+    const {landscapePreferred, portraitRequired, rotation, surfaceSize} = s.presentation;
+    if (landscapePreferred && surfaceSize.x < surfaceSize.y) return false;
+    if (portraitRequired && surfaceSize.x > surfaceSize.y) return false;
+    return rotation === 0 || (surfaceSize.x === s.viewport.height && surfaceSize.y === s.viewport.width);
+  }, 'Godot directly fits the active mobile surface', 15000);
 }
 async function cornerNavigationCase() {
   if (!fixtureDir) throw new Error('Corner navigation requires an earned ordinary save');
@@ -862,7 +886,7 @@ async function cornerNavigationCase() {
   const corner = (s, name) => {
     const c = controls(s).find(c => c.name === name); const r = c?.rect;
     check(!!r && c.text === '' && Math.abs(r.width-44)<.01 && Math.abs(r.height-44)<.01, `${active.id}: ${name} is a 44px icon`);
-    const edge = name === 'WorldPhoneButton' ? {x:s.world.rect.x+s.world.rect.width-8,y:s.world.rect.y+s.world.rect.height-8} : {x:s.viewport.width-12,y:s.viewport.height-12};
+    const edge = name === 'WorldPhoneButton' ? {x:s.world.rect.x+s.world.rect.width-8,y:s.world.rect.y+s.world.rect.height-8} : {x:s.presentation.surfaceSize.x-12,y:s.presentation.surfaceSize.y-12};
     check(Math.abs(r.x+r.width-edge.x)<.1 && Math.abs(r.y+r.height-edge.y)<.1, `${active.id}: ${name} uses its actual bottom-right safe corner`);
   };
   corner(before, 'WorldPhoneButton');
@@ -879,7 +903,7 @@ async function cornerNavigationCase() {
   active.screenshots.push(await screenshot(`${active.id}-corner-phone`));
   await clickControl('PhoneWorldReturn', 'name');
   const returned = await poll(async () => { const s = await snapshot(); return s?.world?.visible && state(s)?.runtimeMode === 'rpg' ? s : null; }, 'corner map return restores the original world');
-  await acceptPortraitFallback();
+  await enterLandscapeScene();
   check(facts(state(returned)) === originalFacts && returned.world.scene_id === before.world.scene_id && Math.hypot(returned.world.player.x - before.world.player.x, returned.world.player.y - before.world.player.y) < .01, `${active.id}: phone-to-map preserves scene, actor, checkpoint, inventory and story`);
   const mode = state(returned).native.mode;
   await clickControl('WorldMode', 'name');
@@ -966,9 +990,9 @@ async function reopenLibraryRuleThroughApp() {
     } else if (!controls(value).some(c => c.name === 'HomeApp_zjuding')) return null;
     return value;
   }, 'imported Library surface has actually mounted', 60000);
-  if (controls(initial).some(c => c.name === 'LibraryWorldDocumentClose')) { await acceptPortraitFallback(); return; }
+  if (controls(initial).some(c => c.name === 'LibraryWorldDocumentClose')) { await enterLandscapeScene(); return; }
   if (initial.world?.visible) {
-    await acceptPortraitFallback();
+    await enterLandscapeScene();
     active.library ||= { navigation: [] };
     active.library.navigation ||= [];
     const button = controls(initial).find(c => c.name === 'WorldPhoneButton');
@@ -981,7 +1005,7 @@ async function reopenLibraryRuleThroughApp() {
   await clickControl('HomeApp_zjuding', 'name');
   await clickControl('ZjudingApp_library', 'name');
   await clickControl('LibraryApp_rule', 'name');
-  await acceptPortraitFallback();
+  await enterLandscapeScene();
 }
 async function scrollLibraryRuleToClose() {
   // Use the real scroll surface and actual browser input on both profiles.
@@ -1030,8 +1054,35 @@ async function libraryCase() {
   // Wait for the real world and complete content family before sending input;
   // then use its ordinary phone control before the explicit save.
   await poll(async () => { const s = await snapshot(); return s?.content?.blocking === false && (s.content.monolithic === true || s.content.enabled === true && s.content.readyFamilies?.includes('chapter2')) && s.world?.visible && controls(s).some(c => c.name === 'WorldPhoneButton' && !c.disabled) ? s : null; }, 'imported unread rule restores its ready Library world', bootTimeout);
+  async function resizeForLibrary(width, height) {
+    const portrait = width < height;
+    await active.cdp.send('Emulation.setDeviceMetricsOverride', { width, height, screenWidth: width, screenHeight: height,
+      deviceScaleFactor: active.dpr, mobile: true, screenOrientation: { type: portrait ? 'portraitPrimary' : 'landscapePrimary', angle: portrait ? 0 : 90 } });
+    await poll(async () => { const s = await snapshot(); return s?.viewport.width === width && s.viewport.height === height; }, 'the library follows the resized browser', 15000);
+    await enterLandscapeScene();
+  }
+  if (active.touch) {
+    await resizeForLibrary(740, 320);
+    await assertLayout(`${active.id} Library short landscape`);
+    const short = await poll(async () => { const s = await snapshot(); return Math.abs(s?.world?.zoom - 0.85) < 0.001 ? s : null; }, 'the short landscape keeps legible library scale');
+    await resizeForLibrary(1000, 430);
+    const wide = await poll(async () => { const s = await snapshot(); return s?.world?.zoom <= 0.75 ? s : null; }, 'wide landscape shows more of the library');
+    await assertLayout(`${active.id} Library wide landscape`);
+    check(wide.world.size.x === short.world.size.x && wide.world.size.y === short.world.size.y &&
+      JSON.stringify(wide.world.player) === JSON.stringify(short.world.player) && JSON.stringify(state(wide).items) === originalItems,
+    `${active.id}: wider framing preserves logical viewport, actor position and inventory`);
+    active.screenshots.push(await screenshot(`${active.id}-library-wide-view`));
+    await resizeForLibrary(740, 320);
+  }
   await clickControl('WorldPhoneButton', 'name');
   await poll(async () => { const s = await snapshot(); return state(s)?.native.page === 'phone_home' && !s.world?.visible ? s : null; }, 'ordinary phone return before saving unread rule');
+  if (active.touch) {
+    await poll(async () => evaluate('window.__GODOT_755_ORIENTATION__?.snapshot()?.portraitRequired===true'), 'returning to the phone requests portrait');
+    check(await evaluate("!document.getElementById('scene-orientation')"), `${active.id}: the phone returns without a switching prompt`);
+    await resizeForLibrary(360, 640);
+    await assertLayout(`${active.id} Library phone portrait`);
+    await resizeForLibrary(active.width, active.height);
+  }
   value = await snapshot();
   check(!state(value).ui.libraryFinalsPuzzle.archivedRuleRead && JSON.stringify(state(value).items) === originalItems, `${active.id}: returning to the phone keeps the acquired rule unread`);
   await settings(); await saveProgressAndWait(`${active.id} unread library rule`);
@@ -1088,13 +1139,13 @@ async function libraryCase() {
   value = await snapshot();
   check(state(value).native.chapter === 3 && state(value).ui.libraryFinalsPhase === 'friend_contacted' && state(value).canteenHunt.active, `${active.id}: reload retains completed library handoff`);
   await poll(async () => { const s = await snapshot(); return !s.content?.blocking && s.world?.visible && s.world.scene_id === 'campus_bootstrap'; }, 'reloaded handoff presents the actual campus');
-  await acceptPortraitFallback();
+  await enterLandscapeScene();
   const handoffFacts = JSON.stringify([state(value).items, state(value).ui.libraryFinalsPhase, state(value).canteenHunt, state(value).rpgCheckpoint]);
   await clickControl('WorldPhoneButton', 'name');
   await poll(async () => { const s = await snapshot(); return state(s).native.page === 'phone_home' && !s.world?.visible; }, 'library handoff permits an ordinary phone return');
   await clickControl('PhoneWorldReturn', 'name');
   await poll(async () => { const s = await snapshot(); return s.world?.visible && s.world.scene_id === 'campus_bootstrap'; }, 'library handoff permits an ordinary return to campus');
-  await acceptPortraitFallback();
+  await enterLandscapeScene();
   value = await snapshot();
   check(JSON.stringify([state(value).items, state(value).ui.libraryFinalsPhase, state(value).canteenHunt, state(value).rpgCheckpoint]) === handoffFacts, `${active.id}: handoff phone/map round trip preserves earned facts and items`);
   await assertLayout(`${active.id} Library handoff`);
@@ -1671,9 +1722,10 @@ async function directWorldCase(value) {
     value = await rotateMobileWorld(value, true, 'direct-portrait-return');
     value = await assertWorldStopped(value, 'direct-orientation');
     await worldTouches('touchCancel');
-    await acceptPortraitFallback();
+    check(value.presentation.rotation === 1 && value.presentation.surfaceSize.x > value.presentation.surfaceSize.y, `${active.id}: the map fits sideways without an orientation prompt`);
     check(state(value).native.scene === 'dorm_hub' && state(value).items.campusCard, `${active.id}: orientation preserves the earned scene and item`);
     value = await rotateMobileWorld(value, false, 'direct-landscape-return');
+    await enterLandscapeScene();
     value = await worldTap(value, worldTarget(value).point);
     value = await poll(async () => { const next = await snapshot(); return next?.world?.input?.dormPropActions > oldActions + 1 ? next : null; }, 'landscape target tap reaches the original object controller', 5000);
     check(value.world.input.dormPropActions === oldActions + 2 && lampOn(value) !== beforeLamp, `${active.id}: landscape direct target tap still submits exactly one action`);
@@ -1685,7 +1737,7 @@ async function directWorldCase(value) {
   check(Math.abs(value.phoneRect.width / 430 - value.phoneRect.height / 860) < .005, `${active.id}: phone return retains its portrait logical viewport`, value.phoneRect);
   value = await rotateMobileWorld(value, true, 'phone-portrait-return');
   await clickControl('PhoneWorldReturn', 'name');
-  await acceptPortraitFallback();
+  await enterLandscapeScene();
   value = await poll(async () => { const next = await snapshot(); return next?.world?.visible && next.world.input.geometryAvailable ? next : null; }, 'ordinary phone corner restores the same retained map');
   check(mobileFacts(value) === beforePhone && mobileDistance(value.world.player, playerBeforePhone) < .5 && value.world.size.x === 960 && value.world.size.y === 540,
     `${active.id}: phone and orientation round trip preserve source player, items and accepted actions`);

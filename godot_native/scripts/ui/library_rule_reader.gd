@@ -24,15 +24,22 @@ func build(b,view:Dictionary)->Control:
 	b._label(volume,"馆内秩序编写组",Rect2(56,230,194,26),13,Color("d4c191"))
 	for edge:int in 4:b._panel(volume,Rect2(13+edge,326+edge*3,275,2),Color("c5b793"))
 	# The printed source is kept intact, with room for wrapping on the fixed phone.
-	b._panel(volume,Rect2(7,358,282,652),Color("efe3c5"),Color("b5a17a"),0,1)
-	b._panel(volume,Rect2(8,359,17,650),Color("d4c29a"))
-	b._panel(volume,Rect2(25,359,2,650),Color("b9a17a"))
+	var paper:Control=b._panel(volume,Rect2(7,358,282,652),Color("efe3c5"),Color("b5a17a"),0,1)
+	var edge:Control=b._panel(volume,Rect2(8,359,17,650),Color("d4c29a"))
+	var spine:Control=b._panel(volume,Rect2(25,359,2,650),Color("b9a17a"))
 	b._label(volume,"旧版离座规则",Rect2(44,390,224,39),22,Color("293d39"))
 	b._panel(volume,Rect2(44,438,221,1),Color("9a865f"))
 	var text:Label=b._label(volume,str(view.get("body","")),Rect2(44,465,221,460),18,Color("343b30"))
 	text.vertical_alignment=VERTICAL_ALIGNMENT_TOP
-	b._label(volume,"—  755  —",Rect2(44,962,221,25),13,Color("766849"),HORIZONTAL_ALIGNMENT_CENTER)
-	var close:Button=b._button(volume,"合上书",Rect2(44,1035,221,46),func():
+	text.propagate_notification(Control.NOTIFICATION_THEME_CHANGED)
+	text.size.y=maxf(text.size.y,text.get_minimum_size().y)
+	var footer_y:float=maxf(962,text.position.y+text.size.y+37)
+	var close_y:float=footer_y+73
+	volume.custom_minimum_size.y=close_y+65
+	paper.size.y=footer_y+48-paper.position.y
+	edge.size.y=paper.size.y-2;spine.size.y=edge.size.y
+	b._label(volume,"—  755  —",Rect2(44,footer_y,221,25),13,Color("766849"),HORIZONTAL_ALIGNMENT_CENTER)
+	var close:Button=b._button(volume,"合上书",Rect2(44,close_y,221,46),func():
 		if not root.get_meta("end_seen",false):return
 		var acknowledge:bool=b.s.ui.libraryFinalsPuzzle.archivedRuleCollected and not b.s.ui.libraryFinalsPuzzle.archivedRuleRead
 		# Reading starts narration and locks navigation. Leave the reader first.

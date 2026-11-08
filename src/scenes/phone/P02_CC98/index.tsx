@@ -1085,6 +1085,7 @@ export function Cc98Scene({ state, router, events }: SceneComponentProps) {
                   ownedEvidenceIds={ownedEvidenceIds}
                   uploadedEvidenceIds={finalsPuzzle.cc98UploadedEvidenceIds}
                   preBdBriefingSeen={finalsPuzzle.preBdBriefingSeen}
+                  bdFailCount={finalsPuzzle.bdPasswordAttemptCount}
                   events={events}
                   showUploader={access.cc98OwnerUpload}
                   showBd={access.cc98Bd}

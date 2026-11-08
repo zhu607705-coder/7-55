@@ -17,6 +17,7 @@ interface TopTenRisePuzzleProps {
   ownedEvidenceIds: LibraryEvidenceId[];
   uploadedEvidenceIds: LibraryEvidenceId[];
   preBdBriefingSeen: boolean;
+  bdFailCount: number;
   events?: EventBus;
   showUploader?: boolean;
   showBd?: boolean;
@@ -53,6 +54,7 @@ export function TopTenRisePuzzle({
   ownedEvidenceIds,
   uploadedEvidenceIds,
   preBdBriefingSeen,
+  bdFailCount,
   events,
   showUploader = true,
   showBd = uploadedEvidenceIds.length === EVIDENCE.length
@@ -237,11 +239,11 @@ export function TopTenRisePuzzle({
           <b>{selectedPostIds.length}/4</b>
         </header>
         <p className="cc98-bd-password-prompt">{BD_PASSWORD.prompt}</p>
-        <ol className="cc98-bd-clues" aria-label="口令顺序提示">
+        {bdFailCount >= 2 ? <ol className="cc98-bd-clues" aria-label="口令顺序提示">
           {BD_PASSWORD.clues.map((clue) => (
             <li key={clue.index}><b>{clue.index}</b><span>{clue.label}<small>{clue.instruction}</small></span></li>
           ))}
-        </ol>
+        </ol> : null}
         <div className="cc98-bd-code" aria-label={`当前口令 ${selectedPostIds.map((id) => BD_DIGIT_BY_POST.get(id)).join("") || "空"}`} aria-live="polite">
           {[0, 1, 2, 3].map((index) => <span key={`${index}-${selectedPostIds[index] ?? "empty"}`}>{selectedPostIds[index] ? BD_DIGIT_BY_POST.get(selectedPostIds[index]) : "·"}</span>)}
         </div>

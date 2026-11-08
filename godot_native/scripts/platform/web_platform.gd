@@ -105,6 +105,7 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 			observeVisibility: receive => {
 				const canvas = document.getElementById('canvas');
 				let windowFocused = document.hasFocus();
+				let trustedCanvasTouch = false;
 				// Godot 4.7.1 moves text focus to its sibling IME or virtual
 				// keyboard element. Those are part of the game, not a window exit.
 				const gameHasFocus = () => {
@@ -117,21 +118,26 @@ func setup(owner_shell: Control, owner_state: Node) -> void:
 						!active.disabled;
 				};
 				visibilityHandler = () => {
-					if (!disposed) receive(document.hidden, windowFocused && document.hasFocus() && gameHasFocus());
+					const hidden = document.hidden;
+					const gameFocused = gameHasFocus();
+					if (hidden || !gameFocused) trustedCanvasTouch = false;
+					if (!disposed) receive(hidden, gameFocused && ((windowFocused && document.hasFocus()) || trustedCanvasTouch));
 				};
 				focusHandler = () => { windowFocused = true; visibilityHandler(); };
-				blurHandler = () => { windowFocused = false; visibilityHandler(); };
+				blurHandler = () => { windowFocused = false; trustedCanvasTouch = false; visibilityHandler(); };
 				canvasFocusHandler = () => { windowFocused = document.hasFocus(); visibilityHandler(); };
 				// During blur, activeElement may temporarily be body. Wait until the
 				// focus handoff settles so an internal text edit never pauses a frame.
 				canvasBlurHandler = () => { Promise.resolve().then(visibilityHandler); };
 				documentFocusHandler = () => { windowFocused = document.hasFocus(); visibilityHandler(); };
 				documentBlurHandler = canvasBlurHandler;
-				// Reconcile mobile returns that omit window focus, without stealing
-				// focus from the engine's active text input.
-				inputFocusHandler = () => {
+				// Some Android browsers keep hasFocus() false after leaving
+				// fullscreen even while a trusted touch reaches the visible canvas.
+				// Resume before Godot receives that touch; real blur/hidden revokes it.
+				inputFocusHandler = event => {
 					if (document.hidden) return;
 					if (!gameHasFocus()) canvas?.focus();
+					if (event.isTrusted && event.target === canvas && (event.type === 'touchstart' || event.pointerType === 'touch')) trustedCanvasTouch = true;
 					windowFocused = document.hasFocus(); visibilityHandler();
 				};
 				document.addEventListener('visibilitychange', visibilityHandler);
@@ -666,9 +672,10 @@ func read_snapshot() -> Dictionary:
 	var library_story: Dictionary = {}
 	if is_instance_valid(shell.library_story_host) and shell.library_story_host.current!=null:
 		library_story=shell.library_story_host.current.snapshot()
-	var landscape_preferred: bool=(is_instance_valid(shell.world_frame) and shell.world_frame.is_visible_in_tree()) or (is_instance_valid(shell.active_game) and shell.game_viewport.x>shell.game_viewport.y)
+	var landscape_preferred: bool=shell.mobile_surface_prefers_landscape()
+	var phone_portrait: bool=not landscape_preferred and (is_instance_valid(shell.active_game) or (is_instance_valid(shell.phone) and shell.phone.is_visible_in_tree()))
 	if content.get("retryVisible", false): controls.append({"name": "RetryRequiredContent", "text": "重试", "type": "Button", "rect": content.retryRect, "disabled": false})
-	return {"sampleFrame": Engine.get_process_frames(), "engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "documentFocused": _document_focused, "platformPaused": _suspended, "awaitingResume": false, "content": content, "savePersistence": read_save_persistence(), "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "activity":game.get("activity",{}), "world": world, "libraryStory": library_story, "presentation":{"landscapePreferred":landscape_preferred}, "phoneRect": _rect(shell.phone.get_global_rect()) if is_instance_valid(shell.phone) else {}, "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
+	return {"sampleFrame": Engine.get_process_frames(), "engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "documentFocused": _document_focused, "platformPaused": _suspended, "awaitingResume": false, "content": content, "savePersistence": read_save_persistence(), "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "activity":game.get("activity",{}), "world": world, "libraryStory": library_story, "presentation":{"landscapePreferred":landscape_preferred, "portraitRequired":phone_portrait, "rotation":shell.mobile_surface_rotation, "surfaceSize":_json_value(shell.size)}, "phoneRect": _rect(shell.phone.get_global_rect()) if is_instance_valid(shell.phone) else {}, "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
 
 func _exit_tree() -> void:
 	if _owns_tree_pause and is_inside_tree():TreePauseLease.release(get_tree(),self)

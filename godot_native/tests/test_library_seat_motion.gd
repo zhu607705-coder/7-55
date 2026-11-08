@@ -68,8 +68,10 @@ func model_checks() -> void:
 	motion.advance(1)
 	check(not motion.note_pose().visible and motion.bag_pose().offset == Vector2.ZERO, "paper leaves the table and bag settles")
 	check(s == accepted and s.items.occupancyNote, "finishing the visual does not acquire or consume an item")
+	finish_story(controller,s)
 	controller.dispatch(s,"lib_receipt"); motion.sync(s)
 	check(motion.receipt_ms < 0 and motion.receipt_pose().width == 8, "missing arrow leaves the folded receipt in its gap")
+	finish_story(controller,s)
 	s.items.rightArrow = true
 	controller.dispatch(s,"lib_receipt"); motion.sync(s)
 	accepted = s.duplicate(true)

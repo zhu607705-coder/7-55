@@ -127,16 +127,23 @@ const ACCENT := Color("c9e96e")
 const BLUE := Color("267b9e")
 
 var flc_entry_mode:=false
+var mobile_surface_rotation := 0
+var mobile_surface_managed := false
 
 func _ready() -> void:
 	set_meta("paper_ink_scope",true)
+	mobile_surface_managed = OS.has_feature("web") and DisplayServer.is_touchscreen_available()
+	if mobile_surface_managed:
+		set_anchors_preset(Control.PRESET_TOP_LEFT)
+		get_viewport().size_changed.connect(_layout)
+	else:
+		resized.connect(_layout)
 	flc_entry_mode=bool(get_tree().root.get_meta("flc_entry_requested",false))
 	if flc_entry_mode:
 		get_tree().root.remove_meta("flc_entry_requested")
 		# Optional exploration has no background story/phone session to advance.
 		get_tree().auto_accept_quit=false
 		get_tree().root.close_requested.connect(_request_quit)
-		resized.connect(_layout)
 		await _open_game_now({"kind":"future_learning_center","script":"res://scripts/games/future_learning_center/view.gd","return_to_entry":true})
 		if not is_instance_valid(active_game):
 			get_tree().change_scene_to_file("res://scenes/entry.tscn")
@@ -167,8 +174,6 @@ func _ready() -> void:
 		if is_instance_valid(battery_prank): battery_prank.consume_reserve(percent)
 	)
 	State.story_reset.connect(_reset_runtime_presentations)
-	resized.connect(_layout)
-	get_viewport().size_changed.connect(_schedule_layout)
 	_setup_runtime_hosts()
 	_restore_shell_surface()
 	_refresh()
@@ -674,7 +679,33 @@ func _library_world_presentation(cue: String,payload: Dictionary,layer: RefCount
 	world_page_origin_scene="library_interior"
 	_open_library_world_document("library_rule")
 
+func mobile_surface_prefers_landscape() -> bool:
+	if is_instance_valid(active_game): return game_viewport.x > game_viewport.y
+	return flc_entry_mode or (mobile_world and _has_world_scene())
+
+func _layout_mobile_surface() -> void:
+	if not mobile_surface_managed: return
+	var viewport := get_viewport()
+	var extent := viewport.get_visible_rect().size
+	var landscape := mobile_surface_prefers_landscape()
+	var turn := 0
+	if landscape and extent.x < extent.y: turn = 1
+	elif not landscape and extent.x > extent.y: turn = -1
+	if turn != mobile_surface_rotation:
+		if is_instance_valid(world): _cancel_surface_gestures()
+		mobile_surface_rotation = turn
+	var transform := Transform2D.IDENTITY
+	if turn == 1: transform = Transform2D(Vector2.DOWN, Vector2.LEFT, Vector2(extent.x, 0))
+	elif turn == -1: transform = Transform2D(Vector2.UP, Vector2.RIGHT, Vector2(0, extent.y))
+	viewport.global_canvas_transform = transform
+	size = Vector2(extent.y, extent.x) if turn != 0 else extent
+
+func _exit_tree() -> void:
+	if mobile_surface_managed and is_instance_valid(get_viewport()):
+		get_viewport().global_canvas_transform = Transform2D.IDENTITY
+
 func _layout() -> void:
+	_layout_mobile_surface()
 	if flc_entry_mode:
 		if is_instance_valid(active_game):active_game.configure_activity_layout(size,size.x<760)
 		return
@@ -686,8 +717,13 @@ func _layout() -> void:
 	var fitted_activity: bool = _activity_owns_scene()
 	var has_world := _has_world_scene()
 	if not has_world: mobile_world = false
-	var phone_top := 18.0
-	var phone_space := available - Vector2(24,phone_top + (64 if has_world else 18))
+	var safe_insets := _world_safe_insets() if compact_layout else Vector4.ZERO
+	if mobile_surface_rotation == 1: safe_insets = Vector4(safe_insets.y, safe_insets.z, safe_insets.w, safe_insets.x)
+	elif mobile_surface_rotation == -1: safe_insets = Vector4(safe_insets.w, safe_insets.x, safe_insets.y, safe_insets.z)
+	var phone_insets := safe_insets if DisplayServer.is_touchscreen_available() else Vector4.ZERO
+	var phone_top := 18.0 + phone_insets.y
+	var phone_width := available.x - phone_insets.x - phone_insets.z
+	var phone_space := Vector2(phone_width - 24, available.y - phone_top - phone_insets.w - (64 if has_world else 18))
 	# WebDisplay expresses this viewport in CSS-sized logical pixels. Let large
 	# browser windows use the available height instead of stopping at 430x860;
 	# the authored phone and every anchored hit area still scale together.
@@ -695,7 +731,7 @@ func _layout() -> void:
 	var phone_scale := fit_scale
 	phone.scale = Vector2.ONE * phone_scale
 	phone.size = Vector2(430,860)
-	phone.position = Vector2((available.x - 430*phone_scale)/2,phone_top+(phone_space.y-860*phone_scale)/2)
+	phone.position = Vector2(phone_insets.x+(phone_width-430*phone_scale)/2,phone_top+(phone_space.y-860*phone_scale)/2)
 	phone.visible = not mobile_world and not fitted_activity
 	# Return, resize and activity cancellation may reveal a retained dirty page
 	# without another State.changed signal. Coalesce one current-state rebuild.
@@ -706,7 +742,7 @@ func _layout() -> void:
 	# One measured reading gutter below reserves the painted bag + badge.
 	# Keep the upstream page wrapper, without stacking a second approximate inset.
 	phone_world_return.visible = phone.visible and has_world and not is_instance_valid(active_game)
-	phone_world_return.position = available-Vector2(56,56)
+	phone_world_return.position = available-Vector2(56+phone_insets.z,56+phone_insets.w)
 	phone_world_return.size = Vector2(44,44)
 	if not phone.visible: photo_brightness_session.reset()
 	elif not photo_brightness_session.mounted and str(State.d.native.page)=="photos":
@@ -717,7 +753,8 @@ func _layout() -> void:
 	world_tasks.visible=mobile_back.visible
 	world_mode.visible=mobile_back.visible and mode_unlocked
 	var inventory_available:=_inventory_dock_available() and not is_instance_valid(active_game)
-	var compact:bool=mobile_world and compact_layout and not _authored_world_contract()
+	var authored_world := _authored_world_contract()
+	var compact:bool=mobile_world and compact_layout and not authored_world
 	compact_world_contract=compact
 	inventory_handle.hide()
 	inventory_dock.visible=world_frame.visible and inventory_available
@@ -726,14 +763,13 @@ func _layout() -> void:
 	var margin:=2.0 if compact else 10.0
 	border.content_margin_left=margin; border.content_margin_right=margin
 	border.content_margin_top=margin; border.content_margin_bottom=margin
+	var safe_extent:=available-Vector2(safe_insets.x+safe_insets.z+4,safe_insets.y+safe_insets.w+4)
 	if compact:
-		var insets:=_world_safe_insets()
-		var safe_extent:=available-Vector2(insets.x+insets.z+4,insets.y+insets.w+4)
+		var insets:=safe_insets
 		var frame_extent:=world_extent+Vector2.ONE*4
 		var world_scale:=maxf(.01,minf(safe_extent.x/frame_extent.x,safe_extent.y/frame_extent.y))
-		# Compact input and readable root-space controls do not change the map's
-		# authored landscape viewport. A portrait window letterboxes it until
-		# the device rotates; desktop narrow windows use the same projection.
+		# The mobile surface is already oriented. Keep the source canvas 16:9
+		# inside the usable bounds and reserve readable root-space controls.
 		world_frame.scale=Vector2.ONE*world_scale
 		world_frame.position=Vector2(insets.x+2,insets.y+2)+(safe_extent-frame_extent*world_scale)/2
 		world_frame.size=frame_extent
@@ -788,6 +824,7 @@ func _layout() -> void:
 	if is_instance_valid(file_dialog) and file_dialog.visible: NativeFileDialogTheme.fit(file_dialog,size)
 	_sync_selected_world_overlay()
 	_layout_phone_reading_gutters()
+	if world_frame.visible and not authored_world: world.fit_library_camera(safe_extent)
 
 func _layout_phone_reading_gutters() -> void:
 	if not is_instance_valid(page_body) or not is_instance_valid(phone_chrome):return
@@ -1830,6 +1867,10 @@ func _refresh_inventory_dock() -> void:
 			icon.name="WorldItemArtwork"
 			icon.position=Vector2(8,8)
 		button.gestures=inventory_gestures
+		# A rotated Web surface can extend past the unrotated GUI hover bounds.
+		# Resolve releases on its visible world using the same drop target.
+		button.touch_drop=func(point: Vector2,data: Variant) -> bool:
+			return mobile_surface_rotation!=0 and world_view.drop_inventory_touch(point,data)
 		button.can_combine=func(from_id: String,to_id: String) -> bool:
 			return world_frame.is_visible_in_tree() and not _inventory_dock_input_blocked() and bool(State.d.items.get(from_id,false)) and bool(State.d.items.get(to_id,false))
 		button.combination_requested.connect(_combine_inventory_items)
@@ -1943,6 +1984,8 @@ func _show_journal() -> void:
 	var box := _modal_base("调查记录","selected_journal")
 	if return_to_world: modal_previous_focus=weakref(world)
 	var current: Dictionary=CanteenObjective.current(State.d)
+	if int(State.d.native.chapter)==2:
+		current={"detail":str(State.get_view("library_archive").get("guidance",""))}
 	var journal:=NativeJournalView.new()
 	if modal.has_meta("journal_shared_shell"):journal.phone_builder=modal.get_meta("journal_shared_shell").builder
 	if return_to_world: journal.context_texture=world.background
@@ -2661,7 +2704,7 @@ func _on_audio_subtitle(text:String,surface:String,duration_ms:float,tone:String
 func _sync_selected_world_overlay() -> void:
 	if not is_instance_valid(world) or not is_instance_valid(world_view): return
 	var screen_rect: Rect2 = world_view.get_global_rect()
-	var local_rect := Rect2(get_global_transform_with_canvas().affine_inverse() * screen_rect.position, screen_rect.size / get_global_transform_with_canvas().get_scale())
+	var local_rect := get_global_transform().affine_inverse() * screen_rect
 	world.sync_selected_overlay_native(self,local_rect)
 	# Transparent reading surfaces own attention, not a new camera/layout.
 	# Preserve visibility-derived world bounds and existing modal input blocking.
