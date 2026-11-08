@@ -481,12 +481,12 @@ func _surface_navigation_blocked(ignore_world_presentation: bool=false) -> bool:
 	# Library shelf). Returning must reveal that same owner so it can finish.
 	return not ignore_world_presentation and world_frame.is_visible_in_tree() and (_authored_world_contract() or (is_instance_valid(world) and world._interaction_presentation_blocks()))
 
-func _cancel_surface_gestures(cancel_route := true) -> void:
+func _cancel_surface_gestures(keep_campus_route := false) -> void:
 	for button in inventory_buttons.get_children(): button.cancel_gesture()
 	if is_instance_valid(phone_chrome) and is_instance_valid(phone_chrome.inventory_slots):
 		for button in phone_chrome.inventory_slots.get_children(): button.cancel_gesture()
 	if is_instance_valid(world):
-		world.cancel_exploration_gestures(cancel_route)
+		world.cancel_exploration_gestures(keep_campus_route)
 		world.walk_clock = 0
 	if is_instance_valid(world_viewport): world_viewport.gui_release_focus()
 	get_viewport().gui_release_focus()
@@ -697,7 +697,7 @@ func _layout_mobile_surface() -> void:
 	if landscape and extent.x < extent.y: turn = 1
 	elif not landscape and extent.x > extent.y: turn = -1
 	if turn != mobile_surface_rotation:
-		if is_instance_valid(world): _cancel_surface_gestures(false)
+		if is_instance_valid(world): _cancel_surface_gestures(true)
 		mobile_surface_rotation = turn
 	var transform := Transform2D.IDENTITY
 	if turn == 1: transform = Transform2D(Vector2.DOWN, Vector2.LEFT, Vector2(extent.x, 0))
@@ -907,7 +907,7 @@ func _configure_world_surface(extent: Vector2,margin: float,compact: bool) -> vo
 	if layout_changed or backing_changed:
 		# A pointer captured against the old projection cannot survive a reflow.
 		for button in inventory_buttons.get_children(): button.cancel_gesture()
-		world.cancel_exploration_gestures(false)
+		world.cancel_exploration_gestures(true)
 		if layout_changed: world.pan_offset=Vector2.ZERO
 		world._update_camera()
 		world.queue_redraw()

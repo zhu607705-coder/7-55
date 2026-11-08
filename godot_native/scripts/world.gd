@@ -78,6 +78,9 @@ var _floor_goal := Vector2.INF
 var _floor_status := ""
 var _floor_feedback_left := 0.0
 var _floor_bounds := Rect2()
+var _floor_expected_camera := Vector2.ZERO
+var _floor_view_size := Vector2.ZERO
+var _floor_view_zoom := 0.0
 var _floor_world_key := ""
 var _floor_pending_interaction:Dictionary={}
 var _floor_intent_state:Dictionary={}
@@ -877,9 +880,9 @@ func _process(delta: float) -> void:
 	if _floor_feedback_left>0:
 		_floor_feedback_left=maxf(0,_floor_feedback_left-delta)
 		if _floor_feedback_left==0 and _floor_route.is_empty(): _floor_goal=Vector2.INF; _floor_status=""
-	if direct_gestures.has_active() and not direct_gestures.valid(_direct_gesture_context(),State.d):cancel_exploration_gestures(false)
+	if direct_gestures.has_active() and not direct_gestures.valid(_direct_gesture_context(),State.d):cancel_exploration_gestures(true)
 	if not _floor_pending_interaction.is_empty() and not _floor_intent_valid():_cancel_floor_route()
-	if not _floor_route.is_empty() and (capture_mode or presentation_actor_hidden or not is_visible_in_tree() or get_viewport().gui_is_dragging() or get_tree().root.gui_is_dragging() or world_key != _floor_world_key): _cancel_floor_route()
+	if not _floor_route.is_empty() and (capture_mode or presentation_actor_hidden or not is_visible_in_tree() or get_viewport().gui_is_dragging() or get_tree().root.gui_is_dragging() or not _floor_transform_current()): _cancel_floor_route()
 	if not is_visible_in_tree() or scene_id.is_empty() or capture_mode: return
 	if is_instance_valid(host_node) and not host_node.world_frame.is_visible_in_tree(): _cancel_floor_route(); return
 	if chapter3_layers!=null:
@@ -926,9 +929,10 @@ func _process(delta: float) -> void:
 	if is_instance_valid(shell) and is_instance_valid(shell.get("world_effect")) and shell.world_effect.get_meta("blocks_input",false):cancel_exploration_gestures();return
 	var focus := host_node.get_viewport().gui_get_focus_owner() if is_instance_valid(host_node) else get_viewport().gui_get_focus_owner()
 	var axis := Vector2.ZERO
-	var route_can_advance: bool = _window_focused and not direct_gestures.has_active()
+	var campus_route := scene_id == "campus_bootstrap"
+	var route_can_advance: bool = not campus_route or (_window_focused and not direct_gestures.has_active())
 	if focus is LineEdit or focus is TextEdit: _cancel_floor_route()
-	elif _window_focused:
+	elif not campus_route or _window_focused:
 		axis = Vector2(float(Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT))-float(Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)),float(Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN))-float(Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP)))
 	if touch_axis.length_squared() > 0:
 		_cancel_floor_route()
@@ -1039,6 +1043,7 @@ func _process(delta: float) -> void:
 			nearby = target
 	_update_guard(delta)
 	_update_camera()
+	_floor_expected_camera = camera
 	_last_save += delta
 	if _last_save > 3.0:
 		_last_save = 0
@@ -1720,7 +1725,7 @@ func _gui_input(event: InputEvent) -> void:
 			State.lake_world_stroke(self,"left" if event.keycode in [KEY_A,KEY_LEFT] else "right",Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN))
 			accept_event()
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
-		_cancel_floor_route()
+		if scene_id == "campus_bootstrap": _cancel_floor_route()
 		_try_interact()
 		accept_event()
 
@@ -2007,21 +2012,22 @@ func _cancel_table_drag() -> void:
 func _notification(what: int) -> void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT, NOTIFICATION_WM_WINDOW_FOCUS_OUT]:
 		_window_focused = false
-		cancel_exploration_gestures(false)
+		if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT or scene_id == "campus_bootstrap":
+			cancel_exploration_gestures(true)
 	elif what in [NOTIFICATION_APPLICATION_FOCUS_IN, NOTIFICATION_WM_WINDOW_FOCUS_IN]:
 		_window_focused = true
 	if what==NOTIFICATION_DRAG_END: _finish_table_drag()
 	elif what==NOTIFICATION_VISIBILITY_CHANGED and is_inside_tree() and not is_visible_in_tree():cancel_exploration_gestures()
-	elif what==NOTIFICATION_RESIZED:cancel_exploration_gestures(false)
+	elif what==NOTIFICATION_RESIZED:cancel_exploration_gestures(true)
 
-func cancel_exploration_gestures(cancel_route := true) -> void:
+func cancel_exploration_gestures(keep_campus_route := false) -> void:
 	_cancel_table_drag()
 	if library_layers!=null:library_layers.book.cancel()
 	touch_axis=Vector2.ZERO;move_target=Vector2.INF
 	mobile_confirmed_target_id="";mobile_confirmed_world_key=""
 	if direct_gestures!=null:direct_gestures.cancel()
 	kayak_mouse_gesture.clear()
-	if cancel_route: _cancel_floor_route()
+	if not keep_campus_route or scene_id != "campus_bootstrap": _cancel_floor_route()
 
 func kayak_paddle_rects() -> Dictionary:
 	if kayak==null or not is_instance_valid(kayak_visual):return {}
@@ -2248,6 +2254,11 @@ func _cancel_floor_route() -> void:
 func _stop_floor_route() -> void:
 	_floor_route.clear(); move_target=Vector2.INF; _floor_status="blocked"; _floor_feedback_left=.9
 	_floor_pending_interaction.clear();_floor_intent_state={}
+
+func _floor_transform_current() -> bool:
+	if world_key != _floor_world_key: return false
+	# Only campus routes use the full map, independent of the current view.
+	return scene_id == "campus_bootstrap" or (size == _floor_view_size and is_equal_approx(zoom, _floor_view_zoom) and camera.is_equal_approx(_floor_expected_camera))
 
 func _floor_visible_rect() -> Rect2:
 	var local:=exploration_safe_rect()
@@ -2508,7 +2519,7 @@ func _queue_target_approach(target:Dictionary, interact_on_arrival := true)->boo
 		var route:Array[Vector2]=_floor_plan(goal,obstacles)
 		if not route.is_empty():
 			_floor_route=route;_floor_goal=goal+PlayerMetrics.foot_center_offset(scene_id);_floor_status="moving"
-			_floor_world_key = world_key
+			_floor_world_key=world_key;_floor_view_size=size;_floor_view_zoom=zoom;_floor_expected_camera=camera
 			if interact_on_arrival:
 				_floor_intent_state=State.d
 				_floor_pending_interaction={"target":target.duplicate(true),"world_key":world_key,"phase":_floor_phase_context()}
@@ -2562,7 +2573,7 @@ func _mobile_floor_tap(local: Vector2) -> void:
 		if object_picker.contains(player_geometry(),point): return
 	_floor_bounds=_floor_travel_bounds()
 	_floor_goal=point
-	_floor_world_key = world_key
+	_floor_world_key=world_key;_floor_view_size=size;_floor_view_zoom=zoom;_floor_expected_camera=camera
 	# Tap/marker denote the scene-specific collision-foot center, not the
 	# sprite origin. Object and inventory hit coordinates are unchanged.
 	var goal:=PlayerMetrics.anchor_from_foot_center(point,scene_id)
