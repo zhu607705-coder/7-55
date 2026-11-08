@@ -50,7 +50,7 @@ func _initialize() -> void: call_deferred("run")
 func run() -> void:
 	fixture=DisplayFixture.library(JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/library_story_source.json")))
 	library=Library.new(); witness=Node.new(); root.add_child(witness); s=fresh()
-	check(fixture.sequenceCount==12 and fixture.lineCount==53,"fixture covers 12 sequences and 53 authored lines")
+	check(fixture.sequenceCount==16 and fixture.lineCount==62,"fixture covers 16 sequences and 62 authored lines")
 	check(fixture.separateOwner.lineCount==20,"final 20-line 022 conversation remains C3-owned")
 	act("lib_enter"); check(s.ui.libraryFinalsPhase=="library_entered","first entry preserves source phase")
 	act("lib_record"); check(not s.ui.libraryFinalsPuzzle.entranceRecordRead,"entry reveal blocks underlying interaction")
@@ -95,7 +95,7 @@ func run() -> void:
 	act("lib_sit"); check(not s.ui.libraryFinalsPuzzle.playerSeated,"eviction exchange cannot be skipped by sitting")
 	play("library_backpack_evicted"); act("lib_sit")
 	check(library.story_session(s)==null and library.scene_session(s)!=null,"final022 remains exclusively existing C3 opening")
-	check(covered.size()==12 and covered_lines==53,"all authored story sequences traversed end-to-end")
+	check(covered.size()==12 and covered_lines==53,"all currently connected story sequences traversed end-to-end")
 	# Save replacement and stale capabilities, plus source recovery priority.
 	s=fresh(); s.ui.libraryFinalsPhase="evidence_gathering"; s.ui.libraryFinalsPuzzle.archivedRuleRead=true
 	var stale: RefCounted=library.story_session(s); stale.attach(s,witness)
@@ -148,7 +148,7 @@ func run() -> void:
 					root.get_texture().get_image().save_png("res://.screenshots/library-story/%s-%sx%s.png" % [id,viewport.x,viewport.y])
 	host.queue_free(); underlying.queue_free(); impostor.queue_free(); witness.queue_free(); await process_frame
 	await test_real_shell()
-	print("Library story sequences: ",checks," checks, ",errors," errors; 12 sequences /53 authored lines")
+	print("Library story sequences: ",checks," checks, ",errors," errors; 12 connected sequences / 53 lines")
 	quit(0 if errors==0 else 1)
 
 func test_real_shell() -> void:

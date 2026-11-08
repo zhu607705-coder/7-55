@@ -939,7 +939,7 @@
     "act2_balance_shifted": 3880,
     "act2_gamepad_purchase_rejected": 3520,
     "act2_exit_ready": 2560,
-    "library_story_library_entered_01": 2560,
+    "library_story_library_entered_01": 2800,
     "library_story_library_entered_02": 3160,
     "library_story_library_entered_03": 2560,
     "library_story_library_entered_04": 2560,
@@ -950,48 +950,57 @@
     "library_story_library_entered_09": 2400,
     "library_story_library_entered_10": 3160,
     "library_story_library_entered_11": 2400,
-    "library_story_library_entered_12": 4240,
+    "library_story_library_entered_12": 4480,
+    "library_story_library_gate_record_checked_01": 5200,
+    "library_story_library_gate_record_checked_02": 4960,
     "library_story_library_occupied_seat_found_01": 2400,
-    "library_story_library_occupied_seat_found_02": 4840,
-    "library_story_library_occupied_seat_found_03": 2440,
-    "library_story_library_occupied_seat_found_04": 3880,
-    "library_story_cc98_occupation_post_opened_01": 3760,
-    "library_story_cc98_occupation_post_opened_02": 2400,
-    "library_story_cc98_occupation_post_opened_03": 3640,
-    "library_story_library_catalog_match_found_01": 3760,
-    "library_story_library_catalog_match_found_02": 3880,
+    "library_story_library_occupied_seat_found_02": 4480,
+    "library_story_library_occupied_seat_found_03": 3760,
+    "library_story_library_occupied_seat_found_04": 4720,
+    "library_story_library_occupation_note_picked_01": 6500,
+    "library_story_library_occupation_note_picked_02": 3040,
+    "library_story_library_occupation_note_picked_03": 5080,
+    "library_story_cc98_occupation_post_opened_01": 4480,
+    "library_story_cc98_occupation_post_opened_02": 4000,
+    "library_story_cc98_occupation_post_opened_03": 4960,
+    "library_story_library_catalog_match_found_01": 6500,
+    "library_story_library_catalog_match_found_02": 6160,
     "library_story_library_archived_rule_recovered_01": 2800,
     "library_story_library_archived_rule_recovered_02": 2400,
-    "library_story_library_archived_rule_recovered_03": 2560,
-    "library_story_library_archived_rule_recovered_04": 2680,
-    "library_story_library_archived_rule_recovered_05": 3040,
-    "library_story_library_archived_rule_recovered_06": 3760,
-    "library_story_library_archived_rule_recovered_07": 2400,
+    "library_story_library_archived_rule_recovered_03": 6040,
+    "library_story_library_archived_rule_recovered_04": 2800,
+    "library_story_library_archived_rule_recovered_05": 5200,
+    "library_story_library_archived_rule_recovered_06": 6500,
     "library_story_library_front_desk_proof_request_01": 2800,
-    "library_story_library_front_desk_proof_request_02": 2680,
-    "library_story_library_front_desk_proof_request_03": 3040,
+    "library_story_library_front_desk_proof_request_02": 4480,
+    "library_story_library_front_desk_proof_request_03": 6500,
     "library_story_library_front_desk_proof_request_04": 2800,
-    "library_story_library_front_desk_proof_request_05": 3520,
-    "library_story_library_bag_nonperson_proof_issued_01": 3760,
-    "library_story_library_bag_nonperson_proof_issued_02": 3160,
-    "library_story_tiyi_presence_proof_issued_01": 2400,
-    "library_story_tiyi_presence_proof_issued_02": 3160,
-    "library_story_tiyi_presence_proof_issued_03": 2560,
-    "library_story_tiyi_presence_proof_issued_04": 3160,
-    "library_story_tiyi_presence_proof_issued_05": 2440,
-    "library_story_cc98_evidence_set_completed_01": 3880,
-    "library_story_cc98_evidence_set_completed_02": 4840,
+    "library_story_library_front_desk_proof_request_05": 5080,
+    "library_story_library_bag_nonperson_proof_issued_01": 3880,
+    "library_story_library_bag_nonperson_proof_issued_02": 6500,
+    "library_story_library_bag_nonperson_proof_issued_03": 3160,
+    "library_story_library_crevice_inspected_01": 4600,
+    "library_story_library_crevice_inspected_02": 6160,
+    "library_story_library_seat_receipt_recovered_01": 4840,
+    "library_story_library_seat_receipt_recovered_02": 6500,
+    "library_story_tiyi_presence_proof_issued_01": 4720,
+    "library_story_tiyi_presence_proof_issued_02": 3040,
+    "library_story_tiyi_presence_proof_issued_03": 3160,
+    "library_story_tiyi_presence_proof_issued_04": 6500,
+    "library_story_cc98_evidence_set_completed_01": 4480,
+    "library_story_cc98_evidence_set_completed_02": 6500,
     "library_story_cc98_evidence_set_completed_03": 2560,
-    "library_story_cc98_evidence_set_completed_04": 5440,
-    "library_story_cc98_top_ten_reached_01": 4000,
-    "library_story_library_seat_release_pass_issued_01": 3280,
-    "library_story_library_seat_release_pass_issued_02": 2920,
-    "library_story_library_backpack_evicted_01": 2920,
-    "library_story_library_backpack_evicted_02": 3160,
+    "library_story_cc98_evidence_set_completed_04": 6040,
+    "library_story_cc98_top_ten_reached_01": 4120,
+    "library_story_cc98_top_ten_reached_02": 6500,
+    "library_story_library_seat_release_pass_issued_01": 6400,
+    "library_story_library_seat_release_pass_issued_02": 3280,
+    "library_story_library_backpack_evicted_01": 4480,
+    "library_story_library_backpack_evicted_02": 3280,
     "library_story_library_backpack_evicted_03": 2440,
     "library_story_library_backpack_evicted_04": 2400,
     "library_story_library_backpack_evicted_05": 2400,
-    "library_story_library_backpack_evicted_06": 3280,
+    "library_story_library_backpack_evicted_06": 5200,
     "library_story_library_friend_contacted_01": 3040,
     "library_story_library_friend_contacted_02": 4000,
     "library_story_library_friend_contacted_03": 3640,
@@ -6559,7 +6568,7 @@
     "library_story_library_entered_01": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "这就是基础馆？你说的那个朋友在哪？"
+      "subtitleZh": "这里就是基础图书馆？"
     },
     "library_story_library_entered_02": {
       "kind": "dialogue",
@@ -6614,7 +6623,17 @@
     "library_story_library_entered_12": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "她的入馆记录停在三天前，一直没签退。先刷闸机进去看看情况。"
+      "subtitleZh": "这张记录没有固定时长。先在门口闸机核对入馆记录。"
+    },
+    "library_story_library_gate_record_checked_01": {
+      "kind": "dialogue",
+      "speaker": "narrator",
+      "subtitleZh": "闸机屏幕亮起：07:55 刷卡入馆，一层书库 022 会话未闭合。"
+    },
+    "library_story_library_gate_record_checked_02": {
+      "kind": "dialogue",
+      "speaker": "system",
+      "subtitleZh": "入馆记录确认了。进馆去一层书库 022，对照桌牌找到座位。"
     },
     "library_story_library_occupied_seat_found_01": {
       "kind": "dialogue",
@@ -6624,47 +6643,62 @@
     "library_story_library_occupied_seat_found_02": {
       "kind": "dialogue",
       "speaker": "narrator",
-      "subtitleZh": "022 号座位上赫然盘踞着一个鼓鼓囊囊的书包，上面贴着一张便签纸：“本人离开三分钟，马上回来”。"
+      "subtitleZh": "022 座位被一个书包占着，旁边压着一张占座纸条。"
     },
     "library_story_library_occupied_seat_found_03": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "……被占座了。而且一个书包怎么连选座终端的屏幕都挡死了？"
+      "subtitleZh": "明明预约了 022，位置却被书包占了。"
     },
     "library_story_library_occupied_seat_found_04": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "别硬拽！馆内选座系统判定它还在“三分钟暂离保护期”内，强行挪动会触发警报。去 CC98 搜搜怎么破这个死循环。"
+      "subtitleZh": "先别直接挪动它。拿起旁边的占座纸条看看上面写了什么。"
+    },
+    "library_story_library_occupation_note_picked_01": {
+      "kind": "dialogue",
+      "speaker": "narrator",
+      "subtitleZh": "占座纸条上写着：“主人马上回来（临时离座规则详见 CC98）”，落款时间停在 08:02。"
+    },
+    "library_story_library_occupation_note_picked_02": {
+      "kind": "dialogue",
+      "speaker": "player",
+      "subtitleZh": "离座规则还要去论坛上查？"
+    },
+    "library_story_library_occupation_note_picked_03": {
+      "kind": "dialogue",
+      "speaker": "system",
+      "subtitleZh": "打开手机里的 CC98，用纸条上的关键词搜出 022 的调查帖。"
     },
     "library_story_cc98_occupation_post_opened_01": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "先看这条讨论，确认三分钟离座的规则。"
+      "subtitleZh": "翻看帖子里提到的旧规书名，确认怎么处理超时占座。"
     },
     "library_story_cc98_occupation_post_opened_02": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "查到以后呢？"
+      "subtitleZh": "12 楼提到一本《三分钟离座法及其例外》。"
     },
     "library_story_cc98_occupation_post_opened_03": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "拿到规则，再补齐恢复 022 的证明。"
+      "subtitleZh": "把书名记进任务记录。去馆内的馆藏检索终端查这本书的架位。"
     },
     "library_story_library_catalog_match_found_01": {
       "kind": "dialogue",
       "speaker": "narrator",
-      "subtitleZh": "书名、索书号和 022 的记录都能对上。"
+      "subtitleZh": "检索结果匹配：《三分钟离座法及其例外》，基础馆一层 · 06架南端上层，索书号 755。"
     },
     "library_story_library_catalog_match_found_02": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "去一层书库 755 号书架背面找旧版规则。"
+      "subtitleZh": "架位已经记下了。去基础馆一层 06 架南端上层，抽出索书号 755 的旧版离座规则。"
     },
     "library_story_library_archived_rule_recovered_01": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "755 号书架背面的旧版《三分钟离座法》找到了。"
+      "subtitleZh": "旧版离座规则读完了。"
     },
     "library_story_library_archived_rule_recovered_02": {
       "kind": "dialogue",
@@ -6674,97 +6708,112 @@
     "library_story_library_archived_rule_recovered_03": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "非常官僚。要想强制清退超时占座物，必须集齐三份纸质证明："
+      "subtitleZh": "它要求集齐三类申请证明，还要连同本册规则一起发到 CC98 完成四项公开公示。"
     },
     "library_story_library_archived_rule_recovered_04": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "……？我要去向图书馆证明一个双肩包不是人？！"
+      "subtitleZh": "连书包都要核验身份？"
     },
     "library_story_library_archived_rule_recovered_05": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "因为在后台数据库里，这个书包已经连续刷了三天全勤，系统默认它是模范读者。"
+      "subtitleZh": "规则只认材料：022 座位小票、本人来过证明、书包非本人证明。"
     },
     "library_story_library_archived_rule_recovered_06": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "第一，你本人的到馆时间证明；第二，022 座位的小票；第三……“该书包不是人类”的身份核验公章。"
-    },
-    "library_story_library_archived_rule_recovered_07": {
-      "kind": "dialogue",
-      "speaker": "player",
-      "subtitleZh": "……"
+      "subtitleZh": "三条取证线已经记入任务记录。先回 022 桌面夹缝和书包现场取证，或去前台和体艺处理。"
     },
     "library_story_library_front_desk_proof_request_01": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "同学你好，办什么业务？"
+      "subtitleZh": "请说明要办理的业务。"
     },
     "library_story_library_front_desk_proof_request_02": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "我想举报 022 号座位的占座书包。"
+      "subtitleZh": "我要给 022 的占座书包办一张《书包非本人证明》。"
     },
     "library_story_library_front_desk_proof_request_03": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "清退占座需先提交《占用物非本人证明》。"
+      "subtitleZh": "系统里它目前登记为座位使用者。请先回 022 给书包拍照，与相册里的旧照完成核对，再把生成的核验报告交来前台盖章。"
     },
     "library_story_library_front_desk_proof_request_04": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "不是，它就是个帆布包，你抬头看一眼不就知道了？"
+      "subtitleZh": "书包也要做实名比对？"
     },
     "library_story_library_front_desk_proof_request_05": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "不好意思，选座系统只认公章，不认肉眼。在系统里它有合法占座权。"
+      "subtitleZh": "注意把相机显示亮度调到 20 以下，否则书包标签过曝无法识别。"
     },
     "library_story_library_bag_nonperson_proof_issued_01": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "公章盖好了。“书包不具备自然人学籍”核验通过。"
+      "subtitleZh": "核验报告确认无误，已加盖非本人证明章。"
     },
     "library_story_library_bag_nonperson_proof_issued_02": {
       "kind": "dialogue",
+      "speaker": "system",
+      "subtitleZh": "《书包非本人证明》拿到了。打开任务记录查看还缺哪项材料；若三份证明已齐，就回 CC98 调查帖上传公示。"
+    },
+    "library_story_library_bag_nonperson_proof_issued_03": {
+      "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "为了赶一节早八，我今天办的证明比退学手续还全。"
+      "subtitleZh": "我今天跑的证明比上课还多。"
+    },
+    "library_story_library_crevice_inspected_01": {
+      "kind": "dialogue",
+      "speaker": "narrator",
+      "subtitleZh": "022 桌面夹缝深处卡着一张座位小票，徒手伸不进去。"
+    },
+    "library_story_library_crevice_inspected_02": {
+      "kind": "dialogue",
+      "speaker": "system",
+      "subtitleZh": "直接拿够不到。找找身边或桌面上有没有细长硬实的物件，把 022 座位小票拨出来。"
+    },
+    "library_story_library_seat_receipt_recovered_01": {
+      "kind": "dialogue",
+      "speaker": "narrator",
+      "subtitleZh": "小票从桌面夹缝里滑了出来，上面印着：基础馆一层 022。"
+    },
+    "library_story_library_seat_receipt_recovered_02": {
+      "kind": "dialogue",
+      "speaker": "system",
+      "subtitleZh": "《022 座位小票》拿到了。可查看任务记录继续补齐剩余证明，集齐后回 CC98 调查帖公示。"
     },
     "library_story_tiyi_presence_proof_issued_01": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "补录成功。"
+      "subtitleZh": "补录审核通过。入馆与到座耗时已关联至 47 号公示记录。"
     },
     "library_story_tiyi_presence_proof_issued_02": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "入馆和到馆时间已写入记录。"
+      "subtitleZh": "《本人来过证明》拿到了。"
     },
     "library_story_tiyi_presence_proof_issued_03": {
-      "kind": "dialogue",
-      "speaker": "system",
-      "subtitleZh": "到馆证明拿到了。"
-    },
-    "library_story_tiyi_presence_proof_issued_04": {
       "kind": "dialogue",
       "speaker": "player",
       "subtitleZh": "终于有一项证明的是我自己。"
     },
-    "library_story_tiyi_presence_proof_issued_05": {
+    "library_story_tiyi_presence_proof_issued_04": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "还差座位小票。"
+      "subtitleZh": "到馆记录已归档。按任务记录核对剩余缺项；若三项证明均已备齐，即可回 CC98 调查帖上传公示。"
     },
     "library_story_cc98_evidence_set_completed_01": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "三份证明终于跑齐了，现在能把书包清走了吧？"
+      "subtitleZh": "四项公开材料都传上去了，现在能申请恢复座位了吧？"
     },
     "library_story_cc98_evidence_set_completed_02": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "还差最后一步“舆论监督”。用四位受理口令完成确认，帖子冲上 CC98 十大第一，清退入口才会开放。"
+      "subtitleZh": "还差公开确认。看置顶说明：按上传栏从上到下的顺序，给每项材料找一条对应的数字回复点 bd，拼出四位热度口令。"
     },
     "library_story_cc98_evidence_set_completed_03": {
       "kind": "dialogue",
@@ -6774,32 +6823,37 @@
     "library_story_cc98_evidence_set_completed_04": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "98 黑话，“帮顶”的意思。你按证据栏的顺序给那几层带数字的楼层点 bd，楼层的数字就会拼成四位受理口令。"
+      "subtitleZh": "bd 是“帮顶”。每点一次数字回复上的 bd，对应数字就会按顺序写入热度口令。"
     },
     "library_story_cc98_top_ten_reached_01": {
       "kind": "dialogue",
       "speaker": "narrator",
-      "subtitleZh": "帖子到了第一，022 的恢复申请入口开放。"
+      "subtitleZh": "调查帖冲上十大第一，四项公开材料公示生效。"
+    },
+    "library_story_cc98_top_ten_reached_02": {
+      "kind": "dialogue",
+      "speaker": "system",
+      "subtitleZh": "公示完成了。打开手机里的「图书馆服务 → 022 恢复申请」，提交三份申请证明领取解除占座 PASS。"
     },
     "library_story_library_seat_release_pass_issued_01": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "清退凭证生成。带它回 022。"
+      "subtitleZh": "《解除占座 PASS》已发放。带它回一层书库 022，把解除占座 PASS 用在书包上。"
     },
     "library_story_library_seat_release_pass_issued_02": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "这次该把座位还给人了。"
+      "subtitleZh": "这次终于能把 022 收回来了。"
     },
     "library_story_library_backpack_evicted_01": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "022 号座位清退申请已通过。请占座物品立即离开座位。"
+      "subtitleZh": "解除占座 PASS 核验通过，请占座物品离开 022。"
     },
     "library_story_library_backpack_evicted_02": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "逾期未领的书包将移交失物招领处。"
+      "subtitleZh": "如需认领，请前往失物招领处。"
     },
     "library_story_library_backpack_evicted_03": {
       "kind": "dialogue",
@@ -6819,7 +6873,7 @@
     "library_story_library_backpack_evicted_06": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "别信它。这张纸条上的“三分钟”，已经在这儿卡了整整三天了。"
+      "subtitleZh": "占座纸条上的这句话已经留了三天。现在 022 空出来了，坐下吧。"
     },
     "library_story_library_friend_contacted_01": {
       "kind": "dialogue",
