@@ -48,7 +48,7 @@ func run()->void:
 			var goal:Vector2=world.player+Vector2(row.axis)*.5
 			world._floor_route.assign([goal]);world._floor_goal=goal+Metrics.FOOT_CENTER_OFFSET
 			world._floor_bounds=Rect2(Vector2.ZERO,world.world_size)
-			world._floor_world_key=world.world_key
+			world._floor_world_key=world.world_key;world._floor_view_size=world.size;world._floor_view_zoom=world.zoom;world._floor_expected_camera=world.camera
 			world._floor_status="moving";world.touch_axis=Vector2.ZERO
 			world._process(.01)
 			check(world.player==goal and world._floor_route.is_empty() and world._floor_status=="arrived","route reaches exact endpoint for "+row.facing+" phase "+str(phase))
