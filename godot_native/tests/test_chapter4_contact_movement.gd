@@ -20,9 +20,9 @@ func run():
   if obstacle.get("id","")=="a1_midday_queue_rope":rope=world._rect(obstacle)
  var feet:Rect2=Metrics.foot_rect(Vector2.ZERO)
  check(counter==Rect2(80,292,397,90) and rope==Rect2(129,398,325,10),"Exact original occupied geometry")
- check(feet.size==Vector2(19.5,14.625),"Full source foot box retained")
+ check(feet.size==Vector2(16,10),"Chapter 4 uses the shared walking box")
  var low:float=counter.end.y-feet.position.y;var high:float=rope.position.y-feet.end.y
- check(is_equal_approx(high-low,1.375),"Original gap has 1.375px legal anchor band")
+ check(is_equal_approx(high-low,6.0),"The same source gap leaves 6px for the new foot box")
  var lamp:Dictionary={}
  for target:Dictionary in world.targets:
   if target.id=="a1_bakery_inspection_lamp":lamp=target
@@ -31,7 +31,7 @@ func run():
  for dt:float in [1.0/120,1.0/60,1.0/30,0.05]:
   var p:=Vector2(467.114685,359.449463)
   check(world.can_stand(p),"Actual stalled pose remains legal")
-  for i in range(4):
+  for i in range(8):
    var step:=Vector2(0,-176*dt);var next:Vector2=world._c4_axis_destination(p,step)
    check(world.can_stand(next) and next.distance_to(p)<=step.length()+.001,"No overlap or excess movement at contact")
    p=next
@@ -48,9 +48,9 @@ func run():
  var below:=Vector2(345,450)
  var stopped:Vector2=world._c4_axis_destination(below,Vector2(0,-200))
  check(world.can_stand(stopped) and Metrics.foot_rect(stopped).position.y>=rope.end.y-.001,"Long component cannot tunnel across the rope")
- check(stopped.y<below.y and stopped.y>counter.end.y,"Stops at the first full-foot contact")
+ check(stopped.y<below.y and absf(Metrics.foot_rect(stopped).position.y-rope.end.y)<.002,"Stops at the first full-foot contact")
  check(world._c4_axis_destination(Vector2(345,381),Vector2(0,4))==Vector2(345,385),"A bounded move may escape an already-overlapped dynamic start")
- check(world._c4_axis_destination(Vector2(345,350),Vector2(0,1))==Vector2(345,350),"No automatic teleport from an invalid start")
+ check(world._c4_axis_destination(Vector2(345,348),Vector2(0,1))==Vector2(345,348),"No automatic teleport from an invalid start")
  check(JSON.stringify(state.d)==before,"Contact calculation never writes story/save state")
  world.queue_free();await process_frame
  print("CHAPTER4_CONTACT_MOVEMENT ",checks," checks; ",failures," failures")

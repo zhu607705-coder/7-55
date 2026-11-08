@@ -1,4 +1,5 @@
 extends SceneTree
+const Overlay = preload("res://scripts/ui/world_overlay_layout.gd")
 
 var checks := 0
 var failures := 0
@@ -47,6 +48,7 @@ func run() -> void:
 	check(layers.ready and world.background == null, "formal scene uses the complete layered campus")
 	if not layers.ready: quit(1); return
 	check(world.get_viewport() == main.world_viewport, "map, actors, labels and feedback share the world render target")
+	check(world.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "campus sprites use nearest sampling inside the world render target")
 	if ClassDB.class_has_integer_constant(&"CanvasItem",&"OVERSAMPLING_WITH_SCALE_ENABLED"):
 		check(int(world.get("oversampling_with_scale"))==ClassDB.class_get_integer_constant(&"CanvasItem",&"OVERSAMPLING_WITH_SCALE_ENABLED"),"world drawing uses scale-aware glyphs")
 	check(world.world_size == Vector2(4516,3420) and world.zoom == 1.1, "map preserves authored bounds and exploration scale")
@@ -120,7 +122,8 @@ func run() -> void:
 		var label := "%s at %sx" % [dimensions,density]
 		print("CAMPUS_RENDER ",label," -> ",main.world_viewport.size)
 		var caption: Dictionary=world.hud_metrics("基础图书馆入口已开放。")
-		check(caption.body_font*world.hud_display_scale()>=17.99,"campus caption stays at least 18 layout pixels at " + label)
+		var caption_scale:float=world.hud_display_scale()
+		check(caption.body_font==ceili(18*Overlay.ui_units(world.size,caption_scale)), "campus caption uses the current fitted UI scale at " + label)
 		check(main.size.is_equal_approx(Vector2(dimensions)) and world.size == Vector2(960,540) and world.zoom == 1.1, "logical viewport and camera zoom survive " + label)
 		check(physical.size.distance_to(backing) < .01 and physical.position.distance_to(physical.position.round()) < .01, "campus render texture covers the painted physical pixels 1:1 at " + label)
 		check(is_equal_approx(backing.aspect(),16.0/9.0) and (backing.x > 960) == (dimensions.x*density > 1000), "exact 16:9 backing follows physical size at " + label)

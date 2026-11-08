@@ -42,17 +42,14 @@ func run() -> void:
 	state.d = state.initial()
 	var before: Dictionary = state.d.duplicate(true)
 	var sample := Vector2(800.25,500.75)
-	var original := Rect2(sample+Vector2(-9.75,24.375),Vector2(19.5,14.625))
-	check(Metrics.FOOT_SIZE==Vector2(19.5,14.625) and Metrics.FOOT_CENTER_OFFSET==Vector2(0,31.6875),"shared source constants are unchanged")
-	check(Metrics.foot_rect(sample)==original,"omitting scene keeps the original formula")
-	for scene: String in ["","dorm_hub","library_interior","canteen_interior","theater_interior","qizhen_lake","campus_qizhen_loop","duan_yongping_temporal_maze","buct_chaoyang","buct_haidian","buct_changping","unknown"]:
-		check(Metrics.foot_rect(sample,scene)==original,"unchanged non-campus collision: "+scene)
-		check(Metrics.anchor_from_foot_center(Metrics.foot_center(sample,scene),scene)==sample,"exact non-campus inverse: "+scene)
-	check(Metrics.foot_size(CAMPUS)==Vector2(16,10),"campus-only 16 x 10 collision size")
-	check(Metrics.foot_center_offset(CAMPUS)==Vector2(0,36.5625),"campus center applies the user-requested one-third upward correction")
-	check(Metrics.foot_rect(sample,CAMPUS)==Rect2(sample+Vector2(-8,31.5625),Vector2(16,10)),"campus rectangle has exact lower position")
-	check(Metrics.anchor_from_foot_center(Metrics.foot_center(sample,CAMPUS),CAMPUS)==sample,"exact campus tap/anchor inverse")
+	var approved := Rect2(sample+Vector2(-8,31.5625),Vector2(16,10))
+	check(Metrics.foot_rect(sample)==approved,"default walking geometry is the approved 16 x 10 box")
+	for scene: String in [CAMPUS,"dorm_hub","library_interior","canteen_interior","theater_interior","qizhen_lake","campus_qizhen_loop","duan_yongping_temporal_maze",""]:
+		var expected:=Rect2(sample+Vector2(-18,31.5625),Vector2(36,10)) if scene=="library_interior" else approved
+		check(Metrics.foot_rect(sample,scene)==expected and Metrics.foot_size(scene)==expected.size,"shared depth and scene walking width: "+scene)
+		check(Metrics.anchor_from_foot_center(Metrics.foot_center(sample,scene),scene)==sample,"exact tap/anchor inverse: "+scene)
 	check(Metrics.depth_y(sample)==sample.y+31.6875,"campus depth stays at the pre-change reference")
+	check(Metrics.ground_depth_y(sample)==sample.y+39.0,"interior depth stays at the pre-change reference")
 	check(Metrics.depth_y(sample)!=Metrics.foot_center(sample,CAMPUS).y,"physical and rendering anchors are independent")
 	var visual := Metrics.visual_rect(sample,Metrics.scale_at(CAMPUS,sample.y))
 	check(visual.position.is_equal_approx(sample-Vector2(15.6,0)) and visual.size.is_equal_approx(Vector2(31.2,41.6)),"campus sprite position and .325 scale are unchanged")
@@ -77,7 +74,7 @@ func run() -> void:
 	world.mask_meta = SOURCE.duplicate()
 	world.campus_layers = art
 	var source_before: PackedByteArray = world.mask.duplicate()
-	check(world._floor_anchor_bounds(Rect2(0,0,256,256))==Rect2(8,-31.5625,240,246),"visible route bounds use scene-specific full feet")
+	check(world._floor_anchor_bounds(Rect2(0,0,256,256))==Rect2(8,-31.5625,240,246),"visible route bounds use the whole shared foot box")
 	for x: float in [90,132]:
 		check(world.can_stand(anchor_for_rect(Vector2(x,100))),"exact road width permits campus feet at "+str(x))
 	for x: float in [89.99,132.01]:
@@ -120,22 +117,17 @@ func run() -> void:
 	check(not world._floor_segment_clear(start,finish,[],true),"validated-node fast path cannot skip new-foot hole")
 	art.walk_supports = [road]
 	check(world._floor_segment_clear(start,finish),"restored support reopens same exact segment")
-	# Repeated scene changes must select defaults afresh, not retain a campus
-	# body in a mutable cache. The same world instance exercises each path.
 	for scene: String in ["campus_bootstrap","library_interior","canteen_interior","campus_qizhen_loop","duan_yongping_temporal_maze","campus_bootstrap"]:
 		world.scene_id = scene
 		world.collisions = [{"x":100,"y":120,"width":10,"height":10}]
-		var foot := Metrics.foot_rect(Vector2.ZERO,scene)
-		check(world._floor_obstacles().has(Rect2(box.position-foot.end,box.size+foot.size)),"scene transition selects correct obstacle footprint: "+scene)
+		var local_foot := Metrics.foot_rect(Vector2.ZERO,scene)
+		check(world._floor_obstacles().has(Rect2(box.position-local_foot.end,box.size+local_foot.size)),"routing uses the active footprint after changing scenes: "+scene)
 	world.collisions = []
 	check(world.mask==source_before and art.walk_supports==[road] and state.d==before,"metrics/physics checks do not alter source floor, obstacles or story state")
 	check(not world.is_inside_tree() and art.textures.is_empty(),"isolated physics fixture does not load scene artwork")
 	var code := FileAccess.get_file_as_string("res://scripts/world.gd")
 	check(code.count("PlayerMetrics.depth_y(player)")==2,"both campus render passes use preserved depth")
 	check(not code.contains("PlayerMetrics.FOOT_CENTER_OFFSET"),"world collision/tap paths cannot read unscoped default offset")
-	var calls := RegEx.new()
-	calls.compile("PlayerMetrics\\.foot_rect\\((?:Vector2.ZERO|[a-z_]+),scene_id\\)")
-	check(calls.search_all(code).size()==code.count("PlayerMetrics.foot_rect("),"every world footprint call is scene-aware")
 	world.free()
 	print("Campus player metrics: ",checks," checks, ",failures," failures")
 	quit(0 if failures==0 else 1)

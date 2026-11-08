@@ -2,6 +2,7 @@ extends Control
 ## Native 960x540 rendering of ChapterThreeOpeningOverlay and its CSS parts.
 const Notice = preload("res://scripts/ui/native_phone_notice.gd")
 const Typography = preload("res://scripts/ui/native_typography.gd")
+const Overlay = preload("res://scripts/ui/world_overlay_layout.gd")
 signal advance
 signal skip
 var session: RefCounted
@@ -30,6 +31,7 @@ func _ready() -> void:
 	advance_button=Button.new(); advance_button.pressed.connect(func():advance.emit()); advance_button.draw.connect(_draw_advance_icon); add_child(advance_button)
 	skip_button=Button.new(); skip_button.text="跳过演出"; skip_button.pressed.connect(func():skip.emit()); add_child(skip_button)
 	for button: Button in [advance_button,skip_button]:
+		button.set_meta("tactile_keep_layout",true)
 		var box:=StyleBoxFlat.new(); box.bg_color=Color("101e28",0.94); box.border_color=Color("cfbd74"); box.set_border_width_all(2)
 		for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]: button.add_theme_stylebox_override(mode,box)
 		var focused: StyleBoxFlat=box.duplicate(); focused.border_color=Color("9ee7f1"); focused.set_border_width_all(3)
@@ -47,32 +49,47 @@ func tick() -> void:
 	var view: Dictionary=session.snapshot()
 	var text:=str(view.text)
 	subtitle.text="" if text.is_empty() else str(view.speaker)+"："+text
-	narrow=size.x<620
-	subtitle.position=origin+Vector2(42,430)*scale_factor
-	subtitle.size=Vector2(720,76)*scale_factor
-	subtitle.add_theme_font_size_override("font_size",maxi(10,int(18*scale_factor)))
-	advance_button.position=origin+Vector2(778,451)*scale_factor; advance_button.size=Vector2(140,46)*scale_factor
+	var display_size:=Vector2(960,540)*scale_factor
+	var ui_scale:=Overlay.ui_scale(display_size)
+	var subtitle_font:=roundi(18*ui_scale)
+	narrow=scale_factor<.85
+	var panel_size:=Vector2(908,88)*ui_scale
+	var panel_origin:=origin+Vector2((display_size.x-panel_size.x)/2,display_size.y-32*ui_scale-panel_size.y)
+	subtitle_panel=Rect2(panel_origin,panel_size)
+	subtitle.position=panel_origin+Vector2(16,10)*ui_scale
+	subtitle.size=Vector2(720,76)*ui_scale
+	subtitle.add_theme_font_size_override("font_size",subtitle_font)
+	advance_button.position=panel_origin+Vector2(752,31)*ui_scale
+	advance_button.size=Vector2(140,46)*ui_scale
 	advance_button.text="回到校园" if view.phase=="arrival" else ""
 	advance_button.queue_redraw()
-	skip_button.position=origin+Vector2(812,24)*scale_factor; skip_button.size=Vector2(120,36)*scale_factor
+	skip_button.position=origin+Vector2(display_size.x-148*ui_scale,24*ui_scale)
+	skip_button.size=Vector2(120,36)*ui_scale
 	skip_button.disabled=view.phase=="arrival"
-	for button: Button in [advance_button,skip_button]: button.add_theme_font_size_override("font_size",maxi(10,int(14*scale_factor)))
-	subtitle_panel=Rect2(origin+Vector2(26,420)*scale_factor,Vector2(908,88)*scale_factor)
+	for button: Button in [advance_button,skip_button]: button.add_theme_font_size_override("font_size",roundi(14*ui_scale))
 	if narrow:
-		# This view is already in Main's screen space, so 14 means 14 actual
-		# pixels rather than 14 logical pixels inside the scaled world.
-		var display_size:=Vector2(960,540)*scale_factor
-		var panel_width: float=display_size.x-20
-		var text_width: float=panel_width-84
-		var text_font: Font=subtitle.get_theme_font("font")
-		var text_height: float=text_font.get_multiline_string_size(subtitle.text,HORIZONTAL_ALIGNMENT_LEFT,text_width,14).y
-		var panel_height: float=maxf(54,text_height+16)
-		subtitle_panel=Rect2(origin+Vector2(10,display_size.y-panel_height-10),Vector2(panel_width,panel_height))
-		subtitle.add_theme_font_size_override("font_size",14)
-		subtitle.position=subtitle_panel.position+Vector2(8,8); subtitle.size=Vector2(text_width,panel_height-16)
-		advance_button.position=subtitle_panel.end-Vector2(72,38); advance_button.size=Vector2(64,30)
-		skip_button.position=origin+Vector2(display_size.x-94,10); skip_button.size=Vector2(84,30)
-		for button: Button in [advance_button,skip_button]: button.add_theme_font_size_override("font_size",12)
+		# This view is in window space. Wrap at the readable size even
+		# when a short window scales the film into a small letterbox.
+		var edge:=10*ui_scale
+		var padding:=8*ui_scale
+		var control_size:=Vector2(64*ui_scale,maxf(28,30*ui_scale))
+		var panel_width:=display_size.x-edge*2
+		var text_width:=maxf(1,panel_width-control_size.x-20*ui_scale)
+		subtitle.size.x=text_width
+		# Measure the actual wrapped rows, including the label's line spacing.
+		var panel_height:=maxf(control_size.y,subtitle.get_minimum_size().y)+padding*2
+		var panel_top:=display_size.y-panel_height-edge
+		if size.y>size.x:
+			# Tall windows can use the space beneath the film for long lines.
+			var bottom_limit:=size.y-origin.y-edge
+			panel_top=maxf(panel_top,minf(display_size.y/2,bottom_limit-panel_height))
+		subtitle_panel=Rect2(origin+Vector2(edge,panel_top),Vector2(panel_width,panel_height))
+		subtitle.position=subtitle_panel.position+Vector2.ONE*padding
+		subtitle.size=Vector2(text_width,panel_height-padding*2)
+		advance_button.position=subtitle_panel.end-control_size-Vector2.ONE*padding
+		advance_button.size=control_size
+		skip_button.size=Vector2(84*ui_scale,control_size.y)
+		skip_button.position=origin+Vector2(display_size.x-skip_button.size.x-edge,edge)
 	if not was_visible or (last_beat!=view.beatIndex and view.phase=="arrival"): advance_button.grab_focus()
 	last_beat=view.beatIndex
 	queue_redraw()
@@ -80,11 +97,11 @@ func advance_triangle() -> PackedVector2Array:
 	if not is_instance_valid(advance_button) or session==null or not advance_button.text.is_empty(): return PackedVector2Array()
 	# The source down-triangle must not depend on the pixel font containing ▾.
 	var center: Vector2=advance_button.size/2
-	var radius: float=clampf(advance_button.size.y*.16,4,8)
+	var radius:=minf(advance_button.size.x,advance_button.size.y)*.16
 	return PackedVector2Array([center+Vector2(-radius,-radius*.55),center+Vector2(radius,-radius*.55),center+Vector2(0,radius*.75)])
 func _draw_advance_icon() -> void:
 	var triangle: PackedVector2Array=advance_triangle()
-	if triangle.size()==3: advance_button.draw_colored_polygon(triangle,Color("f4edd6"))
+	if triangle.size()==3: advance_button.draw_colored_polygon(triangle,advance_button.get_theme_color("font_color"))
 func _input(event: InputEvent) -> void:
 	if not visible or session==null: return
 	# A shell modal above this presentation owns its focus and keyboard. The

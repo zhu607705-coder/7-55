@@ -2,7 +2,7 @@ extends RefCounted
 const Identity=preload("res://scripts/ui/native_tiyi_identity.gd")
 ## Source RouteAuditPanel fields and evidence. All saved facts stay controller-owned.
 const FIELDS=[
-	{"id":"arrival","key":"auditArrivalMinutes","label":"到座耗时","unit":"分钟","min":0,"max":12,"default":5,"hint":"门禁记录 · 两次时间差"},
+	{"id":"arrival","key":"auditArrivalMinutes","label":"到馆时长","unit":"分钟","min":0,"max":12,"default":5,"hint":"入馆记录 · 出发到刷卡"},
 	{"id":"notice","key":"auditPublicNoticeFloor","label":"公示编号","unit":"号","min":1,"max":63,"default":45,"hint":"论坛公示 · 关联记录号"},
 	{"id":"proofs","key":"auditProofCount","label":"证明数量","unit":"项","min":1,"max":5,"default":1,"hint":"旧版规则 · 材料类别"}
 ]
@@ -123,9 +123,9 @@ func build(b) -> Control:
 				var next: Control=controls[i+1]
 				controls[i].text_submitted.connect(func(_value): next.grab_focus())
 		var attempts=int(p.auditAttemptCount)
-		var hint="时间差核对到座记录，编号关联公示，类别数核对材料。" if source_ready else "先取得门禁记录、论坛公示与旧版规则。"
+		var hint="从出发算到刷卡入馆，填两次时间差。" if source_ready else "先取得入馆记录、论坛公示与旧版规则。"
 		if attempts>0:
-			hint="补录参数与原始记录不一致。" if attempts==1 else "三项分别对应到座耗时、公示编号和旧规的证明数量。" if attempts==2 else "仍有字段与来源不一致。请重新核对三份原件。"
+			hint="补录参数与原始记录不一致。" if attempts==1 else "三项分别对应到馆时长、公示编号和旧规的证明数量。" if attempts==2 else "仍有字段与来源不一致。请重新核对三份原件。"
 		_text(b,root,hint,Rect2(50,601,308,48),13,Color("8b352e") if attempts>0 else MUTED).name="TiyiPresenceFeedback"
 	_sources(b,root,p)
 	root.ready.connect(func(): _restore.call_deferred(root))
@@ -142,9 +142,12 @@ func _result(b,root: Control,p: Dictionary) -> void:
 
 func _sources(b,root: Control,p: Dictionary) -> void:
 	_text(b,root,"填写依据与核对用途",Rect2(50,668,308,28),17,BLUE)
+	var content: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/library-finals.content.json"))
+	var trip: Dictionary=content.library.audit.arrivalTrip
+	var travel_record: String="%s %s出发 → %s %s入馆\n填从出发到入馆的分钟数。" % [trip.departureTime,trip.departurePlace,trip.arrivalTime,trip.arrivalPlace]
 	var entries=[
-		["01 门禁记录 · 核对到座时间","07:55 基础馆入口 → 08:02 一层书库 022\n填写分钟差，用于核对同一次到馆会话" if p.entranceRecordRead else "未取得 · 在图书馆座位预约的「我的」中查看入馆记录"],
-		["02 论坛公示 · 关联原始记录","23 楼编辑：本次 022 公示记录编号 %s\n用来关联公示，不填楼层、排名或 BD 口令" % _notice_number() if p.investigationOpened else "未取得 · 在 022 座位拿到占座纸条，用它打开 CC98 调查帖"],
+		["01 入馆记录 · 核对到馆时长",travel_record if p.entranceRecordRead else "未取得 · 在图书馆座位预约的「我的」中查看入馆记录"],
+		["02 论坛公示 · 关联原始记录","23 楼编辑：本次 022 公示记录编号 %s\n用来关联公示，不填楼层、排名或 BD 口令" % int(content.cc98.post.publicNoticeFloor) if p.investigationOpened else "未取得 · 在 022 座位拿到占座纸条，用它打开 CC98 调查帖"],
 		["03 旧版规则 · 核对材料完整性","本人确实到馆；目标座位与凭据一致；当前占用物不具备本人身份。\n填写要求的类别数，不是背包中的道具总数" if p.archivedRuleRead else "未取得 · 按索书号找到 06 架南端上层的 755 号书，抽出并读完规则"]
 	]
 	for i in range(entries.size()):
@@ -152,7 +155,3 @@ func _sources(b,root: Control,p: Dictionary) -> void:
 		b._panel(root,Rect2(14,y,350,138),Color.WHITE,Color("b8c9db"),8,1)
 		_text(b,root,entries[i][0],Rect2(50,y+8,302,30),14,BLUE)
 		_text(b,root,entries[i][1],Rect2(50,y+40,302,90),13,MUTED).name="TiyiEvidence_"+str(i)
-
-func _notice_number() -> String:
-	var data=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/library-finals.content.json"))
-	return str(int(data.get("cc98",{}).get("post",{}).get("publicNoticeFloor",0))) if data is Dictionary else ""

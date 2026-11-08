@@ -143,7 +143,7 @@ func test_manual_and_collision() -> void:
 	world.touch_axis=Vector2.ZERO;world._process(.05)
 	check(world.walk_clock==0,"manual idle resets gait clock")
 	# Exact north-wall contact at feet y=201.5 (no changed source collision).
-	world.player=Vector2(480,177.125)
+	world.player=Metrics.anchor_from_foot_center(Vector2(480,201.5+Metrics.FOOT_SIZE.y/2))
 	check(world.can_stand(world.player) and not world.can_stand(world.player+Vector2(0,-8)),"real wall contact fixture has legal start and blocked next step")
 	world.walk_clock=.3;world.touch_axis=Vector2.UP
 	start=world.player;world._process(.05)

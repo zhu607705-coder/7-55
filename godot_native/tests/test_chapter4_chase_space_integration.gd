@@ -58,7 +58,10 @@ func drive_touch(game:Control,targets:Array)->void:
 	var up:=InputEventScreenTouch.new();up.index=7;up.pressed=false;game._chase_input(up)
 	check(not game.pointer_moving,"Terminal touch release leaves no held movement")
 func check_trace_coalescing(game:Control)->void:
-	var corner:=[Vector2(870,1347),Vector2(870,1347.5),Vector2(870.6,1347.5)]
+	var rail:Rect2=game.geometry.obstacles[0]
+	var clearance:Vector2=game.PlayerMetrics.FOOT_SIZE/2
+	var corner_point:=Vector2(rail.position.x-clearance.x,rail.end.y+clearance.y)
+	var corner:=[corner_point+Vector2(-.2,-.35),corner_point+Vector2(-.2,.15),corner_point+Vector2(.4,.15)]
 	check(not game.geometry.segment_open(corner[0],corner[2]),"Corner fixture has an illegal coarse chord")
 	for point:Vector2 in corner:
 		game.player=point;game.elapsed+=10;game._record_chase_sample()

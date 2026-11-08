@@ -1,4 +1,5 @@
 extends SceneTree
+const Overlay=preload("res://scripts/ui/world_overlay_layout.gd")
 var checks: int=0
 var errors: int=0
 var state: Node
@@ -20,9 +21,10 @@ func run() -> void:
 	await process_frame; await process_frame
 	shell.world.set_process(false); shell.c3_scene_host.set_process(false)
 	var host: Control=shell.c3_scene_host
-	for width: int in [390,430,1280]:
+	for extent: Vector2i in [Vector2i(390,844),Vector2i(430,844),Vector2i(844,390),Vector2i(1280,720),Vector2i(3840,2160)]:
+		var width := extent.x
 		opening_state(); state.story_reset.emit(); state.changed.emit()
-		root.size=Vector2i(width,844 if width<620 else 720)
+		root.size=extent
 		shell.mobile_world=true; shell._layout(); await process_frame; await process_frame
 		host.tick(0,true)
 		var session: RefCounted=host.current
@@ -38,16 +40,19 @@ func run() -> void:
 			check(triangle.size()==(0 if source.phase=="arrival" else 3),"native source down-triangle appears only before arrival")
 			for vertex: Vector2 in triangle:
 				check(Rect2(Vector2.ZERO,view.advance_button.size).has_point(vertex),"advance triangle stays inside unchanged button hitbox")
+			if triangle.size()==3:
+				check(is_equal_approx(triangle[1].x-triangle[0].x,minf(view.advance_button.size.x,view.advance_button.size.y)*.32),"advance mark scales with its button")
 			var display:=Rect2(view.origin,Vector2(960,540)*view.scale_factor)
-			check(display.encloses(view.subtitle_panel),"opening panel stays in unmodified16:9 bounds")
-			if width<620:
-				check(view.subtitle.get_theme_font_size("font_size")>=14,"opening minimum14physical pixels")
-				check(view.subtitle_panel.size.y<=display.size.y*.5,"opening story panel bounded to world half")
-				var measured: Vector2=view.subtitle.get_theme_font("font").get_multiline_string_size(view.subtitle.text,HORIZONTAL_ALIGNMENT_LEFT,view.subtitle.size.x,view.subtitle.get_theme_font_size("font_size"))
-				check(measured.y<=view.subtitle.size.y+.01,"every original opening line fits wrapped height")
+			check(Rect2(Vector2.ZERO,view.size).encloses(view.subtitle_panel),"opening panel stays inside the window")
+			if not display.encloses(view.subtitle_panel):
+				check(view.size.y>view.size.x and view.subtitle_panel.position.y>=display.get_center().y,"only a portrait caption can extend below the film")
+			check(view.subtitle.get_theme_font_size("font_size")==roundi(18*Overlay.ui_scale(display.size)),"opening text scales with the film, with a narrow-screen floor")
+			check(view.subtitle.get_visible_line_count()==view.subtitle.get_line_count(),"the actual label shows every wrapped row")
+			check(view.subtitle_panel.encloses(view.subtitle.get_rect()),"wrapped label remains inside its card")
+			if view.narrow:
 				check(view.subtitle_panel.encloses(view.advance_button.get_rect()) and not view.subtitle.get_rect().intersects(view.advance_button.get_rect()),"actual next control remains inside panel without covering text")
 			else:
-				check(view.subtitle.get_theme_font_size("font_size")==int(18*view.scale_factor),"desktop opening typography unchanged")
+				check(is_equal_approx(view.subtitle_panel.size.x,908*Overlay.ui_scale(display.size)) and view.subtitle_panel.encloses(view.advance_button.get_rect()),"wide caption card and next button scale together")
 			host._advance(); beats+=1
 		check(beats==27,"all27source beats tested through genuine advance controls")
 		state.d=state.initial(); state.d.native.chapter=3; state.d.native.scene="canteen_interior"; state.d.native.page="c3_canteen"
@@ -56,12 +61,11 @@ func run() -> void:
 		shell.world.player=Vector2(1053,660); shell.world._sync_player(); host.tick(0,true)
 		var paper: Control=host.paper
 		check(is_equal_approx(paper.display_scale,shell.world_frame.scale.x),"paper reads actual Main display scale")
-		check(paper.narrow_text()==(width<620),"paper narrow decision uses displayed width rather than logical960")
+		check(paper.narrow_text()==(shell.world.size.x*shell.world_frame.scale.x<620),"paper narrow decision uses displayed width rather than logical960")
 		for text: String in ["玩家：找到了。","纸条：！","旁白：纸条钻进了食堂。","系统：先别跟丢。"]:
-			if width>=620: continue
 			for tail: bool in [true,false]:
 				var layout: Dictionary=paper.text_layout(text,Vector2(-10,800),70,.8,tail)
-				check(layout.fontSize*paper.display_scale>=14,"paper source text minimum14physical pixels")
+				check(layout.fontSize*paper.display_scale>=Overlay.BODY_PX*Overlay.ui_scale(shell.world.size*paper.display_scale)-.01,"paper source text follows displayed game size")
 				check(Rect2(Vector2.ZERO,shell.world.size).encloses(layout.rect),"paper bubble/tail clamped inside real world")
 				check(layout.rect.size.y<=shell.world.size.y*.5,"paper text panel does not cover more than world half")
 				check("".join(layout.lines)==text,"wrapping preserves exact complete source text")

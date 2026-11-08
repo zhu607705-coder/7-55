@@ -4,6 +4,7 @@ import { deferRpgRuntimeDebugCapture } from "./RpgRuntimeDebug";
 import libraryInteriorMapUrl from "../../assets/rpg/interiors/library_interior.png";
 import libraryFrontDeskStaffSheetUrl from "../../assets/rpg/npcs/library/front_desk_staff_2frame.png";
 import libraryFrontDeskStampUrl from "../../assets/rpg/props/library_front_desk_stamp_v01.png";
+import libraryFinalsContent from "../../data/library-finals.content.json";
 import type { GameState, ItemId, LibraryLocationId } from "../../core/types";
 import type { RpgBridge } from "./RpgBridge";
 import {
@@ -680,6 +681,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
   private publishRuntimeDebug(activeTargets: readonly LibraryInteractionTarget[]): void {
     if (deferRpgRuntimeDebugCapture(() => this.publishRuntimeDebug(activeTargets))) return;
     const state = this.bridge.getState();
+    const trip = libraryFinalsContent.library.audit.arrivalTrip;
     setRpgRuntimeDebugState({
       coordinateSystem: "Phaser world coordinates, origin at top-left, x right, y down",
       scene: "library_interior",
@@ -752,10 +754,10 @@ export class LibraryInteriorScene extends Phaser.Scene {
         ...(this.entranceRecordPanel.visible
           ? {
               entries: [
-                { time: "07:55", location: "基础馆入口" },
-                { time: "08:02", location: "一层书库 022" }
+                { time: trip.departureTime, location: trip.departurePlace },
+                { time: trip.arrivalTime, location: trip.arrivalPlace }
               ],
-              calculation: "08:02 - 07:55"
+              calculation: `${trip.arrivalTime} - ${trip.departureTime}`
             }
           : {})
       },
@@ -1628,20 +1630,21 @@ export class LibraryInteriorScene extends Phaser.Scene {
       this.add.rectangle(0, y, 622, 2, 0x8ec3b7, 0.045)
     ));
 
+    const trip = libraryFinalsContent.library.audit.arrivalTrip;
     const leftCard = this.add.rectangle(-157, -24, 252, 126, 0x15312e, 0.96)
       .setStrokeStyle(3, 0x5e8c80, 0.82);
-    const leftLabel = this.add.text(-264, -70, "入馆扫描", {
+    const leftLabel = this.add.text(-264, -70, "出发记录", {
       color: "#a9c9c0",
       fontFamily: "monospace",
       fontSize: "12px"
     }).setOrigin(0, 0.5);
-    const leftTime = this.add.text(-157, -24, "07:55", {
+    const leftTime = this.add.text(-157, -24, trip.departureTime, {
       color: "#f3dc83",
       fontFamily: "monospace",
       fontSize: "38px",
       fontStyle: "bold"
     }).setOrigin(0.5);
-    const leftLocation = this.add.text(-157, 22, "基础馆入口", {
+    const leftLocation = this.add.text(-157, 22, trip.departurePlace, {
       color: "#eff7ef",
       fontFamily: "monospace",
       fontSize: "13px"
@@ -1649,18 +1652,18 @@ export class LibraryInteriorScene extends Phaser.Scene {
 
     const rightCard = this.add.rectangle(157, -24, 252, 126, 0x15312e, 0.96)
       .setStrokeStyle(3, 0x5e8c80, 0.82);
-    const rightLabel = this.add.text(50, -70, "到达记录", {
+    const rightLabel = this.add.text(50, -70, "刷卡入馆", {
       color: "#a9c9c0",
       fontFamily: "monospace",
       fontSize: "12px"
     }).setOrigin(0, 0.5);
-    const rightTime = this.add.text(157, -24, "08:02", {
+    const rightTime = this.add.text(157, -24, trip.arrivalTime, {
       color: "#8ce1b4",
       fontFamily: "monospace",
       fontSize: "38px",
       fontStyle: "bold"
     }).setOrigin(0.5);
-    const rightLocation = this.add.text(157, 22, "一层书库 022", {
+    const rightLocation = this.add.text(157, 22, trip.arrivalPlace, {
       color: "#eff7ef",
       fontFamily: "monospace",
       fontSize: "13px"
@@ -1672,7 +1675,7 @@ export class LibraryInteriorScene extends Phaser.Scene {
       fontStyle: "bold"
     }).setOrigin(0.5);
 
-    const calculationLabel = this.add.text(0, 69, "到座耗时核对：08:02 − 07:55", {
+    const calculationLabel = this.add.text(0, 69, `到馆时长核对：${trip.arrivalTime} − ${trip.departureTime}`, {
       color: "#dcebe5",
       fontFamily: "monospace",
       fontSize: "14px",

@@ -14,7 +14,7 @@
     },
     {
       "path": "src/data/library-finals.content.json",
-      "sha256": "c2a760572ea2c8ca690100c76dd95f8326b24ef6c6c5b33359a7a40f3351a8cc"
+      "sha256": "daadb14d5554709584b4cf4ec1e0577a24b797446696771e120cc05af06b9357"
     },
     {
       "path": "src/modules/LibraryFinalsController.ts",
@@ -138,7 +138,7 @@
     "library_gate_record_checked": [
       {
         "speaker": "旁白",
-        "text": "闸机屏幕亮起：07:55 刷卡入馆，一层书库 022 会话未闭合。",
+        "text": "闸机屏幕亮起：08:02 刷卡入馆，一层书库 022 会话未闭合。",
         "lineKey": "library_story_library_gate_record_checked_01",
         "durationMs": 5200
       },
@@ -350,7 +350,7 @@
     "tiyi_presence_proof_issued": [
       {
         "speaker": "体艺",
-        "text": "补录审核通过。入馆与到座耗时已关联至 47 号公示记录。",
+        "text": "补录审核通过。出发到入馆用时已关联至 47 号公示记录。",
         "lineKey": "library_story_tiyi_presence_proof_issued_01",
         "durationMs": 4720
       },

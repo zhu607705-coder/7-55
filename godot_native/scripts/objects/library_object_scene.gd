@@ -37,7 +37,7 @@ func ensure_loaded()->bool:
 		rows[row.id]=row
 		var image_size:Vector2=textures[row.asset].get_size()
 		var area := fit_art(Rules.rect(row.bounds), image_size)
-		areas[row.id]=area
+		areas[row.id]=Rect2(area.position.round(),area.size.round())
 		var paint_ids: Array[String] = [row.id]
 		if row.has("seatPoint"): paint_ids.append_array([row.id + "@seat", row.id + "@back"])
 		for paint_id: String in paint_ids:
@@ -56,17 +56,31 @@ func ensure_loaded()->bool:
 	for row:Dictionary in data.instances:
 		var area:Rect2=areas[row.id]
 		for f:Array in row.footprints:
-			var footprint:=Rect2(area.position+area.size*Vector2(f[0],f[1]),area.size*Vector2(f[2],f[3]))
-			var pieces:Array[Rect2]=[footprint]
-			var corner:float=minf(float(row.get("chamfer",0)),minf(footprint.size.x,footprint.size.y)/4)
-			if corner>0:
-				# Bevel the real base corners; empty silhouette corners never become walls.
-				pieces=[Rect2(footprint.position+Vector2(corner,0),footprint.size-Vector2(corner*2,0)),Rect2(footprint.position+Vector2(0,corner),Vector2(footprint.size.x,footprint.size.y-corner*2))]
-			for piece:Rect2 in pieces:solids.append(_solid(row.id,piece))
+			if row.has("chamfer"):
+				# The printer's original back contact used its fitted source rectangle.
+				var fitted:=fit_art(Rules.rect(row.bounds),textures[row.asset].get_size())
+				var base:=Rect2(fitted.position+fitted.size*Vector2(f[0],f[1]),fitted.size*Vector2(f[2],f[3]))
+				var bevel:=float(row.chamfer)
+				solids.append(_solid(row.id,base.grow_individual(-bevel,0,-bevel,0)))
+				# The solid side extends to the tray. Keep the original back edge.
+				solids.append(_solid(row.id,Rect2(area.position.x,base.position.y+bevel,area.size.x,base.size.y-bevel)))
+				continue
+			var base:=_footprint(area,f)
+			# Table and cabinet tops can extend sideways beyond the supporting legs.
+			# Clear the solid side across its ground depth, including the counter's
+			# front corners where the upper cabinet overhangs the angled toe-kick.
+			if row.get("artSides",false) or base.position.y>=area.position.y+float(row.get("frontSideRow",INF)):
+				base=Rect2(area.position.x,base.position.y,area.size.x,base.size.y)
+			solids.append(_solid(row.id,base))
 		if row.get("diagonalSolid",false):
+			# Follow the measured post contacts all the way to each end.
+			var line: Array = row.depthLine
 			for i:int in 8:
-				var at:=area.position+area.size*Vector2(.08+float(i)*.10,.32+float(i)*.075)
-				solids.append(_solid(row.id,Rect2(at,Vector2(area.size.x*.17,area.size.y*.10))))
+				var fraction := float(i)/7
+				var x := lerpf(line[0][0],line[1][0],fraction)
+				var y := lerpf(line[0][1],line[1][1],fraction)
+				var at := area.position+area.size*Vector2(x-.09,y-.10)
+				solids.append(_solid(row.id,Rect2(at,area.size*Vector2(.18,.10))))
 		ordered.append(row)
 	ordered.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		var a_depth := baseline(a.id)
@@ -96,6 +110,10 @@ func _minified_texture(original:Texture2D)->Texture2D:
 
 func _solid(id:String,rect:Rect2)->Dictionary:
 	return {"id":id,"nativeLibraryObject":true,"left":rect.position.x,"top":rect.position.y,"right":rect.end.x,"bottom":rect.end.y}
+func _footprint(area:Rect2,contact:Array)->Rect2:
+	var start:Vector2=(area.size*Vector2(contact[0],contact[1])).round()
+	var end:Vector2=(area.size*Vector2(contact[0]+contact[2],contact[1]+contact[3])).round()
+	return Rect2(area.position+start,end-start)
 func baseline(id:String)->float:
 	var row:Dictionary=rows[id]
 	return baseline(str(row.depthOwner)) if row.has("depthOwner") else float(areas[id].end.y)
@@ -109,13 +127,16 @@ func baseline_at(id: String, foot_x: float) -> float:
 	var to := area.position + area.size * Vector2(float(line[1][0]), float(line[1][1]))
 	return lerpf(from.y, to.y, clampf(inverse_lerp(from.x, to.x, foot_x), 0, 1))
 func geometry(id:String,offset:=Vector2.ZERO,part: String="")->Dictionary:
-	# Snap only the paint to the plate's source grid. Feet and depth still use areas.
+	# Paint and the physical footprint start on the same plate pixel.
 	var area: Rect2 = areas[id]
 	var tile: AtlasTexture = draw_tiles[id if part.is_empty() else id + "@" + part]
 	return {"rect": Rect2((area.position + offset).round(), tile.get_size()), "texture": tile, "source": Rect2(Vector2.ZERO, tile.get_size())}
 
 func table_surface(id: String) -> Rect2:
 	var area: Rect2 = geometry(id).rect
+	if rows[id].has("surfaceRect"):
+		var surface:=Rules.rect(rows[id].surfaceRect)
+		return Rect2(area.position+area.size*surface.position,area.size*surface.size)
 	area.size.y = roundf(area.size.y * float(rows[id].tableSurface))
 	return area
 
@@ -143,7 +164,7 @@ func draw_ground_shadows(canvas:CanvasItem,shelf_offset:float)->void:
 		var area:Rect2=areas[row.id]
 		if row.get("movable",false):area.position.x+=shelf_offset
 		for base:Array in row.footprints:
-			var rect:=Rect2(area.position+area.size*Vector2(base[0],base[1]),area.size*Vector2(base[2],base[3]))
+			var rect:=_footprint(area,base)
 			var cast:=Vector2(3,3) if row.asset!="shelf_broad" else Vector2(6,5)
 			canvas.draw_colored_polygon(PackedVector2Array([rect.position,Vector2(rect.end.x,rect.position.y),Vector2(rect.end.x,rect.position.y)+cast,rect.end+cast,Vector2(rect.position.x,rect.end.y)+cast,Vector2(rect.position.x,rect.end.y)]),Color(.17,.14,.12,.18))
 

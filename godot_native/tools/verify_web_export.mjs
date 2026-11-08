@@ -1108,7 +1108,7 @@ async function libraryCase() {
     const line = `${before.libraryStory.sequenceId}:${before.libraryStory.lineIndex}`;
     active.library.dialogueSamples.push({ at: Date.now(), frame: before.sampleFrame, line, text: controls(before).filter(c => c.type === 'Label').map(c => c.text) });
     if (active.touch) {
-      const prompt = controls(before).find(c => /^点击 \/ 空格 \/ 回车(?:继续|确认)$/.test(c.text));
+      const prompt = controls(before).find(c => /^点击(?: \/ 空格 \/ 回车)?(?:继续|确认)$/.test(c.text));
       if (prompt) await clickPoint(await renderPoint({ x: prompt.rect.x + prompt.rect.width / 2, y: prompt.rect.y + prompt.rect.height / 2 }, before));
     } else await press(' ', 'Space');
     await poll(async () => { const next = await snapshot(); const story = next?.libraryStory; return state(next)?.ui.libraryFinalsPuzzle.archivedRuleBriefingSeen || story?.sequenceId && `${story.sequenceId}:${story.lineIndex}` !== line ? next : null; }, 'Library dialogue advances to a new authored line or completes');

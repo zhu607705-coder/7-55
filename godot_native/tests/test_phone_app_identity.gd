@@ -103,7 +103,7 @@ func check_presence_identity(form:Control):
 	check(form.name=="TiyiPresenceForm" and labels(form).has("浙大体艺"),"library fixture mounts the branded inline presence form")
 	check(form.find_child("TiyiCount47",true,false)==null and form.find_child("TiyiExercise",true,false)==null,"presence form never substitutes the prologue or movement action")
 	check(form.find_child("TiyiRecordedRoute",true,false).text=="寝室 → 图书馆入口 → 022","presence form shows only recorded source route points")
-	for field in [["arrival","5","到座耗时（分钟）"],["notice","45","公示编号（号）"],["proofs","1","证明数量（项）"]]:
+	for field in [["arrival","5","到馆时长（分钟）"],["notice","45","公示编号（号）"],["proofs","1","证明数量（项）"]]:
 		var input=form.find_child("TiyiField_"+field[0],true,false)
 		check(input is LineEdit and input.text==field[1] and input.editable and input.tooltip_text==field[2],"source field and wrong default: "+field[0])
 		check(input.get_rect().end.y<=Candidate.APP_HEIGHT and input.size.y>=28,"source field remains in the first app viewport: "+field[0])
@@ -113,7 +113,7 @@ func check_presence_identity(form:Control):
 		var fill: Color=submit.get_theme_stylebox(mode).bg_color
 		var ink: Color=submit.get_theme_color("font_disabled_color" if mode=="disabled" else "font_color")
 		check((maxf(lum(ink),lum(fill))+.05)/(minf(lum(ink),lum(fill))+.05)>=4.5,"presence submit actual neutral label contrast "+mode)
-	for source in [[0,"07:55 基础馆入口 → 08:02 一层书库 022\n填写分钟差，用于核对同一次到馆会话"],[1,"23 楼编辑：本次 022 公示记录编号 47\n用来关联公示，不填楼层、排名或 BD 口令"],[2,"本人确实到馆；目标座位与凭据一致；当前占用物不具备本人身份。\n填写要求的类别数，不是背包中的道具总数"]]:
+	for source in [[0,"07:55 紫云五舍出发 → 08:02 基础图书馆入馆\n填从出发到入馆的分钟数。"],[1,"23 楼编辑：本次 022 公示记录编号 47\n用来关联公示，不填楼层、排名或 BD 口令"],[2,"本人确实到馆；目标座位与凭据一致；当前占用物不具备本人身份。\n填写要求的类别数，不是背包中的道具总数"]]:
 		check(form.find_child("TiyiEvidence_"+str(source[0]),true,false).text==source[1],"source evidence text stays exact: "+str(source[0]))
 func run():
 	expected_cases=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/phone-app-identity-contract.json")).cases

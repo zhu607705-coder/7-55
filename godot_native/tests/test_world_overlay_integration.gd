@@ -34,8 +34,7 @@ func run()->void:
 			check(not world.touch_controls if dimensions.x>1000 else world.mobile_exploration,"desktop stays keyboard and compact keeps touch")
 			var inverse:Vector2=(door-world.size/2)/zoom+world.camera
 			check(inverse.distance_to(Vector2(1352,935))<.01,"world screen inverse remains exact")
-		# Use the real feedback entry and surface handoff. A live world hint
-		# must finish before a queued shell notification can take the one owner.
+		# Use the real feedback entry and verify each surface keeps its own notice.
 		shell._clear_notice_presentations();shell.mobile_world=false;shell._layout()
 		world.subtitle="旧消息";world.subtitle_left=4
 		shell._feedback("获得书包非本人证明。","system",3.25)
@@ -43,12 +42,14 @@ func run()->void:
 		check(not shell.toast.visible and shell.toast.text.is_empty(),"world handoff retires the root notice without a second subtitle owner")
 		check(world.subtitle=="旧消息" and is_equal_approx(world.subtitle_left,4),"world handoff waits for live local feedback rather than replacing it")
 		world.subtitle="";world.subtitle_left=0;shell._layout_toast()
-		check(world.subtitle=="获得书包非本人证明。" and is_equal_approx(world.subtitle_left,3.25),"after the local hint, handoff preserves the full unread lifetime")
-		shell._clear_notice_presentations();shell.mobile_world=false;shell._layout()
+		check(world.subtitle.is_empty() and is_equal_approx(float(shell.notice_queue.current.remaining),3.25),"phone notice stays off the map after local feedback clears")
+		shell._clear_notice_presentations()
 		shell._feedback("获得书包非本人证明。","system",.04)
+		shell.mobile_world=false;shell._layout()
+		check(not shell.toast.visible and world.subtitle.is_empty(),"world notice stays off the phone during its final40ms")
 		shell._show_world_mobile();shell._layout_toast()
-		check(world.subtitle=="获得书包非本人证明。" and is_equal_approx(world.subtitle_left,.04),"handoff preserves a notice's final40ms without extending it")
-		world.subtitle_left=3.25
+		check(world.subtitle=="获得书包非本人证明。" and is_equal_approx(world.subtitle_left,.04),"return preserves a world notice's final40ms without extending it")
+		shell._feedback("获得书包非本人证明。","system",3.25)
 		var unread_text:String=world.subtitle
 		var unread_seconds:float=float(shell.notice_queue.current.remaining)
 		var view:Control=shell.library_story_host.view

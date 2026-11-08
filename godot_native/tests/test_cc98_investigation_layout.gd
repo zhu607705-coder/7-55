@@ -6,6 +6,7 @@ const Library=preload("res://scripts/chapters/library022.gd")
 var state: Node
 var shell: Control
 var earned: Dictionary
+var before_post: Dictionary
 var checks=0
 var failures=0
 var events: Array=[]
@@ -52,6 +53,10 @@ func earn() -> Dictionary:
 	s.networkMode="campus_wifi"; s.ui.libraryFinalsPhase="library_route_unlocked"; s.items.rightArrow=true
 	for intent in ["c2_tiyi_discover","c2_tiyi_acquire","c2_tiyi_install"]: controller.dispatch(s,intent)
 	for intent in [["lib_enter",null],["lib_register_arrival",null],["lib_record",null],["lib_backpack",null],["lib_note",null],["lib_investigate","occupancyNote"],["lib_catalog_terminal",null],["lib_catalog_search","三分钟离座法"],["lib_catalog_select","three-minute-leave-method"],["lib_shelf",null],["lib_read_rule",null],["lib_front_desk",null],["lib_photo",null]]:
+		if intent[0]=="lib_investigate":
+			before_post=s.duplicate(true)
+			before_post.native.page="cc98"
+			before_post.runtimeMode="phone"
 		controller.dispatch(s,intent[0],intent[1]); acknowledge(controller,s)
 	s.ui.brightness=20
 	for intent in [["lib_dim_photo",null],["lib_view_photo","seat_022_clue"],["lib_item_report",null],["lib_scan",null],["lib_scan_result",{"scanMs":720,"identityChecks":[false,false,false],"stamped":true}]]:
@@ -70,6 +75,44 @@ func restore() -> void:
 	state.story_reset.emit(); state.d=earned.duplicate(true); shell.phone_builder.cc98_post="seat-022-backpack"
 	shell.mobile_world=false; shell.phone_chrome.inventory_open=false; await refresh()
 	shell.phone_scroll.scroll_vertical=0; await frames()
+func read_post_dialogue() -> void:
+	state.d=before_post.duplicate(true)
+	state.story_reset.emit()
+	shell.phone_builder.cc98_post=""
+	await refresh()
+	var chrome=shell.phone_chrome
+	if not chrome.inventory_open: await click(chrome.inventory_handle)
+	var note: Control=chrome.inventory_slots.get_node("Item_occupancyNote")
+	chrome.inventory_scroll.ensure_control_visible(note); await frames()
+	await drag_control(note,rect(node("Cc98NoteDrop")).get_center())
+	if chrome.inventory_open: await click(chrome.inventory_handle)
+	var post: Control=node("Cc98Result_seat-022-backpack")
+	check(is_instance_valid(post),"dropping the occupancy note finds the investigation post")
+	if not is_instance_valid(post): return
+	await click(post)
+	var dialogue: Control=shell.library_story_host.view
+	var lines: Array = JSON.parse_string(FileAccess.get_file_as_string(Page.SOURCE)).storyDialogues.cc98_occupation_post_opened
+	check(dialogue.is_visible_in_tree() and not shell.world_frame.visible and dialogue.body.text==lines.front().text,"ordinary CC98 search opens the authored phone dialogue")
+	if not dialogue.is_visible_in_tree(): return
+	var outside:=Vector2(3,root.size.y/2.0)
+	await mouse(outside,true); await mouse(outside,false)
+	check(shell.library_story_host.current.line_index==0,"click outside phone neither advances nor activates the underlying surface")
+	await click(dialogue.panel)
+	await key(KEY_SPACE)
+	check(dialogue.body.text==lines.back().text,"pointer and keyboard read the authored three lines in order")
+	var card_rect:=rect(dialogue.panel)
+	check(rect(shell.phone_scroll).encloses(card_rect),"dialogue fits in the phone content region")
+	for control: Control in [dialogue.speaker,dialogue.body_scroll,dialogue.prompt]:
+		check(card_rect.encloses(rect(control)),"all dialogue text and the continuation prompt fit the card")
+	check(dialogue.body.get_line_count()==dialogue.body.get_visible_line_count(),"the full authored line is readable")
+	check(dialogue.panel.get_theme_stylebox("panel").bg_color==Color.WHITE,"phone dialogue uses the investigation's white card")
+	await capture("phone-dialogue-"+str(root.size.x))
+	var touch:=InputEventScreenTouch.new()
+	touch.position=rect(dialogue.panel).get_center(); touch.pressed=true
+	Input.parse_input_event(touch); Input.flush_buffered_events(); await frames(1)
+	touch.pressed=false
+	Input.parse_input_event(touch); Input.flush_buffered_events(); await frames()
+	check(not dialogue.is_visible_in_tree() and node("Cc98Investigation")!=null and not state.story_input_locked(),"touch acknowledges the last line and returns to the investigation")
 func drag(item_id: String,slot_id: String,offset: Vector2=Vector2(220,75)) -> void:
 	var chrome=shell.phone_chrome
 	if not chrome.inventory_open: await click(chrome.inventory_handle)
@@ -80,25 +123,30 @@ func drag(item_id: String,slot_id: String,offset: Vector2=Vector2(220,75)) -> vo
 		var target: Control=slot.get_node(id)
 		check(not rect(target).intersects(rect(chrome.inventory_handle)) and not rect(target).intersects(rect(chrome.inventory_body)),"expanded drawer leaves material text and action readable")
 	await capture("drawer-open-"+str(root.size.x))
-	var start=rect(item).get_center(); var end=slot.get_global_transform_with_canvas()*offset
+	await drag_control(item,slot.get_global_transform_with_canvas()*offset)
+	if chrome.inventory_open: await click(chrome.inventory_handle)
+func drag_control(item: Control,end: Vector2) -> void:
+	var start=rect(item).get_center()
 	var motion=InputEventMouseMotion.new(); motion.position=start; motion.global_position=start; Input.parse_input_event(motion); Input.flush_buffered_events()
 	await mouse(start,true)
 	for i in range(1,11):
 		motion=InputEventMouseMotion.new(); motion.position=start.lerp(end,i/10.0); motion.global_position=motion.position; motion.relative=(end-start)/10.0; motion.button_mask=MOUSE_BUTTON_MASK_LEFT; Input.parse_input_event(motion); Input.flush_buffered_events(); await frames(1)
 	check(root.gui_is_dragging(),"real inventory drag starts")
 	await mouse(end,false); await frames()
-	if chrome.inventory_open: await click(chrome.inventory_handle)
 func run() -> void:
 	state=root.get_node("State"); state.developer_mode=true; earned=earn(); state.d=earned.duplicate(true)
 	shell=load("res://scenes/main.tscn").instantiate(); root.add_child(shell); await frames(); shell.set_process(false)
 	state.action_completed.connect(func(id,_before,_after,result): events.append({"id":id,"result":result.duplicate(true)}))
 	var source: Dictionary=JSON.parse_string(FileAccess.get_file_as_string(Page.SOURCE)).cc98
 	for size in [Vector2i(390,844),Vector2i(430,860),Vector2i(1440,900)]:
-		root.size=size; shell.size=Vector2(size); await frames(); await restore()
+		root.size=size; shell.size=Vector2(size); await frames()
+		await read_post_dialogue()
+		await restore()
 		var before=JSON.stringify(state.d)
 		check(node("Cc98Investigation")!=null,"source investigation mounts at "+str(size))
 		check(node("Cc98CopyCatalogTitle")!=null,"earned copy-title consumer retained")
 		check(node("Cc98ReplyTitle_3").text=="3楼 · 前排先占楼" and node("Cc98ReplyTitle_6").text=="6楼 · 三分钟后再来","floor labels use source integers")
+		check(shell.page_body.find_children("*","Button",true,false).filter(func(button): return button.text=="折叠一条闲聊回复").is_empty(),"investigation does not offer the inert folding action")
 		check(node("Cc98ReplyBody_16").text=="xxx" and node("Cc98ReplyBody_24")==null,"source BD content stays gated")
 		for control in shell.page_body.find_children("Cc98Reply*","Label",true,false):
 			shell.phone_scroll.ensure_control_visible(control); await frames()

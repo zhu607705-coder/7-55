@@ -3,6 +3,7 @@ extends RefCounted
 ## Drawing and alpha picking share one texture. This view owns no story state.
 const Picker=preload("res://scripts/world_object_picker.gd")
 const SpatialRules=preload("res://scripts/space/spatial_rules.gd")
+const Overlay=preload("res://scripts/ui/world_overlay_layout.gd")
 const SIZE:=Vector2(92,62)
 const DRAW: Array=[{"method":"strokeCircle","args":[20,42,17],"style":{"width":5,"color":1515817,"alpha":1}},{"method":"strokeCircle","args":[20,42,13],"style":{"width":2,"color":12371911,"alpha":0.9}},{"method":"lineBetween","args":[7,42,33,42],"style":{"width":2,"color":12371911,"alpha":0.9}},{"method":"lineBetween","args":[20,29,20,55],"style":{"width":2,"color":12371911,"alpha":0.9}},{"method":"strokeCircle","args":[70,42,17],"style":{"width":5,"color":1515817,"alpha":1}},{"method":"strokeCircle","args":[70,42,13],"style":{"width":2,"color":12371911,"alpha":0.9}},{"method":"lineBetween","args":[57,42,83,42],"style":{"width":2,"color":12371911,"alpha":0.9}},{"method":"lineBetween","args":[70,29,70,55],"style":{"width":2,"color":12371911,"alpha":0.9}},{"method":"lineBetween","args":[20,42,39,20],"style":{"width":6,"color":4094382,"alpha":1}},{"method":"lineBetween","args":[39,20,52,42],"style":{"width":6,"color":4094382,"alpha":1}},{"method":"lineBetween","args":[52,42,20,42],"style":{"width":6,"color":4094382,"alpha":1}},{"method":"lineBetween","args":[39,20,70,42],"style":{"width":6,"color":4094382,"alpha":1}},{"method":"lineBetween","args":[38,19,34,10],"style":{"width":6,"color":4094382,"alpha":1}},{"method":"fillRoundedRect","args":[29,7,18,6,2],"style":{"color":2503740,"alpha":1}},{"method":"fillRoundedRect","args":[55,20,14,13,2],"style":{"color":2503740,"alpha":1}},{"method":"fillRect","args":[59,23,6,6],"style":{"color":7591922,"alpha":1}}]
 
@@ -54,10 +55,11 @@ func draw(canvas: CanvasItem,context: Dictionary,s: Dictionary,front: bool) -> v
 func draw_hint(canvas: CanvasItem,context: Dictionary,s: Dictionary) -> void:
 	if not active(s) or context.player.distance_to(point())>170:return
 	var outer_scale: float=canvas.hud_display_scale() if canvas.has_method("hud_display_scale") else 1.0
-	var font_size: int=maxi(12,ceili(14/maxf(.1,outer_scale)))
+	var unit:=Overlay.ui_units(canvas.size,outer_scale)
+	var font_size:=ceili(Overlay.BODY_PX*unit)
 	var text: String="扫码骑车：2.00 元 / 次\n我的零钱：%.2f 元"%(float(s.wallet.cashCents)/100.0)
 	var text_size: Vector2=font.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_CENTER,-1,font_size)
-	var extent: Vector2=text_size+Vector2(16,12)
+	var extent: Vector2=text_size+Vector2(16,12)*unit
 	var anchor: Vector2=context.origin+(point()+Vector2(0,-58))*float(context.zoom)
 	var position:=Vector2(clampf(anchor.x-extent.x/2,8,maxf(8,canvas.size.x-extent.x-8)),anchor.y-extent.y)
 	if position.y<48:
@@ -67,4 +69,4 @@ func draw_hint(canvas: CanvasItem,context: Dictionary,s: Dictionary) -> void:
 		position.y=clampf(position.y,48,maxf(48,canvas.size.y-extent.y-8))
 	canvas.draw_rect(Rect2(position,extent),Color("241a12",.94))
 	Picker.record(canvas,[],{"rect":Rect2((position-context.origin)/float(context.zoom),extent/float(context.zoom))})
-	canvas.draw_multiline_string(font,position+Vector2(8,6+font.get_ascent(font_size)),text,HORIZONTAL_ALIGNMENT_CENTER,text_size.x,font_size,-1,Color("fff7df"))
+	canvas.draw_multiline_string(font,position+Vector2(8*unit,6*unit+font.get_ascent(font_size)),text,HORIZONTAL_ALIGNMENT_CENTER,text_size.x,font_size,-1,Color("fff7df"))

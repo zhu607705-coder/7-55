@@ -1,5 +1,6 @@
 extends SceneTree
 ## Routed Main regression: issued library entry, focus return, and in-page record action.
+const Overlay=preload("res://scripts/ui/world_overlay_layout.gd")
 var state: Node
 var shell: Control
 var checks: Array=[]
@@ -62,6 +63,7 @@ func entry(dimensions: Vector2i) -> void:
 	var world_rect: Rect2 = shell.world_view.get_global_rect()
 	var panel_rect: Rect2 = host.view.panel.get_global_rect()
 	check(panel_rect.position.x>=world_rect.position.x and panel_rect.end.x<=world_rect.end.x and is_equal_approx(world_rect.get_center().x,panel_rect.get_center().x),"entry-dialogue-centered-in-real-map",{"map":world_rect,"dialogue":panel_rect})
+	check(host.view.body.get_theme_font_size("font_size")==ceili(Overlay.BODY_PX*Overlay.ui_scale(world_rect.size)),"entry-dialogue-follows-map-display-size")
 	check(host.view.body_scroll.size.y >= host.view.body.get_theme_font("font").get_height(host.view.body.get_theme_font_size("font_size")),"entry-dialogue-keeps-one-readable-body-row")
 	var authored_lines: int=host.current.lines.size()
 	for i in authored_lines: await press(KEY_SPACE)
@@ -69,6 +71,8 @@ func entry(dimensions: Vector2i) -> void:
 	check(state.d.native.page=="library_app" and not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"last-dialogue-key-does-not-interact-through-overlay")
 	check(shell.world.has_focus(),"world-focus-restored",{"root":focus_path(root),"world":focus_path(shell.world_viewport)})
 	var before: Vector2=shell.world.player
+	shell.world._process(0)
+	check(shell.world.facing=="up" and str(shell.world.nearby.get("id",""))=="entrance_record","arrives-facing-in-and-offers-card-reader",shell.world.nearby)
 	await key(KEY_W)
 	for i in 14: shell.world._process(.05)
 	await key(KEY_W,false); shell.world._process(0)
@@ -99,6 +103,11 @@ func entry(dimensions: Vector2i) -> void:
 		check(buttons(shell.page_body,"记下入馆记录").is_empty(),"acknowledged-record-action-removed")
 		state.act("lib_record"); await frames()
 		check(state.d.ui.libraryFinalsPuzzle.clueIds.count("arrival_7_minutes")==1,"duplicate-confirmation-does-not-add-another-clue")
+		host.tick(0); await frames()
+		check(host.current!=null and host.current.sequence_id=="library_gate_record_checked","record-confirmation-opens-phone-dialogue")
+		if host.current!=null:
+			for i in host.current.lines.size(): await press(KEY_ENTER)
+		check(host.current==null,"record-dialogue-completes-before-map-return")
 	shell._return_from_phone(); await frames()
 	shell.world._process(0); shell.world.grab_focus()
 	await bag_dialogue()

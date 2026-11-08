@@ -1,5 +1,7 @@
 extends Control
 const SelectedUi=preload("res://scripts/ui/selected_ui_theme.gd")
+const WorldOverlay=preload("res://scripts/ui/world_overlay_layout.gd")
+const DialogueLayout=preload("res://scripts/ui/selected_dialogue_layout.gd")
 const CommunityPortal=preload("res://scripts/platform/community_portal.gd")
 ## Native phone and RPG shell. All story changes pass through State.
 var phone: PanelContainer
@@ -32,6 +34,7 @@ const NOTICE_LAYER := 110
 var notice_queue=NoticeQueue.new()
 var notice_surface:=""
 var notice_world_revision:=-1
+var story_caption_origin:=""
 # Synchronous device actions own their existing operation row, not the notice FIFO.
 var c3_device_action_depth:=0
 var local_feedback_revision:=-1
@@ -742,7 +745,9 @@ func _layout() -> void:
 	# One measured reading gutter below reserves the painted bag + badge.
 	# Keep the upstream page wrapper, without stacking a second approximate inset.
 	phone_world_return.visible = phone.visible and has_world and not is_instance_valid(active_game)
-	phone_world_return.position = available-Vector2(56+phone_insets.z,56+phone_insets.w)
+	var return_scale:=maxf(1,phone_scale)
+	phone_world_return.scale=Vector2.ONE*return_scale
+	phone_world_return.position = available-Vector2(56,56)*return_scale-Vector2(phone_insets.z,phone_insets.w)
 	phone_world_return.size = Vector2(44,44)
 	if not phone.visible: photo_brightness_session.reset()
 	elif not photo_brightness_session.mounted and str(State.d.native.page)=="photos":
@@ -783,19 +788,24 @@ func _layout() -> void:
 	if world_frame.visible:
 		_configure_world_surface(world_extent,margin,compact)
 		play_rect=get_global_transform_with_canvas().affine_inverse()*world_view.get_global_rect()
-	var row_y:=play_rect.end.y-52
-	mobile_back.position=Vector2(play_rect.end.x-52,row_y)
+	# Keep the established touch target on small displays and let desktop
+	# chrome grow with the same game surface as the text above it.
+	var chrome_scale:=maxf(1,WorldOverlay.ui_scale(play_rect.size))
+	for control: Control in [mobile_back,world_tasks,world_mode,inventory_handle,inventory_dock]:
+		control.scale=Vector2.ONE*chrome_scale
+	var row_y:=play_rect.end.y-52*chrome_scale
+	mobile_back.position=Vector2(play_rect.end.x-52*chrome_scale,row_y)
 	mobile_back.size=Vector2(44,44)
-	world_tasks.position=mobile_back.position-Vector2(104 if world_mode.visible else 52,0)
+	world_tasks.position=mobile_back.position-Vector2(104 if world_mode.visible else 52,0)*chrome_scale
 	world_tasks.size=Vector2(44,44)
-	world_mode.position=mobile_back.position-Vector2(52,0)
+	world_mode.position=mobile_back.position-Vector2(52,0)*chrome_scale
 	world_mode.size=Vector2(44,44)
 	world_mode.set("glyph","dark" if State.d.native.mode=="dark" else "light")
 	world_mode.tooltip_text=State.mode_label()
 	world_mode.accessibility_name=world_mode.tooltip_text
 	world_mode.queue_redraw()
-	inventory_dock.position=Vector2(play_rect.position.x+8,row_y)
-	inventory_dock.size=Vector2(maxf(44,world_tasks.position.x-inventory_dock.position.x-8),44)
+	inventory_dock.position=Vector2(play_rect.position.x+8*chrome_scale,row_y)
+	inventory_dock.size=Vector2(maxf(44,(world_tasks.position.x-inventory_dock.position.x)/chrome_scale-8),44)
 	# Retained for old callers; no visible bag button and no layout side effect.
 	inventory_handle.position=inventory_dock.position
 	inventory_handle.size=Vector2(44,44)
@@ -956,11 +966,17 @@ func _on_local_phone_notice_shown() -> void:
 	# Main toast for later. Critical captions and persistent records are separate.
 	_hide_notice_surface();notice_queue.clear();_layout_toast()
 
+func _modal_notice_width() -> float:
+	var limit:=maxf(1,modal_panel.size.x-32)
+	# The container rounds its allocated width after a fractional resize.
+	return minf(limit,modal_notice_slot.size.x) if modal_notice_slot.size.x>0 else limit
+
 func _layout_story_caption() -> void:
 	if not is_instance_valid(story_caption):return
-	var phone_caption_visible: bool = story_caption_time>0 and not story_caption_line.text.is_empty() and is_instance_valid(phone) and phone.visible and not is_instance_valid(active_game) and not is_instance_valid(modal_notice_slot) and not _feedback_world_active()
+	var on_surface:=_story_caption_on_surface()
+	var phone_caption_visible: bool = on_surface and not story_caption_line.text.is_empty() and is_instance_valid(phone) and phone.visible and not is_instance_valid(active_game) and not is_instance_valid(modal_notice_slot) and not _feedback_world_active()
 	phone_story_caption.visible=phone_caption_visible
-	if story_caption_time<=0:
+	if not on_surface:
 		if story_caption_surface=="world" and is_instance_valid(world) and world.subtitle==story_caption_line.text:
 			world.subtitle="";world.subtitle_left=0;world.queue_redraw()
 		story_caption_surface="";story_caption.session=null;story_caption.tick();return
@@ -986,10 +1002,11 @@ func _layout_story_caption() -> void:
 	story_caption.session=story_caption_line
 	story_caption.text_scale=float(State.d.native.settings.get("text_scale",1.0))
 	if is_instance_valid(modal_notice_slot):
+		var unit:float=modal_panel.scale.x
 		var available:=maxf(1,modal_panel.size.y-100)
-		story_caption.screen_rect=Rect2(modal_notice_slot.global_position,Vector2(maxf(1,modal_panel.size.x-32),available))
+		story_caption.screen_rect=Rect2(modal_notice_slot.global_position,Vector2(_modal_notice_width(),available)*unit)
 		story_caption.tick();story_caption.panel.position.y=modal_notice_slot.global_position.y
-		modal_notice_slot.custom_minimum_size.y=story_caption.panel.size.y;modal_notice_slot.show()
+		modal_notice_slot.custom_minimum_size.y=story_caption.panel.size.y/unit;modal_notice_slot.show()
 	elif is_instance_valid(phone) and phone.visible:
 		story_caption.screen_rect=Rect2(phone.position+Vector2(19,100)*phone.scale,Vector2(392,720)*phone.scale)
 		story_caption.tick()
@@ -1005,12 +1022,14 @@ func _layout_toast() -> void:
 	toast.z_index=layer;story_caption.z_index=layer
 	_retire_local_feedback_on_takeover()
 	_sync_notice_remaining()
-	if _notice_scene_busy() or story_caption_time>0:
+	if _notice_scene_busy() or _story_caption_on_surface():
 		_hide_notice_surface();_layout_story_caption();return
 	_layout_story_caption()
 	if notice_queue.current.is_empty():
 		_hide_notice_surface();return
 	var item:Dictionary=notice_queue.current
+	if item.origin!=_notice_origin():
+		_hide_notice_surface();return
 	var use_world:=_feedback_world_active() and not is_instance_valid(modal_notice_slot)
 	if use_world:
 		# A local world hint is another live owner, not stale space to overwrite.
@@ -1032,15 +1051,17 @@ func _layout_toast() -> void:
 	PhoneNotice.set_message(toast,item.text,item.speaker)
 	toast_time=float(item.remaining)
 	if is_instance_valid(modal_notice_slot):
-		modal_notice_slot.show();toast.scale=Vector2.ONE
-		PhoneNotice.layout(toast,maxf(1,modal_panel.size.x-32))
+		modal_notice_slot.show();toast.scale=modal_panel.scale
+		PhoneNotice.layout(toast,_modal_notice_width())
 		modal_notice_slot.custom_minimum_size.y=toast.size.y;toast.global_position=modal_notice_slot.global_position
 	elif is_instance_valid(phone) and phone.visible:
 		toast.scale=phone.scale;PhoneNotice.layout(toast,392)
 		toast.position=phone.position+Vector2(19,55)*phone.scale
 	else:
-		toast.scale=Vector2.ONE;PhoneNotice.layout(toast,minf(680,maxf(160,size.x-32)))
-		toast.position=Vector2((size.x-toast.size.x)/2,maxf(12,size.y-toast.size.y-maxf(72,size.y*.1)))
+		var unit:=WorldOverlay.ui_scale(size)
+		toast.scale=Vector2.ONE*unit
+		PhoneNotice.layout(toast,minf(680,maxf(160,size.x/unit-32)))
+		toast.position=Vector2((size.x-toast.size.x*unit)/2,maxf(12*unit,size.y-toast.size.y*unit-maxf(72*unit,size.y*.1)))
 	toast.move_to_front()
 	_sync_home_notice_lane()
 
@@ -1059,6 +1080,7 @@ func _advance_notices(delta:float) -> void:
 
 func _show_story_caption(text:String,tone:String,duration:float,speaker:String="") -> void:
 	_sync_notice_remaining();_hide_notice_surface();notice_queue.discard(text)
+	story_caption_origin=_notice_origin()
 	story_caption_line.text=text
 	story_caption_line.speaker=speaker if not speaker.is_empty() else str(PhoneNotice.SPEAKERS.get(tone,"系统"))
 	PhoneNotice.set_message(phone_story_caption,story_caption_line.text,story_caption_line.speaker)
@@ -1115,8 +1137,12 @@ func _layout_modal() -> void:
 	if not is_instance_valid(modal_panel): return
 	# Generic dialogs fit their contents. The scroll viewport still caps long
 	# records, keeping the close row outside the scrolling body.
-	var dialog_width := maxf(1,minf(580,size.x-24))
-	var dialog_limit := maxf(1,minf(700,size.y-24))
+	var unit:=WorldOverlay.ui_scale(world_view.get_global_rect().size if world_frame.visible else size)
+	if phone.visible:unit=maxf(WorldOverlay.MIN_UI_SCALE,phone.scale.x)
+	modal_panel.scale=Vector2.ONE*unit
+	var available:=size/unit
+	var dialog_width := maxf(1,minf(580,available.x-24))
+	var dialog_limit := maxf(1,minf(700,available.y-24))
 	var natural_height := dialog_limit
 	var content: VBoxContainer = modal_panel.get_meta("dialog_content",null)
 	var column: VBoxContainer = modal_panel.get_meta("dialog_column",null)
@@ -1131,15 +1157,15 @@ func _layout_modal() -> void:
 		chrome_height += maxf(0,visible_rows-1)*column.get_theme_constant("separation")
 		natural_height = maxf(180,chrome_height+content.get_combined_minimum_size().y)
 	modal_panel.size = Vector2(dialog_width,minf(dialog_limit,natural_height))
-	modal_panel.position = (size-modal_panel.size)/2
 	if modal_panel.get_meta("selected_surface","")=="journal":
 		# The phone branch is the shared 378px overlay handled above. Retained
 		# world journals keep their existing independent reading-layer geometry.
-		modal_panel.size.x=maxf(1,minf(580,size.x*(0.86 if size.x<600 else 0.70)))
-		modal_panel.position=(size-modal_panel.size)/2
+		modal_panel.size.x=maxf(1,minf(580,available.x*(0.86 if available.x<600 else 0.70)))
 	elif modal_panel.get_meta("selected_surface","")=="dialogue":
-		modal_panel.size.x=maxf(1,minf(580,size.x*(0.86 if size.x<600 else 0.57)))
-		modal_panel.position=Vector2(size.x-modal_panel.size.x-size.x*0.06,(size.y-modal_panel.size.y)/2)
+		modal_panel.size.x=maxf(1,minf(580,available.x*(0.86 if available.x<600 else 0.57)))
+	modal_panel.position=(size-modal_panel.size*unit)/2
+	if modal_panel.get_meta("selected_surface","")=="dialogue":
+		modal_panel.position.x=size.x-modal_panel.size.x*unit-size.x*.06
 	_layout_toast()
 
 func _schedule_refresh() -> void:
@@ -2609,7 +2635,8 @@ func _open_narrative(config: Dictionary) -> void:
 	var box := _modal_base(str(config.get("title","7:55")),"selected_dialogue")
 	var label := _label(str(config.get("text",config.get("body",""))),20)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	SelectedUi.apply_label(label,"dialogue","body")
+	if _feedback_world_active(): DialogueLayout.apply_role(label,"body",WorldOverlay.BODY_PX)
+	else: SelectedUi.apply_label(label,"dialogue","body")
 	box.add_child(label)
 	var advance:=_button("继续",func(): _close_modal(); State.act(str(config.get("on_complete","")),{"acknowledged":true}))
 	SelectedUi.apply_button(advance,"dialogue")
@@ -2621,6 +2648,12 @@ func _on_file_selected(path: String) -> void:
 
 func _feedback_world_active() -> bool:
 	return is_instance_valid(world) and is_instance_valid(world_frame) and world_frame.is_visible_in_tree() and not str(State.d.native.scene).is_empty() and not is_instance_valid(active_game)
+
+func _notice_origin() -> String:
+	return "world" if _feedback_world_active() else "phone"
+
+func _story_caption_on_surface() -> bool:
+	return story_caption_time>0 and story_caption_origin==_notice_origin()
 
 func _virtual_run_owns_feedback(message: String) -> bool:
 	if not is_instance_valid(active_game) or not active_game.has_method("owns_result_feedback"): return false
@@ -2646,7 +2679,7 @@ func _issued_swan_catch_feedback(message:String)->bool:
 	return false
 
 func _local_feedback_reading_taken()->bool:
-	if State.story_input_locked() or story_caption_time>0 or is_instance_valid(active_game):return true
+	if State.story_input_locked() or _story_caption_on_surface() or is_instance_valid(active_game):return true
 	if is_instance_valid(world_effect) and world_effect.get_meta("blocks_input",false):return true
 	if is_instance_valid(library_story_host) and library_story_host.current!=null:return true
 	if is_instance_valid(c3_scene_host) and c3_scene_host.owns_world_contract():return true
@@ -2686,7 +2719,7 @@ func _feedback(message: String,tone: String="system",duration_override:float=-1)
 			local_notice.dismiss()
 	_sync_notice_remaining();_hide_notice_surface()
 	var duration:float=duration_override if duration_override>=0 else clampf(1.6+message.length()*.12,2.4,6.5)
-	notice_queue.enqueue(message,str(PhoneNotice.SPEAKERS.get(tone,"系统")),duration,duration_override>=0)
+	notice_queue.enqueue(message,str(PhoneNotice.SPEAKERS.get(tone,"系统")),duration,duration_override>=0,_notice_origin())
 	_layout_toast()
 
 func _on_audio_subtitle(text:String,surface:String,duration_ms:float,tone:String) -> void:

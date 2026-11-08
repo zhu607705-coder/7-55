@@ -32,7 +32,8 @@ func run()->void:
 	world.touch_axis=Vector2.UP
 	for i in 25:world._process(.05)
 	world.touch_axis=Vector2.ZERO
-	check(world.player.y>=688.625,"existing pre-admission blocker still blocks passage")
+	var blocker:Dictionary=collisions.filter(func(box:Dictionary):return box.id=="c3_dynamic_admission_gate")[0]
+	check(absf(Metrics.foot_rect(world.player).position.y-world._rect(blocker).end.y)<.002,"the full shared foot stops at the original pre-admission blocker")
 	world.player=Vector2(842,740);world._sync_player()
 	state.act("c3_target:theater_ticket_gate");host.tick(0,true);world._process(0)
 	var session:RefCounted=host.current

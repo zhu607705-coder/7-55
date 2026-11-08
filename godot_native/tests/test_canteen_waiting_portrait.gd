@@ -105,7 +105,7 @@ func run() -> void:
 		check(is_equal_approx(paper.display_scale,display_scale),"first cinematic tick reads the new Main display scale")
 		check(paper.narrow_text()==(shell.world.size.x*display_scale<620),"first cinematic tick uses the real displayed width")
 		var first_text:Dictionary=paper.text_layout("玩家：找到了。",Vector2(480,270),108,1)
-		check(first_text.fontSize*display_scale>=14,"first cinematic text retains14physical pixels after handoff")
+		check(first_text.fontSize*display_scale>=12.8,"first cinematic text retains the narrow-screen reading floor after handoff")
 		var half:=Vector2(480,270)/1.18
 		var source_camera:=Vector2(clampf(shell.world.player.x,half.x,maxf(half.x,shell.world.world_size.x-half.x)),clampf(shell.world.player.y,half.y,maxf(half.y,shell.world.world_size.y-half.y)))
 		check(shell.c3_scene_host.entry_camera.distance_to(source_camera)<.001,"discovery camera starts from canonical source clamp")

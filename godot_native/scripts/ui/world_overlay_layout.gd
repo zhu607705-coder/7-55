@@ -3,6 +3,15 @@ extends RefCounted
 const BODY_PX:=16
 const SPEAKER_PX:=14
 const TITLE_PX:=16
+const UI_REFERENCE_SIZE:=Vector2(1280,720)
+const MIN_UI_SCALE:=.8
+
+static func ui_scale(display_extent:Vector2)->float:
+	# Scale with the fitted game surface. Keep a legible floor in a small letterbox.
+	return ui_units(display_extent,1.0)
+
+static func ui_units(extent:Vector2,display_scale:float)->float:
+	return maxf(MIN_UI_SCALE/maxf(.01,display_scale),minf(extent.x/UI_REFERENCE_SIZE.x,extent.y/UI_REFERENCE_SIZE.y))
 
 static func pixels(physical:float,display_scale:float)->float:
 	return physical/maxf(.01,display_scale)
@@ -12,28 +21,28 @@ static func font_pixels(physical:int,display_scale:float)->int:
 
 static func hud(font:Font,extent:Vector2,display_scale:float,text:String,touch:bool,text_scale:float=1.0,body_px:int=BODY_PX)->Dictionary:
 	var s:=maxf(.01,display_scale)
-	var gap:=pixels(6,s)
-	var padding:=pixels(10,s)
-	var body_padding:=pixels(12,s)
-	var type_scale:=clampf(extent.x*s/960.0,1.0,1.2)
-	var body_font:=font_pixels(ceili(body_px*type_scale*text_scale),s)
-	var title_font:=font_pixels(ceili((18 if touch else TITLE_PX)*type_scale),s)
-	var mode_font:=font_pixels(ceili(SPEAKER_PX*type_scale),s)
-	var available_width:=maxf(1,minf(extent.x-body_padding*2,pixels(680,s)))
-	var natural_width:=maxf(pixels(220,s),font.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,body_font).x)
+	var unit:=ui_units(extent,s)
+	var gap:=6*unit
+	var padding:=10*unit
+	var body_padding:=12*unit
+	var body_font:=maxi(1,ceili(body_px*unit*text_scale))
+	var title_font:=maxi(1,ceili((18 if touch else TITLE_PX)*unit))
+	var mode_font:=maxi(1,ceili(SPEAKER_PX*unit))
+	var available_width:=maxf(1,minf(extent.x-body_padding*2,680*unit))
+	var natural_width:=maxf(220*unit,font.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,body_font).x)
 	var width:=minf(available_width,natural_width)
 	var measured:=font.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,width,body_font)
-	var inset:=pixels(8,s)
+	var inset:=8*unit
 	var content_height:=measured.y
-	var height:=maxf(pixels(44 if touch else 34,s),content_height+inset*2)
-	var header:=maxf(pixels(44 if touch else 32,s),font.get_height(title_font)+pixels(10,s))
+	var height:=maxf((44 if touch else 34)*unit,content_height+inset*2)
+	var header:=maxf((44 if touch else 32)*unit,font.get_height(title_font)+10*unit)
 	# A long caption keeps the scene usable. Its complete text remains in the
 	# existing scroll surface instead of taking over the visible map.
-	var budget:=minf(extent.y/3.0,extent.y-header-pixels(96,s))
+	var budget:=minf(extent.y/3.0,extent.y-header-96*unit)
 	budget=maxf(inset*2+1,budget)
 	var overflow:=height>budget
 	if overflow:
-		width=maxf(1,width-pixels(14,s))
+		width=maxf(1,width-14*unit)
 		content_height=font.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,width,body_font).y
 		height=budget
 	var mode_width:=font.get_string_size("浅色模式",HORIZONTAL_ALIGNMENT_LEFT,-1,mode_font).x+padding*2
@@ -41,14 +50,14 @@ static func hud(font:Font,extent:Vector2,display_scale:float,text:String,touch:b
 
 static func dialogue(font:Font,extent:Rect2,display_scale:float,speaker:String,text:String,prompt:String="",text_scale:float=1.0)->Dictionary:
 	var s:=maxf(.01,display_scale)
-	var padding:=pixels(10,s)
-	var gap:=pixels(4,s)
-	var width:=minf(pixels(760,s),extent.size.x)
+	var unit:=ui_units(extent.size,s)
+	var padding:=10*unit
+	var gap:=4*unit
+	var width:=minf(760*unit,extent.size.x)
 	var inner_width:=maxf(1,width-padding*2)
-	var type_scale:=clampf(extent.size.x*s/960.0,1.0,1.2)
-	var body_font:=font_pixels(ceili(BODY_PX*type_scale*text_scale),s)
-	var speaker_font:=font_pixels(ceili(SPEAKER_PX*type_scale),s)
-	var prompt_font:=font_pixels(12,s)
+	var body_font:=maxi(1,ceili(BODY_PX*unit*text_scale))
+	var speaker_font:=maxi(1,ceili(SPEAKER_PX*unit))
+	var prompt_font:=maxi(1,ceili(12*unit))
 	var speaker_height:=ceilf(font.get_height(speaker_font)) if not speaker.is_empty() else 0.0
 	var body_height:=ceilf(font.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,inner_width,body_font).y)
 	var prompt_height:=ceilf(font.get_height(prompt_font)) if not prompt.is_empty() else 0.0
@@ -57,7 +66,7 @@ static func dialogue(font:Font,extent:Rect2,display_scale:float,speaker:String,t
 	var visible_height:=minf(body_height,maxf(1,extent.size.y-body_y-footer))
 	var overflow:=visible_height<body_height
 	if overflow:
-		inner_width=maxf(1,inner_width-pixels(14,s))
+		inner_width=maxf(1,inner_width-14*unit)
 		body_height=ceilf(font.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,inner_width,body_font).y)
 	var height:=minf(extent.size.y,body_y+visible_height+footer)
 	var top:=maxf(extent.position.y,extent.end.y-height)

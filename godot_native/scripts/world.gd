@@ -249,6 +249,7 @@ func refresh_world() -> void:
 	if guard_capture.active and not guard_capture.matches(_guard_capture_context()): _cancel_guard_capture()
 	if not stair_handoff.is_empty() and (State.d.native.scene!="duan_yongping_temporal_maze" or State.d.chapter4.phase!="final_chase" or State.d.chapter4.floor!="A2" or int(stair_handoff.attempt)!=int(State.d.chapter4.chaseAttempt)):stair_handoff.clear()
 	var incoming := str(State.d.native.scene)
+	var entering_library := incoming=="library_interior" and incoming!=scene_id
 	if incoming != scene_id: _clear_npc_feedback()
 	_ensure_scene_visuals(incoming)
 	if incoming=="canteen_interior" and not is_instance_valid(native_canteen):
@@ -286,7 +287,8 @@ func refresh_world() -> void:
 	pan_offset = Vector2.ZERO
 	scene_id = incoming
 	# A new SubViewport defaults to linear even when the root uses nearest.
-	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST if scene_id == "library_interior" else CanvasItem.TEXTURE_FILTER_PARENT_NODE
+	# The inner viewport defaults to linear even when the root window is nearest.
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST if scene_id in ["campus_bootstrap","library_interior"] else CanvasItem.TEXTURE_FILTER_PARENT_NODE
 	player_turn.clear(); walk_clock=0
 	_last_floor = floor_id
 	last_zone = zone
@@ -409,6 +411,8 @@ func refresh_world() -> void:
 	if scene_id == "library_interior":
 		var entrance: Dictionary = spawns.get("library_entrance", {})
 		player = library_gate.restore_anchor(player, Vector2(entrance.get("x", 715), entrance.get("y", 842)))
+		if entering_library and library_gate.outside(player):
+			facing="up"; player_flip=false; nearby={}
 	if scene_id == "qizhen_lake" and vehicle_id == "kayak" and ResourceLoader.exists("res://scripts/games/kayak_model.gd"):
 		kayak = load("res://scripts/games/kayak_model.gd").new()
 		kayak.configure({"phase":"world","bounded":false})
@@ -590,6 +594,9 @@ func resolve_kayak_rotation(previous_heading: float) -> bool:
 
 func _find_safe(origin: Vector2) -> Vector2:
 	if can_stand(origin): return origin
+	if kayak==null and scene_id!="campus_bootstrap":
+		var aligned := origin-Vector2(0,PlayerMetrics.FOOT_BOTTOM_SHIFT)
+		if can_stand(aligned): return aligned
 	for radius in range(8,320,8):
 		for angle in range(0,360,15):
 			var point := origin+Vector2.from_angle(deg_to_rad(float(angle)))*radius
@@ -608,7 +615,7 @@ func _distance(target: Dictionary) -> float:
 
 func _distance_at(target:Dictionary,anchor:Vector2)->float:
 	if target.get("follow_player",false): return 0.0
-	var point := PlayerMetrics.foot_rect(anchor,scene_id).get_center() if scene_id=="duan_yongping_temporal_maze" else anchor
+	var point := anchor+PlayerMetrics.DEPTH_CENTER_OFFSET if scene_id=="duan_yongping_temporal_maze" else anchor
 	if target.has("bounds"):
 		var b = target.bounds
 		var rect: Rect2
@@ -624,8 +631,7 @@ func _library_chair_anchor(target: Dictionary) -> Vector2:
 	var chair_id := str(target.get("id", ""))
 	if not library_layers.CHAIR_IDS.has(chair_id) or target.get("action") not in ["lib_catalog_terminal", "lib_sit", "library_study"]:
 		return Vector2.INF
-	var chair: Rect2 = library_layers.objects.areas[library_layers.CHAIR_IDS[chair_id]]
-	return Vector2(chair.get_center().x, chair.end.y - PlayerMetrics.FOOT_CENTER_OFFSET.y)
+	return library_layers.chair_approach(chair_id)
 
 func _library_chair_reachable(chair_anchor: Vector2, from: Vector2) -> bool:
 	return from.y >= chair_anchor.y - 12.0 and from.distance_to(chair_anchor) <= 58.0
@@ -1009,7 +1015,7 @@ func _process(delta: float) -> void:
 	var nearest := INF
 	for target in targets:
 		if target.get("decorative",false): continue
-		if scene_id == "library_interior" and target.id == "library_exit" and not library_gate.outside(player): continue
+		if scene_id == "library_interior" and target.id == "library_exit" and (facing!="down" or not library_gate.outside(player)): continue
 		var distance := _distance(target)
 		# The always-near self-inspection target is a fallback, not a permanent
 		# Space-key occluder over the desk, cabinet and earned dorm exit.
@@ -1440,7 +1446,8 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 		SpatialRules.draw_actor_covers(canvas,guard_context,guard_position.y+extent.y,Rect2(guard_position-Vector2(guard_size.x/2,guard_size.y*.89)/zoom,guard_size/zoom))
 	var name_text := str(State.d.get("playerName",State.d.get("characterName","")))
 	if not presentation_actor_hidden and not name_text.is_empty():
-		var name_size:=WorldOverlay.font_pixels(16,hud_display_scale()) if scene_id=="campus_bootstrap" else 14
+		var display:=hud_display_scale()
+		var name_size:=WorldOverlay.font_pixels(roundi(16*WorldOverlay.ui_scale(size*display)),display) if scene_id=="campus_bootstrap" else 14
 		canvas.draw_string(font,origin+player*zoom+Vector2(-25,22),name_text,HORIZONTAL_ALIGNMENT_CENTER,100,name_size,Color.WHITE)
 	_draw_npc_feedback(canvas,layer_context)
 	if _exploration_overlay_blocked():
@@ -2376,7 +2383,7 @@ func _canteen_floor_goal(goal: Vector2,obstacles: Array) -> Vector2:
 
 func _library_floor_goal(goal: Vector2, obstacles: Array) -> Vector2:
 	if not mask.is_empty() or _floor_stand(goal): return goal
-	var feet := PlayerMetrics.foot_rect(goal)
+	var feet := PlayerMetrics.foot_rect(goal, scene_id)
 	var tap := feet.get_center()
 	# Forgive a partial-foot overlap only when the tap itself was on bare floor.
 	if world_space.scene_id == scene_id and not world_space.allows_ground(feet): return goal
@@ -2391,7 +2398,7 @@ func _library_floor_goal(goal: Vector2, obstacles: Array) -> Vector2:
 			if not shape.get("nativeLibraryObject", false) or "rail" in id or id.begins_with("entrance_"): return goal
 	if not Rect2(Vector2.ZERO, world_size).encloses(PlayerMetrics.visual_rect(goal, display_scale_at(goal))): return goal
 	return _canteen_floor_tap.nearest(goal, CanteenFloorTap.PIXEL_RADIUS / zoom, obstacles, _floor_stand,
-		func(anchor: Vector2): return _floor_empty_destination(anchor + PlayerMetrics.FOOT_CENTER_OFFSET))
+		func(anchor: Vector2): return _floor_empty_destination(PlayerMetrics.foot_center(anchor, scene_id)))
 
 func _floor_phase_context()->Array:
 	var n:Dictionary=State.d.get("native",{});var ui:Dictionary=State.d.get("ui",{})
@@ -2421,8 +2428,7 @@ func _queue_target_approach(target:Dictionary, interact_on_arrival := true)->boo
 		if scene_id=="dorm_hub" and authored.is_finite():authored=authored*.5+Vector2(245,0)
 	var chair_anchor := _library_chair_anchor(target)
 	if chair_anchor.is_finite():
-		# The collision foot must clear the back edge before the sit animation starts.
-		authored = chair_anchor + Vector2.DOWN * (PlayerMetrics.FOOT_SIZE.y / 2.0 + 1.0)
+		authored = chair_anchor
 	_floor_bounds=_floor_anchor_bounds(_floor_visible_rect())
 	var offset:Vector2=PlayerMetrics.foot_center_offset(scene_id) if scene_id=="duan_yongping_temporal_maze" else Vector2.ZERO
 	var obstacles:Array=_floor_obstacles();var attempts:=0

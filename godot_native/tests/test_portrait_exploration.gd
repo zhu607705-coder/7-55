@@ -122,7 +122,7 @@ func fixture(dimensions: Vector2i) -> void:
 		check(rendered.size.is_equal_approx(Vector2(shell.world_viewport.size)),"viewport renders the world at display resolution")
 		var hud:Dictionary=shell.world.hud_metrics("找到入口，继续向前。")
 		var display:float=shell.world.hud_display_scale()
-		check(hud.title_font*display>=18 and hud.body_font*display>=14,"physical HUD fonts meet mobile floor")
+		check(hud.title_font*display>=14.39 and hud.body_font*display>=12.79,"HUD fonts meet compact reading floors")
 		var controls:Dictionary=shell.world.mobile_control_metrics()
 		check(controls.scheme=="direct_world" and controls.gestureArea.size.x>=200 and controls.gestureArea.size.y>=100,"direct world gestures retain useful physical floor area")
 		check(not controls.mode.has_area() and not shell.world_mode.visible,"dorm exploration has no mode button before the story unlock")

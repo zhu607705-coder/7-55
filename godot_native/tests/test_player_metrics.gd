@@ -9,9 +9,10 @@ func _initialize() -> void:
 		if not is_equal_approx(rect.end.y,541.6): failures+=1
 		if not is_equal_approx(rect.size.x/rect.size.y,96.0/128.0): failures+=1
 	var foot: Rect2=Metrics.foot_rect(Vector2(800,500))
-	if foot.size!=Vector2(19.5,14.625) or foot.get_center()!=Vector2(800,531.6875): failures+=1
+	if foot!=Rect2(792,531.5625,16,10) or foot.get_center()!=Vector2(800,536.5625): failures+=1
+	if Metrics.depth_y(Vector2(800,500))!=531.6875 or Metrics.ground_depth_y(Vector2(800,500))!=539.0: failures+=1
 	if Metrics.scale_at("campus_bootstrap",500)!=.325: failures+=1
 	if not is_equal_approx(Metrics.scale_at("library_interior",500),Metrics.DISPLAY_SCALE): failures+=1
 	if Metrics.scale_at("canteen_interior",500)!=.65: failures+=1
-	print("Source player metrics: ","PASS" if failures==0 else "FAIL")
+	print("Native player metrics: ","PASS" if failures==0 else "FAIL")
 	quit(0 if failures==0 else 1)
