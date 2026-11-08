@@ -65,16 +65,16 @@ func arrive(at: Vector2,expected: Vector2,using_touch: bool=false) -> void:
 	await snapshot(str(records.size())+"-accepted")
 	check(w._floor_goal.distance_to(raw)*w.zoom<=Tap.PIXEL_RADIUS+.001,"correction is bounded in physical pixels")
 	check(planning_us<200000 and w._canteen_floor_tap.candidate_count<=Tap.MAX_CANDIDATES,"correction and planning remain bounded")
-	var legal:=true;var transform_ok:=true;var continuous:=true;var count:=0
+	var legal:=true;var same_scene:=true;var continuous:=true;var count:=0
 	var deadline:=Time.get_ticks_msec()+10000
 	while not w._floor_route.is_empty() and Time.get_ticks_msec()<deadline:
 		var previous: Vector2=w.player
 		await process_frame
-		legal=legal and w.can_stand(w.player);transform_ok=transform_ok and w._floor_transform_current()
+		legal=legal and w.can_stand(w.player);same_scene=same_scene and w._floor_world_key==w.world_key
 		continuous=continuous and previous.distance_to(w.player)<=165*.05+.001;count+=1
 	check(w._floor_status=="arrived" and Metrics.foot_rect(w.player).get_center().distance_to(expected)<.002,"live Main frames arrive at selected full-foot center")
 	check(w.walk_clock==0,"arrival retires walking pixels before the next root input")
-	check(legal and continuous and transform_ok,"every frame preserves exact feet, native speed and camera ownership")
+	check(legal and continuous and same_scene,"every frame preserves exact feet, native speed and scene ownership")
 	check(w.collisions==geometry and story()==before and actions.size()==action_count,"route changes no geometry, story, inventory, wallet or interaction")
 	await snapshot(str(records.size())+"-arrived")
 	records.append({"root":str(at),"input":"touch" if using_touch else "mouse","start":str(start),"raw":str(raw),"resolved":str(expected),"snapPixels":raw.distance_to(expected)*w.zoom,"waypoints":waypoints,"final":str(w.player),"frames":count,"planningUs":planning_us,"edges":w._floor_planner.edge_checks,"candidates":w._canteen_floor_tap.candidate_count})

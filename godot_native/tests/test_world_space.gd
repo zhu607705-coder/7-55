@@ -59,6 +59,9 @@ func run()->void:
 		if row.has("zone"):state.d.qizhenLake.zone=row.zone;state.d.qizhenLake.vehicle=row.vehicle
 		world.scene_id="";world.world_key="";world.refresh_world()
 		var label:String=world.world_space.variant
+		check(world.texture_filter==CanvasItem.TEXTURE_FILTER_NEAREST,label+" uses the same pixel-art sampler after a scene change")
+		if ClassDB.class_has_integer_constant(&"CanvasItem",&"OVERSAMPLING_WITH_SCALE_ENABLED"):
+			check(int(world.get("oversampling_with_scale"))==ClassDB.class_get_integer_constant(&"CanvasItem",&"OVERSAMPLING_WITH_SCALE_ENABLED"),label+" rasterizes map text at its rendered scale")
 		check(world.world_space.active,label+" registers one common ground authority")
 		check(world.can_stand(world.player),label+" actual safe spawn remains physically valid")
 		var body:Rect2=world.kayak_collision_rect(world.player,world.kayak.heading) if world.kayak else Body.foot_rect(world.player,world.scene_id)
