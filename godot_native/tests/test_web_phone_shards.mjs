@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {test} from 'node:test';
-import {phoneRecoveryCase} from '../tools/web_phone_recovery.mjs';
+import {phoneRecoveryCase, waitForC2PhoneWorld} from '../tools/web_phone_recovery.mjs';
 import {PHONE_GROUPS, PHONE_COVERAGE, phoneGroups, phoneCoverage, phoneInputs, runPhoneRecoveryGroups, assertPhoneCoverage, assertPhoneShardUnion} from '../tools/web_phone_shards.mjs';
 
 await test('default all retains the original ordered three flows and all eleven labels', async () => {
@@ -173,4 +173,16 @@ for(const [label,value] of [
   ['blocked home',returnSnapshot('phone_home',20,{content:{blocking:true}})]
 ])await test(`phone exit ${label} fails without another tap or partial success`,async()=>{
   await exerciseExitReturn([value],false);
+});
+
+for (const rotation of [1, -1]) await test(`cold C2 validates button bounds after canvas turn ${rotation}`, async () => {
+  const value = readyC2();
+  value.presentation = {rotation};
+  value.viewport = rotation === 1 ? {width:390,height:844} : {width:844,height:390};
+  value.visibleControls[0].rect = rotation === 1 ? {x:706,y:332,width:44,height:44} : {x:332,y:706,width:44,height:44};
+  const harness = {touch:true,bootTimeout:180000,poll:syntheticPoll,async snapshot(){return value;}};
+  assert.equal(await waitForC2PhoneWorld(harness,10),value);
+  // A world displaced offscreen by the old backing-origin bug is not accepted.
+  value.visibleControls[0].rect.y = 900;
+  await assert.rejects(waitForC2PhoneWorld(harness,10),/synthetic timeout/);
 });

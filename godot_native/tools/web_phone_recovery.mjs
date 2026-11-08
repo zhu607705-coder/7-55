@@ -65,7 +65,13 @@ export async function waitForC2PhoneWorld(h, afterFrame) {
     const controls = (value.visibleControls || []).filter(control => control.name === 'WorldPhoneButton');
     if (controls.length !== 1 || controls[0].disabled !== false) return null;
     const r = controls[0].rect, v = value.viewport;
-    if (!r || !v || ![r.x, r.y, r.width, r.height, v.width, v.height].every(Number.isFinite) || r.width <= 0 || r.height <= 0 || v.width <= 0 || v.height <= 0 || r.x < 0 || r.y < 0 || r.x + r.width > v.width || r.y + r.height > v.height) return null;
+    if (!r || !v || ![r.x, r.y, r.width, r.height, v.width, v.height].every(Number.isFinite) || r.width <= 0 || r.height <= 0 || v.width <= 0 || v.height <= 0) return null;
+    // The snapshot and click harness use pre-rotation root coordinates. Bounds
+    // must be tested after the same canvas quarter turn used for actual input.
+    const rotation = value.presentation?.rotation || 0;
+    const screen = rotation === 1 ? {x:v.width-r.y-r.height,y:r.x,width:r.height,height:r.width}
+      : rotation === -1 ? {x:r.y,y:v.height-r.x-r.width,width:r.height,height:r.width} : r;
+    if (screen.x < 0 || screen.y < 0 || screen.x + screen.width > v.width || screen.y + screen.height > v.height) return null;
     return {value};
   }, 'cold C2 required content and restored dorm world are ready before phone input', h.bootTimeout);
   if (result.error) throw Error(`C2 phone content failed: ${result.error}`);
