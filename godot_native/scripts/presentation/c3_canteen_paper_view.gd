@@ -1,5 +1,6 @@
 extends Control
 const Paper=preload("res://scripts/presentation/c3_paper_art.gd")
+const Overlay=preload("res://scripts/ui/world_overlay_layout.gd")
 var session: RefCounted
 var world: Control
 var font: Font
@@ -15,11 +16,12 @@ func narrow_text() -> bool:
 	return is_instance_valid(world) and world.size.x*display_scale<620
 func text_layout(text: String,point: Vector2,width: float,factor: float,is_tail: bool=false) -> Dictionary:
 	# Coordinates remain in the unmodified 960x540 world. Only the HUD text
-	# compensates for the actual SubViewport display scale on narrow screens.
+	# compensates for the actual SubViewport display scale.
 	var physical_scale: float=maxf(.1,display_scale)
-	var font_size: int=maxi(15 if is_tail else int(13*factor),ceili(14/physical_scale))
-	var padding: float=8/physical_scale
-	var max_width: float=world.size.x-24/physical_scale
+	var unit:=Overlay.ui_units(world.size,physical_scale)
+	var font_size: int=maxi(15 if is_tail else int(13*factor),ceili(Overlay.BODY_PX*unit))
+	var padding: float=8*unit
+	var max_width: float=world.size.x-24*unit
 	var natural_width: float=font.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x+padding*2
 	var box_width: float=minf(max_width,maxf(width,natural_width))
 	var lines: Array[String]=[]
@@ -32,15 +34,19 @@ func text_layout(text: String,point: Vector2,width: float,factor: float,is_tail:
 	var line_height: float=font.get_height(font_size)
 	var box_height: float=line_height*lines.size()+padding*2
 	var rect:=Rect2(point-Vector2(box_width/2,box_height/2),Vector2(box_width,box_height))
-	var edge: float=6/physical_scale
+	var edge: float=6*unit
 	rect.position.x=clampf(rect.position.x,edge,world.size.x-edge-rect.size.x)
-	rect.position.y=world.size.y-box_height-10/physical_scale if is_tail else clampf(rect.position.y,edge,world.size.y-edge-rect.size.y)
-	return {"rect":rect,"fontSize":font_size,"lines":lines,"lineHeight":line_height,"padding":padding}
+	rect.position.y=world.size.y-box_height-10*unit if is_tail and narrow_text() else clampf(rect.position.y,edge,world.size.y-edge-rect.size.y)
+	return {"rect":rect,"fontSize":font_size,"lines":lines,"lineHeight":line_height,"padding":padding,"unit":unit}
 func _draw_readable(text: String,point: Vector2,width: float,factor: float,alpha: float,is_tail: bool=false) -> void:
 	var layout: Dictionary=text_layout(text,point,width,factor,is_tail)
 	var rect: Rect2=layout.rect
 	draw_rect(rect,Color("102633",.94*alpha) if is_tail else Color("fff6df",.97*alpha))
-	if not is_tail: draw_rect(rect,Color("243947",alpha),false,1/maxf(.1,display_scale))
+	if not is_tail:
+		draw_rect(rect,Color("243947",alpha),false,layout.unit)
+		var tip:=minf(9*float(layout.unit),world.size.y-rect.end.y)
+		var base:=Vector2(rect.position.x+rect.size.x*.3,rect.end.y)
+		draw_colored_polygon(PackedVector2Array([base,base+Vector2(tip,0),base+Vector2(tip*.3,tip)]),Color("fff6df",alpha))
 	for i in range(layout.lines.size()):
 		var baseline:=rect.position+Vector2(layout.padding,layout.padding+font.get_ascent(layout.fontSize)+i*layout.lineHeight)
 		draw_string(font,baseline,layout.lines[i],HORIZONTAL_ALIGNMENT_CENTER,rect.size.x-layout.padding*2,layout.fontSize,Color("f5fbff",alpha) if is_tail else Color("172932",alpha))
@@ -120,22 +126,8 @@ func _draw() -> void:
 		var fade: float=70 if tail_reduced else 120
 		var hold: float=1600-(190 if tail_reduced else 280)
 		var alpha: float=minf(clampf(t/fade,0,1),clampf((fade*2+hold-t)/fade,0,1))
-		var line: String=str(tail_lines[index])
-		if narrow_text():
-			_draw_readable(line,Vector2(world.size.x/2,world.size.y-128),0,1,alpha,true)
-			return
-		var w: float=font.get_string_size(line,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x+28
-		var rect:=Rect2((world.size.x-w)/2,world.size.y-128,w,42)
-		draw_rect(rect,Color("102633",0.94*alpha))
-		draw_string(font,rect.position+Vector2(14,26),line,HORIZONTAL_ALIGNMENT_LEFT,-1,15,Color("f5fbff",alpha))
+		_draw_readable(str(tail_lines[index]),Vector2(world.size.x/2,world.size.y-107),0,1,alpha,true)
 func _bubble(text: String,point: Vector2,width: float,factor: float,alpha: float=1.0) -> void:
-	if narrow_text():
-		_draw_readable(text,point,width,factor,alpha)
-		return
-	var rect:=Rect2(point-Vector2(width/2,15*factor),Vector2(width,30*factor))
-	draw_rect(rect,Color("fff6df",0.97*alpha)); draw_rect(rect,Color("243947",alpha),false,2*factor)
-	var tail:=PackedVector2Array([point+Vector2(-width*0.2,15*factor),point+Vector2(-width*0.2+10*factor,15*factor),point+Vector2(-width*0.2+3*factor,24*factor)])
-	draw_colored_polygon(tail,Color("fff6df",alpha))
-	draw_string(font,point+Vector2(-width/2,5*factor),text,HORIZONTAL_ALIGNMENT_CENTER,width,int(13*factor),Color("172932",alpha))
+	_draw_readable(text,point,width,factor,alpha)
 func reset() -> void:
 	session=null; ghosts=[]; tail_lines=[]; tail_ms=0; last_frame=-1; ghost_session_id=0; ghost_elapsed_ms=0; queue_redraw()

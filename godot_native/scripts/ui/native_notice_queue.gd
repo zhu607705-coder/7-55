@@ -5,13 +5,13 @@ var current: Dictionary={}
 # sequences belong to their own scheduler, never to this transient lane.
 var pending: Array[Dictionary]=[]
 
-func enqueue(text: String,speaker: String,duration: float,exact: bool=false) -> void:
+func enqueue(text: String,speaker: String,duration: float,exact: bool,origin: String) -> void:
 	if text.strip_edges().is_empty(): return
 	# Each new interaction replaces the previous result immediately, including
 	# repeated text. Give the new result its own complete lifetime.
 	duration=maxf(0,duration)
 	pending.clear()
-	current={"text":text,"speaker":speaker,"duration":duration,"remaining":duration,"elapsed":0.0,"exact":exact}
+	current={"text":text,"speaker":speaker,"duration":duration,"remaining":duration,"elapsed":0.0,"exact":exact,"origin":origin}
 
 func advance(delta: float) -> void:
 	if current.is_empty(): return

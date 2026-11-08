@@ -506,7 +506,7 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 			if group.id==id: target=group
 		if target.is_empty(): return _locked("room204_unknown_group")
 		var player: Dictionary=s.native.get("player",{})
-		if not player.has("x") or not player.has("y") or Room204.distance(PlayerMetrics.foot_rect(Vector2(float(player.x),float(player.y))).get_center(),Room204.rect(target.targetBounds))>64: return _locked("too_far")
+		if not player.has("x") or not player.has("y") or Room204.distance(Vector2(float(player.x),float(player.y))+PlayerMetrics.DEPTH_CENTER_OFFSET,Room204.rect(target.targetBounds))>64: return _locked("too_far")
 		var target_id: String=id; var orientation: String="up"
 		if value!=null:
 			if not value is Dictionary or value.get("groupId","")!=id: return _locked("room204_wrong_group")

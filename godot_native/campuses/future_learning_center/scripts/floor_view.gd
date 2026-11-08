@@ -591,7 +591,7 @@ func npc_foot(person:Dictionary)->Vector2:
 
 func npc_geometry(person:Dictionary)->Dictionary:
 	var frame:Vector2=Vector2(person.frameSize[0],person.frameSize[1])
-	return {"rect":Body.visual_rect(npc_foot(person)-Body.FOOT_CENTER_OFFSET),"texture":_texture(str(person.path)),"source":Rect2(Vector2.ZERO,frame)}
+	return {"rect":Body.visual_rect(npc_foot(person)-Body.DEPTH_CENTER_OFFSET),"texture":_texture(str(person.path)),"source":Rect2(Vector2.ZERO,frame)}
 
 func npc_at(point:Vector2)->Dictionary:
 	if overview:return {}
@@ -732,7 +732,7 @@ func _draw()->void:
 		lighting.draw_contact(self,object);lighting.draw_shadow(self,object);items.append(object)
 	for person:Dictionary in data.get("npcs",[]):
 		if npc_geometry(person).rect.intersects(view):items.append({"npc":person,"baseline":float(person.foot[1])})
-	if not capture_only:items.append({"actor":true,"baseline":player.y+Body.FOOT_CENTER_OFFSET.y})
+	if not capture_only:items.append({"actor":true,"baseline":Body.depth_y(player)})
 	items.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return float(a.baseline)<float(b.baseline))
 	for item:Dictionary in items:
 		if item.get("actor",false):_draw_actor()
@@ -764,7 +764,7 @@ func _draw_prop(item:Dictionary)->void:
 	var source:Rect2=Space.rect(item.crop)
 	var scale_value:=float(item.scale)
 	var hit:Rect2=box.intersection(Body.visual_rect(player))
-	if capture_only or not item.has("actorOcclusionAlpha") or player.y+Body.FOOT_CENTER_OFFSET.y>=float(item.baseline) or not hit.has_area():
+	if capture_only or not item.has("actorOcclusionAlpha") or Body.depth_y(player)>=float(item.baseline) or not hit.has_area():
 		_region(textures[item.path],source,box.position,scale_value);return
 	# Only the overlap with the actor fades. The remaining canopy and its alpha
 	# holes keep their original pixels, and the ground collision stays separate.
@@ -796,7 +796,7 @@ func _atrium(atrium:Dictionary)->void:
 func _draw_actor()->void:
 	var frame:=Body.frame_at(elapsed*1000.0) if walking else 0
 	var actor:Texture2D=textures["res://assets/rpg/player/player_%s_%d.png"%["side" if facing=="left" else facing,frame]]
-	draw_circle(player+Body.FOOT_CENTER_OFFSET,11,Color(0,0,0,.18))
+	draw_circle(player+Body.DEPTH_CENTER_OFFSET,11,Color(0,0,0,.18))
 	if facing=="left":
 		draw_set_transform(player,0,Vector2(-1,1));draw_texture_rect(actor,Body.visual_rect(Vector2.ZERO),false);draw_set_transform(Vector2.ZERO)
 	else:draw_texture_rect(actor,Body.visual_rect(player),false)
@@ -953,7 +953,9 @@ func _restore_activity()->void:
 	var at:Array=location.get("player",[])
 	# Persisted actor coordinates still have to fit the current source collision map.
 	if at.size()==2:
-		if not load_floor(floor_number,Vector2(float(at[0]),float(at[1]))+Body.FOOT_CENTER_OFFSET):load_floor(floor_number)
+		var foot:=Body.foot_center(Vector2(float(at[0]),float(at[1])))
+		if not load_floor(floor_number,foot) and not load_floor(floor_number,foot-Vector2(0,Body.FOOT_BOTTOM_SHIFT)):
+			load_floor(floor_number)
 	else:load_floor(floor_number)
 	set_hour(float(location.get("hour",12)))
 func _commit_room(id:String,model:Object)->void:

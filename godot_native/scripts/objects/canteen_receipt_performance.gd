@@ -179,7 +179,7 @@ func _pose() -> void:
 	paper.position = TERMINAL_POINT + SLOT_POINT.lerp(hand - Vector2(0, PAPER_LENGTH / 2), float(pose.take)) + Vector2(float(pose.sway), 0)
 	paper.rotation = 0.0
 	var player: Vector2 = TERMINAL_POINT + hand - Vector2(16, -3)
-	paper_depth = lerpf(SOURCE_DEPTH, Metrics.foot_rect(player).end.y + 1.0, smoothstep(0, .6, float(pose.take)))
+	paper_depth = lerpf(SOURCE_DEPTH, Metrics.ground_depth_y(player) + 1.0, smoothstep(0, .6, float(pose.take)))
 	paper.z_index = preload("res://scripts/objects/canteen_scene_object.gd").draw_layer(paper_depth)
 	roller.position = SLOT_POINT
 	roller.phase = int(pose.roller)

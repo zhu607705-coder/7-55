@@ -885,6 +885,30 @@
         "T04885"
       ],
       "proposalId": "chapter4-finale-8"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_entered",
+        11,
+        "text"
+      ],
+      "oldText": "这张记录没有固定时长。先在门口闸机核对入馆记录。",
+      "newText": "先刷卡进馆。入馆记录在手机图书馆的座位预约里，点「我的」就能查。",
+      "proposalId": "library-phone-arrival-record"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_gate_record_checked",
+        0,
+        "text"
+      ],
+      "oldText": "闸机屏幕亮起：08:02 刷卡入馆，一层书库 022 会话未闭合。",
+      "newText": "手机屏幕显示：08:02 刷卡入馆，一层书库 022 会话未闭合。",
+      "proposalId": "library-phone-arrival-record"
     }
   ],
   "nativeRevisions": [

@@ -55,4 +55,4 @@ func _compile_voids()->void:
 	voids=remaining
 
 func snapshot()->Dictionary:
-	return {"active":active,"floor":floor_id,"groundRegions":regions.duplicate(),"nonGround":voids.duplicate(),"solidFaces":solid_faces.duplicate(true),"sourceSize":source_size,"footSize":Metrics.FOOT_SIZE,"depth":"shared foot bottom"}
+	return {"active":active,"floor":floor_id,"groundRegions":regions.duplicate(),"nonGround":voids.duplicate(),"solidFaces":solid_faces.duplicate(true),"sourceSize":source_size,"footSize":Metrics.FOOT_SIZE,"depth":"source ground baseline"}

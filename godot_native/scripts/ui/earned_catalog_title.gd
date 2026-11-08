@@ -10,14 +10,10 @@ func title_for_reply(state: Dictionary, row: Dictionary) -> String:
 	var source: Dictionary=JSON.parse_string(FileAccess.get_file_as_string(SOURCE_PATH))
 	for reply: Dictionary in source.cc98.storyReplies:
 		if int(reply.floor)!=SOURCE_FLOOR: continue
-		if int(str(row.get("title","")).get_slice(" ",0))!=int(reply.floor): return ""
-		var text=str(reply.text)
+		var text := str(reply.text)
 		if not str(row.get("body","")).contains(text): return ""
-		var start=text.find("搜‘")
-		if start<0: return ""
-		start+=2
-		var end=text.find("’",start)
-		return text.substr(start,end-start) if end>start else ""
+		var title := str(source.library.catalogQuery)
+		return title if text.contains("《%s》" % title) else ""
 	return ""
 
 func copy_reply_title(state: Dictionary, row: Dictionary) -> String:

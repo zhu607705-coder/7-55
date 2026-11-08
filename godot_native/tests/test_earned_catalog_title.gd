@@ -24,6 +24,7 @@ var emitted: Array=[]
 var routed: Array=[]
 var earned: Dictionary
 var clue: Dictionary
+var catalog_title: String
 var geometry: Array=[]
 
 func _initialize() -> void: run.call_deferred()
@@ -92,7 +93,7 @@ func search_from_input(native_paste: bool=false) -> Dictionary:
 	await click(query)
 	if native_paste: await key(KEY_V,true)
 	else: await type_title(clipboard.text)
-	check(query.text=="三分钟离座法","Normal input receives exact copied/manual title")
+	check(query.text==catalog_title,"Normal input receives exact copied/manual title")
 	check(not state.d.ui.libraryFinalsPuzzle.catalogSearchCompleted,"Input alone cannot submit a search")
 	await click(node("LibraryCatalogSearch"))
 	return {"ids":state.d.native.get("lib_catalog_result_ids",[]).duplicate(),"complete":state.d.ui.libraryFinalsPuzzle.catalogSearchCompleted,"items":state.d.items.duplicate(true)}
@@ -103,16 +104,19 @@ func run() -> void:
 	earned.actOne.phase="complete"; earned.actOne.cc98Login.authenticated=true; earned.networkMode="campus_wifi"
 	earned.ui.libraryFinalsPhase="occupied_seat_found"; earned.ui.libraryFinalsPuzzle.backpackInspected=true
 	controller.dispatch(earned,"lib_note")
+	acknowledge()
 	var source: Dictionary=JSON.parse_string(FileAccess.get_file_as_string(CopyTitle.SOURCE_PATH))
+	catalog_title=source.library.catalogQuery
 	for reply: Dictionary in source.cc98.storyReplies:
 		if int(reply.floor)==12: clue={"title":"%s 楼 · %s" % [reply.floor,reply.author],"body":str(reply.get("quote",""))+"\n"+str(reply.text)}
+	check(not catalog_title.is_empty() and clue.body.contains("《%s》" % catalog_title),"Catalog title is visible in the source clue")
 	check(clipboard.title_for_reply(earned,clue).is_empty(),"Collected note alone never exposes a title-copy action")
 	check(clipboard.copy_reply_title(earned,clue)=="请先阅读调查帖中的题名线索。" and clipboard.writes==0,"Unopened investigation never touches clipboard")
 	controller.dispatch(earned,"lib_investigate","wrong-item")
 	check(not earned.ui.libraryFinalsPuzzle.investigationOpened,"Wrong investigation input keeps source gate locked")
 	controller.dispatch(earned,"lib_investigate","occupancyNote"); acknowledge()
 	check(earned.ui.libraryFinalsPuzzle.investigationOpened and not earned.items.occupancyNote,"Ordinary investigation earns the source reply")
-	check(clipboard.title_for_reply(earned,clue)=="三分钟离座法","Copied text is extracted verbatim from authored 12th-floor clue")
+	check(clipboard.title_for_reply(earned,clue)==catalog_title,"Copied text matches the authored 12th-floor title")
 	check(clipboard.title_for_reply(earned,{"title":"4 楼","body":clue.body}).is_empty(),"Unrelated reply cannot expose copy")
 	check(clipboard.title_for_reply(earned,{"title":clue.title,"body":"unrelated"}).is_empty(),"Missing visible source clue cannot expose copy")
 	state.d=earned.duplicate(true)
@@ -138,7 +142,7 @@ func run() -> void:
 			check(bodies[0].get_global_rect().end.y<=rect.position.y,"New control does not cover clue text")
 		var before=JSON.stringify(state.d); var count=emitted.size(); var routes=routed.size()
 		for i in range(3): await click(copy); assert_copy_is_local(before,count,routes)
-		check(clipboard.text=="三分钟离座法" and status.text.begins_with("已复制"),"Repeated copy reports verified clipboard success")
+		check(clipboard.text==catalog_title and status.text.begins_with("已复制"),"Repeated copy reports verified clipboard success")
 		check(status.get_line_count()==status.get_visible_line_count(),"Success feedback fits its inline label")
 		await capture("earned-title-copy-"+str(viewport.x))
 		shell.phone_builder.native_library.catalog_query="已有的手动输入"
@@ -170,7 +174,7 @@ func run() -> void:
 		await key(KEY_ESCAPE)
 		check(not is_instance_valid(shell.modal) and not state.d.ui.libraryFinalsPuzzle.catalogSearchCompleted,"Cancel/Escape never searches or leaves a copy modal")
 	# Manual typing and copied text pass exactly the same existing input/controller path.
-	await restore_earned(); clipboard.text="三分钟离座法"
+	await restore_earned(); clipboard.text=catalog_title
 	var without_terminal=await search_from_input()
 	check(without_terminal.ids.size()==controller.library._data().library.catalogResults.size() and not without_terminal.complete,"Exact title still cannot bypass terminal evidence gate")
 	await click(node("LibraryCatalogResult_three-minute-leave-method"))
@@ -185,7 +189,7 @@ func run() -> void:
 		await restore_earned(); shell.phone_builder.earned_catalog_title=CopyTitle.new(); await open_clue()
 		var before=JSON.stringify(state.d); var count=emitted.size(); var routes=routed.size()
 		await click(node("Cc98CopyCatalogTitle")); assert_copy_is_local(before,count,routes)
-		check(DisplayServer.clipboard_get()=="三分钟离座法","Actual OS clipboard receives source title")
+		check(DisplayServer.clipboard_get()==catalog_title,"Actual OS clipboard receives source title")
 		var pasted=await search_from_input(true)
 		check(pasted==typed,"Native clipboard Ctrl+V and manual typing produce identical search/controller state")
 		DisplayServer.clipboard_set(previous)

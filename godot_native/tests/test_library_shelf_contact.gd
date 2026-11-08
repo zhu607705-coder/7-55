@@ -61,7 +61,7 @@ func finish_case(label:String,start:Vector2,before:Dictionary)->void:
 	check(not layer.shelf_animating and layer.shelf_offset==16 and is_equal_approx(layer.shelf_ms,layer.shelf_total_ms()),label+" retains the exact final source timeline and pose")
 	check(world.can_stand(world.player),label+" final actor is collision-safe")
 	var previous:Vector2=world.player
-	var away:=Vector2.LEFT if start.x<548 else Vector2.RIGHT
+	var away:=Vector2.UP if start.x<548 else Vector2.RIGHT
 	world.touch_axis=away;world._process(.016);world.touch_axis=Vector2.ZERO
 	check(world.can_stand(world.player) and world.player.distance_to(previous+away*2.64)<.001,label+" ordinary small movement exits after the full reveal")
 	var boxes:Array=world._floor_obstacles()
@@ -80,7 +80,7 @@ func finish_case(label:String,start:Vector2,before:Dictionary)->void:
 		for frame:int in 60:world._process(.016)
 		world.touch_axis=Vector2.ZERO
 		var rear:float=shelf_base().position.y
-		check(world.can_stand(world.player) and absf(Metrics.foot_rect(world.player).end.y-rear)<2.65,"ordinary walking stops at the measured rear support")
+		check(world.can_stand(world.player) and absf(Metrics.foot_rect(world.player,world.scene_id).end.y-rear)<2.65,"ordinary walking stops at the measured rear support")
 	world.queue_free();await process_frame
 
 func timeline_case(label:String,start:Vector2,reduced:bool=false)->void:
@@ -102,9 +102,10 @@ func timeline_case(label:String,start:Vector2,reduced:bool=false)->void:
 		var moved:Vector2=world.player-at
 		held_blocked=held_blocked and absf(moved.y)<.0001 and absf(moved.x)<=absf(layer.shelf_offset-old_offset)+.002
 		var base:=shelf_base()
-		var old_feet:=Metrics.foot_rect(at)
+		var old_feet:=Metrics.foot_rect(at,world.scene_id)
 		if old_feet.intersects(base):
-			var expected_x:float=base.end.x+Metrics.FOOT_SIZE.x/2+Rules.CONTACT_EPSILON if start.x>548 else base.position.x-Metrics.FOOT_SIZE.x/2-Rules.CONTACT_EPSILON
+			var half_width:=old_feet.size.x/2
+			var expected_x:float=base.end.x+half_width+Rules.CONTACT_EPSILON if start.x>548 else base.position.x-half_width-Rules.CONTACT_EPSILON
 			minimal=minimal and absf(world.player.x-expected_x)<.001
 		else:minimal=minimal and moved==Vector2.ZERO
 	check(frames<400 and legal,label+" every authored shake and slide step leaves legal feet")
@@ -115,7 +116,7 @@ func timeline_case(label:String,start:Vector2,reduced:bool=false)->void:
 	await finish_case(label,start,before)
 
 func canceled_case()->void:
-	var start:=Vector2(596,277)
+	var start:=Vector2(600.5,277)
 	await setup_actor(start)
 	check(world.can_stand(start),"canceled close approach is initially legal")
 	var before:Dictionary=progress()
@@ -135,9 +136,9 @@ func refused_cases()->void:
 	world.library_layers.cancel_shelf_reveal(state.d,world.library_layers.reveal_serial);world._process(.01)
 	check(world.player==prior,"a previously illegal actor never receives a general collision rescue")
 	world.queue_free();await process_frame
-	await setup_actor(Vector2(596,277))
+	await setup_actor(Vector2(600.5,277))
 	prior=world.player
-	world.collisions.append({"id":"test_static_barrier","left":616,"top":300,"right":617,"bottom":320})
+	world.collisions.append({"id":"test_static_barrier","left":632,"top":300,"right":633,"bottom":320})
 	check(world.can_stand(prior),"adversarial static barrier starts outside the legal actor feet")
 	world.library_layers.cancel_shelf_reveal(state.d,world.library_layers.reveal_serial);world._process(.01)
 	check(world.player==prior,"a physical push cannot pass through another wall or cross the cabinet to its far side")
@@ -147,10 +148,10 @@ func run()->void:
 	check(Isolation.is_isolated_save(),"isolated native save")
 	if failures:quit(1);return
 	state=root.get_node("State");root.size=Vector2i(960,540)
-	await timeline_case("east side",Vector2(596,277))
-	await timeline_case("west side",Vector2(526,277))
+	await timeline_case("east side",Vector2(600.5,277))
+	await timeline_case("west side",Vector2(518.5,277))
 	await timeline_case("front aisle",Vector2(564,320))
-	await timeline_case("east reduced",Vector2(596,277),true)
+	await timeline_case("east reduced",Vector2(600.5,277),true)
 	await canceled_case()
 	await refused_cases()
 	print("LIBRARY_SHELF_CONTACT ",checks," checks, ",failures," failures; cases=",JSON.stringify(records))

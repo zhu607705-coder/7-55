@@ -4,7 +4,7 @@ const PlayerBodyMetrics=preload("res://scripts/player_metrics.gd")
 const Picker=preload("res://scripts/world_object_picker.gd")
 const CONTACT_EPSILON:=.001
 
-static func foot_y(anchor:Vector2)->float:return PlayerBodyMetrics.foot_rect(anchor).end.y
+static func foot_y(anchor:Vector2)->float:return PlayerBodyMetrics.ground_depth_y(anchor)
 static func depth_in_front(baseline:float,ground_y:float)->bool:return ground_y<=baseline+.01
 static func in_front(baseline:float,anchor:Vector2)->bool:return depth_in_front(baseline,foot_y(anchor))
 static func legacy_baseline(depth:float,player_depth_offset:float)->float:

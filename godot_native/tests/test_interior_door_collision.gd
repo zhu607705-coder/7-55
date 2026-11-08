@@ -93,7 +93,7 @@ func run()->void:
 		keyboard(key,true)
 		for frame in 24: world._process(.05)
 		keyboard(key,false)
-		var feet := Metrics.foot_rect(world.player)
+		var feet := Metrics.foot_rect(world.player,world.scene_id)
 		var aperture: Vector2 = world.library_gate.aperture_x
 		check(side*(world.player.x-start.x)>35 and feet.position.x>=aperture.x and feet.end.x<=aperture.y,"real lateral movement stops on the paved landing "+str(side))
 	fixture("library_interior",Vector2(715,842))
@@ -102,6 +102,11 @@ func run()->void:
 		check(world.can_stand(Vector2(spawn.x,spawn.y)),"original source checkpoint remains physically open "+id)
 	check(world.can_stand(Vector2(1180,480)),"existing validated reading-area arrival stays physically open")
 	check(world.can_stand(Vector2(1180,500)),"seat checkpoint clears the separately rendered reading rail")
+	var old_landing:=Vector2(715,850)
+	check(not world.can_stand(old_landing),"the new lower edge exposes an old saved pose at the landing limit")
+	state.d.native.positions={"library_interior:":{"x":old_landing.x,"y":old_landing.y}}
+	world.world_key="";world.scene_id="";world.refresh_world()
+	check(world.player==Vector2(715,847.4375) and world.can_stand(world.player),"loading the old landing pose lifts it by 2.5625px on the same side of the gate")
 	# A saved position in the former horizontal-stack aisle now intersects a
 	# north-south stack. Exercise actual Continue recovery against that footprint.
 	var old_aisle:=Vector2(642,277)
@@ -162,7 +167,7 @@ func run()->void:
 		check(gate.lanes[0].progress==1 and world.can_stand(left_axis) and not world.can_stand(right_axis),"only the swiped lane opens")
 		check(world._floor_segment_clear(Vector2(715,842),Vector2(715,695)),"opened wing clears the same route planner")
 		move_input(Vector2.UP,15,touch)
-		check(Metrics.foot_rect(world.player).end.y<gate.axis_y and world.can_stand(world.player),"ordinary input enters the library through the wing")
+		check(Metrics.foot_rect(world.player,world.scene_id).end.y<gate.axis_y and world.can_stand(world.player),"ordinary input enters the library through the wing")
 		check(state.d.native.get("lib_admission_recorded",false) and not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"crossing issues the unread record")
 		state.act("lib_record")
 		check(state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"phone acknowledgement follows physical entry")
@@ -204,7 +209,8 @@ func run()->void:
 	motion.progress=0;motion.visual_progress=0
 	check(motion.begin_departure(),"runtime-only departure hold belongs to theater door")
 	for i:int in range(12):world._process(.05)
-	check(motion.passable() and motion.progress==1 and world.can_stand(Vector2(836,895)),"departure opens a complete body-sized passage")
+	var landing:=Metrics.anchor_from_foot_center(Vector2(836,929))
+	check(motion.passable() and motion.progress==1 and world.can_stand(landing),"departure opens a complete body-sized passage up to the original ground edge")
 	move_input(Vector2.DOWN,12,false)
 	check(world.player.y>890 and world.can_stand(world.player),"real keyboard motion crosses opened theater door")
 	check(state.d.native.scene=="theater_interior" and state.d.theaterHunt.phase!="complete","opening a door cannot finish chapter or exit")

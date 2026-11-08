@@ -130,7 +130,7 @@ func _sync_view_layout() -> void:
 		view.exploration_rect=Rect2(safe.position+Vector2(8,8),safe.size-Vector2(16,16))
 
 	# Dialogue is screen UI, not a texel in the world render target. Preserve
-	# authored safe geometry, but paint selected 18/14 px fonts exactly once.
+	# authored safe geometry, but apply the selected fonts at screen scale.
 	if is_instance_valid(shell) and parent==world:
 		var local_safe:Rect2=view.exploration_rect
 		if not local_safe.has_area():local_safe=Rect2(Vector2(8,8),world.size-Vector2(16,16))

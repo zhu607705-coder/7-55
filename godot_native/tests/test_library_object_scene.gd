@@ -38,29 +38,42 @@ func opaque_runs(image: Image, y: int) -> Array[Vector2i]:
 func counter_contact()->void:
 	var area:Rect2=world.library_layers.objects.areas.front_desk_counter
 	world.capture_mode=false
-	for sample:Array in [[Vector2(110,555),Vector2.RIGHT,"west"],[Vector2(535,555),Vector2.LEFT,"east"],[Vector2(334,704),Vector2.UP,"south"],[Vector2(120,623),Vector2.RIGHT,"west corner"],[Vector2(535,623),Vector2.LEFT,"east corner"]]:
+	for sample:Array in [[Vector2(110,555),Vector2.RIGHT,"west"],[Vector2(535,555),Vector2.LEFT,"east"],[Vector2(334,704),Vector2.UP,"south"],[Vector2(126,623),Vector2.RIGHT,"west corner"],[Vector2(535,623),Vector2.LEFT,"east corner"]]:
 		world.player=sample[0];world.move_target=Vector2.INF;world.touch_axis=sample[1];world._sync_player()
 		check(world.can_stand(world.player),"counter approach starts on clear floor "+sample[2])
 		for frame:int in 80:world._process(.016)
 		world.touch_axis=Vector2.ZERO
-		var feet:=Metrics.foot_rect(world.player)
+		var feet:=Metrics.foot_rect(world.player,world.scene_id)
 		var aligned:=false
 		match sample[2]:
-			"west":aligned=feet.end.x<=area.position.x+.01
-			"east":aligned=feet.position.x>=area.end.x-.01
-			"south":aligned=feet.position.y>=area.end.y-.01
-			"west corner":aligned=feet.end.x<=area.position.x+6
-			"east corner":aligned=feet.position.x>=area.end.x-6
-		check(world.can_stand(world.player) and world.player.distance_to(sample[0])>20 and aligned,"ordinary movement stops outside the painted cabinet "+sample[2])
-		if sample[2]=="west":
+			"west","west corner":aligned=absf(feet.end.x-area.position.x)<.002
+			"east","east corner":aligned=absf(feet.position.x-area.end.x)<.002
+			"south":aligned=absf(feet.position.y-area.end.y)<.002
+		check(world.can_stand(world.player) and world.player.distance_to(sample[0])>10 and aligned,"the full-width foot stops at the cabinet side "+sample[2])
+		if sample[2] in ["west","east"]:
 			var at:Vector2=world.player
 			world.touch_axis=Vector2.DOWN
-			for frame:int in 30:world._process(.016)
+			for frame:int in 36:world._process(.016)
+			check(world.can_stand(world.player) and absf(world.player.y-at.y-95.04)<.01,"walking along the cabinet clears the front corner "+sample[2])
+			world.touch_axis=sample[1]
+			for frame:int in 10:world._process(.016)
 			world.touch_axis=Vector2.ZERO
-			check(world.can_stand(world.player) and absf(world.player.y-at.y-79.2)<.01,"walking along the side stays clear through its front corner")
+			check(world.can_stand(world.player) and absf(world.player.x-at.x-26.4*sample[1].x)<.01,"can turn along the front aisle after clearing the corner "+sample[2])
 	check(not stand(Vector2(area.position.x+3,590)) and not stand(Vector2(area.end.x-3,590)),"both former side gaps are solid")
 	check(not stand(Vector2(area.position.x+12,655)) and not stand(Vector2(area.end.x-12,655)),"both former front-corner gaps are solid")
 	world.capture_mode=true
+func check_rear_contact(center:Vector2,edge:float,label:String)->void:
+	var start:=Metrics.anchor_from_foot_center(center)
+	check(world.can_stand(start),label+" approach is open")
+	var stopped:Vector2=world._axis_destination(start,Vector2(0,edge-center.y+24))
+	check(world.can_stand(stopped) and absf(Metrics.foot_rect(stopped,world.scene_id).end.y-edge)<.002 and not world.can_stand(stopped+Vector2.DOWN),label+" stops at the measured ground edge")
+
+func check_east_contact(center:Vector2,edge:float,label:String)->void:
+	var start:=Metrics.anchor_from_foot_center(center)
+	var stopped:Vector2=world._axis_destination(start,Vector2(edge-center.x-24,0))
+	var feet:=Metrics.foot_rect(stopped,world.scene_id)
+	check(world.can_stand(start) and world.can_stand(stopped) and absf(feet.position.x-edge)<.002 and not world.can_stand(stopped+Vector2.LEFT),label+" keeps the body outside the painted side")
+
 func capture(id:String,center:Vector2,scale_value:float=1.0,focus:=Vector2(750,450))->void:
 	if output.is_empty() or DisplayServer.get_name()=="headless":return
 	world.player=center-Metrics.FOOT_CENTER_OFFSET
@@ -78,6 +91,42 @@ func run()->void:
 	check(scene.ready,"complete sprite family and clean plate activate together")
 	if not scene.ready:print(scene.issues);quit(1);return
 	counter_contact()
+	check(scene.areas.keys().all(func(id:String):return scene.areas[id]==scene.geometry(id).rect),"all fitted objects share the registered paint pixel grid")
+	var counter:Rect2=scene.areas.front_desk_counter
+	check(stand(counter.position+Vector2(30,25)) and not stand(counter.position+Vector2(30,37)),"the approach behind the raised arm remains open to its measured rear ground edge")
+	check(Rules.depth_in_front(scene.baseline("front_desk_counter"),666) and not Rules.depth_in_front(scene.baseline("front_desk_counter"),667),"the whole cabinet follows its original front edge")
+	var measured_width:=Metrics.foot_size(world.scene_id).x
+	var body_fits:=measured_width==36.0
+	for direction:String in ["down","up","side"]:
+		var poses:Array=world.library_layers.animations.walks[direction].duplicate()
+		poses.append(world.library_layers.animations.idles[direction])
+		for texture:Texture2D in poses:
+			var top:Rect2i=texture.get_image().get_region(Rect2i(0,0,96,104)).get_used_rect()
+			var radius:=maxi(48-top.position.x,top.end.x-48)*Metrics.DISPLAY_SCALE
+			body_fits=body_fits and radius<=measured_width/2
+	check(body_fits,"the collision width covers the upper body in every actual library walk and idle frame")
+	var catalog:Rect2=scene.areas.catalog_desk
+	check_rear_contact(Vector2(catalog.end.x-16,525),555,"catalog table")
+	check_east_contact(Vector2(773,597),catalog.end.x,"catalog table")
+	check_east_contact(Vector2(539,536),scene.areas.desk_back_1.end.x,"desk bookcase")
+	check_rear_contact(Vector2(820,548),576.56,"printer's original rear edge")
+	var previous_side:=Metrics.anchor_from_foot_center(Vector2(493,619))
+	var recovered:Vector2=world._find_safe(previous_side)
+	check(not world.can_stand(previous_side) and world.can_stand(recovered) and recovered.x>=counter.end.x+measured_width/2,"an old side position recovers to the same outside aisle")
+	var worktop:Rect2=scene.table_surface("front_desk_counter")
+	var terminal:Rect2=scene.geometry("desk_terminal").rect
+	var terminal_x:=terminal.get_center().x
+	check(worktop.has_point(Vector2(terminal_x,terminal.position.y+terminal.size.y*.75)) and worktop.has_point(Vector2(terminal_x,terminal.end.y-1)),"monitor stand and keyboard sit on the front worktop")
+	var service:Transform2D=world.library_layers.desk_service_transform()
+	var idle:Dictionary=world.library_layers.stamp_pose()
+	check(worktop.has_point(service*Vector2(idle.stampBottom)),"idle stamp foot sits on the usable worktop")
+	var stamp_point:=service*(Vector2(idle.stampRect.position)+Vector2(idle.stampRect.size)*Vector2(.5,.25))
+	check(str(world._pick_target(stamp_point).get("id","")) in ["front_desk","identity_machine"],"the relocated stamp is picked at its visible handle")
+	var stamp_motion=preload("res://scripts/presentation/library_stamp_motion.gd")
+	for phase_ms:float in [0.0,340.0,1080.0,1400.0]:
+		var sample:Dictionary=stamp_motion.sample(phase_ms,-1)
+		var sheet:=Rect2(Vector2(sample.paper)-Vector2(sample.paperSize)/2,Vector2(sample.paperSize))
+		check(worktop.encloses(service*sheet) and worktop.has_point(service*Vector2(sample.stampBottom)),"stamp and report keep tabletop contact through "+str(phase_ms))
 	check(world.background==scene.clean_plate and world.background.get_size()==Vector2(1500,900),"real world uses exact source-sized empty plate")
 	check(world.texture_filter==CanvasItem.TEXTURE_FILTER_NEAREST,"library paint bypasses the SubViewport linear default")
 	for id: String in scene.rows:
@@ -90,13 +139,21 @@ func run()->void:
 	var sample_y := rail.position.y + rail.size.y * .75
 	check(not Rules.depth_in_front(scene.baseline_at("diagonal_rail", rail.position.x + 6),sample_y),"actor at the outer end of the sloped railing is in front")
 	check(Rules.depth_in_front(scene.baseline_at("diagonal_rail", rail.end.x - 6),sample_y),"same foot Y on the carpet side is behind the railing")
+	check(not stand(rail.position + rail.size * Vector2(.91,.98)),"end post blocks feet down to the painted ground contact")
+	for chair_id: String in world.library_layers.CHAIR_IDS:
+		var approach: Vector2 = world.library_layers.chair_approach(chair_id)
+		var chair: Rect2 = scene.areas[world.library_layers.CHAIR_IDS[chair_id]]
+		check(world.can_stand(approach) and not stand(chair.get_center()+Vector2(0,chair.size.y*.4)),"chair has a solid foot and a reachable rear approach "+chair_id)
 	var record_read:bool=state.d.ui.libraryFinalsPuzzle.entranceRecordRead
 	state.d.ui.libraryFinalsPuzzle.entranceRecordRead=false;world.refresh_world()
 	await process_frame;await process_frame
 	check(world._pick_target(world.library_gate.reader_rect(0).get_center()).get("id","")=="entrance_record","cabinet reader owns its actual elevated screen")
 	var entrance_target:Dictionary=world.targets.filter(func(target:Dictionary):return target.id=="entrance_record")[0]
 	check(world._distance_at(entrance_target,Vector2(715,842))<=entrance_target.radius,"reader is reachable from the authored entrance spawn")
-	check(stand(Vector2(750,708)) and not stand(Vector2(750,806)),"retired reader base clears the hall and lowered cabinets stay solid")
+	check(stand(Vector2(750,708)) and stand(Vector2(750,806)),"retired reader base and raised turnstile top leave floor behind")
+	for index:int in 3:
+		var cabinet:Rect2=scene.areas["entrance_turnstile_%d"%index]
+		check_rear_contact(Vector2(cabinet.get_center().x,765),836,"turnstile "+str(index))
 	check(world._pick_target(world.library_gate.reader_rect(1).get_center()).get("id","")=="entrance_record_east","each lane has its own physical reader")
 	state.d.ui.libraryFinalsPuzzle.entranceRecordRead=true;world.refresh_world()
 	check(world.targets.any(func(target:Dictionary):return target.id=="entrance_record" and target.label=="刷卡入馆"),"acknowledged record leaves a reusable card reader")
@@ -109,14 +166,14 @@ func run()->void:
 		check(scene.rows[id].shelfNumber==column+1,"physical shelf number matches its column "+id)
 		check(area.size.is_equal_approx(Vector2(45,231)) and area.position.y==85,"north-south stacks share size and rear alignment "+id)
 		if column>0:check(area.position.x-previous_right>=37,"clear north-south aisle "+id)
-		else:check(area.position.x==124,"west edge of stacks")
+		else:check(area.position.x==122,"west shelf bank leaves room for the sliding shelf's shake")
 		previous_right=area.end.x
 		check(stand(Vector2(area.get_center().x,120)) and not stand(Vector2(area.get_center().x,280)),"elevated rear permits feet behind the measured shelf base "+id)
 		for side:int in [-1,1]:
 			var edge:float=area.position.x if side<0 else area.end.x
-			var outside:=Vector2(edge+side*Metrics.FOOT_SIZE.x/2,280)
-			check(stand(outside) and not stand(outside-Vector2(side*3,0)),"feet stop at the painted upright "+id)
-	check(previous_right==830,"east edge of stacks")
+			var outside:=Vector2(edge+side*measured_width/2,280)
+			check(stand(outside) and not stand(outside-Vector2(side*3,0)),"shoulders clear the painted upright "+id)
+	check(previous_right==847,"east shelf bank leaves room for the sliding shelf's final pose")
 	var desk_back:Rect2=scene.areas.desk_back_1
 	check(desk_back.position==Vector2(270,435) and desk_back.end.x==489 and desk_back.size.y>110,"enlarged desk cabinet meets rear and east boundaries")
 	check(not scene.rows.has("southwest_display_shelf") and not scene.rows.has("southeast_display_shelf") and stand(Vector2(256,780)) and stand(Vector2(1190,780)),"both entrance cabinet locations are visibly and physically clear")
@@ -203,6 +260,7 @@ func run()->void:
 		var area: Rect2 = scene.geometry(prop).rect
 		check(scene.table_surface(owner).has_point(Vector2(area.get_center().x,area.end.y - 1)) and scene.baseline(prop)==scene.baseline(owner),"tabletop contact and depth agree " + prop)
 	var wide_table:Rect2=scene.areas.reading_table_4
+	check(absf(scene.areas.catalog_terminal_chair.get_center().x-scene.areas.catalog_terminal.get_center().x)<1,"catalog seat aligns with monitor center")
 	check(wide_table.has_point(Vector2(1368,445)),"receipt's authored seam is on the real wide tabletop")
 	check(scene.areas.reading_table_4_west.end.x>wide_table.position.x and scene.areas.reading_table_4_east.position.x<wide_table.end.x,"side chairs meet the wide table edges without detached gaps")
 	check(not scene.textures.has("glass_panel"),"no side glass is mounted in the object layer")
@@ -234,7 +292,8 @@ func run()->void:
 	for row:Dictionary in world.collisions:
 		if not row.get("nativeLibraryObject",false):continue
 		var rect:=Rules.rect(world.library_layers.replace_collision(row))
-		legal=legal and obstacles.has(Rect2(rect.position-Metrics.foot_rect(Vector2.ZERO).end,rect.size+Metrics.FOOT_SIZE))
+		var feet:=Metrics.foot_rect(Vector2.ZERO,world.scene_id)
+		legal=legal and obstacles.has(Rect2(rect.position-feet.end,rect.size+feet.size))
 	check(legal,"pointer navigation uses the same generated-object feet as keyboard movement")
 	check(JSON.stringify(state.d)==before,"all geometry queries preserve story and inventory")
 	world.transition_alpha=0
@@ -258,7 +317,7 @@ func run()->void:
 	await capture("library_objects_overview",Vector2(1100,300))
 	await capture("library_actor_behind_table",Vector2(1063,185))
 	await capture("library_actor_front_table",Vector2(1047,290))
-	await capture("library_counter_west",Vector2(144,586),1.5,Vector2(340,610))
+	await capture("library_counter_west",Vector2(137,586),1.5,Vector2(340,610))
 	await capture("library_entry_post",Vector2(715,750),1.3,Vector2(750,690))
 	if not output.is_empty() and DisplayServer.get_name()!="headless":
 		for dimensions:Vector2i in [Vector2i(1280,720),Vector2i(844,390)]:

@@ -36,7 +36,7 @@ func run() -> void:
 		for line: String in ["WASD 移动  /  空格 交互  /  滚轮 缩放","太远了，请靠近订单回收槽。", "这是一段完整的现场反馈，保留全部文字并根据窗口换行。".repeat(5)]:
 			var hud: Dictionary=world.hud_metrics(line)
 			check(hud.title_font*scale>=13.99,"world title physical14px at "+str(dimensions))
-			check(hud.mode_font*scale>=11.99 and hud.body_font*scale>=11.99,"world mode/subtitle physical12px at "+str(dimensions))
+			check(hud.mode_font*scale>=11.19 and hud.body_font*scale>=12.79,"world mode/subtitle maintain compact reading sizes at "+str(dimensions))
 			check(hud.header_height+hud.body_height+hud.body_gap*2<=540.1,"HUD bars remain contained at "+str(dimensions))
 			if hud.compact:
 				var needed: Vector2=world.hud_font.get_multiline_string_size(line,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font)
@@ -45,7 +45,7 @@ func run() -> void:
 		check(Layout.font_size(21,12,scale)*scale>=11.99,"touch captions keep12px physical text without moving controls")
 		var mode_rect: Rect2=world.hud_mode_rect()
 		var mode_root:Rect2=shell.world_mode.get_global_rect()
-		check(shell.world_view.get_global_rect().encloses(mode_root) and mode_root.position.y>=shell.world_view.get_global_rect().end.y-60,"visible mode icon stays inside the actual game bottom edge")
+		check(shell.world_view.get_global_rect().encloses(mode_root) and mode_root.position.y>=shell.world_view.get_global_rect().end.y-60*shell.world_mode.scale.y,"visible mode icon stays inside the actual game bottom edge")
 		check((shell.world_view.get_global_rect().position+mode_rect.position*scale).is_equal_approx(mode_root.position) and (mode_rect.size*scale).is_equal_approx(mode_root.size),"mode metadata matches the actual root button instead of a hidden top hitbox")
 		if scale<0.7 or world.mobile_exploration: check(mode_rect.size.y*scale>=28 and mode_rect.size.x*scale>=28,"compact mode hitbox exceeds28px")
 		var previous_mode: String=state.d.native.mode

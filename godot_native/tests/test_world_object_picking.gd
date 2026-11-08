@@ -129,8 +129,10 @@ func run() -> void:
 	world.targets=[module._target("front_desk","staff",[334,594],[174,519,320,150],64,"lib_front_desk"),module._target("identity_machine","service",[334,594],[174,519,320,150],64,"lib_scan","itemRecognitionReport")]
 	world.library_layers.sync(state.d,true);world.player=Vector2(400,700);world.camera=Vector2(334,590);world.zoom=1;await redraw()
 	await click(Vector2(334,549));check(world.interactions==["front_desk"],"library-staff-head-owned-by-visible-staff",world.interactions)
-	world.interactions.clear();await click(Vector2(300,608));check(world.interactions==["identity_machine"],"library-service-owned-by-stamp-zone",world.interactions)
-	world.interactions.clear();await drag("campusCard",Vector2(300,608));check(world.interactions.is_empty(),"library-wrong-item-cannot-fall-through-to-staff")
+	var stamp:Rect2=world.library_layers.stamp_pose().stampRect
+	var stamp_point:Vector2=world.library_layers.desk_service_transform()*stamp.get_center()
+	world.interactions.clear();await click(stamp_point);check(world.interactions==["identity_machine"],"library-service-owned-by-visible-stamp",world.interactions)
+	world.interactions.clear();await drag("campusCard",stamp_point);check(world.interactions.is_empty(),"library-wrong-item-cannot-fall-through-to-staff")
 	state.d.ui.libraryFinalsPuzzle.backpackInspected=true;state.d.ui.libraryFinalsPuzzle.occupancyNoteCollected=false
 	world.targets=[module._target("backpack_pass","bag",[1255,407],[1237,375,36,64],100,"lib_apply_pass","seatReleasePass"),module._target("occupancy_note","note",[1282,422],[1261,406,42,32],80,"lib_note")]
 	world.library_layers.sync(state.d,true);world.player=Vector2(1280,520);world.camera=Vector2(1282,422);world.interactions.clear();await redraw()

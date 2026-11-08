@@ -11,6 +11,9 @@ const SeatMotion=preload("res://scripts/presentation/library_seat_motion.gd")
 const ObjectScene=preload("res://scripts/objects/library_object_scene.gd")
 const ObjectMotion=preload("res://scripts/presentation/library_object_motion.gd")
 const ShelfBook=preload("res://scripts/objects/library_shelf_book.gd")
+const DESK_SERVICE_ORIGIN:=Vector2(334,594)
+const DESK_GUIDE_LEFT:=-101.0
+const DESK_GUIDE_BOTTOM:=41.0
 ## LibraryInteriorScene's source-pixel replacement layers and timed prop motion.
 ## Runtime-only presentation; reads persisted facts but never creates them.
 var source: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/library-world-source.json"))
@@ -86,6 +89,11 @@ func local_chair_pose() -> Dictionary:
 	var progress := smoothstep(0.0, SIT_SECONDS, chair_age)
 	var destination := Vector2(chair.get_center().x, chair.end.y - PlayerMetrics.GROUND_OFFSET)
 	return {"point": chair_start.lerp(destination, progress), "settle": smoothstep(0.48, 1.0, progress), "depth": chair.end.y - 0.5, "seat": objects.seat_point(id), "chair": id}
+
+func chair_approach(id: String) -> Vector2:
+	var chair: Rect2 = objects.areas[CHAIR_IDS[id]]
+	var foot_center := Vector2(chair.get_center().x,chair.end.y+PlayerMetrics.FOOT_SIZE.y/2+2)
+	return PlayerMetrics.anchor_from_foot_center(foot_center)
 
 var pass_from:=Vector2.ZERO
 
@@ -226,11 +234,14 @@ func align_object_targets(targets:Array)->void:
 	if not active or not objects.ready:return
 	var has_study_chair := not targets.is_empty() and targets.any(func(target: Dictionary): return target.id == GeometryNotebook.ID)
 	if has_study_chair:
-		var chair: Rect2 = objects.areas[CHAIR_IDS.library_study_chair]
-		var at := Vector2(chair.get_center().x, chair.end.y - PlayerMetrics.FOOT_CENTER_OFFSET.y)
-		targets.append({"id":"library_study_chair", "label":"开始自习", "action":"library_study", "position":[at.x, at.y], "radius":56.0, "mode":"light"})
+		targets.append({"id":"library_study_chair", "label":"开始自习", "action":"library_study", "radius":56.0, "mode":"light"})
 	var catalog_chair: Dictionary = {}
 	for target:Dictionary in targets:
+		if CHAIR_IDS.has(target.id):
+			var at := chair_approach(str(target.id))
+			target.position=[at.x,at.y]
+			target.stand=target.position
+			target.erase("bounds")
 		if target.id=="seat_022_gap":
 			var at := receipt_anchor()
 			target.position = [at.x, at.y]
@@ -242,7 +253,7 @@ func align_object_targets(targets:Array)->void:
 		if target.id=="library_shelf_755":
 			target.label=ShelfBook.LOCATION
 			var reach:Rect2=book.geometry(objects,shelf_offset).rect
-			reach.position.y=objects.areas.north_display_shelf.end.y-PlayerMetrics.FOOT_CENTER_OFFSET.y-reach.size.y
+			reach.position.y=objects.areas.north_display_shelf.end.y-PlayerMetrics.DEPTH_CENTER_OFFSET.y-reach.size.y
 			target.position=[reach.get_center().x,reach.get_center().y]
 			target.bounds=[reach.position.x,reach.position.y,reach.size.x,reach.size.y]
 	if not catalog_chair.is_empty(): targets.append(catalog_chair)
@@ -565,10 +576,19 @@ func staff_pose() -> Dictionary:
 			# The whole authored frame leans once with load; no sprite stretching.
 			y+=1.2*float(stamp_pose().pressure)
 	return {"frame":frame,"position":Vector2(334,y),"scale":float(source.frontDesk.scale),"depth":float(source.frontDesk.staffDepth)}
+
+func desk_service_transform() -> Transform2D:
+	if not objects.ready: return Transform2D(0.0,DESK_SERVICE_ORIGIN)
+	var surface:Rect2=objects.table_surface("front_desk_counter")
+	var unit:=minf(1.0,(surface.size.y-2.0)/(DESK_GUIDE_BOTTOM-StampMotion.STAMP_REST_Y))
+	var origin:=Vector2(DESK_SERVICE_ORIGIN.x,surface.position.y+1.0-StampMotion.STAMP_REST_Y*unit)
+	return Transform2D(Vector2(unit,0),Vector2(0,unit),origin)
+
 func _draw_front_desk(canvas: CanvasItem,context: Dictionary,front: bool) -> void:
 	_context(canvas,context)
 	var pose: Dictionary=staff_pose(); var scale_value: float=pose.scale
-	if _in_pass(_floor_depth(pose.position.y),context,front):
+	var staff_pass:=_in_pass(_floor_depth(pose.position.y),context,front)
+	if staff_pass:
 		var texture:Texture2D=interactions.sheets.staff if interactions.ready else staff_art
 		var cell:Rect2=interactions.source("staff",interactions.staff_frame(clock_ms,motion.staff_ms,scanning_ms,stamp_ms,reduced)) if interactions.ready else Rect2(int(pose.frame)*96,0,96,128)
 		var origin:Vector2=context.origin
@@ -577,29 +597,35 @@ func _draw_front_desk(canvas: CanvasItem,context: Dictionary,front: bool) -> voi
 		var area:=Rect2((anchor-origin)/zoom-Vector2(48,128)*scale_value,Vector2(96,128)*scale_value)
 		Picker.record(canvas,["front_desk"],{"rect":area,"texture":texture,"source":cell})
 		canvas.draw_texture_rect_region(texture,area,cell)
-	var counter_front:bool=SpatialRules.depth_in_front(objects.baseline("front_desk_counter"),float(context.get("player_ground_y",SpatialRules.foot_y(context.player)))) if objects.ready else _in_pass(_floor_depth(float(source.frontDesk.counterBounds.top)+float(source.frontDesk.counterBounds.height)),context,true)
-	if counter_front==front:
-		if objects.ready:
-			var geometry:Dictionary=objects.geometry("front_desk_counter")
-			Picker.record(canvas,["front_desk","identity_machine"],geometry)
-			canvas.draw_texture_rect_region(geometry.texture,geometry.rect,geometry.source)
+	var ground:float=context.get("player_ground_y",SpatialRules.foot_y(context.player))
+	var counter_front:bool
+	if objects.ready:
+		counter_front=SpatialRules.depth_in_front(objects.baseline("front_desk_counter"),ground)
+		if counter_front==front:
+			var cabinet:Dictionary=objects.geometry("front_desk_counter")
+			Picker.record(canvas,["front_desk","identity_machine"],cabinet)
+			canvas.draw_texture_rect_region(cabinet.texture,cabinet.rect,cabinet.source)
 			var terminal:Dictionary=objects.geometry("desk_terminal")
 			Picker.record(canvas,["front_desk"],terminal)
 			canvas.draw_texture_rect_region(terminal.texture,terminal.rect,terminal.source)
-		else:
+	else:
+		counter_front=_in_pass(_floor_depth(float(source.frontDesk.counterBounds.top)+float(source.frontDesk.counterBounds.height)),context,true)
+		if counter_front==front:
 			var b: Dictionary=source.frontDesk.counterBounds; var region:=Rect2(b.left,b.top,b.width,b.height)
 			Picker.record(canvas,["front_desk"],region)
 			canvas.draw_texture_rect_region(art,region,region)
-	if _in_pass(float(source.frontDesk.serviceDepth),context,front): _draw_stamp_service(canvas)
+	var service_front:=counter_front if objects.ready else _in_pass(float(source.frontDesk.serviceDepth),context,true)
+	var status_pass:=staff_pass if objects.ready else service_front==front
+	if status_pass:_draw_stamp_status(canvas)
+	if service_front==front:
+		_draw_stamp_service(canvas,context)
+		_context(canvas,context)
 	if _in_pass(810,context,front):
 		canvas.draw_rect(Rect2(243,669,144,26),Color("23332f",0.93))
 		canvas.draw_string(font,Vector2(251,687),"信息台 / 失物招领",HORIZONTAL_ALIGNMENT_LEFT,-1,14,Color("f2e5c6"))
 	canvas.draw_set_transform(Vector2.ZERO)
-func _draw_stamp_service(canvas: CanvasItem) -> void:
-	var at:=Vector2(334,594)
-	# Original LibraryInteriorScene's service zone: (0,8), 116×86.
-	# Active scan and ordinary service are affordances of this same object.
-	Picker.record(canvas,["identity_machine","front_desk"],Rect2(at+Vector2(-58,-35),Vector2(116,86)))
+func _draw_stamp_status(canvas: CanvasItem) -> void:
+	var at:=DESK_SERVICE_ORIGIN+Vector2(18,0) if objects.ready else DESK_SERVICE_ORIGIN
 	Picker.record(canvas,["identity_machine","front_desk"],Rect2(at+Vector2(5,-51),Vector2(92,22)))
 	var indicator: Color=Color("5ed68d") if lost_stage=="stamped" else Color("e1b953") if lost_stage in ["ready","scanning"] else Color("c96a5e")
 	var status: String={"missing_report":"等待报告","ready":"递交报告","scanning":"人工核验","stamped":"已盖章"}.get(lost_stage,"")
@@ -611,31 +637,41 @@ func _draw_stamp_service(canvas: CanvasItem) -> void:
 		var x: float=28+i*22; var color: Color=Color("5ed68d") if lost_stage=="stamped" else Color("e1b953") if lost_stage=="ready" or (lost_stage=="scanning" and i<2) else Color("c96a5e")
 		if lost_stage=="missing_report": color.a=0.72
 		canvas.draw_circle(at+Vector2(x,-21),3,color); canvas.draw_string(font,at+Vector2(x-3.5,-9),labels[i],HORIZONTAL_ALIGNMENT_LEFT,-1,7,Color("c6d1ca"))
+
+func _draw_stamp_service(canvas: CanvasItem,context: Dictionary) -> void:
+	var mount:=desk_service_transform()
+	var zoom_value:=float(context.zoom)
+	canvas.draw_set_transform(Vector2(context.origin)+mount.origin*zoom_value,0,mount.get_scale()*zoom_value)
 	var pose: Dictionary=stamp_pose()
-	# Quiet physical guides use the existing desk's brass / timber palette.
-	canvas.draw_line(at+Vector2(-101,8),at+Vector2(3,8),Color("a38e60"),1)
-	canvas.draw_line(at+Vector2(-101,40),at+Vector2(3,40),Color("6c593b"),2)
-	canvas.draw_line(at+Vector2(-101,41),at+Vector2(3,41),Color("ba9d63"),1)
+	var ids:=["identity_machine","front_desk"]
+	if not objects.ready:
+		Picker.record(canvas,ids,mount*Rect2(-58,-35,116,86))
+	canvas.draw_line(Vector2(DESK_GUIDE_LEFT,8),Vector2(3,8),Color("a38e60"),1)
+	canvas.draw_line(Vector2(DESK_GUIDE_LEFT,DESK_GUIDE_BOTTOM-1),Vector2(3,DESK_GUIDE_BOTTOM-1),Color("6c593b"),2)
+	canvas.draw_line(Vector2(DESK_GUIDE_LEFT,DESK_GUIDE_BOTTOM),Vector2(3,DESK_GUIDE_BOTTOM),Color("ba9d63"),1)
 	if pose.visible:
-		_draw_service_paper(canvas,at,pose)
+		var paper_size:Vector2=pose.paperSize
+		Picker.record(canvas,ids,mount*Rect2(Vector2(pose.paper)-paper_size/2,paper_size))
+		_draw_service_paper(canvas,pose)
 		if not reduced and lost_stage=="scanning" and scanning_ms>=StampMotion.RECEIVE_MS and scanning_ms<1240:
 			var scan: float=StampMotion.smooth(fposmod(scanning_ms-StampMotion.RECEIVE_MS,500)/500)
-			canvas.draw_line(at+Vector2(pose.paper.x-20,12+scan*24),at+Vector2(pose.paper.x+20,12+scan*24),Color("e1b953",0.55),1)
-	# Foot shadow tightens toward contact. Draw the original uniformly scaled
-	# stamp AFTER the paper, so the foot visibly presses and occludes its mark.
+			canvas.draw_line(Vector2(pose.paper.x-20,12+scan*24),Vector2(pose.paper.x+20,12+scan*24),Color("e1b953",0.55),1)
+	# Ground the shadow at the foot, and keep the stamp above the report's ink.
 	var gap: float=maxf(0,float(pose.contact.y)-float(pose.stampBottom.y))
-	var shadow: float=(1-clampf(gap/24.0,0,1))*0.35
-	canvas.draw_line(at+Vector2(-44,27),at+Vector2(-26,27),Color(0.17,0.11,0.06,shadow),2)
-	canvas.draw_texture_rect(stamp_art,Rect2(at+pose.stampRect.position,pose.stampRect.size),false)
+	var shadow: float=lerpf(.35,.18,clampf(gap/24.0,0,1))
+	var shadow_y:=float(pose.stampBottom.y)+1.0
+	canvas.draw_line(Vector2(StampMotion.STAMP_X-9,shadow_y),Vector2(StampMotion.STAMP_X+9,shadow_y),Color(0.17,0.11,0.06,shadow),2)
+	Picker.record(canvas,ids,{"rect":pose.stampRect,"transform":mount,"texture":stamp_art})
+	canvas.draw_texture_rect(stamp_art,pose.stampRect,false)
 
 func stamp_pose() -> Dictionary:
 	return StampMotion.sample(stamp_ms,scanning_ms if lost_stage=="scanning" else -1,reduced)
 
-func _draw_service_paper(canvas: CanvasItem,at: Vector2,pose: Dictionary) -> void:
+func _draw_service_paper(canvas: CanvasItem,pose: Dictionary) -> void:
 	var alpha: float=pose.alpha
 	var corners:=PackedVector2Array()
 	for local: Vector2 in [Vector2(-23,-14),Vector2(0,-14),Vector2(23,-14),Vector2(23,14),Vector2(0,14),Vector2(-23,14)]:
-		corners.append(at+StampMotion.paper_point(local,pose))
+		corners.append(StampMotion.paper_point(local,pose))
 	var shadow:=PackedVector2Array()
 	for point: Vector2 in corners: shadow.append(point+Vector2(0,1.2))
 	canvas.draw_colored_polygon(shadow,Color("493c28",0.3*alpha))
@@ -645,10 +681,10 @@ func _draw_service_paper(canvas: CanvasItem,at: Vector2,pose: Dictionary) -> voi
 	# Fine ruled strokes follow the same local paper deformation as its edge.
 	for row: int in range(2):
 		var points:=PackedVector2Array()
-		for col: int in range(7): points.append(at+StampMotion.paper_point(Vector2(-17+col*4,-8+row*5),pose))
+		for col: int in range(7): points.append(StampMotion.paper_point(Vector2(-17+col*4,-8+row*5),pose))
 		canvas.draw_polyline(points,Color("87928c",(0.8-row*0.15)*alpha),1)
 	if pose.ink>0:
-		var mark: Vector2=at+Vector2(pose.mark)+Vector2(0,pose.pressure*0.8)
+		var mark: Vector2=Vector2(pose.mark)+Vector2(0,pose.pressure*0.8)
 		var ink:=Color("ae4037",alpha*pose.ink)
 		canvas.draw_rect(Rect2(mark-Vector2(10,5),Vector2(20,10)),ink,false,0.8)
 		canvas.draw_string(font,mark+Vector2(-9,2.8),"非本人",HORIZONTAL_ALIGNMENT_LEFT,-1,6,ink)

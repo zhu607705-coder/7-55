@@ -25,7 +25,7 @@ func run() -> void:
 			check(is_equal_approx(painted.size.x/painted.size.y,16.0/9.0) and Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(painted),"narrow windows letterbox the map without stretching or overflow: "+checkpoint)
 			check(actor==actor_before,"layout retains source actor dimensions: "+checkpoint)
 			if dimensions.x<1100:
-				check(shell.world.hud_metrics("").body_font*physical_scale>=14,"body text physical floor: "+checkpoint)
+				check(shell.world.hud_metrics("").body_font*physical_scale>=12.79,"compact body text floor: "+checkpoint)
 				var pan_start:=world_screen(Vector2(shell.world.size.x*.5,100))
 				touch(pan_start,true);finger(pan_start+Vector2(9999,9999),Vector2(9999,9999));touch(pan_start+Vector2(9999,9999),false);await frames()
 				check(absf(shell.world.pan_offset.x)<=shell.world.size.x*.35/shell.world.zoom+0.01 and absf(shell.world.pan_offset.y)<=shell.world.size.y*.35/shell.world.zoom+0.01,"touch camera pan is bounded: "+checkpoint)

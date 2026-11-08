@@ -46,22 +46,24 @@ func run()->void:
 		var world:Control=load("res://scripts/world.gd").new();world.size=Vector2(dimensions);root.add_child(world);world.set_process(false)
 		await process_frame
 		check(world.library_layers.objects.ready,"separate object scene activates")
+		var spawn:Dictionary=world.spec.spawns.library_entrance
+		var entrance:=Vector2(spawn.x,spawn.y)
 		# Model the fully opened, already-authorized entrance; no story action is
 		# granted by this geometric navigation fixture.
-		world.library_gate.use_reader(0, Vector2(715, 850))
-		for frame in 8: world.library_gate.tick(.1, state.d, Vector2(715, 850))
+		world.library_gate.use_reader(0,entrance)
+		for frame in 8: world.library_gate.tick(.1,state.d,entrance)
 		var before:Dictionary=state.d.duplicate(true)
 		for offset:int in [0,16]:
 			world.library_layers.shelf_offset=offset
 			verify_route(world,"front to rear through moving shelf aisle",Vector2(609,320),Vector2(609,96))
 			verify_route(world,"cross aisle behind north-south stacks",Vector2(145,110),Vector2(807,110))
 			verify_route(world,"reading gate to notebook",Vector2(1062,520),Notebook.APPROACH)
-			verify_route(world,"entrance to ordinary row shelf",Vector2(715,850),Vector2(564,316))
-			verify_route(world,"entrance to seat 022",Vector2(715,850),Vector2(1302,500))
+			verify_route(world,"entrance to ordinary row shelf",entrance,Vector2(564,316))
+			verify_route(world,"entrance to seat 022",entrance,Vector2(1302,500))
 			verify_route(world,"front desk to seat 022",Vector2(334,680),Vector2(1302,500))
 			verify_route(world,"row shelf to seat 022",Vector2(564,316),Vector2(1302,500))
 			verify_route(world,"notebook to catalog",Notebook.APPROACH,Vector2(690,650))
-			verify_route(world,"seat 022 to entrance",Vector2(1302,500),Vector2(715,850))
+			verify_route(world,"seat 022 to entrance",Vector2(1302,500),entrance)
 		check(state.d.items==before.items and state.d.ui.libraryFinalsPuzzle==before.ui.libraryFinalsPuzzle,"route queries cannot acquire inventory or write story facts")
 		world.scene_id="campus_bootstrap";world._floor_obstacles()
 		check(world._floor_planner.corner_limit==192 and world._floor_planner.edge_limit==4096,"leaving the library restores the original planner budget")

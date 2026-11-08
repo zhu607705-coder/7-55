@@ -95,7 +95,7 @@ func _paper_flight() -> void:
 	var bounds: Rect2
 	for a in layout.floors[0].anchors:
 		if a.id=="a1_noticeboard_paper": bounds=Room.rect(a.bounds)
-	var start: Vector2=Vector2(float(config.get("player",{}).get("x",836)),float(config.get("player",{}).get("y",716)))+Metrics.FOOT_CENTER_OFFSET+Vector2(0,-4.0*48)
+	var start: Vector2=Vector2(float(config.get("player",{}).get("x",836)),float(config.get("player",{}).get("y",716)))+Metrics.DEPTH_CENTER_OFFSET+Vector2(0,-4.0*48)
 	start=start.clamp(Vector2(24,44),Vector2(1648,917))
 	var end: Vector2=Vector2(bounds.get_center().x,bounds.end.y); var t: float=clampf(elapsed_ms/1900,0,1); t=(1-cos(t*PI))/2
 	layer.draw_frame(self,context(),"chapter4_story_items","sign_in_record_paper",start.lerp(end,t),18*t if t<1 else 0,0.18,Color(1,1,1,0.96))
@@ -221,6 +221,6 @@ func _clock_theft() -> void:
 	if elapsed_ms<start_at: return
 	var duration: float=maxf(120,float(layout.finalClockRuntime.presentation.commitAtMs)-start_at-40)
 	var t: float=_sine((elapsed_ms-start_at)/duration)
-	var start: Vector2=Vector2(float(config.player.x),float(config.player.y))+Metrics.FOOT_CENTER_OFFSET+Vector2(0,-34)
+	var start: Vector2=Vector2(float(config.player.x),float(config.player.y))+Metrics.DEPTH_CENTER_OFFSET+Vector2(0,-34)
 	var destination: Vector2=_clock_endpoint(float(layout.finalClockRuntime.targetAngleDegrees))
 	layer.draw_frame(self,context(),"chapter4_story_items","sign_in_record_paper",start.lerp(destination,t),lerpf(-12,28,t),0.15)

@@ -5,6 +5,7 @@ const Metrics = preload("res://scripts/player_metrics.gd")
 const Rules = preload("res://scripts/space/spatial_rules.gd")
 const Picker = preload("res://scripts/world_object_picker.gd")
 const LAYOUT_PATH := "res://data/native/library-entrance-geometry.json"
+const SCENE_ID := "library_interior"
 const READER_IDS := ["entrance_record", "entrance_record_east"]
 const READER_CABINETS := [0, 2]
 const INWARD := -1
@@ -71,7 +72,7 @@ func _fit_gate_row() -> void:
 	]
 
 func sync(state: Dictionary, scene_changed := false) -> void:
-	var here := str(state.get("native", {}).get("scene", "")) == "library_interior"
+	var here := str(state.get("native", {}).get("scene", "")) == SCENE_ID
 	if scene_changed or here != active or not is_same(state, bound_state):
 		lanes = [Passage.new(), Passage.new()]
 		last_foot = Vector2.INF
@@ -119,9 +120,9 @@ func use_reader(index: int, anchor: Vector2) -> void:
 
 func crossed_inward(before: Vector2, after: Vector2) -> bool:
 	if not active or arrival_recorded: return false
-	var feet := Metrics.foot_rect(after)
+	var feet := Metrics.foot_rect(after,SCENE_ID)
 	var inner_edge := axis_y - WING_THICKNESS
-	if Metrics.foot_rect(before).end.y < inner_edge or feet.end.y >= inner_edge: return false
+	if Metrics.foot_rect(before,SCENE_ID).end.y < inner_edge or feet.end.y >= inner_edge: return false
 	for index in lanes.size():
 		var lane := lanes[index]
 		if lane.direction != INWARD or lane.phase not in [Phase.OPENING, Phase.OPEN]: continue
@@ -141,7 +142,7 @@ func tick(delta: float, state: Dictionary, anchor: Vector2) -> void:
 	sync(state)
 	if not active: return
 	var dt := clampf(delta, 0.0, .1)
-	var feet := Metrics.foot_rect(anchor)
+	var feet := Metrics.foot_rect(anchor,SCENE_ID)
 	var foot := feet.get_center()
 	var leaving := last_foot.is_finite() and foot.y > last_foot.y
 	last_foot = foot
@@ -178,7 +179,7 @@ func tick(delta: float, state: Dictionary, anchor: Vector2) -> void:
 					if lane.progress <= 0.0: lane.phase = Phase.CLOSED
 
 func restore_anchor(anchor: Vector2, entrance: Vector2) -> Vector2:
-	var feet := Metrics.foot_rect(anchor)
+	var feet := Metrics.foot_rect(anchor,SCENE_ID)
 	# Older saves could stop between the old sliding leaves and this gate row.
 	var former_entrance := Rect2(aperture_x.x, former_door_y, aperture_x.y - aperture_x.x, axis_y + WING_THICKNESS - former_door_y)
 	if not arrival_recorded and former_entrance.intersects(feet):
@@ -193,12 +194,12 @@ func restore_anchor(anchor: Vector2, entrance: Vector2) -> Vector2:
 	return anchor
 
 func _clear_axis(anchor: Vector2, half_depth: float) -> Vector2:
-	var feet := Metrics.foot_rect(anchor)
+	var feet := Metrics.foot_rect(anchor,SCENE_ID)
 	var side := INWARD if feet.get_center().y < axis_y else OUTWARD
 	return Metrics.anchor_from_foot_center(Vector2(anchor.x, axis_y + side * (feet.size.y / 2 + half_depth + 1)))
 
 func outside(anchor: Vector2) -> bool:
-	return Metrics.foot_rect(anchor).position.y > axis_y + WING_THICKNESS
+	return Metrics.foot_rect(anchor,SCENE_ID).position.y > axis_y + WING_THICKNESS
 
 func _wing(index: int, side: int) -> PackedVector2Array:
 	var lane := lanes[index]

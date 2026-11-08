@@ -37,13 +37,13 @@ const CONTROLS: Array<{
 }> = [
   {
     field: "arrivalMinutes",
-    label: "到座耗时",
+    label: "到馆时长",
     unit: "分钟",
     min: 0,
     max: 12,
     stateKey: "auditArrivalMinutes",
     sourceIndex: "01",
-    sourceHint: "门禁记录 · 两次时间差"
+    sourceHint: "入馆记录 · 出发到刷卡"
   },
   {
     field: "publicNoticeFloor",
@@ -68,6 +68,7 @@ const CONTROLS: Array<{
 ];
 
 const PUBLIC_NOTICE_NUMBER = libraryFinalsContent.cc98.post.publicNoticeFloor;
+const ARRIVAL_TRIP = libraryFinalsContent.library.audit.arrivalTrip;
 const RULE_REQUIREMENTS = ITEM_CATALOG.archivedLeaveRule.document?.body.filter((line) => /^[一二三]、/.test(line)) ?? [];
 
 const LOCATION_LABELS: Record<LibraryLocationId, string> = {
@@ -174,7 +175,7 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
       <section className="tiyi-audit-guide" aria-label="补录方法">
         <strong>填写依据与核对用途</strong>
         <ul>
-          <li><span>01 图书馆入口小屏</span><em>填写到座耗时</em></li>
+          <li><span>01 图书馆入口小屏</span><em>填写到馆时长</em></li>
           <li><span>02 CC98 调查帖楼主编辑</span><em>填写公示编号</em></li>
           <li><span>03 一层书库 06 架旧版规则</span><em>填写证明数量</em></li>
         </ul>
@@ -185,11 +186,11 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
         <article id="tiyi-audit-source-01" className={puzzle.entranceRecordRead ? "is-ready" : ""}>
           <span>01</span>
           <div>
-            <strong>图书馆入口小屏 <em>填：到座耗时</em></strong>
+            <strong>图书馆入口小屏 <em>填：到馆时长</em></strong>
             {puzzle.entranceRecordRead ? (
               <>
-                <small className="tiyi-audit-source-evidence"><b>07:55</b> 基础馆入口 <i>→</i> <b>08:02</b> 一层书库 022</small>
-                <small>填写分钟差，用于核对同一次到馆会话</small>
+                <small className="tiyi-audit-source-evidence"><b>{ARRIVAL_TRIP.departureTime}</b> {ARRIVAL_TRIP.departurePlace}出发 <i>→</i> <b>{ARRIVAL_TRIP.arrivalTime}</b> {ARRIVAL_TRIP.arrivalPlace}入馆</small>
+                <small>填从出发到入馆的分钟数。</small>
               </>
             ) : <small>未取得 · 回到基础图书馆入口，查看门禁记录小屏</small>}
           </div>
@@ -253,7 +254,7 @@ export function RouteAuditPanel({ phase, puzzle, router }: RouteAuditPanelProps)
           <strong>本人来过证明</strong>
           <p>一张证明你来过的证明。它没有证明你为什么要来。</p>
           <dl aria-label="已验证补录值">
-            <div><dt>到座耗时</dt><dd>{puzzle.auditArrivalMinutes} 分钟</dd></div>
+            <div><dt>到馆时长</dt><dd>{puzzle.auditArrivalMinutes} 分钟</dd></div>
             <div><dt>公示编号</dt><dd>{puzzle.auditPublicNoticeFloor}</dd></div>
             <div><dt>证明数量</dt><dd>{puzzle.auditProofCount} 项</dd></div>
           </dl>

@@ -2,7 +2,8 @@ extends RefCounted
 ## Candidate shared geometry for the approved independent chase space.
 ## Pure whitebox model only: no scene route, save, reward, or story writes.
 const SOURCE_PATH := "res://data/native/chapter4-chase-space.json"
-const PLAYER_BODY := Vector2(19.5, 14.625)
+const PlayerMetrics := preload("res://scripts/player_metrics.gd")
+const PLAYER_BODY := PlayerMetrics.FOOT_SIZE
 const GUARD_BODY := Vector2(20, 14)
 const PLAYER_SPEED := 208.0
 const GUARD_SPEED := 174.0

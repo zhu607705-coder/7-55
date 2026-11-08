@@ -186,7 +186,7 @@ func run() -> void:
 		check(state.save_game(),"earned receipt ordinary save succeeds")
 		check(state.load_game(),"earned receipt ordinary reload succeeds")
 		await new_shell(); await open_ready()
-		for field in [["arrival","到座耗时：7 分钟"],["notice","公示编号：47 号"],["proofs","证明数量：3 项"]]:
+		for field in [["arrival","到馆时长：7 分钟"],["notice","公示编号：47 号"],["proofs","证明数量：3 项"]]:
 			check(node("TiyiReceipt_"+field[0])!=null and node("TiyiReceipt_"+field[0]).text==field[1],"normal-save receipt uses integer label: "+field[0])
 		check(not node("TiyiEvidence_1").text.contains("47.0"),"normal-save source notice retains integer formatting")
 		await check_presence_rail()

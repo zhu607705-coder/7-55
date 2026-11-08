@@ -65,7 +65,7 @@ func mode() -> String:return "generated" if generated_ready else "source_atlas"
 func entries(state: Dictionary) -> Array:
 	if not ready() or str(state.get("native",{}).get("scene",""))!=str(data.sceneId):return []
 	var result: Array=[]
-	var body_bottom: float=Metrics.foot_rect(Vector2.ZERO).end.y
+	var body_bottom: float=Metrics.GROUND_DEPTH_OFFSET
 	for object: Dictionary in data.objects:
 		if generated_ready and object.has("replacement"):
 			var destination: Rect2=replacement_geometry[object.id].destination

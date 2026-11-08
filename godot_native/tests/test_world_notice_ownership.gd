@@ -42,7 +42,7 @@ func run()->void:
 	state.feedback.emit("跨面通知");tick(shell,10)
 	var remaining:float=shell.notice_queue.current.remaining
 	shell._show_phone_surface();shell._layout_toast()
-	check(shell.notice_surface=="toast" and shell.toast.text=="跨面通知" and shell.world.subtitle.is_empty() and is_equal_approx(shell.toast_time,remaining),"ordinary world-to-phone route preserves unread time and one surface")
+	check(shell.notice_surface.is_empty() and shell.toast.text.is_empty() and shell.world.subtitle.is_empty() and is_equal_approx(shell.notice_queue.current.remaining,remaining),"world notice stays off the phone and retains its natural clock")
 	shell._process(.3);remaining-=.3;shell._return_from_phone();shell._layout_toast()
 	check(shell.notice_surface=="world" and shell.world.subtitle=="跨面通知" and shell.toast.text.is_empty() and is_equal_approx(shell.world.subtitle_left,remaining),"ordinary phone-to-world route retains its unread time")
 	shell.world._receive_feedback("跨面通知");shell.world.subtitle_left=.1
@@ -56,6 +56,15 @@ func run()->void:
 	check(shell.notice_queue.current.get("text","")=="跨面通知" and is_equal_approx(shell.world.subtitle_left,remaining),"an external clear resumes rather than consumes unread content")
 	until_next(shell,"跨面通知")
 	check(shell.notice_queue.current.is_empty() and shell.world.subtitle.is_empty(),"resumed surface eventually completes once")
+	shell._show_story_caption("地图旁白","narrator",2.0,"旁白")
+	shell._show_phone_surface();shell._layout_toast()
+	check(not shell.phone_story_caption.visible and not shell.story_caption.visible and shell.world.subtitle.is_empty(),"world caption stays off the phone")
+	state.feedback.emit("手机通知")
+	check(shell.toast.text=="手机通知" and shell.toast.visible,"hidden world caption does not cover fresh phone feedback")
+	shell._return_from_phone();shell._layout_toast()
+	check(not shell.toast.visible and shell.world.subtitle=="地图旁白","map caption resumes while the phone notice remains on its own surface")
+	shell._process(2.1)
+	check(shell.world.subtitle.is_empty() and not shell.toast.visible,"phone notice never moves to the map when the caption expires")
 	await shell.shutdown();shell.queue_free();await process_frame
 	var standalone=load("res://scripts/world.gd").new();root.add_child(standalone);standalone.set_process(false)
 	state.feedback.emit("独立世界反馈")

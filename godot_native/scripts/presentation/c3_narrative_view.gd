@@ -44,7 +44,8 @@ func tick() -> void:
 		var margin:=Overlay.pixels(8,display_scale)
 		region=Rect2(margin,margin,size.x-margin*2,size.y-margin*2)
 	# Use the same bottom safe edge in exploration and authored film letterboxes.
-	var metrics:=DialogueLayout.metrics(region,physical_scale,str(v.speaker),str(v.text),"",text_scale)
+	var ui_scale:=Overlay.ui_scale(size*physical_scale)
+	var metrics:=DialogueLayout.metrics(region,physical_scale,str(v.speaker),str(v.text),"",text_scale,Overlay.BODY_PX,ui_scale)
 	panel.position=metrics.panel.position; panel.size=metrics.panel.size
 	if align_left:panel.position.x=region.position.x
 

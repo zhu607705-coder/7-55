@@ -4,6 +4,7 @@ extends Control
 const Selected = preload("res://scripts/ui/selected_ui_theme.gd")
 const Notice = preload("res://scripts/ui/native_phone_notice.gd")
 const DialogueLayout = preload("res://scripts/ui/selected_dialogue_layout.gd")
+const Overlay = preload("res://scripts/ui/world_overlay_layout.gd")
 class Scrim extends PanelContainer:
 	func _draw()->void:
 		# Keep the exact passive HUD rectangle and its scrolling/input contract.
@@ -132,13 +133,14 @@ func _label(parent:Node,surface:String,role:String)->Label:
 	var label:=Label.new();label.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	label.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-	if surface=="dialogue": DialogueLayout.apply_role(label,role,Selected.size(surface,role))
+	if surface=="dialogue": DialogueLayout.apply_role(label,role,Overlay.BODY_PX if role=="body" else Selected.size(surface,role))
 	else: Selected.apply_label(label,surface,role)
 	parent.add_child(label)
 	return label
 
 func sync_view(extent:Vector2,display_scale:float,title:String,goal:String,prompt:String,mode_text:String,mode_rect:Rect2,bottom:float,clock_text:String="",object_detail:String="",plaque_bottom:float=-1.0)->void:
-	var s:=maxf(.01,display_scale)
+	var displayed_scale:=maxf(.01,display_scale)
+	var s:=displayed_scale/Overlay.ui_scale(extent*displayed_scale)
 	scale=Vector2.ONE/s;size=extent*s
 	location.text=title;clock.text=clock_text;clock.visible=not clock_text.is_empty();objective.text=goal;task_tip.text="当前任务"
 	object_heading.text=prompt;object_body.text=object_detail;object_body.visible=not object_detail.is_empty() and object_detail!=prompt;object_hint.text="交互" if mobile_exploration else "空格 · 交互"

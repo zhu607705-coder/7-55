@@ -108,7 +108,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
       { label: "证明数量", value: "3" },
       { label: "记录状态", value: "补录成功" }
     ],
-    body: ["访问轨迹与 022 座位凭据的时间记录一致。", "到馆已确认，座位使用仍需单独申请。"],
+    body: ["已核对从宿舍出发到刷卡入馆的记录。", "到馆已确认，座位使用仍需单独申请。"],
     footer: "签发来源：浙大体艺访问记录补录。"
   }, [
     { target: "cc98-upload:library_presence_proof", result: "retain" },

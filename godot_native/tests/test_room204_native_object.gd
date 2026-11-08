@@ -57,9 +57,10 @@ func run() -> void:
 	check(adapter.footprint_bounds().position.is_equal_approx(initial_bounds.position+Vector2(116,0)),"Moving native root moves its collision")
 	check(adapter.table.interaction_polygon()[0].is_equal_approx(initial_pick+Vector2(116,0)),"Moving native root moves its pick shape")
 	check(not adapter.contains_source_point(Vector2(72,710)) and adapter.contains_source_point(Vector2(188,710)),"No invisible old interaction survives native root move")
-	var actor:=Vector2(0,710-ActorFootMetrics.foot_rect(Vector2.ZERO).end.y)
-	check(adapter.front_of_player(actor),"Occlusion order compares actual feet with the same native root transform")
-	check(not adapter.front_of_player(Vector2(0,adapter.table.position.y+2-ActorFootMetrics.foot_rect(Vector2.ZERO).end.y)),"Feet crossing the native baseline move in front even while the torso remains behind")
+	var depth_offset:=ActorFootMetrics.GROUND_DEPTH_OFFSET
+	var actor:=Vector2(0,710-depth_offset)
+	check(adapter.front_of_player(actor),"Occlusion uses the calibrated ground depth and the same native root transform")
+	check(not adapter.front_of_player(Vector2(0,adapter.table.position.y+2-depth_offset)),"Crossing the native depth line puts the player in front")
 	adapter.table.position.y-=20
 	check(not adapter.front_of_player(actor),"Moving root across actor foot depth also changes its occlusion pass")
 	adapter.sync(state.d,world.scene_id)

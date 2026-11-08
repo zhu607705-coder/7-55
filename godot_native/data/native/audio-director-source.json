@@ -6623,12 +6623,12 @@
     "library_story_library_entered_12": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "这张记录没有固定时长。先在门口闸机核对入馆记录。"
+      "subtitleZh": "先刷卡进馆。入馆记录在手机图书馆的座位预约里，点「我的」就能查。"
     },
     "library_story_library_gate_record_checked_01": {
       "kind": "dialogue",
       "speaker": "narrator",
-      "subtitleZh": "闸机屏幕亮起：07:55 刷卡入馆，一层书库 022 会话未闭合。"
+      "subtitleZh": "手机屏幕显示：08:02 刷卡入馆，一层书库 022 会话未闭合。"
     },
     "library_story_library_gate_record_checked_02": {
       "kind": "dialogue",
@@ -6788,7 +6788,7 @@
     "library_story_tiyi_presence_proof_issued_01": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "补录审核通过。入馆与到座耗时已关联至 47 号公示记录。"
+      "subtitleZh": "补录审核通过。出发到入馆用时已关联至 47 号公示记录。"
     },
     "library_story_tiyi_presence_proof_issued_02": {
       "kind": "dialogue",

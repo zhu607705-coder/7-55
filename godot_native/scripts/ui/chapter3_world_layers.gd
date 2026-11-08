@@ -4,6 +4,7 @@ const Facing=preload("res://scripts/character_facing.gd")
 ## Source-sized Phaser actors and dynamic props. This renderer never writes story facts.
 const Metrics=preload("res://scripts/player_metrics.gd")
 const SpatialRules=preload("res://scripts/space/spatial_rules.gd")
+const NPC_FOOT_SIZE:=Vector2(19.5,14.625)
 const QizhenLocker=preload("res://scripts/presentation/qizhen_locker_object.gd")
 var qizhen_locker:RefCounted=QizhenLocker.new()
 const REHEARSAL_RACK_ASSET="res://assets/native/theater_rebuild_20261020/fan_rack.png"
@@ -116,7 +117,7 @@ func ticket_inspector_asset(s:Dictionary,point:Vector2,scan:bool) -> String:
 	# All four complete idle poses already exist in the original React assets.
 	# Preserve the authored scanning action, then look toward a nearby visitor.
 	if scan:return asset("ticketInspectorScanUrl")
-	var heading:=_player(s)+Metrics.FOOT_CENTER_OFFSET-(point+Vector2(0,128*.75*.5))
+	var heading:=_player(s)+Metrics.DEPTH_CENTER_OFFSET-(point+Vector2(0,128*.75*.5))
 	if heading.length()>180:return asset("ticketInspectorIdleUrl")
 	var pose:=Facing.pose(Vector2.ZERO,heading,"down")
 	var direction:String=("left" if pose.flip else "right") if pose.facing=="side" else "back" if pose.facing=="up" else "front"
@@ -205,7 +206,7 @@ func entries(s: Dictionary) -> Array:
 				rehearsal_rack_source=Rect2(image.get_used_rect())
 			if rehearsal_rack_source.has_area():
 				var fit:float=minf(REHEARSAL_RACK_BOUNDS.size.x/rehearsal_rack_source.size.x,REHEARSAL_RACK_BOUNDS.size.y/rehearsal_rack_source.size.y)
-				result.append({"id":"theater_shadow_rehearsal","kind":"sprite","asset":REHEARSAL_RACK_ASSET,"point":Vector2(REHEARSAL_RACK_BOUNDS.get_center().x,REHEARSAL_RACK_BOUNDS.end.y),"size":rehearsal_rack_source.size*fit,"source":rehearsal_rack_source,"anchor":Vector2(.5,1),"depth":REHEARSAL_RACK_BOUNDS.end.y+120-Metrics.foot_rect(Vector2.ZERO).end.y})
+				result.append({"id":"theater_shadow_rehearsal","kind":"sprite","asset":REHEARSAL_RACK_ASSET,"point":Vector2(REHEARSAL_RACK_BOUNDS.get_center().x,REHEARSAL_RACK_BOUNDS.end.y),"size":rehearsal_rack_source.size*fit,"source":rehearsal_rack_source,"anchor":Vector2(.5,1),"depth":REHEARSAL_RACK_BOUNDS.end.y+120-Metrics.GROUND_DEPTH_OFFSET})
 		var offset: float=worlds.theater_interior.constants.THEATER_TICKET_FIXTURE_OFFSET_Y
 		var admission: Dictionary=admission_pose(s)
 		var admission_live: bool=t.admitted and admission_elapsed(s)>=0 and admission_elapsed(s)<9000
@@ -240,11 +241,10 @@ func entries(s: Dictionary) -> Array:
 	result.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return float(a.depth)<float(b.depth))
 	return result
 func canteen_occlusion(cover: Dictionary, player: Vector2, is_reduced: bool) -> Dictionary:
-	# CanteenInteriorScene.updateOcclusion uses the actual foot body, not the
-	# sprite anchor. It softens intersecting foreground instead of losing the actor.
+	# Keep the calibrated occlusion threshold while softening overlapping actors.
 	var bounds:=_bounds(cover)
 	var player_bounds: Rect2=Metrics.visual_rect(player)
-	var foot_y: float=Metrics.foot_rect(player).end.y
+	var foot_y: float=Metrics.ground_depth_y(player)
 	var behind: bool=player_bounds.end.x>bounds.position.x and player_bounds.position.x<bounds.end.x and foot_y<float(cover.get("sortY",bounds.end.y))-1
 	var overlaps: bool=behind and player_bounds.intersects(bounds)
 	var target_alpha: float=.52 if overlaps else 1.0
@@ -320,7 +320,7 @@ func _pick_ids(entry: Dictionary,targets: Array) -> Array:
 	return result
 
 func handles_target(target: Dictionary,_s: Dictionary) -> bool: return str(target.get("id","")).begins_with("theater_program_") or str(target.get("id",""))=="theater_shadow_rehearsal" or theater_rebuild.owns_target(target)
-func _foot(id: String,p: Vector2) -> Dictionary: return {"id":"c3_dynamic_"+id,"left":p.x-Metrics.FOOT_SIZE.x/2,"right":p.x+Metrics.FOOT_SIZE.x/2,"top":p.y-Metrics.FOOT_SIZE.y,"bottom":p.y}
+func _foot(id: String,p: Vector2) -> Dictionary: return {"id":"c3_dynamic_"+id,"left":p.x-NPC_FOOT_SIZE.x/2,"right":p.x+NPC_FOOT_SIZE.x/2,"top":p.y-NPC_FOOT_SIZE.y,"bottom":p.y}
 func _bounds(r: Dictionary) -> Rect2: return Rect2(r.left,r.top,r.right-r.left,r.bottom-r.top)
 func _player(s: Dictionary) -> Vector2:
 	var p: Dictionary=s.native.get("player",{}); return Vector2(float(p.get("x",0)),float(p.get("y",0)))

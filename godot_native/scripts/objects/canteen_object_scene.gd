@@ -215,8 +215,9 @@ func configure_view(origin:Vector2,zoom:float,player:Vector2)->void:
 	for patch:Sprite2D in floor_patches:patch.modulate=tint
 	var actor:Dictionary=world.player_visual()
 	player_sprite.texture=actor.texture
-	var visual:=Metrics.visual_rect(player,world.display_scale_at(player));player_sprite.position=player;player_sprite.scale=visual.size/Metrics.FRAME;player_sprite.offset=(visual.position-player)/player_sprite.scale;player_sprite.rotation=deg_to_rad(float(actor.angle));player_sprite.flip_h=actor.flip_h;player_sprite.set_meta("source_depth",Metrics.foot_rect(player).end.y);player_sprite.z_index=Prop.draw_layer(Metrics.foot_rect(player).end.y);player_sprite.visible=not world.presentation_actor_hidden
-	player_shadow.position=player+Vector2(0,39);player_shadow.z_index=Prop.draw_layer(Metrics.foot_rect(player).end.y-1);player_shadow.visible=player_sprite.visible
+	var depth:=Metrics.ground_depth_y(player)
+	var visual:=Metrics.visual_rect(player,world.display_scale_at(player));player_sprite.position=player;player_sprite.scale=visual.size/Metrics.FRAME;player_sprite.offset=(visual.position-player)/player_sprite.scale;player_sprite.rotation=deg_to_rad(float(actor.angle));player_sprite.flip_h=actor.flip_h;player_sprite.set_meta("source_depth",depth);player_sprite.z_index=Prop.draw_layer(depth);player_sprite.visible=not world.presentation_actor_hidden
+	player_shadow.position=Vector2(player.x,depth);player_shadow.z_index=Prop.draw_layer(depth-1);player_shadow.visible=player_sprite.visible
 	_update_entities()
 	var actors:Array=[]
 	if player_sprite.visible:actors.append({"id":"player","depth":float(player_sprite.get_meta("source_depth")),"rect":visual})

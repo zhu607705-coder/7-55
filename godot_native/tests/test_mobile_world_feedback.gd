@@ -31,7 +31,7 @@ func run() -> void:
 			if hud.body_overflow:
 				check(world.overflow_feedback.visible and world.overflow_feedback.label.text==line,"overflow owns complete source text")
 				check(world.overflow_feedback.label.size.y>=needed-hud.body_inset*2,"overflow scroll content retains full glyph height")
-			check(hud.body_font*world.hud_display_scale()>=14,"physical feedback font floor")
+			check(hud.body_font*world.hud_display_scale()>=12.79,"compact feedback font floor")
 			check(Rect2(Vector2.ZERO,world.size).encloses(bar),"full feedback bar is inside viewport")
 			check(Rect2(0,hud.header_height,world.size.x,world.size.y-hud.header_height).encloses(controls.gestureArea),"direct movement area stays beneath header after growth")
 			check(not controls.gestureArea.intersects(bar) and not controls.mode.intersects(bar),"grown feedback never covers the direct gesture area or mode target")

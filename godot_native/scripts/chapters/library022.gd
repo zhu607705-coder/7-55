@@ -152,7 +152,10 @@ func view(page: String, s: Dictionary) -> Dictionary:
 	var d = _data()
 	if page == "library_app": return {"title":"图书馆 · 座位预约", "body":"基础馆\n负一层书库　160 座\n一层书库　160 座\n二层书库　160 座\n" + ("已预约　一层书库 022" if s.ui.librarySeatReserved else "选择馆舍、阅览室与座位")}
 	if page == "library_record":
-		return {"title":"入馆记录","body":"07:55：进入基础馆\n08:02：到达一层书库 022\n一层书库 022：存在未闭合会话\n最后活动：未知\n\n08:02 − 07:55" if _record_available(s) else "暂无入馆记录"}
+		if not _record_available(s): return {"title":"入馆记录","body":"暂无入馆记录"}
+		var trip: Dictionary=d.library.audit.arrivalTrip
+		var body: String="%s 从%s出发\n%s 刷卡进%s\n\n一层书库 022：存在未闭合会话\n最后活动：未知" % [trip.departureTime,trip.departurePlace,trip.arrivalTime,trip.arrivalPlace]
+		return {"title":"入馆记录","body":body}
 	if not _active(s): return {}
 	match page:
 		"library_archive":
@@ -161,7 +164,7 @@ func view(page: String, s: Dictionary) -> Dictionary:
 			if p.archivedRuleRead: rows.append({"title":"旧版离座规则","body":"三项证明：本人到馆、座位凭据、占用物非本人。公开公示后可恢复座位。"})
 			if p.nonPersonProofStamped: rows.append({"title":"书包非本人证明","body":"对象：022 座位占用书包\n认证结论：非本人\n姓名 / 学号：无 / 无\n盖章来源：基础馆物品身份盖章机\n经核验，该书包无姓名、无学号，不具备独立占用座位的身份条件。\n本证明仅证明书包。持有人仍需另交到馆材料。"})
 			if p.seatReceiptCollected: rows.append({"title":"022 座位凭据","body":"座位编号：022\n区域：一层书库\n时间：07:55\n凭据状态：离座中 · 待公示\n当前占用物：书包。恢复处理需提交论坛公示。"})
-			if p.presenceProofCollected: rows.append({"title":"本人来过证明","body":"到馆时长：7 分钟\n公示编号：47\n证明数量：3\n记录状态：补录成功\n访问轨迹与 022 座位凭据的时间记录一致。到馆已确认，座位使用仍需单独申请。"})
+			if p.presenceProofCollected: rows.append({"title":"本人来过证明","body":"到馆时长：7 分钟\n公示编号：47\n证明数量：3\n记录状态：补录成功\n已核对从宿舍出发到刷卡入馆的记录。到馆已确认，座位使用仍需单独申请。"})
 			return {"title":"已取得的材料","body":"材料提交后，内容仍保留在这里。","rows":rows,
 				"guidance":"\n\n".join(_proofs(s)) if p.archivedRuleRead else ""}
 		"library_rule": return {"title":"旧版离座规则", "body":"\n\n".join(d.library.archivedRuleBook.pages)}
@@ -179,7 +182,7 @@ func view(page: String, s: Dictionary) -> Dictionary:
 			if not p.investigationOpened: return {}
 			if s.networkMode != "cellular": return {"title":"浙大体艺", "body":"当前网络无法完成加载。需要移动数据。"}
 			var route = "寝室 → 图书馆入口 → 022 → 前台 → 书架背面 → 022"
-			return {"title":"本人来过证明补录单", "body":route + "\n到座耗时（分钟）\n公示编号\n规则要求的证明数量\n请核对门禁记录、论坛公示与旧版规则。"}
+			return {"title":"本人来过证明补录单", "body":route + "\n到馆时长（分钟）\n公示编号\n规则要求的证明数量\n请核对入馆记录、论坛公示与旧版规则。"}
 		"cc98":
 			if not s.actOne.cc98Login.authenticated or s.networkMode != "campus_wifi": return {}
 			if not p.investigationOpened: return {"title":"CC98 · 搜索", "body":"搜索帖子、版面与校园资料。\n搜索框可以接收纸条。"}
@@ -224,15 +227,11 @@ func actions(page: String, s: Dictionary) -> Array:
 		"photos":
 			if not p.photoCaptured: return []
 			return [_a("lib_dim_photo", "核对照片中的标签")] + ([_a("lib_item_report", "用旧照补全物品报告")] if s.native.get("lib_selected_photo","")=="seat_022_clue" and not p.itemReportGenerated else [])
-		"tiyi": return [{"id":"lib_audit","label":"提交补录单","inputs":[{"id":"arrival","label":"到座耗时（分钟）","type":"number"},{"id":"notice","label":"公示编号","type":"number"},{"id":"proofs","label":"证明数量","type":"number"}]}] if p.investigationOpened and s.networkMode == "cellular" and not p.presenceProofCollected else []
+		"tiyi": return [{"id":"lib_audit","label":"提交补录单","inputs":[{"id":"arrival","label":"到馆时长（分钟）","type":"number"},{"id":"notice","label":"公示编号","type":"number"},{"id":"proofs","label":"证明数量","type":"number"}]}] if p.investigationOpened and s.networkMode == "cellular" and not p.presenceProofCollected else []
 		"cc98":
 			if not s.actOne.cc98Login.authenticated or s.networkMode != "campus_wifi": return []
 			if not p.investigationOpened: return [_a("lib_investigate", "将占座纸条放入搜索框", "choice", [{"id":"occupancyNote","label":"占座纸条"}])]
 			var out: Array = []
-			var ac_options: Array = []
-			for r in _data().get("cc98",{}).get("optionalAc01Replies",[]):
-				if not p.optionalAc01Floors.has(int(r.floor)): ac_options.append({"id":str(int(r.floor)),"label":"%s 楼 · %s" % [int(r.floor),r.author]})
-			if not ac_options.is_empty(): out.append(_a("lib_optional_ac01","折叠一条闲聊回复","choice",ac_options))
 			if _phase(s) == "evidence_gathering":
 				var opts: Array = []
 				for e in _data().get("cc98",{}).get("evidenceSlots",[]):
@@ -292,6 +291,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 		"lib_register_arrival":
 			if phase == "library_entered" and s.native.scene == "library_interior" and not _record_available(s):
 				s.native.lib_admission_recorded = true
+				return _ok("刚刷过卡。打开浙大钉里的图书馆，到座位预约的「我的」里查入馆记录。")
 			return _ok("")
 		"lib_record":
 			if p.entranceRecordRead: return _ok("")
@@ -578,7 +578,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			s.native.page = "phone_home"
 			s.currentScene = "phone_home"
 			s.rpgCheckpoint = "campus_library_gate"
-			var handoff := _world(s,"campus_bootstrap")
+			var handoff := _world(s,"campus_bootstrap","022：深色模式也打开了。")
 			handoff["open_world"] = true
 			return handoff
 
@@ -598,7 +598,7 @@ func objective(s: Dictionary) -> String:
 		"idle", "library_route_unlocked": return "前往基础图书馆寻找系统的朋友"
 		"library_entered":
 			if p.entranceRecordRead: return "前往一层书库寻找 022"
-			return "在座位预约的「我的」中查看入馆记录" if _record_available(s) else "刷卡进入基础图书馆"
+			return "打开浙大钉里的图书馆，在座位预约的「我的」中查看入馆记录" if _record_available(s) else "刷卡进入基础图书馆"
 		"occupied_seat_found": return "检查 022 书包旁的纸条"
 		"evidence_gathering":
 			if not p.investigationOpened: return _guide("currentObjectives","stage_04_search_cc98")

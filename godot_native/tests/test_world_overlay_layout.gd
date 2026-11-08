@@ -9,13 +9,15 @@ func check(ok:bool,label:String)->void:
 func run()->void:
 	var font:Font=load("res://assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf")
 	var text:="已获得非人物品证明。系统：记录已经存入物品栏，可以继续查看。"
+	check(is_equal_approx(Layout.ui_scale(Vector2(1024,576)),Layout.MIN_UI_SCALE) and Layout.ui_scale(Vector2(1040,585))>Layout.MIN_UI_SCALE,"compact scale extends to 1024 by 576")
+	check(is_equal_approx(Layout.ui_scale(Vector2(3840,2160)),3.0),"4K UI uses three times the base size, or 75 percent of the original proportional scale")
 	for extent:Vector2 in [Vector2(960,540),Vector2(370,700),Vector2(824,314)]:
 		for scale:float in [.38,1.0,1.45]:
 			for text_scale:float in [1.0,1.25,3.0]:
 				var metrics:=Layout.hud(font,extent,scale,text,false,text_scale)
 				var needed:=font.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_CENTER,metrics.body_width,metrics.body_font)
 				check(metrics.body_content_height>=needed.y,"feedback stores the full actual wrapped glyph height")
-				check(metrics.body_font*scale>=15*text_scale,"text setting preserves body readability")
+				check(metrics.body_font*scale>=Layout.BODY_PX*Layout.ui_scale(extent*scale)*text_scale-.01,"text setting and fitted window both scale the body")
 				var region:=Rect2(8,40,extent.x-16,extent.y-48)
 				var dialogue:=Layout.dialogue(font,region,scale,"系统",text,"",text_scale)
 				check(region.encloses(dialogue.panel),"dialogue stays wholly inside its region, including enlarged text")
@@ -23,6 +25,9 @@ func run()->void:
 	# Regression: original full-viewport clamp put the southeast mat (935px)
 	# behind the footer; the same zoom must now put it inside the clear region.
 	var extent:=Vector2(960,540)
+	var full_hd:=Layout.hud(font,extent,2,text,false)
+	var ultra_hd:=Layout.hud(font,extent,4,text,false)
+	check(ultra_hd.body_font==full_hd.body_font and ultra_hd.body_width==full_hd.body_width,"doubling display size doubles the rendered text and card")
 	var room:=Vector2(1672,941)
 	var safe:=Rect2(0,32,960,460)
 	for zoom:float in [.45,.85,1.6]:
