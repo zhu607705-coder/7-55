@@ -1363,7 +1363,7 @@
 205. bd 本人来过证明上写着到馆时长 7 分钟。
    来源：[src/data/library-finals.content.json:506](../src/data/library-finals.content.json#L506)
 206. 入馆记录
-   来源：[src/data/library-finals.content.json:513](../src/data/library-finals.content.json#L513)；[src/scenes/rpg/LibraryInteriorScene.ts:1774](../src/scenes/rpg/LibraryInteriorScene.ts#L1774)
+   来源：[src/data/library-finals.content.json:513](../src/data/library-finals.content.json#L513)；[src/scenes/rpg/LibraryInteriorScene.ts:1775](../src/scenes/rpg/LibraryInteriorScene.ts#L1775)
 207. 基础图书馆门口闸机
    来源：[src/data/library-finals.content.json:514](../src/data/library-finals.content.json#L514)
 208. 基础馆一层书库 022
@@ -1553,7 +1553,7 @@
 300. 跟上它，往东区食堂那边！
    来源：[src/data/library-finals.content.json:769](../src/data/library-finals.content.json#L769)
 301. 纸条
-   来源：[src/data/library-finals.content.json:772](../src/data/library-finals.content.json#L772)；[src/scenes/rpg/LibraryInteriorScene.ts:2313](../src/scenes/rpg/LibraryInteriorScene.ts#L2313)
+   来源：[src/data/library-finals.content.json:772](../src/data/library-finals.content.json#L772)；[src/scenes/rpg/LibraryInteriorScene.ts:2314](../src/scenes/rpg/LibraryInteriorScene.ts#L2314)
 302. 本人马上回来。
    来源：[src/data/library-finals.content.json:773](../src/data/library-finals.content.json#L773)
 303. 它会说话了？！
@@ -1685,7 +1685,7 @@
 366. 余额没有向任何方向移动。
    来源：[src/scenes/phone/P04_CampusCard/index.tsx:31](../src/scenes/phone/P04_CampusCard/index.tsx#L31)
 367. system
-   来源：[src/scenes/phone/P04_CampusCard/index.tsx:31](../src/scenes/phone/P04_CampusCard/index.tsx#L31)；[src/scenes/phone/P04_CampusCard/index.tsx:35](../src/scenes/phone/P04_CampusCard/index.tsx#L35)；[src/scenes/phone/P15_Zjuding/index.tsx:913](../src/scenes/phone/P15_Zjuding/index.tsx#L913)；[src/scenes/phone/P15_Zjuding/index.tsx:926](../src/scenes/phone/P15_Zjuding/index.tsx#L926)；[src/scenes/phone/P15_Zjuding/index.tsx:934](../src/scenes/phone/P15_Zjuding/index.tsx#L934)；[src/scenes/phone/P15_Zjuding/index.tsx:998](../src/scenes/phone/P15_Zjuding/index.tsx#L998)；[src/scenes/phone/P15_Zjuding/index.tsx:1014](../src/scenes/phone/P15_Zjuding/index.tsx#L1014)；[src/scenes/phone/P15_Zjuding/index.tsx:1017](../src/scenes/phone/P15_Zjuding/index.tsx#L1017)；[src/scenes/phone/P15_Zjuding/index.tsx:1022](../src/scenes/phone/P15_Zjuding/index.tsx#L1022)；[src/scenes/phone/P15_Zjuding/index.tsx:1026](../src/scenes/phone/P15_Zjuding/index.tsx#L1026)；[src/scenes/rpg/LibraryInteriorScene.ts:351](../src/scenes/rpg/LibraryInteriorScene.ts#L351)；[src/scenes/rpg/LibraryInteriorScene.ts:374](../src/scenes/rpg/LibraryInteriorScene.ts#L374)；[src/scenes/rpg/LibraryInteriorScene.ts:384](../src/scenes/rpg/LibraryInteriorScene.ts#L384)；[src/scenes/rpg/LibraryInteriorScene.ts:535](../src/scenes/rpg/LibraryInteriorScene.ts#L535)；[src/scenes/rpg/LibraryInteriorScene.ts:2113](../src/scenes/rpg/LibraryInteriorScene.ts#L2113)
+   来源：[src/scenes/phone/P04_CampusCard/index.tsx:31](../src/scenes/phone/P04_CampusCard/index.tsx#L31)；[src/scenes/phone/P04_CampusCard/index.tsx:35](../src/scenes/phone/P04_CampusCard/index.tsx#L35)；[src/scenes/phone/P15_Zjuding/index.tsx:913](../src/scenes/phone/P15_Zjuding/index.tsx#L913)；[src/scenes/phone/P15_Zjuding/index.tsx:926](../src/scenes/phone/P15_Zjuding/index.tsx#L926)；[src/scenes/phone/P15_Zjuding/index.tsx:934](../src/scenes/phone/P15_Zjuding/index.tsx#L934)；[src/scenes/phone/P15_Zjuding/index.tsx:998](../src/scenes/phone/P15_Zjuding/index.tsx#L998)；[src/scenes/phone/P15_Zjuding/index.tsx:1014](../src/scenes/phone/P15_Zjuding/index.tsx#L1014)；[src/scenes/phone/P15_Zjuding/index.tsx:1017](../src/scenes/phone/P15_Zjuding/index.tsx#L1017)；[src/scenes/phone/P15_Zjuding/index.tsx:1022](../src/scenes/phone/P15_Zjuding/index.tsx#L1022)；[src/scenes/phone/P15_Zjuding/index.tsx:1026](../src/scenes/phone/P15_Zjuding/index.tsx#L1026)；[src/scenes/rpg/LibraryInteriorScene.ts:351](../src/scenes/rpg/LibraryInteriorScene.ts#L351)；[src/scenes/rpg/LibraryInteriorScene.ts:374](../src/scenes/rpg/LibraryInteriorScene.ts#L374)；[src/scenes/rpg/LibraryInteriorScene.ts:384](../src/scenes/rpg/LibraryInteriorScene.ts#L384)；[src/scenes/rpg/LibraryInteriorScene.ts:535](../src/scenes/rpg/LibraryInteriorScene.ts#L535)；[src/scenes/rpg/LibraryInteriorScene.ts:2114](../src/scenes/rpg/LibraryInteriorScene.ts#L2114)
 368. 这个箭头还不能改动余额。
    来源：[src/scenes/phone/P04_CampusCard/index.tsx:35](../src/scenes/phone/P04_CampusCard/index.tsx#L35)
 369. 校园卡
@@ -1801,7 +1801,7 @@
 424. 记录已保存
    来源：[src/scenes/rpg/LibraryInteriorScene.ts:358](../src/scenes/rpg/LibraryInteriorScene.ts#L358)
 425. success
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:358](../src/scenes/rpg/LibraryInteriorScene.ts#L358)；[src/scenes/rpg/LibraryInteriorScene.ts:379](../src/scenes/rpg/LibraryInteriorScene.ts#L379)；[src/scenes/rpg/LibraryInteriorScene.ts:882](../src/scenes/rpg/LibraryInteriorScene.ts#L882)；[src/scenes/rpg/LibraryInteriorScene.ts:922](../src/scenes/rpg/LibraryInteriorScene.ts#L922)；[src/scenes/rpg/LibraryInteriorScene.ts:1169](../src/scenes/rpg/LibraryInteriorScene.ts#L1169)；[src/scenes/rpg/LibraryInteriorScene.ts:1193](../src/scenes/rpg/LibraryInteriorScene.ts#L1193)；[src/scenes/rpg/LibraryInteriorScene.ts:1286](../src/scenes/rpg/LibraryInteriorScene.ts#L1286)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:358](../src/scenes/rpg/LibraryInteriorScene.ts#L358)；[src/scenes/rpg/LibraryInteriorScene.ts:379](../src/scenes/rpg/LibraryInteriorScene.ts#L379)；[src/scenes/rpg/LibraryInteriorScene.ts:883](../src/scenes/rpg/LibraryInteriorScene.ts#L883)；[src/scenes/rpg/LibraryInteriorScene.ts:923](../src/scenes/rpg/LibraryInteriorScene.ts#L923)；[src/scenes/rpg/LibraryInteriorScene.ts:1170](../src/scenes/rpg/LibraryInteriorScene.ts#L1170)；[src/scenes/rpg/LibraryInteriorScene.ts:1194](../src/scenes/rpg/LibraryInteriorScene.ts#L1194)；[src/scenes/rpg/LibraryInteriorScene.ts:1287](../src/scenes/rpg/LibraryInteriorScene.ts#L1287)
 426. 占座纸条已收入道具栏
    来源：[src/scenes/rpg/LibraryInteriorScene.ts:366](../src/scenes/rpg/LibraryInteriorScene.ts#L366)
 427. 旧规则已确认：三项证明要求已核对，可继续补齐未完成材料。
@@ -1873,89 +1873,89 @@
 460. 座位已经空出，可以坐下确认会话。
    来源：[src/scenes/rpg/LibraryInteriorScene.ts:655](../src/scenes/rpg/LibraryInteriorScene.ts#L655)
 461. 这个道具和目标的证据类型对不上。
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:803](../src/scenes/rpg/LibraryInteriorScene.ts#L803)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:804](../src/scenes/rpg/LibraryInteriorScene.ts#L804)
 462. 先走到{{targetLabel ? \`「${targetLabel}」\` : "目标"}}的可操作边缘，再使用道具。
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:805](../src/scenes/rpg/LibraryInteriorScene.ts#L805)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:806](../src/scenes/rpg/LibraryInteriorScene.ts#L806)
 463. 道具没有落在可交互目标上。
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:807](../src/scenes/rpg/LibraryInteriorScene.ts#L807)
-464. 条件还不完整，目标暂时不接受这个操作。
    来源：[src/scenes/rpg/LibraryInteriorScene.ts:808](../src/scenes/rpg/LibraryInteriorScene.ts#L808)
+464. 条件还不完整，目标暂时不接受这个操作。
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:809](../src/scenes/rpg/LibraryInteriorScene.ts#L809)
 465. error
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:809](../src/scenes/rpg/LibraryInteriorScene.ts#L809)；[src/scenes/rpg/LibraryInteriorScene.ts:869](../src/scenes/rpg/LibraryInteriorScene.ts#L869)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:810](../src/scenes/rpg/LibraryInteriorScene.ts#L810)；[src/scenes/rpg/LibraryInteriorScene.ts:870](../src/scenes/rpg/LibraryInteriorScene.ts#L870)
 466. 022 仍有微弱信号，信号源被书包压住了。
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:869](../src/scenes/rpg/LibraryInteriorScene.ts#L869)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:870](../src/scenes/rpg/LibraryInteriorScene.ts#L870)
 467. 书架开始缓慢横移，后面的夹层逐渐露出一份旧黄纸。
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:922](../src/scenes/rpg/LibraryInteriorScene.ts#L922)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:923](../src/scenes/rpg/LibraryInteriorScene.ts#L923)
 468. 022 · 空闲
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1068](../src/scenes/rpg/LibraryInteriorScene.ts#L1068)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1069](../src/scenes/rpg/LibraryInteriorScene.ts#L1069)
 469. 022 · 占用
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1068](../src/scenes/rpg/LibraryInteriorScene.ts#L1068)；[src/scenes/rpg/LibraryInteriorScene.ts:2286](../src/scenes/rpg/LibraryInteriorScene.ts#L2286)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1069](../src/scenes/rpg/LibraryInteriorScene.ts#L1069)；[src/scenes/rpg/LibraryInteriorScene.ts:2287](../src/scenes/rpg/LibraryInteriorScene.ts#L2287)
 470. 前台盖章完成：书包不等于本人。
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1169](../src/scenes/rpg/LibraryInteriorScene.ts#L1169)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1170](../src/scenes/rpg/LibraryInteriorScene.ts#L1170)
 471. 小票向“右”了。
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1193](../src/scenes/rpg/LibraryInteriorScene.ts#L1193)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1194](../src/scenes/rpg/LibraryInteriorScene.ts#L1194)
 472. 022 · 转移中
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1227](../src/scenes/rpg/LibraryInteriorScene.ts#L1227)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1228](../src/scenes/rpg/LibraryInteriorScene.ts#L1228)
 473. 书包：主人马上回来。
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1229](../src/scenes/rpg/LibraryInteriorScene.ts#L1229)
-474. 玩家：什么时候？
    来源：[src/scenes/rpg/LibraryInteriorScene.ts:1230](../src/scenes/rpg/LibraryInteriorScene.ts#L1230)
-475. 书包：三分钟。
+474. 玩家：什么时候？
    来源：[src/scenes/rpg/LibraryInteriorScene.ts:1231](../src/scenes/rpg/LibraryInteriorScene.ts#L1231)
-476. 系统：它三天前也是这么说的。
+475. 书包：三分钟。
    来源：[src/scenes/rpg/LibraryInteriorScene.ts:1232](../src/scenes/rpg/LibraryInteriorScene.ts#L1232)
+476. 系统：它三天前也是这么说的。
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1233](../src/scenes/rpg/LibraryInteriorScene.ts#L1233)
 477. 022 已恢复。
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1286](../src/scenes/rpg/LibraryInteriorScene.ts#L1286)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1287](../src/scenes/rpg/LibraryInteriorScene.ts#L1287)
 478. 图书馆门禁 · 入馆记录
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1615](../src/scenes/rpg/LibraryInteriorScene.ts#L1615)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1616](../src/scenes/rpg/LibraryInteriorScene.ts#L1616)
 479. 出发记录
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1635](../src/scenes/rpg/LibraryInteriorScene.ts#L1635)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1636](../src/scenes/rpg/LibraryInteriorScene.ts#L1636)
 480. 刷卡入馆
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1654](../src/scenes/rpg/LibraryInteriorScene.ts#L1654)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1655](../src/scenes/rpg/LibraryInteriorScene.ts#L1655)
 481. 到馆时长核对：{{trip.arrivalTime}} − {{trip.departureTime}}
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1677](../src/scenes/rpg/LibraryInteriorScene.ts#L1677)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1678](../src/scenes/rpg/LibraryInteriorScene.ts#L1678)
 482. 目标记录：一层书库 022 · 会话未闭合
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1683](../src/scenes/rpg/LibraryInteriorScene.ts#L1683)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1684](../src/scenes/rpg/LibraryInteriorScene.ts#L1684)
 483. 记下记录
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1691](../src/scenes/rpg/LibraryInteriorScene.ts#L1691)；[src/scenes/rpg/LibraryInteriorScene.ts:1836](../src/scenes/rpg/LibraryInteriorScene.ts#L1836)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1692](../src/scenes/rpg/LibraryInteriorScene.ts#L1692)；[src/scenes/rpg/LibraryInteriorScene.ts:1837](../src/scenes/rpg/LibraryInteriorScene.ts#L1837)
 484. Enter / 空格 确认 · Esc 关闭
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1704](../src/scenes/rpg/LibraryInteriorScene.ts#L1704)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1705](../src/scenes/rpg/LibraryInteriorScene.ts#L1705)
 485. 点击查看
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1780](../src/scenes/rpg/LibraryInteriorScene.ts#L1780)；[src/scenes/rpg/LibraryInteriorScene.ts:1893](../src/scenes/rpg/LibraryInteriorScene.ts#L1893)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1781](../src/scenes/rpg/LibraryInteriorScene.ts#L1781)；[src/scenes/rpg/LibraryInteriorScene.ts:1894](../src/scenes/rpg/LibraryInteriorScene.ts#L1894)
 486. 关闭记录
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1836](../src/scenes/rpg/LibraryInteriorScene.ts#L1836)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1837](../src/scenes/rpg/LibraryInteriorScene.ts#L1837)
 487. 已读取 · 点击复查
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1893](../src/scenes/rpg/LibraryInteriorScene.ts#L1893)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1894](../src/scenes/rpg/LibraryInteriorScene.ts#L1894)
 488. 基础图书馆 · 一层书库
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1902](../src/scenes/rpg/LibraryInteriorScene.ts#L1902)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1903](../src/scenes/rpg/LibraryInteriorScene.ts#L1903)
 489. 信息台 / 失物招领
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1994](../src/scenes/rpg/LibraryInteriorScene.ts#L1994)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:1995](../src/scenes/rpg/LibraryInteriorScene.ts#L1995)
 490. 图
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2059](../src/scenes/rpg/LibraryInteriorScene.ts#L2059)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2060](../src/scenes/rpg/LibraryInteriorScene.ts#L2060)
 491. 物
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2059](../src/scenes/rpg/LibraryInteriorScene.ts#L2059)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2060](../src/scenes/rpg/LibraryInteriorScene.ts#L2060)
 492. 座
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2059](../src/scenes/rpg/LibraryInteriorScene.ts#L2059)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2060](../src/scenes/rpg/LibraryInteriorScene.ts#L2060)
 493. 非本人
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2083](../src/scenes/rpg/LibraryInteriorScene.ts#L2083)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2084](../src/scenes/rpg/LibraryInteriorScene.ts#L2084)
 494. 请靠近信息台柜台。
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2113](../src/scenes/rpg/LibraryInteriorScene.ts#L2113)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2114](../src/scenes/rpg/LibraryInteriorScene.ts#L2114)
 495. 等待报告
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2130](../src/scenes/rpg/LibraryInteriorScene.ts#L2130)
-496. 递交报告
    来源：[src/scenes/rpg/LibraryInteriorScene.ts:2131](../src/scenes/rpg/LibraryInteriorScene.ts#L2131)
-497. 人工核验
+496. 递交报告
    来源：[src/scenes/rpg/LibraryInteriorScene.ts:2132](../src/scenes/rpg/LibraryInteriorScene.ts#L2132)
-498. 已盖章
+497. 人工核验
    来源：[src/scenes/rpg/LibraryInteriorScene.ts:2133](../src/scenes/rpg/LibraryInteriorScene.ts#L2133)
+498. 已盖章
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2134](../src/scenes/rpg/LibraryInteriorScene.ts#L2134)
 499. 馆藏检索 / 打印
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2178](../src/scenes/rpg/LibraryInteriorScene.ts#L2178)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2179](../src/scenes/rpg/LibraryInteriorScene.ts#L2179)
 500. 文学 / 社科书架
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2195](../src/scenes/rpg/LibraryInteriorScene.ts#L2195)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2196](../src/scenes/rpg/LibraryInteriorScene.ts#L2196)
 501. 旧规
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2256](../src/scenes/rpg/LibraryInteriorScene.ts#L2256)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2257](../src/scenes/rpg/LibraryInteriorScene.ts#L2257)
 502. 一层书库 · 安静阅览
-   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2275](../src/scenes/rpg/LibraryInteriorScene.ts#L2275)
+   来源：[src/scenes/rpg/LibraryInteriorScene.ts:2276](../src/scenes/rpg/LibraryInteriorScene.ts#L2276)
 
 ## 第三章
 
