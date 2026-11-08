@@ -1027,7 +1027,10 @@ async function scrollLibraryRuleToClose() {
       }
       await active.cdp.send('Input.dispatchTouchEvent', {type: 'touchEnd', touchPoints: []});
     } else {
+      // The Web engine routes wheel input through the focused canvas.
+      if (attempt === 0) await clickPoint(from);
       await active.cdp.send('Input.dispatchMouseEvent', {type: 'mouseMoved', ...from});
+      await interval(70);
       await active.cdp.send('Input.dispatchMouseEvent', {type: 'mouseWheel', x: from.x, y: from.y, deltaX: 0, deltaY: 260});
     }
     await interval(350);
