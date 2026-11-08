@@ -22,7 +22,7 @@ const ObjectPicker = preload("res://scripts/world_object_picker.gd")
 const NpcFeedback = preload("res://scripts/presentation/npc_interaction_feedback.gd")
 const NpcFeedbackBindings = preload("res://scripts/presentation/npc_feedback_bindings.gd")
 var npc_feedback: RefCounted = NpcFeedback.new()
-var _npc_feedback_focused := true
+var _window_focused := true
 var _npc_completion_waiting: Dictionary = {}
 const KayakObject = preload("res://scripts/objects/kayak_world_adapter.gd")
 const CampusWayfinding = preload("res://scripts/ui/campus_wayfinding.gd")
@@ -40,7 +40,9 @@ var room301_exhibit:Node2D
 var elevator_button:Node2D
 var north_props:Node2D
 const CampusLayeredMap = preload("res://scripts/presentation/campus_layered_map.gd")
+const CampusFloorRoute = preload("res://scripts/space/campus_floor_route.gd")
 var campus_layers: RefCounted = CampusLayeredMap.new()
+var _campus_floor_planner := CampusFloorRoute.new()
 const SourceTiledTexture=preload("res://scripts/presentation/source_tiled_texture.gd")
 # This chapter-owned script and its setup textures are loaded only after the
 # incoming scene's WebContent pack is ready. An inactive canteen is retained
@@ -169,6 +171,9 @@ var object_picker: RefCounted=ObjectPicker.new()
 
 func _ready() -> void:
 	clip_contents = true
+	# Use the same pixel-art sampler for every scene, including standalone
+	# views that do not mount the shell's world SubViewport.
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	NativeUi.enable_scale_aware_text(self)
 	touch_controls = DisplayServer.is_touchscreen_available()
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -211,7 +216,11 @@ func _ensure_scene_visuals(incoming: String) -> void:
 	if incoming.is_empty(): return
 	if incoming == "campus_bootstrap":
 		if not campus_layers.configure(): push_error("Campus layer loading failed: " + str(campus_layers.errors))
-	elif campus_layers.ready: campus_layers.release()
+		elif not _campus_floor_planner.configure(campus_layers.manifest.get("routeGrid", {}), PlayerMetrics.foot_size(incoming)):
+			push_error("Campus road grid is missing or invalid")
+	elif campus_layers.ready:
+		campus_layers.release()
+		_campus_floor_planner.clear()
 	if player_frames.is_empty():
 		for direction in ["down","up","side","left"]:
 			var frames: Array = []
@@ -286,9 +295,6 @@ func refresh_world() -> void:
 	_sync_npc_feedback()
 	pan_offset = Vector2.ZERO
 	scene_id = incoming
-	# A new SubViewport defaults to linear even when the root uses nearest.
-	# The inner viewport defaults to linear even when the root window is nearest.
-	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST if scene_id in ["campus_bootstrap","library_interior"] else CanvasItem.TEXTURE_FILTER_PARENT_NODE
 	player_turn.clear(); walk_clock=0
 	_last_floor = floor_id
 	last_zone = zone
@@ -437,6 +443,7 @@ func _rect(value:Variant) -> Rect2:return SpatialRules.rect(value)
 func _ground_y(point:Vector2)->float:
 	if scene_id=="qizhen_lake" and str(State.d.qizhenLake.vehicle)=="kayak":
 		return kayak_collision_rect(point,float(kayak.heading) if kayak else -PI/2).end.y
+	if scene_id=="campus_bootstrap": return PlayerMetrics.foot_center(point,scene_id).y
 	return SpatialRules.foot_y(point)
 
 func display_scale_at(point: Vector2) -> float:
@@ -812,7 +819,7 @@ func _tick_npc_feedback(delta: float) -> void:
 	if not _npc_feedback_visible() or _npc_feedback_cinematic() or not _npc_feedback_world_current():
 		npc_feedback.clear_visuals()
 		return
-	if not _npc_feedback_focused or _shell_input_blocked(): return
+	if not _window_focused or _shell_input_blocked(): return
 	if not _npc_completion_waiting.is_empty():
 		npc_feedback.play(str(_npc_completion_waiting.id),"complete",str(_npc_completion_waiting.receipt))
 		_npc_completion_waiting.clear()
@@ -873,7 +880,7 @@ func _process(delta: float) -> void:
 	if _floor_feedback_left>0:
 		_floor_feedback_left=maxf(0,_floor_feedback_left-delta)
 		if _floor_feedback_left==0 and _floor_route.is_empty(): _floor_goal=Vector2.INF; _floor_status=""
-	if direct_gestures.has_active() and not direct_gestures.valid(_direct_gesture_context(),State.d):cancel_exploration_gestures()
+	if direct_gestures.has_active() and not direct_gestures.valid(_direct_gesture_context(),State.d):cancel_exploration_gestures(true)
 	if not _floor_pending_interaction.is_empty() and not _floor_intent_valid():_cancel_floor_route()
 	if not _floor_route.is_empty() and (capture_mode or presentation_actor_hidden or not is_visible_in_tree() or get_viewport().gui_is_dragging() or get_tree().root.gui_is_dragging() or not _floor_transform_current()): _cancel_floor_route()
 	if not is_visible_in_tree() or scene_id.is_empty() or capture_mode: return
@@ -922,8 +929,10 @@ func _process(delta: float) -> void:
 	if is_instance_valid(shell) and is_instance_valid(shell.get("world_effect")) and shell.world_effect.get_meta("blocks_input",false):cancel_exploration_gestures();return
 	var focus := host_node.get_viewport().gui_get_focus_owner() if is_instance_valid(host_node) else get_viewport().gui_get_focus_owner()
 	var axis := Vector2.ZERO
+	var campus_route := scene_id == "campus_bootstrap"
+	var route_can_advance: bool = not campus_route or (_window_focused and not direct_gestures.has_active())
 	if focus is LineEdit or focus is TextEdit: _cancel_floor_route()
-	if not (focus is LineEdit or focus is TextEdit):
+	elif not campus_route or _window_focused:
 		axis = Vector2(float(Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT))-float(Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)),float(Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN))-float(Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP)))
 	if touch_axis.length_squared() > 0:
 		_cancel_floor_route()
@@ -935,8 +944,9 @@ func _process(delta: float) -> void:
 		_input_kind = "keyboard"
 		move_target = Vector2.INF
 	elif not _floor_route.is_empty():
-		axis=_floor_route[0]-player
-		_input_kind="touch"
+		if route_can_advance:
+			axis = _floor_route[0] - player
+			_input_kind = "touch"
 	elif move_target != Vector2.INF:
 		axis = move_target-player
 		_input_kind = "touch"
@@ -977,7 +987,7 @@ func _process(delta: float) -> void:
 			var pace_position := _axis_destination(player,Vector2(pace_x-player.x,0))
 			if can_stand(pace_position): player = pace_position; _sync_player()
 	# A zero-length route waypoint still needs its normal completion step.
-	if axis.length_squared() > 0 or not _floor_route.is_empty():
+	if axis.length_squared() > 0 or (route_can_advance and not _floor_route.is_empty()):
 		if mobile_exploration and _floor_route.is_empty(): pan_offset=Vector2.ZERO
 		axis = axis.normalized()
 		var speed := 208.0 if scene_id == "duan_yongping_temporal_maze" and State.d.chapter4.phase == "final_chase" else 176.0 if scene_id == "duan_yongping_temporal_maze" else 160.0 if scene_id == "dorm_hub" else 165.0
@@ -986,18 +996,26 @@ func _process(delta: float) -> void:
 		var old := player
 		var following_floor_route:=not _floor_route.is_empty()
 		if following_floor_route:
-			var next: Vector2=player.move_toward(_floor_route[0],speed*delta)
-			if _floor_segment_clear(player,next):
-				player=next
+			var remaining := speed * delta
+			while not _floor_route.is_empty():
+				var next: Vector2 = player.move_toward(_floor_route[0], remaining)
+				if not _floor_segment_clear(player, next):
+					_stop_floor_route()
+					break
+				remaining -= player.distance_to(next)
+				player = next
 				# move_toward returns the exact target when this frame reaches it.
 				# Relative approximate equality can retire large-coordinate goals early.
-				if player==_floor_route[0]:
-					_floor_route.pop_front()
-					if _floor_route.is_empty(): _floor_status="arrived"; _floor_feedback_left=.45
-			else: _stop_floor_route()
+				if player != _floor_route[0]: break
+				_floor_route.pop_front()
+				if _floor_route.is_empty(): _floor_status="arrived"; _floor_feedback_left=.45
+				if scene_id != "campus_bootstrap" or remaining <= 0.0: break
 		else:
 			player=_axis_destination(player,Vector2(displacement.x,0))
 			player=_axis_destination(player,Vector2(0,displacement.y))
+			var cardinal_input := is_zero_approx(displacement.x) or is_zero_approx(displacement.y)
+			if scene_id == "campus_bootstrap" and cardinal_input and player.distance_squared_to(old + displacement) > .0001:
+				player = _campus_edge_slide(old, displacement, player)
 		floor_route_finished = following_floor_route and _floor_route.is_empty()
 		if old.distance_to(player) > 0:
 			_sync_player()
@@ -1025,7 +1043,7 @@ func _process(delta: float) -> void:
 			nearby = target
 	_update_guard(delta)
 	_update_camera()
-	_floor_expected_camera=camera
+	_floor_expected_camera = camera
 	_last_save += delta
 	if _last_save > 3.0:
 		_last_save = 0
@@ -1092,6 +1110,33 @@ func _c4_axis_destination(start:Vector2,motion:Vector2) -> Vector2:
 
 func _axis_destination(start:Vector2,motion:Vector2) -> Vector2:
 	return SpatialRules.sweep_axis(start,motion,can_stand,4.0)
+
+func _campus_edge_slide(start: Vector2, motion: Vector2, axis_result: Vector2) -> Vector2:
+	if motion.is_zero_approx(): return axis_result
+	var forward := motion.normalized()
+	var progress := (axis_result - start).dot(forward)
+	var obstacles := _floor_obstacles()
+	# Project onto the nearest direction that can sweep the whole foot.
+	# Progress decreases with the turn angle, so a steeper turn cannot win.
+	for angle: float in [15.0, 30.0, 45.0, 60.0, 75.0]:
+		for side: float in [-1.0, 1.0]:
+			var tangent := forward.rotated(deg_to_rad(angle * side))
+			var candidate := start + tangent * motion.dot(tangent)
+			if (candidate - start).dot(forward) <= progress + .001: continue
+			if can_stand(candidate) and _floor_segment_clear(start, candidate, obstacles, true): return candidate
+	# A source-pixel step can require a short sideways move before the next
+	# forward segment clears it. Check that continuation before sliding, so
+	# holding a key into a straight wall cannot make the player drift.
+	var remaining := motion.length() - start.distance_to(axis_result)
+	if remaining <= .01: return axis_result
+	var lateral := forward.orthogonal()
+	for distance: float in [1.0, 2.0, 3.0, 4.0]:
+		for side: float in [-1.0, 1.0]:
+			var corner := axis_result + lateral * distance * side
+			var continuation := corner + forward * 2.0
+			if can_stand(corner) and can_stand(continuation) and _floor_segment_clear(axis_result, corner, obstacles, true) and _floor_segment_clear(corner, continuation, obstacles, true):
+				return axis_result.move_toward(corner, remaining)
+	return axis_result
 
 func fit_library_camera(usable_extent: Vector2) -> void:
 	if capture_mode or usable_extent.y <= 0.0: return
@@ -1322,7 +1367,7 @@ func _draw_base_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	if scene_id.is_empty(): return
 	if scene_id == "campus_bootstrap":
 		if campus_layers.ready:
-			campus_layers.draw_background(canvas,origin,zoom,size,0.0 if bool(State.d.native.settings.reduced_motion) else Time.get_ticks_msec(),PlayerMetrics.depth_y(player))
+			campus_layers.draw_background(canvas,origin,zoom,size,0.0 if bool(State.d.native.settings.reduced_motion) else Time.get_ticks_msec(),_ground_y(player))
 		else:
 			canvas.draw_string(ThemeDB.fallback_font,Vector2(32,80),"地图图层加载失败，请重新打开试玩。旧地图未替代显示。",HORIZONTAL_ALIGNMENT_LEFT,-1,18,Color.WHITE)
 	elif background_is_tiled:
@@ -1404,7 +1449,7 @@ func _draw_actor_foreground_prefix(canvas: CanvasItem,layer_context: Dictionary)
 func _draw_actor_foreground_suffix(canvas: CanvasItem,layer_context: Dictionary) -> void:
 	var origin:Vector2=layer_context.origin
 	if scene_id == "campus_bootstrap":
-		campus_layers.draw_foreground(canvas,origin,zoom,size,PlayerMetrics.depth_y(player),mode_mix)
+		campus_layers.draw_foreground(canvas,origin,zoom,size,_ground_y(player),mode_mix)
 	elif background or background_is_tiled:
 		for cover in foreground:
 			if north_objects.owns_cover(cover):continue
@@ -1446,8 +1491,7 @@ func _draw_tail_pass(canvas: CanvasItem,layer_context: Dictionary) -> void:
 		SpatialRules.draw_actor_covers(canvas,guard_context,guard_position.y+extent.y,Rect2(guard_position-Vector2(guard_size.x/2,guard_size.y*.89)/zoom,guard_size/zoom))
 	var name_text := str(State.d.get("playerName",State.d.get("characterName","")))
 	if not presentation_actor_hidden and not name_text.is_empty():
-		var display:=hud_display_scale()
-		var name_size:=WorldOverlay.font_pixels(roundi(16*WorldOverlay.ui_scale(size*display)),display) if scene_id=="campus_bootstrap" else 14
+		var name_size := maxi(1, ceili(WorldOverlay.TITLE_PX * WorldOverlay.ui_units(size, hud_display_scale())))
 		canvas.draw_string(font,origin+player*zoom+Vector2(-25,22),name_text,HORIZONTAL_ALIGNMENT_CENTER,100,name_size,Color.WHITE)
 	_draw_npc_feedback(canvas,layer_context)
 	if _exploration_overlay_blocked():
@@ -1681,6 +1725,7 @@ func _gui_input(event: InputEvent) -> void:
 			State.lake_world_stroke(self,"left" if event.keycode in [KEY_A,KEY_LEFT] else "right",Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN))
 			accept_event()
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
+		if scene_id == "campus_bootstrap": _cancel_floor_route()
 		_try_interact()
 		accept_event()
 
@@ -1965,21 +2010,24 @@ func _cancel_table_drag() -> void:
 	if is_inside_tree() and get_viewport().gui_is_dragging(): get_viewport().gui_cancel_drag()
 
 func _notification(what: int) -> void:
-	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_WM_WINDOW_FOCUS_OUT]: _npc_feedback_focused = false
-	elif what in [NOTIFICATION_APPLICATION_FOCUS_IN,NOTIFICATION_WM_WINDOW_FOCUS_IN]: _npc_feedback_focused = true
+	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT, NOTIFICATION_WM_WINDOW_FOCUS_OUT]:
+		_window_focused = false
+		if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT or scene_id == "campus_bootstrap":
+			cancel_exploration_gestures(true)
+	elif what in [NOTIFICATION_APPLICATION_FOCUS_IN, NOTIFICATION_WM_WINDOW_FOCUS_IN]:
+		_window_focused = true
 	if what==NOTIFICATION_DRAG_END: _finish_table_drag()
-	elif what==NOTIFICATION_WM_WINDOW_FOCUS_OUT:cancel_exploration_gestures()
 	elif what==NOTIFICATION_VISIBILITY_CHANGED and is_inside_tree() and not is_visible_in_tree():cancel_exploration_gestures()
-	elif what==NOTIFICATION_RESIZED:cancel_exploration_gestures()
+	elif what==NOTIFICATION_RESIZED:cancel_exploration_gestures(true)
 
-func cancel_exploration_gestures() -> void:
+func cancel_exploration_gestures(keep_campus_route := false) -> void:
 	_cancel_table_drag()
 	if library_layers!=null:library_layers.book.cancel()
 	touch_axis=Vector2.ZERO;move_target=Vector2.INF
 	mobile_confirmed_target_id="";mobile_confirmed_world_key=""
 	if direct_gestures!=null:direct_gestures.cancel()
 	kayak_mouse_gesture.clear()
-	_cancel_floor_route()
+	if not keep_campus_route or scene_id != "campus_bootstrap": _cancel_floor_route()
 
 func kayak_paddle_rects() -> Dictionary:
 	if kayak==null or not is_instance_valid(kayak_visual):return {}
@@ -2114,7 +2162,7 @@ func _direct_gesture_context(role:String="")->Array:
 
 func _direct_touch_role(local:Vector2)->String:
 	if hud_mode_rect().has_point(local):return "mode"
-	if not exploration_safe_rect(true).has_point(local):return "ignored"
+	if not _floor_tap_surface_contains(local):return "ignored"
 	var point:Vector2=(local-size/2)/zoom+camera
 	if chapter4_layers!=null and scene_id=="duan_yongping_temporal_maze" and not chapter4_layers.pick_drag(point,State.d).is_empty():return "furniture"
 	if kayak!=null:
@@ -2129,8 +2177,17 @@ func _direct_touch_role(local:Vector2)->String:
 		if absf(beside.x)>=28 and absf(beside.x)<=180 and absf(beside.y)<=140 and can_stand(point):return "water_"+("left" if beside.x<0 else "right")
 	return "map"
 
+func _floor_tap_surface_contains(local: Vector2) -> bool:
+	if scene_id != "campus_bootstrap": return exploration_safe_rect(true).has_point(local)
+	if not Rect2(Vector2.ZERO, size).has_point(local): return false
+	# Root controls receive their own input. Inside the campus canvas, only
+	# the feedback that is actually painted covers the floor underneath it.
+	if subtitle.is_empty() and not guard_capture.active: return true
+	var feedback: Rect2 = hud_metrics(_hud_line()).body_rect
+	return not feedback.has_point(local)
+
 func _mobile_pan(delta: Vector2) -> void:
-	_cancel_floor_route()
+	if scene_id != "campus_bootstrap": _cancel_floor_route()
 	var limit:=size*.35/zoom
 	pan_offset=(pan_offset-delta/zoom).clamp(-limit,limit)
 	move_target=Vector2.INF
@@ -2143,7 +2200,8 @@ func _direct_gesture_action(action:Dictionary)->void:
 		"pan":
 			_mobile_pan(action.delta);direct_gestures.context=_direct_gesture_context()
 		"camera":
-			_cancel_floor_route();move_target=Vector2.INF
+			if scene_id != "campus_bootstrap": _cancel_floor_route()
+			move_target=Vector2.INF
 			var before:Vector2=(Vector2(action.center)-Vector2(action.delta)-size/2)/zoom+camera
 			zoom=clampf(zoom*float(action.ratio),.45,1.6)
 			_update_camera()
@@ -2160,7 +2218,7 @@ func _direct_gesture_action(action:Dictionary)->void:
 func _mobile_exploration_input(event: InputEvent) -> bool:
 	# This is a direct scene surface. The map never reserves invisible controls.
 	if (event is InputEventMouseButton or event is InputEventMouseMotion) and event.device==-1:return true
-	if event is InputEventKey and event.pressed:_cancel_floor_route()
+	if event is InputEventKey and event.pressed and scene_id != "campus_bootstrap": _cancel_floor_route()
 	if event is InputEventMouseMotion and (event.button_mask & MOUSE_BUTTON_MASK_RIGHT or event.button_mask & MOUSE_BUTTON_MASK_MIDDLE):
 		direct_gestures.cancel();_mobile_pan(event.relative);accept_event();return true
 	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
@@ -2169,7 +2227,8 @@ func _mobile_exploration_input(event: InputEvent) -> bool:
 			# Preserve Godot's real furniture drag owner, including overlapping
 			# targets. A press never opens that target or starts a floor route.
 			if role=="furniture":_cancel_floor_route();return false
-			_cancel_floor_route();grab_focus()
+			if scene_id != "campus_bootstrap": _cancel_floor_route()
+			grab_focus()
 			_begin_direct_pointer(-999,event.position,role)
 		else:_end_direct_pointer(-999,event.position,false)
 		accept_event();return true
@@ -2178,8 +2237,10 @@ func _mobile_exploration_input(event: InputEvent) -> bool:
 	if event is InputEventScreenTouch:
 		touch_controls=true;_input_kind="touch"
 		if event.pressed:
-			_cancel_floor_route();grab_focus()
-			_begin_direct_pointer(event.index,event.position,_direct_touch_role(event.position))
+			var role := _direct_touch_role(event.position)
+			if role == "furniture" or scene_id != "campus_bootstrap": _cancel_floor_route()
+			grab_focus()
+			_begin_direct_pointer(event.index,event.position,role)
 		else:_end_direct_pointer(event.index,event.position,event.canceled)
 		accept_event();return true
 	if event is InputEventScreenDrag:
@@ -2195,7 +2256,9 @@ func _stop_floor_route() -> void:
 	_floor_pending_interaction.clear();_floor_intent_state={}
 
 func _floor_transform_current() -> bool:
-	return world_key==_floor_world_key and size==_floor_view_size and is_equal_approx(zoom,_floor_view_zoom) and camera.is_equal_approx(_floor_expected_camera)
+	if world_key != _floor_world_key: return false
+	# Only campus routes use the full map, independent of the current view.
+	return scene_id == "campus_bootstrap" or (size == _floor_view_size and is_equal_approx(zoom, _floor_view_zoom) and camera.is_equal_approx(_floor_expected_camera))
 
 func _floor_visible_rect() -> Rect2:
 	var local:=exploration_safe_rect()
@@ -2204,6 +2267,11 @@ func _floor_visible_rect() -> Rect2:
 func _floor_anchor_bounds(visible: Rect2) -> Rect2:
 	var feet:=PlayerMetrics.foot_rect(Vector2.ZERO,scene_id)
 	return Rect2(visible.position-feet.position,visible.size-feet.size)
+
+func _floor_travel_bounds() -> Rect2:
+	if scene_id == "campus_bootstrap" and campus_layers.manifest.has("routeGrid"):
+		return _floor_anchor_bounds(Rect2(Vector2.ZERO, world_size))
+	return _floor_anchor_bounds(_floor_visible_rect())
 
 func _floor_obstacles() -> Array:
 	# The separated library contains real chair/pot bases instead of a few
@@ -2264,6 +2332,18 @@ func _floor_campus_detour_nodes(goal:Vector2, local_support_only:bool=false) -> 
 func _floor_plan(goal:Vector2,obstacles:Array)->Array[Vector2]:
 	var clear:Callable=func(a:Vector2,b:Vector2)->bool:return _floor_segment_clear(a,b,obstacles,true)
 	if scene_id=="campus_bootstrap" and campus_layers.ready:
+		if not _floor_stand(player) or not _floor_stand(goal): return []
+		if campus_layers.manifest.has("routeGrid") and _campus_floor_planner.configure(campus_layers.manifest.routeGrid, PlayerMetrics.foot_size(scene_id)):
+			var foot_offset := PlayerMetrics.foot_center_offset(scene_id)
+			var clear_centers := func(a: Vector2,b: Vector2) -> bool:
+				var from := a - foot_offset
+				var to := b - foot_offset
+				return _floor_stand(from) and _floor_stand(to) and bool(clear.call(from, to))
+			var centers := _campus_floor_planner.plan(player + foot_offset, goal + foot_offset, clear_centers, mask, mask_meta)
+			if not centers.is_empty():
+				for index in centers.size(): centers[index] -= foot_offset
+				centers[-1] = goal
+				return centers
 		# Both attempts are synchronous against one unchanged collision state.
 		# Reuse exact directed-edge proofs across retries, but never across taps
 		# or movement frames. Combined real checks retain the existing budget.
@@ -2303,9 +2383,7 @@ func _floor_campus_sweep_clear(a: Vector2,b: Vector2) -> bool:
 		var feet:=PlayerMetrics.foot_rect(anchor,scene_id)
 		corners.append_array(PackedVector2Array([feet.position,Vector2(feet.end.x,feet.position.y),feet.end,Vector2(feet.position.x,feet.end.y)]))
 	var swept:=Geometry2D.convex_hull(corners)
-	for polygon: PackedVector2Array in campus_layers.solid_polygons:
-		if not Geometry2D.intersect_polygons(swept,polygon).is_empty(): return false
-	return true
+	return not campus_layers.solid_intersects(swept, swept_bounds)
 
 func _floor_segment_clear(a: Vector2,b: Vector2,planned_obstacles: Array=[],validated_nodes: bool=false) -> bool:
 	# Planning is synchronous and has already checked each graph node. Walking
@@ -2314,6 +2392,7 @@ func _floor_segment_clear(a: Vector2,b: Vector2,planned_obstacles: Array=[],vali
 	var segment_bounds := Rect2(a.min(b), (b-a).abs())
 	for obstacle: Rect2 in (planned_obstacles if validated_nodes else _floor_obstacles()):
 		if segment_bounds.intersects(obstacle, true) and MobileFloorRoute.segment_hits(a,b,obstacle): return false
+	if not _floor_campus_sweep_clear(a,b): return false
 	if mask.is_empty(): return true
 	# Exact conservative fast path: if the ENTIRE swept bounding rectangle
 	# is supported and hazard-free, every intermediate whole foot is too.
@@ -2321,6 +2400,7 @@ func _floor_segment_clear(a: Vector2,b: Vector2,planned_obstacles: Array=[],vali
 	# Real polygon/water sweeps and legacy/story obstacles were checked above.
 	if scene_id=="campus_bootstrap" and campus_layers.ready:
 		var envelope:=PlayerMetrics.foot_rect(a,scene_id).merge(PlayerMetrics.foot_rect(b,scene_id))
+		if not campus_layers.source_floor_override_intersects(envelope) and SpatialRules.mask_allows_rect(envelope,mask,mask_meta): return true
 		if campus_layers.reviewed_support_covers(envelope,mask,mask_meta):return true
 	# Full footprint occupancy only changes as a foot edge crosses a cell edge.
 	# Test every such interval, including narrow holes between the old samples.
@@ -2429,7 +2509,7 @@ func _queue_target_approach(target:Dictionary, interact_on_arrival := true)->boo
 	var chair_anchor := _library_chair_anchor(target)
 	if chair_anchor.is_finite():
 		authored = chair_anchor
-	_floor_bounds=_floor_anchor_bounds(_floor_visible_rect())
+	_floor_bounds=_floor_travel_bounds()
 	var offset:Vector2=PlayerMetrics.foot_center_offset(scene_id) if scene_id=="duan_yongping_temporal_maze" else Vector2.ZERO
 	var obstacles:Array=_floor_obstacles();var attempts:=0
 	for goal:Vector2 in TargetApproach.candidates(player,area,limit,offset,authored):
@@ -2475,8 +2555,7 @@ func _mobile_floor_tap(local: Vector2) -> void:
 	_cancel_floor_route(); move_target=Vector2.INF
 	if presentation_actor_hidden or capture_mode or _scene_presentation_blocks() or _shell_input_blocked(): return
 	if get_viewport().gui_is_dragging() or get_tree().root.gui_is_dragging(): return
-	var visible:=exploration_safe_rect(true)
-	if not visible.has_point(local): return
+	if not _floor_tap_surface_contains(local): return
 	var point: Vector2=(local-size/2)/zoom+camera
 	# Furniture owns the press before overlapping targets, as in canonical input.
 	if chapter4_layers!=null and scene_id=="duan_yongping_temporal_maze" and not chapter4_layers.pick_drag(point,State.d).is_empty(): return
@@ -2492,9 +2571,9 @@ func _mobile_floor_tap(local: Vector2) -> void:
 	var actor:Dictionary=player_visual()
 	if actor.texture!=null:
 		if object_picker.contains(player_geometry(),point): return
-	_floor_bounds=_floor_anchor_bounds(_floor_visible_rect())
+	_floor_bounds=_floor_travel_bounds()
 	_floor_goal=point
-	_floor_world_key=world_key; _floor_view_size=size; _floor_view_zoom=zoom; _floor_expected_camera=camera
+	_floor_world_key=world_key;_floor_view_size=size;_floor_view_zoom=zoom;_floor_expected_camera=camera
 	# Tap/marker denote the scene-specific collision-foot center, not the
 	# sprite origin. Object and inventory hit coordinates are unchanged.
 	var goal:=PlayerMetrics.anchor_from_foot_center(point,scene_id)

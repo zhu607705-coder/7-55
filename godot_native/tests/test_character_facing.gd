@@ -57,11 +57,16 @@ func run()->void:
 			check(world.player_visual().texture==idle and world.player_visual().flip_h==row.flip,"arrival retains actual heading and idle pixels")
 	world._cancel_floor_route();world.mobile_exploration=false
 	# Actual axis collision code: x blocked, y moves. Face the resulting slide.
-	world.player=Vector2(500,500);world.facing="side";world.player_flip=false
-	world.collisions=[{"x":510,"y":350,"width":50,"height":400}]
+	# Library uses a wider body than other scenes. Start one quarter pixel
+	# before contact with that actual body, rather than inside the wall.
+	var wall_x:=510.0
+	world.player=Vector2(wall_x-Metrics.foot_rect(Vector2.ZERO,world.scene_id).end.x-.25,500)
+	world.facing="side";world.player_flip=false
+	world.collisions=[{"x":wall_x,"y":350,"width":50,"height":400}]
+	check(world.can_stand(world.player) and is_equal_approx(wall_x-Metrics.foot_rect(world.player,world.scene_id).end.x,.25),"slide fixture starts legal with the scene-specific body one quarter pixel from contact")
 	world.touch_axis=Vector2(1,-.4);world._process(.05)
-	var contact:Rect2=Metrics.foot_rect(world.player)
-	check(contact.end.x<=510.001 and contact.end.x>509.99 and world.player.y<500,"actual body closes the quarter-pixel gap to wall contact and slides vertically without penetration")
+	var contact:Rect2=Metrics.foot_rect(world.player,world.scene_id)
+	check(contact.end.x<=wall_x+.001 and contact.end.x>wall_x-.01 and world.player.y<500,"actual body closes the quarter-pixel gap to wall contact and slides vertically without penetration")
 	check(world.facing=="up","slide uses actual up displacement rather than stronger right intent")
 	world.touch_axis=Vector2.RIGHT;var blocked:Vector2=world.player;world._process(.05)
 	check(world.player==blocked and world.facing=="side" and not world.player_flip,"wall contact turns in place toward intent")

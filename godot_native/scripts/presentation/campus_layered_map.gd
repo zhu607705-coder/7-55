@@ -300,6 +300,13 @@ func _ensure_solid_bounds() -> void:
 			for vertex: Vector2 in polygon: bounds = bounds.expand(vertex)
 		_solid_bounds_cache.append(bounds)
 
+func solid_intersects(shape: PackedVector2Array, bounds: Rect2) -> bool:
+	_ensure_solid_bounds()
+	for index in solid_polygons.size():
+		if not bounds.intersects(_solid_bounds_cache[index], true): continue
+		if not Geometry2D.intersect_polygons(shape, solid_polygons[index]).is_empty(): return true
+	return false
+
 func navigation_decision(feet: Rect2, source_support: Callable = Callable(), hazards_only: bool = false) -> int:
 	# -1 delegates to unchanged source mask; 0 rejects a measured new solid;
 	# 1 admits only a whole foot box covered by explicit reviewed floor regions.
@@ -309,12 +316,7 @@ func navigation_decision(feet: Rect2, source_support: Callable = Callable(), haz
 		for water: Rect2 in region.rects:
 			if feet.intersects(water): return 0
 	var box := PackedVector2Array([feet.position, Vector2(feet.end.x, feet.position.y), feet.end, Vector2(feet.position.x, feet.end.y)])
-	_ensure_solid_bounds()
-	for index in solid_polygons.size():
-		# Reject only strict AABB separation. Edge contact still reaches the
-		# original polygon algorithm, preserving its exact boundary semantics.
-		if not feet.intersects(_solid_bounds_cache[index], true): continue
-		if not Geometry2D.intersect_polygons(box, solid_polygons[index]).is_empty(): return 0
+	if solid_intersects(box, feet): return 0
 	if hazards_only or floor_polygons.is_empty(): return -1
 	var overlaps_floor := false
 	for polygon: PackedVector2Array in floor_polygons:

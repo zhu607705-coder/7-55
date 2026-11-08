@@ -16,9 +16,6 @@ static func ui_units(extent:Vector2,display_scale:float)->float:
 static func pixels(physical:float,display_scale:float)->float:
 	return physical/maxf(.01,display_scale)
 
-static func font_pixels(physical:int,display_scale:float)->int:
-	return maxi(1,ceili(pixels(physical,display_scale)))
-
 static func hud(font:Font,extent:Vector2,display_scale:float,text:String,touch:bool,text_scale:float=1.0,body_px:int=BODY_PX)->Dictionary:
 	var s:=maxf(.01,display_scale)
 	var unit:=ui_units(extent,s)

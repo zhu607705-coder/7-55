@@ -1,14 +1,70 @@
 #!/usr/bin/env python3
 """Compile deterministic independent sources; no new painting or flattened map fallback."""
 from pathlib import Path
-from PIL import Image
-import json,hashlib,math,base64,numpy as np
+from PIL import Image, ImageDraw
+import json,hashlib,math,base64,zlib,numpy as np
 from campus_layer_selection import load_current
 ROOT=Path(__file__).resolve().parents[1];SOURCE=ROOT.parent/'art/campus_layered';OUT=ROOT/'assets/native/campus_layered';MANIFEST=ROOT/'data/native/campus_layered_map.json';SIZE=1024
 
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
-def write(im,p):p.parent.mkdir(parents=True,exist_ok=True);im.save(p);return sha(p)
-def rel(p):return 'res://'+str(p.relative_to(ROOT))
+def write(im,p):
+ p.parent.mkdir(parents=True,exist_ok=True)
+ if p.exists():
+  with Image.open(p) as previous:
+   if previous.mode==im.mode and previous.size==im.size and previous.tobytes()==im.tobytes():return sha(p)
+ im.save(p)
+ return sha(p)
+def rel(p):return 'res://'+p.relative_to(ROOT).as_posix()
+
+def route_grid(result, roads):
+ """Candidate centers for the 16 × 10 campus foot box. Runtime still checks every route edge."""
+ half_width,half_height=8,5
+ width,height=result['worldSize']
+ source_path=ROOT.parent/'src/data/maps/zijingang-campus-runtime.json'
+ source=json.loads(source_path.read_text(encoding='utf-8'))['walkability']
+ cell=source['cellSize']
+ count=source['gridWidth']*source['gridHeight']
+ original=np.unpackbits(np.frombuffer(base64.b64decode(source['bitsBase64']),dtype=np.uint8),bitorder='little',count=count)
+ support=np.repeat(np.repeat(original.reshape(source['gridHeight'],source['gridWidth']),cell,axis=0),cell,axis=1).astype(bool)
+ assert support.shape==(height,width)
+ rows=result['navigation'].get('walkSupportSources',[])
+ for row in rows:
+  if 'sourceFloorOverrideRect' in row:
+   x,y,w,h=row['sourceFloorOverrideRect']
+   support[y:y+h,x:x+w]=False
+ for row in rows:
+  x,y=row['origin']; mask=np.asarray(Image.open(SOURCE/row['source']))!=0
+  h,w=mask.shape
+  assert 0<=x<=width-w and 0<=y<=height-h, row['id']
+  support[y:y+h,x:x+w]|=mask
+ solid=Image.new('1',(width,height)); painter=ImageDraw.Draw(solid)
+ for row in result['navigation'].get('footprints',[]):
+  painter.polygon([tuple(p) for p in row['polygon']],fill=1)
+ for row in result['waterRegions']:
+  x,y=row['origin']
+  for l,t,w,h in row['rectsNative']:
+   painter.rectangle((x+l,y+t,x+l+w-1,y+t+h-1),fill=1)
+ support&=~np.asarray(solid)
+ # Integral image counts unsupported pixels inside the exact foot size.
+ # With 4px spacing, the four orthogonal neighbors also cover diagonal sweeps.
+ step=4
+ xs=np.arange(step//2,width,step);ys=np.arange(step//2,height,step)
+ sums=np.zeros((height+1,width+1),dtype=np.int32)
+ sums[1:,1:]=np.cumsum(np.cumsum(~support,axis=0,dtype=np.int32),axis=1,dtype=np.int32)
+ left=np.maximum(0,xs-half_width);right=np.minimum(width,xs+half_width)
+ top=np.maximum(0,ys-half_height);bottom=np.minimum(height,ys+half_height)
+ count_blocked=sums[np.ix_(bottom,right)]-sums[np.ix_(top,right)]-sums[np.ix_(bottom,left)]+sums[np.ix_(top,left)]
+ valid=(count_blocked==0)&((right-left)==2*half_width)&(((bottom-top)==2*half_height)[:,None])
+ terrain=np.where(valid,1+roads[np.ix_(ys,xs)],0).astype(np.uint8)
+ # The original Web route used conservative 24px cells. Keep an equivalent
+ # 12px road margin in the fine grid while preserving access to narrow links.
+ radius=12//step
+ rim=np.pad(terrain!=2,radius,constant_values=True)
+ prefix=np.pad(rim,((1,0),(1,0))).cumsum(axis=0,dtype=np.int32).cumsum(axis=1,dtype=np.int32)
+ span=2*radius+1
+ core_count=prefix[span:,span:]-prefix[:-span,span:]-prefix[span:,:-span]+prefix[:-span,:-span]
+ terrain[core_count==0]=3
+ return {'cellSize':step,'size':[len(xs),len(ys)],'footSize':[2*half_width,2*half_height],'terrainDeflateBase64':base64.b64encode(zlib.compress(terrain.tobytes(),9)).decode('ascii')}
 def validate_semantics(authoring):
  assert authoring.get('semanticLayerVersion')==2, 'Explicit ground/raised semantic version 2 required'
  for row in authoring['layers']:
@@ -37,8 +93,13 @@ def navigation_pixels(water, visual_alpha):
 def build():
  a,s,ss=load_current();validate_semantics(a);result={'format':'755-campus-layered-map-v1','semanticLayerVersion':2,'worldSize':[4516,3420],'coordinateSystem':'unchanged campus_bootstrap; not campus_qizhen_loop','selectionRevision':s['revision'],'selectionSha256':ss,'layers':[],'waterTiles':[],'waterFrames':[],'waterRegions':[],'walkSupports':[],'navigation':a.get('navigation',{}),'limitations':a.get('limitations',[]),'reviewStatus':a.get('reviewStatus'),'layeringPolicy':'grass/land -> masked true water -> ground/shore/paving -> roads -> raised buildings/canopies/gates split around actor by measured foot baseline'}
  keep=set()
+ roads=np.zeros(result['worldSize'][::-1],dtype=bool)
  for row in a['layers']:
   src=SOURCE/row['source'];assert sha(src)==row['sourceSha256'];im=Image.open(src).convert('RGBA');assert im.size==tuple(row['nativeSize']);r={k:v for k,v in row.items() if k not in ['source']};r['tiles']=[]
+  if row['renderPass']=='roads':
+   assert row['scale']==1
+   ox,oy=row['origin']
+   roads[oy:oy+im.height,ox:ox+im.width]|=np.asarray(im.getchannel('A'))>0
   for y in range(0,im.height,SIZE):
    for x in range(0,im.width,SIZE):
     tile=im.crop((x,y,min(x+SIZE,im.width),min(y+SIZE,im.height)));b=tile.getchannel('A').getbbox()
@@ -81,7 +142,8 @@ def build():
    result['walkSupports'][-1]['sourceFloorOverrideRect']=rect
 
  result['raisedLayers']=[r['id'] for r in result['layers'] if r.get('renderPass')=='raised'];assert result['raisedLayers'], 'No raised semantic content';assert result['waterTiles']
+ result['routeGrid']=route_grid(result,roads)
  for p in OUT.rglob('*.png'):
   if p not in keep:p.unlink();p.with_suffix(p.suffix+'.import').unlink(missing_ok=True)
- MANIFEST.parent.mkdir(parents=True,exist_ok=True);MANIFEST.write_text(json.dumps(result,ensure_ascii=False,indent=2));print(json.dumps({'layers':len(result['layers']),'waterTiles':len(result['waterTiles']),'objectTiles':sum(len(x['tiles'])for x in result['layers']),'manifest':str(MANIFEST),'sha256':sha(MANIFEST)}))
+ MANIFEST.parent.mkdir(parents=True,exist_ok=True);MANIFEST.write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8',newline='\n');print(json.dumps({'layers':len(result['layers']),'waterTiles':len(result['waterTiles']),'objectTiles':sum(len(x['tiles'])for x in result['layers']),'manifest':str(MANIFEST),'sha256':sha(MANIFEST)}))
 if __name__=='__main__':build()
