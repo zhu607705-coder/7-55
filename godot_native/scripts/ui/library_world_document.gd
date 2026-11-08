@@ -26,14 +26,20 @@ func configure(main:Control,b,page_id:String,view:Dictionary)->void:
 	# Let drag/wheel events on the paper reach its ScrollContainer while child
 	# controls keep their own ordinary pointer handling.
 	paper.mouse_filter=Control.MOUSE_FILTER_PASS;scroll.add_child(paper)
-	b._panel(paper,Rect2(0,0,516,790),Color("efe3c5"),Color("b5a17a"),0,1)
-	b._panel(paper,Rect2(0,0,17,790),Color("d4c29a"))
+	var page_background: Control=b._panel(paper,Rect2(0,0,516,790),Color("efe3c5"),Color("b5a17a"),0,1)
+	var page_edge: Control=b._panel(paper,Rect2(0,0,17,790),Color("d4c29a"))
 	b._label(paper,str(view.get("title","")),Rect2(42,26,432,42),25,Color("293d39"))
 	b._panel(paper,Rect2(42,83,432,1),Color("9a865f"))
 	var text:Label=b._label(paper,str(view.get("body","")),Rect2(42,108,432,530),21,Color("343b30"))
 	text.vertical_alignment=VERTICAL_ALIGNMENT_TOP
-	b._label(paper,"—  755  —",Rect2(42,665,432,28),15,Color("766849"),HORIZONTAL_ALIGNMENT_CENTER)
-	var close:Button=b._button(paper,"合上书",Rect2(112,720,292,46),func():
+	text.size.y=maxf(text.size.y,text.get_minimum_size().y)
+	var footer_y:=text.position.y+text.size.y+27
+	var close_y:=footer_y+55
+	paper.custom_minimum_size.y=close_y+70
+	page_background.size.y=paper.custom_minimum_size.y
+	page_edge.size.y=page_background.size.y
+	b._label(paper,"—  755  —",Rect2(42,footer_y,432,28),15,Color("766849"),HORIZONTAL_ALIGNMENT_CENTER)
+	var close:Button=b._button(paper,"合上书",Rect2(112,close_y,292,46),func():
 		if not can_close():return
 		host._close_modal(),Color("214748"),Color("efe3c5"))
 	close.name="LibraryWorldDocumentClose";close.disabled=not end_seen

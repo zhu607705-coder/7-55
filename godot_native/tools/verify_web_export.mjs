@@ -1027,6 +1027,7 @@ async function scrollLibraryRuleToClose() {
       }
       await active.cdp.send('Input.dispatchTouchEvent', {type: 'touchEnd', touchPoints: []});
     } else {
+      await active.cdp.send('Input.dispatchMouseEvent', {type: 'mouseMoved', ...from});
       await active.cdp.send('Input.dispatchMouseEvent', {type: 'mouseWheel', x: from.x, y: from.y, deltaX: 0, deltaY: 260});
     }
     await interval(350);

@@ -139,6 +139,13 @@ func run() -> void:
 	main.world_mode.pressed.emit()
 	await frames()
 	check(state.d.native.mode == "dark" and main.world_mode.tooltip_text == "深色模式", "ordinary switch toggles and uses the dark mode name alone")
+	main.mobile_surface_managed = true
+	root.size = Vector2i(390,844)
+	await frames()
+	main._layout()
+	var rotated_surface := Rect2(Vector2.ZERO, main.size)
+	check(main.mobile_surface_rotation == 1 and rotated_surface.encloses(main.world_view.get_global_rect()), "portrait browser keeps the oriented map inside the landscape surface")
+	check(main.world_view.get_global_rect().encloses(main.mobile_back.get_global_rect()), "phone button stays inside the rotated map")
 	main.queue_free()
 	await frames()
 	print("Layered campus integration: %d checks, %d failures" % [checks,failures])

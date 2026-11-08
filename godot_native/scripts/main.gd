@@ -787,7 +787,7 @@ func _layout() -> void:
 	var play_rect:=Rect2(world_frame.position+Vector2.ONE*margin*world_frame.scale,world_extent*world_frame.scale)
 	if world_frame.visible:
 		_configure_world_surface(world_extent,margin,compact)
-		play_rect=get_global_transform_with_canvas().affine_inverse()*world_view.get_global_rect()
+		play_rect=get_global_transform().affine_inverse()*world_view.get_global_rect()
 	# Keep the established touch target on small displays and let desktop
 	# chrome grow with the same game surface as the text above it.
 	var chrome_scale:=maxf(1,WorldOverlay.ui_scale(play_rect.size))
@@ -886,8 +886,9 @@ func _configure_world_surface(extent: Vector2,margin: float,compact: bool) -> vo
 	var units:=maxi(1,floori(extent.x*density/16.0))
 	var dimensions:=Vector2i(16,9)*units
 	var view_scale:=Vector2.ONE/density
-	var top_left:=(to_pixels*(extent/2.0)-Vector2(dimensions)/2.0).round()
-	var view_position:=to_pixels.affine_inverse()*top_left
+	# Center in the authored axes before snapping the oriented origin to pixels.
+	var origin_pixels:=(to_pixels*((extent-Vector2(dimensions)*view_scale)/2.0)).round()
+	var view_position:=to_pixels.affine_inverse()*origin_pixels
 	var context: Array=[extent,compact,world_frame.get_global_transform_with_canvas()]
 	var layout_changed: bool=context!=world_surface_context
 	var backing_changed: bool=world_viewport.size!=dimensions or not world_view.position.is_equal_approx(view_position) or not world_view.scale.is_equal_approx(view_scale)

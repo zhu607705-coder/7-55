@@ -578,7 +578,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			s.native.page = "phone_home"
 			s.currentScene = "phone_home"
 			s.rpgCheckpoint = "campus_library_gate"
-			var handoff := _world(s,"campus_bootstrap")
+			var handoff := _world(s,"campus_bootstrap","022：深色模式也打开了。")
 			handoff["open_world"] = true
 			return handoff
 
