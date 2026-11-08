@@ -32,6 +32,7 @@ func configure(main:Control,b,page_id:String,view:Dictionary)->void:
 	b._panel(paper,Rect2(42,83,432,1),Color("9a865f"))
 	var text:Label=b._label(paper,str(view.get("body","")),Rect2(42,108,432,530),21,Color("343b30"))
 	text.vertical_alignment=VERTICAL_ALIGNMENT_TOP
+	text.propagate_notification(Control.NOTIFICATION_THEME_CHANGED)
 	text.size.y=maxf(text.size.y,text.get_minimum_size().y)
 	var footer_y:=text.position.y+text.size.y+27
 	var close_y:=footer_y+55
