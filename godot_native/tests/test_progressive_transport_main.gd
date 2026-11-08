@@ -105,9 +105,12 @@ func open_target(target: Dictionary,id: String) -> Control:
 	var prior:=starts
 	var local: Vector2=(shell.world._target_point(target)-shell.world.camera)*shell.world.zoom+shell.world.size/2
 	check(Rect2(Vector2.ZERO,shell.world.size).has_point(local),"Source object is visible for real pointer input "+id)
+	var display: Control=shell.world_view
+	var pixel: Vector2=shell.world.get_global_transform_with_canvas()*local
+	var at: Vector2=display.get_global_transform_with_canvas()*(pixel*display.size/Vector2(shell.world_viewport.size))
 	for pressed: bool in [true,false]:
-		var e:=InputEventMouseButton.new();e.button_index=MOUSE_BUTTON_LEFT;e.position=local;e.global_position=local;e.pressed=pressed
-		shell.world_viewport.push_input(e,true);await frames(2)
+		var e:=InputEventMouseButton.new();e.button_index=MOUSE_BUTTON_LEFT;e.position=at;e.global_position=at;e.pressed=pressed
+		root.push_input(e,true);await frames(2)
 	var game: Control=shell.active_game
 	check(is_instance_valid(game) and game.config.get("kind","")=="progressive_transport" and game.config.puzzleId==id and starts==prior+1,"Ordinary physical object pointer mounts exactly one activity "+id)
 	check(shell.modal==null and shell.world_effect==null,"No old answer modal or second world overlay "+id)

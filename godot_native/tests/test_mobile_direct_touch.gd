@@ -47,7 +47,8 @@ func key(code: Key, down: bool) -> void:
 	event.keycode = code; event.physical_keycode = code; event.pressed = down
 	send(event)
 func world_screen(local: Vector2) -> Vector2:
-	return shell.world_view.get_global_transform_with_canvas() * (local * shell.world_view.size / Vector2(shell.world_viewport.size))
+	var display: Rect2=shell.world_view.get_global_rect()
+	return display.position+local*display.size/shell.world.size
 func source_screen(point: Vector2) -> Vector2:
 	return world_screen((point-shell.world.camera)*shell.world.zoom+shell.world.size/2)
 func target(id := TARGET_ID) -> Dictionary:
@@ -112,7 +113,8 @@ func assert_layout(insets: Vector4) -> void:
 	var map:Rect2=shell.world_view.get_global_rect()
 	var back:Rect2=shell.mobile_back.get_global_rect()
 	check(absf(back.end.x-(map.end.x-8))<.01 and absf(back.end.y-(map.end.y-8))<.01 and back.size.x>=44 and back.size.y>=44,"phone icon retains a physical44px target in the map's bottom right")
-	check(shell.world.size==Vector2(shell.world_viewport.size),"world pixels match SubViewport exactly")
+	var rendered := root.get_final_transform()*map
+	check(rendered.size.is_equal_approx(Vector2(shell.world_viewport.size)),"world backing matches the rendered pixels")
 	observations.append({"size":str(shell.size),"safe":str(safe),"world":str(shell.world_frame.get_global_rect()),"gestureArea":str(metrics.gestureArea)})
 
 func plaque_character_rects() -> Array[Rect2]:

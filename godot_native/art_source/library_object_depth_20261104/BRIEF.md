@@ -34,3 +34,14 @@ Counter annotation revision, November 4. Expand the counter's two ground-contact
 Shelf finding revision, November 4. Each of the nine stacks carries its actual column number 01–09 on a uniform cream sign above its north end. The catalogue locates the existing I247.55 / 755 record at 06架 · 南端上层 · 755号. That book has a separate spine region cropped from the existing shelf master. A controlled downward mouse or touch pull of at least 18 world pixels invokes the original lib_shelf intent, then preserves the authored shelf/paper/reader handoff. The book's displacement is transient and resets on cancellation, mode/context changes, hiding or state replacement. Inventory drag can still target the actual spine. Original controller item IDs, evidence rewards and save facts remain authoritative; no new persistent book field or image master was introduced.
 
 Catalogue decoys, same review. The shared catalogue now contains eight records, including Liu Cixin's real titles 三体, 球状闪电 and 流浪地球 alongside the original authored clues. Title and author were checked against Beijing Publishing Group's author profile https://en.bphg.com.cn/shaoers/detail/1630.html and the China Writers Association profile https://www.chinawriter.com.cn/2015/2015-08-25/251665.html. Shelf placements and catalogue numbers are invented for this game's interior. No real edition, publication year or publisher was invented. Native reference covers are plain original typeset cards. Only the original correct result ID can award the clue. Search-result event counts use the actual catalogue size.
+
+November 7 library furniture and pixel grid. The reading table and catalogue desk were generated with built-in image_gen in the room's orthographic oblique top-down view. The north-facing chair uses the existing south-facing master for the complete painted wood faces, bevels and dark edges. The approved rear-view layout sets the slat heights and the equal span between the posts. The normalizer assembles and separates the chair surfaces at master size before the atlas samples them. Each table's far supports align behind its near supports, so the two visible legs have equal widths and flush feet. The atlas clips the seat under the table apron, keeps the near backrest visible and uses the painted alpha for chair interaction. The diagonal railing measures depth between the two post contacts. The plate and static furniture use one texel per source world pixel and nearest sampling.
+
+From the repository root, regenerate the furniture, placement data and sprite atlas with official Godot 4.7.1.
+
+```powershell
+$project = (Resolve-Path godot_native).Path
+godot --headless --path $project --script res://tools/normalize_library_objects.gd -- $project --furniture
+node godot_native/tools/build_library_objects.mjs
+godot --headless --path $project --script res://tools/normalize_library_objects.gd -- $project --grid
+```

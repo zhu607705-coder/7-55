@@ -368,7 +368,7 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 		return _ok("",{"scene":SCENE})
 	if action=="c4_mode":
 		invalidate_progressive_session()
-		c.mode="dark" if c.mode=="light" else "light"; s.native.mode=c.mode; return _ok("深色观察" if c.mode=="dark" else "浅色操作")
+		c.mode="dark" if c.mode=="light" else "light"; s.native.mode=c.mode; return _ok("深色模式" if c.mode=="dark" else "浅色模式")
 	if action=="c4_cancel_floor_selection":
 		if value is Dictionary and pending.get("action","")=="c4_floor_select" and value.get("session","")==pending.get("token","missing"): pending={}
 		return _ok()
@@ -618,10 +618,10 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 	if action=="c4_diagnose":
 		if c.phase!="maintenance_repair" or c.floor!="A1" or c.guardMode!="patrol" or _has(c,"cart_wheel_inspected") or not value is Dictionary: return _locked()
 		if value.get("wheel_sound","")!="latch" or value.get("clock_jam","")!="gear_offset" or value.get("oil_trace","")!="oil_shortage": return _ok("故障与痕迹还没有对应上。")
-		_fact(c,"cart_wheel_inspected"); s.items.shortPryBar=true; return _ok("维修工具已备好。")
+		_fact(c,"cart_wheel_inspected"); s.items.shortPryBar=true; return _ok("诊断对上了。短撬棍已放进道具栏。")
 	if action=="c4_cart_cover":
 		if c.phase!="maintenance_repair" or c.floor!="A1" or c.mode!="light" or _has(c,"cart_wheel_cover_opened") or not _has(c,"cart_wheel_inspected") or not s.items.shortPryBar: return _locked("cart_wheel_inspection_required")
-		_fact(c,"cart_wheel_cover_opened"); s.items.shortPryBar=false; s.items.universalLubricatingOil=true; return _ok("轮罩已打开。")
+		_fact(c,"cart_wheel_cover_opened"); s.items.shortPryBar=false; s.items.universalLubricatingOil=true; return _ok("轮罩打开了。用道具栏里的通用润滑油给轮轴上油。")
 	if action=="c4_cart_oil":
 		if c.phase!="maintenance_repair" or c.floor!="A1" or c.mode!="light" or _has(c,"cart_wheel_repaired") or not _has(c,"cart_wheel_cover_opened") or not s.items.universalLubricatingOil: return _locked("cart_wheel_cover_required")
 		_facts(c,["cart_wheel_repaired","clock_gear_repaired"]); s.items.universalLubricatingOil=false; return _ok("轮轴恢复转动，联动齿轮归位。")
@@ -768,9 +768,9 @@ func _puzzle_correct(id: String,value: Variant) -> bool:
 	return false
 func _records(c: Dictionary) -> String:
 	var lines: Array=[]
-	if _has(c,"elevator_history_observed"): lines.append("一楼门体持续开放八秒，完整覆盖六秒进入窗口。\n门体闭合后，轿厢指示立即由 1F 转为上行。")
-	if _has(c,"elevator_a2_call_record_observed"): lines.append("二楼下行外呼在 18:50:04 被按下，按钮持续亮到 18:50:12。\n同一时间段没有二楼门机开启记录，层显由 1F 直接跳到 3F。")
-	if _has(c,"elevator_a3_arrival_record_observed"): lines.append("三楼到站铃在 18:50:12 响起，随后门机完整开启。\n轿厢内没有第二次起步记录，这里是离开一楼后的实际到站层。")
+	if _has(c,"elevator_history_observed"): lines.append("一楼闭楼回放：从 22:43:31 起，八秒开门区间覆盖六秒进梯窗口。\n门闭合后，轿厢指示由 1F 转为上行。")
+	if _has(c,"elevator_a2_call_record_observed"): lines.append("二楼晚间外呼记录：18:50:04 按钮亮起，持续到 18:50:12。\n这段没有二楼门机开启记录，层显由 1F 直接跳到 3F。")
+	if _has(c,"elevator_a3_arrival_record_observed"): lines.append("三楼晚间停站记录：18:50:12 到站铃响，随后门机完整开启。\n轿厢没有第二次起步记录，三楼是离开一楼后的实际到站层。")
 	return "\n\n".join(lines)
 func _closure_ready(s: Dictionary) -> bool:
 	var c: Dictionary=s.chapter4
@@ -907,7 +907,7 @@ func objective(s: Dictionary) -> String:
 		return str(content.tasks["install_final_minute" if c.floor=="A1" else "return_via_main_stair"].label)
 	if c.phase=="maintenance_repair":
 		if not _has(c,"cart_wheel_inspected"): return "检查清洁车与旧钟的故障"
-		if not _has(c,"cart_wheel_cover_opened"): return "用短撬杆打开清洁车轮罩"
+		if not _has(c,"cart_wheel_cover_opened"): return "用短撬棍打开保洁车轮罩"
 		if not _has(c,"clock_gear_repaired"): return "将润滑油用于清洁车轮轴"
 		return "把旧钟拨向 07:55"
 	for contract in content.phaseContracts:

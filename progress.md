@@ -15,6 +15,19 @@
 - 在 `9b417f8c` 工作树用本机 Fish Audio Drama 3 MLX 4-bit（Built with Fish Audio）重录六段既有英文对白。四个角色各用固定原声和逐字稿作参考。三条校园广播沿用同一参考，保洁员和保安分别沿用第四章的原声参考。记录了角色表演提示、采样和原声 SHA。
 - 共生成 54 条候选。六段入选 MP3 经本机无提示转写，与原对白逐词一致。五段混音转写逐词一致，剧场混音的 `foyer` 被拼作 `Foye`。录音均按解码采样确认 5200 ms，硬岸音频 SHA 与原版一致，北教广播人声结束至断电约 366 ms。
 - 本机混音、复验、幂等检查和 Godot 资源同步通过。Godot 4.7.1 八项定向校验通过，包含实际音频播放、暂停、失焦、证据选择及章节交接。Web 快速检查五项及第 3.5 章 48 种证据完成顺序通过。A/B 试听页已用本机 Chromium 核对 390 px 布局、播放推进和切换时暂停上一段。验证范围为本地工作树与试听页。
+## 2026-11-07 本地试玩修复
+
+- 在新版分层校园图上按实际显示区域绘制地图、人物、标牌和界面，任务、模式和手机入口集中在右下角。宿舍名为「紫云五舍」。模式在 022 剧情交接后解锁，由游戏对白提示。
+- CC98 认证页面隐藏密码线索。第二次点击人脸时图标跳起，落下后显示「你惊动了认证值班员。」并展开线索。体艺结算和第一章活动使用自身画面，校园卡余额左对齐并移除重复的零钱栏。
+- 操作反馈和同一操作附带的字幕共用首次显示位置。移动小数点后的同句字幕不会跳到底部，也不会盖掉更新的提示或重放已过期的提示。地图上的操作反馈、物件提示和对白使用同一纸面样式，长文本仍可滚动。任务页已移除线索对照。
+- 在 Godot 4.7.1 隔离环境复测认证、余额提示、原生图形窗口、四章任务页和地图字幕。测试覆盖提示过期、连续反馈、窄屏触控、故事字幕以及任务返回。
+
+## 2026-11-07 第四章现场线索与文本对齐
+
+- 按字段合并用户提供的阶段、任务、对白和失败反馈，维持 13 个阶段、41 项任务和 117 条分级提示。重新生成文本索引，更新六件核心道具说明，合并已被新正文替代的 30 条 Godot 对白覆盖。
+- 补齐三轮旧钟的原始记录与推算提示。区分 18:50 楼内记录与 22:43:31 闭楼回放，电梯说明指向 A3 实际到站。303 参照仍是楼梯前的主线条件，301 和 302 保留为档案支线。203、开放自习区、维修和 07:54 配电采用实际现场操作的说明。
+- JSON 结构、ID、时间、数值判定和掉落条件对比通过。Godot 4.7.1 专项及先决阶段 19 项通过；保留 Web quick、第四章剧情、因果、拓扑、运行时、Task 14 及原生文本、音频和机关导出校验通过。
+- 保留三句与现有保安配音对应的字幕；重新生成原生存档校验目录，变动仅限第四章来源记录和嵌入文案。
 
 ## 2026-11-06 认证输入焦点与跨章节手机任务界面
 
@@ -23,6 +36,17 @@
 - Godot `4.7.1.stable.official.a13da4feb`：源同步、导入/解析完成；实际认证页面 **144 项通过**，含回去填写、连续键入、退格、滚轮及原登录回归；四章手机及地图任务 **264 项通过**，覆盖 `1280×720`、`1440×900`、`390×844`、`844×390`，长记录滚动、焦点、线索对照返回与场景/故事不变性。相同 264 项另在 NVIDIA OpenGL 图形渲染通过，已查看桌面和手机截图。测试使用唯一 Windows 临时用户目录，没有写入正式存档。
 - 执行原有 JS 存档传输回归 **41 项通过**；新增依赖无关的焦点交接/虚拟键盘/窗口及可见性事件/销毁回归通过。本机 Edge `156.0.4314.58` 实际 DOM、连续键盘、退格和滚轮输入通过；使用模拟 Godot 输入接收端，不是完整 WebGL 游戏。无头浏览器没有提供真实切换标签页的失焦，窗口失焦/恢复以明确合成事件和 Node 模型验证。
 - 限制：正式原生总测试入口只支持 Linux/macOS，在 Windows 报 `NATIVE_TEST_PLATFORM_REQUIRED`，因此这里使用明确隔离的定向引擎运行。未完成完整原生/保留 Web 发布套件、完整 Godot WebGL、Firefox/WebKit、真实切换应用窗口及实体手机验收。提交与草稿 PR 单独记录；不自动合并或部署。
+
+## 2026-11-07 — simplify CI routing and repeated phone validation
+
+- PR #225's native-only changes still ran the separate retained React/Phaser release job for 289 seconds in run `42328959116`. Add a retained-Web scope rather than changing that suite: native-only changes skip it, while shared source/assets, root dependencies, unknown game paths, shared button CSS and the imported theater test driver keep it. Manual dispatch remains full.
+- Fix PR path classification to compare the base with the tested synthetic merge, rather than comparing divergent branch tips. Real Git/CLI fixtures reproduce the former false platform/retained-Web selection and cover renamed/deleted shared inputs and missing-SHA fallback.
+- Cancel superseded native, cross-PR and Godot Web checks only within the same PR. Mainline/manual runs and the separate Pages publication group are not cancelled. Replace four phone receipt implementations with one CLI and exercise that CLI's success and rejection cases directly.
+- Local checks: native validation and source-integration contracts 172/172; Python source transport 23/23; routing plus Web workflow/consumer/phone contracts 86/86; media-tool fixtures 234/234; six workflow YAML files and all 73 shell steps parse; `git diff --check` passes. This is orchestration validation, not a local engine/gameplay pass. The cloud's preinstalled Godot is 4.6.3; the hosted workflows retain pinned 4.7.1 and perform the actual game/export/browser checks after publication of the working branch.
+- Hosted run `42339426271` exposed two infrastructure failures rather than failing gameplay assertions: one shard spent 6m07s downloading inputs, then reached the old 10-minute job limit with 57 passes and zero failures; retrying only that shard rejected the same immutable source because consumer attempt 2 differed from producer attempt 1. Bind restore to the explicit producer attempt while preserving same-run/commit/tree/head/base and manifest/archive hashes. Give the job 15 minutes and the actual runtime step 10 minutes; per-case limits remain unchanged.
+- Recognize only GitHub’s standard `RUNNER_TEMP` scratch directory in the existing environment filter, while retaining it in the identity hash and rejecting unknown external fixture overrides. On head `38705e11`, real Godot Web, retained Web, cross-PR integration and Platform passed; native did not finish because of the infrastructure issues above. A fresh-head hosted run is still required for the retry fix.
+- Head `28b6abe0` completed native validation, including all 12 runtime shards and GPU/PCK, but its actual Web charging case reproduced a stale-observation harness race: the first real exit had already reached phone home, then the runner read cached bonsai state and requested the now-absent exit again. Passing/failing artifacts have identical browser/recovery/shard runner hashes. After one actual exit tap, wait for a newer visible, nonblocking phone-home snapshot; preserve the 20-second input limit, back-panel behavior and final page assertion. The old runner fails all six new regression cases (including the duplicate tap); the corrected phone suite passes 35/35, and phone progress/exercise regression totals 81/81. No gameplay code changes. New-head actual browser validation is still required.
+- Existing #225 failure run `42325641201` timed out waiting for real Main in desktop library and Retina C2 reloads. Those cases and their timeouts stay intact. The latest Web run took 17m29s, while its final coverage job took 13 seconds; no speedup claim is made from deleting coverage checks, and none were deleted. No gameplay, assets, dependencies, merge, deployment or repository permissions change.
 
 ## 2026-11-06 — bounded warm content reads and receipt compatibility
 
@@ -50,6 +74,14 @@
 
 - 以 `14e86ac5` 为基线核对正式 Godot 运行时、保留的 React/Phaser 实现、共创平台及发布路径。记录 QFramework 的已接入职责与仍可直接写入状态的兼容入口，按交互顺序、结果和保存、宿主拆分提出渐进迁移方案。首个建议试点为图书馆规则阅读与离页。
 - 新增[架构与开发规范](docs/ARCHITECTURE.md)，从仓库规则和协作入口链接，并澄清 README 中正式 Web 发布与保留 Web 回归的边界。核对文档链接、源码依据与差异。本次交付范围为文档。
+
+## 2026-11-06 — protect saves created by newer game versions
+
+- Reproduced native startup accepting a sourceVersion 37 save in the version 36 runtime: successive ordinary page saves rewrote the primary and then its backup. Manual import also accepted future-version native files. The fix checks both primary and backup before selection, blocks persistence with an explicit update message, and rejects future imports before migration, media or CC98 changes. Profile activation reuses the same check and clears the block only when a compatible profile opens.
+- Reused the entrance detail label and disabled story/FLC entry while blocked, including direct entry calls. No new runtime module, save field, dependency or asset was introduced. Compatible v35 migration, v36 and historical versionless native files remain supported; corrupt-primary recovery remains intact.
+- Official Godot 4.7.1 with isolated user directories: the new regression passes 44 assertions including two independent engine startups, versions 37/37.5/999/string-37, exact original-byte preservation, rejected import side effects and profile recovery. Existing profile checks pass 144 and save integration 1829 (236 file imports, 117 checkpoints).
+- The official selected-stage aggregate passes 24/24 with unchanged inputs (input SHA-256 26372fa9f01bd3ac2cd912f0bfbed1982df20f887fd65cd71300ea84b8adc840); 631/655 stages were not selected. This includes startup, entry, FLC, native/Web save contracts, Continue and the original SaveStore differential, not a full-suite or real browser pass.
+- Retained-Web release passes 36/39 locally. The unchanged offline single-file build is again killed with exit 137, so its artifact check and dependent browser smoke cannot complete. Exact-head full CI remains required; no limits were relaxed, no merge or deployment performed.
 
 ## 2026-10-31 — approved FLC 53-file integration
 
@@ -6003,6 +6035,17 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 - Local checks use official Godot 4.7.1 with the pinned SHA-256, isolated save directories, source synchronization and validated derived media. The retained-Web release attempt passed 36/39 validators; offline single-file rendering was killed with exit 137, including an isolated retry, so artifact verification and browser smoke could not run locally. No validation threshold or build budget was weakened.
 - Combined native selected-stage results and exact-head CI are recorded in the PR. These per-fix results are not a full native-suite pass, actual Web network/account acceptance, physical-device test or manual full playthrough. No merge or deployment is performed.
 
+## 2026-11-06 — 后台预取的消费预算
+
+- 基于 `main` 的 `bb842b0`，只修改 Godot Web 加载器与相关合约/文档。主界面两帧后的现有预取贯穿首章小游戏；`chapter1_2.gd` 的签到/恢复动作发出 `prologue_interception.gd`，由 `State.game_requested` 进入 Main。未新增进度、存档或游戏完成门槛。
+- 后台大包 worker 从三个改为一个；网络响应最多 64 KiB 一片，消费预算 128→256→512 KiB/s，长帧退让。前台同包接管立即解除等待；其他前台、隐藏、离线、省流量会抢占/取消。未新增素材、依赖、传输副本或打包格式。
+- 实包规模仅引用 PR #224 的真实构建清单（run `42173974356`）：第二章 16 包共 107,056,752 B，首包 17,836,924 B。512 KiB/s 下纯消费约需 204 秒，另加起步、网络和帧退让；这不是已测下载时间。
+- 独立调度测试 11/11；既有 loader、resource-cache、boot/chapter chunk 检查通过。合成 3,145,857 B 的同加载器对照中，后台并发 3→1，预算调度时间约 8.77 秒；时间由测试时钟控制，不是浏览器帧率或网络实测。内部只读复核未见重大正确性回归。
+- 已与 PR #224 初始缓存补丁做三方合并与合约回归，不复制缓存改动进入本 PR；其暖缓存读取修复仍在独立进行，合并前需按最终 head 再验证。
+- 当前环境的浏览器无法连接本地测试服务器（`ERR_CONNECTION_REFUSED`），未完成实际 Godot Web/手机帧时间、CPU、峰值内存验收。整包复制/原生校验/挂载仍可能形成尖峰；浏览器预缓冲不受硬带宽约束，持续低帧率会暂停后台。精确 PR head 的构建与浏览器 CI 另行给出，不把这些合约检查当成整体验收。
+
+- 同日追加全链诊断：JS 缓存事务/校验/重组/预算等待/MEMFS/ACK 与原生 SHA/PCK 挂载分开计时，通过原有只读快照提供，未改存档。调度/计时 12/12；官方 Godot 4.7.1 真实 tiny PCK 130/0，FLC 取消21/0、策略9/0。一个 Linux tiny PCK 样本挂载41.854ms，不能外推实际Web，也不是纹理解码时间。
+- 与 #224 的8块有界读取候选组合时，普通IDB循环有一处文本冲突：保留8块读取、persisted收据、共享块保护和 pace(0)帧门控，并用计时wrapper保留原SHA。隔离合并后的缓存51、loader103、调度12通过。合并顺序/最终head仍须再次核对；本PR不暗中包含该缓存补丁。
 ## 2026-11-06 智云课堂参考界面
 
 - 智云课堂原生入口改为青色标题区、周课表和全部课程检索。课表回放进入课程详情，PPT 识别使用游戏课堂板书演示。数字签到和雷达沿用原入口与控制器。
@@ -6012,3 +6055,70 @@ Final b36 combination focused validation: official Godot 4.7.1 import/editor par
 
 - 周课表和课程列表共用六条排课；微积分回放提供四页 PPT 与八条字幕。第三页保留计算题，答案 120 在回放字幕揭晓。
 - 雷达检测提示改走主界面手机通知队列。原生导航 252 项通过。未提交发布。
+
+## 2026-11-07 — 有界校验与重复界面构建
+
+- 在 PR #225 已提交的后台预取和阶段计时基础上，正常纳入固定主线 `73c88a0`。保留 #224 的分块缓存去重、事务回执与八块批读，以及主线的登录、手账和课堂修改；未恢复遗失的未提交候选，也未调整纹理分辨率、遮挡、剧情、存档或资源分包。
+- 原生收到大包后，从下一帧开始使用同一 SHA 上下文。后台每帧最多 256 KiB/约 1.5 ms，必需资源最多 4 MiB/约 16 ms；64 KiB 块结束后检查预算。前台接管不重读，重复回调不另起任务，退出/重配清单会关闭文件。完整摘要和挂载成功之后才确认就绪。MEMFS 整包复制、PCK 挂载和 GPU 上传仍不受该分片保证。
+- 官方 Godot 4.7.1 同一实际 17,837,136 B PCK 样本：旧整包 SHA 62.788 ms；新后台校验跨 69 帧，累计活动片段 70.006 ms、最长片段 1.510 ms、含等待总接收 458.695 ms。它以较长墙钟等待换取较小单帧工作，不是吞吐提速或 Web/实体手机帧率实测。实际 PCK、坏摘要、截断、前台接管、暂停、重复回调、重试、替换与退出测试通过，样本运行 289 检查。
+- 持续慢帧不再无限推迟后台进度：每次压力等待最多一秒，仍只放行有界片段；空的静态分块缓存记录不逐个等待。新增 20/10 FPS 调度与冷缓存失败夹具在旧代码失败，在修正后通过。未提高浏览器验收超时，也未把夹具当成此前 CI 超时的实际根因证明。
+- 只复用非序章的手机主页/设置隐藏子树。换页、State 替换和重新显示仍重建；微信等带延迟剧情回调的页面保留原来的重建/取消行为。实际受控 C2 交流测试覆盖隐藏刷新、返回、旧回调取消与状态替换。20 次隐藏更新样本为 0 次重建/25,641 µs，对照为 20 次/475,526 µs，仅为同进程 headless 墙钟时间，不是浏览器帧率。
+- 已运行源同步、完整媒体转换/验证和导入。原生正式预检与专项是部分验证，不声称完整套件通过；手机专项及 Node 加载/缓存/调度/工作流回归通过。保留 Web release 本地 36/39：离线单文件构建被终止（137），随后缺少单文件产物，浏览器预览为 HTTP 404。完整原生与实际 Godot Web 的精确提交验收交由 PR CI；不把上传、通过或合并混为一事。没有合并或部署。
+
+- 同源真实 Web 首轮发现前台回归：桌面 C3 重载中 36 包的活动 SHA 仅 2.264 秒，但 376 次逐帧让出令原生确认累计 35.7 秒；Retina C2 的 146 次逐帧让出累计 34.36 秒。缓存无重复网络、无预算等待。只把遮罩下的必需资源预算从 1 MiB/6 ms 调整为 4 MiB/16 ms；后台仍是 256 KiB/1.5 ms。保持全部摘要、挂载和超时断言，等待新精确提交的 Web 验收。
+
+## 2026-11-07 校园分层地图 PR 候选整合
+
+- 在独立干净检出上，以 `a31f0862127b6a14d988c521537d32633a85f079` 整合校园 v12 作者源和运行分层。对旧基线的增量做三方比对，保留最新图书馆物件/动画/寻路预算、NPC 反馈及手机分包；不覆盖用户原有工作区。
+- 569 图层与 684 运行纹理重新编译后，manifest SHA-256 为 `414127c2e6a9af9db59df9cc037c78b818562ac75a61ba0c0928a763e62e8c46`。公开候选仅含必要作者源、运行文件、编译工具和当前回归，排除历史素材、截图和试玩站文件。
+- 已执行固定 Godot 4.7.1 初次严格导入、完整媒体准备及保留 Web quick 检查。最终完整原生、Web 导出及浏览器结果以该候选 PR 的实测记录为准，本条不宣称完整验收通过或正式站已更新。
+- 校园脚框保持已认可的 16×10、中心偏移 `(0,36.5625)`，其他场景物理参数和校园绘制深度不变。银泉北桥东侧落脚台向南的旧小径仍未完全连通。
+- 复现入口及验收边界：`godot_native/docs/CAMPUS_LAYERED_INTEGRATION.md`。本轮仅准备草稿 PR，不合并、不部署。
+
+## 2026-11-07 校园 PR 合并前校验修正
+
+- 隔离移动寻路的合成 mask 世界，保留真实校园支持区；空间测试改用场景脚框和完整地面支持检查，水体、实体、外围、巨大位移及剧情状态断言不变。两项隔离重跑分别 77/77、183/183 通过。
+- 更新已经懒加载的档案胶片和体艺图片归属测试，仍以真实 kayak 脚本/场景链验证硬预加载提升 core；69 项资源归属检查通过。
+- 真实 Godot 4.7.1 导出复现新增校园后 102 包超过 100 包限制。只在包数超限时确定性合并最小同 family 普通包，当前两次合并恢复 100 包；其余 98 包身份、core 与 family 字节均不变，6 MB 普通目标、24 MB 硬限和 1 MiB 传输块继续保留。验证器重算必要性和精确成员，拒绝伪造例外；新增真实字节规模回归纳入非部署 CI。
+- 上述专项不代替完整原生与浏览器验收；实际构建和新提交 CI 结果记录于 PR #230。银泉北桥东侧落脚台向南旧小径的已知断点没有修改。
+
+- 合并前再次同步 `95124a80700130e83f4bf82500a31051c82f52b6`：保留后台预取、有界原生校验、隐藏手机页复用及新增回归；唯一文本冲突为本日志的追加段，双方记录均保留。新组合须重新验收，不沿用先前基线的全绿结果。
+
+## 2026-11-07 入口遮挡期间的绘制隔离
+
+- 最终合并 `d869df49` 的 Retina 390×844、DPR3 C2 体艺重载仍被真实 Web 门禁拦住。截图停在 101.8/129.2 MB 资源遮罩；存档摘要独立核验一致，缓存重用没有重新下载。已完成包的 SHA 活动时间约 1.2 秒，原生确认约 23.7 秒，缓存读取约 28 秒；这些数据证明真实加载超时，不把它改称旧快照误报。
+- 候选只在 WebContent 独立不透明遮罩完全盖住入口时隐藏 Entry 绘制和焦点。入口继续处理并发布只读快照；取消、错误重试及退出恢复原可见性和焦点规则，不抢占其他可见管理器。资源、画质、校验、存档和 60 秒 Main 门禁均未更改。
+- 固定官方 Godot 4.7.1 的真实 Entry 生命周期检查 35/35、既有纸墨入口检查 97/97、WebContent 检查 289/289 通过。独立代码复查无阻塞问题。随后本地 Web 基线导出完成，但工作区重置中断夹具准备和 A/B，未获得浏览器性能结论。保留后来合入的新版存档保护和第四章文本；组合提交仍须经过 PR 完整验收，不声称性能问题已修复或正式站已经发布。
+
+## 2026-11-07 图书馆桌椅、遮挡与对白
+
+- 图书馆子视口绘制使用最近邻。原尺寸底图与 89 个静态摆放采用同一个源像素格网，抽查的 1806 个地毯边缘像素全部来自原图色板。
+- 用内置 image_gen 生成完整阅览桌和查询台，桌腿前后沿同列投影，两条可见腿等宽、脚底齐平。北向椅子沿用确认的正交轮廓，两道横杠、凳面和柱帽取现用南向椅子的木纹，描边使用同一深色。椅子的座面和靠背分层，坐姿按髋点对齐凳面。人物采用室内通用尺寸，较上一版放大 25%，碰撞使用原脚点。
+- 斜栏杆沿两个落脚端判断人物前后。桌沿遮住伸入桌下的椅子部分，桌上物件与桌子共用深度。桌灯、书、电脑键盘和 022 收据按桌面边缘重新定位。
+- 地图对白共用纸面、字色与居中布局。图书馆对白按实际地图宽度对齐，竖屏借用上方留白保证正文行高。原生图形检查覆盖座位、栏杆两侧及三种屏幕比例的对白，原生专项覆盖寻路、取书、打印机和入馆对白操作。
+- 北向椅子复用南向椅子的柱帽、木件明暗和脚部纹理。先定横杠与凳腿的木面，再向外描边。完整凳面绘制在立柱和靠背后面，两侧交接处由立柱遮住。座面与靠背分层缩到地图像素网格，坐姿对齐髋点，坐稳后膝下和鞋藏入桌下。
+
+## 2026-11-07 图书馆摆翼闸机
+
+- 用原有三台独立机身组成两条通道。切短读卡槽下方的外壳，画面高度由 110 降到 88 源像素。入口中央的旧推拉门与独立记录屏移除。
+- 第一次从闸机打开入馆记录，由原控制器确认后驱动该通道刷卡、亮灯和开闸。已读记录可再次直接刷卡。馆内朝闸机走时感应出馆，双翼按通行方向摆开。通道内有人时保持开启，离开或未使用超时后回关。读卡、摆翼和安全感应均为场景内状态。
+- 闸翼的绘制与通行判定共用转轴坐标。旧存档若停在原门和新闸机之间，未读记录的玩家回到入口出生点，已读记录且压在挡板上的玩家恢复到挡板同侧的安全位置。
+- 在 `9e1ff44b` 基线加本地改动上，官方 Godot 4.7.1 通过入口剧情 86 项、碰撞与感应 110 项、直接输入 131 项、实际主界面触控 292 项、图书馆物件 256 项。主界面触控包含 390×844、844×390 和 1280×720。
+- Godot Web 分包导出和产物校验通过，输入摘要为 `19700e1b9543068718cfbdba2b4e379c4576607979210004e55ebac0d54a261a`。在 Edge 的 1280×720 桌面和 390×844 触控视口导入已读入馆记录的原控制器存档，实际点读卡器、进馆、关闸、感应出馆和再次关闸均通过。首次读取记录由原生主界面测试覆盖。
+
+## 2026-11-07 图书馆闸翼居中和入口外沿
+
+- 移除两侧固定玻璃的八块实例和对应的旧碰撞。沿闸机一排设置低金属护栏，连接机身和入口两侧。闸机外侧的左右碰撞按蓝色地砖边缘布置。
+- 从渲染机身的中点计算四个摆翼转轴。挡板绘制、脚部碰撞和方向感应共用该轴。防夹感应检查挡板实际摆动的一侧，通道外等待时仍能触发超时关闭。
+- 在 `9e1ff44b` 基线加本地改动上，用 Godot 4.7.1 跑完六组原生专项共 1,029 项，覆盖真实点击、键盘和触控进出、关闸、左右外沿拦截、旧存档落脚和馆内寻路。实际 Godot 画面检查了两边开放后的地面、挡板中点和摆动中间帧。
+- Godot Web 分包产物通过校验，输入摘要为 `359e5f1412f16c9de1b6414d576807dea1fa6761adf4cdc559ed58772f5db74c`。在 Edge 的 1280×720 桌面和 390×844 触控视口从已读记录的存档刷卡进馆、等候关闸、感应出馆并再次关闸，分别通过 987 和 992 项检查。
+- 清理两份旧试玩副本中的网页导出、分包中间件和导入缓存，以及 D 盘项目的旧导出。当天网页验收共用一次临时构建，验收后清掉该构建及浏览器临时文件。实测可用空间由 C 盘 5.0 GiB、D 盘 7.5 GiB 增至 28.8 GiB、13.7 GiB。
+
+## 2026-11-08 座位预约入馆记录
+
+- 手机图书馆的「座位预约 → 我的」加入入馆记录。查看后可以返回「我的」，按「记下入馆记录」才确认原来的七分钟线索。确认后的记录仍可回看。
+- 刷卡开启选中的闸道，实际走进馆内后由章节控制器登记一次到馆。开闸后停在闸外时手机显示暂无记录。已有已读记录的旧存档继续可回看。记录正文留出手机物品栏的空间。
+- 在 `9e1ff44b` 加本地图书馆改动上，Godot 4.7.1 的十组原生专项通过 2,461 项检查。主界面触控覆盖 390×844、844×390 和 1280×720，检查普通存档能保存未读的到馆记录，另用改动前的控制器存档验证已读记录的回看。
+- Godot Web 分包产物的输入摘要为 `e7ffa31cc799fae85a2a68913d014ff5063a152ee0e739492f34cd4aeef2eee4`。Edge 1280×720 桌面和 390×844 模拟触控从旧版的未入馆存档刷卡进馆，再经座位预约的「我的」查看和确认，分别通过 993 和 995 项检查。
+- 补测新闸机两种续玩情形。旧门厅的未入馆位置恢复到闸外，已过闸的未读存档导入和重启均保留馆内位置及到馆记录。Godot 4.7.1 的原生场景存档与入口碰撞专项分别通过 248 和 131 项检查。
+- 保留座位预约原有的页面入口参数，更新已调整的两处对白布局验收基准。馆舍导航、手机提示和对白布局专项分别通过 112、253 和 164 项检查。

@@ -54,7 +54,7 @@ func run() -> void:
 	check(fixture.separateOwner.lineCount==20,"final 20-line 022 conversation remains C3-owned")
 	act("lib_enter"); check(s.ui.libraryFinalsPhase=="library_entered","first entry preserves source phase")
 	act("lib_record"); check(not s.ui.libraryFinalsPuzzle.entranceRecordRead,"entry reveal blocks underlying interaction")
-	play("library_entered"); act("lib_record"); act("lib_backpack"); play("library_occupied_seat_found")
+	play("library_entered"); act("lib_register_arrival"); act("lib_record"); act("lib_backpack"); play("library_occupied_seat_found")
 	act("lib_note"); act("lib_investigate","occupancyNote"); play("cc98_occupation_post_opened")
 	act("lib_catalog_terminal"); act("lib_catalog_search","三分钟离座法"); act("lib_catalog_select","three-minute-leave-method"); play("library_catalog_match_found")
 	act("lib_shelf"); act("lib_read_rule")
@@ -170,6 +170,7 @@ func test_real_shell() -> void:
 	for i in range(12):
 		var key:=InputEventKey.new(); key.keycode=KEY_ENTER; key.pressed=true; Input.parse_input_event(key); await process_frame
 	check(live.current==null and not shell.world._scene_presentation_blocks(),"real shell keyboard closes complete entry and restores world")
+	state.act("lib_register_arrival")
 	state.act("lib_record")
 	check(state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"real shell action resumes after story completion")
 	state.d=state.initial(); state.d.native.chapter=2; state.d.native.scene="library_interior"; state.d.native.page="cc98"

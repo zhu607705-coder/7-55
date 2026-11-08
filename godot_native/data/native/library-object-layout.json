@@ -212,7 +212,7 @@
     "coordinates": "original source pixels; uniform scale only",
     "authority": "presentation only; controller facts, original collisions and save fields are unchanged",
     "activation": "clean plate and all four transparent sprites must validate together; otherwise the original source presentation remains active",
-    "doors": "library_entrance_door owns the independently rendered door leaves",
+    "doors": "library_turnstiles owns the independently rendered swing wings and reader feedback",
     "depth": "new floor props sort at their original solid bottom using the shared player foot-box back edge; shelf and bag retain authored source depths"
   },
   "cleanPlateEdits": {

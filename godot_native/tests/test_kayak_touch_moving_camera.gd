@@ -2,7 +2,7 @@ extends "res://tests/test_lake_paddle_pointer.gd"
 ## Keep actual world ticks enabled while a finger holds the moving paddle.
 func finger(point:Vector2,down:bool,index:int=7)->void:
  var event:=InputEventScreenTouch.new();event.index=index;event.position=point;event.pressed=down
- shell.world_viewport.push_input(event,true)
+ root.push_input(event,true)
 func moving_fixture()->void:
  await reset(Vector2i(390,844))
  var world:Control=shell.world
@@ -15,7 +15,7 @@ func moving_fixture()->void:
  check(placed,"fixture has legal water for real movement")
  state.lake_module().live_session=null;world.lake_session=state.lake_module().bind_world(state.d,world)
  world._sync_player();world._process(0);await frames()
- var first:Vector2=world.kayak_paddle_rects().left.get_center()
+ var first:Vector2=center("left")
  finger(first,true);finger(first,false)
  check(count()==1,"first ordinary paddle stroke starts actual kayak motion")
  world.set_process(true)
@@ -24,7 +24,7 @@ func run()->void:
  state=root.get_node("State");state.developer_mode=false
  await moving_fixture()
  var world:Control=shell.world
- var point:Vector2=world.kayak_paddle_rects().right.get_center()
+ var point:Vector2=center("right")
  var old_camera:Vector2=world.camera;var old_player:Vector2=world.player
  finger(point,true)
  check(world.direct_gestures.has_active(),"second finger owns the right paddle before movement")
@@ -35,14 +35,14 @@ func run()->void:
  check(count()==2 and world.kayak.last_side=="right","release after moving frames records exactly the second stroke")
  finger(point,false);check(count()==2,"duplicate release remains neutral")
  await moving_fixture();world=shell.world
- var left:Vector2=world.kayak_paddle_rects().left.get_center();var right:Vector2=world.kayak_paddle_rects().right.get_center()
+ var left:Vector2=center("left");var right:Vector2=center("right")
  finger(left,true,1);finger(left,true,2);finger(right,true,3);await frames(3)
  finger(left,false,1);await frames(3);finger(right,false,3);finger(left,false,2)
  check(count()==3,"ignored competing finger cannot cancel the other paddle after original owner lifts")
  for reason:String in ["focus","zoom","pan","mode","phone","modal","scene"]:
   await moving_fixture();world=shell.world
   var held_model:RefCounted=world.kayak
-  point=world.kayak_paddle_rects().right.get_center();finger(point,true)
+  point=center("right");finger(point,true)
   check(world.direct_gestures.has_active(),reason+" case owns a finger before interruption")
   match reason:
    "focus":world._notification(Control.NOTIFICATION_WM_WINDOW_FOCUS_OUT)

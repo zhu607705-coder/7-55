@@ -323,7 +323,8 @@ func caption_owner() -> void:
 	var game:Control=await open_rack()
 	if not is_instance_valid(game):return
 	var before:Dictionary=state.d.duplicate(true);var durable:Dictionary=bytes()
-	shell.story_caption_line.text="灯下仍留着上一句旁白。";shell.story_caption_line.speaker="旁白";shell.story_caption_time=10.0;shell.story_caption_surface="world"
+	shell._show_story_caption("灯下仍留着上一句旁白。","narrator",10.0,"旁白")
+	shell.story_caption_surface="world"
 	shell.world.subtitle=shell.story_caption_line.text;shell.world.subtitle_left=10.0
 	var remaining:float=shell.story_caption_time;shell._layout_story_caption()
 	check(not shell.story_caption.visible and shell.story_caption.session==null and shell.world.subtitle.is_empty(),"Active rehearsal retires only the matching old world/window subtitle")
@@ -347,7 +348,7 @@ func caption_owner() -> void:
 	shell._layout_story_caption()
 	check(shell.story_caption_surface=="world" and shell.world.subtitle==shell.story_caption_line.text,"Ordinary world caption ownership resumes after the activity closes")
 	shell.mobile_world=false;shell._layout();shell._layout_story_caption()
-	check(shell.story_caption.visible and shell.story_caption.session==shell.story_caption_line,"Other phone/window caption owners remain usable outside this rehearsal")
+	check(shell.phone_story_caption.is_visible_in_tree() and shell.phone_story_caption.text==shell.story_caption_line.text and not shell.story_caption.visible,"The same line resumes in the single shared phone caption")
 	shell.story_caption_time=0;shell._layout_story_caption();shell.mobile_world=true;shell._layout()
 	assert_unchanged(before,durable,"Caption-owner and optional-view handoffs")
 	await close_shell()

@@ -120,8 +120,12 @@ func open_scene(scene: String) -> void:
 	d.runtimeMode = "rpg"
 	navigation_changed.emit(true)
 
+static func mode_switch_unlocked(snapshot: Dictionary) -> bool:
+	# The 022 handoff advances the native chapter only after its session commits.
+	return int(snapshot.get("native",{}).get("chapter",1)) >= 3
+
 func toggle_mode() -> void:
-	if input_locked(): return
+	if not mode_switch_unlocked(d) or input_locked(): return
 	invalidate_progressive_activities()
 	d.native.mode = "dark" if d.native.mode == "light" else "light"
 	d.themeMode = "dark" if d.native.mode == "dark" else "normal"

@@ -32,6 +32,8 @@ func check_top_row() -> void:
 	check(tasks.text.is_empty() and tasks.get("glyph")=="journal" and tasks.size.is_equal_approx(Vector2(44,44)) and tasks.scale==Vector2.ONE and tasks.get_global_rect().size.x>=43.99 and tasks.get_global_rect().size.y>=43.99,"journal is a quiet glyph with a physical44px target")
 	check(shell.world_view.get_global_rect().encloses(tasks.get_global_rect()) and tasks.position.y>=shell.world_view.get_global_rect().end.y-60,"journal fits the actual game image's lower edge")
 	check(not tasks.get_global_rect().intersects(shell.mobile_back.get_global_rect()),"Tasks does not cover return-to-phone")
+	check(tasks.position.x<shell.world_mode.position.x and shell.world_mode.position.x<shell.mobile_back.position.x and tasks.position.y==shell.mobile_back.position.y,"Tasks and mode share the right footer with the phone")
+	check(not shell.inventory_dock.get_global_rect().intersects(tasks.get_global_rect()),"right footer stays outside the inventory strip")
 	check(shell.world_view.get_global_rect().encloses(tasks.get_global_rect()),"system icon overlays the playfield without reserving an outer toolbar")
 	if shell.inventory_handle.visible:
 		check(not tasks.get_global_rect().intersects(shell.inventory_handle.get_global_rect()),"Tasks does not overlap portrait or landscape bag handle")
@@ -162,7 +164,7 @@ func run() -> void:
 			check_top_row()
 			for method in ["pointer","keyboard","touch"]:await journal_round_trip(method)
 	await setup_world(Vector2i(1440,900))
-	check(shell.world_tasks.visible and not shell.phone.visible and shell.world_viewport.size==Vector2i(960,540),"desktop exposes world tasks and retains authored viewport")
+	check(shell.world_tasks.visible and not shell.phone.visible and shell.world.size==Vector2(960,540),"desktop exposes world tasks and retains authored viewport")
 	shell.world_tasks.pressed.emit();await frames();check(is_instance_valid(shell.modal),"desktop uses the same world Tasks path");shell._close_modal()
 	var output:=OS.get_environment("UI_QA_REPORT")
 	if not output.is_empty():

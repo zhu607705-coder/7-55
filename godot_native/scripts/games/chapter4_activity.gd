@@ -511,7 +511,7 @@ func _process(delta: float) -> void:
 					running=false
 					if selection==int(config.timeline.correctReplayStartSeconds) and boarded: _finish({"startSeconds":selection,"boarded":true})
 					else:
-						elevator_feedback="校验结果：两条区间边缘仍未对齐，请调整重放起点。" if selection!=int(config.timeline.correctReplayStartSeconds) else "未在六秒进入窗口内走入电梯，请重新回放。"
+						elevator_feedback="校验结果：八秒开门区间没盖住进梯窗口。把重放起点调到 22:43:31 再试。" if selection!=int(config.timeline.correctReplayStartSeconds) else "未在六秒进梯窗口内走入轿厢。重新回放，再试一次。"
 						stage="select";_elevator_controls()
 				elif is_instance_valid(elevator_panel):elevator_panel.refresh(selection,stage,elapsed,boarded,elevator_feedback)
 			"prologue":

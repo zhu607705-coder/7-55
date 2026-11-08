@@ -120,7 +120,7 @@ export function ChapterFourInsertedPuzzleGame({
       <section className="chapter4-inserted-puzzle" data-puzzle-id={puzzleId}>
         <header className="chapter4-inserted-puzzle__header">
           <div>
-            <p>{definition.locationLabel} · {mode === "dark" ? "深色观察" : "浅色操作"}</p>
+            <p>{definition.locationLabel} · {mode === "dark" ? "深色模式" : "浅色模式"}</p>
             <h2 id="chapter4-inserted-puzzle-title">{definition.title}</h2>
           </div>
           <Button variant="ghost" ref={closeRef} type="button" disabled={pending} onClick={onClose} aria-label="返回现场">×</Button>

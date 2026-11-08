@@ -408,42 +408,42 @@
   {
     "id": "attendanceRecordPaper",
     "name": "签到记录纸",
-    "desc": "从图书馆 022 一路追到北教大厅的早八签到条。边角沾着启真湖的水气，上面那句「本人马上回来」已经困了它整整三天。去一楼签到台右侧纸槽交掉它吧。",
+    "desc": "从图书馆 022 一路追到北教大厅的早八签到条。边角还沾着启真湖的水气，纸上写着“本人马上回来”。等旧钟走到 07:55，把它交到一楼签到台右侧纸槽。",
     "sourceScene": "duan_yongping_temporal_maze",
     "target": "a1_attendance_paper_slot"
   },
   {
     "id": "oldClockHourHand",
     "name": "旧时针",
-    "desc": "从一楼面包坊传送带缝里取出的金属短针，轴孔正好匹配大厅旧钟。翻到背面能看见一枚「书页刻印」，旁边刻着一行小字：晚课 18:30 开始。",
+    "desc": "从一楼面包坊传送带缝里取出的金属短针，轴孔正好匹配大厅旧钟。背面有一枚「书页刻印」，旁边刻着一行小字：晚课 18:30 开始。",
     "sourceScene": "duan_yongping_temporal_maze",
     "target": "a1_hall_clock_hour_hand_socket"
   },
   {
     "id": "clockPositioningPlate",
     "name": "钟面定位片",
-    "desc": "从二楼 204 讲台抽屉取出的透明垫片，经 201 压痕校准后可消除旧钟指针晃动。背面印着一枚「扳手刻印」，注明夜间检修自 22:00 开始。",
+    "desc": "从 204 讲台抽屉取出的透明定位片。带到 201 对齐旧压痕后，可以用它消除旧钟指针的晃动。背面的「扳手刻印」注明：夜间检修从 22:00 开始。",
     "sourceScene": "duan_yongping_temporal_maze",
     "target": "a1_hall_clock_positioning_plate_slot"
   },
   {
     "id": "shortPryBar",
     "name": "短撬棍",
-    "desc": "一把扁头短撬棍，撬头厚度刚好能插进大厅保洁车的金属轮罩窄缝里。",
+    "desc": "一把扁头短撬棍，撬头刚好能插进大厅保洁车的金属轮罩窄缝。",
     "sourceScene": "duan_yongping_temporal_maze",
     "target": "a1_cleaning_cart_wheel_cover"
   },
   {
     "id": "universalLubricatingOil",
     "name": "通用润滑油",
-    "desc": "半瓶机械润滑油。撬开保洁车轮罩后滴在干涩的轮轴上，既能挪开卡死的保洁车，也能顺带让旧钟底部的传动齿轮重新咬合。",
+    "desc": "半瓶机械润滑油。撬开保洁车轮罩后滴在干涩的轮轴上，轮轴恢复转动时，旧钟的传动齿轮也会重新咬合。",
     "sourceScene": "duan_yongping_temporal_maze",
     "target": "a1_cleaning_cart_wheel|a1_hall_clock_gear"
   },
   {
     "id": "finalMinute",
     "name": "黄铜分针组件",
-    "desc": "从二楼 202 阶梯座椅间找回的黄铜分针与卡簧。它替那张纸条偷走了 07:54 到 07:55 的最后一分钟——带回一楼大厅装上旧钟，早八就真正到了。",
+    "desc": "从二楼 202 阶梯座椅间找回的黄铜分针与卡簧。纸条用它带走了 07:54 到 07:55 的最后一分钟。带回一楼大厅装上旧钟，早八就真正到了。",
     "sourceScene": "duan_yongping_temporal_maze",
     "target": "a1_hall_clock_minute_endpoint"
   }

@@ -102,6 +102,8 @@ func _ok(message: String, extra: Dictionary = {}) -> Dictionary:
 func _phase(s: Dictionary) -> String: return str(s.ui.libraryFinalsPhase)
 func _p(s: Dictionary) -> Dictionary: return s.ui.libraryFinalsPuzzle
 func _active(s: Dictionary) -> bool: return int(s.native.get("chapter",1)) == 2 and _phase(s) != "idle"
+func _record_available(s: Dictionary) -> bool:
+	return bool(_p(s).entranceRecordRead) or bool(s.native.get("lib_admission_recorded",false))
 func _a(id: String, label: String, input: String = "", options: Array = []) -> Dictionary:
 	var r = {"id":id,"label":label}
 	if input != "": r.input = input
@@ -137,6 +139,8 @@ func view(page: String, s: Dictionary) -> Dictionary:
 	var p = _p(s)
 	var d = _data()
 	if page == "library_app": return {"title":"图书馆 · 座位预约", "body":"基础馆\n负一层书库　160 座\n一层书库　160 座\n二层书库　160 座\n" + ("已预约　一层书库 022" if s.ui.librarySeatReserved else "选择馆舍、阅览室与座位")}
+	if page == "library_record":
+		return {"title":"入馆记录","body":"07:55：进入基础馆\n08:02：到达一层书库 022\n一层书库 022：存在未闭合会话\n最后活动：未知\n\n08:02 − 07:55" if _record_available(s) else "暂无入馆记录"}
 	if not _active(s): return {}
 	match page:
 		"library_archive":
@@ -147,7 +151,6 @@ func view(page: String, s: Dictionary) -> Dictionary:
 			if p.seatReceiptCollected: rows.append({"title":"022 座位凭据","body":"座位编号：022\n区域：一层书库\n时间：07:55\n凭据状态：离座中 · 待公示\n当前占用物：书包。恢复处理需提交论坛公示。"})
 			if p.presenceProofCollected: rows.append({"title":"本人来过证明","body":"到馆时长：7 分钟\n公示编号：47\n证明数量：3\n记录状态：补录成功\n访问轨迹与 022 座位凭据的时间记录一致。到馆已确认，座位使用仍需单独申请。"})
 			return {"title":"已取得的材料","body":"材料提交后，内容仍保留在这里。","rows":rows}
-		"library_record": return {"title":"入馆记录", "body":"07:55：进入基础馆\n08:02：到达一层书库 022\n一层书库 022：存在未闭合会话\n最后活动：未知\n\n08:02 − 07:55"}
 		"library_rule": return {"title":"旧版离座规则", "body":"期末周修订版 · 已归档\n适用范围：座位被非本人随身物持续占用\n目标座位：022\n恢复申请须同时具备三类证明：\n一、本人确实到馆；\n二、目标座位与凭据一致；\n三、当前占用物不具备本人身份。\n规则依据须先完成公开公示。"}
 		"library_catalog":
 			var rows: Array = []
@@ -195,7 +198,7 @@ func actions(page: String, s: Dictionary) -> Array:
 	var p = _p(s)
 	match page:
 		"library_app": return [_a("lib_open_rule", "查看旧版离座规则")] if p.archivedRuleCollected else []
-		"library_record": return [_a("lib_record", "记下入馆记录")] if not p.entranceRecordRead else []
+		"library_record": return [_a("lib_record", "记下入馆记录")] if _phase(s) == "library_entered" and _record_available(s) and not p.entranceRecordRead else []
 		"library_rule": return [_a("lib_read_rule", "阅读旧版离座规则")] if p.archivedRuleCollected and not p.archivedRuleRead else []
 		"library_catalog":
 			var out = [_a("lib_catalog_search", "检索馆藏", "text")]
@@ -252,7 +255,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 	var phase = _phase(s)
 	var items: Dictionary = s.items
 	if SceneSession.pending_opening(s) and action not in ["lib_dialogue_open","lib_dialogue_next","lib_opening_complete"]: return _ok("请先完成 022 转场。")
-	if action in ["lib_note","lib_shelf","lib_photo","lib_scan","lib_receipt","lib_apply_pass","lib_sit"] and s.native.get("mode","light") != "light": return _ok("深色观察不执行物理操作。请切换到浅色操作。")
+	if action in ["lib_note","lib_shelf","lib_photo","lib_scan","lib_receipt","lib_apply_pass","lib_sit"] and s.native.get("mode","light") != "light": return _ok("切到浅色模式再试。")
 	if action in ["lib_investigate", "lib_upload", "lib_bd_briefing", "lib_bd_select", "lib_bd_undo", "lib_bd_submit"] and (s.networkMode != "campus_wifi" or not s.actOne.cc98Login.authenticated): return _ok("请在校园网完成 CC98 统一身份认证。")
 	match action:
 		"lib_enter":
@@ -267,22 +270,24 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			if s.native.scene != "library_interior": return _ok("你不在图书馆里。")
 			s.rpgCheckpoint = "campus_library_gate"
 			return _world(s,"campus_bootstrap")
-		"lib_open_record":
-			if s.native.scene != "library_interior": return _ok("需要靠近入口记录屏。")
-			return _go(s,"library_record")
 		"lib_open_rule":
 			# The acquired paper remains readable after leaving its first reader,
 			# an interrupted shelf reveal, or the Library itself. Opening it never
 			# acknowledges reading and never grants a spent evidence item again.
 			if not p.archivedRuleCollected: return _ok("请先取得旧版离座规则。")
 			return _go(s,"library_rule")
+		"lib_register_arrival":
+			if phase == "library_entered" and s.native.scene == "library_interior" and not _record_available(s):
+				s.native.lib_admission_recorded = true
+			return _ok("")
 		"lib_record":
-			if phase != "library_entered" or s.native.scene != "library_interior": return _ok("现在不能写入入馆记录。")
+			if p.entranceRecordRead: return _ok("")
+			if phase != "library_entered" or not _record_available(s): return _ok("请先刷卡入馆。")
 			p.entranceRecordRead = true
 			_unique(p.clueIds,"arrival_7_minutes")
 			return _ok("门禁记录已记下。022 存在未闭合会话。")
 		"lib_backpack":
-			if not p.entranceRecordRead or phase not in ["library_entered","occupied_seat_found"] or s.native.scene != "library_interior": return _ok("先核对闸机上的入馆记录。")
+			if not p.entranceRecordRead or phase not in ["library_entered","occupied_seat_found"] or s.native.scene != "library_interior": return _ok("请先在座位预约的「我的」中核对入馆记录。")
 			if p.backpackInspected: return _ok("")
 			p.backpackInspected = true
 			s.ui.libraryFinalsPhase = "occupied_seat_found"
@@ -550,7 +555,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			s.native.page = "phone_home"
 			s.currentScene = "phone_home"
 			s.rpgCheckpoint = "campus_library_gate"
-			return _world(s,"campus_bootstrap","")
+			return _world(s,"campus_bootstrap","022：深色模式也打开了。")
 
 	return _ok("当前阶段没有这个操作。")
 
@@ -566,7 +571,9 @@ func objective(s: Dictionary) -> String:
 	var p = _p(s)
 	match _phase(s):
 		"idle", "library_route_unlocked": return "前往基础图书馆寻找系统的朋友"
-		"library_entered": return "前往一层书库寻找 022" if p.entranceRecordRead else "读取图书馆入馆记录"
+		"library_entered":
+			if p.entranceRecordRead: return "前往一层书库寻找 022"
+			return "在座位预约的「我的」中查看入馆记录" if _record_available(s) else "刷卡进入基础图书馆"
 		"occupied_seat_found": return "检查 022 书包旁的纸条"
 		"evidence_gathering":
 			if not p.investigationOpened: return "用占座纸条调查 CC98"
@@ -592,7 +599,7 @@ func targets(scene: String, s: Dictionary) -> Array:
 	if SceneSession.pending_opening(s): return []
 	var p = _p(s)
 	var out: Array = [{"id":"library_exit","label":"离开图书馆","position":[715,842],"radius":72.0,"action":"lib_exit"}]
-	out.append(_target("entrance_record","查看入馆记录",[750,727],[673,693,154,68],64,"lib_open_record"))
+	out.append(_target("entrance_record","刷卡入馆",[750,727],[673,693,154,68],64,"lib_swipe_gate"))
 	out.append(_target("front_desk","前台工作人员",[334,594],[174,519,320,150],64,"lib_front_desk"))
 	out.append(_target("catalog_terminal","馆藏检索终端",[653,555],[597,507,112,96],70,"lib_catalog_terminal"))
 	out.append(GeometryNotebook.target())

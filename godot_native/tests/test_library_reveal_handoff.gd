@@ -91,7 +91,7 @@ func earned_shelf() -> Dictionary:
 	s.ui.libraryFinalsPhase="library_route_unlocked"
 	var controller=Chapter.new()
 	controller.dispatch(s,"lib_enter"); acknowledge(controller,s)
-	controller.dispatch(s,"lib_record"); controller.dispatch(s,"lib_backpack"); acknowledge(controller,s)
+	controller.dispatch(s,"lib_register_arrival"); controller.dispatch(s,"lib_record"); controller.dispatch(s,"lib_backpack"); acknowledge(controller,s)
 	controller.dispatch(s,"lib_note"); controller.dispatch(s,"lib_investigate","occupancyNote"); acknowledge(controller,s)
 	controller.dispatch(s,"lib_catalog_terminal"); controller.dispatch(s,"lib_catalog_search","三分钟离座法")
 	controller.dispatch(s,"lib_catalog_select","three-minute-leave-method"); acknowledge(controller,s)
@@ -127,7 +127,8 @@ func fixture(dimensions: Vector2i,reduced: bool=false) -> void:
 	reader_openings=0; action_start=actions.size()
 func world_screen(point: Vector2) -> Vector2:
 	var local: Vector2=(point-shell.world.camera)*shell.world.zoom+shell.world.size/2
-	return shell.world_view.get_global_transform_with_canvas()*(local*shell.world_view.size/Vector2(shell.world_viewport.size))
+	var display: Rect2=shell.world_view.get_global_rect()
+	return display.position+local*display.size/shell.world.size
 func shelf_screen() -> Vector2:
 	# Pick the actual rendered source cabinet polygon, not the legacy target
 	# radius or a target chosen because it accepts this particular item.

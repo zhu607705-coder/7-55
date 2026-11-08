@@ -35,7 +35,7 @@ func run()->void:
 	var event:=InputEventKey.new();event.keycode=KEY_ENTER;event.pressed=true
 	view._gui_input(event)
 	check(owner.d.chapter4.completed,"Keyboard final acknowledgement reaches sole controller")
-	var expected_lines: Array[String]=["外面亮了一下。","这次真的结束了？","结束了，签到记录已归档。"]
+	var expected_lines: Array[String] = ["北教楼外的「灿若星辰」灯亮起了微光。", "这次……是真的结束了吧？不会再有什么长腿的纸条飞出来了吧？", "结束了。07:55 的所有错位记录都已归档——去吃顿热乎的早饭吧，祝你今天早八愉快。"]
 	var revisions: Array=DisplayFixture.revisions()
 	for i in expected_lines.size():
 		expected_lines[i]=DisplayFixture.text_at(revisions,"chapter4-755.content.json",["dialogues","exterior.closure",i,"text"],expected_lines[i])

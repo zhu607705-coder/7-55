@@ -68,12 +68,9 @@ func run()->void:
 	check(s.items.seat022Receipt and not s.items.rightArrow,"receipt's original controller consume/reward contract remains authoritative")
 
 	s=fresh();s.ui.libraryFinalsPhase="library_entered";s.ui.libraryFinalsPuzzle.entranceRecordRead=false;motion.sync(s)
+	controller.dispatch(s,"lib_register_arrival")
 	perform(motion,controller,s,"lib_record")
-	check(motion.entry_ms==0 and motion.entry_pose().read,"controller-issued admission starts source door sensor feedback")
-	advance(motion,430)
-	check(not motion.entry_pose().scanVisible and motion.entry_ms>0,"420ms entry scan and 900ms sensor blink keep separate clocks")
-	motion.sync(s.duplicate(true))
-	check(motion.entry_ms<0 and motion.record_read,"imported read record keeps its solved lamp without replay")
+	check(s.ui.libraryFinalsPuzzle.entranceRecordRead and motion.packets.is_empty(),"admission remains a chapter fact outside furniture feedback")
 
 	s=fresh();s.ui.libraryFinalsPhase="backpack_removed";s.ui.libraryFinalsPuzzle.backpackEvicted=true;motion.sync(s)
 	motion.set_anchors(Vector2(1320,470),Vector2(1302,500),Rect2(624,519,58,36))

@@ -2,7 +2,6 @@ extends VBoxContainer
 ## Read-only task presentation. Authored objectives, earned logs and all return
 ## actions stay controller-owned; opening or folding this view grants nothing.
 signal resume_requested
-signal comparison_requested
 const PhoneOverlay=preload("res://scripts/ui/phone_overlay_shell.gd")
 var phone_builder: RefCounted
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
@@ -17,7 +16,6 @@ var context_texture: Texture2D
 var objective: String
 var detail: String
 var entries: Array=[]
-var comparison_available:=false
 var digit_slots: Array[String]=[]
 var return_label: String="返回游戏"
 var resume_button: Button
@@ -29,8 +27,8 @@ func _init() -> void:
 	# presentation registry must not reapply its retired raised key material.
 	set_meta("phone_ui_scope",true)
 
-func configure(title: String, next_step: String, log: Array, can_compare: bool, in_world: bool) -> void:
-	objective=title;detail=next_step;entries=log.duplicate(true);comparison_available=can_compare
+func configure(title: String, next_step: String, log: Array, in_world: bool) -> void:
+	objective=title;detail=next_step;entries=log.duplicate(true)
 	return_label="返回现场" if in_world else "返回游戏"
 
 func configure_digits(snapshot: Dictionary) -> void:
@@ -132,10 +130,6 @@ func _ready() -> void:
 			add_child(slots)
 	resume_button=_button(return_label,"JournalResume",func(): resume_requested.emit(),true)
 	add_child(resume_button)
-	if comparison_available:
-		add_child(_rule("JournalComparisonRule"))
-		add_child(_label("可选 · 整理已见线索","JournalComparisonHeading","tip"))
-		add_child(_button("打开线索对照","JournalObservationCompare",func(): comparison_requested.emit()))
 	add_child(_rule("JournalHistoryRule"))
 	history_toggle=_button("展开历史记录（%d）"%entries.size(),"JournalHistoryToggle",_toggle_history)
 	history_toggle.toggle_mode=true
@@ -164,11 +158,6 @@ func _build_phone_sections() -> void:
 			digit.add_theme_stylebox_override("normal",phone_builder._style(phone_builder.PAPER,phone_builder.INK,0,2))
 			slots.add_child(digit)
 		body.add_child(slots)
-	if comparison_available:
-		var clues: Dictionary=PhoneOverlay.card(phone_builder)
-		clues.panel.name="JournalCluesCard";add_child(clues.panel)
-		clues.content.add_child(_label("可选 · 整理已见线索","JournalComparisonHeading","tip"))
-		clues.content.add_child(_button("打开线索对照","JournalObservationCompare",func(): comparison_requested.emit()))
 	var records: Dictionary=PhoneOverlay.card(phone_builder)
 	records.panel.name="JournalHistoryCard";add_child(records.panel)
 	history_toggle=_button("展开历史记录（%d）"%entries.size(),"JournalHistoryToggle",_toggle_history)

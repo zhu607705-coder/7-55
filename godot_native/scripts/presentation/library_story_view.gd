@@ -1,7 +1,7 @@
 extends Control
 ## One global modal surface across both phone and RPG, matching LibraryStoryOverlay.
 const Typography=preload("res://scripts/ui/native_typography.gd")
-const Selected=preload("res://scripts/ui/selected_ui_theme.gd")
+const Notice=preload("res://scripts/ui/native_phone_notice.gd")
 const DialogueLayout=preload("res://scripts/ui/selected_dialogue_layout.gd")
 const OverflowText=preload("res://scripts/ui/overflow_text.gd")
 var body_scroll:ScrollContainer
@@ -18,15 +18,13 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter=Control.MOUSE_FILTER_STOP; focus_mode=Control.FOCUS_ALL
 	panel=Panel.new(); panel.clip_contents=true; panel.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(panel)
-	Selected.apply_paper_panel(panel)
+	panel.add_theme_stylebox_override("panel",Notice.card_style())
 	for field: String in ["speaker","body","prompt"]:
 		var label:=Label.new(); label.mouse_filter=Control.MOUSE_FILTER_IGNORE;label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		Typography.apply_body(label)
 		panel.add_child(label); set(field,label)
 	body_scroll=OverflowText.new();panel.add_child(body_scroll);body_scroll.setup(body)
-	body.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	Selected.apply_label(body,"dialogue","body")
-	Selected.apply_label(prompt,"dialogue","tip"); prompt.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
+	prompt.horizontal_alignment=HORIZONTAL_ALIGNMENT_RIGHT
 	visible=false
 func tick() -> void:
 	visible=session!=null
@@ -37,13 +35,21 @@ func tick() -> void:
 	var region:=Rect2(16,64,size.x-32,maxf(1,size.y-80))
 	var shell:Node=get_parent().get_parent() if get_parent()!=null else null
 	var world:Variant=shell.get("world") if is_instance_valid(shell) else null
+	var portrait := size.x < size.y
 	if is_instance_valid(world) and shell.world_frame.is_visible_in_tree():
+		var safe_top := region.position.y
+		var view_rect: Rect2 = get_global_transform().affine_inverse() * shell.world_view.get_global_rect()
+		region = view_rect.grow(-8)
 		var bottom:float=region.end.y
-		if shell.inventory_handle.visible:bottom=minf(bottom,shell.inventory_handle.position.y-8)
-		if shell.inventory_dock.visible:bottom=minf(bottom,shell.inventory_dock.position.y-8)
-		if shell.world_tasks.visible:bottom=minf(bottom,shell.world_tasks.position.y-8)
+		for control: Control in [shell.inventory_handle, shell.inventory_dock, shell.world_tasks]:
+			if not control.is_visible_in_tree(): continue
+			var control_rect: Rect2 = get_global_transform().affine_inverse() * control.get_global_rect()
+			if control_rect.intersects(view_rect): bottom = minf(bottom, control_rect.position.y - 8)
+		# A portrait letterbox can be shorter than a readable dialogue. Keep
+		# its horizontal center and use the blank space above for long lines.
+		if portrait: region.position.y = minf(region.position.y, safe_top)
 		region.size.y=maxf(1,bottom-region.position.y)
-	if is_instance_valid(world) and not world.subtitle.is_empty() and shell.world_frame.is_visible_in_tree():
+	if not portrait and is_instance_valid(world) and not world.subtitle.is_empty() and shell.world_frame.is_visible_in_tree():
 		# One minimum readable feedback row and the dialogue share this budget.
 		# Otherwise a large dialogue can leave no space in which to stack HUD.
 		var scale:float=world.hud_display_scale()

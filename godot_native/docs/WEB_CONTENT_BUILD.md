@@ -21,6 +21,24 @@ gives deterministic membership for identical input. It does not promise stable
 membership after a resource is added or changes size. This repackages existing bytes without changing `res://` paths,
 controllers, item data or save data.
 
+If that ordinary plan exceeds the browser's unchanged 100-pack ceiling, a
+count-budget fallback merges the smallest eligible same-family pair until the
+plan reaches 100. Each merge removes one pack; no extra merges are performed.
+Single-resource exceptions are never merged. The 24,000,000-byte hard limit,
+chapter/phone admission, original paths and boot core remain unchanged. All
+unaffected packs retain their IDs and members; the earlier ID survives each
+merge, so unrelated cached packs remain reusable. If no safe pair exists, the
+build fails instead of promoting content to core or relaxing a hard limit.
+
+Only pressured builds add the `countBudget` policy and `pack-count-pressure`
+size-exception receipts. Verification rebuilds ordinary first-fit bins from the
+complete-export inventory and repeats the deterministic merges, checking exact
+membership and exception receipts. Unnecessary pressure declarations, forged
+exceptions, mixed-family membership, and altered pack limits are rejected.
+Existing manifests without this policy remain readable. Merged packs over the
+6 MB target use the same independently verified 1 MiB transport slices; the
+extra slices also count toward the existing 950 MB delivery budget.
+
 Cache reuse is based on verified content identity, not on the chapter name.
 The first upgrade from the former 24 MB grouping changes PCK membership and
 hashes, so previously cached whole chapter packs cannot satisfy the new packs.
@@ -36,7 +54,7 @@ The published directory contains:
   fonts and resources selected by the conservative startup dependency scan.
 - `content/<group>-<sha256-prefix>.pck`: immutable deferred chapter/campus packs.
 - `content/chunks/<group>-<index>-<sha256-prefix>.bin`: 1 MiB static slices only
-  for the single-resource packs above the 6 MB target. The complete original
+  for single-resource exceptions and count-budget merged packs above the 6 MB target. The complete original
   PCK remains available; ordinary packs have no duplicate transport files.
 - `content-manifest.json`: the `755-web-content-v1` transport manifest consumed
   by the browser loader and native resource coordinator.
@@ -82,4 +100,5 @@ Focused packer checks, including an actual Godot missing-pack negative control:
 ```sh
 GODOT_BIN=/path/to/Godot node godot_native/tools/test_partition_web_pack.mjs
 node godot_native/tools/test_web_content_chunks.mjs
+node godot_native/tools/test_web_content_packing.mjs
 ```

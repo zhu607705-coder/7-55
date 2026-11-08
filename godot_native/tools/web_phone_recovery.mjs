@@ -360,6 +360,18 @@ export async function phoneRecoveryCase(h) {
       if (current.state.native.page === 'phone_home') return;
       const nav = current.visibleControls.find(c => c.name === 'PhoneNav_exit' && !c.disabled) || current.visibleControls.find(c => c.name === 'PhoneNav_back' && !c.disabled);
       await click(nav.name);
+      if (nav.name === 'PhoneNav_exit') {
+        // A CDP ACK and fixed delay do not acknowledge the cached native snapshot.
+        // Exit targets home; observe that transition without sending another tap.
+        await h.poll(async () => {
+          const next = await read();
+          return Number.isSafeInteger(current.sampleFrame) && Number.isSafeInteger(next.sampleFrame)
+            && next.sampleFrame > current.sampleFrame && next.documentHidden !== true
+            && !next.content?.blocking && next.state.native.page === 'phone_home';
+        }, 'ordinary exit reaches phone home');
+        await page('phone_home');
+        return;
+      }
     }
     await page('phone_home');
   }
@@ -386,6 +398,14 @@ export async function phoneRecoveryCase(h) {
           `${h.id}: ordinary legacy ${percent}% import preserves charge and brightness while removing retired power fields`);
         h.check(noRetiredControls(value), `${h.id}: imported home exposes no charging return control`);
         await click('HomeBonsaiOpen'); await page('bonsai');
+        // The route is set before the first deferred artwork mounts. Wait
+        // on the real object and exit control before exercising navigation.
+        await h.poll(async () => {
+          const current = await read();
+          return !current.content?.blocking && current.state.native.page === 'bonsai'
+            && current.visibleControls.some(c => c.name === 'BonsaiPlant')
+            && current.visibleControls.some(c => c.name === 'PhoneNav_exit' && !c.disabled);
+        }, 'first bonsai view and its ordinary exit are ready', h.bootTimeout);
         value = await read(`ordinary bonsai entry at ${percent}%`);
         h.check(noRetiredControls(value) && !value.state.flags.plantLit,
           `${h.id}: bonsai remains reachable without charging and dim light cannot satisfy the plant`);

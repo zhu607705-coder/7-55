@@ -18,6 +18,7 @@ const ProfileStorage = preload("res://scripts/platform/profile_storage.gd")
 var SAVE_PATH := "user://save.json"
 var BACKUP_PATH := "user://save.previous.json"
 var persistence_ready := true
+var save_compatibility_error := ""
 const SOURCE_VERSION := 36
 const FLCRoomSave = preload("res://scripts/flc_room_save.gd")
 const SaveDomainGuard = preload("res://scripts/save_domain_guard.gd")
@@ -29,6 +30,7 @@ const GameArchitecture = preload("res://scripts/architecture/game_architecture.g
 const NavigationCommand = preload("res://scripts/architecture/commands/navigation_command.gd")
 const StoryActionCommand = preload("res://scripts/architecture/commands/story_action_command.gd")
 const ChapterQuery = preload("res://scripts/architecture/queries/chapter_query.gd")
+const ChapterSystem = preload("res://scripts/architecture/systems/chapter_system.gd")
 var _architecture: GameArchitecture
 # Legacy callers retain one shared dictionary; there is no parallel model/save.
 var d: Dictionary:
@@ -268,6 +270,12 @@ func open_scene(scene: String) -> void:
 func toggle_mode() -> void:
 	game_architecture().send_command(NavigationCommand.new("toggle_mode", ""))
 
+func mode_switch_unlocked() -> bool:
+	return ChapterSystem.mode_switch_unlocked(d)
+
+func mode_label() -> String:
+	return "深色模式" if d.native.mode=="dark" else "浅色模式"
+
 func _record(message: String) -> void:
 	d.native.log.append({"text":message,"time":Time.get_datetime_string_from_system()})
 	while d.native.log.size() > 200: d.native.log.pop_front()
@@ -339,18 +347,10 @@ func activate_profile(key: String, read_existing: bool=true) -> Dictionary:
 	stores.posts_path=ProfileStorage.file("cc98-posts.json");stores.quest_path=ProfileStorage.file("cc98-quest-post-overrides.json")
 	if DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(ProfileStorage.folder()))!=OK: return {"ok":false,"message":"无法准备本机存档目录。"}
 	d=initial();developer_mode=false;formal_snapshot={};persistence_ready=true
+	save_compatibility_error=""
 	var had_file:=FileAccess.file_exists(SAVE_PATH)
-	if read_existing:
-		for existing_path: String in [SAVE_PATH,BACKUP_PATH]:
-			if not FileAccess.file_exists(existing_path): continue
-			var handle:=FileAccess.open(existing_path,FileAccess.READ)
-			if handle==null: continue
-			var envelope: Variant=JSON.parse_string(handle.get_as_text()) if handle.get_length()<=8*1024*1024 else null
-			handle.close()
-			if envelope is Dictionary and float(envelope.get("sourceVersion",0))>SOURCE_VERSION:
-				persistence_ready=false
-				return {"ok":false,"message":"本机存档或备份来自较新游戏版本，请更新游戏；原文件未改动。"}
 	var loaded: bool=load_game() if read_existing else false
+	if not save_compatibility_error.is_empty(): return {"ok":false,"message":save_compatibility_error}
 	if not loaded and legacy.get("ok",false):
 		var prepared:=prepare_cloud_bundle(legacy.bundle,legacy.images)
 		if not prepared.get("ok",false): return prepared
@@ -490,7 +490,8 @@ func validate_snapshot(value: Variant, allow_legacy_v35_fields: bool=false) -> b
 		"c3_pending_handoff":{"id":"","scene":"","paperX":0.0,"paperY":0.0,"playerX":0.0,"playerY":0.0,"paperFrame":0,"paperFlip":false,"paperAngle":0.0},
 		"alarm_ringing":false,"wake_warned":false,"flower_eight_visible":false,"friend_scatter_pending":false,"tower_key_pending":false,
 		"c35_frame":"","c35_voice_stage":"","c35_summary_choice":"","c4_bio":"","c4_context":"","c4_last_dialogue":"","checkpoint_id":"",
-		"lib_catalog_results":false,"lib_dialogue_index":0,"lib_selected_photo":"","lib_photo_filter":"","c4_elevator_transport":false,"c4_native_elevator_completed":false,
+		"lib_catalog_results":false,"lib_dialogue_index":0,"lib_selected_photo":"","lib_photo_filter":"","lib_admission_recorded":false,
+		"c4_elevator_transport":false,"c4_native_elevator_completed":false,
 		"c35_listened":[],"c35_reviewed":[],"c35_voice_selection":[],"c35_photo_selection":[],"c35_route_selection":[],"lib_catalog_result_ids":[],
 		"c35_network_filters":{"time":"all","session":"all","area":"all"},"c3_tray_slots":[],"positions":{},"c4_stair_proof":{},"c4_closure_proof":{},
 		"save_import":{"kind":"","source_version":0,"normalizer_sha256":"","legacy_completed":false,"proof_facts":[],"source_chapter4":{}}
@@ -616,6 +617,27 @@ func save_game() -> bool:
 	if error==OK: snapshot_saved.emit()
 	return error == OK
 
+func _future_native_save(envelope: Variant) -> bool:
+	if not envelope is Dictionary: return false
+	var version: Variant=envelope.get("sourceVersion")
+	return (version is int or version is float or (version is String and version.is_valid_float())) and float(version) > SOURCE_VERSION
+
+func _protect_future_saves() -> bool:
+	# Inspect both files before selecting either: a valid primary must not rotate
+	# over a newer backup. Keep writes disabled until a compatible profile opens.
+	for path: String in [SAVE_PATH,BACKUP_PATH]:
+		var file:=FileAccess.open(path,FileAccess.READ)
+		if file==null: continue
+		var raw:=file.get_as_text() if file.get_length()<=8*1024*1024 else ""
+		file.close()
+		if not load("res://scripts/save_json_guard.gd").new().accepts(raw): continue
+		var envelope: Variant=JSON.parse_string(raw)
+		if _future_native_save(envelope):
+			persistence_ready=false
+			save_compatibility_error="本机存档或备份来自较新游戏版本，请更新游戏；原文件未改动。"
+			return false
+	return true
+
 func _read_native_save(path: String) -> Dictionary:
 	if not FileAccess.file_exists(path): return {}
 	var file := FileAccess.open(path,FileAccess.READ)
@@ -628,6 +650,7 @@ func _read_native_save(path: String) -> Dictionary:
 	if not load("res://scripts/save_json_guard.gd").new().accepts(raw): return {}
 	var envelope = JSON.parse_string(raw)
 	if not envelope is Dictionary or envelope.get("format") != "7-55-godot-native": return {}
+	if _future_native_save(envelope): return {}
 	if not (envelope.get("version") is int or envelope.get("version") is float) or envelope.version != 1: return {}
 	if not validate_snapshot(envelope.get("state"),envelope.get("sourceVersion")==35): return {}
 	if not _valid_native_v36_fields(envelope): return {}
@@ -674,6 +697,13 @@ func _upgrade_legacy_net_receipt(snapshot: Dictionary) -> void:
 func _sanitize_runtime_resume(snapshot: Dictionary) -> void:
 	if snapshot.theaterHunt.propBoxOpened: preload("res://scripts/games/theater_chest_mechanism.gd").ensure(snapshot)
 	_upgrade_legacy_phone_state(snapshot)
+	# An early save from before the gate may already be dark. Restore the
+	# accessible mode before presenting a world that has no switch yet.
+	if not ChapterSystem.mode_switch_unlocked(snapshot):
+		snapshot.native.mode="light"
+		snapshot.themeMode="normal"
+		for domain: String in ["chapter4","canteenHunt","theaterHunt","qizhenLake"]:
+			snapshot[domain].mode="light"
 	# The source lake rehydrates at its checkpoint, not a stale moving/chasing
 	# framebuffer position. This never alters a saved photo recipe or story fact.
 	var positions: Dictionary=snapshot.native.get("positions",{})
@@ -685,6 +715,7 @@ func at_unstarted_opening() -> bool:
 	return int(d.native.chapter) == 1 and d.native.page == "alarm" and d.native.scene == "" and not d.native.get("alarm_ringing", false)
 
 func load_game() -> bool:
+	if not _protect_future_saves(): return false
 	for path in [SAVE_PATH,BACKUP_PATH]:
 		var envelope := _read_native_save(path)
 		if not envelope.is_empty():
@@ -736,6 +767,7 @@ func import_save(path: String) -> Dictionary:
 	var portable_media := false
 	var store_service: Script
 	if envelope.get("format") == "7-55-godot-native":
+		if _future_native_save(envelope): return {"ok":false,"message":"存档来自较新游戏版本，请更新游戏；当前进度未改变。"}
 		if not (envelope.get("version") is int or envelope.get("version") is float) or envelope.version != 1 or not validate_snapshot(envelope.get("state"),envelope.get("sourceVersion")==35): return {"ok":false,"message":"原生存档结构或剧情凭据无效，当前进度未改变。"}
 		if not _valid_native_v36_fields(envelope): return {"ok":false,"message":"新增存档字段无效，当前进度未改变。"}
 		_upgrade_legacy_net_receipt(envelope.state)

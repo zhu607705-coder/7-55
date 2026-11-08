@@ -27,9 +27,14 @@ func run() -> void:
 	var state: Node = root.get_node("State")
 	var state_before := JSON.stringify(state.d)
 	var display: Node = root.get_node("WebDisplay")
-	if not OS.has_feature("web"):
-		check(not display.is_processing(),"native autoload does not poll/apply Web density")
-		check(is_equal_approx(root.content_scale_factor,1.0),"native startup retains its original scale")
+	if OS.get_name()=="Windows" and DisplayServer.get_name()!="headless":
+		var windows_scale := float(DisplayServer.screen_get_dpi(root.current_screen))/96.0
+		check(display.is_processing() and is_equal_approx(root.content_scale_factor,windows_scale),"Windows window uses the active monitor's scale")
+		check(root.get_visible_rect().size.is_equal_approx((Vector2(root.size)/windows_scale).floor()),"Windows keeps full backing pixels and lays out UI in logical units")
+		display.set_process(false)
+	elif not OS.has_feature("web"):
+		check(not display.is_processing(),"other native backends retain their original density policy")
+		check(is_equal_approx(root.content_scale_factor,1.0),"headless startup keeps deterministic scale1")
 	for invalid: float in [0.0,-1.0,NAN,INF,-INF]:
 		check(is_equal_approx(Policy.normalized_scale(invalid),1.0),"invalid/nonfinite density safely normalizes to1: "+str(invalid))
 	check(is_equal_approx(Policy.normalized_scale(.8),.8),"zoom below100% remains fractional")

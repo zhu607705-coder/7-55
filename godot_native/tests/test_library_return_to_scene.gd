@@ -38,7 +38,7 @@ func fixture(scene: String="library_interior",phase: String="library_entered") -
 	state.d.runtimeMode="rpg"; state.d.rpgScene=scene; state.d.rpgCheckpoint="library_entrance"
 	state.d.actOne.phase="complete"; state.d.networkMode="campus_wifi"
 	state.d.ui.libraryFinalsPhase=phase; state.d.ui.libraryFinalsPuzzle.libraryVisitedPoints=["entrance"]
-	state.d.native.positions={"library_interior:":{"x":731.0,"y":739.0}}
+	state.d.native.positions={"library_interior:":{"x":716.0,"y":830.0}}
 	shell.phone_builder.native_library.reset()
 	shell.mobile_world=false; shell.world_page_origin_scene="library_interior"
 	shell._refresh(); await frames()
@@ -68,7 +68,7 @@ func run() -> void:
 		var puzzle=state.d.ui.libraryFinalsPuzzle.duplicate(true)
 		var items=state.d.items.duplicate(true)
 		var scene=state.d.native.scene
-		check(retained==Vector2(731,739) and shell.world.can_stand(retained),"fixture resumes valid saved location near the entrance record")
+		check(retained==Vector2(716,830) and shell.world.can_stand(retained),"fixture resumes valid saved location near the gate reader")
 		var phone_rect=shell.phone.get_global_rect()
 		for repeat in range(3):
 			await click(find("LibraryApp_return"))
@@ -76,14 +76,14 @@ func run() -> void:
 			assert_layout(compact)
 			check(state.d.native.scene==scene and shell.world.player==retained and state.d.native.positions==positions,"return preserves retained scene, live actor and stored position")
 			check(state.d.ui.libraryFinalsPuzzle==puzzle and state.d.items==items and state.d.ui.libraryFinalsPhase=="library_entered","return never advances existing story or inventory")
-			if not compact: check(shell.phone.get_global_rect().is_equal_approx(phone_rect) and shell.world_viewport.size==Vector2i(960,540),"surface switches retain phone bounds and authored world viewport")
+			if not compact: check(shell.phone.get_global_rect().is_equal_approx(phone_rect) and shell.world.size==Vector2(960,540),"surface switches retain phone bounds and authored world viewport")
 			if repeat<2: await app_again()
 		# The next source interaction works without finding another footer or refocusing.
 		shell.world._process(0)
 		await key(KEY_SPACE)
-		check(is_instance_valid(shell.modal) and shell.modal.find_child("LibraryWorldDocumentClose",true,false)!=null,"next Space opens the nearby record through normal world input")
-		check(not shell.phone.visible and shell.world_frame.visible,"the real record remains in the Library world")
-		check(not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"opening the record does not acknowledge it")
+		check(not is_instance_valid(shell.modal) and shell.world.library_gate.snapshot().lanes[0].phase=="scanning","next Space uses the gate reader through normal world input")
+		check(not shell.phone.visible and shell.world_frame.visible,"a swipe stays in the Library world")
+		check(not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"using the reader does not acknowledge the phone record")
 		# The button remains visible in this source-ineligible fixture; controller owns refusal.
 		await fixture(); state.d.actOne.phase="movement_required"
 		await click(find("LibraryApp_return"))

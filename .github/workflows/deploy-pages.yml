@@ -26,7 +26,7 @@ permissions:
 concurrency:
   # Acceptance-only runs must neither queue behind nor cancel a Pages publication.
   group: ${{ github.event_name == 'pull_request' && format('godot-web-pr-{0}', github.event.pull_request.number) || ((github.ref == 'refs/heads/main' || github.ref == 'refs/heads/codex/godot-complete-20261019') && 'github-pages' || format('godot-web-accept-{0}', github.ref)) }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -131,6 +131,7 @@ jobs:
         run: |
           node godot_native/tests/test_web_acceptance_bundle.mjs
           node godot_native/tools/test_web_content_loader.mjs
+          node --test godot_native/tools/test_web_background_budget.mjs
           node godot_native/tools/test_web_resource_cache.mjs
           node godot_native/tools/test_web_boot_chunks.mjs
           node godot_native/tools/test_web_audio_compat.mjs --export=godot_native/exports/web-release
@@ -236,6 +237,8 @@ jobs:
         run: |
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           node godot_native/tests/test_web_acceptance_workflow.mjs
+          node godot_native/tools/test_web_content_packing.mjs
+          node godot_native/tools/test_web_content_chunks.mjs
           node godot_native/tests/test_web_consumer_source_closure.mjs
           node godot_native/tests/test_web_source_inventory.mjs
           node godot_native/tests/test_preparation_pipeline.mjs
@@ -500,31 +503,7 @@ jobs:
             --chrome-arg --use-angle=swiftshader \
             --chrome-arg --enable-unsafe-swiftshader \
             --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_phone_recovery/acceptance.log
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import {phoneInputs, assertPhoneCoverage} from './godot_native/tools/web_phone_shards.mjs';
-          const directory = 'godot_native/exports/verification/web_phone_recovery';
-          const report = JSON.parse(fs.readFileSync(`${directory}/web-acceptance.json`, 'utf8'));
-          const fixtures = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/godot-web-inputs/controller-earned/phone-recovery-inputs.json`, 'utf8'));
-          const expected = [process.env.ACCEPTANCE_PROFILE];
-          const group = process.env.ACCEPTANCE_PHONE_GROUP;
-          const inputs = phoneInputs(fixtures, group);
-          if (report.scenarios !== 'phone-recovery' || !report.passed || report.exportManifest?.sourceCommit !== process.env.GITHUB_SHA || report.exportManifest?.engine !== '4.7.1.stable.official' || JSON.stringify(report.cases.map(item => item.id).sort()) !== JSON.stringify(expected)) throw Error('Missing exact-source 4.7.1 phone recovery browser cases');
-          const profile = { 'desktop-1280': [1280, 720, false, 1], 'touch-390': [390, 844, true, 1], 'retina-touch-390': [390, 844, true, 3] }[process.env.ACCEPTANCE_PROFILE];
-          for (const item of report.cases) {
-            if (JSON.stringify([item.width, item.height, item.touch, item.dpr]) !== JSON.stringify(profile)) throw Error(`Wrong actual phone profile: ${item.id}`);
-            assertPhoneCoverage(item.phoneRecovery, group);
-            if (!item.passed || !item.screenshots.length) throw Error(`Incomplete ordinary phone recovery evidence: ${item.id}`);
-            if (!inputs.every(input => item.imports.some(actual => actual.filename === input.filename && actual.sha256 === input.sha256))) throw Error(`Unverified phone recovery import bytes: ${item.id}`);
-          }
-          const receipt = {group, sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine,
-            runnerSha256: report.runnerSha256, phoneRecoveryRunnerSha256: report.phoneRecoveryRunnerSha256,
-            inputBundle: JSON.parse(fs.readFileSync('godot_native/exports/verification/verified-inputs.json', 'utf8')),
-            inputs, cases: report.cases.map(item => ({id: item.id, group, coverage: item.phoneRecovery.coverage, screenshots: item.screenshots})),
-            scope: 'Actual ordinary Chromium inputs, imports and reload against the Godot WASM export. Low-battery legacy inputs are explicit compatibility constructions; no physical-device or four-chapter manual playthrough claim.'};
-          fs.writeFileSync(`${directory}/ci-phone-recovery-receipt.json`, JSON.stringify(receipt, null, 2) + '\n');
-          console.log(JSON.stringify(receipt, null, 2));
-          NODE
+          node godot_native/tools/write_web_phone_receipt.mjs
 
       - name: Preserve this phone group's browser evidence
         if: always()
@@ -682,31 +661,7 @@ jobs:
             --chrome-arg --use-angle=swiftshader \
             --chrome-arg --enable-unsafe-swiftshader \
             --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_phone_recovery/acceptance.log
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import {phoneInputs, assertPhoneCoverage} from './godot_native/tools/web_phone_shards.mjs';
-          const directory = 'godot_native/exports/verification/web_phone_recovery';
-          const report = JSON.parse(fs.readFileSync(`${directory}/web-acceptance.json`, 'utf8'));
-          const fixtures = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/godot-web-inputs/controller-earned/phone-recovery-inputs.json`, 'utf8'));
-          const expected = [process.env.ACCEPTANCE_PROFILE];
-          const group = process.env.ACCEPTANCE_PHONE_GROUP;
-          const inputs = phoneInputs(fixtures, group);
-          if (report.scenarios !== 'phone-recovery' || !report.passed || report.exportManifest?.sourceCommit !== process.env.GITHUB_SHA || report.exportManifest?.engine !== '4.7.1.stable.official' || JSON.stringify(report.cases.map(item => item.id).sort()) !== JSON.stringify(expected)) throw Error('Missing exact-source 4.7.1 phone recovery browser cases');
-          const profile = { 'desktop-1280': [1280, 720, false, 1], 'touch-390': [390, 844, true, 1], 'retina-touch-390': [390, 844, true, 3] }[process.env.ACCEPTANCE_PROFILE];
-          for (const item of report.cases) {
-            if (JSON.stringify([item.width, item.height, item.touch, item.dpr]) !== JSON.stringify(profile)) throw Error(`Wrong actual phone profile: ${item.id}`);
-            assertPhoneCoverage(item.phoneRecovery, group);
-            if (!item.passed || !item.screenshots.length) throw Error(`Incomplete ordinary phone recovery evidence: ${item.id}`);
-            if (!inputs.every(input => item.imports.some(actual => actual.filename === input.filename && actual.sha256 === input.sha256))) throw Error(`Unverified phone recovery import bytes: ${item.id}`);
-          }
-          const receipt = {group, sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine,
-            runnerSha256: report.runnerSha256, phoneRecoveryRunnerSha256: report.phoneRecoveryRunnerSha256,
-            inputBundle: JSON.parse(fs.readFileSync('godot_native/exports/verification/verified-inputs.json', 'utf8')),
-            inputs, cases: report.cases.map(item => ({id: item.id, group, coverage: item.phoneRecovery.coverage, screenshots: item.screenshots})),
-            scope: 'Actual ordinary Chromium inputs, imports and reload against the Godot WASM export. Low-battery legacy inputs are explicit compatibility constructions; no physical-device or four-chapter manual playthrough claim.'};
-          fs.writeFileSync(`${directory}/ci-phone-recovery-receipt.json`, JSON.stringify(receipt, null, 2) + '\n');
-          console.log(JSON.stringify(receipt, null, 2));
-          NODE
+          node godot_native/tools/write_web_phone_receipt.mjs
 
       - name: Preserve this phone group's browser evidence
         if: ${{ always() && matrix.phone_profile != '' }}
@@ -797,31 +752,7 @@ jobs:
             --chrome-arg --use-angle=swiftshader \
             --chrome-arg --enable-unsafe-swiftshader \
             --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_phone_recovery/acceptance.log
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import {phoneInputs, assertPhoneCoverage} from './godot_native/tools/web_phone_shards.mjs';
-          const directory = 'godot_native/exports/verification/web_phone_recovery';
-          const report = JSON.parse(fs.readFileSync(`${directory}/web-acceptance.json`, 'utf8'));
-          const fixtures = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/godot-web-inputs/controller-earned/phone-recovery-inputs.json`, 'utf8'));
-          const expected = [process.env.ACCEPTANCE_PROFILE];
-          const group = process.env.ACCEPTANCE_PHONE_GROUP;
-          const inputs = phoneInputs(fixtures, group);
-          if (report.scenarios !== 'phone-recovery' || !report.passed || report.exportManifest?.sourceCommit !== process.env.GITHUB_SHA || report.exportManifest?.engine !== '4.7.1.stable.official' || JSON.stringify(report.cases.map(item => item.id).sort()) !== JSON.stringify(expected)) throw Error('Missing exact-source 4.7.1 phone recovery browser cases');
-          const profile = { 'desktop-1280': [1280, 720, false, 1], 'touch-390': [390, 844, true, 1], 'retina-touch-390': [390, 844, true, 3] }[process.env.ACCEPTANCE_PROFILE];
-          for (const item of report.cases) {
-            if (JSON.stringify([item.width, item.height, item.touch, item.dpr]) !== JSON.stringify(profile)) throw Error(`Wrong actual phone profile: ${item.id}`);
-            assertPhoneCoverage(item.phoneRecovery, group);
-            if (!item.passed || !item.screenshots.length) throw Error(`Incomplete ordinary phone recovery evidence: ${item.id}`);
-            if (!inputs.every(input => item.imports.some(actual => actual.filename === input.filename && actual.sha256 === input.sha256))) throw Error(`Unverified phone recovery import bytes: ${item.id}`);
-          }
-          const receipt = {group, sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine,
-            runnerSha256: report.runnerSha256, phoneRecoveryRunnerSha256: report.phoneRecoveryRunnerSha256,
-            inputBundle: JSON.parse(fs.readFileSync('godot_native/exports/verification/verified-inputs.json', 'utf8')),
-            inputs, cases: report.cases.map(item => ({id: item.id, group, coverage: item.phoneRecovery.coverage, screenshots: item.screenshots})),
-            scope: 'Actual ordinary Chromium inputs, imports and reload against the Godot WASM export. Low-battery legacy inputs are explicit compatibility constructions; no physical-device or four-chapter manual playthrough claim.'};
-          fs.writeFileSync(`${directory}/ci-phone-recovery-receipt.json`, JSON.stringify(receipt, null, 2) + '\n');
-          console.log(JSON.stringify(receipt, null, 2));
-          NODE
+          node godot_native/tools/write_web_phone_receipt.mjs
 
       - name: Preserve this phone group's browser evidence
         if: always()
@@ -996,31 +927,7 @@ jobs:
             --chrome-arg --use-angle=swiftshader \
             --chrome-arg --enable-unsafe-swiftshader \
             --boot-timeout 180000 2>&1 | tee godot_native/exports/verification/web_phone_recovery/acceptance.log
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import {phoneInputs, assertPhoneCoverage} from './godot_native/tools/web_phone_shards.mjs';
-          const directory = 'godot_native/exports/verification/web_phone_recovery';
-          const report = JSON.parse(fs.readFileSync(`${directory}/web-acceptance.json`, 'utf8'));
-          const fixtures = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/godot-web-inputs/controller-earned/phone-recovery-inputs.json`, 'utf8'));
-          const expected = [process.env.ACCEPTANCE_PROFILE];
-          const group = process.env.ACCEPTANCE_PHONE_GROUP;
-          const inputs = phoneInputs(fixtures, group);
-          if (report.scenarios !== 'phone-recovery' || !report.passed || report.exportManifest?.sourceCommit !== process.env.GITHUB_SHA || report.exportManifest?.engine !== '4.7.1.stable.official' || JSON.stringify(report.cases.map(item => item.id).sort()) !== JSON.stringify(expected)) throw Error('Missing exact-source 4.7.1 phone recovery browser cases');
-          const profile = { 'desktop-1280': [1280, 720, false, 1], 'touch-390': [390, 844, true, 1], 'retina-touch-390': [390, 844, true, 3] }[process.env.ACCEPTANCE_PROFILE];
-          for (const item of report.cases) {
-            if (JSON.stringify([item.width, item.height, item.touch, item.dpr]) !== JSON.stringify(profile)) throw Error(`Wrong actual phone profile: ${item.id}`);
-            assertPhoneCoverage(item.phoneRecovery, group);
-            if (!item.passed || !item.screenshots.length) throw Error(`Incomplete ordinary phone recovery evidence: ${item.id}`);
-            if (!inputs.every(input => item.imports.some(actual => actual.filename === input.filename && actual.sha256 === input.sha256))) throw Error(`Unverified phone recovery import bytes: ${item.id}`);
-          }
-          const receipt = {group, sourceCommit: report.exportManifest.sourceCommit, engine: report.exportManifest.engine,
-            runnerSha256: report.runnerSha256, phoneRecoveryRunnerSha256: report.phoneRecoveryRunnerSha256,
-            inputBundle: JSON.parse(fs.readFileSync('godot_native/exports/verification/verified-inputs.json', 'utf8')),
-            inputs, cases: report.cases.map(item => ({id: item.id, group, coverage: item.phoneRecovery.coverage, screenshots: item.screenshots})),
-            scope: 'Actual ordinary Chromium inputs, imports and reload against the Godot WASM export. Low-battery legacy inputs are explicit compatibility constructions; no physical-device or four-chapter manual playthrough claim.'};
-          fs.writeFileSync(`${directory}/ci-phone-recovery-receipt.json`, JSON.stringify(receipt, null, 2) + '\n');
-          console.log(JSON.stringify(receipt, null, 2));
-          NODE
+          node godot_native/tools/write_web_phone_receipt.mjs
 
       - name: Preserve this phone group's browser evidence
         if: ${{ always() && matrix.phone_profile != '' }}

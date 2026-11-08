@@ -1,6 +1,6 @@
 extends RefCounted
 ## Shared screen-space typography and bounds. Never receives world camera zoom.
-const BODY_PX:=15
+const BODY_PX:=16
 const SPEAKER_PX:=14
 const TITLE_PX:=16
 
@@ -10,19 +10,19 @@ static func pixels(physical:float,display_scale:float)->float:
 static func font_pixels(physical:int,display_scale:float)->int:
 	return maxi(1,ceili(pixels(physical,display_scale)))
 
-static func hud(font:Font,extent:Vector2,display_scale:float,text:String,touch:bool,text_scale:float=1.0)->Dictionary:
+static func hud(font:Font,extent:Vector2,display_scale:float,text:String,touch:bool,text_scale:float=1.0,body_px:int=BODY_PX)->Dictionary:
 	var s:=maxf(.01,display_scale)
 	var gap:=pixels(6,s)
 	var padding:=pixels(10,s)
 	var body_padding:=pixels(12,s)
 	var type_scale:=clampf(extent.x*s/960.0,1.0,1.2)
-	var body_font:=font_pixels(ceili(BODY_PX*type_scale*text_scale),s)
+	var body_font:=font_pixels(ceili(body_px*type_scale*text_scale),s)
 	var title_font:=font_pixels(ceili((18 if touch else TITLE_PX)*type_scale),s)
 	var mode_font:=font_pixels(ceili(SPEAKER_PX*type_scale),s)
 	var available_width:=maxf(1,minf(extent.x-body_padding*2,pixels(680,s)))
 	var natural_width:=maxf(pixels(220,s),font.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,body_font).x)
 	var width:=minf(available_width,natural_width)
-	var measured:=font.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_CENTER,width,body_font)
+	var measured:=font.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,width,body_font)
 	var inset:=pixels(8,s)
 	var content_height:=measured.y
 	var height:=maxf(pixels(44 if touch else 34,s),content_height+inset*2)
@@ -34,9 +34,9 @@ static func hud(font:Font,extent:Vector2,display_scale:float,text:String,touch:b
 	var overflow:=height>budget
 	if overflow:
 		width=maxf(1,width-pixels(14,s))
-		content_height=font.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_CENTER,width,body_font).y
+		content_height=font.get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,width,body_font).y
 		height=budget
-	var mode_width:=font.get_string_size("浅色操作",HORIZONTAL_ALIGNMENT_LEFT,-1,mode_font).x+padding*2
+	var mode_width:=font.get_string_size("浅色模式",HORIZONTAL_ALIGNMENT_LEFT,-1,mode_font).x+padding*2
 	return {"compact":true,"title_font":title_font,"mode_font":mode_font,"body_font":body_font,"header_height":header,"padding":padding,"body_padding":body_padding,"body_width":width,"body_height":height,"body_content_height":content_height,"body_overflow":overflow,"body_gap":gap,"body_inset":inset,"mode_rect":Rect2(extent.x-mode_width,0,mode_width,header)}
 
 static func dialogue(font:Font,extent:Rect2,display_scale:float,speaker:String,text:String,prompt:String="",text_scale:float=1.0)->Dictionary:

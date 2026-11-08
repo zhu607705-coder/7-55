@@ -2,6 +2,8 @@ extends Control
 ## Selected HUD 2 / interaction 1. Screen-space presentation only.
 ## World motion, targets, camera and progression remain owned by world.gd.
 const Selected = preload("res://scripts/ui/selected_ui_theme.gd")
+const Notice = preload("res://scripts/ui/native_phone_notice.gd")
+const DialogueLayout = preload("res://scripts/ui/selected_dialogue_layout.gd")
 class Scrim extends PanelContainer:
 	func _draw()->void:
 		# Keep the exact passive HUD rectangle and its scrolling/input contract.
@@ -16,7 +18,7 @@ var clock: Label
 var location: Label
 var objective: Label
 var task_tip: Label
-var plaque: VBoxContainer
+var plaque: PanelContainer
 var object_heading: Label
 var object_body: Label
 var object_hint: Label
@@ -54,14 +56,13 @@ func _init() -> void:
 	clock=_label(task_column,"hud","heading")
 	objective=_label(task_column,"hud","body")
 	task_tip=_label(task_column,"hud","tip");task_column.move_child(task_tip,3)
-	plaque=VBoxContainer.new();plaque.name="SelectedInteraction1";plaque.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	plaque.add_theme_constant_override("separation",8);add_child(plaque)
-	object_heading=_label(plaque,"interaction","heading")
-	object_heading.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-	object_body=_label(plaque,"interaction","body")
-	object_body.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-	object_hint=_label(plaque,"interaction","button")
-	object_hint.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	plaque=PanelContainer.new();plaque.name="SelectedInteraction1";plaque.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	plaque.add_theme_stylebox_override("panel",Notice.dialog_style(Vector2(12,8)));add_child(plaque)
+	var plaque_text:=VBoxContainer.new();plaque_text.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	plaque_text.add_theme_constant_override("separation",3);plaque.add_child(plaque_text)
+	object_heading=_label(plaque_text,"dialogue","heading")
+	object_body=_label(plaque_text,"dialogue","body")
+	object_hint=_label(plaque_text,"dialogue","tip")
 	mode=_label(self,"hud","button");mode.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	task_column.minimum_size_changed.connect(_schedule_settle)
 	task_scroll.resized.connect(_schedule_settle)
@@ -131,7 +132,9 @@ func _label(parent:Node,surface:String,role:String)->Label:
 	var label:=Label.new();label.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	label.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-	Selected.apply_label(label,surface,role);parent.add_child(label)
+	if surface=="dialogue": DialogueLayout.apply_role(label,role,Selected.size(surface,role))
+	else: Selected.apply_label(label,surface,role)
+	parent.add_child(label)
 	return label
 
 func sync_view(extent:Vector2,display_scale:float,title:String,goal:String,prompt:String,mode_text:String,mode_rect:Rect2,bottom:float,clock_text:String="",object_detail:String="",plaque_bottom:float=-1.0)->void:

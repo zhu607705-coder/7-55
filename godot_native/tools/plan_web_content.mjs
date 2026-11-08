@@ -10,6 +10,7 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { isFlcRuntimePath } from './web_story_content_policy.mjs';
 import { CONTENT_PACK_TARGET, CONTENT_PACK_LIMIT } from './web_content_chunks.mjs';
+import { CONTENT_FAMILY_ORDER, packContentFamilies } from './web_content_packing.mjs';
 
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const argv = process.argv.slice(2);
@@ -79,6 +80,8 @@ function classify(name) {
   if (/^assets\/(objectized\/chapter4|native\/(stair_b|endless_stair_b3|canruo))\//.test(name)) return 'chapter4';
   if (/^assets\/native\/chapter35_recovery_/.test(name)) return 'chapter35';
   if (/^assets\/native\/(qizhen_rain_rescue|lake_assembly|kayak)\//.test(name)) return 'chapter35';
+  // Layered campus is loaded with campus_bootstrap, never the opening phone.
+  if (/^assets\/native\/campus_layered\//.test(name)) return 'chapter2';
   if (/^assets\/native\/north_objects_20261025\//.test(name)) return 'chapter4';
   if (/^assets\/native\/(library_rebuild_20261020|library_object_depth_20261104|library_animation_20261105|library_interactions_20261105)\//.test(name)) return 'chapter2';
   if (/^assets\/native\/(theater_rebuild_20261020|liangzhu_performance_20261021|theater_chest_20261023)\//.test(name)) return 'chapter3';
@@ -276,39 +279,13 @@ for (const [name, owner] of ownership) {
   if (isFlcRuntimePath(name.replace(/\.(?:import|remap)$/, '')) && owner.group !== 'flc_activity')
     throw new Error(`FLC activity resource promoted outside its admission gate: ${name} (${owner.reason})`);
 }
-const groupOrder = ['core', 'phone_bonsai', 'phone_tiyi', 'chapter2', 'chapter3', 'chapter35', 'chapter4', 'flc_activity', 'campus_shared', 'campus_chaoyang', 'campus_haidian', 'campus_changping'];
+const groupOrder = CONTENT_FAMILY_ORDER;
 const summaries = groupOrder.map(id => {
   const files = entries.filter(entry => ownership.get(entry.path).group === id).sort((a, b) => a.path.localeCompare(b.path, 'en'));
   return { id, count: files.length, payloadBytes: files.reduce((sum, entry) => sum + entry.bytes, 0), paths: files.map(entry => entry.path) };
 });
 const chunkLimitBytes = CONTENT_PACK_LIMIT;
-const chunks = [];
-for (const family of summaries.filter(group => group.id !== 'core' && group.count)) {
-  let current = null;
-  let sequence = 0;
-  // Stable first-fit decreasing avoids large, poorly cacheable chapter packs.
-  // Pack membership remains deterministic for a fixed complete export.
-  const bins = [];
-  const sorted = family.paths.map(name => byPath.get(name)).sort((a, b) => b.bytes - a.bytes || a.path.localeCompare(b.path, 'en'));
-  for (const entry of sorted) {
-    // PCKPacker also writes file alignment and a path/hash directory. Reserve
-    // 128 bytes per entry plus its UTF-8 path and a 256-byte pack header, which
-    // is greater than the supported PCK format's 32-byte alignment/directory overhead.
-    const budgetBytes = entry.bytes + Buffer.byteLength(entry.path, 'utf8') + 128;
-    if (budgetBytes + 256 > chunkLimitBytes) throw new Error(`Resource exceeds ${chunkLimitBytes}-byte content chunk budget: ${entry.path} (${entry.bytes}); split/convert the authored resource explicitly`);
-    // A single immutable resource may exceed the ordinary target. Keep it
-    // alone, record the exception, and retain the unchanged 24 MB hard limit.
-    const oversized = budgetBytes + 256 > CONTENT_PACK_TARGET;
-    current = oversized ? null : bins.find(bin => !bin.oversizedResource && bin.estimatedPackBytes + budgetBytes <= CONTENT_PACK_TARGET);
-    if (!current) { current = { family: family.id, id: `${family.id}_${String(++sequence).padStart(3, '0')}`, paths: [], payloadBytes: 0, estimatedPackBytes: 256 }; bins.push(current); }
-    if (oversized) current.oversizedResource = entry.path;
-    current.paths.push(entry.path);
-    current.payloadBytes += entry.bytes;
-    current.estimatedPackBytes += budgetBytes;
-  }
-  for (const bin of bins) { bin.paths.sort((a, b) => a.localeCompare(b, 'en')); chunks.push(bin); }
-}
-if (chunks.length > 100) throw new Error(`Content plan exceeds the browser's 100-pack limit: ${chunks.length}`);
+const { chunks, ordinaryPackCount, merges } = packContentFamilies(summaries, entries);
 const plan = { schemaVersion: 1, coreId: 'core', groups: chunks.map(({ id, paths }) => ({ id, paths })) };
 const report = {
   schemaVersion: 1, mode: startup,
@@ -318,6 +295,7 @@ const report = {
   groups: summaries.map(({ paths, ...group }) => group),
   chunkLimitBytes,
   targetPackBytes: CONTENT_PACK_TARGET,
+  ordinaryPackCount, pressureMerges: merges,
   chunks: chunks.map(({ paths, ...chunk }) => ({ ...chunk, count: paths.length })),
   startupParsedScripts: [...parsed].sort(),
   startupPromotions: [...promoted].map(([path, value]) => ({ path, ...value })), unresolved,

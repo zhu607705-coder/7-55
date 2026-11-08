@@ -1,7 +1,9 @@
 extends Node
-## CSS layout units with the original HiDPI backing buffer. No game state.
+## Logical UI units with the original HiDPI backing buffer. No game state.
 var _window: Window
 var _web_active := false
+var _windows_active := false
+var _windows_poll_left := 0.0
 var _syncing := false
 
 static func normalized_scale(value: float) -> float:
@@ -17,29 +19,34 @@ static func apply_to_window(window: Window, density: float) -> bool:
 func _enter_tree() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_web_active = OS.has_feature("web")
-	set_process(_web_active)
-	if not _web_active: return
+	_windows_active = OS.get_name()=="Windows" and DisplayServer.get_name()!="headless"
+	if not (_web_active or _windows_active): return
 	_window = get_tree().root
-	# Browser density/zoom can be fractional, including values below one.
+	# Browser zoom and Windows display scaling can both be fractional.
 	if _window.content_scale_stretch != Window.CONTENT_SCALE_STRETCH_FRACTIONAL:
 		_window.content_scale_stretch = Window.CONTENT_SCALE_STRETCH_FRACTIONAL
-	_window.size_changed.connect(_sync_scale)
+	if _web_active: _window.size_changed.connect(_sync_scale)
 	_sync_scale()
 
 func _ready() -> void:
 	# Script callback registration can enable processing after _enter_tree.
-	set_process(_web_active)
-	if _web_active: _sync_scale()
+	set_process(_web_active or _windows_active)
+	_sync_scale()
 
 func _sync_scale() -> void:
-	if not _web_active or _syncing or not is_instance_valid(_window): return
+	if _syncing or not is_instance_valid(_window): return
 	_syncing = true
-	# Same effective ratio as Web's canvas, including the engine HiDPI setting.
-	apply_to_window(_window,DisplayServer.screen_get_scale())
+	var density := DisplayServer.screen_get_scale() if _web_active else float(DisplayServer.screen_get_dpi(_window.current_screen))/96.0
+	apply_to_window(_window,density)
 	_syncing = false
 
-func _process(_delta: float) -> void:
-	# Monitor/zoom changes need not alter CSS dimensions. Equal values never write.
+func _process(delta: float) -> void:
+	# Windows has no Window.dpi_changed signal. Check the current monitor at
+	# intervals so a move to another display does not depend on a resize.
+	if _windows_active:
+		_windows_poll_left-=delta
+		if _windows_poll_left>0.0: return
+		_windows_poll_left=.5
 	_sync_scale()
 
 func _exit_tree() -> void:

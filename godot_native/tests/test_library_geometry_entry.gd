@@ -50,8 +50,11 @@ func run()->void:
 		check(world._pick_target(Notebook.BOUNDS.get_center()).get("id")==Notebook.ID,"visible independent notebook owns the hit area")
 		var before=state.d.duplicate(true)
 		await capture(str(dim.x)+"_notebook")
-		var at=(Notebook.BOUNDS.get_center()-world.camera)*world.zoom+world.size/2
-		await click(world.get_viewport(),at);await frames(8)
+		var local: Vector2=(Notebook.BOUNDS.get_center()-world.camera)*world.zoom+world.size/2
+		var display: Control=shell.world_view
+		var pixel: Vector2=world.get_global_transform_with_canvas()*local
+		var at: Vector2=display.get_global_transform_with_canvas()*(pixel*display.size/Vector2(shell.world_viewport.size))
+		await click(root,at);await frames(8)
 		check(is_instance_valid(shell.active_game),"ordinary table click opens the native geometry reading")
 		if not is_instance_valid(shell.active_game):shell.queue_free();await frames();continue
 		var view:Control=shell.active_game
@@ -82,7 +85,7 @@ func run()->void:
 		check(state.d.items==before.items and state.d.ui.libraryFinalsPuzzle==before.ui.libraryFinalsPuzzle and state.d.ui.libraryFinalsPhase==before.ui.libraryFinalsPhase,"reading and animation cannot grant inventory or story proof")
 		await click(root,view.back.get_global_rect().get_center());await frames(6)
 		check(not is_instance_valid(shell.active_game) and shell.world_frame.visible and world.player.distance_to(Notebook.APPROACH)<1,"close returns to the same real table")
-		await click(world.get_viewport(),at);await frames(8)
+		await click(root,at);await frames(8)
 		check(is_instance_valid(shell.active_game) and not shell.active_game.intro_play,"reopening does not replay the session entrance")
 		if is_instance_valid(shell.active_game):
 			var key=InputEventKey.new();key.keycode=KEY_ESCAPE;key.physical_keycode=KEY_ESCAPE;key.pressed=true;root.push_input(key,true);await frames()

@@ -16,15 +16,13 @@ export function RpgRealityModeToggle({
   className = ""
 }: RpgRealityModeToggleProps) {
   const current = RPG_REALITY_MODE_CONTRACT[mode];
-  const nextMode: RpgRealityMode = mode === "dark" ? "light" : "dark";
-  const next = RPG_REALITY_MODE_CONTRACT[nextMode];
   return (
     <Button variant="ghost" data-layout="content"
       type="button"
       className={`rpg-canteen-mode-toggle rpg-reality-mode-toggle is-${mode} ${className}`.trim()}
       aria-pressed={mode === "dark"}
-      aria-label={`当前${current.label}。点击切换到${next.label}`}
-      title={`${current.shortHint} 点击切换到${next.label}。`}
+      aria-label={current.label}
+      title={current.label}
       onClick={(event) => {
         onToggle();
         // Return keyboard control to the RPG surface. Otherwise Space activates
@@ -32,9 +30,7 @@ export function RpgRealityModeToggle({
         event.currentTarget.blur();
       }}
     >
-      <span>当前模式</span>
       <strong>{current.label}</strong>
-      <small>切换：{next.label}</small>
     </Button>
   );
 }

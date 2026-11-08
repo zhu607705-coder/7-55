@@ -1,0 +1,347 @@
+{
+  "schema": "755-campus-navigation-v10-fixture-v1",
+  "coordinateConvention": "world-foot-center",
+  "footSize": [
+    16,
+    10
+  ],
+  "footCenterOffset": [
+    0,
+    36.5625
+  ],
+  "stepPixels": 2,
+  "groups": [
+    {
+      "id": "east_bank",
+      "label": "截图右侧沿岸小径",
+      "routes": [
+        {
+          "id": "red_south_to_north_forward",
+          "points": [
+            [
+              3529,
+              653
+            ],
+            [
+              3529,
+              666
+            ],
+            [
+              3536,
+              676
+            ],
+            [
+              3541,
+              686
+            ],
+            [
+              3545,
+              696
+            ],
+            [
+              3546,
+              706
+            ],
+            [
+              3546,
+              716
+            ],
+            [
+              3544,
+              726
+            ],
+            [
+              3540,
+              736
+            ],
+            [
+              3535,
+              746
+            ],
+            [
+              3529,
+              756
+            ],
+            [
+              3520,
+              766
+            ],
+            [
+              3512,
+              776
+            ],
+            [
+              3508,
+              786
+            ],
+            [
+              3508,
+              796
+            ],
+            [
+              3510,
+              806
+            ],
+            [
+              3516,
+              816
+            ],
+            [
+              3523,
+              826
+            ],
+            [
+              3532,
+              836
+            ],
+            [
+              3540,
+              846
+            ],
+            [
+              3545,
+              856
+            ],
+            [
+              3547,
+              866
+            ],
+            [
+              3547,
+              876
+            ],
+            [
+              3544,
+              886
+            ],
+            [
+              3539,
+              896
+            ],
+            [
+              3532,
+              906
+            ],
+            [
+              3524,
+              916
+            ],
+            [
+              3515,
+              926
+            ],
+            [
+              3506,
+              936
+            ],
+            [
+              3498,
+              946
+            ],
+            [
+              3488,
+              956
+            ],
+            [
+              3478,
+              966
+            ],
+            [
+              3465,
+              976
+            ],
+            [
+              3445,
+              986
+            ],
+            [
+              3423,
+              993
+            ],
+            [
+              3403,
+              995
+            ],
+            [
+              3375,
+              995
+            ]
+          ]
+        },
+        {
+          "id": "white_west_branch_forward",
+          "points": [
+            [
+              3375,
+              774
+            ],
+            [
+              3403,
+              774
+            ],
+            [
+              3423,
+              776
+            ],
+            [
+              3443,
+              781
+            ],
+            [
+              3463,
+              786
+            ],
+            [
+              3483,
+              791
+            ],
+            [
+              3508,
+              795
+            ]
+          ]
+        },
+        {
+          "id": "north_paving_to_main_road_forward",
+          "points": [
+            [
+              3375,
+              653
+            ],
+            [
+              3410,
+              653
+            ],
+            [
+              3450,
+              653
+            ],
+            [
+              3490,
+              653
+            ],
+            [
+              3529,
+              653
+            ]
+          ]
+        }
+      ],
+      "tapRoutes": [
+        {
+          "id": "red_south_to_north_forward_tap_0",
+          "points": [
+            [
+              3529,
+              653
+            ],
+            [
+              3544,
+              726
+            ]
+          ]
+        },
+        {
+          "id": "red_south_to_north_forward_tap_1",
+          "points": [
+            [
+              3544,
+              726
+            ],
+            [
+              3508,
+              796
+            ]
+          ]
+        },
+        {
+          "id": "red_south_to_north_forward_tap_2",
+          "points": [
+            [
+              3508,
+              796
+            ],
+            [
+              3547,
+              866
+            ]
+          ]
+        },
+        {
+          "id": "red_south_to_north_forward_tap_3",
+          "points": [
+            [
+              3547,
+              866
+            ],
+            [
+              3506,
+              936
+            ]
+          ]
+        },
+        {
+          "id": "red_south_to_north_forward_tap_4",
+          "points": [
+            [
+              3506,
+              936
+            ],
+            [
+              3403,
+              995
+            ]
+          ]
+        }
+      ],
+      "open": [],
+      "blocked": [
+        {
+          "id": "baisha_south__path_tree_upper_root",
+          "point": [
+            3518.6666666666665,
+            733.8333333333334
+          ]
+        },
+        {
+          "id": "baisha_south__path_tree_middle_root",
+          "point": [
+            3565.0,
+            905.0
+          ]
+        },
+        {
+          "id": "baisha_south__path_tree_lower_root",
+          "point": [
+            3485.3333333333335,
+            1006.3333333333334
+          ]
+        },
+        {
+          "id": "east_water",
+          "point": [
+            3695,
+            1000
+          ]
+        },
+        {
+          "id": "south_water",
+          "point": [
+            3500,
+            1080
+          ]
+        },
+        {
+          "id": "north_building_base",
+          "point": [
+            3480,
+            622
+          ]
+        }
+      ],
+      "edgeProbes": []
+    }
+  ],
+  "sourceFixture": "campus_navigation_v11_east_bank.json",
+  "revisionNote": "Campus-only authorized16x10 center36.5625; user adjusted previous downward shift upward by one-third."
+}

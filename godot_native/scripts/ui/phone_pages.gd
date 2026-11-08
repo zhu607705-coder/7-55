@@ -1033,11 +1033,11 @@ func _campus_card() -> Control:
 		_panel(root,_home_rect(x,94,26,26),Color.TRANSPARENT,Color.WHITE,12 if i==2 else 3 if i==1 else 0,3)
 		if i==3: _panel(root,_home_rect(x,113,26,7),Color.WHITE)
 		_label(root,["扫一扫","付款码","卡片充值","卡包"][i],_home_rect(18+i*97,126,97,20),12,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
-	_panel(root,_home_rect(17,164,396,260),Color(.04,.08,.20,.45))
-	var card=_panel(root,_home_rect(14,161,396,260),Color("1d3f8f"),Color("0e2257"),0,2); card.name="CampusCardPlate"; card.clip_contents=true
+	_panel(root,_home_rect(17,164,396,208),Color(.04,.08,.20,.45))
+	var card=_panel(root,_home_rect(14,161,396,208),Color("1d3f8f"),Color("0e2257"),0,2); card.name="CampusCardPlate"; card.clip_contents=true
 	var gradient=Gradient.new(); gradient.offsets=PackedFloat32Array([0,.68,1]); gradient.colors=PackedColorArray([Color("2a53b0"),Color("1d3f8f"),Color("1d3f8f")])
-	var gradient_texture=GradientTexture2D.new(); gradient_texture.gradient=gradient; gradient_texture.width=396; gradient_texture.height=260; gradient_texture.fill_from=Vector2(.17,0); gradient_texture.fill_to=Vector2(.83,1)
-	var gradient_view=TextureRect.new(); gradient_view.name="CampusCardGradient"; gradient_view.expand_mode=TextureRect.EXPAND_IGNORE_SIZE; gradient_view.texture=gradient_texture; gradient_view.position=Vector2(2,2)/PHONE_SCALE; gradient_view.size=Vector2(392,256)/PHONE_SCALE; gradient_view.mouse_filter=Control.MOUSE_FILTER_IGNORE; card.add_child(gradient_view)
+	var gradient_texture=GradientTexture2D.new(); gradient_texture.gradient=gradient; gradient_texture.width=396; gradient_texture.height=208; gradient_texture.fill_from=Vector2(.17,0); gradient_texture.fill_to=Vector2(.83,1)
+	var gradient_view=TextureRect.new(); gradient_view.name="CampusCardGradient"; gradient_view.expand_mode=TextureRect.EXPAND_IGNORE_SIZE; gradient_view.texture=gradient_texture; gradient_view.position=Vector2(2,2)/PHONE_SCALE; gradient_view.size=Vector2(392,204)/PHONE_SCALE; gradient_view.mouse_filter=Control.MOUSE_FILTER_IGNORE; card.add_child(gradient_view)
 	_panel(root,_home_rect(30,177,30,30),Color("dfe9ff"),Color.WHITE,15,2)
 	_panel(root,_home_rect(40,187,10,10),Color.WHITE,Color.TRANSPARENT,5)
 	_label(root,"浙江大学",_home_rect(70,182,106,24),16,Color("f2f6ff"))
@@ -1056,8 +1056,9 @@ func _campus_card() -> Control:
 		var i=[["学　号："],["姓　名："],["卡账户："]].find([row[0]])
 		_label(root,row[0],_home_rect(138,234+i*25,68,23),12,Color("cedcf3"))
 		_label(root,row[1],_home_rect(210,234+i*25,181,23),12,Color("f2f6ff"))
-	_label(root,"校园卡余额：",_home_rect(138,312,92,27),12,Color("cedcf3"))
-	var balance=DropButton.new(); balance.name="CampusCardBalance"; balance.position=_home_rect(232,305,161,40).position; balance.size=_home_rect(232,305,161,40).size
+	_label(root,"校园卡余额：",_home_rect(138,312,86,27),12,Color("cedcf3")).name="CampusCardBalanceLabel"
+	var balance=DropButton.new(); balance.name="CampusCardBalance"; balance.position=_home_rect(222,305,171,40).position; balance.size=_home_rect(222,305,171,40).size
+	balance.alignment=HORIZONTAL_ALIGNMENT_LEFT
 	balance.disabled=s.actOne.phase not in ["movement_required","reservation_briefing_required","reservation_required","movement_ready"] or s.actOne.balanceShifted
 	balance.text="¥%.2f" % (maxi(0,int(s.wallet.campusCardCents))/100.0)
 	balance.add_theme_font_size_override("font_size",21)
@@ -1073,27 +1074,21 @@ func _campus_card() -> Control:
 			var tween=arrow.create_tween(); tween.tween_property(arrow,"position:x",345/PHONE_SCALE,1.1); tween.parallel().tween_property(arrow,"modulate:a",0.0,1.1)
 			tween.tween_callback(func(): balance.text="¥%.2f" % (maxi(0,int(s.wallet.campusCardCents))/100.0)))
 	displayed_balance_shifted=s.actOne.balanceShifted
-	_panel(root,_home_rect(30,363,364,42),Color(.04,.1,.27,.35),Color(1,1,1,.5),0,1)
-	_panel(root,_home_rect(44,374,20,20),Color("f5c542"),Color("8f6b16"),10,2)
-	_panel(root,_home_rect(50,380,8,8),Color("8f6b16"),Color.TRANSPARENT,4)
-	_label(root,"我的零钱：",_home_rect(72,371,103,28),12,Color("f2f6ff"))
-	_label(root,"¥%.2f" % (maxi(0,int(s.wallet.cashCents))/100.0),_home_rect(179,371,184,28),16,Color.WHITE)
-	_label(root,"›",_home_rect(367,369,18,30),22,Color.WHITE)
-	_panel(root,_home_rect(14,433,396,77),Color("fffdf6"),INK,0,2)
+	_panel(root,_home_rect(14,381,396,77),Color("fffdf6"),INK,0,2)
 	for i in range(4):
 		var x=55+i*97
-		_panel(root,_home_rect(x,447,24,24),Color.TRANSPARENT,Color("4d7ed9"),12 if i==2 else 4 if i==1 else 0,3)
-		if i==0: _panel(root,_home_rect(x,447,7,24),Color("4d7ed9"))
-		_label(root,["账单","付款码","卡片充值","挂失·解挂"][i],_home_rect(18+i*97,477,97,21),12,INK,HORIZONTAL_ALIGNMENT_CENTER)
-	_panel(root,_home_rect(14,522,396,282),Color("fff8e2"),INK,0,2)
-	_label(root,"▎校园新闻",_home_rect(30,537,254,25),13)
-	_label(root,"查看全部 ›",_home_rect(297,537,97,25),10,Color("4d7ed9"),HORIZONTAL_ALIGNMENT_RIGHT)
-	_label(root,"浙江大学图书馆暑期开放安排通知！",_home_rect(30,575,364,29),12)
-	_panel(root,_home_rect(30,622,364,100),Color("79b7e8"),INK,0,2)
-	_panel(root,_home_rect(32,677,360,43),Color("7ec27e"))
-	_panel(root,_home_rect(32,624,360,96),Color(.15,.31,.63,.35))
-	_label(root,"2026 年暑期图书馆开放安排",_home_rect(43,646,338,47),16,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
-	_label(root,"1天前 · 校园资讯中心",_home_rect(30,754,364,26),10,Color("999999"))
+		_panel(root,_home_rect(x,395,24,24),Color.TRANSPARENT,Color("4d7ed9"),12 if i==2 else 4 if i==1 else 0,3)
+		if i==0: _panel(root,_home_rect(x,395,7,24),Color("4d7ed9"))
+		_label(root,["账单","付款码","卡片充值","挂失·解挂"][i],_home_rect(18+i*97,425,97,21),12,INK,HORIZONTAL_ALIGNMENT_CENTER)
+	_panel(root,_home_rect(14,470,396,282),Color("fff8e2"),INK,0,2)
+	_label(root,"▎校园新闻",_home_rect(30,485,254,25),13)
+	_label(root,"查看全部 ›",_home_rect(297,485,97,25),10,Color("4d7ed9"),HORIZONTAL_ALIGNMENT_RIGHT)
+	_label(root,"浙江大学图书馆暑期开放安排通知！",_home_rect(30,523,364,29),12)
+	_panel(root,_home_rect(30,570,364,100),Color("79b7e8"),INK,0,2)
+	_panel(root,_home_rect(32,625,360,43),Color("7ec27e"))
+	_panel(root,_home_rect(32,572,360,96),Color(.15,.31,.63,.35))
+	_label(root,"2026 年暑期图书馆开放安排",_home_rect(43,594,338,47),16,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
+	_label(root,"1天前 · 校园资讯中心",_home_rect(30,702,364,26),10,Color("999999"))
 	_nav(root,"back","返回浙大钉",func(): _return_zjuding(),_home_rect(10,50,40,40),PAPER)
 	_panel(root,_home_rect(0,812,424,42),Color("fbfcfe"),Color("d5dae4"),0,2)
 	for i in range(5):
@@ -1846,27 +1841,14 @@ func _directory() -> Control:
 
 func _library(page: String, view: Dictionary) -> Control:
 	if page=="library_rule":return preload("res://scripts/ui/library_rule_reader.gd").new().build(self,view)
-	if page in ["library_app","library_catalog","library_recovery","c3_lake_catalog"]: return native_library.build(self,page)
+	if page in ["library_app","library_catalog","library_recovery","library_record","c3_lake_catalog"]: return native_library.build(self,page,view)
 	var rows: Array = view.get("rows",[])
 	var root = _base(Color("f5f6fa"),maxf(460,200+rows.size()*196))
-	_header(root,str(view.get("title","图书馆")),Color("174d9d"),Color.WHITE,func():
-		if page=="library_app": _return_zjuding()
-		else: page_requested.emit("library_app"),"back","返回浙大钉" if page=="library_app" else "返回图书馆")
+	_header(root,str(view.get("title","图书馆")),Color("174d9d"),Color.WHITE,func(): page_requested.emit("library_app"),"back","返回图书馆")
 	var y = 76
 	if rows.is_empty():
 		_panel(root,Rect2(16,76,346,342),Color.WHITE,Color("c7d0da"),3,1)
-		# Keep rule text and its action clear of the collapsed phone inventory rail.
-		var rule_page=page=="library_rule"
-		var text_left=60 if rule_page else 31
-		_label(root,str(view.get("body","")),Rect2(text_left,91,346-text_left,310),20,Color("34445c"))
-		if page in ["library_record","library_rule"]:
-			var action_id="lib_read_rule" if rule_page else "lib_record"
-			var action_left=60 if rule_page else 16
-			for action: Dictionary in view.get("actions",[]):
-				if action.id!=action_id: continue
-				var read_action=_act(root,str(action.label),Rect2(action_left,434,362-action_left,48),str(action.id),null,BLUE,Color.WHITE,3,Color.TRANSPARENT)
-				read_action.name="LibraryRuleAction" if rule_page else "LibraryRecordAction"
-				read_action.disabled=bool(action.get("disabled",false))
+		_label(root,str(view.get("body","")),Rect2(31,91,315,310),20,Color("34445c"))
 	else:
 		_label(root,str(view.get("body","")),Rect2(20,67,338,102),17,MUTED)
 		y = 180

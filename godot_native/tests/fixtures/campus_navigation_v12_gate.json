@@ -1,0 +1,498 @@
+{
+  "schema": "755-campus-navigation-v10-fixture-v1",
+  "coordinateConvention": "world-foot-center",
+  "footSize": [
+    16,
+    10
+  ],
+  "footCenterOffset": [
+    0,
+    36.5625
+  ],
+  "stepPixels": 2,
+  "groups": [
+    {
+      "id": "south_gate",
+      "label": "南大门真实道路与五门洞",
+      "routes": [
+        {
+          "id": "arch_1_west_road",
+          "points": [
+            [
+              2306,
+              3080
+            ],
+            [
+              2306,
+              3184
+            ],
+            [
+              2181,
+              3184
+            ],
+            [
+              2181,
+              3380
+            ]
+          ]
+        },
+        {
+          "id": "arch_2_west_paved",
+          "points": [
+            [
+              2306,
+              3080
+            ],
+            [
+              2306,
+              3184
+            ],
+            [
+              2181,
+              3184
+            ],
+            [
+              2181,
+              3284
+            ],
+            [
+              2244,
+              3284
+            ],
+            [
+              2244,
+              3380
+            ]
+          ]
+        },
+        {
+          "id": "arch_3_middle_paved",
+          "points": [
+            [
+              2306,
+              3080
+            ],
+            [
+              2306,
+              3184
+            ],
+            [
+              2181,
+              3184
+            ],
+            [
+              2181,
+              3284
+            ],
+            [
+              2306,
+              3284
+            ],
+            [
+              2306,
+              3380
+            ]
+          ]
+        },
+        {
+          "id": "arch_4_east_paved",
+          "points": [
+            [
+              2306,
+              3080
+            ],
+            [
+              2306,
+              3184
+            ],
+            [
+              2430,
+              3184
+            ],
+            [
+              2430,
+              3284
+            ],
+            [
+              2367,
+              3284
+            ],
+            [
+              2367,
+              3380
+            ]
+          ]
+        },
+        {
+          "id": "arch_5_east_road",
+          "points": [
+            [
+              2306,
+              3080
+            ],
+            [
+              2306,
+              3184
+            ],
+            [
+              2430,
+              3184
+            ],
+            [
+              2430,
+              3380
+            ]
+          ]
+        },
+        {
+          "id": "all_arches_south_paving_connection",
+          "points": [
+            [
+              2181,
+              3360
+            ],
+            [
+              2430,
+              3360
+            ]
+          ]
+        },
+        {
+          "id": "all_arches_north_paving_connection",
+          "points": [
+            [
+              2181,
+              3284
+            ],
+            [
+              2430,
+              3284
+            ]
+          ]
+        },
+        {
+          "id": "west_existing_plaza_preserved",
+          "points": [
+            [
+              2110,
+              3110
+            ],
+            [
+              2110,
+              3350
+            ]
+          ]
+        }
+      ],
+      "tapRoutes": [],
+      "open": [
+        {
+          "id": "arch_1",
+          "point": [
+            2181,
+            3327
+          ]
+        },
+        {
+          "id": "arch_2",
+          "point": [
+            2244,
+            3327
+          ]
+        },
+        {
+          "id": "arch_3",
+          "point": [
+            2306,
+            3327
+          ]
+        },
+        {
+          "id": "arch_4",
+          "point": [
+            2367,
+            3327
+          ]
+        },
+        {
+          "id": "arch_5",
+          "point": [
+            2430,
+            3327
+          ]
+        },
+        {
+          "id": "old_road_edge_now_true_west_paving",
+          "point": [
+            2220,
+            3380
+          ]
+        },
+        {
+          "id": "old_road_edge_now_true_east_paving",
+          "point": [
+            2392,
+            3380
+          ]
+        },
+        {
+          "id": "center_paving_south",
+          "point": [
+            2306,
+            3380
+          ]
+        },
+        {
+          "id": "paving_below_lawn",
+          "point": [
+            2306,
+            3280
+          ]
+        },
+        {
+          "id": "west_existing_plaza",
+          "point": [
+            2110,
+            3300
+          ]
+        },
+        {
+          "id": "arch_1_left_clear",
+          "point": [
+            2169.0,
+            3327
+          ]
+        },
+        {
+          "id": "arch_1_right_clear",
+          "point": [
+            2193.0,
+            3327
+          ]
+        },
+        {
+          "id": "arch_2_left_clear",
+          "point": [
+            2232.0,
+            3327
+          ]
+        },
+        {
+          "id": "arch_2_right_clear",
+          "point": [
+            2256.0,
+            3327
+          ]
+        },
+        {
+          "id": "arch_3_left_clear",
+          "point": [
+            2295.0,
+            3327
+          ]
+        },
+        {
+          "id": "arch_3_right_clear",
+          "point": [
+            2317.0,
+            3327
+          ]
+        },
+        {
+          "id": "arch_4_left_clear",
+          "point": [
+            2356.0,
+            3327
+          ]
+        },
+        {
+          "id": "arch_4_right_clear",
+          "point": [
+            2379.0,
+            3327
+          ]
+        },
+        {
+          "id": "arch_5_left_clear",
+          "point": [
+            2418.0,
+            3327
+          ]
+        },
+        {
+          "id": "arch_5_right_clear",
+          "point": [
+            2442.0,
+            3327
+          ]
+        },
+        {
+          "id": "center_18px_stem_accepts_authorized_16px_foot",
+          "point": [
+            2306,
+            3250
+          ]
+        }
+      ],
+      "blocked": [
+        {
+          "id": "left_lawn_bed",
+          "point": [
+            2250,
+            3250
+          ]
+        },
+        {
+          "id": "right_lawn_bed",
+          "point": [
+            2360,
+            3250
+          ]
+        },
+        {
+          "id": "west_old_road_overlap_lawn",
+          "point": [
+            2221,
+            3250
+          ]
+        },
+        {
+          "id": "east_old_road_overlap_lawn",
+          "point": [
+            2391,
+            3250
+          ]
+        },
+        {
+          "id": "west_outer_nonroad",
+          "point": [
+            2140,
+            3380
+          ]
+        },
+        {
+          "id": "east_outer_nonroad",
+          "point": [
+            2472,
+            3380
+          ]
+        },
+        {
+          "id": "gate_pier_01",
+          "point": [
+            2147.5,
+            3327.0
+          ]
+        },
+        {
+          "id": "gate_pier_02",
+          "point": [
+            2212.5,
+            3327.0
+          ]
+        },
+        {
+          "id": "gate_pier_03",
+          "point": [
+            2275.5,
+            3327.0
+          ]
+        },
+        {
+          "id": "gate_pier_04",
+          "point": [
+            2336.5,
+            3327.0
+          ]
+        },
+        {
+          "id": "gate_pier_05",
+          "point": [
+            2398.5,
+            3327.0
+          ]
+        },
+        {
+          "id": "gate_pier_06",
+          "point": [
+            2463.5,
+            3327.0
+          ]
+        },
+        {
+          "id": "arch_1_left_pier_clip",
+          "point": [
+            2166.75,
+            3327
+          ]
+        },
+        {
+          "id": "arch_1_right_pier_clip",
+          "point": [
+            2195.25,
+            3327
+          ]
+        },
+        {
+          "id": "arch_2_left_pier_clip",
+          "point": [
+            2229.75,
+            3327
+          ]
+        },
+        {
+          "id": "arch_2_right_pier_clip",
+          "point": [
+            2258.25,
+            3327
+          ]
+        },
+        {
+          "id": "arch_3_left_pier_clip",
+          "point": [
+            2292.75,
+            3327
+          ]
+        },
+        {
+          "id": "arch_3_right_pier_clip",
+          "point": [
+            2319.25,
+            3327
+          ]
+        },
+        {
+          "id": "arch_4_left_pier_clip",
+          "point": [
+            2353.75,
+            3327
+          ]
+        },
+        {
+          "id": "arch_4_right_pier_clip",
+          "point": [
+            2381.25,
+            3327
+          ]
+        },
+        {
+          "id": "arch_5_left_pier_clip",
+          "point": [
+            2415.75,
+            3327
+          ]
+        },
+        {
+          "id": "arch_5_right_pier_clip",
+          "point": [
+            2444.25,
+            3327
+          ]
+        }
+      ],
+      "edgeProbes": []
+    }
+  ],
+  "sourceFixture": "campus_navigation_v11_gate.json",
+  "revisionNote": "Campus-only authorized16x10 center36.5625; user adjusted previous downward shift upward by one-third."
+}

@@ -126,3 +126,51 @@ await test('phone readiness does not globally block save imports or the streamin
   const importer=source.slice(source.indexOf('async function importSave('),source.indexOf('async function importSave(')+4500);
   assert.doesNotMatch(importer,/waitForC2PhoneWorld/);
 });
+
+const returnSnapshot = (page, frame, extra = {}) => ({
+  sampleFrame: frame, documentHidden: false, content: {blocking:false},
+  state: {native:{page}, ui:{inventoryOpen:false}},
+  visibleControls: page === 'phone_home' ? [] : [{name:'BonsaiPlant',disabled:false},{name:'PhoneNav_exit',disabled:false}],
+  ...extra
+});
+async function exerciseExitReturn(afterExit, reachesHome) {
+  const inputs=[];let reads=0,recorded;
+  const nextStep=Error('reached ordinary network setup');
+  const task=phoneRecoveryCase({group:'c1-tiyi',touch:true,fixtureDir:'/synthetic',
+    record(value){recorded=value;},async importSave(){},
+    async snapshot(){return inputs.length===0 ? returnSnapshot('bonsai',10) : afterExit[Math.min(reads++,afterExit.length-1)];},
+    async clickControl(name,match){
+      assert.equal(match,'name');inputs.push(name);
+      if(name==='ControlCenterTrigger')throw nextStep;
+      assert.equal(name,'PhoneNav_exit');assert.equal(inputs.length,1,'never repeat an exit while its first transition is pending');
+    },
+    async poll(fn,label,timeout){
+      assert.equal(timeout,undefined,'preserve the harness default 20-second poll limit');
+      for(let i=0;i<12;i++){const value=await fn();if(value)return value;}
+      throw Error(`synthetic timeout: ${label}`);
+    }});
+  if(reachesHome)await assert.rejects(task,error=>error===nextStep);
+  else await assert.rejects(task,/synthetic timeout: ordinary exit reaches phone home/);
+  assert.deepEqual(inputs,reachesHome?['PhoneNav_exit','ControlCenterTrigger']:['PhoneNav_exit']);
+  assert.equal(recorded.completed,false);assert.deepEqual(recorded.coverage,[]);
+  return reads;
+}
+await test('phone exit waits for fresh actual home instead of repeating a cached exit',async()=>{
+  const reads=await exerciseExitReturn([
+    returnSnapshot('bonsai',10),returnSnapshot('bonsai',11),
+    returnSnapshot('phone_home',10),
+    returnSnapshot('phone_home',12,{documentHidden:true}),
+    returnSnapshot('phone_home',13,{content:{blocking:true}}),
+    returnSnapshot('phone_home',14)
+  ],true);
+  assert.ok(reads>=6,'all pending and unusable observations precede actual home arrival');
+});
+for(const [label,value] of [
+  ['never transitions',returnSnapshot('bonsai',20)],
+  ['stale home',returnSnapshot('phone_home',10)],
+  ['missing frame',returnSnapshot('phone_home',undefined)],
+  ['hidden home',returnSnapshot('phone_home',20,{documentHidden:true})],
+  ['blocked home',returnSnapshot('phone_home',20,{content:{blocking:true}})]
+])await test(`phone exit ${label} fails without another tap or partial success`,async()=>{
+  await exerciseExitReturn([value],false);
+});

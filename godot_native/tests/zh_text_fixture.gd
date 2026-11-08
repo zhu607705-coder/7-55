@@ -79,6 +79,9 @@ static func chapter3(original: Dictionary) -> Dictionary:
 
 static func opening(original: Dictionary) -> Dictionary:
 	var result: Dictionary = original.duplicate(true)
+	for mode: String in ["normal", "reduced"]:
+		for beat: Dictionary in result[mode]:
+			if beat.phase == "mode_unlock": beat.caption = ""
 	for revision: Dictionary in revisions():
 		if revision.sourceFile != "library-finals.content.json" or revision.path.size() != 4 or revision.path[0] != "library" or revision.path[1] != "dialogue022" or revision.path[3] != "text" or revision.oldText == revision.newText:
 			continue

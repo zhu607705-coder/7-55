@@ -2,7 +2,7 @@ extends SceneTree
 ## Emulated root input + real Main/audio consumers. Presentation fixtures do not
 ## grant story facts, and every stage uses the native test save sandbox.
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
-const PaperInk=preload("res://scripts/ui/paper_ink_material.gd")
+const Notice=preload("res://scripts/ui/native_phone_notice.gd")
 var checks:=0
 var failures:=0
 var shell:Control
@@ -19,8 +19,8 @@ func frames(count:int=3)->void:
 	for i in count:await process_frame
 func check_paper_caption(view:Control,label:String)->void:
 	var face:StyleBox=view.panel.get_theme_stylebox("panel")
-	check(face is StyleBoxFlat and face.bg_color==PaperInk.PAPER,label+" has the exact opaque paper reading face")
-	check(view.body.get_theme_color("font_color")==PaperInk.INK and Ui._contrast(view.body.get_theme_color("font_color"),PaperInk.PAPER)>=4.5,label+" retains readable dark ink")
+	check(face is StyleBoxFlat and face.bg_color==Notice.PAPER and face.border_color==Notice.INK,label+" shares the opaque notice paper")
+	check(view.body.get_theme_color("font_color")==Notice.INK and Ui._contrast(Notice.INK,Notice.PAPER)>=4.5,label+" retains readable dark ink")
 func click(control:Control)->void:
 	var at:=control.get_global_transform_with_canvas()*(control.size/2)
 	for down in [true,false]:
@@ -85,18 +85,18 @@ func run()->void:
 	director.source.events.notice_test_voice={"cues":[{"channel":"voice","asset":"vo_prologue_narrator_caught","subtitleKey":"prologue_narrator_caught","durationMs":180}]}
 	director.cue("notice_test_voice");director._process(0);await frames()
 	check(director.last_subtitle.get("presentationRole","")=="dialogue","exact source kind identifies immediate dialogue independently of notice tone")
-	var caption:Variant=shell.get("story_caption")
+	var caption: Label=shell.phone_story_caption
 	check(is_instance_valid(caption) and caption.is_visible_in_tree(),"voice subtitle is visible immediately despite a pending ordinary notice")
 	check(not shell.toast.visible,"ordinary notification hides while the spoken caption is visible")
 	if is_instance_valid(caption):
-		check(caption.body.text==director.last_subtitle.text,"caption retains exact Chinese source text")
-		check(not caption.is_processing_input(),"read-only shell caption cannot consume underlying Space/Enter/Tab input")
-		check(shell.phone.get_global_rect().encloses(caption.panel.get_global_rect()),"spoken caption stays inside the canonical phone safe region")
-		check(is_equal_approx(caption.panel.get_global_rect().end.y,(shell.phone.position+Vector2(0,820)*shell.phone.scale).y),"phone dialogue is anchored in the bottom reading lane")
-		check(caption.panel.get_global_rect().position.y>=(shell.phone.position+Vector2(0,100)*shell.phone.scale).y,"caption preserves status, app header and task safe space")
+		check(caption.text==director.last_subtitle.text,"caption retains exact Chinese source text")
+		check(caption.mouse_filter==Control.MOUSE_FILTER_IGNORE and not shell.story_caption.is_processing_input(),"read-only shell captions cannot consume underlying input")
+		check(shell.phone.get_global_rect().encloses(caption.get_global_rect()),"spoken caption stays inside the canonical phone safe region")
+		check(is_equal_approx(caption.get_global_rect().end.y,(shell.phone.position+Vector2(0,820)*shell.phone.scale).y),"phone dialogue is anchored in the bottom reading lane")
+		check(caption.get_global_rect().position.y>=(shell.phone.position+Vector2(0,100)*shell.phone.scale).y,"caption preserves status, app header and task safe space")
 		for viewport:Vector2i in [Vector2i(390,844),Vector2i(667,375)]:
 			root.size=viewport;shell.size=Vector2(viewport);shell._layout();await frames()
-			var rect:Rect2=caption.panel.get_global_rect()
+			var rect:Rect2=caption.get_global_rect()
 			check(shell.phone.get_global_rect().encloses(rect),"scaled caption remains in phone: "+str(viewport))
 			check(is_equal_approx(rect.end.y,(shell.phone.position+Vector2(0,820)*shell.phone.scale).y),"scaled caption retains bottom reading lane: "+str(viewport))
 			check(rect.position.y>=(shell.phone.position+Vector2(0,100)*shell.phone.scale).y,"scaled caption preserves upper safe region: "+str(viewport))
@@ -113,6 +113,7 @@ func run()->void:
 	await reset_phone()
 	shell._show_settings();shell._feedback("设置里的通知");await frames();shell._process(0)
 	check(shell.modal_notice_slot.visible and shell.modal_notice_slot.get_global_rect().encloses(shell.toast.get_global_rect()),"generic modal keeps its reserved notice row")
+	check(shell.toast.z_index>shell.modal.z_index,"reserved notice is drawn above its modal")
 	check(shell.toast.mouse_filter==Control.MOUSE_FILTER_IGNORE and root.gui_get_focus_owner()!=shell.toast,"latest notices never take pointer or keyboard ownership")
 	await shell.shutdown();shell.queue_free();await frames()
 	print("NOTICE_QUEUE_LIFECYCLE: ",checks," checks; ",failures," failures")

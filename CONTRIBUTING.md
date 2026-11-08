@@ -32,6 +32,8 @@ git config core.hooksPath .githooks
 npm run validate:release
 ```
 
+该命令用于保留 Web 源码、构建和共享输入的交付。原生专属改动按下文运行原生与实际 Godot Web 验证，不重复构建未改动的 React/Phaser 交付物。CI 编排改动运行对应脚本测试和工作流；未知游戏路径仍按保守范围验证。
+
 `validate:release` 只执行一次 TypeScript 类型检查，随后使用 unchecked 构建入口生成生产包和单文件，避免在同一验证批次重复运行 `tsc --noEmit`。
 
 行为级验证、仓库契约、浏览器启动检查和扩展内容审计的边界见
@@ -45,6 +47,7 @@ npm run validate:release
 
 仓库的 pre-push hook 和 GitHub Actions 会执行当前登记的检查；新增验证器后，应同步更新
 测试策略、本文档和对应 Web 或原生工作流。
+失败分类、单任务重跑和合并边界按[实用规则](docs/TESTING.md#practical-change-retry-and-merge-rules)执行；不要用重复全量重跑代替定位失败。
 
 提交信息采用：
 

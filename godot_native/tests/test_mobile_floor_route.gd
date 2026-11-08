@@ -111,10 +111,12 @@ func run() -> void:
 	check(shell.world_view.get_global_rect()==play_rect,"inline item selection never resizes the game")
 	await cancel_floor_touch(source_screen(goal))
 	before=story();position=w.player;action_count=actions.size()
-	var footer_at:Vector2=shell.world_mode.get_global_rect().get_center();touch(footer_at,true);touch(footer_at,false,true);await frames()
-	check(w._floor_route.is_empty() and w.player==position and story()==before and actions.size()==action_count,"cancelled system-icon touch cannot walk or choose a hidden target")
+	check(not shell.world_mode.visible,"library floor fixture has no mode button before the story unlock")
+	var footer_at:Vector2=shell.world_tasks.get_global_rect().get_center();touch(footer_at,true);touch(footer_at,false,true);await frames()
+	check(w._floor_route.is_empty() and w.player==position and story()==before and actions.size()==action_count and shell.modal==null,"cancelled system-icon touch cannot walk, open the task or choose a hidden target")
 	touch(footer_at,true);touch(footer_at,false);await frames()
-	check(state.d.native.mode!=before.native.mode and not shell.world_mode.disabled,"fresh ordinary system-icon tap still switches the light after interruption")
+	check(is_instance_valid(shell.modal) and shell.modal.find_child("JournalObjective",true,false)!=null,"fresh ordinary system-icon tap opens the task after interruption")
+	shell._close_modal()
 	# Actual bag drag owns input while a floor route is active.
 	await route_fixture(Vector2i(430,860),Vector2(1040,598.3125),true)
 	await tap_ground(Vector2(1130,630));position=w.player
@@ -149,15 +151,21 @@ func run() -> void:
 	check(planner.segment_hits(Vector2(0,0),Vector2(10,0),Rect2(4,-1,.01,2)),"swept segment cannot tunnel thin obstacle")
 	check(not planner.segment_hits(Vector2(0,1),Vector2(10,1),Rect2(4,-1,1,2)),"exact tangency retains unchanged rectangle semantics")
 	check(planner.segment_hits(Vector2(5,0),Vector2(5,3),Rect2(4,-1,2,2)),"starting inside obstacle is blocked")
-	# Synthetic mask-only corridor isolates the exact five-foot-sample sweep.
-	# These are temporary fixture values, never authored source edits.
-	w.collisions=[];w.mask_meta={"cellSize":10,"gridWidth":50,"gridHeight":50}
-	w.mask.resize(313);w.mask.fill(255);w.world_size=Vector2(500,500);w._floor_bounds=Rect2(40,40,400,400)
+	# A separate mask-only world prevents the real campus's reviewed lawn
+	# support from filling this artificial source-mask gap. Keep campus feet.
+	var mask_world=load("res://scripts/world.gd").new()
+	mask_world.scene_id="campus_bootstrap";mask_world.campus_layers.ready=true
+	mask_world.mask_meta={"cellSize":10,"gridWidth":50,"gridHeight":50}
+	mask_world.mask.resize(313);mask_world.mask.fill(255)
+	mask_world.world_size=Vector2(500,500);mask_world._floor_bounds=Rect2(40,40,400,400)
 	for row in range(50):
-		var bit:=row*50+20;w.mask[bit/8]&=~(1<<(bit%8))
-	check(w.can_stand(Vector2(100,200)) and w.can_stand(Vector2(300,200)),"mask sweep endpoints are both legal")
-	check(not w._floor_segment_clear(Vector2(100,200),Vector2(300,200)),"mask-cell crossing catches blocked interval between legal endpoints")
-	check(w._floor_segment_clear(Vector2(100,200),Vector2(150,200)),"mask sweep permits wholly legal segment")
+		var bit:=row*50+20;mask_world.mask[bit/8]&=~(1<<(bit%8))
+	check(mask_world.can_stand(Vector2(100,200)) and mask_world.can_stand(Vector2(300,200)),"mask sweep endpoints are both legal")
+	check(not mask_world.can_stand(Vector2(205,200)),"mask-only fixture has a genuinely unsupported whole-foot midpoint")
+	check(not mask_world._floor_segment_clear(Vector2(100,200),Vector2(300,200)),"mask-cell crossing catches blocked interval between legal endpoints")
+	check(not mask_world._floor_segment_clear(Vector2(300,200),Vector2(100,200)),"reverse mask-cell crossing catches the same blocked interval")
+	check(mask_world._floor_segment_clear(Vector2(100,200),Vector2(150,200)),"mask sweep permits wholly legal segment")
+	mask_world.free()
 	await route_fixture(Vector2i(390,844));await tap_ground(goal)
 	var tick:=Time.get_ticks_usec()
 	var obstacles: Array=w._floor_obstacles()
