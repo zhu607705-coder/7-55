@@ -327,8 +327,10 @@ func refresh(next_state: Dictionary) -> void:
 	inventory_open=bool(ui.get("inventoryOpen",false))
 	selected_item=str(ui.get("selectedItem","") if ui.get("selectedItem")!=null else "")
 	inventory.visible=not bare and not owned.is_empty() and not (state.get("flags",{}).get("checkinDone",false) and not state.get("actOne",{}).get("inventoryRecovered",false))
-	if page=="c35_recovery" and not state.get("chapterThreeInterlude",{}).get("recoveryOpened",false):inventory.hide()
-	var signature:=str(owned)+"|"+str(inventory_open)+"|"+selected_item
+	if page=="c35_recovery":
+		var finding_location: bool=state.get("native",{}).get("c35_investigation",{}).get("step","")=="map"
+		if finding_location or not state.get("chapterThreeInterlude",{}).get("recoveryOpened",false): inventory.hide()
+	var signature:=str(owned)+"|"+str(inventory_open)+"|"+selected_item+"|"+str(_recovery_inventory_toolbar())
 	if signature!=_inventory_signature:
 		_inventory_signature=signature
 		_refresh_inventory()
@@ -390,9 +392,8 @@ func _refresh_task() -> void:
 	var width:=136.0 if show_digits else 76.0
 	task_button.position=Vector2((424-width)/2,5); task_button.size=Vector2(width,30)
 	var page := str(state.get("native",{}).get("page",""))
-	if page.begins_with("c35_") or (page=="photos" and state.get("qizhenLake",{}).get("phase","")=="complete" and not state.get("chapterThreeInterlude",{}).get("completed",false)):
-		task_button.position=Vector2(354,48);task_button.size=Vector2(56,44);width=56
-		task_button.visible=task_button.visible and not (page=="c35_recovery" and not state.get("chapterThreeInterlude",{}).get("recoveryOpened",false))
+	if page=="c35_recovery" and not state.get("chapterThreeInterlude",{}).get("recoveryOpened",false):
+		task_button.hide()
 	task_copy.add_theme_font_size_override("font_size",10 if show_digits else 14)
 	task_copy.position=Vector2(2,3 if show_digits else 2); task_copy.size=Vector2(width-4,12 if show_digits else task_button.size.y-4)
 	digit_hint.visible=show_digits; digit_hint.text="签到码 "+" ".join(known); digit_hint.position=Vector2(2,15); digit_hint.size=Vector2(width-4,11)
@@ -442,11 +443,14 @@ func _refresh_inventory() -> void:
 	inventory_count.visible=not inventory_open
 	inventory_arrow.text="‹" if inventory_open else "›"
 	inventory_handle.tooltip_text="收起物品栏" if inventory_open else "展开物品栏"
+	inventory_handle.accessibility_name=inventory_handle.tooltip_text
 	inventory_handle.position=Vector2(74 if inventory_open else 0,0); inventory_handle.size=Vector2(40 if inventory_open else 38,63)
 	var normal:=Hardware.style(Hardware.TRAY,Hardware.EDGE)
 	var hover:=Hardware.style(Color("354f5e"),Hardware.CORAL)
 	normal.border_width_left=1 if inventory_open else 0
 	hover.border_width_left=normal.border_width_left
+	var drawer_style := inventory_body.get_theme_stylebox("panel") as StyleBoxFlat
+	drawer_style.border_width_left=1 if _recovery_inventory_toolbar() else 0
 	_set_button_style(inventory_handle,normal,hover)
 	inventory_count.text=str(owned.size()); inventory_count.size=Vector2(_text_width(inventory_count.text,9)+12,15); inventory_count.position=Vector2(inventory_handle.size.x-inventory_count.size.x+8,-8)
 	var scroll_before:=inventory_scroll.scroll_vertical
@@ -503,6 +507,7 @@ func _inspect_inventory_item(id: String) -> void:
 	inspect_requested.emit(catalog.get(id,{"id":id,"name":id}))
 
 func _on_handle_input(event: InputEvent) -> void:
+	if _recovery_inventory_toolbar(): return
 	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			_bar_dragging=true; _bar_moved=false; _bar_drag_start=get_global_mouse_position().y; _bar_top_start=inventory_top
@@ -537,13 +542,15 @@ func set_inventory_top(top: float) -> void:
 
 func _reading_inventory_anchor() -> bool:
 	var page: String=str(state.get("native",{}).get("page",""))
-	if page in ["c4_notes","c4_device"]: return true
-	if page=="c3_lake":return true
+	return page in ["c4_notes","c4_device","c3_lake"] or _recovery_inventory_toolbar()
+
+func _recovery_inventory_toolbar() -> bool:
 	if bool(state.get("chapterThreeInterlude",{}).get("completed",false)):return false
+	var page: String=str(state.get("native",{}).get("page",""))
 	# Home's Photos app aliases the recovered frames only after the lake ending.
 	# Match that page's existing admission rule without changing its story state.
 	if page=="photos":return str(state.get("qizhenLake",{}).get("phase",""))=="complete"
-	return page in ["c35_recovery","c35_journal","c35_photos","c35_voice","c35_official","c35_messages","c35_network"]
+	return page.begins_with("c35_")
 
 func _layout_inventory_anchor() -> void:
 	if not _built or not is_instance_valid(inventory_handle): return
@@ -558,9 +565,14 @@ func _layout_inventory_anchor() -> void:
 	if signature==_inventory_anchor_signature:return
 	_inventory_anchor_signature=signature
 	var icon:Control=inventory_handle.get_node("BackpackIcon")
+	if _recovery_inventory_toolbar():
+		_layout_recovery_inventory(icon)
+		return
 	inventory_handle.remove_meta("painted_rect")
 	# The expanded drawer keeps its authored drag/inspection/combine geometry.
 	inventory.position=Vector2(0,inventory_top)
+	inventory_body.position=Vector2.ZERO
+	inventory_body.mouse_default_cursor_shape=Control.CURSOR_VSIZE
 	inventory_handle.position=Vector2(74 if inventory_open else 0,0)
 	inventory_handle.size=Vector2(40 if inventory_open else 38,63)
 	_set_inventory_painted_rect(Rect2(Vector2.ZERO,inventory_handle.size))
@@ -581,6 +593,24 @@ func _layout_inventory_anchor() -> void:
 	icon.position=Vector2((edge-26)/2,10)
 	inventory_count.position=Vector2(edge-inventory_count.size.x+8,-8)
 	_set_inventory_painted_rect(Rect2(Vector2.ZERO,inventory_handle.size))
+
+func _layout_recovery_inventory(icon: Control) -> void:
+	# Keep the hit target within the phone, even at a short viewport's small scale.
+	var factor := maxf(.001,get_global_transform().get_scale().x)
+	var hit := maxf(44,28.0/factor)
+	var width := maxf(hit,inventory_body.size.x)
+	inventory.position=Vector2(CONTENT_SIZE.x-8-width,STATUS_HEIGHT+maxf(0,(56-hit)/2))
+	inventory_handle.position=Vector2(width-hit,0)
+	inventory_handle.size=Vector2.ONE*hit
+	inventory_body.position=Vector2(width-inventory_body.size.x,maxf(104-inventory.position.y,hit+4))
+	inventory_body.mouse_default_cursor_shape=Control.CURSOR_ARROW
+	inventory.size=Vector2(width,inventory_body.position.y+inventory_body.size.y if inventory_open else hit)
+	_set_button_style(inventory_handle,Hardware.style(Color("d5e2ea") if inventory_open else Color("e6edf1"),Color("9dadb8")),Hardware.style(Color("cfdee8"),Color("637e90")))
+	var face := Rect2(Vector2.ONE*(hit-36)/2,Vector2(36,36))
+	_set_inventory_painted_rect(face)
+	icon.position=face.get_center()-icon.size/2
+	inventory_arrow.hide()
+	inventory_count.position=Vector2(face.end.x-inventory_count.size.x+4,face.position.y-4)
 
 func _set_inventory_painted_rect(rect:Rect2) -> void:
 	# The hit area can be larger than its face. Flat fill/focus follow the face,
@@ -620,7 +650,12 @@ func _process(_delta: float) -> void:
 	if _acquisition_started>=0:
 		var elapsed:=now-_acquisition_started
 		var p:=floorf(clampf(elapsed/0.98,0,1)*12)/12.0
-		acquisition.position=Vector2(208,2)+Vector2(lerpf(30,-190,minf(p/0.7,1)),lerpf(-18,0,minf(p/0.7,1)))
+		var flight := minf(p/0.7,1)
+		if _recovery_inventory_toolbar():
+			var target := inventory_handle.position+inventory_handle.size/2-acquisition.size/2
+			acquisition.position=(Vector2(212,172)-inventory.position).lerp(target,flight)
+		else:
+			acquisition.position=Vector2(208,2)+Vector2(lerpf(30,-190,flight),lerpf(-18,0,flight))
 		var scale_value:=lerpf(1.45,0.82,p/0.7) if p<=0.7 else lerpf(0.82,0,clampf((p-0.7)/0.3,0,1))
 		acquisition.scale=Vector2.ONE*scale_value
 		acquisition.modulate.a=minf(1,p/0.12) if p<0.12 else (1.0 if p<0.7 else maxf(0,1-(p-0.7)/0.12))

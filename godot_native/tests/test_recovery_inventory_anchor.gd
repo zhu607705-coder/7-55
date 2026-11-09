@@ -31,8 +31,21 @@ func main_reading_clearance(source:Dictionary)->void:
   for page:String in ["c35_voice","c35_recovery","c35_photos","photos","c35_journal","c35_official","c35_messages","c35_network","c3_lake"]:
    state.d=source.duplicate(true);state.d.native.chapter=3;state.d.native.scene="";state.d.runtimeMode="phone"
    state.d.native.page=page;state.d.chapterThreeInterlude.evidenceIds=["journal_start"]
+   if page=="c35_network":
+    state.d.networkMode="campus_wifi"
+    shell.set_process(true)
    state.d.ui.inventoryOpen=false;shell.mobile_world=false;shell._refresh();await settle()
    var facts:String=JSON.stringify({"recovery":state.d.chapterThreeInterlude,"items":state.d.items,"lake":state.d.qizhenLake})
+   if page!="c3_lake":
+    var app: Control=shell.page_body.find_child("C35App_*",false,false)
+    var deadline:=Time.get_ticks_msec()+3500
+    while app==null and Time.get_ticks_msec()<deadline:
+     await settle()
+     app=shell.page_body.find_child("C35App_*",false,false)
+    check(app!=null,"Chapter 3.5 reading frame is ready: "+page)
+    if app!=null:
+     check(app.content_margin.get_theme_constant("margin_left")==18 and app.content_margin.get_theme_constant("margin_right")==18 and is_equal_approx(app.content.size.x,388.0),"Chapter 3.5 keeps its full reading width beside an overlay: "+page)
+    if page=="c35_network":shell.set_process(false)
    var controls:=semantic_controls(shell.page_body)
    check(not controls.is_empty(),"actual Main mounts semantic reading content: "+page)
    var scrolls:Array=[shell.phone_scroll]
@@ -52,7 +65,12 @@ func main_reading_clearance(source:Dictionary)->void:
      if not bounds.has_area():continue
      var full:=physical_rect(control);var viewport:=physical_rect(shell.phone_scroll)
      check(full.position.x>=viewport.position.x-.5 and full.end.x<=viewport.end.x+.5,"reading content remains horizontally inside real phone: "+str(dims)+" "+page+" "+control.text)
-     check(not occupied.intersects(bounds),"real reading text/action clears collapsed bag paint/count: "+str(dims)+" "+page+" "+str(fraction)+" "+control.text)
+     if page=="c3_lake":check(not occupied.intersects(bounds),"the lake fallback still clears the collapsed bag: "+str(dims)+" "+control.text)
+    if page!="c3_lake":
+     var toolbar:Control=shell.page_body.find_child("PhoneAppToolbar",true,false)
+     var face:Rect2=shell.phone_chrome.inventory_handle.get_meta("painted_rect")
+     var painted:=Rect2(handle.position+face.position*scale,face.size*scale)
+     check(toolbar!=null and physical_rect(toolbar).encloses(painted),"collapsed bag is painted inside the app toolbar: "+page+" "+str(dims))
    check(JSON.stringify({"recovery":state.d.chapterThreeInterlude,"items":state.d.items,"lake":state.d.qizhenLake})==facts,"reading/scrolling never changes earned state: "+page)
  await shell.shutdown();shell.queue_free();await settle()
 func run():
@@ -72,19 +90,25 @@ func run():
    var phone:Control=Control.new();phone.size=Vector2(430,860);var factor:float=minf(1,minf((dims.x-36)/430.0,(dims.y-36)/860.0));phone.scale=Vector2.ONE*factor;phone.position=(Vector2(dims)-phone.size*factor)/2;root.add_child(phone)
    var chrome=Chrome.new();phone.add_child(chrome);chrome.refresh(s);await settle()
    var handle:Rect2=chrome.inventory_handle.get_global_rect();var scroll:Rect2=Rect2(phone.position+Vector2(3,43)*factor,Vector2(424,811)*factor)
-   check(handle.size.x>=27.99 and handle.size.y>=43.99,"approved28x44 physical target "+str(dims))
+   var toolbar:bool=page!="c3_lake"
+   check(handle.size.x>=27.99 and handle.size.y>=(27.99 if toolbar else 43.99),"collapsed physical target "+str(dims))
    check(Rect2(Vector2.ZERO,Vector2(dims)).encloses(handle),"handle inviewport "+str(dims))
-   check(chrome.inventory.position.y>=0 and chrome.inventory.position.x<=0,"collapsed handle remains on authored draggable left rail "+str(dims))
+   var phone_bounds:=physical_rect(phone)
+   if toolbar:
+    check(phone_bounds.encloses(handle) and handle.get_center().x>phone_bounds.get_center().x,"collapsed handle stays inside right app chrome "+str(dims))
+   else:
+    check(chrome.inventory.position.y>=0 and chrome.inventory.position.x<=0,"lake keeps its left rail "+str(dims))
    check(not handle.intersects(chrome.task_button.get_global_rect()),"handle doesnot cover Tasks")
    check(not handle.intersects(chrome.time_box.get_global_rect()),"clock remains readable")
    check(not handle.intersects(chrome.status_right.get_global_rect()),"network andbattery remain visible")
    check(Rect2(Vector2.ZERO,Vector2(dims)).encloses(chrome.inventory_count.get_global_rect()),"attached count remains inside viewport")
-   check(chrome.inventory_count.position==Vector2(chrome.inventory_handle.size.x-chrome.inventory_count.size.x+8,-8),"count retains authored top-right attachment")
    var face:Rect2=chrome.inventory_handle.get_meta("painted_rect")
    var face_global:Rect2=Rect2(handle.position+face.position*factor,face.size*factor)
    check(handle.encloses(face_global),"painted face stays inside transparent target")
-   if chrome.inventory.position.y<0 and chrome.inventory.position.x>0:
-    check(face_global.position.y>=phone.position.y and face_global.end.y<=scroll.position.y,"portrait painted face stays in top chrome")
+   if toolbar:
+    check(phone_bounds.encloses(physical_rect(chrome.inventory_count)) and face_global.position.y>=scroll.position.y-.01,"count and face stay inside the phone")
+   else:
+    check(chrome.inventory_count.position==Vector2(chrome.inventory_handle.size.x-chrome.inventory_count.size.x+8,-8),"lake count retains top-right attachment")
    var same_rect:Rect2=handle
    for i in range(5):chrome._layout_inventory_anchor()
    check(chrome.inventory_handle.get_global_rect()==same_rect,"stable anchor")
@@ -94,8 +118,13 @@ func run():
    check(margins==[style.expand_margin_left,style.expand_margin_top,style.expand_margin_right,style.expand_margin_bottom],"refresh never accumulates painted offsets")
    check(JSON.stringify(s)==before,"presentation preserves earned state")
    s.ui.inventoryOpen=true;chrome.refresh(s);await settle()
-   check(chrome.inventory.position==Vector2(0,chrome.inventory_top),"expanded drawer authored anchor")
-   check(chrome.inventory_handle.position==Vector2(74,0) and chrome.inventory_handle.size==Vector2(40,63),"expanded handle geometry unchanged")
+   if toolbar:
+    var panel:=physical_rect(chrome.inventory_body)
+    check(physical_rect(chrome.inventory_handle).is_equal_approx(handle),"same toolbar target opens and closes the drawer")
+    check(phone_bounds.encloses(panel) and panel.position.y>=handle.end.y,"drawer fits inside the phone below its trigger")
+   else:
+    check(chrome.inventory.position==Vector2(0,chrome.inventory_top),"lake expanded drawer authored anchor")
+    check(chrome.inventory_handle.position==Vector2(74,0) and chrome.inventory_handle.size==Vector2(40,63),"lake expanded handle geometry unchanged")
    check(chrome.inventory_body.size.x==74 and chrome.inventory_scroll.size.x==62,"expanded item/drop geometry unchanged")
    var slot=chrome.inventory_slots.get_child(0);var point:Vector2=slot.get_global_rect().get_center()
    var down:InputEventMouseButton=InputEventMouseButton.new();down.button_index=MOUSE_BUTTON_LEFT;down.position=point;down.global_position=point;down.pressed=true;Input.parse_input_event(down);await process_frame
@@ -113,10 +142,13 @@ func run():
    touch.pressed=false;Input.parse_input_event(touch);await settle()
    s.native.page=page;chrome.refresh(s);await settle()
    var lower:float=chrome.inventory_top+20;chrome.set_inventory_top(lower)
-   check(chrome.inventory.position.y==lower,"expanded drawer still moves")
+   if not toolbar:check(chrome.inventory.position.y==lower,"lake expanded drawer still moves")
    s.ui.inventoryOpen=false;chrome.refresh(s);await settle()
    check(chrome.inventory_handle.get_global_rect().size.is_equal_approx(handle.size),"close restores same collapsed target size")
-   check(chrome.inventory.position.x<=0 and chrome.inventory.position.y==lower,"close retains left rail and deliberate vertical position")
+   if toolbar:
+    check(physical_rect(chrome.inventory_handle).is_equal_approx(handle),"close returns to the same toolbar geometry")
+   else:
+    check(chrome.inventory.position.x<=0 and chrome.inventory.position.y==lower,"lake close retains deliberate vertical position")
    s.native.page="cc98";chrome.refresh(s);await settle()
    # main1322 keeps one44px physical minimum for every collapsed rail.
    check(chrome.inventory.position.x==0 and chrome.inventory_handle.size==Vector2(maxf(38,44.0/factor),maxf(63,44.0/factor)),"other pages retain current44px source rail")

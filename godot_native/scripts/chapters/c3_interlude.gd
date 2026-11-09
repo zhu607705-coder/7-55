@@ -1,5 +1,6 @@
 extends "res://scripts/chapters/c3_base.gd"
 const VoiceSession = preload("res://scripts/media/c3_voice_session.gd")
+const Investigation = preload("res://scripts/chapters/c35_investigation.gd")
 var voice_session: RefCounted
 
 const EVIDENCE: Array=["journal_start","photo_direction","network_destination","broadcast_end"]
@@ -141,6 +142,9 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 	if not action.begins_with("c35_"): return {}
 	var c: Dictionary=s.chapterThreeInterlude
 	if s.qizhenLake.phase!="complete" or c.completed: return locked()
+	if action.begins_with("c35_trace:"): return Investigation.dispatch(s,action.trim_prefix("c35_trace:"),value)
+	if Investigation.has_route(s) and action=="c35_begin": return locked("先看看浙大钉刚收到的消息。")
+	if Investigation.has_route(s) and action=="c35_journal" and Investigation.step(s)!="journal" and not c.evidenceIds.has("journal_start"): return locked("先处理浙大钉里的补交通知。")
 	if action=="c35_begin":
 		c.recoveryOpened=true
 		c.rebootSeen=true
@@ -163,8 +167,9 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 		s.qizhenLake.journal.memoryCardUnlocked=true
 		s.qizhenLake.journal.status="archived"
 		evidence(c,"journal_start")
+		if Investigation.step(s)=="journal": s.native[Investigation.KEY].step="group"
 		c.phase="evidence_collection"
-		return response("已保存离湖回复：22:37:05。")
+		return response()
 	if not c.evidenceIds.has("journal_start"): return locked("先在记录恢复中确认划船帖的离湖时间。")
 	if action=="c35_photo_reset":
 		# Source P18's Reorder clears only the local selection, never earned evidence.
@@ -179,7 +184,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 		return response()
 	if action=="c35_voice_exit":
 		var result: Dictionary=response()
-		result.page="c35_recovery"
+		result.page="phone_home" if value=="phone_home" else "c35_recovery"
 		if voice_session!=null: result.media=media_command("stop")
 		return result
 	if action=="c35_voice_stage":
@@ -277,6 +282,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			network_ready(c)
 			return response("候选接入记录已保存。")
 		"c35_destination":
+			if Investigation.has_route(s): return locked("请通过位置共享确认入口。")
 			if not exclusions_ready(c): return locked("先完成四类证据与旧时间核验。")
 			if c.networkRecordId!="record_0755": return response("保存的接入记录对不上这个地点，再看一遍网络记录。")
 			if str(value)!="duan_yongping_a1": return response(copy_data().destinationConflictCopy.get(str(value),"当前证据还不足以确认这个地点。"))
@@ -285,7 +291,9 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			c.phase="destination_verified"
 			return response(copy_data().destinationConfirmed)
 		"c35_replay":
-			if c.destinationId!="duan_yongping_a1" or not exclusions_ready(c): return locked()
+			if Investigation.has_route(s):
+				if not Investigation.can_replay(s): return locked("先确认入口和抵达时间。")
+			elif c.destinationId!="duan_yongping_a1" or not exclusions_ready(c): return locked()
 			c.replayUnlocked=true
 			c.phase="replay_ready"
 			return {"handled":true,"page":"c4_notes","message":"时间与地点已经完成交叉核验。"}
@@ -302,6 +310,15 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 func objective(s: Dictionary) -> String:
 	var c: Dictionary=s.chapterThreeInterlude
 	if s.qizhenLake.phase!="complete" or c.completed: return ""
+	if Investigation.has_route(s):
+		return {
+			"inbox":"查看浙大钉里的新消息","notice":"查看课程群的补交通知","assignment":"整理第十周作业的附件",
+			"camera":"用文档相机拍下作业","files":"找出第十周作业","file":"预览作业并选作附件",
+			"attached":"把作业私信发给助教","file_error":"处理助教打不开的附件","receipt":"查看相册中未同步的照片",
+			"album_trace":"回到照片对应的划船帖","journal":"回复划船帖，留下离湖时间",
+			"group":"问问同学刚才去了哪里","seen":"找收到过位置的同学私聊","private":"打开那张旧位置卡",
+			"map":"从全校地图找西侧大厅入口","arrival":"核对入口的短接入记录","confirmed":"回看离湖后的那段路",
+		}.get(Investigation.step(s),"查看未同步记录")
 	if not c.recoveryOpened: return "打开未同步记录"
 	if not c.evidenceIds.has("journal_start"): return "查清离开湖边的时间"
 	if c.evidenceIds.size()<4: return "查清离湖后去了哪里"

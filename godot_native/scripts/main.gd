@@ -844,12 +844,9 @@ func _layout_phone_reading_gutters() -> void:
 		phone_chrome._layout_inventory_anchor()
 		phone_builder.lake_apps.layout_map_header(page_body,phone_chrome)
 	var margin: MarginContainer=page_body.get_node_or_null("FallbackReadingMargin")
-	var app: Control
-	if page_body.get_child_count()>0 and str(page_body.get_child(0).name).begins_with("C35App_"):
-		app=page_body.get_child(0)
-	if margin==null and app==null:return
+	if margin==null:return
 	phone_chrome._layout_inventory_anchor()
-	var inset:=12 if margin!=null else 18
+	var inset:=12
 	if not phone_chrome.inventory_open and phone_chrome.inventory_handle.is_visible_in_tree() and phone_chrome._reading_inventory_anchor():
 		var handle: Rect2=phone_chrome.inventory_handle.get_global_rect()
 		var paint: StyleBox=phone_chrome.inventory_handle.get_theme_stylebox("normal")
@@ -857,14 +854,12 @@ func _layout_phone_reading_gutters() -> void:
 		var shadow:=handle.grow(paint.shadow_size*paint_scale)
 		shadow.position+=paint.shadow_offset*paint_scale
 		handle=handle.merge(shadow).merge(phone_chrome.inventory_count.get_global_rect())
-		var target: Control=margin if margin!=null else app
-		var column: Rect2=target.get_global_rect()
-		var content_scale:=maxf(.001,absf(target.get_global_transform_with_canvas().get_scale().x))
+		var column: Rect2=margin.get_global_rect()
+		var content_scale:=maxf(.001,absf(margin.get_global_transform_with_canvas().get_scale().x))
 		# Reserve the full column because the handle remains vertically draggable.
 		if handle.end.x>column.position.x:
 			inset=maxi(inset,ceili((handle.end.x-column.position.x)/content_scale)+8)
-	if margin!=null:margin.add_theme_constant_override("margin_left",inset)
-	if app!=null:app.set_reading_left_gutter(inset)
+	margin.add_theme_constant_override("margin_left",inset)
 
 func _activity_owns_scene() -> bool:
 	# Layout adapters opt into one full-scene owner. The shared host opts in
@@ -1205,6 +1200,7 @@ func _refresh() -> void:
 	if is_instance_valid(phone_object_pickup): phone_object_pickup.after_refresh()
 
 func _refresh_phone_page(n: Dictionary,page: String) -> void:
+	var previous_page := phone_scroll_page
 	# Keep destination changes: the builders also route/reset app-local sessions.
 	# Repeated hidden updates can share the existing subtree until it is shown.
 	# Reset/import replaces the state owner, so its old views must be rebound.
@@ -1225,6 +1221,7 @@ func _refresh_phone_page(n: Dictionary,page: String) -> void:
 		phone_scroll_page = page
 	var view: Dictionary = State.get_view(page)
 	view["actions"] = State.get_actions(page)
+	view["previous_phone_page"] = previous_page
 	status_label.text = "7:55  ·  %s  ·  %d%%" % ["校园网" if State.d.networkMode == "campus_wifi" else "移动网络",int(State.d.phoneBattery.percent)]
 	title_label.text = str(view.get("title","7:55"))
 	chapter_label.text = "7:55   /   CHAPTER %s%s" % [str(int(n.chapter))," · DEV" if State.developer_mode else ""]

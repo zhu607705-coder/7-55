@@ -11,7 +11,13 @@ var journal_builder: RefCounted=JournalPages.new()
 const VoiceProgress=preload("res://scripts/ui/c3_voice_progress.gd")
 const PhotoSequence=preload("res://scripts/ui/c35_photo_sequence.gd")
 const AppFrame=preload("res://scripts/ui/phone_app_frame.gd")
+const LakePalette=preload("res://scripts/ui/chapter35_palette.gd")
+const InvestigationPages=preload("res://scripts/ui/c35_investigation_pages.gd")
+const Investigation=preload("res://scripts/chapters/c35_investigation.gd")
+const DingChoices=preload("res://scripts/ui/c35_ding_chat.gd")
+var investigation_pages := InvestigationPages.new()
 const WechatSocial=preload("res://scripts/ui/wechat_social_pages.gd")
+const WechatChrome=preload("res://scripts/ui/wechat_chrome.gd")
 var current_view: Dictionary={}
 var footer: VBoxContainer
 var scroll_offsets: Dictionary={}
@@ -20,12 +26,6 @@ var photo_view_id: String=""
 var expanded_voice_id: String=""
 var rejection_choices: Dictionary={}
 var destination_choice: String=""
-const Motion=preload("res://scripts/ui/c3_evidence_motion.gd")
-var last_requested_page:String=""
-var observed_ready:Array=[]
-var pending_arrivals:Array=[]
-var observed_recovery:bool=false
-const Ring=preload("res://scripts/ui/c3_investigation_ring.gd")
 const Interlude=preload("res://scripts/chapters/c3_interlude.gd")
 var module: RefCounted=Interlude.new()
 var state: Dictionary={}
@@ -37,10 +37,8 @@ const MUTED=Palette.MUTED
 # 378px authored canvas. Keep requested type sizes; never shrink them again.
 # 15px remains above 12px after the 390px shell fit (366 / 430).
 const CAPTION_FONT_SIZE := 15
-class ChatBubble extends PanelContainer:
-	var fill := Color.WHITE
-	func _draw() -> void:
-		draw_colored_polygon(PackedVector2Array([Vector2(0,12),Vector2(-6,18),Vector2(0,24)]),fill)
+# Keep secondary copy legible through the phone's low-battery display veil.
+const INTRO_SECONDARY := Color("505050")
 
 func _init() -> void:
 	journal_builder.action_requested.connect(_journal_action)
@@ -57,24 +55,31 @@ func build(page: String, _view: Dictionary, s: Dictionary) -> Control:
 	if page=="photos" and s.qizhenLake.phase=="complete" and not s.chapterThreeInterlude.completed: page="c35_photos"
 	if page in ["c3_journal","c3_journal_camera"]: return journal_builder.build(page,_view,s)
 	if page not in ["c35_recovery","c35_journal","c35_photos","c35_voice","c35_official","c35_messages","c35_network","c3_ticket_post"]: return null
+	if not is_same(state,s):
+		return_pages.clear()
+		scroll_offsets.clear()
+		photo_view_id=""
 	state=s;current_view=_view;page_id=page
-	if requested_page=="photos":return_pages[page]="phone_home"
+	if requested_page=="photos" or (page=="c35_voice" and _view.get("previous_phone_page")=="phone_home"):
+		return_pages[page]="phone_home"
 	if page!="c35_photos":photo_view_id=""
-	var page_entry := page!=last_requested_page
-	last_requested_page=page
+	if page=="c35_recovery" and Investigation.has_route(s): return investigation_pages.build(self,s)
 	if page=="c35_recovery" and not s.chapterThreeInterlude.recoveryOpened: return recovery_intro()
 	var frame := AppFrame.new()
 	frame.name="C35App_"+page
-	var headings: Dictionary={"c35_recovery":["记录恢复","未同步的七分五十五秒"],"c35_journal":["启真湖划船记录","CC98 · 我的帖子"],"c35_photos":["恢复的项目","7 张照片 · 选择连续的三帧"],"c35_voice":["语音备忘录","恢复的录音"],"c35_official":["紫金港楼宇服务","公众号"],"c35_messages":["麦斯威夜间自习群","18 位成员 · 消息归档"],"c35_network":["夜间接入记录","浙大钉 · 校园网络"],"c3_ticket_post":["临时退票","CC98 · 校园生活"]}
-	if page=="c35_photos" and not photo_view_id.is_empty():headings[page]=["查看照片","恢复的项目"]
+	var headings: Dictionary={"c35_recovery":["记录恢复",""],"c35_journal":["CC98","我的帖子"],"c35_photos":["照片","恢复的项目"],"c35_voice":["语音备忘录",""],"c35_official":["紫金港楼宇服务","公众号"],"c35_messages":["麦斯威夜间自习群","18 位成员"],"c35_network":["夜间接入记录",""],"c3_ticket_post":["临时退票","CC98 · 校园生活"]}
+	if page=="c35_photos" and not photo_view_id.is_empty():headings[page]=["查看照片",""]
 	var scroll_key := page+("_viewer" if page=="c35_photos" and not photo_view_id.is_empty() else "")
-	frame.configure(headings[page][0],headings[page][1],int(scroll_offsets.get(scroll_key,0)))
+	var exits: bool=page in ["c35_recovery","c3_ticket_post"] or (return_pages.get(page)=="phone_home" and (page!="c35_photos" or photo_view_id.is_empty()))
+	frame.configure(headings[page][0],headings[page][1],int(scroll_offsets.get(scroll_key,0)),exits)
 	frame.scroll_changed.connect(func(value: float) -> void: scroll_offsets[scroll_key]=int(value))
 	frame.back_requested.connect(_back)
 	footer=frame.footer
+	if page in ["c35_recovery","c35_journal","c35_photos","c35_messages"]:
+		frame.background.color=LakePalette.BACKDROP
 	match page:
 		"c35_recovery": recovery(frame.content)
-		"c35_journal": journal(frame.content)
+		"c35_journal": journal(frame)
 		"c35_photos":
 			if photo_view_id.is_empty():photos(frame.content)
 			else:photo_viewer(frame.content)
@@ -83,42 +88,63 @@ func build(page: String, _view: Dictionary, s: Dictionary) -> Control:
 		"c35_messages": messages(frame.content)
 		"c35_network": network(frame.content)
 		"c3_ticket_post": ticket(frame.content)
-	if page_entry:Motion.enter(frame,bool(state.native.get("settings",{}).get("reduced_motion",false)))
 	return frame
 
 func _back() -> void:
 	if page_id=="c35_photos" and not photo_view_id.is_empty():
 		photo_view_id="";page_requested.emit("c35_photos");return
-	if page_id=="c35_voice":action_requested.emit("c35_voice_exit",null);return
+	if page_id=="c35_voice":action_requested.emit("c35_voice_exit",return_pages.get(page_id,"c35_recovery"));return
 	page_requested.emit(str(return_pages.get(page_id,"phone_home" if page_id in ["c35_recovery","c3_ticket_post"] else "c35_recovery")))
 
 func recovery_intro() -> Control:
-	var root := Control.new();root.name="C35RecoveryIntro"
-	root.custom_minimum_size=Vector2(424,814);root.size=root.custom_minimum_size
-	root.set_meta("source_page",true);root.set_meta("handles_all_actions",true)
-	var paper := ColorRect.new();paper.color=Palette.SURFACE;paper.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	root.add_child(paper);paper.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	var back := AppFrame.BackButton.new();back.name="C35IntroBack";back.position=Vector2(12,6);back.size=Vector2(44,44)
-	back.set_meta("phone_nav_kind","exit")
-	NativeUi.apply_button(back,Color.TRANSPARENT,AppFrame.INK,Color.TRANSPARENT,0,0,18)
-	back.tooltip_text="返回手机主页";back.pressed.connect(func() -> void:page_requested.emit("phone_home"));root.add_child(back)
+	var frame := AppFrame.new()
+	frame.name="C35RecoveryIntro"
+	frame.configure("记录恢复","",0,true)
+	frame.back_button.name="C35IntroBack"
+	frame.back_requested.connect(func() -> void:page_requested.emit("phone_home"))
+	frame.content.add_theme_constant_override("separation",18)
 	var intro: Dictionary=module.copy_data().intro
-	var chapter := label(intro.heading,17,AppFrame.MUTED);chapter.position=Vector2(28,66);chapter.size=Vector2(368,26);root.add_child(chapter)
-	var title := label("未同步的\n七分五十五秒",39,AppFrame.INK);title.name="C35IntroTitle"
-	title.position=Vector2(26,110);title.size=Vector2(374,116);root.add_child(title)
-	var art := image_node("res://assets/native/chapter35_recovery_20261023/lake_memory.png",Vector2.ZERO)
-	art.name="C35IntroArt";art.position=Vector2(26,252);art.size=Vector2(372,238)
-	art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED;root.add_child(art)
-	var copy := VBoxContainer.new()
-	copy.position=Vector2(28,506);copy.size=Vector2(368,190)
-	copy.add_theme_constant_override("separation",6)
-	root.add_child(copy)
-	copy.add_child(label(intro.detail,17,AppFrame.MUTED))
-	copy.add_child(label("林星宇："+intro.player,17,AppFrame.INK))
-	copy.add_child(label("系统："+intro.system,17,AppFrame.INK))
-	var begin := action(root,"开始恢复","c35_begin",null,true);begin.name="C35BeginRecovery"
-	begin.position=Vector2(28,706);begin.size=Vector2(368,56)
-	return root
+	var scene := intro_group(frame.content,6)
+	var art := image_node("res://assets/native/chapter35_recovery_20261023/lake_memory.png",Vector2(0,164))
+	art.name="C35IntroArt";art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	scene.add_child(art)
+	var location := label("启真湖小码头 · 上岸后",15,INTRO_SECONDARY)
+	location.name="C35IntroLocation"
+	scene.add_child(location)
+
+	var record := intro_group(frame.content,6)
+	var title := label("未同步的七分五十五秒",28,INK)
+	title.name="C35IntroTitle"
+	record.add_child(title)
+	var status := label(intro.heading,16,INTRO_SECONDARY)
+	status.name="C35IntroStatus"
+	record.add_child(status)
+
+	rule(frame.content)
+	var dialogue := intro_group(frame.content,12)
+	intro_passage(intro_group(dialogue,3),"C35IntroNarrator","旁白",intro.detail,INTRO_SECONDARY)
+	intro_passage(intro_group(dialogue,3),"C35IntroPlayer","林星宇",intro.player,INK)
+
+	var next_step := card(frame.content,Palette.SURFACE)
+	next_step.add_theme_constant_override("separation",5)
+	# Keep the forum name with the action at the phone's fixed reading width.
+	var instruction := str(intro.system).replace("。先","。\n先").replace("，把","，\n把")
+	intro_passage(next_step,"C35IntroSystem","下一步 · CC98",instruction,INK)
+	var begin := action(frame.footer,"开始恢复","c35_begin",null,true);begin.name="C35BeginRecovery"
+	lake_primary(begin)
+	begin.custom_minimum_size.y=50
+	return frame
+
+func intro_group(parent: Control, separation: int) -> VBoxContainer:
+	var group := VBoxContainer.new()
+	group.add_theme_constant_override("separation",separation)
+	parent.add_child(group)
+	return group
+
+func intro_passage(group: VBoxContainer, node_name: String, speaker: String, copy: String, color: Color) -> void:
+	group.name=node_name
+	group.add_child(label(speaker,15,INTRO_SECONDARY))
+	group.add_child(label(copy,17,color))
 
 func label(text: String, size: int=17, color: Color=INK) -> Label:
 	var node: Label=Label.new()
@@ -158,7 +184,6 @@ func button(parent: Control,text: String,callback: Callable,accent: bool=false) 
 	node.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	NativeUi.apply_button(node,Palette.ACCENT if accent else Palette.CONTROL,Palette.SURFACE if accent else INK,Palette.LINE,3,0,17,Vector2(12,10),Palette.ACCENT)
 	node.pressed.connect(callback)
-	if page_id in ["c35_voice","c35_recovery"]:Motion.press(node,bool(state.native.get("settings",{}).get("reduced_motion",false)))
 	parent.add_child(node)
 	return node
 
@@ -174,10 +199,15 @@ func action(parent: Control,text: String,id: String,value: Variant=null,accent: 
 	result.set_meta("intent",id);result.set_meta("intent_value",value)
 	return result
 
-func navigate(parent: Control,text: String,page: String) -> void:
-	button(parent,text,func() -> void:
+func navigate(parent: Control,text: String,page: String,accent: bool=false) -> Button:
+	return button(parent,text,func() -> void:
 		return_pages[page]=page_id
-		page_requested.emit(page))
+		page_requested.emit(page),accent)
+
+func lake_primary(control: Button) -> void:
+	NativeUi.apply_button(control,LakePalette.NIGHT,LakePalette.PAPER,LakePalette.NIGHT,4,1,17,Vector2(12,8),LakePalette.PALE)
+	control.add_theme_stylebox_override("disabled",NativeUi.box(LakePalette.DISABLED,LakePalette.DISABLED,1,4,Vector2(12,8)))
+	control.add_theme_color_override("font_disabled_color",LakePalette.SECONDARY)
 
 func eyebrow(parent: Control,text: String) -> void:
 	parent.add_child(display_label(text,15,MUTED))
@@ -192,43 +222,83 @@ func image_node(path: String,size: Vector2,mirror: bool=false) -> TextureRect:
 	if ResourceLoader.exists(path): image.texture=load(path)
 	return image
 
-func evidence_edge(box:VBoxContainer,edge:Color,width:int=1)->void:
-	var panel:PanelContainer=box.get_parent()
-	var style:StyleBoxFlat=panel.get_theme_stylebox("panel").duplicate()
-	style.set_border_width_all(width);style.border_color=edge
-	style.shadow_offset=Vector2.ZERO
-	panel.add_theme_stylebox_override("panel",style)
+func rule(parent: Control) -> void:
+	var divider := ColorRect.new()
+	divider.color=Palette.LINE
+	divider.custom_minimum_size.y=1
+	divider.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	parent.add_child(divider)
+
+func recovery_endpoint(row: HBoxContainer, caption: String, control_name: String, time: String) -> void:
+	var endpoint := VBoxContainer.new()
+	endpoint.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	endpoint.add_theme_constant_override("separation",3)
+	row.add_child(endpoint)
+	var value := label("待恢复" if time.is_empty() else time,24,LakePalette.PENDING if time.is_empty() else LakePalette.PAPER)
+	value.name=control_name
+	value.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	endpoint.add_child(value)
+	var hint := label(caption,15,LakePalette.PALE)
+	hint.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	endpoint.add_child(hint)
 
 func recovery(root: VBoxContainer) -> void:
 	var c: Dictionary=state.chapterThreeInterlude
-	var window := card(root)
+	var has_departure: bool=c.evidenceIds.has("journal_start")
+	var window := card(root,LakePalette.NIGHT)
 	window.name="C35TimeWindow"
-	window.add_child(label("待核验时间窗",15,MUTED))
-	window.add_child(label(("22:37:05" if c.evidenceIds.has("journal_start") else "待恢复")+" — "+("22:45:00" if c.voiceSequenceSolved else "待恢复"),24,GREEN))
-	if not c.evidenceIds.has("journal_start"):
-		window.add_child(label("离湖记录",19))
-		window.add_child(label(module.copy_data().intro.system,16,MUTED))
-		navigate(window,"查看划船帖","c35_journal")
+	window.add_child(label("待核验时间窗",16,LakePalette.PALE))
+	var endpoints := HBoxContainer.new()
+	endpoints.add_theme_constant_override("separation",8)
+	window.add_child(endpoints)
+	recovery_endpoint(endpoints,"离湖时间","C35RecoveryDepartureValue","22:37:05" if has_departure else "")
+	var connector := ColorRect.new()
+	connector.color=LakePalette.PALE
+	connector.custom_minimum_size=Vector2(28,1)
+	connector.size_flags_vertical=Control.SIZE_SHRINK_CENTER
+	connector.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	endpoints.add_child(connector)
+	recovery_endpoint(endpoints,"末段时间","C35RecoveryArrivalValue","22:45:00" if c.voiceSequenceSolved else "")
+	if not has_departure:
+		var departure := card(root)
+		var departure_title := label("离湖记录",22)
+		departure_title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+		departure.add_child(departure_title)
+		var copy := str(module.copy_data().intro.system).replace("。先","。\n先").replace("，把","，\n把")
+		departure.add_child(label(copy,16,INTRO_SECONDARY))
+		var open := navigate(departure,"查看划船帖","c35_journal",true)
+		lake_primary(open)
+		open.custom_minimum_size.y=48
 		return
 	var sources: Array=[
-		["照片","连续帧", "c35_photos", c.photoSequenceSolved,"photo"],
-		["录音","试听与排序", "c35_voice", c.voiceSequenceSolved,"voice"],
-		["消息","楼宇通知与群聊", "c35_official", c.officialNoticeSaved and c.routeScreenshotSaved,"chat"],
-		["网络","夜间接入记录", "c35_network", c.networkRecordRead,"network"]]
-	root.add_child(label("来源记录",16,MUTED))
+		["照片","连续帧", "c35_photos", c.photoSequenceSolved,"photo","album","eee5dd"],
+		["录音","试听与排序", "c35_voice", c.voiceSequenceSolved,"voice","voice","f0d8d0"],
+		["消息","楼宇通知与群聊", "c35_official", c.officialNoticeSaved and c.routeScreenshotSaved,"chat","messages","61b58c"],
+		["网络","夜间接入记录", "c35_network", c.networkRecordRead,"network","campus","496a7b"]]
+	var source_title := label("来源记录",16,INTRO_SECONDARY)
+	source_title.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	root.add_child(source_title)
+	var list := VBoxContainer.new()
+	list.add_theme_constant_override("separation",0)
+	root.add_child(list)
 	var source_buttons: Array[Button]=[]
 	for source: Array in sources:
-		var row := card(root)
-		var line := HBoxContainer.new();line.add_theme_constant_override("separation",12);row.add_child(line)
-		var icon := label({"photo":"照","voice":"声","chat":"讯","network":"网"}[source[4]],22,GREEN)
-		icon.custom_minimum_size=Vector2(38,44);icon.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN;line.add_child(icon)
-		var stack := VBoxContainer.new();stack.size_flags_horizontal=Control.SIZE_EXPAND_FILL;line.add_child(stack)
-		stack.add_child(label(source[0]+(" · 已归档" if source[3] else ""),19))
-		stack.add_child(label(source[1],15,MUTED))
-		var open := button(line,"查看",func() -> void:
+		var open := WechatChrome.conversation(list,source[0],source[1],"已归档" if source[3] else "›",1.0)
+		open.accessibility_name="查看"+source[0]
+		for id in ["ConversationTime","ConversationPreview"]:
+			open.find_child(id,true,false).add_theme_font_size_override("font_size",CAPTION_FONT_SIZE)
+		open.find_child("ConversationTime",true,false).custom_minimum_size.x=50
+		var icon := image_node("res://ui_assets/phone_icons/%s.svg" % source[5],Vector2.ZERO)
+		var slot := open.find_child("AvatarSlot",true,false) as Control
+		var icon_frame := Panel.new()
+		icon_frame.position=Vector2(3,3);icon_frame.size=Vector2(42,42)
+		icon_frame.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		icon_frame.add_theme_stylebox_override("panel",NativeUi.box(Color(source[6]),INK,2,4))
+		slot.add_child(icon_frame)
+		icon_frame.add_child(icon);icon.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT,Control.PRESET_MODE_MINSIZE,6)
+		open.pressed.connect(func() -> void:
 			return_pages[source[2]]="c35_recovery";page_requested.emit(source[2]))
 		open.name="C35Source_"+source[4]
-		open.custom_minimum_size.x=64;open.size_flags_horizontal=Control.SIZE_SHRINK_END
 		source_buttons.append(open)
 		open.gui_input.connect(func(event: InputEvent) -> void:
 			if not event is InputEventKey or not event.pressed:return
@@ -292,71 +362,99 @@ func recovery(root: VBoxContainer) -> void:
 		replay.add_child(label("回放会从启真湖最后一帧开始，并在已确认地点结束。",16,MUTED))
 		action(footer,"开始回放","c35_replay",null,true)
 
-func journal(root: VBoxContainer) -> void:
-	var article := card(root)
-	article.add_child(label("林星宇  ·  楼主",16,GREEN))
+func journal(frame: Control) -> void:
+	var root: VBoxContainer=frame.content
+	var article := card(root,LakePalette.PAPER)
 	article.add_child(label("启真湖划船记录｜风景很好，返程提前了",23))
+	article.add_child(label("林星宇  ·  楼主",16,Color("346589")))
+	var photo := image_node("res://assets/ui/photo-evidence/chapter35_live_lake_memory_a.webp",Vector2(0,202))
+	photo.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	article.add_child(photo)
 	article.add_child(label("从小码头下水。湖面比岸边安静，风从剧场方向过来。最后一张照片没同步上来，我先回岸上整理。",17))
-	article.add_child(image_node("res://assets/ui/photo-evidence/chapter35_live_lake_memory_a.webp",Vector2(0,170)))
 	article.add_child(label("启真湖 · 22:37:05",15,MUTED))
+	var published: bool=state.chapterThreeInterlude.evidenceIds.has("journal_start")
+	if published:
+		var receipt := card(root,LakePalette.SELECTED)
+		receipt.name="C35JournalReceipt"
+		receipt.add_child(label("收尾回复已发布 · 离湖时间已保存",15,LakePalette.INK))
+	var replies := card(root,LakePalette.PAPER)
 	for reply: Array in [["2楼","晚上水面反光挺亮，靠岸别太快。"],["3楼","最后一张图像是朝东边拍的。"]]:
-		var row := card(root);row.add_child(label(reply[0],15,GREEN));row.add_child(label(reply[1],17))
-	if state.chapterThreeInterlude.evidenceIds.has("journal_start"):
-		footer.add_child(label("收尾回复已发布 · 离湖时间已保存",15,GREEN));return
-	root.add_child(label("回复这条记录",19))
-	var selected: String=state.native.get("c35_summary_choice","details_withheld")
+		if replies.get_child_count()>0:rule(replies)
+		replies.add_child(label(reply[0],15,MUTED))
+		replies.add_child(label(reply[1],17))
+	if published: return
+	var choices: Dictionary={}
 	for id: String in ["safe_return","details_withheld"]:
 		var reply: Dictionary=module.copy_data().journalReplies[id]
-		var row := card(root)
-		action(row,("● " if selected==id else "○ ")+reply.label,"c35_summary_select",id)
-		row.add_child(label(reply.body,17))
-	action(footer,"发布收尾并保存时间","c35_journal",selected,true)
+		choices[id]=str(reply.label)+"\n"+str(reply.body)
+	var reply_field := button(replies,"回复这条记录…",func() -> void:
+		DingChoices.choice_sheet(self,frame,"选择要发布的回复",choices,func(id: String) -> void:
+			action_requested.emit("c35_journal",id)))
+	reply_field.name="C35JournalComposer"
+	reply_field.alignment=HORIZONTAL_ALIGNMENT_LEFT
 
 func photos(root: VBoxContainer) -> void:
 	var selected: Array=state.native.get("c35_photo_selection",[])
-	var stage := card(root);stage.name="C35PhotoOrder"
-	stage.add_child(label("连续帧顺序  %d / 3" % selected.size(),17))
+	var stage := card(root,LakePalette.NIGHT);stage.name="C35PhotoOrder"
+	stage.add_child(label("连续帧顺序  %d / 3" % selected.size(),17,LakePalette.PAPER))
 	var strip := HBoxContainer.new();strip.add_theme_constant_override("separation",8);stage.add_child(strip)
 	for index: int in range(3):
-		var cell := VBoxContainer.new();cell.size_flags_horizontal=Control.SIZE_EXPAND_FILL;strip.add_child(cell)
-		if index<selected.size():
+		var filled: bool=index<selected.size()
+		var cell := card(strip)
+		cell.add_theme_constant_override("separation",3)
+		cell.custom_minimum_size.y=73
+		cell.get_parent().add_theme_stylebox_override("panel",NativeUi.box(LakePalette.SELECTED if filled else LakePalette.NIGHT,LakePalette.PALE if filled else LakePalette.EDGE,1,4,Vector2(6,5)))
+		if filled:
 			for frame: Dictionary in Interlude.FRAMES:
 				if frame.id==selected[index]:
-					cell.add_child(image_node("res://assets/ui/photo-evidence/chapter35_live_"+frame.image+".webp",Vector2(0,74),frame.get("mirror",false)))
-					cell.add_child(label(str(index+1)+" · "+frame.label.trim_prefix("FRM "),15))
+					cell.add_child(image_node("res://assets/ui/photo-evidence/chapter35_live_"+frame.image+".webp",Vector2(0,49),frame.get("mirror",false)))
+					var sequence_label := label(str(index+1)+" · "+frame.label.trim_prefix("FRM "),15,LakePalette.INK)
+					sequence_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+					cell.add_child(sequence_label)
 		else:
-			var empty := label(str(index+1),25,MUTED);empty.custom_minimum_size.y=74;empty.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;cell.add_child(empty)
-	root.add_child(label("原始时间 07:55:23 · 点照片查看，点编号选入顺序",15,MUTED))
+			var empty := label(str(index+1),21,LakePalette.PALE);empty.size_flags_vertical=Control.SIZE_EXPAND_FILL
+			empty.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;empty.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+			cell.add_child(empty)
+	var gallery_hint := label("原始时间 07:55:23 · 点图预览，点编号排序",15,LakePalette.SECONDARY)
+	gallery_hint.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	root.add_child(gallery_hint)
 	var grid := GridContainer.new();grid.columns=3;grid.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-	grid.add_theme_constant_override("h_separation",8);grid.add_theme_constant_override("v_separation",16);root.add_child(grid)
+	grid.add_theme_constant_override("h_separation",8);grid.add_theme_constant_override("v_separation",10);root.add_child(grid)
 	for frame: Dictionary in Interlude.FRAMES:
 		var cell := VBoxContainer.new();cell.custom_minimum_size.x=112;cell.size_flags_horizontal=Control.SIZE_EXPAND_FILL;grid.add_child(cell)
-		var portrait := AspectRatioContainer.new();portrait.ratio=0.78;portrait.stretch_mode=AspectRatioContainer.STRETCH_WIDTH_CONTROLS_HEIGHT
-		portrait.size_flags_horizontal=Control.SIZE_EXPAND_FILL;portrait.custom_minimum_size=Vector2(112,144)
-		portrait.resized.connect(func() -> void:portrait.custom_minimum_size.y=portrait.size.x/0.78);cell.add_child(portrait)
 		var preview := Button.new();preview.name="C35View_"+frame.id;preview.tooltip_text="查看 "+frame.label
-		NativeUi.apply_button(preview,Palette.SURFACE,INK,Palette.LINE,3,0,17,Vector2.ZERO,GREEN)
+		preview.custom_minimum_size.y=94
+		NativeUi.apply_button(preview,LakePalette.NIGHT,LakePalette.PAPER,LakePalette.EDGE,3,1,17,Vector2.ZERO,LakePalette.PALE)
 		var photo := image_node("res://assets/ui/photo-evidence/chapter35_live_"+frame.image+".webp",Vector2.ZERO,frame.get("mirror",false))
 		photo.name="RecoveredPhoto";photo.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;photo.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);preview.add_child(photo)
-		preview.pressed.connect(func() -> void:photo_view_id=frame.id;page_requested.emit("c35_photos"));portrait.add_child(preview)
+		preview.pressed.connect(func() -> void:photo_view_id=frame.id;page_requested.emit("c35_photos"));cell.add_child(preview)
 		var caption: String=(str(selected.find(frame.id)+1)+" · " if selected.has(frame.id) else "")+frame.label
 		var select := action(cell,caption,"c35_select_photo",frame.id)
+		if selected.has(frame.id):
+			NativeUi.apply_button(select,LakePalette.SELECTED,LakePalette.INK,LakePalette.EDGE,3,1,17,Vector2(8,8),LakePalette.EDGE)
+		else:
+			NativeUi.apply_button(select,LakePalette.PAPER,LakePalette.INK,LakePalette.DISABLED,3,1,17,Vector2(8,8),LakePalette.EDGE)
 		select.disabled=state.chapterThreeInterlude.photoSequenceSolved or (not selected.has(frame.id) and selected.size()>=3)
 	if state.chapterThreeInterlude.photoSequenceSolved:
 		var preview := PhotoSequence.new();preview.name="RecoveredSequence";preview.custom_minimum_size.y=132
 		preview.configure(bool(state.native.get("settings",{}).get("reduced_motion",false)));root.add_child(preview)
-		footer.add_child(label("连续帧已恢复",17,GREEN));return
+		footer.add_child(label("连续帧已恢复",17,LakePalette.INK));return
 	var controls := HBoxContainer.new();controls.add_theme_constant_override("separation",10);footer.add_child(controls)
 	var reset := action(controls,"重排","c35_photo_reset");reset.custom_minimum_size.x=76;reset.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
 	var submit := action(controls,"确认照片顺序","c35_photos",selected.duplicate(),true);submit.disabled=selected.size()!=3
+	lake_primary(submit)
 
 func photo_viewer(root: VBoxContainer) -> void:
 	var frame: Dictionary={}
 	for entry: Dictionary in Interlude.FRAMES:
 		if entry.id==photo_view_id:frame=entry
 	if frame.is_empty():photo_view_id="";photos(root);return
-	root.add_child(image_node("res://assets/ui/photo-evidence/chapter35_live_"+frame.image+".webp",Vector2(0,470),frame.get("mirror",false)))
-	root.add_child(label(frame.label,20));root.add_child(label("原始文件时间 · 07:55:23",15,MUTED))
+	var metadata := VBoxContainer.new();metadata.add_theme_constant_override("separation",4)
+	root.add_child(metadata)
+	metadata.add_child(label(frame.label,20))
+	metadata.add_child(label("原始文件时间 · 07:55:23",15,MUTED))
+	var image_width: float=AppFrame.EXTENT.x-2*AppFrame.READING_INSET
+	root.add_child(image_node("res://assets/ui/photo-evidence/chapter35_live_"+frame.image+".webp",Vector2(0,image_width),frame.get("mirror",false)))
 	var selected: Array=state.native.get("c35_photo_selection",[])
 	var controls := HBoxContainer.new();controls.add_theme_constant_override("separation",10);root.add_child(controls)
 	for shift: int in [-1,1]:
@@ -367,14 +465,14 @@ func photo_viewer(root: VBoxContainer) -> void:
 			photo_view_id=Interlude.FRAMES[posmod(index+shift,Interlude.FRAMES.size())].id;page_requested.emit("c35_photos"))
 	var select := action(footer,"移出顺序" if selected.has(frame.id) else "选入第 %d 帧" % (selected.size()+1),"c35_select_photo",frame.id,true)
 	select.disabled=state.chapterThreeInterlude.photoSequenceSolved or (not selected.has(frame.id) and selected.size()>=3)
+	lake_primary(select)
 
 func voice(root: VBoxContainer) -> void:
-	root.add_child(label("时间索引异常 · 核对环境与声音",15,MUTED))
 	var selected: Array=state.native.get("c35_voice_selection",[])
 	var stage: String=state.native.get("c35_voice_stage","selection")
-	var summary: VBoxContainer=card(root)
-	summary.add_child(label("1 / 2 筛选录音" if stage=="selection" else "2 / 2 排列顺序",14,GREEN))
-	summary.add_child(label("逐段试听，从七段恢复文件中留下同一次移动过程的四段。" if stage=="selection" else "根据环境声的连续变化，调整四段录音的先后位置。",14,MUTED))
+	var summary := VBoxContainer.new();summary.add_theme_constant_override("separation",6);root.add_child(summary)
+	summary.add_child(label("1 / 2 筛选录音" if stage=="selection" else "2 / 2 排列顺序",18))
+	summary.add_child(label("逐段试听，从七段恢复文件中留下同一次移动过程的四段。" if stage=="selection" else "根据环境声的连续变化，调整四段录音的先后位置。",15,MUTED))
 	var records: Array=[]
 	for clip_id: String in ["decoy_theater","lake","decoy_library","stone","decoy_canteen","lobby","broadcast"]:
 		for recording: Dictionary in module.content("chapter3-interlude-voice-memos.audio.content").recordings:
@@ -397,9 +495,8 @@ func voice(root: VBoxContainer) -> void:
 		row.add_theme_constant_override("separation",7)
 		var panel: PanelContainer=row.get_parent()
 		var frame: StyleBoxFlat=panel.get_theme_stylebox("panel").duplicate()
-		frame.set_border_width_all(2 if playing or paused else 1)
-		frame.border_color=Palette.ACCENT if playing else (Palette.MUTED if paused else Palette.LINE)
-		if kept: frame.border_width_left=5; frame.border_color=GREEN
+		frame.set_border_width_all(1)
+		frame.border_color=GREEN if kept or playing else (Palette.MUTED if paused else Palette.LINE)
 		frame.content_margin_left=12; frame.content_margin_right=12
 		frame.content_margin_top=10; frame.content_margin_bottom=10
 		frame.shadow_size=0; frame.shadow_offset=Vector2.ZERO
@@ -451,7 +548,7 @@ func official(root: VBoxContainer) -> void:
 	var box := card(root,Color.WHITE)
 	box.add_child(label("校园楼宇运行通知",15,MUTED))
 	box.add_child(label("夜间闭楼与入口调整",25))
-	box.add_child(label("紫金港楼宇服务 · 22:40",15,GREEN))
+	box.add_child(label("公众号 · 22:40",15,GREEN))
 	box.add_child(WechatSocial.article_cover(WechatSocial.load_campus_content(),Vector2(0,202)))
 	box.add_child(label("22:45 起，北教学区一处楼宇进入夜间清楼。A 楼一层东侧入口暂停通行，人员请从大厅主入口进入。",19))
 	box.add_child(label("主电梯保留运行，楼层开放情况以现场提示为准。",18))
@@ -467,61 +564,90 @@ func messages(root: VBoxContainer) -> void:
 		if entry.id=="withdrawn":
 			var removed := label(entry.text,15,MUTED);removed.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;root.add_child(removed);continue
 		var line := HBoxContainer.new();line.add_theme_constant_override("separation",10);root.add_child(line)
-		var avatar := PanelContainer.new();avatar.custom_minimum_size=Vector2(36,36);avatar.size_flags_vertical=Control.SIZE_SHRINK_BEGIN
+		var avatar := PanelContainer.new();avatar.custom_minimum_size=Vector2(40,40);avatar.size_flags_vertical=Control.SIZE_SHRINK_BEGIN
 		var avatar_style := StyleBoxFlat.new();avatar_style.bg_color={"林昊":Color("547f9d"),"陈嘉":Color("7993a1"),"周琪":Color("70503b"),"室友":Color("385b79")}.get(entry.author,GREEN);avatar_style.set_corner_radius_all(4);avatar.add_theme_stylebox_override("panel",avatar_style)
-		line.add_child(avatar);var initial := label(entry.author.left(1),18,Color.WHITE);initial.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;avatar.add_child(initial)
+		line.add_child(avatar);var initial := label(entry.author.left(1),18,Color.WHITE);initial.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;initial.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;avatar.add_child(initial)
 		var stack := VBoxContainer.new();stack.size_flags_horizontal=Control.SIZE_EXPAND_FILL;stack.add_theme_constant_override("separation",5);line.add_child(stack)
-		stack.add_child(label(entry.author,14,MUTED))
-		var panel := ChatBubble.new();panel.name="C35Message_"+entry.id
-		panel.fill=Palette.SELECTED if selected.has(entry.id) else Palette.SURFACE
-		var bubble_style := StyleBoxFlat.new();bubble_style.bg_color=panel.fill;bubble_style.set_corner_radius_all(4);bubble_style.content_margin_left=12;bubble_style.content_margin_right=12;bubble_style.content_margin_top=10;bubble_style.content_margin_bottom=10;panel.add_theme_stylebox_override("panel",bubble_style);stack.add_child(panel)
+		var heading := HBoxContainer.new()
+		heading.add_theme_constant_override("separation",8)
+		stack.add_child(heading)
+		heading.add_child(label(entry.author,15,LakePalette.SECONDARY))
+		var picked: bool=selected.has(entry.id)
+		if picked:
+			var mark := label("已选择",15,LakePalette.INK)
+			mark.name="C35RouteSelected"
+			mark.autowrap_mode=TextServer.AUTOWRAP_OFF
+			mark.size_flags_horizontal=Control.SIZE_SHRINK_END
+			heading.add_child(mark)
+		var panel := PanelContainer.new();panel.name="C35Message_"+entry.id
+		var fill := LakePalette.SELECTED if picked else LakePalette.PAPER
+		panel.add_theme_stylebox_override("panel",NativeUi.box(fill,LakePalette.EDGE if picked else Color.TRANSPARENT,1,4,Vector2(12,10)))
+		stack.add_child(panel)
 		var bubble := VBoxContainer.new();bubble.size_flags_horizontal=Control.SIZE_EXPAND_FILL;panel.add_child(bubble)
-		bubble.add_child(label(entry.text,18))
+		var message := label(entry.text,18)
+		message.autowrap_mode=TextServer.AUTOWRAP_ARBITRARY
+		bubble.add_child(message)
 		if not saved:
 			var select := Button.new();select.name="C35MessageSelect_"+entry.id
 			select.tooltip_text="取消选择" if selected.has(entry.id) else "选择这条消息"
+			select.accessibility_name=select.tooltip_text+" · "+entry.author
+			select.set_meta("phone_button_role","hit_region")
 			select.set_meta("intent","c35_select_route");select.set_meta("intent_value",entry.id);select.set_meta("route_selected",selected.has(entry.id))
 			select.custom_minimum_size.y=44
 			for mode in ["normal","disabled","pressed"]:select.add_theme_stylebox_override(mode,StyleBoxEmpty.new())
 			var hover := StyleBoxFlat.new();hover.bg_color=Color(Palette.INK,0.05);select.add_theme_stylebox_override("hover",hover)
-			var focus := StyleBoxFlat.new();focus.bg_color=Color.TRANSPARENT;focus.border_color=GREEN;focus.set_border_width_all(2);select.add_theme_stylebox_override("focus",focus)
+			var focus := StyleBoxFlat.new();focus.bg_color=Color.TRANSPARENT;focus.border_color=LakePalette.EDGE;focus.set_border_width_all(2);select.add_theme_stylebox_override("focus",focus)
 			select.pressed.connect(func() -> void:action_requested.emit("c35_select_route",entry.id))
 			select.disabled=not selected.has(entry.id) and selected.size()>=2
-			bubble.get_parent().add_child(select)
-			if selected.has(entry.id):bubble.add_child(label("已选择",15,GREEN))
+			panel.add_child(select)
 	if saved:
-		var receipt := card(root);receipt.add_child(label("路线截图已保存",18,GREEN))
+		var receipt := card(root,LakePalette.SELECTED);receipt.add_child(label("路线截图已保存",18,LakePalette.INK))
 		receipt.add_child(label("22:42 入口调整截图\n东侧关闭 / 西侧主入口可通行",16))
-		footer.add_child(label("已保存 2 条消息",15,GREEN))
+		footer.add_child(label("已保存 2 条消息",15,LakePalette.INK))
 	else:
 		footer.add_child(label("点选消息 · 已选 %d / 2 条" % selected.size(),15,MUTED))
 		var submit := action(footer,"保存路线截图","c35_route",selected.duplicate(),true);submit.disabled=selected.size()!=2
+		lake_primary(submit)
 
 func network(root: VBoxContainer) -> void:
-
 	var filters: Dictionary=state.native.get("c35_network_filters",{"time":"all","session":"all","area":"all"})
-	var filter_box: VBoxContainer=card(root)
+	var filter_box := HBoxContainer.new()
+	filter_box.add_theme_constant_override("separation",8)
+	root.add_child(filter_box)
 	var definitions: Array=[{"id":"time","label":"时间","options":[["all","全部时间"],["missing_475","未同步区间"],["last_minute","最后一分钟"]]},{"id":"session","label":"会话","options":[["all","全部设备"],["unknown_short","陌生短会话"],["authenticated","已认证设备"]]},{"id":"area","label":"区域","options":[["all","全部区域"],["north_a","北教学区 A 区"],["other","其他区域"]]}]
 	for definition: Dictionary in definitions:
-		var row: HBoxContainer=HBoxContainer.new()
+		var row := VBoxContainer.new()
+		row.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 		filter_box.add_child(row)
 		row.add_child(label(definition.label,15,MUTED))
 		var options: OptionButton=OptionButton.new()
 		options.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-		options.custom_minimum_size.y=38
+		options.fit_to_longest_item=false;options.clip_text=true
+		options.custom_minimum_size.y=44
 		row.add_child(options);style_choice(options)
+		NativeUi.apply_button(options,Palette.SURFACE,INK,Palette.LINE,3,1,15,Vector2(6,8),GREEN)
 		for index: int in range(definition.options.size()):
 			options.add_item(definition.options[index][1])
 			if filters.get(definition.id,"all")==definition.options[index][0]: options.select(index)
 		options.item_selected.connect(func(index: int) -> void: action_requested.emit("c35_filter",{"key":definition.id,"value":definition.options[index][0]}))
 	var records: Array=module.filtered_records(state)
 	root.add_child(label("查询结果  %d 条" % records.size(),14,MUTED))
-	for record: Dictionary in records:
-		var row: VBoxContainer=card(root,Color.WHITE)
-		row.add_child(label(record.label,18))
-		row.add_child(label(record.detail,15,MUTED))
-		action(row,"已保存" if state.chapterThreeInterlude.networkRecordId==record.id else "保存候选记录","c35_network",record.id,true)
 	if records.is_empty(): root.add_child(label("没有符合当前筛选条件的记录。",17))
+	else:
+		var results := card(root)
+		for record: Dictionary in records:
+			if results.get_child_count()>0:rule(results)
+			var row := HBoxContainer.new();row.add_theme_constant_override("separation",12);results.add_child(row)
+			var details := VBoxContainer.new();details.size_flags_horizontal=Control.SIZE_EXPAND_FILL;row.add_child(details)
+			details.add_child(label(record.label,18))
+			details.add_child(label(record.detail,15,MUTED))
+			var saved: bool=state.chapterThreeInterlude.networkRecordId==record.id
+			var save := action(row,"已保存" if saved else "保存","c35_network",record.id)
+			save.accessibility_name=("已保存" if saved else "保存候选记录")+" · "+str(record.label)
+			save.custom_minimum_size.x=60
+			save.size_flags_horizontal=Control.SIZE_SHRINK_END
+			save.size_flags_vertical=Control.SIZE_SHRINK_CENTER
+			NativeUi.apply_button(save,Palette.SELECTED if saved else Palette.CONTROL,GREEN if saved else INK,Palette.LINE,3,0,15,Vector2(8,8),GREEN)
 	if state.chapterThreeInterlude.networkRecordId!=null:footer.add_child(label("候选记录已保存",16,GREEN))
 
 func ticket(root: VBoxContainer) -> void:

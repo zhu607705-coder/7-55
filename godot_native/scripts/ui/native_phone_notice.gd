@@ -51,6 +51,7 @@ static func create(text: String="",speaker: String="系统") -> Label:
 	return label
 
 static func icon_for(speaker: String) -> Texture2D:
+	if speaker=="林星宇": speaker="我"
 	if _icons.has(speaker): return _icons[speaker]
 	var cutout: String='<path d="M6 5h4v6H6z" fill="#fff8e2"/>' if speaker=="系统" else '<path d="M5 7h6v1H5z M5 10h5v1H5z" fill="#fff8e2"/>' if speaker=="任务" else ""
 	var svg: String='<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path d="'+str(ICONS.get(speaker,ICONS["系统"]))+'" fill="#222322" fill-rule="evenodd"/>'+cutout+'</svg>'
