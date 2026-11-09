@@ -165,17 +165,20 @@
         if(activeDownloads<3)ticket.grant();else {waitingDownloads.push(ticket);if(signal)signal.addEventListener('abort',cancel,{once:true});}
       });
     }
-    async function fetchChunk(chunk,priority,signal,pace) {
+    function chunkIntegrityError() {
+      const error=new Error('Chunk digest or size differs');error.name='ChunkIntegrityError';return error;
+    }
+    async function fetchChunk(chunk,priority,signal,pace,cacheMode) {
       const release=await acquire(signal);
       try {
         checkSignal(signal);
         if(pace)await pace(0,signal);
-        const response=await abortable(fetch(identity(chunk),{cache:'force-cache',priority:priority||'high',signal}),signal);
+        const response=await abortable(fetch(identity(chunk),{cache:cacheMode,priority:priority||'high',signal}),signal);
         if(!response.ok || response.status!==200)throw new Error('Chunk HTTP '+response.status);
         if(!pace)return new Uint8Array(await abortable(response.arrayBuffer(),signal));
         const bytes=new Uint8Array(chunk.bytes);let received=0;
         async function append(part) {
-          if(received+part.byteLength>bytes.byteLength)throw new Error('Chunk size differs');
+          if(received+part.byteLength>bytes.byteLength)throw chunkIntegrityError();
           for(let offset=0;offset<part.byteLength;offset+=BACKGROUND_SLICE_BYTES) {
             const slice=part.subarray(offset,offset+BACKGROUND_SLICE_BYTES);
             await pace(slice.byteLength,signal);checkSignal(signal);
@@ -187,7 +190,7 @@
           try {while(true){const item=await abortable(reader.read(),signal);if(item.done)break;await append(item.value);}}
           catch(error){await reader.cancel().catch(()=>{});throw error;}
         } else await append(new Uint8Array(await abortable(response.arrayBuffer(),signal)));
-        if(received!==chunk.bytes)throw new Error('Chunk size differs');return bytes;
+        if(received!==chunk.bytes)throw chunkIntegrityError();return bytes;
       } finally {release();}
     }
     function db() {
@@ -274,8 +277,21 @@
         while(next<missing.length) {
           checkSignal(signal);
           const index=missing[next++], chunk=chunks[index];
-          const bytes=await fetchChunk(chunk,options.priority,signal,options.pace);network+=bytes.byteLength;stats.networkBytes+=bytes.byteLength;
-          if(bytes.byteLength!==chunk.bytes || await verifyBytes(bytes,signal,!!options.pace)!==chunk.sha256)throw new Error('Chunk digest or size differs');
+          let bytes;
+          for(const cacheMode of ['force-cache','reload']) {
+            try {
+              bytes=await fetchChunk(chunk,options.priority,signal,options.pace,cacheMode);
+              network+=bytes.byteLength;stats.networkBytes+=bytes.byteLength;
+              if(bytes.byteLength!==chunk.bytes || await verifyBytes(bytes,signal,!!options.pace)!==chunk.sha256)throw chunkIntegrityError();
+              break;
+            } catch(error) {
+              // IDB deletion cannot evict Fetch's immutable HTTP cache. Give a
+              // rejected response one fresh transfer; persistent corruption,
+              // HTTP/network errors and cancellation still fail normally.
+              if(cacheMode==='reload' || error.name!=='ChunkIntegrityError')throw error;
+              checkSignal(signal);
+            }
+          }
           const saved=await operation('readwrite',store=>store.put({bytes:bytes.buffer,digest:chunk.sha256},chunkKey(chunk)));
           if(saved!==null){stats.writtenBytes+=bytes.byteLength;persisted+=bytes.byteLength;}
           accept(index,bytes);
