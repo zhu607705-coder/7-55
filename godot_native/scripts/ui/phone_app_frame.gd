@@ -89,6 +89,11 @@ func configure(title: String, subtitle: String, offset: int=0, exits: bool=false
 	back_button.set_meta("phone_nav_label",back_button.tooltip_text)
 	scroll.set_deferred("scroll_vertical",offset)
 
+func set_reading_left_inset(width: int) -> void:
+	var inset := maxi(READING_INSET,width)
+	if content_margin.get_theme_constant("margin_left")!=inset:
+		content_margin.add_theme_constant_override("margin_left",inset)
+
 func _layout() -> void:
 	toolbar.size=Vector2(size.x,NAV_HEIGHT)
 	var footer_height := footer.get_combined_minimum_size().y+30 if footer.get_child_count()>0 else 0.0

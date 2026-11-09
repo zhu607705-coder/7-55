@@ -90,7 +90,12 @@ func run() -> void:
 	chrome.inventory_handle.pressed.emit()
 	await process_frame
 	check(chrome.inventory_open and chrome.inventory_body.visible and utilities==["inventory_toggle"],"handle toggles expanded vertical items and emits state intent")
-	check(chrome.inventory_handle.position.x==74 and chrome.inventory_handle.size.x==40,"expanded handle moves after 74px body and gains left border")
+	var collapse_face: Rect2=chrome.inventory_handle.get_meta("painted_rect")
+	check(chrome.inventory_handle.position.x==74 and collapse_face.size.x==14 and chrome.inventory_handle.size.x>=28,"thin collapse tab attaches to the drawer with an expanded hit area")
+	check(not chrome.inventory_handle.get_node("BackpackIcon").visible and not chrome.inventory_count.visible,"home drawer hides backpack icon and count while open")
+	check(chrome.inventory_arrow.text=="‹","drawer tab points inward")
+	for role: String in ["normal","hover","pressed","hover_pressed","disabled","focus"]:
+		check(chrome.inventory_handle.get_theme_stylebox(role) is StyleBoxEmpty,"collapse tab leaves the larger hit rectangle unpainted: "+role)
 	check(chrome.inventory_body.size.x==74 and chrome.inventory_scroll.size.y==116,"source body/slot viewport sizes")
 	check(chrome.inventory_slots.get_child(0).size==Vector2(52,52),"actual native item has 52x52 target")
 	check(chrome.inventory_slots.get_theme_constant("separation")==8,"exact 8px vertical slot gap")

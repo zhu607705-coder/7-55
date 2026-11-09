@@ -843,6 +843,13 @@ func _layout_phone_reading_gutters() -> void:
 	if str(State.d.native.page)=="zjuding" and phone_builder!=null:
 		phone_chrome._layout_inventory_anchor()
 		phone_builder.lake_apps.layout_map_header(page_body,phone_chrome)
+	if page_body.get_child_count()>0:
+		var app := page_body.get_child(0)
+		if app.has_method("set_reading_left_inset"):
+			var recovery_inset: int=phone_chrome.recovery_inventory_inset()
+			app.set_reading_left_inset(recovery_inset)
+			var group_settings := app.get_node_or_null("C35GroupSettingsView")
+			if group_settings!=null: group_settings.set_reading_left_inset(recovery_inset)
 	var margin: MarginContainer=page_body.get_node_or_null("FallbackReadingMargin")
 	if margin==null:return
 	phone_chrome._layout_inventory_anchor()
