@@ -53,20 +53,27 @@ func run() -> void:
 			if b.text=="重排": check(b.size.x>=72,"reorder label has a readable dedicated target")
 		for i: int in range(images.size()):
 			var photo: TextureRect=images[i]
-			# Include its caption so integer scroll offsets do not leave the image
-			# exactly on a fractional clipping boundary.
-			scroll.ensure_control_visible(photo.get_parent().get_parent().get_parent());await frames()
+			var cell: Control=photo.get_parent().get_parent()
+			# Reveal the thumbnail and its independent ordering control together.
+			scroll.ensure_control_visible(cell);await frames()
 			viewport=physical_rect(scroll)
-			check(absf(photo.size.x/photo.size.y-0.78)<0.002,"portrait clue aspect preserved")
-			check(photo.size.y>120,"source image is no longer an eighty-pixel landscape strip")
+			check(photo.get_rect().is_equal_approx(Rect2(Vector2.ZERO,photo.get_parent().size)),"thumbnail artwork fits its own preview target")
+			check(photo.size.y>=94,"compact thumbnail keeps the authored minimum height")
 			check(photo.stretch_mode==TextureRect.STRETCH_KEEP_ASPECT_CENTERED,"complete original image fits uniformly without cropping evidence")
 			check(photo.texture!=null and photo.texture.resource_path.ends_with("chapter35_live_"+Pages.Interlude.FRAMES[i].image+".webp"),"original source photograph retained")
 			check(nearest_filter(photo),"effective inherited pixel filtering remains nearest")
 			check(photo.flip_h==bool(Pages.Interlude.FRAMES[i].get("mirror",false)),"mirror decoys retained")
 			check(viewport.grow(.5).encloses(physical_rect(photo)),"each card hit image can be revealed completely inside the real phone scroll: "+str(dimensions)+" frame "+str(i)+" scroll "+str(viewport)+" photo "+str(physical_rect(photo)))
-			var portrait: Control=photo.get_parent().get_parent()
-			var cell: Node=portrait.get_parent()
 			check(physical_rect(cell.get_child(1)).position.y>=physical_rect(photo).end.y-0.1,"caption follows full portrait without overlap")
+		var first: Button=images[0].get_parent()
+		var original: Texture2D=images[0].texture
+		first.pressed.emit()
+		await frames()
+		var detail: Control=shell.page_body.find_child("C35App_c35_photos",true,false)
+		var large: TextureRect=detail.content.find_children("*","TextureRect",true,false).front()
+		check(large.texture==original and large.stretch_mode==TextureRect.STRETCH_KEEP_ASPECT_CENTERED and large.size.y>=388,"opening the thumbnail retains the full source at reading size")
+		detail.back_button.pressed.emit()
+		await frames()
 		check(JSON.stringify(state.d.chapterThreeInterlude)==before,"scrolling and layout never grant recovery evidence")
 	await shell.shutdown();shell.queue_free();await frames()
 	controller.dispatch(s,"c35_select_photo","lake_memory_a")
