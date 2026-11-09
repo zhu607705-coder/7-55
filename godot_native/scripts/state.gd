@@ -469,6 +469,7 @@ func validate_snapshot(value: Variant, allow_legacy_v35_fields: bool=false) -> b
 	if value.native.has("flc_rooms") and not FLCRoomSave.valid(value.native.flc_rooms):return false
 	# The studio checkpoint is optional for old saves; present checkpoints stay bounded.
 	if value.native.has("theater_chest") and not preload("res://scripts/games/theater_chest_mechanism.gd").valid(value): return false
+	if not preload("res://scripts/chapters/c35_investigation.gd").valid(value): return false
 	if value.native.has("c4_clock_chain") and not preload("res://scripts/games/chapter4_clock_chain.gd").valid_state(value): return false
 	if value.native.has("c4_duty_board") and not preload("res://scripts/games/chapter4_duty_board.gd").valid(value.native.c4_duty_board): return false
 	if value.native.has("c4_plate_press") and not load("res://scripts/objects/room201_press_model.gd").valid(value.native.c4_plate_press): return false

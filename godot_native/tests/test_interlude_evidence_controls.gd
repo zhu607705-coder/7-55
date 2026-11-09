@@ -21,9 +21,15 @@ func find_button(node:Node,text:String)->Button:
 		var found=find_button(child,text)
 		if found!=null:return found
 	return null
-func click(text:String,scope_text:String=""):
+func click(text:String,scope_text:String="",record_id:String=""):
 	var scope=main.page_body if scope_text.is_empty() else find_card(main.page_body.get_child(0),scope_text)
 	var button=find_button(scope,text) if scope!=null else null
+	if not record_id.is_empty():
+		button=null
+		for action:Button in main.page_body.find_children("*","Button",true,false):
+			if action.get_meta("intent","")=="c35_network" and action.get_meta("intent_value","")==record_id:
+				button=action
+				break
 	if button==null and scope!=null:
 		for option:OptionButton in scope.find_children("*","OptionButton",true,false):
 			for index:int in range(option.item_count):
@@ -75,7 +81,7 @@ func run():
 	# Only window focus is injected for a headless host; real audio and Controls run.
 	main.media_host.setup(func()->Dictionary:
 		var snapshot=main._read_runtime_state();snapshot.native.host.focused=focused;return snapshot)
-	await click("开始恢复");await click("查看划船帖");await click("安全返航");await click("发布收尾并保存时间");await back()
+	await click("开始恢复");await click("查看划船帖");await click("回复这条记录");await click("安全返航");await back()
 	await click("录音线索")
 	check(find_button(find_card(main.page_body,"CLIP D7"),"试听后可选").disabled,"unreviewed audio has an unavailable keep control")
 	check(state.d.native.get("c35_voice_selection",[]).is_empty(),"unreviewed clip cannot enter selection")
@@ -123,7 +129,12 @@ func run():
 	await click("确认照片顺序");await back();await click("消息线索")
 	await click("保存通知");await click("麦斯威夜间自习群")
 	var route_copy: Dictionary=controller.interlude.copy_data().routeMessages
+	var initial_row: Control=main.page_body.find_child("C35Message_computer_left_on",true,false).get_parent()
+	var initial_row_height:=initial_row.size.y
 	await click("选择",route_copy.computer_left_on);await click("选择",route_copy.guard_east);await click("保存路线截图")
+	var selected_row: Control=main.page_body.find_child("C35Message_computer_left_on",true,false).get_parent()
+	var marker: Label=selected_row.find_child("C35RouteSelected",true,false)
+	check(is_instance_valid(marker) and marker.get_line_count()==1 and is_equal_approx(initial_row_height,selected_row.size.y),"selection marker stays on one line without stretching its message")
 	check(not state.d.chapterThreeInterlude.routeScreenshotSaved,"wrong route pair remains unresolved")
 	check(find_button(find_card(main.page_body,route_copy.east_closed),"选择").disabled,"full route selection disables a third candidate")
 	check(state.d.native.c35_route_selection.size()==2 and not state.d.native.c35_route_selection.has("east_closed"),"route selection limit preserves existing pair")
@@ -131,10 +142,11 @@ func run():
 	await click("选择",route_copy.west_cleaner);await click("选择",route_copy.east_closed);await click("保存路线截图")
 	check(state.d.chapterThreeInterlude.routeScreenshotSaved,"route pair accepted in reverse selection order")
 	await back();await back();await click("网络记录");await create_timer(1.6).timeout;await frames()
-	for record in ["22:44:31","22:43:11","22:44:12"]:
-		await click("保存候选记录",record)
-		check(find_button(find_card(main.page_body.get_child(0),record),"已保存")!=null,"candidate marker updates: "+record)
-	await click("保存候选记录","22:44:57")
+	for record_id:String in ["record_theater_hall","record_library_south","record_qizhen_dock"]:
+		await click("保存","",record_id)
+		check(state.d.chapterThreeInterlude.networkRecordId==record_id,"the clicked candidate is saved: "+record_id)
+	await click("保存","","record_0755")
+	check(state.d.chapterThreeInterlude.networkRecordId=="record_0755","the matching candidate is saved")
 	check(state.d.chapterThreeInterlude.evidenceIds.size()==4,"all four evidence categories earned through actual controls")
 	# Popup options receive real keyboard input; they do not write story evidence.
 	var before=state.d.chapterThreeInterlude.duplicate(true)

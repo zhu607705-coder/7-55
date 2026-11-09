@@ -180,7 +180,14 @@ func lake() -> void:
 	await r.boundary("lake escape")
 
 func interlude() -> void:
-	await r.step("c35_begin")
+	const Investigation=preload("res://scripts/chapters/c35_investigation.gd")
+	var new_route: bool=Investigation.has_route(r.state.d)
+	if new_route:
+		for action in ["message","ta_private","camera","capture","convert"]: await r.step("c35_trace:"+action)
+		await r.step("c35_trace:attach",Investigation.FILE_ID)
+		await r.step("c35_trace:reply","identity")
+		for action in ["submit","open_album","journal"]: await r.step("c35_trace:"+action)
+	else: await r.step("c35_begin")
 	await r.step("c35_journal","safe_return")
 	for id in ["paper_left","paper_middle","paper_right"]:
 		await r.step("c35_frame",id)
@@ -213,9 +220,16 @@ func interlude() -> void:
 	await r.step("c35_network","record_0755")
 	if not r.check(r.state.d.chapterThreeInterlude.evidenceIds.size()==4,"four independent interlude evidence categories recovered"): return
 	for id in c.interlude.REASONS: await r.step("c35_reject:"+id,c.interlude.REASONS[id])
-	await r.step("c35_destination","duan_yongping_a1")
+	if new_route:
+		await r.step("c35_trace:ask","route")
+		await r.step("c35_trace:private","zhou_qi")
+		await r.step("c35_trace:map")
+		var point: Vector2=Investigation.WEST_APPROACH.get_center()
+		await r.step("c35_trace:pin",[point.x,point.y])
+		await r.step("c35_trace:compare","record_0755")
+	else: await r.step("c35_destination","duan_yongping_a1")
 	await r.step("c35_replay")
-	if r.check(r.state.d.chapterThreeInterlude.phase=="replay_ready" and r.state.d.chapterThreeInterlude.replayUnlocked,"actual evidence and exclusion chain unlocks recovered replay"):
+	if r.check(r.state.d.chapterThreeInterlude.phase=="replay_ready" and r.state.d.chapterThreeInterlude.replayUnlocked,"verified interlude route unlocks recovered replay"):
 		r.completed_chapters.append(3)
 		await r.boundary("chapter3 interlude")
 
