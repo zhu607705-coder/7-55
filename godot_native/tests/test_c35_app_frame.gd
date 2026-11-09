@@ -17,7 +17,8 @@ func reading_geometry_matches(frame: Control) -> bool:
 	var scale: float=absf(frame.get_global_transform_with_canvas().get_scale().x)
 	var app := rect(frame)
 	var content := rect(frame.content)
-	return absf((content.position.x-app.position.x)/scale-18)<.5 and absf((app.end.x-content.end.x)/scale-18)<.5 and absf(frame.content.size.x-388)<.5
+	var left_inset := maxi(18,main.phone_chrome.recovery_inventory_inset())
+	return absf((content.position.x-app.position.x)/scale-left_inset)<.5 and absf((app.end.x-content.end.x)/scale-18)<.5 and absf(frame.content.size.x-(406-left_inset))<.5
 func semantic_controls(node: Node) -> Array:
 	var result: Array=[]
 	if (node is Label and not node.text.is_empty()) or node is Button:result.append(node)
@@ -32,8 +33,8 @@ func visible_rect(control: Control) -> Rect2:
 	return bounds
 func check_reading_geometry(frame: Control, label: String) -> void:
 	var app := rect(frame)
-	check(reading_geometry_matches(frame),"equal reading margins with the inventory overlay: "+label)
-	check(frame.footer_margin.get_theme_constant("margin_left")==18 and frame.footer_margin.get_theme_constant("margin_right")==18,"footer uses the same margins as content: "+label)
+	check(reading_geometry_matches(frame),"reading margins clear the inventory shelf: "+label)
+	check(frame.footer_margin.get_theme_constant("margin_left")==18 and frame.footer_margin.get_theme_constant("margin_right")==18,"footer keeps its own equal margins: "+label)
 	for fraction: float in [0.0,.5,1.0]:
 		var bar: VScrollBar=frame.scroll.get_v_scroll_bar()
 		frame.scroll.scroll_vertical=roundi((bar.max_value-bar.page)*fraction);await frames()
@@ -43,9 +44,9 @@ func check_reading_geometry(frame: Control, label: String) -> void:
 	var bag: Control=main.phone_chrome.inventory
 	var was_visible: bool=bag.visible
 	bag.hide();main._layout();await frames()
-	check(reading_geometry_matches(frame),"hiding the overlay does not resize the reading surface: "+label)
+	check(reading_geometry_matches(frame),"hiding the shelf restores the ordinary reading margins: "+label)
 	bag.visible=was_visible;main._layout();await frames()
-	check(reading_geometry_matches(frame),"showing the overlay does not resize the reading surface: "+label)
+	check(reading_geometry_matches(frame),"showing the shelf reserves the same reading clearance: "+label)
 	frame.scroll.scroll_vertical=0
 	await frames()
 func touch(control: Control) -> void:
@@ -116,17 +117,19 @@ func run() -> void:
 		var content_before := rect(recovery_frame.content)
 		var chrome: Control=main.phone_chrome
 		var trigger_before := rect(chrome.inventory_handle)
-		check(rect(main.phone).encloses(trigger_before) and trigger_before.get_center().x>rect(recovery_frame.toolbar).get_center().x,"collapsed inventory attaches inside the right toolbar")
+		check(rect(main.phone).encloses(trigger_before) and trigger_before.get_center().x<rect(recovery_frame.toolbar).get_center().x and trigger_before.position.y>=rect(recovery_frame.toolbar).end.y,"collapsed inventory stays inside the left edge under navigation")
 		await touch(chrome.inventory_handle)
-		check(chrome.inventory_open and chrome.inventory_body.visible and rect(main.phone).encloses(rect(chrome.inventory_body)),"toolbar opens the real drawer inside the phone")
-		check(rect(recovery_frame.content)==content_before,"drawer overlays content without reserving or shifting a column")
+		check(chrome.inventory_open and chrome.inventory_body.visible and rect(main.phone).encloses(rect(chrome.inventory_body)),"shelf opens the real drawer inside the phone")
+		check(rect(recovery_frame.content)==content_before,"opening the drawer keeps the reading column steady")
+		var side_tab := rect(chrome.inventory_handle)
+		check(is_equal_approx(side_tab.position.x,rect(chrome.inventory_body).end.x) and side_tab.size.x>=27.99,"side tab fits the drawer edge and offers a usable touch target")
 		await touch(chrome.inventory_handle)
-		check(not chrome.inventory_open and not chrome.inventory_body.visible,"toolbar handle collapses drawer")
+		check(not chrome.inventory_open and not chrome.inventory_body.visible and rect(chrome.inventory_handle)==trigger_before,"side tab collapses the drawer to its original backpack entry")
 		var point := rect(chrome.inventory_handle).get_center()
 		var down := InputEventScreenTouch.new();down.index=0;down.position=point;down.pressed=true;Input.parse_input_event(down);Input.flush_buffered_events();await frames(1)
 		var drag := InputEventScreenDrag.new();drag.index=0;drag.position=point+Vector2(0,44);drag.relative=Vector2(0,44);Input.parse_input_event(drag);Input.flush_buffered_events();await frames(1)
 		var up := InputEventScreenTouch.new();up.index=0;up.position=drag.position;up.pressed=false;Input.parse_input_event(up);Input.flush_buffered_events();await frames()
-		check(rect(chrome.inventory_handle)==trigger_before and not chrome.inventory_open,"dragging off the toolbar does not displace or open the drawer")
+		check(rect(chrome.inventory_handle)==trigger_before and not chrome.inventory_open,"dragging off the shelf does not displace or open the drawer")
 		var open: Button=null
 		for button: Button in main.page_body.find_children("*","Button",true,false):
 			if button.text=="查看划船帖":open=button

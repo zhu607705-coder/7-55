@@ -421,7 +421,7 @@ func photos(root: VBoxContainer) -> void:
 	var grid := GridContainer.new();grid.columns=3;grid.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	grid.add_theme_constant_override("h_separation",8);grid.add_theme_constant_override("v_separation",10);root.add_child(grid)
 	for frame: Dictionary in Interlude.FRAMES:
-		var cell := VBoxContainer.new();cell.custom_minimum_size.x=112;cell.size_flags_horizontal=Control.SIZE_EXPAND_FILL;grid.add_child(cell)
+		var cell := VBoxContainer.new();cell.custom_minimum_size.x=96;cell.size_flags_horizontal=Control.SIZE_EXPAND_FILL;grid.add_child(cell)
 		var preview := Button.new();preview.name="C35View_"+frame.id;preview.tooltip_text="查看 "+frame.label
 		preview.custom_minimum_size.y=94
 		NativeUi.apply_button(preview,LakePalette.NIGHT,LakePalette.PAPER,LakePalette.EDGE,3,1,17,Vector2.ZERO,LakePalette.PALE)
