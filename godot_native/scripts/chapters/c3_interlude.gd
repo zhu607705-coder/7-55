@@ -1,6 +1,7 @@
 extends "res://scripts/chapters/c3_base.gd"
 const VoiceSession = preload("res://scripts/media/c3_voice_session.gd")
 var voice_session: RefCounted
+var voice_state: Dictionary = {}
 
 const EVIDENCE: Array=["journal_start","photo_direction","network_destination","broadcast_end"]
 const PHOTOS: Array=["paper_left","paper_middle","paper_right"]
@@ -70,7 +71,7 @@ func view(page: String, s: Dictionary) -> Dictionary:
 			for recording: Dictionary in content("chapter3-interlude-voice-memos.audio.content").recordings:
 				body+="\n"+str(recording.code)
 				if voice_reviewed(s,str(recording.id)): body+=" · "+str(recording.time)+"\n"+str(recording.revealZh)
-			return {"title":"录音","body":body,"media_session":voice_session}
+			return {"title":"录音","body":body,"media_session":voice_session if is_same(s,voice_state) else null}
 		"c35_official": return {"title":"紫金港楼宇服务 · 22:40","body":"校园楼宇运行通知\n夜间闭楼与入口调整\n22:45 起，北教学区一处楼宇进入夜间清楼。A 楼一层东侧入口暂停通行，人员请从大厅主入口进入。\n主电梯保留运行，楼层开放情况以现场提示为准。"}
 		"c35_messages":
 			var body: String="群聊 · 18人"
@@ -139,6 +140,13 @@ func exclusions_ready(c: Dictionary) -> bool:
 
 func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionary:
 	if not action.begins_with("c35_"): return {}
+	if not is_same(s,voice_state):
+		# Import/restore installs a new snapshot before Main retires its audio.
+		# The old player's final sample belongs only to the displaced snapshot.
+		if voice_session!=null: voice_session.stop()
+		voice_session=null
+		voice_state=s
+		if action=="c35_media_event": return response()
 	var c: Dictionary=s.chapterThreeInterlude
 	if s.qizhenLake.phase!="complete" or c.completed: return locked()
 	if action=="c35_begin":
@@ -333,7 +341,7 @@ func media_command(command_name: String) -> Dictionary:
 	return {"command":command_name,"session":voice_session,"on_event":"c35_media_event"}
 
 func accept_voice_receipt(s: Dictionary) -> Dictionary:
-	if voice_session==null: return locked()
+	if voice_session==null or not is_same(s,voice_state): return locked()
 	if voice_session.heard_ready:
 		if not s.native.has("c35_listened"): s.native.c35_listened=[]
 		unique(s.native.c35_listened,voice_session.clip_id)
