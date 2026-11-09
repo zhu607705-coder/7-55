@@ -132,10 +132,10 @@ class InventoryHandle extends Button:
 	func use_collapse_face(active: bool) -> void:
 		collapse_styles.clear()
 		if active:
-			var empty := StyleBoxEmpty.new()
+			var hit_style := Hardware.style(Color.TRANSPARENT,Color.TRANSPARENT,0)
 			for role: String in ["normal","hover","pressed","hover_pressed","disabled","focus"]:
 				collapse_styles[role]=get_theme_stylebox(role)
-				add_theme_stylebox_override(role,empty)
+				add_theme_stylebox_override(role,hit_style)
 		queue_redraw()
 
 	func _draw() -> void:
@@ -291,6 +291,7 @@ func _build() -> void:
 	inventory_slots=VBoxContainer.new(); inventory_slots.name="InventorySlots"; inventory_slots.add_theme_constant_override("separation",8); inventory_slots.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN; inventory_scroll.add_child(inventory_slots)
 	inventory_tip=_label(inventory_body,"",11,Color("e8e4d8")); inventory_tip.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER; inventory_tip.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	inventory_handle=InventoryHandle.new(); inventory_handle.name="InventoryHandle"; inventory_handle.mouse_default_cursor_shape=Control.CURSOR_VSIZE
+	inventory_handle.set_meta("phone_button_role","navigation")
 	inventory_handle.pressed.connect(_toggle_inventory); inventory_handle.gui_input.connect(_on_handle_input); inventory.add_child(inventory_handle)
 	var backpack:=_make_icon(inventory_handle,"backpack",26); backpack.name="BackpackIcon"; backpack.position=Vector2(5,10)
 	inventory_arrow=_label(inventory_handle,"›",15,Color("e8e4d8")); inventory_arrow.position=Vector2(5,38); inventory_arrow.size=Vector2(26,15); inventory_arrow.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER

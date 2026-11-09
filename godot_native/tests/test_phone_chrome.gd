@@ -94,8 +94,10 @@ func run() -> void:
 	check(chrome.inventory_handle.position.x==74 and collapse_face.size.x==14 and chrome.inventory_handle.size.x>=28,"thin collapse tab attaches to the drawer with an expanded hit area")
 	check(not chrome.inventory_handle.get_node("BackpackIcon").visible and not chrome.inventory_count.visible,"home drawer hides backpack icon and count while open")
 	check(chrome.inventory_arrow.text=="‹","drawer tab points inward")
+	const FlatMaterial = preload("res://scripts/ui/phone_flat_button_material.gd")
 	for role: String in ["normal","hover","pressed","hover_pressed","disabled","focus"]:
-		check(chrome.inventory_handle.get_theme_stylebox(role) is StyleBoxEmpty,"collapse tab leaves the larger hit rectangle unpainted: "+role)
+		var hit_style: StyleBox=chrome.inventory_handle.get_theme_stylebox(role)
+		check(hit_style is FlatMaterial and is_zero_approx(hit_style.bg_color.a) and is_zero_approx(hit_style.border_color.a),"collapse tab keeps a flat, unpainted hit rectangle: "+role)
 	check(chrome.inventory_body.size.x==74 and chrome.inventory_scroll.size.y==116,"source body/slot viewport sizes")
 	check(chrome.inventory_slots.get_child(0).size==Vector2(52,52),"actual native item has 52x52 target")
 	check(chrome.inventory_slots.get_theme_constant("separation")==8,"exact 8px vertical slot gap")
