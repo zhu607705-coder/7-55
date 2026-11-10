@@ -82,10 +82,10 @@ func check_official_feed() -> void:
 	var scroll := node("WechatScroll") as ScrollContainer
 	check(scroll != null, "official feed owns its own scroll container")
 	if scroll != null:
-		scroll.scroll_vertical = 120
+		scroll.scroll_vertical = 430
 		await frames()
 		var previous_scroll := scroll.scroll_vertical
-		check(previous_scroll > 0, "mixed account feed can scroll")
+		check(previous_scroll >= 350, "mixed account feed reaches a deep reading position")
 		await press("WechatFeedArticle_night-study")
 		await press("WechatLocalBack")
 		scroll = node("WechatScroll") as ScrollContainer

@@ -37,7 +37,10 @@ static func avatar(parent: Control, account: String, diameter: int, unread: bool
 	badge.custom_minimum_size = Vector2.ONE * diameter
 	badge.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	badge.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	badge.add_theme_stylebox_override("panel", Ui.box(PROFILE_COLORS[account], Color.TRANSPARENT, 0, roundi(diameter * .5)))
+	var skin := StyleBoxFlat.new()
+	skin.bg_color = PROFILE_COLORS[account]
+	skin.set_corner_radius_all(roundi(diameter * .5))
+	badge.add_theme_stylebox_override("panel", skin)
 	parent.add_child(badge)
 	Chrome.icon(badge, PROFILE_ICONS[account], Rect2(Vector2.ONE * diameter * .22, Vector2.ONE * diameter * .56), PAPER)
 	if unread:
@@ -45,7 +48,12 @@ static func avatar(parent: Control, account: String, diameter: int, unread: bool
 		dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		dot.position = Vector2(diameter - 11, 0)
 		dot.size = Vector2(12, 12)
-		dot.add_theme_stylebox_override("panel", Ui.box(Color("12b86a"), FEED, 2, 6))
+		var dot_skin := StyleBoxFlat.new()
+		dot_skin.bg_color = Color("12b86a")
+		dot_skin.border_color = FEED
+		dot_skin.set_border_width_all(2)
+		dot_skin.set_corner_radius_all(6)
+		dot.add_theme_stylebox_override("panel", dot_skin)
 		badge.add_child(dot)
 
 static func _action(parent: Control, text: String, id: String, run: Callable, font_size: int, fill: Color = PAPER, ink: Color = INK) -> Button:
@@ -143,6 +151,9 @@ static func _familiar(b, social, column: VBoxContainer) -> void:
 			social.refresh(b), social.font_size(b, 14), Color("e2e2e2"))
 		notice.custom_minimum_size.x = 158
 		notice.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		for style: String in ["normal", "hover", "pressed", "hover_pressed", "focus"]:
+			var shape := notice.get_theme_stylebox(style) as StyleBoxFlat
+			shape.set_corner_radius_all(20)
 
 static func feed(b, social) -> Control:
 	var root: Control = b._base(FEED, b.APP_HEIGHT)
@@ -211,6 +222,9 @@ static func _account_row(b, social, column: VBoxContainer, account: String, date
 	row.mouse_filter = Control.MOUSE_FILTER_PASS
 	row.pressed.connect(_open_account.bind(b, social, account))
 	row.find_child("ConversationPreview", true, false).hide()
+	var stamp := row.find_child("ConversationTime", true, false) as Label
+	stamp.custom_minimum_size.x = 68
+	stamp.visible = not date.is_empty()
 	var badge_slot := row.find_child("AvatarSlot", true, false) as Control
 	avatar(badge_slot, account, 40)
 	badge_slot.get_child(0).position = Vector2(4, 4)

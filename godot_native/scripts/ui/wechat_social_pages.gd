@@ -114,6 +114,8 @@ func feed(b, root: Control, top: float=57, bottom: float=0, key: String="", inse
 	scroll.position=Vector2(0,top);scroll.size=Vector2(378,b.APP_HEIGHT-top-bottom)
 	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
 	scroll.scroll_deadzone=8
+	if key.begins_with("official:") or key.begins_with("profile:") or key.begins_with("article:"):
+		scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	scroll.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	root.add_child(scroll)
 	var margin:=MarginContainer.new();margin.size_flags_horizontal=Control.SIZE_EXPAND_FILL; margin.mouse_filter=Control.MOUSE_FILTER_PASS
