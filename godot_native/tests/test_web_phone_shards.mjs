@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {test} from 'node:test';
-import {phoneRecoveryCase} from '../tools/web_phone_recovery.mjs';
+import {phoneRecoveryCase, waitForC2PhoneWorld} from '../tools/web_phone_recovery.mjs';
 import {PHONE_GROUPS, PHONE_COVERAGE, phoneGroups, phoneCoverage, phoneInputs, runPhoneRecoveryGroups, assertPhoneCoverage, assertPhoneShardUnion} from '../tools/web_phone_shards.mjs';
 
 await test('default all retains the original ordered three flows and all eleven labels', async () => {
@@ -85,6 +85,15 @@ const syntheticPoll = async (fn, label, timeout) => {
   for(let i=0;i<3;i++){const value=await fn();if(value)return value;}
   throw Error(`synthetic timeout: ${label}`);
 };
+for (const rotation of [1, -1]) await test(`cold C2 checks the physical phone button bounds after turn ${rotation}`, async () => {
+  const value = readyC2();
+  value.presentation = {rotation};
+  const rect = value.visibleControls[0].rect = {x:708.67,y:333.33,width:44,height:44};
+  const harness = {touch:true,bootTimeout:180000,poll:syntheticPoll,async snapshot(){return value;}};
+  assert.equal(await waitForC2PhoneWorld(harness,10),value);
+  rect.y = 350;
+  await assert.rejects(waitForC2PhoneWorld(harness,10),/synthetic timeout/);
+});
 await test('cold C2 sends no phone input until required packs and a fresh real world are ready',async()=>{
   const pending=readyC2();pending.sampleFrame=10;pending.content.blocking=true;pending.content.readyFamilies=[];pending.content.packs[0].status='requested';pending.world.scene_id='';pending.world.backgroundPlate.ready=false;
   let reads=0, inputs=0, recorded;

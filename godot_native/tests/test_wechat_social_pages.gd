@@ -31,6 +31,122 @@ func has_text(text: String) -> bool:
 	for label in surface.find_children("*","Label",true,false):
 		if text in label.text:return true
 	return false
+
+func enter_official_query(value: String) -> void:
+	var field := node("WechatOfficialQuery") as LineEdit
+	check(field != null and field.is_visible_in_tree(), "public account search has a visible text field")
+	if field == null: return
+	field.text = value
+	field.text_changed.emit(value)
+	await frames()
+
+func click_official_article(id: String) -> void:
+	var target := node(id) as Button
+	var scroll := node("WechatScroll") as ScrollContainer
+	check(target != null and scroll != null, "article is a clickable part of the scrollable feed")
+	if target == null or scroll == null: return
+	scroll.ensure_control_visible(target)
+	await frames()
+	var visible := target.get_global_rect().intersection(scroll.get_global_rect())
+	check(visible.has_area(), "article can be scrolled to a visible hit area")
+	if not visible.has_area(): return
+	var action_start := actions.size()
+	for pressed: bool in [true, false]:
+		var event := InputEventMouseButton.new()
+		event.button_index = MOUSE_BUTTON_LEFT
+		event.pressed = pressed
+		event.position = visible.get_center()
+		event.global_position = event.position
+		root.push_input(event, true)
+		await frames(1)
+	check(actions.size() > action_start, "ordinary mouse click reaches the whole article card")
+	await render()
+
+func check_official_feed() -> void:
+	var before := JSON.stringify(state)
+	var action_start := actions.size()
+	check(node("WechatOfficialFeed") is Control, "official-account conversation opens the mixed feed")
+	for id: String in ["WechatCampusAccount", "TiyiOfficialAccount", "WechatLifeAccount"]:
+		check(node(id) is Button, "frequently read accounts expose a profile control " + id)
+	check(node("WechatFeedArticle_night-notice") == null, "opening-day feed hides the chapter-four notice")
+
+	await press("WechatOfficialUnread")
+	check(node("WechatFeedArticle_umbrella-stand") is Button, "unread feed contains the unread lead campus article")
+	await click_official_article("WechatFeedArticle_umbrella-stand")
+	check(has_text("大厅伞架") and has_text("精选留言"), "feed opens the original article and its comments")
+	await press("WechatLocalBack")
+	check(node("WechatFeedArticle_umbrella-stand") == null, "return stays in unread view and removes the newly read item")
+	await press("WechatOfficialUnread")
+	check(node("WechatFeedArticle_umbrella-stand") is Button, "all posts still include the read article")
+
+	var scroll := node("WechatScroll") as ScrollContainer
+	check(scroll != null, "official feed owns its own scroll container")
+	if scroll != null:
+		scroll.scroll_vertical = 120
+		await frames()
+		var previous_scroll := scroll.scroll_vertical
+		check(previous_scroll > 0, "mixed account feed can scroll")
+		await press("WechatFeedArticle_night-study")
+		await press("WechatLocalBack")
+		scroll = node("WechatScroll") as ScrollContainer
+		check(scroll != null and scroll.scroll_vertical == previous_scroll, "article back restores the exact feed reading position")
+
+	await press("WechatOfficialSearch")
+	await enter_official_query("不存在的公众号测试词")
+	check(has_text("没有找到相关的公众号或文章"), "an unmatched search explicitly shows empty results")
+	await enter_official_query("22:45")
+	check(node("WechatFeedArticle_night-notice") == null, "search cannot surface the locked notice")
+	await enter_official_query("门厅那排")
+	check(node("WechatFeedArticle_umbrella-stand") is Button and node("WechatFeedArticle_night-study") == null, "title search retains the matching article only")
+	await press("WechatFeedArticle_umbrella-stand")
+	check(has_text("雨伞认错三次"), "search result opens the same complete article")
+	await press("WechatLocalBack")
+	var field := node("WechatOfficialQuery") as LineEdit
+	check(field != null and field.text == "门厅那排" and node("WechatFeedArticle_umbrella-stand") is Button, "reader back restores the query and its results")
+	await enter_official_query("")
+	check(node("WechatFeedAccount_campus") is Button and node("WechatFeedArticle_umbrella-stand") == null, "cleared search restores the account directory")
+	await press("WechatLocalBack")
+	check(node("WechatOfficialQuery") == null and node("WechatFeedArticle_umbrella-stand") is Button, "search back returns to the feed")
+	await check_official_following()
+	check(JSON.stringify(state) == before, "feed, search, follow and unread state never write story or inventory")
+	check(actions.slice(action_start).all(func(action): return action == "phone_refresh"), "local official-account interactions emit only presentation refreshes")
+
+func check_official_following() -> void:
+	await press("WechatLifeAccount")
+	check(has_text("紫金港拾光"), "the lifestyle account has its own profile")
+	await press("WechatArticle_campus-life-dock")
+	check(has_text("码头天亮得比路上早") and has_text("豆浆不要糖"), "the lifestyle account opens its own article and comment")
+	await press("WechatLocalBack")
+	await press("WechatProfileFollow")
+	var follow := node("WechatProfileFollow") as Button
+	check(follow != null and follow.text == "关注公众号", "unfollowing updates the profile control")
+	await press("WechatLocalBack")
+	await press("WechatOfficialFollowing")
+	check(node("WechatFeedAccount_campus-life") == null and node("WechatFeedAccount_campus") is Button, "following list removes only the unfollowed account")
+	await press("WechatLocalBack")
+	await press("WechatOfficialSearch")
+	await enter_official_query("紫金港拾光")
+	check(node("WechatFeedAccount_campus-life") is Button and node("WechatFeedAccount_tiyi") == null, "search can find an unfollowed account by its name")
+	await press("WechatFeedAccount_campus-life")
+	await press("WechatProfileFollow")
+	follow = node("WechatProfileFollow") as Button
+	check(follow != null and follow.text == "已关注公众号", "following again updates the profile control")
+	await press("WechatLocalBack")
+	await press("WechatLocalBack")
+	await press("WechatOfficialFollowing")
+	check(node("WechatFeedAccount_campus-life") is Button, "following list includes the newly followed account")
+	await press("WechatLocalBack")
+
+func check_official_profile() -> void:
+	check(has_text("置顶") and node("WechatArticle_umbrella-stand") is Button, "all posts show the account's pinned lead article")
+	await press("WechatProfileTab_articles")
+	check(not has_text("置顶") and node("WechatArticle_umbrella-stand") is Button, "articles tab keeps the article in the compact list without a pin label")
+	await press("WechatArticle_umbrella-stand")
+	await press("WechatLocalBack")
+	check(not has_text("置顶") and node("WechatArticle_lost-found") is Button, "reader back preserves the account's articles tab")
+	await press("WechatProfileTab_all")
+	check(has_text("置顶"), "all posts restores the pinned presentation")
+
 func check_bubbles() -> void:
 	for label: Label in surface.find_children("MessageText","Label",true,false):
 		var bubble: Control=label.get_parent().get_parent()
@@ -55,9 +171,12 @@ func run() -> void:
 	await press("TiyiContact")
 	check(state.actOne.tiyiUpdateStage=="not_started" and not actions.has("c2_tiyi_discover"),"opening contact reads service text without discovering a future update")
 	await press("WechatLocalBack");await press("TiyiOfficialBack")
-	await press("WechatPublicAccounts");await press("WechatCampusAccount")
+	await press("WechatPublicAccounts")
+	await check_official_feed()
+	await press("WechatCampusAccount")
 	check(surface.find_children("WechatArticle_*","Button",true,false).size()==6,"all six existing non-puzzle campus articles are available from opening")
 	check(not has_text("22:45"),"early account does not disclose the later night-clearance clue")
+	await check_official_profile()
 	await press("WechatArticle_umbrella-stand")
 	check(has_text("伞") and not has_text("22:45"),"article opens its full content without the locked notice")
 	var cover := node("WechatArticleCover") as TextureRect

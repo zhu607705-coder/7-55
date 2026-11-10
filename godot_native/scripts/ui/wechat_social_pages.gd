@@ -4,6 +4,7 @@ const Palette=preload("res://scripts/ui/phone_palette.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
 const NativeUi=preload("res://scripts/ui/native_ui_theme.gd")
 const Chrome=preload("res://scripts/ui/wechat_chrome.gd")
+const Official=preload("res://scripts/ui/wechat_official_pages.gd")
 const Bubble=preload("res://scripts/ui/wechat_message_bubble.gd")
 const TiyiAccess=preload("res://scripts/chapters/tiyi_access.gd")
 const CAMPUS_CONTENT="res://data/source/chapter4-wechat.content.json"
@@ -18,6 +19,11 @@ var history_open=false
 var likes: Dictionary={}
 var scrolls: Dictionary={}
 var owner: Dictionary={}
+var official_mode := "feed"
+var official_query := ""
+var official_read: Dictionary = {}
+var official_following: Dictionary = {}
+var profile_articles_only := false
 
 static func load_campus_content() -> Dictionary:
 	return JSON.parse_string(FileAccess.get_file_as_string(CAMPUS_CONTENT)).official
@@ -25,14 +31,15 @@ static func load_campus_content() -> Dictionary:
 static func article_cover(item: Dictionary, minimum_size: Vector2) -> TextureRect:
 	var cover := TextureRect.new()
 	cover.name="WechatArticleCover"
-	cover.texture=load("res://assets/ui/wechat/official/%s.webp" % item.coverTone)
+	if item.has("coverTone"):
+		cover.texture=load("res://assets/ui/wechat/official/%s.webp" % item.coverTone)
 	cover.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
 	cover.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
 	cover.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	cover.custom_minimum_size=minimum_size
 	cover.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	cover.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	cover.accessibility_name=str(item.coverAlt)
+	cover.accessibility_name=str(item.get("coverAlt", ""))
 	return cover
 
 func word(key: String) -> String:
@@ -64,8 +71,9 @@ func can_browse_night_notice(b) -> bool:
 func route(state: Dictionary, page: String, previous: String) -> void:
 	if not is_same(owner,state):
 		owner=state;tab="chats";panel="";article="";history_open=false;scrolls.clear();likes.clear()
+		official_read.clear();official_following.clear();official_query="";official_mode="feed";profile_articles_only=false
 	if page!=previous and page not in ["wechat","control_center"]:
-		tab="chats";panel="";article="";history_open=false
+		tab="chats";panel="";article="";history_open=false;official_mode="feed";official_query="";profile_articles_only=false
 
 func font_size(b, value: int=17) -> int:
 	return roundi(value*clampf(float(b.s.get("native",{}).get("settings",{}).get("text_scale",1.0)),.85,1.35))
@@ -105,22 +113,34 @@ func feed(b, root: Control, top: float=57, bottom: float=0, key: String="", inse
 	var scroll:=ScrollContainer.new();scroll.name="WechatScroll"
 	scroll.position=Vector2(0,top);scroll.size=Vector2(378,b.APP_HEIGHT-top-bottom)
 	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.scroll_deadzone=8
 	scroll.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	root.add_child(scroll)
-	var margin:=MarginContainer.new();margin.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	var margin:=MarginContainer.new();margin.size_flags_horizontal=Control.SIZE_EXPAND_FILL; margin.mouse_filter=Control.MOUSE_FILTER_PASS
 	margin.add_theme_constant_override("margin_left",inset);margin.add_theme_constant_override("margin_right",inset)
 	margin.add_theme_constant_override("margin_top",18);margin.add_theme_constant_override("margin_bottom",20)
 	scroll.add_child(margin)
-	var column:=VBoxContainer.new();column.name="WechatFeed";column.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	var column:=VBoxContainer.new();column.name="WechatFeed";column.size_flags_horizontal=Control.SIZE_EXPAND_FILL;column.mouse_filter=Control.MOUSE_FILTER_PASS
 	column.add_theme_constant_override("separation",16);margin.add_child(column)
 	if not key.is_empty():
 		var restore: int=int(scrolls.get(key,0))
-		scroll.get_v_scroll_bar().value_changed.connect(func(value): scrolls[key]=value)
-		scroll.ready.connect(func(): scroll.set_deferred("scroll_vertical",restore))
+		var remember := func(value: float): scrolls[key] = value
+		if restore == 0:
+			scroll.get_v_scroll_bar().value_changed.connect(remember)
+		else:
+			scroll.ready.connect(func():
+				# Card minimum sizes settle after the first container layout.
+				var tree := scroll.get_tree()
+				await tree.process_frame
+				await tree.process_frame
+				if not is_instance_valid(scroll) or not scroll.is_inside_tree():
+					return
+				scroll.scroll_vertical = restore
+				scroll.get_v_scroll_bar().value_changed.connect(remember))
 	return column
 
-func header(b, root: Control, title: String, back: Callable=Callable(), id: String="WechatLocalBack") -> void:
-	b._header(root,title,Palette.CHROME,Palette.INK,back if back.is_valid() else func(): tab="chats";panel="";article="";b.tiyi_official_open=false;refresh(b))
+func header(b, root: Control, title: String, back: Callable=Callable(), id: String="WechatLocalBack", background: Color=Palette.CHROME) -> void:
+	b._header(root,title,background,Palette.INK,back if back.is_valid() else func(): tab="chats";panel="";article="";b.tiyi_official_open=false;refresh(b))
 	var nav=root.find_child("PhoneNav_back",true,false)
 	if nav:nav.name=id
 
@@ -140,57 +160,41 @@ func footer(b, root: Control) -> void:
 		caption.name="WechatTabCaption"
 
 func open_panel(b, value: String) -> void:
+	if value.is_empty() and panel=="officials":
+		official_mode="feed";official_query=""
 	panel=value;article="";refresh(b)
 
-func article_link(b, parent: Control, item: Dictionary, destination: String) -> void:
-	var column:=card(parent)
-	if item.has("coverTone"):
-		if item.id=="night-notice":
-			column.add_child(article_cover(item,Vector2(0,183)))
-		else:
-			var row:=HBoxContainer.new()
-			row.add_theme_constant_override("separation",10)
-			column.add_child(row)
-			var thumbnail:=article_cover(item,Vector2(88,50))
-			thumbnail.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
-			thumbnail.size_flags_vertical=Control.SIZE_SHRINK_BEGIN
-			row.add_child(thumbnail)
-			column=VBoxContainer.new()
-			column.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-			row.add_child(column)
-	copy(column,str(item.get("section","历史文章")),font_size(b,12),Palette.MUTED)
-	button(column,str(item.title),func(): article=str(item.id);article_parent=destination;refresh(b),"WechatArticle_"+str(item.id))
-	if item.has("summary"):copy(column,str(item.summary),font_size(b,15),Palette.MUTED)
-	if item.has("publishedAt"):copy(column,str(item.publishedAt),font_size(b,12),Palette.MUTED)
-
 func show_article(b, item: Dictionary) -> Control:
-	var root=b._base(Palette.BACKGROUND,b.APP_HEIGHT)
-	header(b,root,"文章",func():article="";refresh(b))
-	var column=feed(b,root,57,0,"article:"+str(item.id))
-	copy(column,str(item.title),font_size(b,23))
-	copy(column,("浙大体育与艺术" if article_parent=="tiyi" else str(campus.name))+" · "+str(item.get("publishedAt",item.get("section","历史文章"))),font_size(b,12),Palette.MUTED)
+	var root: Control=b._base(Color.WHITE,b.APP_HEIGHT)
+	root.name="WechatOfficialArticle"
+	header(b,root,"公众号",func():article="";refresh(b),"WechatLocalBack",Color.WHITE)
+	var column=feed(b,root,54,0,"article:"+str(item.id),20)
+	copy(column,str(item.title),font_size(b,25))
+	copy(column,Official.name_for(self,article_parent),font_size(b,14),Official.LINK)
+	copy(column,str(item.get("publishedAt",item.get("section","历史文章"))),font_size(b,13),Official.MUTED)
 	if item.has("coverTone"):
-		column.add_child(article_cover(item,Vector2(0,199)))
-	for paragraph in item.body:copy(column,str(paragraph),font_size(b,18))
+		column.add_child(article_cover(item,Vector2(0,182)))
+	for paragraph: String in item.body:
+		var label := copy(column,paragraph,font_size(b,17))
+		label.add_theme_constant_override("line_spacing",6)
 	if item.has("comments"):
 		copy(column,"精选留言",font_size(b,17))
 		for entry: Dictionary in item.comments:
 			var comment:=card(column)
-			copy(comment,"%s  ·  %s 赞" % [entry.author,entry.likes],font_size(b,13),Palette.MUTED)
+			comment.get_parent().add_theme_stylebox_override("panel", NativeUi.box(Official.FEED,Color.TRANSPARENT,0,7,Vector2(12,11)))
+			copy(comment,"%s  ·  %s 赞" % [entry.author,entry.likes],font_size(b,13),Official.MUTED)
 			copy(comment,str(entry.text),font_size(b,16))
 			if entry.has("reply"):
-				copy(comment,"作者回复",font_size(b,13),Palette.ACCENT)
+				copy(comment,"作者回复",font_size(b,13),Official.GREEN)
 				copy(comment,str(entry.reply),font_size(b,16))
 	return root
 
 func build_extra(b) -> Control:
 	if not article.is_empty():
-		if article_parent=="campus" and article=="night-notice" and can_browse_night_notice(b):
-			return show_article(b,night_notice())
-		for item in social_copy.tiyi_articles if article_parent=="tiyi" else campus_articles():
+		for item: Dictionary in Official.items(b,self,article_parent):
 			if item.id==article:return show_article(b,item)
-	if panel=="officials":return accounts(b)
-	if panel=="campus":return campus_account(b)
+	if panel=="officials":return Official.feed(b,self)
+	if panel in ["campus","campus-life"]:return official_account(b,panel)
 	if panel=="moments":return moments(b)
 	if panel=="liked":return moments(b,true)
 	if panel in ["roommate","mentor","helper"]:return conversation(b,panel)
@@ -215,33 +219,24 @@ func build_extra(b) -> Control:
 	footer(b,root)
 	return root
 
-func accounts(b) -> Control:
-	var root=b._base(Palette.BACKGROUND,b.APP_HEIGHT);header(b,root,"公众号")
-	var column=feed(b,root,57,0,"accounts")
-	button(column,"浙大体育与艺术",func():b.tiyi_official_open=true;refresh(b),"TiyiOfficialAccount")
-	copy(column,"修读手记 · 场馆日常 · 客户端服务",font_size(b,14),Palette.MUTED)
-	button(column,str(campus.name),func():open_panel(b,"campus"),"WechatCampusAccount")
-	copy(column,str(campus.profileNote),font_size(b,14),Palette.MUTED)
-	return root
-
-func campus_account(b) -> Control:
-	var root=b._base(Palette.BACKGROUND,b.APP_HEIGHT)
-	header(b,root,str(campus.name),func():open_panel(b,"officials"))
-	var column=feed(b,root,57,0,"campus")
-	if can_browse_night_notice(b):article_link(b,column,night_notice(),"campus")
-	copy(column,"公众号 · 历史文章",font_size(b,13),Palette.MUTED)
-	for item in campus_articles():article_link(b,column,item,"campus")
+func official_account(b, account: String) -> Control:
+	var root: Control=b._base(Color.WHITE,b.APP_HEIGHT)
+	root.name="WechatOfficialProfile"
+	header(b,root,"公众号",func():open_panel(b,"officials"),"WechatLocalBack",Color.WHITE)
+	var column=feed(b,root,54,0,"profile:"+account,17)
+	Official.profile_intro(b,self,column,account)
+	Official.profile_articles(b,self,column,account)
 	return root
 
 func tiyi_account(b) -> Control:
 	if not article.is_empty() and article_parent=="tiyi":
 		for item in social_copy.tiyi_articles:
 			if item.id==article:return show_article(b,item)
-	var root=b._base(Palette.BACKGROUND,b.APP_HEIGHT);root.name="TiyiOfficialAccountPage"
+	var root=b._base(Color.WHITE,b.APP_HEIGHT);root.name="TiyiOfficialAccountPage"
 	root.set_meta("handles_all_actions",true)
-	header(b,root,"浙大体育与艺术",func():b.tiyi_official_open=false;article="";refresh(b),"TiyiOfficialBack")
-	var column=feed(b,root,57,57,"tiyi")
-	copy(column,"公众号",font_size(b,13),Palette.MUTED)
+	header(b,root,"公众号",func():b.tiyi_official_open=false;article="";refresh(b),"TiyiOfficialBack",Color.WHITE)
+	var column=feed(b,root,54,57,"profile:tiyi",17)
+	Official.profile_intro(b,self,column,"tiyi")
 	var stage: String=str(b.s.actOne.get("tiyiUpdateStage","not_started"))
 	if TiyiAccess.update_required(b.s) and stage!="not_started":
 		var download=card(column);download.name="TiyiDownloadCard"
@@ -256,7 +251,7 @@ func tiyi_account(b) -> Control:
 		else:
 			copy(download,word("installed"),font_size(b,17))
 			button(download,word("return_home"),func():b.page_requested.emit("phone_home"),"TiyiUpdateReturnHome",true)
-	for item in social_copy.tiyi_articles.slice(0,2):article_link(b,column,item,"tiyi")
+	Official.profile_articles(b,self,column,"tiyi")
 	b._panel(root,Rect2(0,b.APP_HEIGHT-57,378,57),Palette.CHROME,Palette.LINE,0,1)
 	for i in range(3):
 		var index: int=i

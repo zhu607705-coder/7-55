@@ -32,6 +32,16 @@ class Mark extends Control:
 			"discover":
 				draw_arc(Vector2(16,16),13,0,TAU,40,ink,2,true)
 				draw_colored_polygon(PackedVector2Array([Vector2(22,8),Vector2(12,13),Vector2(9,24),Vector2(19,19)]),ink)
+			"sport":
+				draw_circle(Vector2(18,6),3,ink)
+				draw_polyline(PackedVector2Array([Vector2(5,15),Vector2(12,10),Vector2(18,11),Vector2(22,16),Vector2(28,13)]),ink,2.5,true)
+				draw_polyline(PackedVector2Array([Vector2(16,12),Vector2(13,20),Vector2(19,22),Vector2(22,28)]),ink,2.5,true)
+				draw_polyline(PackedVector2Array([Vector2(13,20),Vector2(9,26),Vector2(3,27)]),ink,2.5,true)
+			"lake":
+				draw_circle(Vector2(23,9),3,ink)
+				draw_polyline(PackedVector2Array([Vector2(3,18),Vector2(10,11),Vector2(15,17),Vector2(19,14),Vector2(29,21)]),ink,2,true)
+				draw_line(Vector2(4,24),Vector2(28,24),ink,2,true)
+				draw_line(Vector2(10,28),Vector2(24,28),ink,2,true)
 			"officials":
 				draw_colored_polygon(PackedVector2Array([Vector2(4,7),Vector2(12,10),Vector2(15,17),Vector2(15,28),Vector2(7,23),Vector2(4,17)]),ink)
 				draw_colored_polygon(PackedVector2Array([Vector2(28,7),Vector2(20,10),Vector2(17,17),Vector2(17,28),Vector2(25,23),Vector2(28,17)]),ink)

@@ -46,6 +46,12 @@ export function createPhoneProgress({filename, id, group, touch, dpr, cdpProgres
   };
 }
 
+export function orientRootRect(rect, viewport, rotation) {
+  if (rotation === 1) return { x: viewport.width - rect.y - rect.height, y: rect.x, width: rect.height, height: rect.width };
+  if (rotation === -1) return { x: rect.y, y: viewport.height - rect.x - rect.width, width: rect.height, height: rect.width };
+  return rect;
+}
+
 // Save acceptance is not content readiness. In the cold C2-only shard, the
 // required chapter packs can still occlude the world after the save is accepted.
 // Observe their real completion before sending the one ordinary phone tap.
@@ -65,7 +71,9 @@ export async function waitForC2PhoneWorld(h, afterFrame) {
     const controls = (value.visibleControls || []).filter(control => control.name === 'WorldPhoneButton');
     if (controls.length !== 1 || controls[0].disabled !== false) return null;
     const r = controls[0].rect, v = value.viewport;
-    if (!r || !v || ![r.x, r.y, r.width, r.height, v.width, v.height].every(Number.isFinite) || r.width <= 0 || r.height <= 0 || v.width <= 0 || v.height <= 0 || r.x < 0 || r.y < 0 || r.x + r.width > v.width || r.y + r.height > v.height) return null;
+    if (!r || !v || ![r.x, r.y, r.width, r.height, v.width, v.height].every(Number.isFinite) || r.width <= 0 || r.height <= 0 || v.width <= 0 || v.height <= 0) return null;
+    const screen = orientRootRect(r, v, value.presentation?.rotation);
+    if (screen.x < 0 || screen.y < 0 || screen.x + screen.width > v.width || screen.y + screen.height > v.height) return null;
     return {value};
   }, 'cold C2 required content and restored dorm world are ready before phone input', h.bootTimeout);
   if (result.error) throw Error(`C2 phone content failed: ${result.error}`);
