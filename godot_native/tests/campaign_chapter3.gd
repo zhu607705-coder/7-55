@@ -293,32 +293,72 @@ func rescue(config: Dictionary) -> void:
 	await r.process_frame
 
 func weather(already_started: bool=false) -> void:
-	var buttons: Array=[{},{},{}]
-	var controls: Array=[]
-	for child in r.game.find_children("*","Button",true,false):
-		if child is Button and child.text in ["向左","向右"]: controls.append(child)
-	controls.sort_custom(func(a,b):
-		var first: Vector2=a.get_global_rect().position; var second: Vector2=b.get_global_rect().position
-		return first.y<second.y if not is_equal_approx(first.y,second.y) else first.x<second.x)
-	if not r.check(controls.size()==6,"actual Weather exposes three left/right control pairs"): return
-	for row in range(3):
-		for index in range(2):
-			var control: Button=controls[row*2+index]
-			buttons[2-row][-1 if control.text=="向左" else 1]=control
-	var held: Array=[0,0,0]
-	if not already_started: r.game.start_button.pressed.emit()
+	var game: Control=r.game
+	if not r.check(game.has_method("cloud_center") and game.has_method("cloud_rect") and game.positions.size()==3,"actual Weather exposes three directly manipulable cloud objects"): return
+	for band: int in range(3):
+		var bounds: Rect2=game.cloud_rect(band)
+		if not r.check(bounds.has_point(game.cloud_center(band)) and bounds.size.x>0 and bounds.size.y>0,"actual Weather cloud hit area follows visible band "+str(band)): return
+	if not already_started:
+		var start: Vector2=game.start_button.position+game.start_button.size/2
+		weather_pointer_button(game,start,true)
+		weather_pointer_button(game,start,false)
+	if not r.check(game.started and not game.paused,"actual Weather starts through its native control"): return
+	var untouched: Array=game.positions.duplicate()
+	var empty_track:=Vector2(game.TRACK_LEFT+float(game.TARGET[1])*game.TRACK_UNIT,game.cloud_center(1).y)
+	if not r.check(not game.cloud_rect(1).has_point(empty_track),"Weather target marker is separate from the initial visible cloud"): return
+	weather_pointer_button(game,empty_track,true)
+	var empty_rejected: bool=game.pointer_owner==game.NO_POINTER
+	weather_pointer_button(game,empty_track,false)
+	if not r.check(empty_rejected and game.positions==untouched and r.game_results.is_empty(),"empty Weather target cannot acquire a cloud or submit completion"): return
+	var held_band: int=-1
+	var aim:=Vector2.ZERO
+	var acquired: Array=[false,false,false]
+	# One real pointer corrects the drawn clouds in sequence. Test-selected aims
+	# stay inside the visible target zones; only the activity's source velocity
+	# step may write positions, count moves or produce the completion proof.
 	for frame in range(1500):
 		if not r.game_results.is_empty(): break
-		for band in range(3):
-			var error: float=float(r.game.TARGET[band])-float(r.game.positions[band])
-			var direction: int=1 if error>1 else -1 if error< -1 else 0
-			if direction!=held[band]:
-				if held[band]!=0: buttons[band][held[band]].button_up.emit()
-				if direction!=0: buttons[band][direction].button_down.emit()
-				held[band]=direction
-		r.game._process(.02)
-	for band in range(3):
-		if held[band]!=0: buttons[band][held[band]].button_up.emit()
+		if game.paused or game.settled:
+			r.check(false,"Weather pointer route remains active before completion")
+			return
+		if held_band>=0 and absf(float(game.positions[held_band])-(float(game.TARGET[held_band])+4.0))<1.0:
+			weather_pointer_button(game,aim,false)
+			held_band=-1
+		if held_band<0:
+			var next_band: int=-1
+			var distance: float=0.0
+			for band: int in range(3):
+				var error: float=absf(float(game.positions[band])-float(game.TARGET[band]))
+				if (error>6.0 or not game.controlled[band]) and error>distance:
+					next_band=band; distance=error
+			if next_band>=0:
+				var center: Vector2=game.cloud_center(next_band)
+				weather_pointer_button(game,center,true)
+				if not r.check(game.pointer_owner==game.MOUSE_POINTER and game.pointer_band==next_band,"actual viewport pointer acquires cloud "+str(next_band)): return
+				acquired[next_band]=true
+				aim=Vector2(game.TRACK_LEFT+(float(game.TARGET[next_band])+4.0)*game.TRACK_UNIT,center.y)
+				var before: Array=game.positions.duplicate()
+				weather_pointer_motion(game,aim)
+				if not r.check(game.positions==before,"actual cloud drag submits intent without teleporting"): return
+				held_band=next_band
+		game._process(.02)
+	if held_band>=0 and not game.settled: weather_pointer_button(game,aim,false)
+	r.check(acquired==[true,true,true],"actual pointer independently operates all three Weather bands")
+	r.check(r.game_results.size()==1,"actual Weather physics emits exactly one completion proof")
+	r.trace.append({"nativeWeatherInput":"viewport-dispatched single mouse pointer over visible clouds","manuallySteppedPhysicsMs":20,"acquiredBands":acquired,"notManualNavigation":true})
+
+func weather_pointer_button(game: Control,local: Vector2,pressed: bool) -> void:
+	var event:=InputEventMouseButton.new()
+	event.position=game.get_global_transform_with_canvas()*local
+	event.global_position=event.position; event.button_index=MOUSE_BUTTON_LEFT
+	event.button_mask=MOUSE_BUTTON_MASK_LEFT if pressed else 0; event.pressed=pressed
+	game.get_viewport().push_input(event,true)
+
+func weather_pointer_motion(game: Control,local: Vector2) -> void:
+	var event:=InputEventMouseMotion.new()
+	event.position=game.get_global_transform_with_canvas()*local
+	event.global_position=event.position; event.button_mask=MOUSE_BUTTON_MASK_LEFT
+	game.get_viewport().push_input(event,true)
 
 func fish(target: String,spot: String) -> void:
 	var request: Dictionary=await lake_interact(target)
