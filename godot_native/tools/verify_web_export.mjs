@@ -7,7 +7,7 @@ import { createReadStream, existsSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, readdir, writeFile, rm, open } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { phoneRecoveryCase, exerciseInputObserver, createPhoneProgress } from './web_phone_recovery.mjs';
+import { phoneRecoveryCase, exerciseInputObserver, createPhoneProgress, orientRootRect } from './web_phone_recovery.mjs';
 import { phoneGroups, assertPhoneCoverage } from './web_phone_shards.mjs';
 import { phoneNavigationCase } from './web_phone_navigation.mjs';
 import { startTransportAudit } from './web_transport_audit.mjs';
@@ -410,11 +410,6 @@ function saveClickCandidate(value) {
   const context = { chapter: native?.chapter, mode: native?.mode, page: native?.page, scene: native?.scene };
   return { value, control, rect, screenRect, viewport, context, frame: value.sampleFrame,
     key: JSON.stringify([control.name, control.text, rect.x, rect.y, rect.width, rect.height, viewport.width, viewport.height, rotation, context]) };
-}
-function orientRootRect(rect, viewport, rotation) {
-  if (rotation === 1) return { x: viewport.width - rect.y - rect.height, y: rect.x, width: rect.height, height: rect.width };
-  if (rotation === -1) return { x: rect.y, y: viewport.height - rect.x - rect.width, width: rect.height, height: rect.width };
-  return rect;
 }
 function saveBlockingNotice(value, rect) {
   return controls(value).find(control => {

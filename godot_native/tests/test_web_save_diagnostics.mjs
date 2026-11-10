@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import path from 'node:path';
+import { orientRootRect } from '../tools/web_phone_recovery.mjs';
 import { phoneGroups } from '../tools/web_phone_shards.mjs';
 // Execute the actual runner functions with simulated readonly IDB/CDP events.
 // This does not launch a browser or prove real persistence timing.
@@ -315,7 +316,7 @@ function saveClickFixture(options = {}) {
   const samples = options.samples || [saveSnapshot(1), saveSnapshot(2)];
   const canvas = { x: 0, y: 0, width: 1280, height: 720, pixelWidth: 2560, pixelHeight: 1440, windowWidth: 1280, windowHeight: 720, documentHidden: false, ...options.canvas };
   const DateClock = class extends Date { static now() { return now; } };
-  const context = vm.createContext({ Date: DateClock, active, console,
+  const context = vm.createContext({ Date: DateClock, active, console, orientRootRect,
     state: value => value?.state, controls: value => value?.visibleControls || [],
     interval: async ms => { delays.push(ms); now += ms; },
     snapshot: async () => {
