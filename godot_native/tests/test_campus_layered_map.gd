@@ -9,6 +9,17 @@ func check(value: bool, label: String) -> void:
 	if not value:
 		failures += 1
 		push_error("Campus layers: " + label)
+func layer_pixel(art: Layered, id: String, point: Vector2i) -> Color:
+	for row: Dictionary in art.manifest.layers:
+		if row.id != id: continue
+		var local := point - Vector2i(row.origin[0], row.origin[1])
+		for tile: Dictionary in row.tiles:
+			var rect: Array = tile.rect
+			var bounds := Rect2i(rect[0], rect[1], rect[2], rect[3])
+			if bounds.has_point(local):
+				return art.textures[str(tile.path)].get_image().get_pixelv(local - bounds.position)
+		break
+	return Color.TRANSPARENT
 func run() -> void:
 	check(load("res://tests/native_test_isolation.gd").is_isolated_save(), "isolated save")
 	if failures: quit(1); return
@@ -32,6 +43,7 @@ func run() -> void:
 			if i == 0: alpha = current
 			else: check(current == alpha, "water movement never moves its shore mask")
 	check(animated_tiles > 0, "water frames actually animate")
+	var curb := Vector2i(2352, 1680)
 	for row: Dictionary in art.manifest.layers:
 		check(str(row.category) != "water", "no static whole-water layer hides animation")
 		for tile: Dictionary in row.tiles:
@@ -40,6 +52,24 @@ func run() -> void:
 		check(not str(row.id).begins_with("west15_compound_edge_reconstructed"), "old west15 retired")
 		check(not str(row.id).begins_with("north16_compound_derived_recovery"), "old north16 retired")
 		check(not str(row.id).begins_with("site16_middle_wholecompound"), "old middle16 retired")
+	check(layer_pixel(art, "central_long_v4", curb).a > .9 and layer_pixel(art, "right_v4__tree_011", curb).a == 0, "stone beside the tree stays on the ground at the original source pixel")
+	for sample: Array in [
+		["right_v4__tree_173", "central_long_v4", Vector2i(2379, 2780), Vector2i(2378, 2815), Vector2i(2365, 2818)],
+		["walkable_tree_719_1967", "haina_V4", Vector2i(730, 1974), Vector2i(730, 1999), Vector2i(736, 2002)],
+		["walkable_tree_606_2034", "yuhu_third_combined", Vector2i(617, 2037), Vector2i(617, 2062), Vector2i(622, 2065)],
+	]:
+		var tree: String = sample[0]
+		var ground: String = sample[1]
+		for point: Vector2i in [sample[2], sample[3]]:
+			check(layer_pixel(art, tree, point).a > .9 and layer_pixel(art, ground, point).a == 0, tree + " owns its canopy tip and visible trunk")
+		var rim: Vector2i = sample[4]
+		check(layer_pixel(art, ground, rim).a > .9 and layer_pixel(art, tree, rim).a == 0, tree + " leaves the planter rim or turf at ground depth")
+	var rear_path := Vector2i(2470, 2554)
+	var front_wall := Vector2i(2495, 2765)
+	check(layer_pixel(art, "central_long_v4", rear_path).a > .9 and layer_pixel(art, "right_v4__biology_complex", rear_path).a == 0, "biology roof no longer redraws the path to its north")
+	check(layer_pixel(art, "right_v4__biology_complex", front_wall).a > .9, "biology facade includes the visible bottom of the wall")
+	var west_lawn := Vector2i(3300, 2810)
+	check(layer_pixel(art, "west_v1_accepted_fusion_unchanged", west_lawn) == layer_pixel(art, "grass", west_lawn), "west lawn overlaps the same exact base texel at the seam")
 	var state = root.get_node("State")
 	state.developer_mode = true
 	state.d = state.initial()

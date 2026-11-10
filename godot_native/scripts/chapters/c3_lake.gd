@@ -605,6 +605,7 @@ func complete_live_escape(s: Dictionary,host: Node,proof: Variant,cues: Array=[]
 	q.chaseDistance=1000; q.chaseBestDistance=maxi(int(q.chaseBestDistance),1000)
 	q.magneticAttachmentBroken=true; q.transitionReady=true
 	s.chapterThreeInterlude.merge({"phase":"reboot","rebootSeen":false,"recoveryOpened":false,"photoFrameIds":[],"photoSequenceSolved":false,"voiceClipOrder":[],"voiceSequenceSolved":false,"officialNoticeSaved":false,"routeScreenshotSaved":false,"networkRecordRead":false,"evidenceIds":[],"timelineOrder":[],"rejectedDecoyIds":[],"statusClockMarkedUntrusted":false,"destinationId":null,"replayUnlocked":false,"completed":false},true)
+	preload("res://scripts/chapters/c35_investigation.gd").begin(s)
 	s.native.chapter=3; s.native.scene=""; s.native.page="c35_recovery"
 	s.runtimeMode="phone"; s.currentScene="phone_home"; s.rpgCheckpoint="qizhen_complete"
 	s.ui.controlCenterOpen=false; s.ui.inventoryOpen=false; s.ui.selectedItem=null; s.native.selected_item=""

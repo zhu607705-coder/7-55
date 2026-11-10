@@ -48,6 +48,8 @@ func run() -> void:
 	check(layers.ready and world.background == null, "formal scene uses the complete layered campus")
 	if not layers.ready: quit(1); return
 	check(world.get_viewport() == main.world_viewport, "map, actors, labels and feedback share the world render target")
+	check(main.world_viewport.canvas_item_default_texture_filter == Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_NEAREST, "world SubViewport defaults all child canvases to nearest")
+	check(main.world_view.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "the composed world target also uses nearest when displayed")
 	check(world.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST, "campus sprites use nearest sampling inside the world render target")
 	if ClassDB.class_has_integer_constant(&"CanvasItem",&"OVERSAMPLING_WITH_SCALE_ENABLED"):
 		check(int(world.get("oversampling_with_scale"))==ClassDB.class_get_integer_constant(&"CanvasItem",&"OVERSAMPLING_WITH_SCALE_ENABLED"),"world drawing uses scale-aware glyphs")

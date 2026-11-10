@@ -25,9 +25,12 @@ func run():
 		a._skip_prologue();await frames()
 		check(a.stage=="card" and not a.done,"task waits for explicit acknowledgment")
 		check(area.encloses(a.prologue_card.get_rect()),"task card in viewport")
+		check(a.prologue_field.grow(.01).encloses(area),"background covers the whole viewport")
+		check(is_equal_approx(a.prologue_field.size.aspect(),16.0/9.0),"cover keeps the original aspect")
+		check(a.prologue_card.get_rect().get_center().is_equal_approx(area.get_center()),"task card is centered over the background")
 		check(a.body.get_rect().end.y<=a.controls.position.y,"task text area does not overlap controls: %s body%s controls%s lines%d"%[view,a.body.get_rect(),a.controls.get_rect(),a.body.get_line_count()])
 		check(a.body.get_line_count()<=a.body.get_visible_line_count(),"all original task lines fit")
-		for b in a.controls.get_children():
+		for b in a.controls.find_children("*","Button",true,false):
 			check(b.get_global_rect().size.y>=44 and area.encloses(b.get_global_rect()),"task control visible44px")
 		var before=a.elapsed;a.configure_activity_layout(Vector2(430,860),true);await frames()
 		check(a.elapsed==before and a.stage=="card","rotation does not advance or remount movie")

@@ -2,6 +2,7 @@ extends SceneTree
 const Chapter = preload("res://scripts/chapters/chapter3.gd")
 const MediaHost = preload("res://scripts/media/c3_media_host.gd")
 const Spotlight = preload("res://scripts/games/c3_spotlight_model.gd")
+const Investigation = preload("res://scripts/chapters/c35_investigation.gd")
 var controller: RefCounted=Chapter.new()
 var checks: int=0
 var errors: int=0
@@ -150,7 +151,11 @@ func run() -> void:
 		act(s,"c3_spotlight_result",proof)
 	check(s.theaterHunt.phase=="reversal" and s.theaterHunt.spotlightRound==3,"all three spotlight acts validated from physical movement traces")
 	await test_lake(s)
-	await test_interlude(s)
+	check(Investigation.step(s)=="inbox","finishing the lake opens the new course-group route")
+	# Existing saves without the investigation receipt still use four-source recovery.
+	var legacy: Dictionary=s.duplicate(true)
+	legacy.native.erase(Investigation.KEY)
+	await test_interlude(legacy)
 	print("Chapter 3 checks: ",checks,"; failures: ",errors)
 	quit(0 if errors==0 else 1)
 func fixture(name: String) -> Dictionary:

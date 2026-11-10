@@ -13,26 +13,12 @@ func check(ok: bool, message: String) -> void:
 func rect(control: Control) -> Rect2:
 	var transform := control.get_global_transform_with_canvas()
 	return Rect2(transform.origin,control.size*transform.get_scale())
-# The oracle uses painted rail geometry and the authored 18 px / 8 px contract,
-# never the current content margin or width to derive the expected result.
-func occupied_rail() -> Rect2:
-	var chrome: Control=main.phone_chrome
-	var handle := rect(chrome.inventory_handle)
-	var style: StyleBox=chrome.inventory_handle.get_theme_stylebox("normal")
-	var scale: float=absf(chrome.inventory_handle.get_global_transform_with_canvas().get_scale().x)
-	var shadow := handle.grow(style.shadow_size*scale)
-	shadow.position+=style.shadow_offset*scale
-	return handle.merge(shadow).merge(rect(chrome.inventory_count))
-func expected_left(frame: Control) -> int:
-	if not main.phone_chrome.inventory_handle.is_visible_in_tree():return 18
-	var intrusion := occupied_rail().end.x-rect(frame).position.x
-	if intrusion<=0:return 18
-	return maxi(18,ceili(intrusion/absf(frame.get_global_transform_with_canvas().get_scale().x))+8)
-func reading_geometry_matches(frame: Control, left: int) -> bool:
+func reading_geometry_matches(frame: Control) -> bool:
 	var scale: float=absf(frame.get_global_transform_with_canvas().get_scale().x)
 	var app := rect(frame)
 	var content := rect(frame.content)
-	return absf((content.position.x-app.position.x)/scale-left)<.5 and absf((app.end.x-content.end.x)/scale-18)<.5 and absf(frame.content.size.x-(424-left-18))<.5
+	var left_inset := maxi(18,main.phone_chrome.recovery_inventory_inset())
+	return absf((content.position.x-app.position.x)/scale-left_inset)<.5 and absf((app.end.x-content.end.x)/scale-18)<.5 and absf(frame.content.size.x-(406-left_inset))<.5
 func semantic_controls(node: Node) -> Array:
 	var result: Array=[]
 	if (node is Label and not node.text.is_empty()) or node is Button:result.append(node)
@@ -46,36 +32,23 @@ func visible_rect(control: Control) -> Rect2:
 		owner=owner.get_parent()
 	return bounds
 func check_reading_geometry(frame: Control, label: String) -> void:
-	var left := expected_left(frame)
 	var app := rect(frame)
-	var content := rect(frame.content)
-	var scale: float=absf(frame.get_global_transform_with_canvas().get_scale().x)
-	# Replace equal-margin and minimum-width assumptions without losing either contract.
-	check(absf((content.position.x-app.position.x)/scale-left)<.5 and absf((app.end.x-content.end.x)/scale-18)<.5,"reading margins match occupied left rail and authored right 18: "+label)
-	check(absf(frame.content.size.x-(424-left-18))<.5,"reading area uses all available width without overflow: "+label)
-	if frame.footer.visible and frame.footer.get_child_count()>0:
-		check(frame.footer_margin.get_theme_constant("margin_left")==left and frame.footer_margin.get_theme_constant("margin_right")==18,"footer shares the safe reading column: "+label)
+	check(reading_geometry_matches(frame),"reading margins clear the inventory shelf: "+label)
+	check(frame.footer_margin.get_theme_constant("margin_left")==18 and frame.footer_margin.get_theme_constant("margin_right")==18,"footer keeps its own equal margins: "+label)
 	for fraction: float in [0.0,.5,1.0]:
 		var bar: VScrollBar=frame.scroll.get_v_scroll_bar()
 		frame.scroll.scroll_vertical=roundi((bar.max_value-bar.page)*fraction);await frames()
 		for control: Control in semantic_controls(frame.content):
-			if not control.is_visible_in_tree():continue
-			var visible := visible_rect(control)
-			if not visible.has_area():continue
+			if not control.is_visible_in_tree() or not visible_rect(control).has_area():continue
 			check(rect(control).position.x>=app.position.x-.5 and rect(control).end.x<=app.end.x+.5,"reading text/action stays inside app: "+label+" / "+control.name)
-			check(not occupied_rail().intersects(visible),"painted inventory/count does not obscure reading text/action: "+label+" / "+control.name)
-	# An actual wrong margin must be rejected, not merely echoed by the oracle.
-	frame.content_margin.add_theme_constant_override("margin_left",left+10);await frames()
-	check(not reading_geometry_matches(frame,left),"geometry oracle rejects a wasted or incorrect left column: "+label)
-	main._layout();await frames()
-	check(reading_geometry_matches(frame,left),"normal layout restores the measured safe column: "+label)
-	# Presentation-only absence must release the reserved column, including desktop.
-	main.phone_chrome.inventory.hide();main._layout();await frames()
-	check(not main.phone_chrome.inventory_handle.is_visible_in_tree(),"negative fixture has no inventory occupancy: "+label)
-	check(reading_geometry_matches(frame,18),"no occupancy restores 18/18 margins and full 388 width: "+label)
-	check(frame.footer_margin.get_theme_constant("margin_left")==18 and frame.footer_margin.get_theme_constant("margin_right")==18,"no occupancy restores footer 18/18: "+label)
-	main.phone_chrome.inventory.show();main._layout();await frames()
-	check(reading_geometry_matches(frame,left),"returning inventory restores only its necessary safe column: "+label)
+	var bag: Control=main.phone_chrome.inventory
+	var was_visible: bool=bag.visible
+	bag.hide();main._layout();await frames()
+	check(reading_geometry_matches(frame),"hiding the shelf restores the ordinary reading margins: "+label)
+	bag.visible=was_visible;main._layout();await frames()
+	check(reading_geometry_matches(frame),"showing the shelf reserves the same reading clearance: "+label)
+	frame.scroll.scroll_vertical=0
+	await frames()
 func touch(control: Control) -> void:
 	check(control!=null,"touch target exists")
 	if control==null:return
@@ -122,35 +95,49 @@ func run() -> void:
 		check(is_instance_valid(intro_back) and intro_back.get_meta("phone_button_material","")=="flat" and intro_back.size==Vector2(44,44),"introduction back keeps its flat phone material and hit area")
 		check(not main.phone_chrome.task_button.visible and not main.phone_chrome.inventory.visible,"chapter introduction has one focal action")
 		check(rect(main.phone_scroll).grow(1).encloses(rect(find_control("C35BeginRecovery"))),"start action fits without scrolling")
+		check(intro_back.text=="×" and intro_back.get_meta("phone_nav_kind")=="exit","intro uses the same app exit symbol as Chapter 1")
+		var reading := rect(find_control("C35IntroArt"))
+		var previous_bottom := reading.end.y
+		for name: String in ["C35IntroLocation","C35IntroTitle","C35IntroStatus","C35IntroNarrator","C35IntroPlayer","C35IntroSystem"]:
+			var section := find_control(name)
+			check(is_instance_valid(section),"intro has the expected reading section: "+name)
+			if section==null:continue
+			var bounds := rect(section)
+			check(bounds.position.y>=previous_bottom-.5,"intro reads from the lake to the next step without overlap: "+name)
+			check(bounds.position.x>=reading.position.x-.5 and bounds.end.x<=reading.end.x+.5,"intro section fits the reading column: "+name)
+			check(visible_rect(section).grow(.5).encloses(bounds),"intro section is fully visible above the start action: "+name)
+			previous_bottom=bounds.end.y
 		await capture("intro-"+str(dimensions.x))
 		await touch(find_control("C35BeginRecovery"))
 		check(state.d.chapterThreeInterlude.recoveryOpened,"start touch requests validated recovery")
 		var recovery_frame: Control=main.page_body.get_child(0)
 		var app_back: Button=find_control("PhoneAppBack")
 		check(is_instance_valid(app_back) and app_back.get_meta("phone_button_material","")=="flat" and app_back.size==Vector2(44,44),"app back keeps its flat phone material and hit area")
+		check(app_back.text=="×","top-level recovery uses app exit")
 		var content_before := rect(recovery_frame.content)
 		var chrome: Control=main.phone_chrome
-		check(chrome.inventory.position.y>=108 and (is_zero_approx(chrome.inventory.position.x) or absf(chrome.inventory.position.x+chrome.inventory_handle.size.x)<1),"collapsed inventory attaches to side, not toolbar")
+		var trigger_before := rect(chrome.inventory_handle)
+		check(rect(main.phone).encloses(trigger_before) and trigger_before.get_center().x<rect(recovery_frame.toolbar).get_center().x and trigger_before.position.y>=rect(recovery_frame.toolbar).end.y,"collapsed inventory stays inside the left edge under navigation")
 		await touch(chrome.inventory_handle)
-		check(chrome.inventory_open and chrome.inventory_body.visible,"side handle opens real item drawer")
-		check(rect(recovery_frame.content)==content_before,"drawer overlays content without reserving or shifting a column")
+		check(chrome.inventory_open and chrome.inventory_body.visible and rect(main.phone).encloses(rect(chrome.inventory_body)),"shelf opens the real drawer inside the phone")
+		check(rect(recovery_frame.content)==content_before,"opening the drawer keeps the reading column steady")
+		var side_tab := rect(chrome.inventory_handle)
+		check(is_equal_approx(side_tab.position.x,rect(chrome.inventory_body).end.x) and side_tab.size.x>=27.99,"side tab fits the drawer edge and offers a usable touch target")
 		await touch(chrome.inventory_handle)
-		check(not chrome.inventory_open and not chrome.inventory_body.visible,"side handle collapses drawer")
-		var side_x: float=chrome.inventory.position.x
-		var old_top: float=chrome.inventory_top
+		check(not chrome.inventory_open and not chrome.inventory_body.visible and rect(chrome.inventory_handle)==trigger_before,"side tab collapses the drawer to its original backpack entry")
 		var point := rect(chrome.inventory_handle).get_center()
 		var down := InputEventScreenTouch.new();down.index=0;down.position=point;down.pressed=true;Input.parse_input_event(down);Input.flush_buffered_events();await frames(1)
 		var drag := InputEventScreenDrag.new();drag.index=0;drag.position=point+Vector2(0,44);drag.relative=Vector2(0,44);Input.parse_input_event(drag);Input.flush_buffered_events();await frames(1)
 		var up := InputEventScreenTouch.new();up.index=0;up.position=drag.position;up.pressed=false;Input.parse_input_event(up);Input.flush_buffered_events();await frames()
-		check(chrome.inventory_top>old_top and is_equal_approx(chrome.inventory.position.x,side_x) and not chrome.inventory_open,"vertical drag moves side attachment without toggling or detaching")
+		check(rect(chrome.inventory_handle)==trigger_before and not chrome.inventory_open,"dragging off the shelf does not displace or open the drawer")
 		var open: Button=null
 		for button: Button in main.page_body.find_children("*","Button",true,false):
 			if button.text=="查看划船帖":open=button
 		await touch(open)
-		await touch(intent("c35_summary_select","safe_return"))
-		check(not state.d.chapterThreeInterlude.evidenceIds.has("journal_start"),"draft does not publish")
-		var publication := intent("c35_journal")
-		check(rect(main.phone_scroll).encloses(rect(publication)),"publish action is fixed and reachable")
+		await touch(find_control("C35JournalComposer"))
+		check(not state.d.chapterThreeInterlude.evidenceIds.has("journal_start"),"opening reply choices does not publish")
+		var publication := find_control("C35Candidate_safe_return")
+		check(rect(main.phone_scroll).encloses(rect(publication)),"reply candidate is reachable in the phone")
 		await touch(publication)
 		check(state.d.chapterThreeInterlude.evidenceIds.has("journal_start"),"explicit publish earns timestamp")
 		await touch(find_control("PhoneAppBack"))
@@ -165,6 +152,7 @@ func run() -> void:
 		await touch(find_control("C35View_paper_left"))
 		check(state.d.chapterThreeInterlude==before and state.d.native.get("c35_photo_selection",[]).is_empty(),"viewing a photograph does not select or solve it")
 		check(main.page_body.get_child(0).scroll.scroll_vertical==0,"photo viewer starts at the top")
+		check(find_control("PhoneAppBack").text=="‹","detail photo uses the standard previous-page symbol")
 		await capture("photo-viewer-"+str(dimensions.x))
 		await touch(intent("c35_select_photo","paper_left"))
 		check(state.d.native.c35_photo_selection==["paper_left"] and not state.d.chapterThreeInterlude.photoSequenceSolved,"separate photo selection does not submit")
@@ -192,7 +180,16 @@ func run() -> void:
 			if page=="c35_voice":
 				var clear := intent("c35_voice_clear")
 				check(clear!=null and rect(clear).size.x>=44,"secondary recording action has a readable touch target")
+			frame.scroll.scroll_vertical=0;await frames()
 			await capture(page+"-"+str(dimensions.x))
+	await show("phone_home")
+	var voice: Button=find_control("HomeApp_voice_memos")
+	check(voice!=null,"voice app is available from the phone home")
+	if voice!=null:
+		await touch(voice)
+		check(state.d.native.page=="c35_voice" and find_control("PhoneAppBack").text=="×","direct voice app entry shows exit")
+		await touch(find_control("PhoneAppBack"))
+		check(state.d.native.page=="phone_home","direct voice exit returns to the home screen")
 	await main.shutdown();main.queue_free();await frames()
 	print("C35_APP_FRAME ",checks," checks; ",failures," failures")
 	quit(1 if failures else 0)

@@ -18,7 +18,11 @@ func mount(page:Control)->void:
  shell.page_body.add_child(page);shell._layout()
  await frames()
 func archived(page:Control)->Array:
- return descendants(page).filter(func(n):return n is Label and n.text.ends_with(" · 已归档")).map(func(n):return n.text)
+ var found:Array=[]
+ for row:Button in source_buttons(page):
+  if row.find_child("ConversationTime",true,false).text=="已归档":
+   found.append(row.find_child("ConversationTitle",true,false).text+" · 已归档")
+ return found
 func source_buttons(page:Control)->Array:
  return descendants(page).filter(func(n):return n is Button and str(n.name).begins_with("C35Source_"))
 func _initialize():run.call_deferred()

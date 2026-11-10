@@ -12,6 +12,7 @@ const GuardModel = preload("res://scripts/games/chapter4_guard_model.gd")
 const Source = preload("res://scripts/games/chapter4_stair_model.gd")
 const ChaseView = preload("res://scripts/presentation/chapter4_chase_stair_view.gd")
 const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
+const LakePalette = preload("res://scripts/ui/chapter35_palette.gd")
 const Capture=preload("res://scripts/presentation/chapter4_guard_capture.gd")
 const PlayerMetrics=preload("res://scripts/player_metrics.gd")
 var config: Dictionary={}
@@ -57,9 +58,10 @@ var prologue_fallback := false
 var prologue_reduced := false
 var prologue_notice: Label
 var prologue_card: ColorRect
+var prologue_scrim: ColorRect
+var prologue_completion: Label
+var prologue_task_still: Texture2D
 var prologue_portraits: Array=[]
-var prologue_available := Vector2(960,540)
-var prologue_adaptive := false
 var prologue_field := Rect2(0,0,960,540)
 var chase_view:Control
 var chase_overview:Control
@@ -93,21 +95,25 @@ func configure_activity_layout(available: Vector2, _compact: bool) -> void:
 		if is_instance_valid(elevator_panel):elevator_panel.size=size
 		return
 	if kind != "prologue": return
-	prologue_adaptive = true
-	prologue_available = available.max(Vector2(240,240))
 	custom_minimum_size = Vector2.ZERO
 	scale = Vector2.ONE
 	position = Vector2.ZERO
-	size = prologue_available
+	size = available.max(Vector2(240,240))
 	_layout_prologue()
 
 func _layout_prologue() -> void:
-	if not prologue_adaptive or not built or kind != "prologue": return
+	if not built or kind != "prologue": return
 	var portrait := size.y > size.x
 	var inset := 16.0
 	var film_area := Rect2(Vector2.ZERO,size)
-	if portrait: film_area = Rect2(16,78,size.x-32,(size.x-32)*9.0/16.0)
+	var task_card := Rect2()
+	if stage=="card":
+		var card_size := Vector2(minf(444,size.x-2*inset),minf(308,size.y-2*inset))
+		task_card=Rect2((size-card_size)/2,card_size)
+	elif portrait:
+		film_area=Rect2(inset,78,size.x-2*inset,(size.x-2*inset)*9.0/16.0)
 	var factor := minf(film_area.size.x/960.0,film_area.size.y/540.0)
+	if stage=="card": factor=maxf(film_area.size.x/960.0,film_area.size.y/540.0)
 	prologue_field = Rect2(film_area.get_center()-Vector2(960,540)*factor/2,Vector2(960,540)*factor)
 	if is_instance_valid(video): video.position=prologue_field.position; video.size=prologue_field.size
 	controls.set_anchors_preset(Control.PRESET_TOP_LEFT)
@@ -121,14 +127,18 @@ func _layout_prologue() -> void:
 	body.add_theme_font_size_override("font_size",18)
 	body.add_theme_constant_override("line_spacing",5)
 	if stage == "card":
-		body.text="CHAPTER 03.5 · COMPLETE\n"+("" if size.y<500 else "\n")+"现场定位：段永平教学楼玻璃门\n当前目标：追踪进入教学楼的异常签到纸"
-		var card_width := minf(410 if portrait else 470,size.x-32)
-		var card_top := prologue_field.end.y+16 if portrait else 16.0
-		var card_rect := Rect2((size.x-card_width)/2 if portrait else size.x-card_width-16,card_top,card_width,size.y-card_top-16)
-		prologue_card.position=card_rect.position; prologue_card.size=card_rect.size
-		title.position=card_rect.position+Vector2(inset,16); title.size=Vector2(card_width-32,34)
-		body.position=title.position+Vector2(0,46); body.size=Vector2(card_width-32,maxf(100,card_rect.size.y-228))
-		controls.position=Vector2(title.position.x,card_rect.end.y-160); controls.size=Vector2(card_width-32,144)
+		prologue_scrim.size=size
+		prologue_card.position=task_card.position
+		prologue_card.size=task_card.size
+		var content_width := task_card.size.x-2*inset
+		title.position=task_card.position+Vector2(inset,16)
+		title.size=Vector2(content_width,34)
+		prologue_completion.position=title.position+Vector2(0,38)
+		prologue_completion.size=Vector2(content_width,26)
+		body.position=title.position+Vector2(0,80)
+		controls.position=Vector2(title.position.x,task_card.end.y-112)
+		controls.size=Vector2(content_width,96)
+		body.size=Vector2(content_width,maxf(1,controls.position.y-body.position.y-8))
 	else:
 		title.position=Vector2(16,16); title.size=Vector2(size.x-32 if portrait else maxf(300,size.x-296),54)
 		body.position=Vector2(20,prologue_field.end.y+16) if portrait else Vector2(32,size.y-106)
@@ -184,8 +194,8 @@ func _build() -> void:
 			running=false; body.text="该活动未接入。剧情未前进。"
 	if kind not in ["prologue","elevator_alignment","chase_stairwell","star_lamp_closure"]: _button("返回",func(): cancelled.emit())
 	queue_redraw()
-func _button(text: String,callback: Callable) -> Button:
-	var button: Button=Button.new(); button.text=text; button.custom_minimum_size.y=42; button.pressed.connect(callback); controls.add_child(button); return button
+func _button(text: String,callback: Callable,parent: BoxContainer=null) -> Button:
+	var button: Button=Button.new(); button.text=text; button.custom_minimum_size.y=42; button.pressed.connect(callback); (controls if parent==null else parent).add_child(button); return button
 func _clear_controls() -> void:
 	for child in controls.get_children():
 		if kind in ["prologue","chase_stairwell"]: controls.remove_child(child)
@@ -241,21 +251,64 @@ func _skip_prologue() -> void:
 	if kind!="prologue" or stage=="card" or done: return
 	# Source skip silences pending beats, opens the task card, and still requires acknowledgement.
 	for beat in source.prologue.beats: cues_fired[beat.cueEvent]=true
-	_cue("chapter4_prologue_skip"); elapsed=43834; _cue("chapter4_prologue_task_card"); _show_prologue_card()
-func _show_prologue_card() -> void:
+	_cue("chapter4_prologue_skip"); elapsed=43834; _cue("chapter4_prologue_task_card"); _show_prologue_card(true)
+func _show_prologue_card(skipped: bool=false) -> void:
 	if stage=="card": return
 	stage="card"; running=false; elapsed=43834
 	if is_instance_valid(video): video.paused=true
+	if skipped or prologue_fallback:
+		var entrance := "res://assets/rpg/cinematics/chapter4-prologue/pixel/entrance_b.png"
+		if ResourceLoader.exists(entrance):
+			prologue_task_still=load(entrance)
+			if is_instance_valid(video): video.hide()
 	_clear_controls(); _update_prologue_notice()
-	prologue_card=ColorRect.new(); prologue_card.color=Color("edf4dc"); prologue_card.position=Vector2(574,112); prologue_card.size=Vector2(352,350); prologue_card.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(prologue_card); move_child(prologue_card,1 if is_instance_valid(video) else 0)
-	title.text="第四章：时间迷宫"; title.position=Vector2(594,136); title.size=Vector2(312,40); title.add_theme_color_override("font_color",Color("18374d"))
-	body.text="CHAPTER 03.5 · COMPLETE\n\n现场定位：段永平教学楼玻璃门\n当前目标：追踪进入教学楼的异常签到纸"; body.position=Vector2(594,184); body.size=Vector2(312,120); body.add_theme_color_override("font_color",Color("18374d"))
-	controls.position=Vector2(594,316); controls.size=Vector2(312,130)
-	_button("收下任务，进入第四章",func(): _finish({"acknowledged":true})); _button("重播过场",_restart_prologue); _button("返回",func(): cancelled.emit()); _layout_prologue(); queue_redraw()
+	clip_contents=true
+	prologue_scrim=ColorRect.new()
+	prologue_scrim.color=Color(0.035,0.08,0.14,0.24)
+	prologue_scrim.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	add_child(prologue_scrim)
+	var layer := 1 if is_instance_valid(video) else 0
+	move_child(prologue_scrim,layer)
+	prologue_card=ColorRect.new()
+	prologue_card.color=LakePalette.NIGHT
+	prologue_card.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	add_child(prologue_card)
+	move_child(prologue_card,layer+1)
+	title.text="第四章：时间迷宫"
+	title.add_theme_color_override("font_color",LakePalette.PAPER)
+	prologue_completion=Label.new()
+	prologue_completion.text="第 3.5 章 · 路径已恢复"
+	prologue_completion.add_theme_font_size_override("font_size",15)
+	prologue_completion.add_theme_color_override("font_color",LakePalette.PENDING)
+	prologue_completion.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	add_child(prologue_completion)
+	body.text="现场定位：段永平教学楼玻璃门\n当前目标：追踪进入教学楼的异常签到纸"
+	body.add_theme_color_override("font_color",LakePalette.PALE)
+	var accept := _button("收下任务，进入第四章",func(): _finish({"acknowledged":true}))
+	style_prologue_action(accept,true)
+	var secondary := HBoxContainer.new()
+	secondary.add_theme_constant_override("separation",8)
+	controls.add_child(secondary)
+	style_prologue_action(_button("重播过场",_restart_prologue,secondary))
+	style_prologue_action(_button("返回",func(): cancelled.emit(),secondary))
+	_layout_prologue()
+	queue_redraw()
+
+func style_prologue_action(button: Button,primary: bool=false) -> void:
+	button.set_meta("tactile_exempt",true)
+	button.custom_minimum_size.y=44
+	button.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	var fill := LakePalette.PENDING if primary else LakePalette.NIGHT
+	var ink := LakePalette.NIGHT if primary else LakePalette.PAPER
+	NativeUi.apply_button(button,fill,ink,LakePalette.PALE if primary else LakePalette.EDGE,4,1,17,Vector2(8,8),LakePalette.PALE)
 func _restart_prologue() -> void:
 	if kind!="prologue" or done: return
 	_cue("chapter4_prologue_closed"); elapsed=0; cues_fired.clear()
 	if is_instance_valid(prologue_card): prologue_card.queue_free(); prologue_card=null
+	if is_instance_valid(prologue_scrim): prologue_scrim.queue_free(); prologue_scrim=null
+	if is_instance_valid(prologue_completion): prologue_completion.queue_free(); prologue_completion=null
+	prologue_task_still=null
+	clip_contents=false
 	if is_instance_valid(video) and not prologue_reduced:
 		prologue_fallback=false; video.show(); video.stop(); video.stream_position=0; video.paused=false; video.play()
 	_prologue_playback_controls(); queue_redraw()
@@ -530,7 +583,11 @@ func _draw() -> void:
 	if not built: return
 	match kind:
 		"prologue":
-			if prologue_fallback:
+			if stage=="card" and prologue_task_still!=null:
+				var art_size := prologue_task_still.get_size()
+				var crop := art_size*(size/prologue_field.size)
+				draw_texture_rect_region(prologue_task_still,Rect2(Vector2.ZERO,size),Rect2((art_size-crop)/2,crop))
+			elif prologue_fallback:
 				draw_set_transform(prologue_field.position,0,Vector2.ONE*(prologue_field.size.x/960.0))
 				_draw_prologue_fallback()
 				draw_set_transform(Vector2.ZERO)

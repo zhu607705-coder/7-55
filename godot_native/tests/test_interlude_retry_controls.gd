@@ -90,8 +90,8 @@ func run():
 	matrix_fixture_checks()
 	main=load("res://scenes/main.tscn").instantiate();root.add_child(main);await frames()
 	await click("开始恢复");await click("查看划船帖")
-	await click("安全返航");check(not state.d.chapterThreeInterlude.evidenceIds.has("journal_start"),"summary draft is not publication")
-	await click("细节暂不公开");await click("发布收尾并保存时间")
+	await click("回复这条记录");check(not state.d.chapterThreeInterlude.evidenceIds.has("journal_start"),"opening candidates is not publication")
+	await click("细节暂不公开")
 	check(state.d.qizhenLake.journal.summaryChoice=="details_withheld","actual chosen journal summary published")
 	await click("‹")
 	# Source ring order uses clockwise next/previous plus Home/End, not spatial nearest.

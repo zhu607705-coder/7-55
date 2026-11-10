@@ -50,9 +50,11 @@ func run() -> void:
 	s.native.erase("c35_photo_selection")
 	s.native.erase("c35_voice_selection")
 	press(ui,controller,s,"c35_recovery","开始恢复")
-	press(ui,controller,s,"c35_journal","安全返航")
-	check(not s.chapterThreeInterlude.evidenceIds.has("journal_start"),"summary selection does not publish early")
-	press(ui,controller,s,"c35_journal","发布收尾并保存时间")
+	var journal: Control=ui.build("c35_journal",controller.view("c35_journal",s),s)
+	find_button(journal,"C35JournalComposer").pressed.emit()
+	check(not s.chapterThreeInterlude.evidenceIds.has("journal_start"),"opening the candidate sheet does not publish early")
+	find_button(journal,"C35Candidate_safe_return").pressed.emit()
+	journal.free()
 	for code: String in ["FRM B2","FRM 91","FRM 4C"]: press(ui,controller,s,"c35_photos",code)
 	press(ui,controller,s,"c35_photos","确认照片顺序")
 	for code: String in ["CLIP D7","CLIP 91","CLIP 4C","CLIP 3A"]:
@@ -66,10 +68,10 @@ func run() -> void:
 	press(ui,controller,s,"c35_voice","进入排序")
 	press(ui,controller,s,"c35_voice","确认录音顺序")
 	press(ui,controller,s,"c35_official","保存通知")
-	press(ui,controller,s,"c35_messages","选择","东边入口已经封了")
-	press(ui,controller,s,"c35_messages","选择","我在西侧看见保洁推车")
+	press(ui,controller,s,"c35_messages","C35MessageSelect_east_closed")
+	press(ui,controller,s,"c35_messages","C35MessageSelect_west_cleaner")
 	press(ui,controller,s,"c35_messages","保存路线截图")
-	press(ui,controller,s,"c35_network","保存候选记录","22:44:57")
+	press(ui,controller,s,"c35_network","保存","22:44:57")
 	check(s.chapterThreeInterlude.evidenceIds.size()==4,"all four sources can be collected through native UI buttons")
 	press(ui,controller,s,"c35_recovery","这是编号","食堂 0755")
 	press(ui,controller,s,"c35_recovery","这是更早","剧场 08:32")
@@ -98,7 +100,7 @@ func find_card(node: Node,text: String) -> Node:
 	return null
 func find_button(node: Node,text: String) -> Button:
 	if node is Button and not node is OptionButton:
-		if text in node.text:return node
+		if text in node.text or str(node.name)==text:return node
 		if text=="选择" and node.get_meta("intent","")=="c35_select_route" and not node.get_meta("route_selected",false):return node
 	for child: Node in node.get_children():
 		var found: Button=find_button(child,text)

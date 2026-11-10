@@ -14,6 +14,9 @@ const SHEET:=Rect2(14,80,402,616)
 var elapsed: float=0
 var label: Label
 var stamp: Button
+var return_button: Button
+var closed: bool=false
+var return_touch: int=-1
 var issued: bool=false
 var stamp_ms: float=-1.0
 var accepted_scan_ms: float=0.0
@@ -57,10 +60,24 @@ func _ready() -> void:
 	stamp.add_theme_stylebox_override("disabled",_button_style(Color("d8ceb9"),Color("b7aa92")))
 	var focus:=_button_style(Color.TRANSPARENT,INK);focus.set_border_width_all(3);stamp.add_theme_stylebox_override("focus",focus)
 	stamp.pressed.connect(_stamp);add_child(stamp)
-	_label("基础馆失物身份登记",Rect2(42,650,348,24),14,MUTED)
+	_label("基础馆失物身份登记",Rect2(42,650,210,24),14,MUTED)
+	# Navigation remains available during scanning and the imprint animation.
+	# Only finished submits a proof; returning never calls the story controller.
+	return_button=Button.new();return_button.set_meta("tactile_exempt",true);return_button.name="ReturnFromStamp"
+	return_button.position=Vector2(260,630);return_button.size=Vector2(128,56)
+	return_button.text="返回图书馆";return_button.tooltip_text="返回图书馆（Esc），本次核验不提交"
+	return_button.add_theme_font_override("font",font);return_button.add_theme_font_size_override("font_size",16)
+	for role: String in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color"]:
+		return_button.add_theme_color_override(role,INK)
+	for mode: String in ["normal","hover","pressed","hover_pressed","disabled"]:
+		return_button.add_theme_stylebox_override(mode,_button_style(PAPER,Color("b7aa92")))
+	return_button.add_theme_stylebox_override("focus",focus.duplicate())
+	return_button.pressed.connect(_cancel);add_child(return_button)
+	_layout_return()
 func start(_config: Dictionary) -> void: pass
 func _process(delta: float) -> void:
-	if not is_visible_in_tree() or issued:return
+	_layout_return()
+	if not is_visible_in_tree() or issued or closed:return
 	var step:=clampf(delta,0.0,.1)
 	if stamp_ms>=0:
 		stamp_ms+=step*1000.0
@@ -69,6 +86,7 @@ func _process(delta: float) -> void:
 		queue_redraw()
 		if stamp_ms>=(350.0 if reduced_motion else SUCCESS_HOLD_MS):
 			issued=true
+			return_button.disabled=true
 			finished.emit({"scanMs":accepted_scan_ms,"identityChecks":[false,false,false],"stamped":true})
 		return
 	elapsed+=step
@@ -78,13 +96,59 @@ func _process(delta: float) -> void:
 		status.text="待盖章";status.add_theme_color_override("font_color",RED)
 		scan_hint.text="核验完成 · 等待盖章";stamp.disabled=false;queue_redraw()
 func _stamp() -> void:
-	if not ready_shown or issued or stamp_ms>=0:return
+	if not ready_shown or issued or closed or stamp_ms>=0:return
 	accepted_scan_ms=elapsed*1000.0
 	stamp_ms=0.0
 	stamp.disabled=true
 	status.hide()
 	scan_hint.text="盖章完成" if reduced_motion else "正在盖章……"
 	queue_redraw()
+
+func _layout_return() -> void:
+	if not is_instance_valid(return_button):return
+	var transform:=get_global_transform_with_canvas()
+	var display_scale:=maxf(.01,transform.get_scale().x)
+	if display_scale*56>=44:
+		return_button.scale=Vector2.ONE
+		return_button.position=Vector2(260,630)
+	else:
+		# A short landscape window letterboxes the portrait report. Keep its
+		# navigation in the free screen edge, at an unscaled 128 x 56 pixels.
+		return_button.scale=Vector2.ONE/display_scale
+		var edge:=get_viewport_rect().end-Vector2(144,72)
+		return_button.position=transform.affine_inverse()*edge
+
+func _cancel() -> void:
+	if closed or issued:return
+	closed=true
+	return_touch=-1
+	stamp.disabled=true;return_button.disabled=true
+	set_process(false)
+	cancelled.emit()
+
+func _input(event: InputEvent) -> void:
+	if not is_visible_in_tree() or closed or issued:return
+	# A cancelled touch is not a release click. Own this navigation gesture
+	# explicitly so its emulated mouse cannot activate the Button a second time.
+	if event is InputEventMouseButton and event.device==InputEvent.DEVICE_ID_EMULATION and (return_touch>=0 or return_button.get_global_rect().has_point(event.position)):
+		get_viewport().set_input_as_handled();return
+	if event is InputEventScreenTouch:
+		if event.pressed and not event.canceled and return_touch<0 and return_button.get_global_rect().has_point(event.position):
+			return_touch=event.index;get_viewport().set_input_as_handled()
+		elif event.index==return_touch and (not event.pressed or event.canceled):
+			return_touch=-1;get_viewport().set_input_as_handled()
+			if not event.canceled and return_button.get_global_rect().has_point(event.position):_cancel()
+	elif event is InputEventScreenDrag and event.index==return_touch:
+		get_viewport().set_input_as_handled()
+
+func _notification(what: int) -> void:
+	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_WM_WINDOW_FOCUS_OUT]:return_touch=-1
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	if not is_visible_in_tree() or closed or issued:return
+	if event is InputEventKey and event.pressed and not event.echo and (event.keycode==KEY_ESCAPE or event.physical_keycode==KEY_ESCAPE):
+		_cancel()
+		get_viewport().set_input_as_handled()
 
 func _draw_stamp_result() -> void:
 	if stamp_ms<0:
@@ -146,3 +210,4 @@ func _draw_source_backpack(center: Vector2,factor: float) -> void:
 			var edge:=Color.hex(int(part.stroke.color)*256+255);edge.a=float(part.stroke.alpha)
 			draw_rect(rect,edge,false,float(part.stroke.width))
 	draw_set_transform(Vector2.ZERO)
+

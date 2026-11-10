@@ -48,9 +48,9 @@ func run() -> void:
 		var expected:=Rect2(sample+Vector2(-18,31.5625),Vector2(36,10)) if scene=="library_interior" else approved
 		check(Metrics.foot_rect(sample,scene)==expected and Metrics.foot_size(scene)==expected.size,"shared depth and scene walking width: "+scene)
 		check(Metrics.anchor_from_foot_center(Metrics.foot_center(sample,scene),scene)==sample,"exact tap/anchor inverse: "+scene)
-	check(Metrics.depth_y(sample)==sample.y+31.6875,"campus depth stays at the pre-change reference")
+	check(Metrics.depth_y(sample)==sample.y+31.6875,"legacy depth offset retains its calibration")
 	check(Metrics.ground_depth_y(sample)==sample.y+39.0,"interior depth stays at the pre-change reference")
-	check(Metrics.depth_y(sample)!=Metrics.foot_center(sample,CAMPUS).y,"physical and rendering anchors are independent")
+	check(Metrics.depth_y(sample)!=Metrics.foot_center(sample,CAMPUS).y,"legacy depth is above the campus foot center")
 	var visual := Metrics.visual_rect(sample,Metrics.scale_at(CAMPUS,sample.y))
 	check(visual.position.is_equal_approx(sample-Vector2(15.6,0)) and visual.size.is_equal_approx(Vector2(31.2,41.6)),"campus sprite position and .325 scale are unchanged")
 	for direction: String in ["down","side","up"]:
@@ -126,7 +126,7 @@ func run() -> void:
 	check(world.mask==source_before and art.walk_supports==[road] and state.d==before,"metrics/physics checks do not alter source floor, obstacles or story state")
 	check(not world.is_inside_tree() and art.textures.is_empty(),"isolated physics fixture does not load scene artwork")
 	var code := FileAccess.get_file_as_string("res://scripts/world.gd")
-	check(code.count("PlayerMetrics.depth_y(player)")==2,"both campus render passes use preserved depth")
+	check(world._ground_y(sample)==Metrics.foot_center(sample,CAMPUS).y,"campus draw depth uses the same foot center as collision")
 	check(not code.contains("PlayerMetrics.FOOT_CENTER_OFFSET"),"world collision/tap paths cannot read unscoped default offset")
 	world.free()
 	print("Campus player metrics: ",checks," checks, ",failures," failures")
