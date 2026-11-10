@@ -28,6 +28,7 @@ var compact_presentation: bool = false
 var cloud_size := Vector2(68,48)
 var layout_transform := Transform2D.IDENTITY
 var layout_viewport := Vector2.ZERO
+var layout_label_size := Vector2.ZERO
 var pointer_owner: int = NO_POINTER
 var pointer_band: int = -1
 var pointer_target: float = 0.0
@@ -227,21 +228,28 @@ func _apply_presentation_layout(force: bool=false) -> void:
 	var transform: Transform2D=get_global_transform_with_canvas()
 	var viewport_size: Vector2=get_viewport_rect().size
 	var factor: float=maxf(.15,minf(transform.x.length(),transform.y.length()))
-	if not force and transform==layout_transform and viewport_size==layout_viewport: return
-	if presentation_scale>0 and (transform!=layout_transform or viewport_size!=layout_viewport): _pause_game()
+	if not force and transform==layout_transform and viewport_size==layout_viewport and label.size==layout_label_size: return
+	if presentation_scale>0 and (transform!=layout_transform or viewport_size!=layout_viewport or label.size!=layout_label_size): _pause_game()
 	layout_transform=transform; layout_viewport=viewport_size
 	presentation_scale=factor; compact_presentation=960*factor<620
 	var body_font: int=maxi(20,int(ceil(15.0/factor)))
 	var button_font: int=maxi(18,int(ceil(14.0/factor)))
 	label.add_theme_font_size_override("font_size",body_font)
 	label.position=Vector2(40,4 if compact_presentation else 25)
-	label.size=Vector2(880,ceil(FONT.get_height(body_font)))
+	# The shaped Label can be taller than the primary font's metrics because
+	# Chinese glyphs use the bundled fallback. Measure the actual current text.
+	refresh()
+	label.size=Vector2(880,maxf(ceil(FONT.get_height(body_font)),label.get_combined_minimum_size().y))
 	cloud_size=Vector2(1.4,1.0)*maxf(48,ceil(44.0/factor))
 	var footer_h: float=maxf(48,ceil(44.0/factor))
 	var footer_y: float=540-10-footer_h if compact_presentation else 445
 	if compact_presentation:
-		var first: float=label.position.y+label.size.y+4+cloud_size.y/2
-		var last: float=footer_y-4-cloud_size.y/2
+		var caption_bottom: float=label.position.y+label.size.y
+		# Preserve the 44px objects. Compress only the four gaps when the real
+		# font needs more room, so adjacent targets cannot overlap at 390px.
+		var gap: float=clampf((footer_y-caption_bottom-3*cloud_size.y)/4,0,4)
+		var first: float=caption_bottom+gap+cloud_size.y/2
+		var last: float=footer_y-gap-cloud_size.y/2
 		row_centers=[first,(first+last)/2,last]
 	else: row_centers=[175.0,265.0,355.0]
 	for button: Button in [start_button,exit_button]: button.add_theme_font_size_override("font_size",button_font)
@@ -250,6 +258,7 @@ func _apply_presentation_layout(force: bool=false) -> void:
 	exit_button.size=Vector2(maxf(150,FONT.get_string_size(exit_button.text,HORIZONTAL_ALIGNMENT_LEFT,-1,button_font).x+24),footer_h)
 	exit_button.position=Vector2(40,footer_y)
 	refresh()
+	layout_label_size=label.size
 
 func refresh() -> void:
 	if is_instance_valid(label):

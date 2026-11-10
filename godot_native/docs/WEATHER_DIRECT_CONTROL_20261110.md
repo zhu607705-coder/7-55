@@ -59,7 +59,7 @@
 
 云朵的绘制尺寸与命中区域一起调整，窄屏重排行距，不使用覆盖整行的透明热区。逻辑画布仍为 `960×540`，模型的横向位置不随窗口缩放改变。
 
-### 验收边界
+### 首轮隔离验收（历史记录）
 
 运行引擎为官方 `4.7.1.stable.official.a13da4feb`。既有云端 ZIP 的 SHA-256 与 [官方 release](https://github.com/godotengine/godot-builds/releases/tag/4.7.1-stable) 一致：`c7ff14fd28472c8d4f193043de30278dcf7e5241a1dcf7566b02e27addaa33ba`。没有更改项目版本或加入运行时依赖。
 
@@ -82,13 +82,54 @@ godot --headless --path godot_native --script res://tests/test_weather_readabili
 
 本次没有显示服务，因此没有原生画面截图、真实浏览器导出或实体手机测试。fixture 使用项目的 Morning Note 字体，缺少的 Fusion 符号后备字体暂用 Morning Note 替代；仓库字体未改，不能把这些度量检查当作生产字体和画面验收。完整 native preflight、全部测试及 Main 入口链也未在这份精简源码中运行，提交后须另看对应提交的 CI。
 
-最终专项运行的源码 SHA-256：
+首轮专项运行的源码 SHA-256：
 
 | 文件 | SHA-256 |
 | --- | --- |
 | `c3_weather.gd` | `b5ed9b885a46caa5e01cd63bfa8da2715ebba314c9d6c061c9c45a8cdeed945d` |
 | `test_weather_direct_control.gd` | `5549f5cefd34f690693ab89e8e76b1aac3a2719dcdec9aeabdab9d22e94ebc96` |
 | `test_weather_readability.gd` | `98046da9f9ab71a9f428739b8b944a356aa08be34f60ce79f435e61aad2fe718` |
+
+## 追加：完整项目复验与三处修正
+
+从 PR #244 原head `1d6af34a89adfeddc71490879c4e52d8f86c82ae` 准备完整原生项目、源素材、媒体及正式 Morning Note/Fusion 字体，没有叠加 #243。原head的 [Main交接回归](../tests/test_weather_main_handoff.gd) 已通过143项，但完整检查另找到三处本次改造引入的回归，均保留失败证据后修正：
+
+| 原失败 | 修正 |
+| --- | --- |
+| `campaign_chapter3.gd` 仍寻找六个方向按钮，未操作天气便退出，后续证明断言随之失败。 | 改为真实Viewport鼠标事件拖云；保留Main、吹风机消耗、回页与后续进度断言，增加三朵云实际取得、空轨道拒绝、无瞬移和单次证明检查。 |
+| `test_shared_pause_adapters.gd` 仍要求只有一个辅助动作。 | 精确检查返回与操作说明两项；保留禁用、退出与清理断言，新增默认隐藏帮助、主动请求后显示六键且保持暂停的检查。 |
+| 正式字体在390宽时使状态Label达到59逻辑像素，原115高云朵的中心距仅114.5。 | 按真实Label最小高度预留文字，再由剩余高度分配四处间距，只压缩留白；云朵和导航仍至少44显示像素，模型横坐标与物理步进不变。修后行距116.75，不再相交。 |
+
+最后一项在原head的远端和完整本地项目均复现，不能归为基线问题。首轮替代字体的fixture未能发现它，不能将那次177项通过当作正式字体验收。增强可读性测试保留原断言，并加入391/400宽字号边界、独立纵向行区检查以及viewport、band和rect诊断。
+
+最终候选使用官方 Godot4.7.1与正式资源，按顺序执行媒体/导入和测试：
+
+| 最终检查 | 结果 |
+| --- | --- |
+| 直控输入 | **129项，零失败**。 |
+| 正式字体布局 | **268项，零失败**；七种视口，44px目标及原分离断言保留。 |
+| 共享暂停适配 | **55项通过**，零失败。 |
+| Main → 控制器 → 磁盘保存/重载 | **143项，零失败**；1280×720、390×844。 |
+| 原 `prepareWebControllerFixtures` | 最终同一运行时代码：连续campaign **1211项，零失败**，章节 `[1,2,3,4]`；library recorder **152项，零失败**，章节 `[1,2]`。 |
+| 390宽真实帧探针 | **495帧，零失败**；引擎自然推进时间，真实拖云期间未自发暂停，状态文字变化后布局尺寸保持稳定。 |
+
+Main回归用已有合法检查点只初始化雨后码头与吹风机前置条件。随后从Home进入天气，真实拖入背包中的吹风机，操作云朵再取消。保存重载后重新走同一入口，实际完成三层调整，由 `c3_weather_result` 接受结果并自动保存。取消保留道具与 `rain_recovery`，成功仅消耗一次并持久化 `boarding_tutorial`；回放同一实际证明不会重复改变结果。
+
+连续控制器fixture生成已在最终运行时代码上另跑一次，且生成完整存档与来源记录。它生成控制器取得的存档，不等于真实浏览器交互。以上Main检查使用鼠标事件与手动时间步进，不是从第一章开始的整章人工游玩，也不替代截图、Godot Web或实体手机。
+
+最终候选的运行时与测试 SHA-256：
+
+| 文件 | SHA-256 |
+| --- | --- |
+| `c3_weather.gd` | `dc74ec4cb3a3995c1bbf7930d5986056abce23f599fb9bf757b6888cff7fc53b` |
+| `campaign_chapter3.gd` | `640520e3873dc069b08324ef0931562677c02ccf6fdbc5cbbd3935be0cbc27d0` |
+| `test_shared_pause_adapters.gd` | `9dcb420b36651302fb2e7fe0de31084c791ed42c99c16519ca828a8b5e618f09` |
+| `test_weather_readability.gd` | `dcb50c9f98f42d2b2d43b560ea86f9ebf4d1323fd4d3875920070d9c362b5157` |
+| `test_weather_main_handoff.gd` | `6ac2262b07fb4163800495ae28069efa848a6b7ba974b72ab8c5e4eadb2bd185` |
+
+原head远端native保留了与精确base相同的53项失败，并有上述三类新增回归带来的7项失败。此次修复只处理新增问题，没有删除或放宽旧失败断言。[旧按钮导致的Web构建失败](https://github.com/zhu607705-coder/7-55/actions/runs/42763969420/job/129655984584) 与 [正式字体布局失败](https://github.com/zhu607705-coder/7-55/actions/runs/42763969530/job/129658164626) 均属本次修改的责任范围；另有 [交接任务的apt下载超时](https://github.com/zhu607705-coder/7-55/actions/runs/42763969481/job/129656026011)，它未进入游戏测试，不能归为同一原因。
+
+更新后的远端检查须绑定新head确认。本地受影响检查通过不等于全部CI通过，PR继续保持Draft；没有合并或部署。
 
 ## 工具范围
 
