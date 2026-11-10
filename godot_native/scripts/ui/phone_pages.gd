@@ -29,6 +29,7 @@ const TiyiAccess = preload("res://scripts/chapters/tiyi_access.gd")
 var tiyi_official_open=false
 const TiyiSevenArt = preload("res://scripts/ui/tiyi_seven_art.gd")
 const SettingsChrome=preload("res://scripts/ui/phone_settings_chrome.gd")
+const ZjudingChrome=preload("res://scripts/ui/zjuding_chrome.gd")
 const CampusServices=preload("res://scripts/ui/phone_campus_services.gd")
 var campus_services=CampusServices.new()
 const SettingsGear = preload("res://scripts/ui/native_settings_gear.gd")
@@ -76,6 +77,9 @@ var zjuding_page = "hub"
 var zjuding_panel = ""
 var zjuding_overlay = ""
 var zjuding_query = ""
+var zjuding_message_filter := "all"
+var zjuding_seen_messages: Dictionary = {}
+var zjuding_from_messages := false
 var wechat_query = ""
 var zjuding_detail = ""
 var zjuding_visitor = {"name":"","date":"","purpose":"校园参观"}
@@ -109,6 +113,10 @@ var previous_page = ""
 var displayed_balance_shifted = false
 
 func build(page: String, view: Dictionary, state: Dictionary) -> Control:
+	if not is_same(s,state):
+		zjuding_seen_messages.clear()
+		zjuding_message_filter="all"
+		zjuding_from_messages=false
 	s = state
 	bonsai_growth.route(page)
 	entry_session.route(s)
@@ -1504,6 +1512,7 @@ func _zju_library_access() -> bool:
 	return s.actOne.phase in ["reservation_required","movement_ready","complete"] or s.ui.librarySeatReserved or s.ui.libraryFinalsPhase!="idle"
 
 func _zju_open(id: String) -> void:
+	zjuding_from_messages=false
 	zjuding_overlay=""; zjuding_detail=""; zjuding_feedback_status=""
 	if id=="learn": zjuding_page="learn"; zjuding_panel=""; action_requested.emit("phone_refresh",{})
 	elif id=="library": page_requested.emit("library_app")
@@ -1522,40 +1531,171 @@ func _zju_open(id: String) -> void:
 	else: zjuding_panel=id; action_requested.emit("phone_refresh",{})
 
 func _zju_back() -> void:
-	zjuding_panel=""; zjuding_overlay=""; zjuding_page="hub"; zjuding_detail=""
+	zjuding_panel="messages" if zjuding_from_messages else ""
+	zjuding_from_messages=false
+	zjuding_overlay=""; zjuding_page="hub"; zjuding_detail=""
 	action_requested.emit("phone_refresh",{})
 
-func _zju_scroll(root: Control, top: float = 0) -> Control:
+func _zju_scroll(root: Control, top: float = 0, color: Color = Color("f4f7fd")) -> Control:
 	var scroll=ScrollContainer.new(); scroll.position=Vector2(0,top); scroll.size=Vector2(378,APP_HEIGHT-top-60)
 	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED; scroll.name="ZjudingScroll"; root.add_child(scroll)
-	var content=_base(Color("f4f7fd"),APP_HEIGHT-top-60); content.custom_minimum_size.x=378; content.size.x=378; scroll.add_child(content)
+	var content=_base(color,APP_HEIGHT-top-60); content.custom_minimum_size.x=378; content.size.x=378; scroll.add_child(content)
 	# Touch drags must reach the scroll owner through the content surface.
 	content.mouse_filter=Control.MOUSE_FILTER_PASS
 	return content
 
 func _zju_nav(root: Control, active: String = "home") -> void:
-	_panel(root,Rect2(0,APP_HEIGHT-60,378,60),Color("fbfcfe"),Color("cad6e7"),0,2)
-	var tabs=[["home","⌂","首页"],["contacts","◉","通讯录"],["all_apps","▦","工作台"],["messages","✦","消息"],["profile","◎","我的"]]
-	for i in range(5):
-		var tab: Array=tabs[i]; var rect=Rect2(i*75.6,APP_HEIGHT-57,75.6,54)
-		var button=_button(root,tab[1]+"\n"+tab[2],rect,func():
-			if tab[0]=="home": _zju_back()
-			else: _zju_open(tab[0]),Color("e8f0ff") if active==tab[0] else Color("fbfcfe"),Color("1454bd") if active==tab[0] else Color("798493"),0,Color.TRANSPARENT)
-		button.add_theme_font_size_override("font_size",12); button.name="ZjudingTab_"+str(tab[0])
+	ZjudingChrome.panel(root,Rect2(9,APP_HEIGHT-57,360,51),Color.WHITE,24)
+	var tabs=[["messages","✦","消息"],["home","⌂","浙江大学"],["contacts","◉","通讯录"],["all_apps","▦","更多"]]
+	for i in range(tabs.size()):
+		var tab: Array=tabs[i]
+		var selected: bool=active==tab[0]
+		var rect=Rect2(14+i*88,APP_HEIGHT-55,86,47)
+		var button=ZjudingChrome.round_button(_button(root,tab[1]+"\n"+tab[2],rect,func():
+			if tab[0]=="home":
+				zjuding_from_messages=false
+				_zju_back()
+			else: _zju_open(tab[0]),ZjudingChrome.PILL if selected else Color.WHITE,ZjudingChrome.BLUE if selected else ZjudingChrome.MUTED,0,Color.TRANSPARENT),20)
+		button.name="ZjudingTab_"+str(tab[0])
+		button.accessibility_name=tab[2]
+		button.set_meta("phone_button_selected",selected)
+		if i >= 2:
+			for role in ["font_color","font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color"]:
+				button.add_theme_color_override(role,Color.TRANSPARENT)
+			if tab[0]=="contacts":
+				WechatChrome.icon(button,"contacts",Rect2(33,4,20,23),Color("167653"))
+			else:
+				ZjudingChrome.icon(button,"all_apps",Rect2(33,4,20,23),ZjudingChrome.BLUE)
+			_label(button,tab[2],Rect2(0,28,86,16),12,ZjudingChrome.MUTED,HORIZONTAL_ALIGNMENT_CENTER)
 
 func _zju_app_tile(root: Control, app: Array, rect: Rect2) -> void:
-	var target=_button(root,"",rect,func(): _zju_open(app[0]),Color.WHITE,BLUE,0,Color.TRANSPARENT)
+	var target=ZjudingChrome.round_button(_button(root,"",rect,func(): _zju_open(app[0]),Color.WHITE,BLUE,0,Color.TRANSPARENT),10)
 	target.name="ZjudingApp_"+str(app[0])
-	var icon=_panel(target,Rect2((rect.size.x-38)/2,10,38,38),Color(app[3]),Color("9ea7b8"),0,2)
-	_label(icon,app[2],Rect2(0,0,38,38),22,Color("174d9d"),HORIZONTAL_ALIGNMENT_CENTER)
-	var label=_label(target,app[1],Rect2(0,53,rect.size.x,24),12,INK,HORIZONTAL_ALIGNMENT_CENTER)
+	target.accessibility_name=app[1]
+	target.mouse_filter=Control.MOUSE_FILTER_PASS
+	var badge=ZjudingChrome.panel(target,Rect2((rect.size.x-36)/2,9,36,36),Color(app[3]).lerp(Color.WHITE,.20),8)
+	ZjudingChrome.icon(badge,app[0],Rect2(7,7,22,22),Color("193f75"))
+	var label=_label(target,app[1],Rect2(0,47,rect.size.x,25),13,INK,HORIZONTAL_ALIGNMENT_CENTER)
 	label.autowrap_mode=TextServer.AUTOWRAP_OFF; label.clip_text=true; label.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
+
+func _zju_identity_header(root: Control, in_messages: bool = false) -> void:
+	var identity := _zju_identity()
+	ZjudingChrome.panel(root,Rect2(0,0,378,69),Color.WHITE,0)
+	if in_messages:
+		_nav(root,"back","返回浙江大学",_zju_back,Rect2(5,11,36,44),Color.WHITE,ZjudingChrome.INK)
+	else:
+		_nav(root,"exit","退出浙大钉，返回手机主页",func(): page_requested.emit("phone_home"),Rect2(5,11,36,44),Color.WHITE,ZjudingChrome.INK)
+	var profile=ZjudingChrome.round_button(_button(root,"",Rect2(45,12,42,42),func(): zjuding_overlay="profile"; action_requested.emit("phone_refresh",{}),Color("e2ecff"),ZjudingChrome.BLUE,0,Color.TRANSPARENT),10)
+	profile.name="ZjudingProfileMenu"
+	profile.accessibility_name="个人菜单"
+	_label(profile,"星宇" if identity else "用户",Rect2(0,0,42,42),14,ZjudingChrome.BLUE,HORIZONTAL_ALIGNMENT_CENTER)
+	_label(root,"林星宇" if identity else "身份未读取",Rect2(97,10,143,28),19,ZjudingChrome.INK)
+	_label(root,"浙江大学",Rect2(97,38,143,19),12,ZjudingChrome.MUTED)
+	_zju_search_trigger(root,Rect2(247,13,117,39),"搜索","ZjudingSearchOpen",ZjudingChrome.PILL)
+
+func _zju_search_trigger(root: Control, rect: Rect2, prompt: String, id: String, fill: Color) -> void:
+	var target=ZjudingChrome.round_button(_button(root,"",rect,func(): zjuding_overlay="search"; action_requested.emit("phone_refresh",{}),fill,ZjudingChrome.INK,0,Color.TRANSPARENT),17 if id=="ZjudingSearchOpen" else 10)
+	target.name=id
+	target.accessibility_name=prompt
+	WechatChrome.icon(target,"search",Rect2(13,10,18,18),ZjudingChrome.MUTED)
+	_label(target,prompt,Rect2(39,0,rect.size.x-45,rect.size.y),14,ZjudingChrome.MUTED)
+	if id=="ZjudingSearchBar":
+		_label(target,"搜索",Rect2(rect.size.x-63,0,51,rect.size.y),14,ZjudingChrome.BLUE,HORIZONTAL_ALIGNMENT_CENTER)
+
+func _zju_identity_card(body: Control) -> void:
+	var identity := _zju_identity()
+	var card := ZjudingChrome.panel(body,Rect2(11,11,356,198),Color("1357ad"),14)
+	card.clip_contents=true
+	var lines := ZjudingChrome.CampusLines.new()
+	lines.size=card.size
+	card.add_child(lines)
+	var seal_rect := Rect2(15,17,53,53)
+	if s.actOne.phase in ["system_required","inventory_required","system_return_required","reservation_briefing_required"]:
+		_act(card,"求",seal_rect,"c2_open_system",null,Color("b51f31"),Color.WHITE,30,Color.WHITE).name="ZjudingSystemSeal"
+	else:
+		ZjudingChrome.panel(card,seal_rect,Color("3370bd"),14)
+		_label(card,"求",seal_rect,22,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
+	_label(card,"林星宇" if identity else "校园身份未读取",Rect2(82,15,244,30),19,Color.WHITE)
+	_label(card,"3250100755 / 求是学院" if identity else "领取电子校园卡后显示",Rect2(82,48,249,23),13,Color("e7f1ff"))
+	var services := ZjudingChrome.panel(card,Rect2(10,87,336,101),Color("104481"),11)
+	var entries := [["campus_card","电子校园卡",identity],["directory","部门黄页",s.actOne.phase!="prologue"],["network_account","网络缴费",true],["all_apps","全部服务",true]]
+	for i in range(entries.size()):
+		var entry: Array=entries[i]
+		var rect := Rect2(4+i*83,4,79,92)
+		var action := ZjudingChrome.round_button(_button(services,"",rect,func(): _zju_open(entry[0]),Color.TRANSPARENT,Color.WHITE,0,Color.TRANSPARENT),8)
+		action.name="ZjudingShortcut_"+str(entry[0])
+		action.accessibility_name=entry[1]
+		action.mouse_filter=Control.MOUSE_FILTER_PASS
+		action.disabled=not entry[2]
+		var ink := Color.WHITE if entry[2] else Color("adc6e8")
+		ZjudingChrome.icon(action,entry[0],Rect2(26,17,27,27),ink)
+		_label(action,entry[1],Rect2(0,52,79,24),13,ink,HORIZONTAL_ALIGNMENT_CENTER)
+
+func _zju_messages(root: Control) -> void:
+	var body := _zju_scroll(root,69,Color.WHITE)
+	_zju_identity_header(root,true)
+	var tools := [["learn","学在浙大"],["smart_classroom","智云课堂"],["network_account","网络缴费"],["all_apps","全部应用"]]
+	for i in range(tools.size()):
+		var entry: Array=tools[i]
+		var x := 11.0+i*89
+		var shortcut := ZjudingChrome.round_button(_button(body,"",Rect2(x,4,87,46),func(): _zju_open(entry[0]),Color.WHITE,ZjudingChrome.INK,0,Color.TRANSPARENT),9)
+		shortcut.accessibility_name=entry[1]
+		ZjudingChrome.icon(shortcut,entry[0],Rect2(5,13,18,18),ZjudingChrome.MUTED)
+		_label(shortcut,entry[1],Rect2(28,0,58,46),12,ZjudingChrome.MUTED)
+	ZjudingChrome.panel(body,Rect2(0,54,378,1),Color("e8ebef"),0)
+	var network: String={"campus_wifi":"校园网已连接","cellular":"当前使用移动数据","offline":"当前处于离线状态"}.get(s.networkMode,"")
+	var messages := [["network","校园网状态",network,"network_account",true]]
+	if _zju_identity():
+		messages.append(["identity","校园身份已读取","林星宇 · 3250100755","campus_card",false])
+	if _zju_library_access():
+		messages.append(["library","图书馆座位预约" if s.ui.librarySeatReserved else "图书馆服务已开放","已预约 "+str(s.ui.librarySelectedSeat)+" 号座位" if s.ui.librarySeatReserved else "可查看开放时间与座位预约。","library",false])
+	var unread := 0
+	for entry: Array in messages:
+		if zjuding_seen_messages.get(entry[0])!=entry[2]: unread+=1
+	ZjudingChrome.panel(body,Rect2(12,67,354,41),ZjudingChrome.PILL,20)
+	var filters := [["all","消息"],["pinned","置顶"],["unread","未读 "+str(unread)]]
+	for i in range(filters.size()):
+		var filter: Array=filters[i]
+		var selected: bool=zjuding_message_filter==filter[0]
+		var button := ZjudingChrome.round_button(_button(body,filter[1],Rect2(15+i*116,69,115,37),func():
+			zjuding_message_filter=filter[0]
+			action_requested.emit("phone_refresh",{}),Color.WHITE if selected else ZjudingChrome.PILL,ZjudingChrome.INK if selected else ZjudingChrome.MUTED,0,Color.TRANSPARENT),18)
+		button.name="ZjudingMessageFilter_"+filter[0]
+		button.set_meta("phone_button_selected",selected)
+		button.add_theme_font_size_override("font_size",15)
+	var shown: Array=[]
+	for entry: Array in messages:
+		if zjuding_message_filter=="pinned" and not entry[4]: continue
+		if zjuding_message_filter=="unread" and zjuding_seen_messages.get(entry[0])==entry[2]: continue
+		shown.append(entry)
+	_label(body,"校园通知 · %d 条消息" % shown.size(),Rect2(15,114,348,28),12,ZjudingChrome.MUTED)
+	var y := 147.0
+	for entry: Array in shown:
+		var row := ZjudingChrome.round_button(_button(body,"",Rect2(10,y,358,70),func():
+			zjuding_seen_messages[entry[0]]=entry[2]
+			_zju_open(entry[3])
+			zjuding_from_messages=zjuding_panel=="network_account",Color("f5f8fc") if entry[4] else Color.WHITE,ZjudingChrome.INK,0,Color.TRANSPARENT),8)
+		row.name="ZjudingMessage_"+entry[0]
+		row.accessibility_name=entry[1]
+		row.mouse_filter=Control.MOUSE_FILTER_PASS
+		var badge := ZjudingChrome.panel(row,Rect2(8,13,42,42),Color("dceaff"),10)
+		ZjudingChrome.icon(badge,entry[3],Rect2(9,9,24,24),ZjudingChrome.BLUE)
+		_label(row,entry[1],Rect2(61,11,224,24),16,ZjudingChrome.INK)
+		_label(row,entry[2],Rect2(61,39,262,20),13,ZjudingChrome.MUTED)
+		if zjuding_seen_messages.get(entry[0])!=entry[2]:
+			ZjudingChrome.panel(row,Rect2(330,30,8,8),Color("cc4622"),4)
+		y+=74
+	if shown.is_empty():
+		_label(body,"暂无未读消息" if zjuding_message_filter=="unread" else "暂无置顶消息",Rect2(15,y+12,348,35),14,ZjudingChrome.MUTED,HORIZONTAL_ALIGNMENT_CENTER)
+	_zju_nav(root,"messages")
 
 func _zjuding() -> Control:
 	if entry_session.family=="zjuding" and entry_session.phase!="ready": return _entry_loading("zjuding")
-	var root=_base(Color("f4f7fd"),APP_HEIGHT)
+	var root=_base(ZjudingChrome.CANVAS,APP_HEIGHT)
 	handled.append("c2_enter_dorm"); handled.append("c2_enter_campus")
-	if not zjuding_panel.is_empty():
+	if zjuding_panel=="messages":
+		_zju_messages(root)
+	elif not zjuding_panel.is_empty():
 		_zju_utility(root)
 	elif zjuding_page=="campus_map" and s.qizhenLake.active and s.qizhenLake.phase!="inactive":
 		lake_apps.map_page(self,root)
@@ -1563,36 +1703,15 @@ func _zjuding() -> Control:
 		root.free()
 		root=learn_page.build(self)
 	else:
-		var body=_zju_scroll(root)
-		body.custom_minimum_size.y=686; body.size.y=686
-		var identity=_zju_identity()
-		_nav(root,"exit","退出浙大钉，返回手机主页",func(): page_requested.emit("phone_home"),Rect2(9,7,40,44),Color("f4f7fd"),BLUE)
-		_button(body,"林星宇" if identity else "用户",Rect2(59,15,46,46),func(): zjuding_overlay="profile"; action_requested.emit("phone_refresh",{}),Color("e9f1ff"),BLUE,0,Color("88aee8")).name="ZjudingProfileMenu"
-		_label(body,"林星宇" if identity else "身份未读取",Rect2(115,14,125,29),21,INK)
-		_label(body,"浙江大学",Rect2(115,43,125,23),12,Color("777777"))
-		_button(body,"⌕　百事通",Rect2(249,18,117,38),func(): zjuding_overlay="search"; action_requested.emit("phone_refresh",{}),Color("f7f7f9"),MUTED,0,Color("b9bbc1")).name="ZjudingSearchOpen"
-		var card=_panel(body,Rect2(11,74,356,230),Color("0755b9"),Color("063f90"),0,2)
-		for x in [26,152,262]: _panel(card,Rect2(x,17,53,39),Color(.7,.85,1,.13))
-		if s.actOne.phase in ["system_required","inventory_required","system_return_required","reservation_briefing_required"]:
-			_act(card,"求",Rect2(15,24,59,59),"c2_open_system",null,Color("b51f31"),Color.WHITE,30,Color.WHITE).name="ZjudingSystemSeal"
-		else:
-			_panel(card,Rect2(15,24,59,59),Color("0755b9"),Color("e7f0ff"),30,3)
-			_label(card,"求",Rect2(15,24,59,59),22,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
-		_label(card,"林星宇" if identity else "▓▓▓",Rect2(88,27,204,31),16,Color.WHITE)
-		_label(card,"3250100755/求是学院（归口..." if identity else "▓▓▓▓▓▓▓▓",Rect2(88,63,238,25),12,Color.WHITE)
-		_panel(card,Rect2(10,100,336,117),Color.TRANSPARENT,Color("6096d2"),0,2)
-		for i in range(4):
-			var titles=["身份码","电子校园卡","校园钱包","部门黄页"]; var icons=["◎","▣","◇","☎"]
-			var active=(i==1 and identity) or (i==3 and s.actOne.phase!="prologue")
-			var rect=Rect2(12+i*83,103,82,111)
-			if active:
-				var id="campus_card" if i==1 else "directory"
-				var action=_button(card,icons[i]+"\n"+titles[i],rect,func(): _zju_open(id),Color("0755b9"),Color.WHITE,0,Color.TRANSPARENT)
-				action.add_theme_font_size_override("font_size",13); action.name="ZjudingShortcut_"+id
-			else: _label(card,icons[i],rect,34,Color("a6c0e3"),HORIZONTAL_ALIGNMENT_CENTER)
-		_button(body,"⌕　搜索应用与服务             搜索",Rect2(18,312,342,39),func(): zjuding_overlay="search"; action_requested.emit("phone_refresh",{}),Color.WHITE,MUTED,0,Color("a8b5cb")).name="ZjudingSearchBar"
-		_panel(body,Rect2(11,360,356,273),Color.WHITE,Color("d4e1f7"),0,2)
-		for i in range(ZJU_APPS.size()): _zju_app_tile(body,ZJU_APPS[i],Rect2(16+i%5*69.5,365+int(i/5)*85.5,69.5,85.5))
+		var body=_zju_scroll(root,69,ZjudingChrome.CANVAS)
+		body.custom_minimum_size.y=566
+		body.size.y=566
+		_zju_identity_header(root)
+		_zju_identity_card(body)
+		_zju_search_trigger(body,Rect2(13,218,352,40),"浙大百事通","ZjudingSearchBar",Color.WHITE)
+		ZjudingChrome.panel(body,Rect2(11,272,356,251),Color.WHITE,13)
+		for i in range(ZJU_APPS.size()):
+			_zju_app_tile(body,ZJU_APPS[i],Rect2(14+i%5*70,277+int(i/5.0)*80,70,76))
 		_zju_nav(root)
 	if not zjuding_overlay.is_empty(): _zju_sheet(root)
 	return root
@@ -1637,14 +1756,6 @@ func _zju_utility(root: Control) -> void:
 			else:
 				_zju_row(body,321,"校园导航","已开放" if s.actOne.dormHubUnlocked else "当前阶段未开放","进入",func(): _zju_open("campus_map"))
 				_zju_row(body,413,"服务联络","部门黄页可用","查看",func(): _zju_open("contacts"))
-		"messages":
-			var messages=[["校园网状态",network,""]]
-			if _zju_identity(): messages.append(["校园身份已读取","林星宇·3250100755","campus_card"])
-			if _zju_library_access(): messages.append(["图书馆座位预约" if s.ui.librarySeatReserved else "图书馆服务已开放","已预约 "+str(s.ui.librarySelectedSeat)+" 号座位" if s.ui.librarySeatReserved else "可查看开放时间与座位预约。","library"])
-			_zju_summary(body,"校园通知",str(messages.size())+" 条消息","")
-			for i in range(messages.size()):
-				var entry: Array=messages[i]
-				_zju_row(body,137+i*92,entry[0],entry[1],"查看",Callable() if entry[2].is_empty() else func(): _zju_open(entry[2]))
 		"all_apps":
 			_zju_summary(body,"统一应用目录","工作台","查找校园应用与服务。")
 			var y=137.0
