@@ -17,34 +17,39 @@ func contrast(a: Color,b: Color) -> float:
 func _initialize() -> void: run.call_deferred()
 func run() -> void:
 	var game=Game.new(); root.add_child(game); game.set_process(false); await process_frame
-	for width: float in [390,430,1280]:
-		var factor:=minf((width-20)/960,(844.0-20)/540 if width<1100 else (720.0-20)/540)
+	for extent: Vector2 in [Vector2(1280,720),Vector2(1024,768),Vector2(390,844),Vector2(430,860),Vector2(844,390)]:
+		root.size=Vector2i(extent)
+		var factor:=minf((extent.x-20)/960,(extent.y-20)/540)
 		game.scale=Vector2.ONE*factor; game._apply_presentation_layout(true); await process_frame; game._process(0.0)
 		check(game.size==Vector2(960,540),"canonical gameplay viewport unchanged")
 		check(game.positions==[78.0,22.0,38.0] and game.TARGET==[34.0,52.0,70.0] and game.WIND==[5.5,6.5,7.5],"presentation never changes source physics data")
 		check(game.elapsed==0 and game.moves==0 and not game.started,"readability does not advance gameplay")
-		check(game.label.get_theme_font_size("font_size")*factor>=15,"instructions meet15 physical pixels")
-		check(contrast(game.label.get_theme_color("font_color"),Color("15243a"))>=4.5,"instructions readable on the actual dark surface")
-		var text_size: Vector2=game.FONT.get_multiline_string_size(game.label.text,HORIZONTAL_ALIGNMENT_LEFT,game.label.size.x,game.label.get_theme_font_size("font_size"))
-		print("WEATHER_LAYOUT ",width," ",factor," ",text_size," label=",game.label.size," font=",game.label.get_theme_font_size("font_size"))
-		check(text_size.y<=game.label.size.y+.5,"instruction text fits its box without clipping")
+		check(game.label.get_theme_font_size("font_size")*factor>=15,"instructions meet 15 physical pixels")
+		check(contrast(game.label.get_theme_color("font_color"),Color("15243a"))>=4.5,"instructions readable on actual dark surface")
+		var text_size: Vector2=game.FONT.get_string_size(game.label.text,HORIZONTAL_ALIGNMENT_LEFT,-1,game.label.get_theme_font_size("font_size"))
+		print("WEATHER_LAYOUT ",extent," scale=",factor," text=",text_size," cloud=",game.cloud_size*factor)
+		check(text_size.y<=game.label.size.y+.5 and text_size.x<=game.label.size.x+.5,"instruction text fits without clipping")
+		check("Q/E" not in game.label.text and "A/D" not in game.label.text and "Z/C" not in game.label.text,"hotkeys are not the default interface")
+		check(game.get_children().filter(func(c): return c is Button).size()==2,"only start/pause and navigation buttons remain")
 		var surface:=Rect2(Vector2.ZERO,game.size)
-		for i in range(game.row_buttons.size()):
-			var button: Button=game.row_buttons[i]
-			check(surface.encloses(Rect2(button.position,button.size)),"direction control inside surface")
-			check(button.size.y*factor>=28 and button.size.x*factor>=28,"direction control has real touch target")
-			check(button.get_theme_font_size("font_size")*factor>=14,"direction label is readable")
-			check(button.get_meta("weather_band")==2-i/2 and button.get_meta("weather_direction")==(-1 if i%2==0 else 1),"source band/direction identity retained")
-			check(contrast(button.get_theme_color("font_color"),button.get_theme_stylebox("normal").bg_color)>=4.5,"direction text contrast")
-			if i>=2: check(not Rect2(button.position,button.size).intersects(Rect2(game.row_buttons[i-2].position,game.row_buttons[i-2].size)),"adjacent row targets do not overlap")
+		for band: int in range(3):
+			var cloud: Rect2=game.cloud_rect(band)
+			check(surface.encloses(cloud),"visible cloud and touch area stay inside surface")
+			check(cloud.size.y*factor>=44 and cloud.size.x*factor>=44,"cloud has 44 physical pixel touch target")
+			check(not cloud.intersects(Rect2(game.label.position,game.label.size)),"cloud target does not cover status text")
+			if band>0: check(not cloud.intersects(game.cloud_rect(band-1)),"adjacent cloud targets do not overlap")
+			for button: Button in [game.start_button,game.exit_button]:
+				check(not cloud.intersects(Rect2(button.position,button.size)),"cloud target does not cover navigation")
 		for button: Button in [game.start_button,game.exit_button]:
-			check(surface.encloses(Rect2(button.position,button.size)),"start/return stays in surface")
-			check(button.size.y*factor>=28,"start/return real touch height")
+			check(surface.encloses(Rect2(button.position,button.size)),"start/return stays inside surface")
+			check(button.size.y*factor>=44 and button.size.x*factor>=44,"start/return real touch size")
+			check(button.get_theme_font_size("font_size")*factor>=14,"navigation label readable")
 			check(game.FONT.get_string_size(button.text,HORIZONTAL_ALIGNMENT_LEFT,-1,button.get_theme_font_size("font_size")).x+12<=button.size.x,"start/return caption fits")
-		if width>=1100: check(game.row_centers==[175.0,265.0,355.0] and game.row_buttons[0].position==Vector2(42,150),"desktop cloud geometry is preserved")
-	game.started=true; game.touch_directions=[1,1,1]; game.directions=[1,1,1]
+			check(contrast(button.get_theme_color("font_color"),button.get_theme_stylebox("normal").bg_color)>=4.5,"navigation text contrast")
+		if extent.x>=1100: check(game.row_centers==[175.0,265.0,355.0],"desktop cloud geometry preserved")
+	game._resume_shared_pause(); game.directions=[1,1,1]; game.held_keys[KEY_C]=true
 	game._notification(MainLoop.NOTIFICATION_APPLICATION_FOCUS_OUT)
-	check(game.paused and game.directions==[0,0,0] and game.touch_directions==[0,0,0] and game.shared_pause_overlay.is_open(),"existing pause/release/resume contract preserved")
+	check(game.paused and game.directions==[0,0,0] and game.held_keys.is_empty() and game.pointer_owner==game.NO_POINTER and game.shared_pause_overlay.is_open(),"pause releases all sources and exposes shared resume")
 	game.queue_free(); await process_frame
 	print("Weather readability: ",checks," checks / ",failures," failures")
 	quit(1 if failures else 0)
