@@ -682,7 +682,7 @@ jobs:
     runs-on: ubuntu-latest
     # The complete C2 save/reload/exercise/weather chain stays independent.
     # Other phone cases run as fresh invocations alongside shorter whole cases.
-    timeout-minutes: 18
+    timeout-minutes: 27
     permissions:
       contents: read
     strategy:
@@ -728,9 +728,9 @@ jobs:
             --output-receipt godot_native/exports/verification/verified-inputs.json
 
       - name: Accept actual early charging and two-stage Tiyi phone input
-        # Continuous ten-segment pointer runs exceeded the former eight-minute
-        # DPR3 software-rendering bound without a failed interaction assertion.
-        timeout-minutes: 12
+        # The DPR3 software-rendered run includes deferred pack mounting after
+        # reload and all ten continuous traces. Leave time for both on slow hosts.
+        timeout-minutes: 20
         shell: bash
         run: |
           set -euo pipefail

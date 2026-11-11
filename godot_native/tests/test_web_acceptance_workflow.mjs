@@ -81,9 +81,9 @@ await test('one immutable producer fans out to eleven bounded jobs including opt
   assert.equal((workflow.match(/node godot_native\/tools\/build_web\.mjs/g) || []).length, 1);
   assert.match(step('Accept actual world input for this profile'), /--scenarios mobile-world --only "\$ACCEPTANCE_PROFILE"/);
   const phone = step('Accept actual early charging and two-stage Tiyi phone input', phoneJob);
-  assert.match(phoneJob, /^    timeout-minutes: 18$/m);
+  assert.match(phoneJob, /^    timeout-minutes: 27$/m);
   assert.match(profilesJob, /^    timeout-minutes: 12$/m);
-  assert.match(phone, /timeout-minutes: 12/);
+  assert.match(phone, /timeout-minutes: 20/);
   assert.match(phone, /--scenarios phone-recovery --only "\$ACCEPTANCE_PROFILE"/);
   assert.match(phone, /--phone-group "\$ACCEPTANCE_PHONE_GROUP"/);
   for (const job of [baselineJob, streamingJob, profilesJob, phoneJob, libraryJob]) {
