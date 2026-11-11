@@ -31,7 +31,8 @@ concurrency:
 jobs:
   build:
     name: Build Godot Web game
-    runs-on: ubuntu-latest
+    # Keep signed FFmpeg installation on the Ubuntu 24.04 package archive.
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     outputs:
       bundle_name: ${{ steps.acceptance_bundle.outputs.bundle_name }}
