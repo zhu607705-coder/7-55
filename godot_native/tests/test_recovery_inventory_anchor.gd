@@ -44,8 +44,7 @@ func main_reading_clearance(source:Dictionary)->void:
      app=shell.page_body.find_child("C35App_*",false,false)
     check(app!=null,"Chapter 3.5 reading frame is ready: "+page)
     if app!=null:
-     var inset := maxi(18,shell.phone_chrome.recovery_inventory_inset())
-     check(app.content_margin.get_theme_constant("margin_left")==inset and app.content_margin.get_theme_constant("margin_right")==18 and is_equal_approx(app.content.size.x,406.0-inset),"Chapter 3.5 reserves only the left shelf clearance: "+page)
+     check(app.content_margin.get_theme_constant("margin_left")==18 and app.content_margin.get_theme_constant("margin_right")==18 and is_equal_approx(app.content.size.x,388.0),"Chapter 3.5 has symmetric margins independent of the shelf: "+page)
     if page=="c35_network":shell.set_process(false)
    var controls:=semantic_controls(shell.page_body)
    check(not controls.is_empty(),"actual Main mounts semantic reading content: "+page)
@@ -66,7 +65,7 @@ func main_reading_clearance(source:Dictionary)->void:
      if not bounds.has_area():continue
      var full:=physical_rect(control);var viewport:=physical_rect(shell.phone_scroll)
      check(full.position.x>=viewport.position.x-.5 and full.end.x<=viewport.end.x+.5,"reading content remains horizontally inside real phone: "+str(dims)+" "+page+" "+control.text)
-     if shell.phone_chrome.inventory.is_visible_in_tree():check(not occupied.intersects(bounds),"reading content clears the collapsed bag: "+str(dims)+" "+control.text)
+     if page=="c3_lake" and shell.phone_chrome.inventory.is_visible_in_tree():check(not occupied.intersects(bounds),"reading content clears the collapsed bag: "+str(dims)+" "+control.text)
     if page!="c3_lake":
      var toolbar:Control=shell.page_body.find_child("PhoneAppToolbar",true,false)
      var face:Rect2=shell.phone_chrome.inventory_handle.get_meta("painted_rect")
@@ -147,11 +146,11 @@ func run():
    touch.pressed=false;Input.parse_input_event(touch);await settle()
    s.native.page=page;chrome.refresh(s);await settle()
    var lower:float=chrome.inventory_top+20;chrome.set_inventory_top(lower)
-   if not inside_shelf:check(chrome.inventory.position.y==lower,"lake expanded drawer still moves")
+   check(chrome.inventory.position.y==lower,"expanded drawer can move along the left rail")
    s.ui.inventoryOpen=false;chrome.refresh(s);await settle()
    check(chrome.inventory_handle.get_global_rect().size.is_equal_approx(handle.size),"close restores same collapsed target size")
    if inside_shelf:
-    check(physical_rect(chrome.inventory_handle).is_equal_approx(handle),"close returns to the same shelf geometry")
+    check(is_equal_approx(physical_rect(chrome.inventory_handle).position.x,handle.position.x) and chrome.inventory.position.y==lower,"close keeps the moved recovery drawer position")
    else:
     check(chrome.inventory.position.x<=0 and chrome.inventory.position.y==lower,"lake close retains deliberate vertical position")
    s.native.page="cc98";chrome.refresh(s);await settle()

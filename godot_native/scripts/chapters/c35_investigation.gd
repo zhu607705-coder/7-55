@@ -1,11 +1,12 @@
 extends RefCounted
 ## The native investigation extends the original interlude without creating source evidence.
 const KEY := "c35_investigation"
-const STEPS := ["inbox","notice","assignment","camera","files","file","attached","file_error","receipt","album_trace","journal","group","seen","private","map","arrival","confirmed"]
+const STEPS := ["inbox","notice","assignment","camera","files","file","attached","file_error","receipt","album_trace","journal","group","seen","private","map","entrance","arrival","confirmed"]
 const CAMPUS_SIZE := Vector2(4516,3420)
-# Source pixels of the active north_teaching_V3 layer and the adjacent path.
+# Footprint of the active north_teaching_V3 layer, in north-up source pixels.
+const NORTH_TEACHING_AREA := Rect2(1499,694,398,414)
+# Older saves record entrance-sized pins on their respective maps.
 const WEST_APPROACH := Rect2(1567,841,104,56)
-const EAST_APPROACH := Rect2(1731,841,117,56)
 const LEGACY_WEST_APPROACH := Rect2(1100,1010,145,130)
 const FILE_ID := "calculus_week10_scan"
 const PHOTO_ID := "calculus_week10_photo"
@@ -18,7 +19,13 @@ const REPLIES := {
 	"identity":"助教您好，我是林星宇，学号 3250100755。这是我的第十周作业，麻烦您查收。",
 	"bare":"这是我补交的作业。",
 }
-const GROUP_REPLIES := {"route":"刚才有人看见我往哪边走了吗？","photo":"有没有人收到过我离开湖边时发的位置？"}
+const GROUP_REPLIES := {"route":"我从启真湖回来后断网了一阵。22:40 左右，有人看到我在北教附近吗？","photo":"有没有人收到过我离开湖边时发的位置？"}
+const RECORDS := [
+	["record_north_east","22:38:12","东门外围","14 秒","室外弱覆盖。接入期间在两个室外节点间漫游。","22:37:05 才在湖边拴好船。不到一分十秒就到北教东门，和这段步行距离对不上。"],
+	["record_north_court","22:42:18","中庭绿地","45 秒","室外移动状态。最后一次收到数据是 22:43:03。","位置共享刚在东门外断开。这段是室外漫游，比玻璃门后的广播早了将近三分钟。"],
+	["record_north_hall_long","22:44:52","A 区大厅","21 秒","广播开始后仍持续连接，于 22:45:13 断开。","录音里广播一响，连接就中断了。这条在 22:45:00 之后还持续了 13 秒。"],
+	["record_0755","22:44:57","A 区大厅","3 秒","短接入记录，于 22:45:00 断开。",""],
+]
 
 static func begin(snapshot: Dictionary) -> void:
 	snapshot.native[KEY]={"step":"inbox","pin":[]}
@@ -44,19 +51,26 @@ static func valid(snapshot: Dictionary) -> bool:
 	if not route.get("captured",false) is bool or not route.get("pdf",false) is bool: return false
 	if route.get("pdf",false) and not route.get("captured",false): return false
 	if route.has("reply") and route.reply not in ["attachment","missing"] and not REPLIES.has(route.reply): return false
-	if not route.get("identity_requested",false) is bool: return false
+	if not route.get("identity_requested",false) is bool or not route.get("broadcast_heard",false) is bool: return false
+	if route.get("album_return","") not in ["","files","receipt"]: return false
+	if route.get("album_photo","") not in ["","lake","dock"] or not route.get("album_seen",false) is bool: return false
+	if route.get("entry_side","") not in ["","west"]: return false
+	if (route.has("entry_side") or route.get("broadcast_heard",false)) and index<STEPS.find("arrival"): return false
 	if route.has("group_reply") and not GROUP_REPLIES.has(route.group_reply): return false
 	for field: String in ["preview_file","attachment"]:
 		if route.has(field) and not file_available(route,route[field]): return false
 	if route.get("attachment","") == EARLIER_FILE_ID: return false
 	if index>=STEPS.find("receipt") and route.has("attachment") and (route.attachment!=FILE_ID or not route.has("reply")): return false
 	var map_version: Variant=route.get("map","")
-	if map_version not in ["","layered"]: return false
+	if map_version not in ["","layered","layered_district"]: return false
 	var interlude: Dictionary=snapshot.chapterThreeInterlude
 	if index>0 and not interlude.recoveryOpened: return false
 	if index>=STEPS.find("group") and not interlude.evidenceIds.has("journal_start"): return false
-	if index<STEPS.find("arrival"): return map_version=="" and route.pin.is_empty() and not interlude.replayUnlocked
-	var bounds := WEST_APPROACH if map_version=="layered" else LEGACY_WEST_APPROACH
+	if index<STEPS.find("entrance"): return map_version=="" and route.pin.is_empty() and not interlude.replayUnlocked
+	var bounds := LEGACY_WEST_APPROACH
+	match map_version:
+		"layered": bounds=WEST_APPROACH
+		"layered_district": bounds=NORTH_TEACHING_AREA
 	if not bounds.has_point(point(route.pin)): return false
 	if route.step=="confirmed":
 		return interlude.destinationId=="duan_yongping_a1" and interlude.networkRecordRead and interlude.networkRecordId=="record_0755"
@@ -83,8 +97,8 @@ static func dispatch(snapshot: Dictionary, action: String, value: Variant) -> Di
 		"capture":
 			if current!="camera": return result
 			route.captured=true
-			route.step="file"
-			route.preview_file=PHOTO_ID
+			route.step="files"
+			route.erase("preview_file")
 			return result
 		"preview":
 			if current!="files" or not file_available(route,value): return result
@@ -124,6 +138,35 @@ static func dispatch(snapshot: Dictionary, action: String, value: Variant) -> Di
 				route.preview_file=PHOTO_ID
 			else: route.step="camera"
 			return result
+		"open_album":
+			if current not in ["files","receipt"] or value not in ["lake","dock"]: return result
+			route.album_return=current
+			route.album_photo=value
+			route.album_seen=true
+			route.step="album_trace"
+			return result
+		"journal":
+			if current!="album_trace" or route.get("album_photo","dock")!="dock": return result
+			if not interlude.evidenceIds.has("journal_start"): route.step="journal"
+			return {"handled":true,"page":"c35_journal","message":""}
+		"close_album":
+			if current!="album_trace": return result
+			route.step=route.get("album_return","receipt")
+			route.erase("album_return")
+			route.erase("album_photo")
+			return result
+		"continue_group":
+			if current=="receipt" and interlude.evidenceIds.has("journal_start"): route.step="group"
+			return result
+		"entrance":
+			if current!="entrance": return result
+			if value!="west": return {"handled":true,"message":"周琪记得东门的铁门拉不开。再对照残片，虚线从东门外绕向了哪一侧？"}
+			route.entry_side="west"
+			route.step="arrival"
+			return result
+		"broadcast":
+			if current=="arrival": route.broadcast_heard=true
+			return result
 		"ask":
 			if current!="group" or not GROUP_REPLIES.has(value): return result
 			route.group_reply=value
@@ -134,7 +177,6 @@ static func dispatch(snapshot: Dictionary, action: String, value: Variant) -> Di
 		"camera":["assignment","camera"],"files":["assignment","files"],
 		"cancel_camera":["camera","assignment"],"close_files":["files","assignment"],
 		"close_preview":["file","files"],"replace_file":["attached","files"],
-		"open_album":["receipt","album_trace"],"journal":["album_trace","journal"],
 		"private":["seen","private"],"map":["private","map"],
 	}
 	if transitions.has(action):
@@ -149,23 +191,32 @@ static func dispatch(snapshot: Dictionary, action: String, value: Variant) -> Di
 			interlude.recoveryOpened=true
 			interlude.phase="journal_closeout"
 			snapshot.currentScene="timeline_recovery"
-		if action=="journal": return {"handled":true,"page":"c35_journal","message":""}
 		return {"handled":true,"message":""}
 	if action=="pin" and current=="map":
 		var position := point(value)
 		if not Rect2(Vector2.ZERO,CAMPUS_SIZE).has_point(position): return {"handled":true,"message":"请在校园地图上标一个位置。"}
-		if EAST_APPROACH.has_point(position): return {"handled":true,"message":"这是东侧入口，清楼时已经锁了。沿中间的绿带找西侧大厅。"}
-		if not WEST_APPROACH.has_point(position): return {"handled":true,"message":"这处和周琪说的教学楼入口对不上。可以换一处再落针。"}
+		if not NORTH_TEACHING_AREA.has_point(position):
+			return {"handled":true,"message":"这片楼群对不上。再看看红边球场隔街往南，找四组排成田字的院落。"}
 		route.pin=value.duplicate()
-		route.map="layered"
-		route.step="arrival"
-		return {"handled":true,"message":"匹配到北教 A 楼西侧大厅入口。"}
+		route.map="layered_district"
+		route.step="entrance"
+		return {"handled":true,"message":"已定位到北教学区。"}
 	if action=="compare" and current=="arrival":
-		if value!="record_0755": return {"handled":true,"message":"这条记录的接入点或时刻与清楼广播对不上。"}
+		if not route.get("broadcast_heard",false): return {"handled":true,"message":"先听清录音末尾的广播。"}
+		var record := RECORDS.filter(func(row: Array) -> bool: return row[0]==value)
+		if record.is_empty(): return result
+		if value!="record_0755": return {"handled":true,"message":record[0][5]}
 		interlude.networkRecordRead=true
 		interlude.networkRecordId="record_0755"
 		interlude.destinationId="duan_yongping_a1"
 		interlude.phase="destination_verified"
 		route.step="confirmed"
-		return {"handled":true,"message":"接入发生在清楼广播前 3 秒。位置和时间对上了。"}
+		return {"handled":true,"message":"22:44:57 进入大厅，3 秒后广播响起、连接断开。地点和时间都对上了。"}
 	return {"handled":true,"message":""}
+
+static func finish_journal(snapshot: Dictionary) -> void:
+	if step(snapshot)!="journal": return
+	var route: Dictionary=snapshot.native[KEY]
+	route.step="files" if route.get("album_return","")=="files" else "group"
+	route.erase("album_return")
+	route.erase("album_photo")

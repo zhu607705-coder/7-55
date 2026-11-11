@@ -6,6 +6,9 @@ const Spotlight=preload("res://scripts/games/c3_spotlight_model.gd")
 const DefenseSolver=preload("res://tests/campaign_defense_solver.gd")
 const FishSolver=preload("res://tests/campaign_fishing_solver.gd")
 const CompactUI=preload("res://tests/campaign_compact_ui.gd")
+const Investigation=preload("res://scripts/chapters/c35_investigation.gd")
+const HallRecording=preload("res://scripts/ui/c35_hall_recording.gd")
+const Chapter3PhonePages=preload("res://scripts/ui/chapter3_phone_pages.gd")
 var r: SceneTree
 var c: RefCounted
 var lake_world: Control
@@ -180,14 +183,56 @@ func lake() -> void:
 	await r.boundary("lake escape")
 
 func interlude() -> void:
-	const Investigation=preload("res://scripts/chapters/c35_investigation.gd")
-	var new_route: bool=Investigation.has_route(r.state.d)
-	if new_route:
-		for action in ["message","ta_private","camera","capture","convert"]: await r.step("c35_trace:"+action)
-		await r.step("c35_trace:attach",Investigation.FILE_ID)
-		await r.step("c35_trace:reply","identity")
-		for action in ["submit","open_album","journal"]: await r.step("c35_trace:"+action)
-	else: await r.step("c35_begin")
+	if Investigation.has_route(r.state.d):
+		await recovered_interlude()
+	else:
+		await legacy_interlude()
+	if r.failures>0: return
+	await r.step("c35_replay")
+	if r.check(r.state.d.chapterThreeInterlude.phase=="replay_ready" and r.state.d.chapterThreeInterlude.replayUnlocked,"verified interlude route unlocks recovered replay"):
+		r.completed_chapters.append(3)
+		await r.boundary("chapter3 interlude")
+
+func recovered_interlude() -> void:
+	for action in ["message","ta_private","camera","capture"]: await r.step("c35_trace:"+action)
+	await r.step("c35_trace:preview",Investigation.PHOTO_ID)
+	await r.step("c35_trace:convert")
+	await r.step("c35_trace:attach",Investigation.FILE_ID)
+	await r.step("c35_trace:reply","identity")
+	await r.step("c35_trace:submit")
+	if not r.check(Investigation.step(r.state.d)=="receipt","photographed and converted assignment earns a private receipt"): return
+	await r.step("c35_trace:open_album","dock")
+	await r.step("c35_trace:journal")
+	await r.step("c35_journal","safe_return")
+	if not r.check(Investigation.step(r.state.d)=="group" and r.state.d.chapterThreeInterlude.evidenceIds==["journal_start"],"dock photo leads to a posted departure-time anchor"): return
+	await r.step("c35_trace:ask","route")
+	await r.step("c35_trace:private","zhou_qi")
+	await r.step("c35_trace:map")
+	var point: Vector2=Investigation.NORTH_TEACHING_AREA.get_center()
+	await r.step("c35_trace:pin",[point.x,point.y])
+	if not r.check(Investigation.step(r.state.d)=="entrance","district placement prompts the entrance deduction"): return
+	await r.step("c35_trace:entrance","west")
+	if not r.check(Investigation.step(r.state.d)=="arrival","west entrance unlocks the hall audio and network records"): return
+	await r.step("c35_trace:compare","record_0755")
+	if not r.check(Investigation.step(r.state.d)=="arrival","network comparison waits for the actual broadcast cue"): return
+	var recording := HallRecording.new()
+	r.root.add_child(recording)
+	recording.build(Chapter3PhonePages.new(),false,1.0)
+	var cue := recording.find_child("C35RecordingCue2",true,false) as Button
+	cue.pressed.emit()
+	var deadline := Time.get_ticks_msec()+5000
+	while not recording.reviewed and Time.get_ticks_msec()<deadline:
+		await r.create_timer(.025).timeout
+	r.trace.append({"nativeHallRecordingSeconds":recording.furthest,"broadcastReviewed":recording.reviewed})
+	var broadcast_reviewed: bool=recording.reviewed
+	recording.free()
+	if not r.check(broadcast_reviewed,"actual hall recording playback earns the broadcast cue"): return
+	await r.step("c35_trace:broadcast")
+	await r.step("c35_trace:compare","record_0755")
+	r.check(Investigation.can_replay(r.state.d),"matching three-second connection unlocks the recovered replay")
+
+func legacy_interlude() -> void:
+	await r.step("c35_begin")
 	await r.step("c35_journal","safe_return")
 	for id in ["paper_left","paper_middle","paper_right"]:
 		await r.step("c35_frame",id)
@@ -220,18 +265,7 @@ func interlude() -> void:
 	await r.step("c35_network","record_0755")
 	if not r.check(r.state.d.chapterThreeInterlude.evidenceIds.size()==4,"four independent interlude evidence categories recovered"): return
 	for id in c.interlude.REASONS: await r.step("c35_reject:"+id,c.interlude.REASONS[id])
-	if new_route:
-		await r.step("c35_trace:ask","route")
-		await r.step("c35_trace:private","zhou_qi")
-		await r.step("c35_trace:map")
-		var point: Vector2=Investigation.WEST_APPROACH.get_center()
-		await r.step("c35_trace:pin",[point.x,point.y])
-		await r.step("c35_trace:compare","record_0755")
-	else: await r.step("c35_destination","duan_yongping_a1")
-	await r.step("c35_replay")
-	if r.check(r.state.d.chapterThreeInterlude.phase=="replay_ready" and r.state.d.chapterThreeInterlude.replayUnlocked,"verified interlude route unlocks recovered replay"):
-		r.completed_chapters.append(3)
-		await r.boundary("chapter3 interlude")
+	await r.step("c35_destination","duan_yongping_a1")
 
 func lake_interact(id: String) -> Dictionary:
 	lake_world.refresh_world()

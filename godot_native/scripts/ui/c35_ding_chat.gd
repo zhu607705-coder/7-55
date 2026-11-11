@@ -12,8 +12,8 @@ const OUTGOING := Color("d4e8ff")
 const LINE := Color("bacdde")
 const GROUP_NAME := "微积分（甲）课程群"
 const MEMBERS := {
-	"ta":"课程助教","zhou_qi":"周琪","chen_jia":"陈嘉","player":"林星宇","sun_yu":"孙雨",
-	"jiang_lin":"蒋琳","he_miao":"何淼","zhao_ke":"赵可","qian_yu":"钱瑜","lu_jia":"陆佳",
+	"ta":"助教 · 张学长","zhou_qi":"周琪","chen_jia":"陈嘉","player":"林星宇","sun_yu":"孙雨",
+	"jiang_lin":"蒋琳","he_miao":"何淼","zhao_ke":"赵可","qian_yu":"钱瑜","lu_jia":"陆佳","chen_mo":"陈默","lin_xiao":"林晓","zhao_yu":"赵宇",
 }
 
 static func surface(pages, parent: Control, color: Color, padding: Vector2, radius: int) -> VBoxContainer:
@@ -78,7 +78,7 @@ static func composer(pages, frame: Control, copy: String, candidates: Dictionary
 	trigger.name="C35ChatComposer"
 	return trigger
 
-static func choice_sheet(pages, frame: Control, title: String, choices: Dictionary, selected: Callable) -> void:
+static func choice_sheet(pages, frame: Control, title: String, choices: Dictionary, selected: Callable, description: String="") -> void:
 	var previous := frame.get_node_or_null("C35ChoiceSheet")
 	if previous!=null: return
 	var overlay := VBoxContainer.new()
@@ -102,12 +102,16 @@ static func choice_sheet(pages, frame: Control, title: String, choices: Dictiona
 	var close := chip(pages,header,"收起",overlay.queue_free)
 	close.custom_minimum_size.x=72
 	close.size_flags_horizontal=Control.SIZE_SHRINK_END
+	if not description.is_empty(): panel.add_child(pages.label(description,15,MUTED))
 	for id: String in choices:
 		var option := chip(pages,panel,str(choices[id]),func() -> void:
 			overlay.queue_free()
 			selected.call(id))
 		option.name="C35Candidate_"+id
 		option.alignment=HORIZONTAL_ALIGNMENT_LEFT
+
+static func profile(pages,frame: Control,who: String) -> void:
+	choice_sheet(pages,frame,MEMBERS.get(who,who),{},Callable(),"微积分（甲）课程群成员")
 
 static func group_settings(pages, frame: Control, member_action: Callable, notice: String) -> void:
 	frame.configure(GROUP_NAME,"归属于 浙江大学 · 内部群")

@@ -1624,11 +1624,19 @@ func _zju_identity_card(body: Control) -> void:
 	lines.size=card.size
 	card.add_child(lines)
 	var seal_rect := Rect2(15,17,53,53)
+	var seal: Control
+	var seal_ink := Color("dcecff")
 	if s.actOne.phase in ["system_required","inventory_required","system_return_required","reservation_briefing_required"]:
-		_act(card,"求",seal_rect,"c2_open_system",null,Color("b51f31"),Color.WHITE,30,Color.WHITE).name="ZjudingSystemSeal"
+		var button := ZjudingChrome.round_button(_act(card,"",seal_rect,"c2_open_system",null,Color("aa2939"),Color.WHITE,0,Color("ffd9ba")),26)
+		button.name="ZjudingSystemSeal"
+		button.set_meta("phone_button_role","object")
+		button.accessibility_name="查看求是印章"
+		button.tooltip_text=button.accessibility_name
+		seal=button
+		seal_ink=Color("ffebcf")
 	else:
-		ZjudingChrome.panel(card,seal_rect,Color("3370bd"),14)
-		_label(card,"求",seal_rect,22,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
+		seal=ZjudingChrome.panel(card,seal_rect,Color("2b6cb8"),26)
+	ZjudingChrome.icon(seal,"campus_seal",Rect2(7,7,39,39),seal_ink)
 	_label(card,"林星宇" if identity else "校园身份未读取",Rect2(82,15,244,30),19,Color.WHITE)
 	_label(card,"3250100755 / 求是学院" if identity else "领取电子校园卡后显示",Rect2(82,48,249,23),13,Color("e7f1ff"))
 	var services := ZjudingChrome.panel(card,Rect2(10,87,336,101),Color("104481"),11)

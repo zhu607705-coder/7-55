@@ -1,5 +1,5 @@
 extends SceneTree
-## PR160 adapted to the existing local no-fixed-controls scheme.
+## Movement-only stick and direct object interaction coexist in the real shell.
 ## Actual Main/World, source dorm targets and root-dispatched events. Fixtures
 ## isolate pointer ownership; they are not earned gameplay or physical-device QA.
 var shell: Control
@@ -94,7 +94,7 @@ func fixture(dimensions := Vector2i(390,844), insets := Vector4.ZERO, bag := fal
 	check(not target().is_empty() and shell.world._distance(target()) <= float(target().radius)*.5,"real lamp target is in its original range")
 	check(visible_pick().is_finite(),"real painted source object has a visible pick")
 func held_clear(label: String) -> void:
-	check(shell.world.touch_axis==Vector2.ZERO and not shell.world.direct_gestures.has_active(),label+" clears movement and pointer owners")
+	check(shell.world.touch_axis==Vector2.ZERO and shell.world.mobile_stick_id==-1 and not shell.world.direct_gestures.has_active(),label+" clears movement and pointer owners")
 	check(shell.world._floor_route.is_empty(),label+" does not leave a floor route")
 
 func held_point() -> Vector2:return visible_pick()
@@ -103,7 +103,9 @@ func assert_layout(insets: Vector4) -> void:
 	var safe:=Rect2(insets.x,insets.y,shell.size.x-insets.x-insets.z,shell.size.y-insets.y-insets.w)
 	var metrics:Dictionary=shell.world.mobile_control_metrics()
 	check(shell.world.mobile_exploration,"compact exploration owns viewport")
-	check(metrics.scheme=="direct_world" and not metrics.has("stick") and not metrics.has("interact"),"local scene gestures keep fixed joystick and confirmation button removed")
+	check(metrics.scheme=="direct_world" and metrics.has("stick") and not metrics.has("interact"),"movement stick coexists with direct object taps and no confirmation button")
+	check(metrics.gestureArea.encloses(metrics.stick),"stick stays inside actual safe playfield")
+	check(metrics.stick.size.x*shell.world.hud_display_scale()>=44,"stick retains at least44 physical pixels")
 	check(metrics.gestureArea==shell.world.exploration_safe_rect(),"gesture area is actual visible scene, with no control strip")
 	check(safe.encloses(shell.world_frame.get_global_rect()),"world frame fits platform safe area")
 	for control:Control in [shell.mobile_back,shell.world_tasks,shell.world_mode,shell.inventory_dock]:
@@ -137,16 +139,24 @@ func assert_mobile_plaque_at_bottom(label: String) -> void:
 	var insets:Vector4=shell.test_safe_insets
 	var safe:=Rect2(insets.x,insets.y,shell.size.x-insets.x-insets.z,shell.size.y-insets.y-insets.w)
 	var metrics:Dictionary=shell.world.mobile_control_metrics()
-	check(metrics.scheme=="direct_world" and not metrics.has("stick"),label+" retains direct scene gestures")
+	check(metrics.scheme=="direct_world" and metrics.has("stick"),label+" retains direct scene gestures and locomotion stick")
 	check(shell.world.mobile_exploration and overlay.plaque.is_visible_in_tree(),label+" has a confirmed mobile plaque")
 	check(region.encloses(plaque) and safe.encloses(plaque),label+" stays entirely in the game viewport and simulated safe area")
-	check(absf(plaque.get_center().x-region.get_center().x)<=1,label+" remains horizontally centered")
+	var stick_bounds:Rect2=metrics.stick
+	var physical_stick:=Rect2(world_screen(stick_bounds.position),world_screen(stick_bounds.end)-world_screen(stick_bounds.position))
+	check(not plaque.intersects(physical_stick),label+" entire paper stays clear of the painted stick")
+	var normal_centered:bool=absf(plaque.get_center().x-region.get_center().x)<=1
+	var reserved_lane:bool=plaque.position.x>=physical_stick.end.x+7.9 and plaque.end.x<=region.end.x-7.9
+	check(normal_centered or reserved_lane,label+" stays centred or uses the clear right-hand lane beside the stick")
 	check(plaque.end.y>=region.position.y+region.size.y*.6,label+" uses the lower playfield above the inline tools")
 	# The local version keeps its tools and items inside the game viewport.
 	# Check actual character/shadow envelopes against those visible controls.
 	var characters:=plaque_character_rects()
 	var visible_overlap:=false;var characters_contained:=true
+	var stick:Rect2=metrics.stick
+	var stick_screen:=Rect2(world_screen(stick.position),world_screen(stick.end)-world_screen(stick.position))
 	for character:Rect2 in characters:
+		if character.intersects(stick_screen):visible_overlap=true
 		for control:Control in [shell.world_tasks,shell.world_mode,shell.mobile_back,shell.inventory_dock]:
 			if control.is_visible_in_tree() and character.intersects(control.get_global_rect()):visible_overlap=true
 		if not region.encloses(character) or not safe.encloses(character):characters_contained=false
@@ -191,6 +201,27 @@ func test_direct_tap() -> void:
 	# Leaving the same source range clears the confirmed plaque.
 	shell.world.player=FAR; shell.world._sync_player(); shell.world._process(0); await frames()
 	check(not shell.world.selected_overlay.plaque.visible,"range exit clears confirmed title")
+func test_long_confirmed_paper() -> void:
+	for dimensions:Vector2i in [Vector2i(390,844),Vector2i(568,320),Vector2i(844,390)]:
+		await fixture(dimensions)
+		# Presentation-only long-copy fixture. Interaction still begins with an
+		# ordinary source-object tap; no controller result is injected.
+		var point:=visible_pick();touch(point,true);touch(point,false);await frames(8)
+		# The real action refreshes source targets. Replace display copy only
+		# after that refresh, otherwise the fixture itself loses its long text.
+		var long_title:="用于检查窄屏换行的完整物件名称与现场说明记录"
+		var definition:=target();definition.label=long_title
+		shell.world._sync_selected_overlay();await frames(8)
+		check(shell.world.selected_overlay.object_heading.text==long_title,"long confirmed paper retains every authored fixture character")
+		assert_mobile_plaque_at_bottom("long confirmed paper")
+		var settled:Rect2=shell.world.selected_overlay.plaque.get_global_rect()
+		await frames(8)
+		check(shell.world.selected_overlay.plaque.get_global_rect().is_equal_approx(settled),"long wrapped paper keeps its complete settled position and size")
+		var journal:Vector2=shell.world_tasks.get_global_rect().get_center()
+		touch(journal,true);touch(journal,false);await frames()
+		check(is_instance_valid(shell.modal),"long paper leaves the actual journal touch target operable")
+		shell._close_modal();await frames()
+
 func test_no_remote_or_arrival() -> void:
 	await fixture()
 	shell.world.player=FAR;shell.world.pan_offset=Vector2(110,0)
@@ -239,7 +270,7 @@ func test_root_capture() -> void:
 		check(action_count()==count and not lamp(),pointer+" outside release never confirms object")
 	# Two map fingers retain the local shared pinch/pan owner.
 	await fixture();var count:=action_count();var zoom:float=shell.world.zoom
-	var a:=world_screen(Vector2(140,200));var b:=world_screen(Vector2(250,200))
+	var a:=world_screen(shell.world.size*Vector2(.55,.25));var b:=world_screen(shell.world.size*Vector2(.75,.25))
 	touch(a,true,3);touch(b,true,4);drag(b+Vector2(30,0),Vector2(30,0),4);await frames()
 	check(shell.world.zoom>zoom and action_count()==count,"root-routed pinch changes camera without interacting")
 	touch(Vector2(-40,-40),false,3);touch(b+Vector2(30,0),false,4);await frames();held_clear("pinch release")
@@ -296,6 +327,55 @@ func test_inventory_first_and_focus() -> void:
 	check(action_count()==count and not lamp() and state.d.items.campusCard,"inventory sequence cannot confirm object or consume wrong item")
 	check(not shell.inventory_handle.visible and shell.inventory_dock.visible,"local inline inventory stays exposed without bag toggle")
 
+func test_locomotion_stick() -> void:
+	await fixture()
+	var rect:Rect2=shell.world.mobile_control_metrics().stick
+	var center:=world_screen(rect.get_center())
+	var travel:float=rect.size.x*.32*shell.world.hud_display_scale()
+	var count:=action_count()
+	touch(center,true,12)
+	check(shell.world.mobile_stick_id==12 and shell.world.touch_axis==Vector2.ZERO,"stick center acquires one owner with neutral deadzone")
+	drag(center+Vector2(travel*.5,0),Vector2(travel*.5,0),12)
+	var partial:float=shell.world.touch_axis.length()
+	check(partial>0 and partial<.6,"half throw produces proportional movement intent")
+	var before:Vector2=shell.world.player
+	shell.world._process(.05)
+	check(shell.world.player.x>before.x and shell.world.player.distance_to(before)<6,"partial throw moves through real controller below full speed")
+	check(shell.world.can_stand(shell.world.player),"stick movement preserves legal collision position")
+	touch(center,true,13);drag(center-Vector2(travel,0),Vector2(-travel,0),13);touch(center,false,13)
+	check(shell.world.mobile_stick_id==12 and is_equal_approx(shell.world.touch_axis.length(),partial),"competing stick finger cannot replace or release owner")
+	var map_point:=world_screen(Vector2(shell.world.size.x*.65,shell.world.size.y*.35))
+	touch(map_point,true,15);drag(map_point+Vector2(20,0),Vector2(20,0),15)
+	for unused in 3:shell.world._process(.016)
+	check(shell.world.mobile_stick_id==12 and shell.world.touch_axis.length()>0 and not shell.world.direct_gestures.has_active(),"map finger during locomotion cannot steal ownership or cancel on camera follow")
+	mouse(center,true,InputEvent.DEVICE_ID_EMULATION);mouse(center,false,InputEvent.DEVICE_ID_EMULATION)
+	check(shell.world.mobile_stick_id==12 and action_count()==count,"emulated mouse cannot duplicate stick or object action")
+	drag(Vector2(-40,-40),Vector2(-200,-200),12)
+	check(is_equal_approx(shell.world.touch_axis.length(),1),"captured drag outside viewport clamps to full throw")
+	touch(Vector2(-40,-40),false,12);await frames();held_clear("stick release outside viewport")
+	var released_camera:Vector2=shell.world.camera
+	drag(map_point+Vector2(40,0),Vector2(20,0),15);touch(map_point+Vector2(40,0),false,15);await frames()
+	held_clear("remaining map finger after stick owner lifts")
+	check(shell.world.camera==released_camera and action_count()==count,"remaining ignored finger cannot pan or interact after owner release")
+	check(action_count()==count,"stick release never confirms nearby object")
+	for boundary in ["cancel","focus","application_focus","resize","modal","inventory"]:
+		await fixture()
+		rect=shell.world.mobile_control_metrics().stick;center=world_screen(rect.get_center())
+		touch(center,true,12);drag(center+Vector2(25,0),Vector2(25,0),12)
+		check(shell.world.touch_axis.length()>0,boundary+" starts with held locomotion")
+		match boundary:
+			"cancel":touch(center,false,12,true)
+			"focus":shell.world.notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_OUT)
+			"application_focus":shell.world.notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
+			"resize":root.size=Vector2i(844,390);shell.size=Vector2(844,390);shell._layout()
+			"modal":shell._show_journal()
+			"inventory":
+				var item:Control=shell.inventory_buttons.get_node_or_null("WorldItem_campusCard")
+				shell.inventory_scroll.ensure_control_visible(item);await frames()
+				touch(item.get_global_rect().get_center(),true,14);shell.world._process(0)
+		await frames();held_clear("stick "+boundary)
+		touch(center,false,12);await frames();held_clear("stick late release "+boundary)
+
 func test_keyboard() -> void:
 	await fixture(Vector2i(1440,900))
 	check(not shell.world.mobile_exploration and shell.world.size==Vector2(960,540),"desktop keeps canonical world")
@@ -318,6 +398,11 @@ func test_browser_cancel_boundary() -> void:
 	check(not shell.world.direct_gestures.has_active() and action_count()==count and not lamp(),"browser cancelled release clears ownership without accepting an object")
 	touch(point,false,0);await frames()
 	check(action_count()==count and not lamp(),"pinned engine's following ordinary release cannot revive cancelled touch")
+	var stick_center:=world_screen(shell.world.mobile_control_metrics().stick.get_center())
+	touch(stick_center,true,7);drag(stick_center+Vector2(25,0),Vector2(25,0),7)
+	check(shell.world.mobile_stick_id==7 and shell.world.touch_axis.length()>0,"browser cancellation probe owns active locomotion")
+	platform._on_browser_touch_cancel(["[7]"]);await frames();held_clear("browser canceled stick")
+	touch(stick_center,false,7);await frames();held_clear("browser late stick release")
 	platform.free()
 func run() -> void:
 	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"test uses an isolated save profile")
@@ -331,12 +416,14 @@ func run() -> void:
 			await fixture(row[0],row[1],bag); assert_layout(row[1])
 			await confirm_and_check_bottom_plaque()
 	await test_direct_tap()
+	await test_long_confirmed_paper()
 	await test_no_remote_or_arrival()
 	await test_drag_and_cancel()
 	await test_root_capture()
 	await test_interrupted_ownership()
 	await test_world_replacement()
 	await test_inventory_first_and_focus()
+	await test_locomotion_stick()
 	await test_keyboard()
 	await test_browser_cancel_boundary()
 	check(Input.emulate_mouse_from_touch==emulation_before,"test and runtime preserve platform touch-emulation setting")

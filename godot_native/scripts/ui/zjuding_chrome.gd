@@ -48,6 +48,13 @@ class ServiceIcon extends Control:
 		var unit := minf(size.x,size.y) / 24.0
 		draw_set_transform((size - Vector2.ONE * 24 * unit) / 2, 0, Vector2.ONE * unit)
 		match kind:
+			"campus_seal":
+				draw_arc(Vector2(12,12),10.6,0,TAU,48,ink,1.1,true)
+				path([Vector2(5.7,11),Vector2(8.2,10.4),Vector2(12,7.5),Vector2(15.8,10.4),Vector2(18.3,11)])
+				draw_line(Vector2(7,12),Vector2(17,12),ink,1.3,true)
+				for x in [7.7,10.6,13.4,16.3]:
+					draw_line(Vector2(x,12.2),Vector2(x,16.1),ink,1.2,true)
+				draw_line(Vector2(6.8,16.6),Vector2(17.2,16.6),ink,1.4,true)
 			"learn","library","language_cards":
 				path([Vector2(12,7),Vector2(8,5),Vector2(3,5),Vector2(3,18),Vector2(8,18),Vector2(12,20),Vector2(16,18),Vector2(21,18),Vector2(21,5),Vector2(16,5),Vector2(12,7),Vector2(12,20)])
 				if kind == "language_cards":

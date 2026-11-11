@@ -7,7 +7,18 @@ const CampusLayers = preload("res://scripts/presentation/campus_layered_map.gd")
 const Typography = preload("res://scripts/ui/native_typography.gd")
 const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
 const Ding = preload("res://scripts/ui/c35_ding_chat.gd")
-const HOMEWORK_NOTICE := "第十周作业补交：没提交成功的同学，自己把作业 PDF 私信发给我。记得写上姓名和学号，我好登记。"
+const HallRecording = preload("res://scripts/ui/c35_hall_recording.gd")
+const HOMEWORK_NOTICE := "@全体成员 今晚 23:00 截止第十周作业补交。没交成功的同学请点我头像私信，发 PDF，带姓名和学号。"
+const PHOTOS := {
+	"lake":["IMG_夜间湖面_01.jpg","22:31","lake_memory_a"],
+	"dock":["IMG_靠岸船头_02.jpg","22:35","paper_right"],
+}
+const CHAT_HISTORY := [
+	["22:38","chen_mo","第七题那个反常积分到底收不收敛？我写了半页。"],
+	["22:39","lin_xiao","化成 p-积分比一下，我刚写完拍了。"],
+	["22:40","zhao_yu","刚从红边球场那边路过，看见保安打着手电往北教东门赶。估计要提前锁门了。"],
+	["22:41","lin_xiao","还好我溜得快，启真湖那边风好大。"],
+]
 
 var map_pose: Dictionary={}
 var source_state: Dictionary={}
@@ -19,18 +30,19 @@ func build(pages, snapshot: Dictionary) -> Control:
 		source_state=snapshot
 	var step := Investigation.step(snapshot)
 	var route: Dictionary=snapshot.native[Investigation.KEY]
-	if step!="map": layers=null
+	if step not in ["private","map","entrance"]: layers=null
 	var frame := Frame.new()
 	frame.name="C35Investigation"
+	frame.enable_touch_reading()
 	frame.background.color=Palette.BACKDROP
 	var app: Array={
 		"inbox":["浙大钉","消息"],"notice":["课程群",""],"assignment":["课程助教","微积分（甲）"],"camera":["相机","作业扫描"],
-		"files":["本机文件","最近使用"],"file":["文件预览",Investigation.FILE_NAMES[route.get("preview_file",Investigation.LEGACY_FILE_ID)]],
+		"files":["最近项目","本机文件与照片"],"file":["文件预览",Investigation.FILE_NAMES[route.get("preview_file",Investigation.LEGACY_FILE_ID)]],
 		"attached":["课程助教","微积分（甲）"],"file_error":["课程助教","微积分（甲）"],"receipt":["课程助教","微积分（甲）"],"album_trace":["照片","最近项目"],"journal":["记录恢复",""],
 		"group":["课程群",""],"seen":["课程群",""],"private":["周琪","浙大钉 · 私聊"],
-		"map":["紫金港校园地图","位置共享"],"arrival":["记录恢复","入口核验"],"confirmed":["记录恢复",""],
+		"map":["紫金港校园地图","位置共享"],"entrance":["紫金港校园地图","比对入口方向"],"arrival":["北教学区","夜间录音与校园网"],"confirmed":["记录恢复",""],
 	}.get(step,["记录恢复",""])
-	var back_action: String={"camera":"cancel_camera","files":"close_files","file":"close_preview","attached":"replace_file"}.get(step,"")
+	var back_action: String={"camera":"cancel_camera","files":"close_files","file":"close_preview","attached":"replace_file","album_trace":"close_album"}.get(step,"")
 	frame.configure(app[0],app[1],0,back_action.is_empty())
 	frame.back_requested.connect(func() -> void:
 		if not back_action.is_empty():
@@ -38,6 +50,7 @@ func build(pages, snapshot: Dictionary) -> Control:
 			return
 		layers=null
 		pages.page_requested.emit("phone_home"))
+	build_note(pages,frame,snapshot,route)
 	if step in ["inbox","notice","assignment","attached","file_error","receipt","group","seen","private"]:
 		frame.background.color=Ding.BACKDROP
 	match step:
@@ -56,15 +69,23 @@ func build(pages, snapshot: Dictionary) -> Control:
 				if id=="ta": open_ta.call()
 				return id=="ta"
 			Ding.group_settings(pages,frame,open_member,HOMEWORK_NOTICE)
+			for item: Array in CHAT_HISTORY:
+				chat_time(pages,frame,item[0])
+				Ding.bubble(pages,frame.content,item[1],item[2],Ding.profile.bind(pages,frame,item[1]))
+			chat_time(pages,frame,"22:48")
 			Ding.bubble(pages,frame.content,"ta",HOMEWORK_NOTICE,open_ta)
-			Ding.bubble(pages,frame.content,"chen_jia","收到，我也去看一下系统里的提交记录。")
+			frame.ready.connect(func() -> void:
+				await frame.get_tree().process_frame
+				if not is_instance_valid(frame) or not frame.is_inside_tree(): return
+				var bar := frame.scroll.get_v_scroll_bar() as VScrollBar
+				frame.scroll.scroll_vertical=ceili(bar.max_value-bar.page))
 		"assignment":
 			Ding.bubble(pages,frame.content,"ta","来自微积分（甲）课程群\n第十周作业补交")
-			var sources := Ding.bubble(pages,frame.content,"player","附件",Callable(),true)
+			var sources := Ding.bubble(pages,frame.content,"player","添加作业",Callable(),true)
 			var actions := HBoxContainer.new()
 			actions.add_theme_constant_override("separation",6)
 			sources.add_child(actions)
-			Ding.chip(pages,actions,"查看本机文件",func() -> void: pages.action_requested.emit("c35_trace:files",null))
+			Ding.chip(pages,actions,"＋ 附件",func() -> void: pages.action_requested.emit("c35_trace:files",null)).name="C35HomeworkAttachments"
 			Ding.chip(pages,actions,"拍摄作业",func() -> void: pages.action_requested.emit("c35_trace:camera",null))
 		"camera":
 			var view := pages.card(frame.content,Palette.NIGHT) as VBoxContainer
@@ -94,13 +115,20 @@ func build(pages, snapshot: Dictionary) -> Control:
 		"receipt":
 			Ding.bubble(pages,frame.content,"player",Investigation.REPLIES.identity+"\n第十周作业.pdf",Callable(),true,"已读")
 			Ding.bubble(pages,frame.content,"ta","这份能打开了。林星宇，第十周补交已登记。")
-			var trace := section(pages,frame,"相册 · 原图仍在本机","作业原图一直在本机。刚才从相册选图时，划船那组也有一张标着「未同步」。")
-			link_action(pages,trace,"查看最近照片","open_album")
-		"album_trace":
-			var entry := section(pages,frame,"划船 · 最后一张","本机原图 · 未同步")
-			entry.add_child(pages.image_node("res://assets/ui/photo-evidence/chapter35_live_paper_right.webp",Vector2(0,170)))
-			entry.add_child(pages.label("和划船帖里是同一段湖岸。回原帖看看最后一次发帖时间。",16,Palette.SECONDARY))
-			link_action(pages,entry,"查看 CC98 划船帖","journal")
+			if snapshot.chapterThreeInterlude.evidenceIds.has("journal_start"):
+				var thread := section(pages,frame,"微积分（甲）课程群","有同学在聊今晚北教的闭楼通知。")
+				link_action(pages,thread,"打开课程群","continue_group")
+			else:
+				var reminder := Ding.surface(pages,frame.content,Ding.WHITE,Vector2(12,10),12)
+				var banner := reminder.get_parent() as Control
+				frame.content.move_child(banner,0)
+				reminder.add_child(pages.label("照片 · 2 张夜间照片尚未同步",16,Ding.INK))
+				Ding.chip(pages,reminder,"查看最近项目",func() -> void: pages.action_requested.emit("c35_trace:open_album","dock"))
+				if not route.get("album_seen",false) and not snapshot.native.get("settings",{}).get("reduced_motion",false):
+					banner.modulate.a=0
+					frame.ready.connect(func() -> void:
+						banner.create_tween().tween_property(banner,"modulate:a",1.0,.2))
+		"album_trace": build_album(pages,frame,route)
 		"journal":
 			var trace := section(pages,frame,"离湖时间","上岸后的去向没同步。划船帖里还留着返航记录。")
 			pages.lake_primary(pages.navigate(trace,"继续查看划船帖","c35_journal",true))
@@ -110,7 +138,9 @@ func build(pages, snapshot: Dictionary) -> Control:
 				pages.action_requested.emit("c35_trace:private",id)
 				return true
 			Ding.group_settings(pages,frame,contact,"群公告：第十周作业补交请私信课程助教。")
-			Ding.bubble(pages,frame.content,"zhou_qi","你刚刚到哪了？你发过来的位置卡我这儿还在。",(func() -> void: contact.call("zhou_qi")) if step=="seen" else Callable())
+			chat_time(pages,frame,"22:40")
+			Ding.bubble(pages,frame.content,"zhao_yu",CHAT_HISTORY[2][2])
+			chat_time(pages,frame,"22:50")
 			Ding.bubble(pages,frame.content,"chen_jia","我还在湖边，先回去整理照片。",(func() -> void: contact.call("chen_jia")) if step=="seen" else Callable())
 			if step=="group":
 				Ding.composer(pages,frame,"发消息…",Investigation.GROUP_REPLIES,func(id: String) -> void: pages.action_requested.emit("c35_trace:ask",id))
@@ -122,21 +152,17 @@ func build(pages, snapshot: Dictionary) -> Control:
 					if is_instance_valid(status):
 						status.text="已读 2"
 						status.add_theme_color_override("font_color",Ding.LINK))
-				frame.content.add_child(pages.label("点头像发私信",14,Ding.MUTED))
+				Ding.bubble(pages,frame.content,"zhao_yu","我在东门那儿还瞥见个人影。林星宇，你是不是跟着保安进去了？")
+				Ding.bubble(pages,frame.content,"zhou_qi","@林星宇 你刚给我发过位置共享，我这儿还留着。私聊说。",func() -> void: contact.call("zhou_qi"))
 		"private":
 			Ding.bubble(pages,frame.content,"player","你那儿的定位还能打开吗？",Callable(),true,"已读")
-			var share := Ding.bubble(pages,frame.content,"zhou_qi","你刚才发过定位。那片教学楼在启真湖西北，几组庭院之间有一条南北向的绿带。东门清楼时锁了，西侧大厅还亮着灯。")
-			Ding.chip(pages,share,"位置共享 · 已过期  ›",func() -> void: pages.action_requested.emit("c35_trace:map",null)).name="C35LocationShare"
+			Ding.bubble(pages,frame.content,"zhou_qi","赵宇看到的是保安去巡门。你发语音说东门铁门拉了两下没开，准备沿中间那条长绿地绕到另一头。")
+			var share := Ding.bubble(pages,frame.content,"zhou_qi","信号到 22:42:04 就断了。我这儿只加载出一块。")
+			var cached := Ding.chip(pages,share,"位置共享 · 已过期  ›",func() -> void: show_fragment(pages,frame))
+			cached.name="C35LocationShare"
 		"map": build_map(pages,frame)
-		"arrival":
-			section(pages,frame,"段永平教学楼 · 西侧大厅入口","大厅录音转写 · 22:45:00\n「本楼开始清楼，请从大厅主入口离开。」")
-			var choices := section(pages,frame,"校园网夜间接入","哪条记录与大厅的地点和清楼时间对得上？")
-			for row: Array in [
-				["22:44:31 · 剧场前厅","record_theater_hall"],
-				["22:44:57 · 北教学区 A 区 · 3 秒","record_0755"],
-				["22:44:12 · 启真湖小码头","record_qizhen_dock"],
-			]:
-				pages.action(choices,row[0],"c35_trace:compare",row[1])
+		"entrance": build_entrance(pages,frame)
+		"arrival": build_verification(pages,frame,route)
 		"confirmed":
 			var verified := section(pages,frame,"离湖路径已核验","22:37:05  ·  启真湖小码头上岸\n22:44:57  ·  北教 A 楼西侧大厅接入\n22:45:00  ·  大厅清楼广播")
 			pages.lake_primary(pages.action(verified,"从西侧大厅开始回放","c35_replay",null,true))
@@ -152,6 +178,21 @@ func build_files(pages,frame: Control,route: Dictionary) -> void:
 		var preview := pages.action(row,"预览","c35_trace:preview",id) as Button
 		preview.name="C35Preview_"+id
 		preview.accessibility_name="预览"+Investigation.FILE_NAMES[id]
+		if id==Investigation.PHOTO_ID:
+			var recent := HBoxContainer.new()
+			recent.add_theme_constant_override("separation",8)
+			frame.content.add_child(recent)
+			for key: String in PHOTOS:
+				var photo: Array=PHOTOS[key]
+				var tile := Ding.surface(pages,recent,Ding.WHITE,Vector2(9,8),8)
+				tile.get_parent().size_flags_horizontal=Control.SIZE_EXPAND_FILL
+				var thumbnail: TextureRect=pages.image_node("res://assets/ui/photo-evidence/chapter35_live_%s.webp" % photo[2],Vector2(0,92))
+				thumbnail.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED
+				tile.add_child(thumbnail)
+				tile.add_child(pages.label("%s  ·  未同步" % photo[1],14,Color("9f3036")))
+				var open := link_action(pages,tile,"夜间湖面" if key=="lake" else "靠岸船头","open_album",key)
+				open.name="C35RecentPhoto_"+key
+
 
 func paper_preview(pages,parent: Control,id: String) -> VBoxContainer:
 	var sheet := pages.card(parent,Palette.PAPER) as VBoxContainer
@@ -214,10 +255,127 @@ func build_submission(pages,frame: Control,route: Dictionary) -> void:
 	field.add_theme_color_override("font_readonly_color",Ding.INK)
 	field.add_theme_stylebox_override("read_only",NativeUi.box(Ding.WHITE,Ding.LINE,1,8,Vector2(10,8)))
 	compose.add_child(field)
-	var choose := Ding.chip(pages,compose,"选择补交说明…",func() -> void:
-		Ding.choice_sheet(pages,frame,"补交说明",Investigation.REPLIES,func(value: String) -> void:
+	var choices: Dictionary=Investigation.REPLIES
+	if route.get("identity_requested",false):
+		choices={"identity":"我是林星宇，学号 3250100755。刚忘了备注，麻烦学长了！"}
+	var choose := Ding.chip(pages,compose,"补发姓名和学号…" if choices.size()==1 else "选择补交说明…",func() -> void:
+		Ding.choice_sheet(pages,frame,"补交说明",choices,func(value: String) -> void:
 			pages.action_requested.emit("c35_trace:reply",value)))
 	choose.name="C35ChooseHomework"
+
+func chat_time(pages,frame: Control,time: String) -> void:
+	var stamp := pages.label(time,13,Ding.MUTED) as Label
+	stamp.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	frame.content.add_child(stamp)
+
+func build_album(pages,frame: Control,route: Dictionary) -> void:
+	var key: String=route.get("album_photo","dock")
+	var photo: Array=PHOTOS.get(key,PHOTOS.dock)
+	var entry := section(pages,frame,photo[0],"拍摄于 %s  ·  云端未同步" % photo[1])
+	var preview := pages.image_node("res://assets/ui/photo-evidence/chapter35_live_%s.webp" % photo[2],Vector2(0,220)) as TextureRect
+	preview.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	entry.add_child(preview)
+	if key=="dock":
+		entry.add_child(pages.label("关联草稿 · CC98 校园生活",15,Palette.SECONDARY))
+		link_action(pages,entry,"查看 CC98 划船帖","journal")
+	else:
+		entry.add_child(pages.label("同一组里还有一张靠岸时拍的照片。",15,Palette.SECONDARY))
+
+func build_note(pages,frame: Control,snapshot: Dictionary,route: Dictionary) -> void:
+	if not snapshot.chapterThreeInterlude.evidenceIds.has("journal_start"): return
+	var pin := pages.button(frame.toolbar,"便签",func() -> void: toggle_note(pages,frame,snapshot,route)) as Button
+	pin.name="C35InvestigationNote"
+	pin.position=Vector2(364,7)
+	pin.size=Vector2(52,42)
+	NativeUi.apply_button(pin,Ding.WHITE,Ding.LINK,Ding.LINE,9,1,14,Vector2(6,4),Ding.LINK)
+
+func toggle_note(pages,frame: Control,snapshot: Dictionary,route: Dictionary) -> void:
+	var prior := frame.get_node_or_null("C35NoteDrawer")
+	if prior!=null:
+		prior.queue_free()
+		return
+	var drawer := VBoxContainer.new()
+	drawer.name="C35NoteDrawer"
+	drawer.z_index=57
+	drawer.position=Vector2(42,56)
+	drawer.size.x=374
+	frame.add_child(drawer)
+	var notes := Ding.surface(pages,drawer,Ding.WHITE,Vector2(14,13),10)
+	notes.add_child(pages.label("调查便签",19,Ding.INK))
+	notes.add_child(pages.label("22:37:05  ·  在启真湖小码头上岸",16,Ding.INK))
+	if Investigation.STEPS.find(Investigation.step(snapshot))>=Investigation.STEPS.find("private"):
+		notes.add_child(pages.label("22:42:04  ·  东门外的位置共享断开",16,Ding.INK))
+	if route.get("entry_side","")=="west":
+		notes.add_child(pages.label("绕过中庭绿地，往西侧大厅走",16,Ding.INK))
+	if route.get("broadcast_heard",false):
+		notes.add_child(pages.label("22:45:00  ·  听见清楼广播",16,Ding.INK))
+	Ding.chip(pages,notes,"收起便签",drawer.queue_free)
+
+func fragment_preview(height: float) -> Control:
+	var view := Control.new()
+	view.name="C35CachedMapFragment"
+	view.custom_minimum_size=Vector2(0,height)
+	view.clip_contents=true
+	view.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	view.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
+	var art := campus_layers()
+	view.draw.connect(func() -> void:
+		var district: Rect2=Investigation.NORTH_TEACHING_AREA
+		var crop := district.grow_individual(20,300,20,8)
+		var factor := view.size.y/crop.size.y
+		var origin: Vector2=view.size*.5-crop.get_center()*factor
+		view.draw_rect(Rect2(Vector2.ZERO,view.size),Palette.NIGHT)
+		art.draw_background(view,origin,factor,view.size,0)
+		view.draw_rect(Rect2(Vector2.ZERO,view.size),Color(0.19,0.27,0.34,0.40))
+		var route := PackedVector2Array([
+			origin+Vector2(district.end.x-12,district.get_center().y-25)*factor,
+			origin+Vector2(district.end.x-54,district.get_center().y+10)*factor,
+			origin+Vector2(district.position.x+48,district.get_center().y+12)*factor])
+		for i in range(1,route.size()):
+			view.draw_dashed_line(route[i-1],route[i],Palette.PENDING,2,7)
+		view.draw_circle(route[0],5,Palette.PAPER)
+		view.draw_rect(Rect2(view.size.x*.88,0,view.size.x*.12,view.size.y*.36),Palette.NIGHT)
+		view.draw_rect(Rect2(0,view.size.y*.82,view.size.x*.16,view.size.y*.18),Palette.NIGHT))
+	view.resized.connect(view.queue_redraw)
+	return view
+
+func show_fragment(pages,frame: Control) -> void:
+	var old: Node=frame.content.find_child("C35SharedMapCache",true,false)
+	if old!=null: return
+	var cached := section(pages,frame,"缓存位置残片","最后更新于 22:42:04")
+	cached.name="C35SharedMapCache"
+	cached.add_child(fragment_preview(228))
+	link_action(pages,cached,"在校园地图中比对落点","map")
+	frame.scroll.ensure_control_visible.call_deferred(cached)
+
+func build_entrance(pages,frame: Control) -> void:
+	var card := section(pages,frame,"北教学区","位置卡断开时，林星宇还在东门外。沿着院落中间的绿地，他接下来绕向哪一侧？")
+	card.add_child(fragment_preview(224))
+	link_action(pages,card,"跟着保安走东门","entrance","east").name="C35EastEntrance"
+	link_action(pages,card,"绕过绿地走西侧","entrance","west").name="C35WestEntrance"
+
+func build_verification(pages,frame: Control,route: Dictionary) -> void:
+	var heard: bool=route.get("broadcast_heard",false)
+	if route.get("entry_side","")=="west":
+		Ding.bubble(pages,frame.content,"zhou_qi","对，那一侧是推拉玻璃门。你刚进去几秒语音就断了。")
+	var audio := section(pages,frame,"未命名环境录音","本机 · 5 秒")
+	var playback := HallRecording.new()
+	audio.add_child(playback)
+	playback.build(pages,heard,float(pages.state.native.get("settings",{}).get("volume",1.0)))
+	playback.broadcast_reviewed.connect(func() -> void: pages.action_requested.emit("c35_trace:broadcast",null))
+	var list := section(pages,frame,"ZJUWLAN 连接记录","北教学区  ·  22:35 – 22:50")
+	for i: int in Investigation.RECORDS.size():
+		var record: Array=Investigation.RECORDS[i]
+		var item := Ding.surface(pages,list,Ding.WHITE,Vector2(11,9),8)
+		item.add_child(pages.label("%02d  ·  %s  ·  %s" % [i+1,record[1],record[2]],16,Ding.INK))
+		var details := VBoxContainer.new()
+		details.visible=false
+		var show := Ding.chip(pages,item,"详情",func() -> void: details.visible=not details.visible)
+		show.name="C35RecordDetail_"+record[0]
+		item.add_child(details)
+		details.add_child(pages.label("%s  ·  %s" % [record[3],record[4]],15,Ding.MUTED))
+		var compare := link_action(pages,details,"对照录音","compare",record[0])
+		compare.name="C35Compare_"+record[0]
 
 func section(pages, frame: Control, title: String, copy: String) -> VBoxContainer:
 	var block: VBoxContainer=pages.card(frame.content,Palette.PAPER)
@@ -246,8 +404,8 @@ func build_map(pages, frame: Control) -> void:
 	frame.content_margin.add_theme_constant_override("margin_bottom",10)
 	frame.content.add_theme_constant_override("separation",10)
 	var clue: VBoxContainer=pages.card(frame.content,Palette.NIGHT)
-	var caption: Label=pages.label("周琪：启真湖西北，找庭院中间的南北绿带。东门已锁，从西侧大厅进。",15,Palette.PALE)
-	caption.autowrap_mode=TextServer.AUTOWRAP_ARBITRARY
+	var caption: Label=pages.label("周琪：启真湖西北，红边球场隔街往南。\n找排成田字的四组院落，中间有长条绿地。",15,Palette.PALE)
+	caption.name="C35MapClue"
 	clue.add_child(caption)
 	var search := LineEdit.new()
 	search.name="C35MapSearch"
@@ -265,6 +423,20 @@ func build_map(pages, frame: Control) -> void:
 	map.restore(map_pose)
 	frame.content.add_child(map)
 	build_map_tools(pages,map,search)
+	var residual := fragment_preview(96)
+	residual.modulate.a=.84
+	residual.visible=false
+	map.add_child(residual)
+	residual.position=Vector2(9,0)
+	residual.size=Vector2(122,96)
+	var residual_toggle := Ding.chip(pages,map,"残片",func() -> void: residual.visible=not residual.visible)
+	residual_toggle.name="C35MapFragmentToggle"
+	residual_toggle.size=Vector2(70,42)
+	var place_residual := func() -> void:
+		residual_toggle.position=Vector2(9,map.size.y-51)
+		residual.position.y=map.size.y-154
+	map.resized.connect(place_residual)
+	place_residual.call()
 	var confirm: Button=pages.button(map,"使用这个落点",func() -> void:
 		var chosen: Vector2=map.pin
 		map.clear_pin()
