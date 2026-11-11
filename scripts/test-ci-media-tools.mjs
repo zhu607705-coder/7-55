@@ -15,7 +15,7 @@ const sourceOptions = call => call.args.filter(arg => arg.startsWith('Dir::Etc::
 let passed = 0;
 function test(name, body) { body(); passed += 1; console.log(`PASS ${name}`); }
 
-function scenario({ initial = [1, 1], source = SOURCE, mirrors = MIRRORS, responses = {}, final = [0, 0], inspect } = {}) {
+function scenario({ initial = [1, 1], source = SOURCE, mirrors = MIRRORS, responses = {}, final = [0, 0], inspect, independentMirror = false } = {}) {
   const directory = mkdtempSync(join(tmpdir(), '755-ci-media-test-'));
   chmodSync(directory, 0o755);
   const sourcePath = join(directory, 'source.original');
@@ -39,7 +39,7 @@ function scenario({ initial = [1, 1], source = SOURCE, mirrors = MIRRORS, respon
     return { status };
   };
   try {
-    try { result = ensureCiMediaTools({ execute, sourcePath, mirrorPath, temporaryParent: directory, log: line => logs.push(line) }); }
+    try { result = ensureCiMediaTools({ execute, sourcePath, mirrorPath, temporaryParent: directory, log: line => logs.push(line), independentMirror }); }
     catch (failure) { error = failure; }
     for (let i = 0; i < originals.length; i += 1) {
       const path = [sourcePath, mirrorPath][i];
@@ -112,6 +112,25 @@ test('HTTPS timeout causes exactly one original-route fallback with unchanged ro
   const routes = r.logs.filter(line => line.includes(' index (60s)'));
   assert.match(routes[0], /existing official HTTPS mirrors; original security source preserved/);
   assert.match(routes[1], /original APT configuration/);
+});
+test('Pages outage fallback redirects both validated stanzas and keeps signed no-download installation', () => {
+  const source = SOURCE.replace(/URIs: [^\n]+\nSuites: noble-security/, 'URIs: http://security.ubuntu.com/ubuntu\nSuites: noble-security');
+  const r = scenario({ source, independentMirror: true, responses: { index1: 124 }, inspect(call) {
+    if (call.phase !== 'index' || call.occurrence !== 2) return;
+    const option = sourceOptions(call).find(value => value.startsWith('Dir::Etc::sourcelist='));
+    const redirected = readFileSync(option.split('=')[1], 'utf8');
+    assert.equal(redirected, source.replace(/^URIs: [^\n]+/gm, 'URIs: https://mirrors.edge.kernel.org/ubuntu/'));
+  } });
+  assert.ifError(r.error);
+  assert.deepEqual(r.result, { installed: true, fallback: true });
+  const apt = r.calls.filter(call => call.command === 'sudo');
+  assert.deepEqual(apt.map(call => call.phase), ['index', 'index', 'download', 'install']);
+  for (const call of apt.slice(1)) {
+    assert.deepEqual(sourceOptions(call), sourceOptions(apt[1]));
+    assert(call.args.includes('APT::Get::AllowUnauthenticated=false'));
+    assert(call.args.includes('Acquire::Check-Valid-Until=true'));
+  }
+  assert(apt.at(-1).args.includes('--no-download'));
 });
 test('HTTPS index failure skips its download, then acquires once from original configuration', () => {
   const r = scenario({ responses: { index1: 100 } });

@@ -31,8 +31,7 @@ concurrency:
 jobs:
   build:
     name: Build Godot Web game
-    # Keep signed FFmpeg installation on the Ubuntu 24.04 package archive.
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 25
     outputs:
       bundle_name: ${{ steps.acceptance_bundle.outputs.bundle_name }}
@@ -116,6 +115,7 @@ jobs:
 
       - name: Install media converter
         env:
+          CI_MEDIA_INDEPENDENT_MIRROR: '1'
           MEDIA_CONVERSION_CACHE_DIR: ${{ runner.temp }}/755-media-conversion-cache
           GODOT_RESOURCE_CACHE_DIR: ${{ runner.temp }}/755-resource-import-cache
         # Media conversion writes only its private temp project while the cold

@@ -12,6 +12,7 @@ const MIRROR_URI = `mirror+file:${MIRRORS}`;
 const DIRECT_SECURITY_URI = 'http://security.ubuntu.com/ubuntu';
 const KEYRING = '/usr/share/keyrings/ubuntu-archive-keyring.gpg';
 const HTTPS_MIRRORS = ['https://archive.ubuntu.com/ubuntu/', 'https://security.ubuntu.com/ubuntu/'];
+const INDEPENDENT_MIRROR = 'https://mirrors.edge.kernel.org/ubuntu/';
 const KNOWN_MIRRORS = ['http://azure.archive.ubuntu.com/ubuntu/', ...HTTPS_MIRRORS];
 const SECURITY = [
   '-o', 'APT::Get::AllowUnauthenticated=false',
@@ -131,7 +132,7 @@ export function runCommand(command, args) {
 
 // Injectable executor keeps fault tests entirely local: importing this module never
 // invokes sudo, apt, timeout or a browser. Only the direct CLI uses real commands.
-export function ensureCiMediaTools({ execute = runCommand, sourcePath = SOURCE, mirrorPath = MIRRORS, temporaryParent = '/tmp', log = console.log } = {}) {
+export function ensureCiMediaTools({ execute = runCommand, sourcePath = SOURCE, mirrorPath = MIRRORS, temporaryParent = '/tmp', log = console.log, independentMirror = false } = {}) {
   const processResult = result => result !== null && typeof result === 'object' && !Array.isArray(result);
   const success = result => processResult(result) && result.status === 0 && result.error == null && result.signal == null;
   const version = command => {
@@ -167,7 +168,8 @@ export function ensureCiMediaTools({ execute = runCommand, sourcePath = SOURCE, 
     chmodSync(emptySources, 0o755);
     chmodSync(temporarySource, 0o644);
     chmodSync(temporaryMirrors, 0o644);
-    const httpsOptions = ['-o', `Dir::Etc::sourcelist=${temporarySource}`, '-o', `Dir::Etc::sourceparts=${emptySources}`];
+    const sourceOptions = file => ['-o', `Dir::Etc::sourcelist=${file}`, '-o', `Dir::Etc::sourceparts=${emptySources}`];
+    const httpsOptions = sourceOptions(temporarySource);
     const network = (seconds, options, operation) => {
       const result = execute('sudo', ['-n', 'timeout', '--signal=TERM', '--kill-after=10s', `${seconds}s`, 'apt-get', ...SECURITY, ...options, ...operation]);
       log(`CI media tools: ${operation.includes('update') ? 'index' : 'download-only'} returned ${JSON.stringify({ status: result?.status ?? null, signal: result?.signal ?? null })}`);
@@ -185,20 +187,23 @@ export function ensureCiMediaTools({ execute = runCommand, sourcePath = SOURCE, 
     // Prefer the official HTTPS mirrors already validated above. The hosted
     // runner's first original mirror can stall; do not pay its timeout before
     // trying these existing routes. Unknown source shapes still fail closed.
-    let options = httpsOptions;
-    // Keep the public result shape: fallback reports use of the second route,
-    // which is now the unchanged original APT configuration.
-    let fallback = false;
-    if (!acquire('existing official HTTPS mirrors; original security source preserved', options, 180)) {
-      fallback = true;
-      options = [];
-      requireCondition(acquire('original APT configuration', options, 120), 'both bounded acquisition attempts failed; installation not attempted');
+    const routes = [{ label: 'existing official HTTPS mirrors; original security source preserved', options: httpsOptions, seconds: 180 }];
+    if (independentMirror) {
+      // The original stanzas have already been validated. Redirect both the
+      // archive and security pockets in a temporary copy during mirror outages.
+      const independentSource = join(directory, 'independent-ubuntu.sources');
+      const redirected = prepared.source.replace(/^([ \t]*URIs:[ \t]+)[^\r\n]+/gm, `$1${INDEPENDENT_MIRROR}`);
+      writeFileSync(independentSource, redirected, { mode: 0o644 });
+      routes.push({ label: 'independent Ubuntu HTTPS mirror with the Ubuntu signing keyring', options: sourceOptions(independentSource), seconds: 180 });
     }
+    routes.push({ label: 'original APT configuration', options: [], seconds: 120 });
+    const route = routes.find(({ label, options, seconds }) => acquire(label, options, seconds));
+    requireCondition(route, independentMirror ? 'all bounded acquisition attempts failed; installation not attempted' : 'both bounded acquisition attempts failed; installation not attempted');
     // No retry/fallback after dpkg starts, and no network or wall-clock kill here.
-    requireCondition(success(execute('sudo', ['-n', 'apt-get', ...SECURITY, ...options, '--yes', '--no-install-recommends', '--no-download', 'install', 'ffmpeg'])), 'no-download installation failed; not retried');
+    requireCondition(success(execute('sudo', ['-n', 'apt-get', ...SECURITY, ...route.options, '--yes', '--no-install-recommends', '--no-download', 'install', 'ffmpeg'])), 'no-download installation failed; not retried');
     requireCondition(versions(), 'installed ffmpeg/ffprobe version check failed');
     log('CI media tools: both versions verified after signed APT installation.');
-    return { installed: true, fallback };
+    return { installed: true, fallback: route !== routes[0] };
   } finally {
     if (directory) rmSync(directory, { recursive: true, force: true });
   }
@@ -207,7 +212,7 @@ export function ensureCiMediaTools({ execute = runCommand, sourcePath = SOURCE, 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     requireCondition(process.argv.length === 2, 'no CLI arguments are accepted');
-    ensureCiMediaTools();
+    ensureCiMediaTools({ independentMirror: process.env.CI_MEDIA_INDEPENDENT_MIRROR === '1' });
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;
