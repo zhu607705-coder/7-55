@@ -24,14 +24,14 @@
         {
           "disabled": false,
           "name": "PhoneNav_exit",
-          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "rect": "[P: (11.0, 4.0), S: (44.0, 45.0)]",
           "text": "×",
           "tooltip": "退出天气，返回手机主页"
         },
         {
           "disabled": true,
           "name": "WeatherWaterCard",
-          "rect": "[P: (16.0, 439.0), S: (346.0, 88.0)]",
+          "rect": "[P: (18.0, 621.6887), S: (342.0, 88.0)]",
           "text": "",
           "tooltip": ""
         }
@@ -64,14 +64,14 @@
         {
           "disabled": false,
           "name": "PhoneNav_exit",
-          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "rect": "[P: (11.0, 4.0), S: (44.0, 45.0)]",
           "text": "×",
           "tooltip": "退出天气，返回手机主页"
         },
         {
           "disabled": false,
           "name": "WeatherWaterCard",
-          "rect": "[P: (16.0, 439.0), S: (346.0, 88.0)]",
+          "rect": "[P: (18.0, 621.6887), S: (342.0, 88.0)]",
           "text": "",
           "tooltip": ""
         }
@@ -109,14 +109,14 @@
         {
           "disabled": false,
           "name": "PhoneNav_exit",
-          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "rect": "[P: (11.0, 4.0), S: (44.0, 45.0)]",
           "text": "×",
           "tooltip": "退出天气，返回手机主页"
         },
         {
           "disabled": false,
           "name": "WeatherWaterCard",
-          "rect": "[P: (16.0, 439.0), S: (346.0, 88.0)]",
+          "rect": "[P: (18.0, 621.6887), S: (342.0, 88.0)]",
           "text": "",
           "tooltip": ""
         }
@@ -136,7 +136,7 @@
       "labels": [
         "杭州 · 紫金港",
         "07:55",
-        "多云",
+        "晴天",
         "19°C",
         "体感温度 19°C",
         "湿度",
@@ -154,14 +154,14 @@
         {
           "disabled": false,
           "name": "PhoneNav_exit",
-          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "rect": "[P: (11.0, 4.0), S: (44.0, 45.0)]",
           "text": "×",
           "tooltip": "退出天气，返回手机主页"
         },
         {
           "disabled": true,
           "name": "WeatherWaterCard",
-          "rect": "[P: (16.0, 439.0), S: (346.0, 88.0)]",
+          "rect": "[P: (18.0, 621.6887), S: (342.0, 88.0)]",
           "text": "",
           "tooltip": ""
         }
@@ -176,7 +176,7 @@
       "labels": [
         "杭州 · 紫金港",
         "07:55",
-        "多云",
+        "晴天",
         "19°C",
         "体感温度 19°C",
         "湿度",
@@ -194,14 +194,14 @@
         {
           "disabled": false,
           "name": "PhoneNav_exit",
-          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "rect": "[P: (11.0, 4.0), S: (44.0, 45.0)]",
           "text": "×",
           "tooltip": "退出天气，返回手机主页"
         },
         {
           "disabled": false,
           "name": "WeatherWaterCard",
-          "rect": "[P: (16.0, 439.0), S: (346.0, 88.0)]",
+          "rect": "[P: (18.0, 621.6887), S: (342.0, 88.0)]",
           "text": "",
           "tooltip": ""
         }
@@ -221,7 +221,7 @@
       "labels": [
         "杭州 · 紫金港",
         "07:55",
-        "多云",
+        "晴天",
         "19°C",
         "体感温度 19°C",
         "湿度",
@@ -239,14 +239,14 @@
         {
           "disabled": false,
           "name": "PhoneNav_exit",
-          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "rect": "[P: (11.0, 4.0), S: (44.0, 45.0)]",
           "text": "×",
           "tooltip": "退出天气，返回手机主页"
         },
         {
           "disabled": false,
           "name": "WeatherWaterCard",
-          "rect": "[P: (16.0, 439.0), S: (346.0, 88.0)]",
+          "rect": "[P: (18.0, 621.6887), S: (342.0, 88.0)]",
           "text": "",
           "tooltip": ""
         }
@@ -285,14 +285,14 @@
         {
           "disabled": false,
           "name": "PhoneNav_exit",
-          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "rect": "[P: (11.0, 4.0), S: (44.0, 45.0)]",
           "text": "×",
           "tooltip": "退出天气，返回手机主页"
         },
         {
           "disabled": true,
           "name": "QizhenWeatherDevice",
-          "rect": "[P: (16.0, 439.0), S: (346.0, 126.0)]",
+          "rect": "[P: (18.0, 583.6887), S: (342.0, 126.0)]",
           "text": "",
           "tooltip": ""
         }
@@ -305,7 +305,7 @@
       "labels": [
         "杭州 · 紫金港",
         "07:55",
-        "多云",
+        "晴天",
         "19°C",
         "体感温度 19°C",
         "湿度",
@@ -323,14 +323,14 @@
         {
           "disabled": false,
           "name": "PhoneNav_exit",
-          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "rect": "[P: (11.0, 4.0), S: (44.0, 45.0)]",
           "text": "×",
           "tooltip": "退出天气，返回手机主页"
         },
         {
           "disabled": true,
           "name": "QizhenWeatherDevice",
-          "rect": "[P: (16.0, 439.0), S: (346.0, 126.0)]",
+          "rect": "[P: (18.0, 583.6887), S: (342.0, 126.0)]",
           "text": "",
           "tooltip": ""
         }
@@ -362,14 +362,14 @@
         {
           "disabled": false,
           "name": "PhoneNav_exit",
-          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "rect": "[P: (11.0, 4.0), S: (44.0, 45.0)]",
           "text": "×",
           "tooltip": "退出天气，返回手机主页"
         },
         {
           "disabled": false,
           "name": "QizhenWeatherDevice",
-          "rect": "[P: (16.0, 439.0), S: (346.0, 126.0)]",
+          "rect": "[P: (18.0, 583.6887), S: (342.0, 126.0)]",
           "text": "",
           "tooltip": ""
         }
@@ -382,7 +382,7 @@
       "labels": [
         "杭州 · 紫金港",
         "07:55",
-        "多云",
+        "晴天",
         "19°C",
         "体感温度 19°C",
         "湿度",
@@ -400,14 +400,14 @@
         {
           "disabled": false,
           "name": "PhoneNav_exit",
-          "rect": "[P: (11.0, 10.0), S: (40.0, 45.0)]",
+          "rect": "[P: (11.0, 4.0), S: (44.0, 45.0)]",
           "text": "×",
           "tooltip": "退出天气，返回手机主页"
         },
         {
           "disabled": true,
           "name": "QizhenWeatherDevice",
-          "rect": "[P: (16.0, 439.0), S: (346.0, 126.0)]",
+          "rect": "[P: (18.0, 583.6887), S: (342.0, 126.0)]",
           "text": "",
           "tooltip": ""
         }

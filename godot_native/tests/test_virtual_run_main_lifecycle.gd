@@ -28,7 +28,7 @@ func prepare(view: Vector2i) -> void:
 	# Seeded test setup, not an earned campaign or browser-UI acceptance path.
 	var controller = load("res://scripts/chapters/chapter1_2.gd").new()
 	state_node.d.native.page = "wechat"
-	for intent in ["c2_tiyi_discover", "c2_tiyi_acquire", "c2_tiyi_install"]: controller.dispatch(state_node.d,intent)
+	preload("res://tests/helpers/tiyi_update_driver.gd").install(controller, state_node.d)
 	state_node.d.native.page = "tiyi"
 	root.size = view
 	shell = load("res://scenes/main.tscn").instantiate()

@@ -23,7 +23,7 @@ func fresh(phase: String="evidence_gathering",opened: bool=true,passed: bool=fal
 	state.d.ui.libraryFinalsPuzzle.presenceProofCollected=passed
 	var controller=load("res://scripts/chapters/chapter1_2.gd").new()
 	state.d.native.page="wechat"
-	for intent in ["c2_tiyi_discover","c2_tiyi_acquire","c2_tiyi_install"]: controller.dispatch(state.d,intent)
+	preload("res://tests/helpers/tiyi_update_driver.gd").install(controller, state.d)
 	state.d.native.page="tiyi"
 	state.get_phone_entry_session(); director.reset(); published.clear(); played.clear()
 func run() -> void:

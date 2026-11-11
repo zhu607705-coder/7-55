@@ -17,7 +17,7 @@ func initial_state() -> void:
 	state.actOne.exerciseStarted = false
 	# Synthetic run fixture earns the new prerequisite through real authority.
 	state.native.page = "wechat"
-	for intent in ["c2_tiyi_discover", "c2_tiyi_acquire", "c2_tiyi_install"]: controller.dispatch(state,intent)
+	preload("res://tests/helpers/tiyi_update_driver.gd").install(controller, state)
 	state.native.page = "tiyi"
 	authority_calls = 0
 

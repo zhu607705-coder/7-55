@@ -3,6 +3,8 @@ extends RefCounted
 ## Form drafts are local; identity, hint count, attempts and lockout stay controller-owned.
 const PhoneNotice = preload("res://scripts/ui/native_phone_notice.gd")
 const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
+const DropButton = preload("res://scripts/ui/phone_drop_button.gd")
+const ATTENDANT_ATTEMPTS := 3
 const REMARKS = [
 	"校园卡都没拿稳，就想混进论坛？报名字没用，我只认卡面上的那串数字。",
 	"连我是谁都没看？门楣上写着 ZheJiang University。大写的站得这么直，你倒一个也没记住。",
@@ -39,6 +41,9 @@ func remaining_ms(login: Dictionary) -> int:
 
 func build(b) -> Control:
 	var login: Dictionary=b.s.actOne.cc98Login
+	var reveal_after_attempt := login_pending and int(login.failureCount) >= ATTENDANT_ATTEMPTS and attendant_taps < 2
+	if int(login.failureCount) >= ATTENDANT_ATTEMPTS:
+		attendant_taps = 2
 	var revealed_count=clampi(int(login.revealedHintCount),0,3)
 	if dialogue_index<0: dialogue_index=revealed_count
 	dialogue_index=clampi(dialogue_index,0,revealed_count)
@@ -140,12 +145,24 @@ void fragment() {
 	PhoneNotice.style_inline(feedback_label,"warning" if remaining_ms(login)>0 else "system",13)
 	var identity_shadow: Panel=b._panel(content,Rect2(20,367,345,90),Color(.17,.18,.2,.35))
 	var identity_plate: Panel=b._panel(content,Rect2(14,361,345,90),charcoal,Color("bfc1c4"),0,2)
-	var reader: Button=b._button(content,"",Rect2(28,375,316,62),func(): card_pending=true; b.action_requested.emit("c2_card_identity",null),Color("4f5155"),light,0,Color("db9e3b")); reader.name="Cc98ReadCampusCard"
+	var reader := DropButton.new()
+	reader.name = "Cc98ReadCampusCard"
+	reader.position = Vector2(28, 375)
+	reader.size = Vector2(316, 62)
+	reader.focus_mode = Control.FOCUS_NONE
+	reader.accessibility_name = "拖入校园卡读取学号"
+	NativeUi.apply_button(reader, Color("4f5155"), light, Color("db9e3b"), 0, 2, 14, Vector2.ZERO)
+	content.add_child(reader)
+	reader.item_dropped.connect(func(item: String):
+		if item != "campusCard" or not b.s.items.campusCard or not b.s.actOne.inventoryRecovered:
+			return
+		card_pending = true
+		b.action_requested.emit("c2_card_identity", null))
 	b._panel(reader,Rect2(8,10,57,42),Color("153a72"),Color("0d274c"),0,2)
 	b._label(reader,"ZJU\n07:55",Rect2(14,14,44,34),10,Color.WHITE)
-	b._label(reader,"校园卡身份已读取" if login.studentIdDiscovered else "出示校园卡",Rect2(75,7,195,23),13,light)
-	b._label(reader,"林星宇 · 3250100755" if login.studentIdDiscovered else "翻看随身物品里的卡面",Rect2(75,29,194,25),11,Color("d9dde1"))
-	b._label(reader,"填入" if login.studentIdDiscovered else "读取",Rect2(277,17,35,28),11,amber,HORIZONTAL_ALIGNMENT_CENTER)
+	b._label(reader,"校园卡身份已读取" if login.studentIdDiscovered else "拖入校园卡",Rect2(75,7,195,23),13,light)
+	b._label(reader,"林星宇 · 3250100755" if login.studentIdDiscovered else "从道具栏拖到这里",Rect2(75,29,194,25),11,Color("d9dde1"))
+	b._label(reader,"已读" if login.studentIdDiscovered else "拖入",Rect2(277,17,35,28),11,amber,HORIZONTAL_ALIGNMENT_CENTER)
 	var dialogue := Control.new()
 	dialogue.name="Cc98PasswordHints"
 	dialogue.position=Vector2(0,447)
@@ -192,15 +209,13 @@ void fragment() {
 		identity_shadow.size.y=identity_plate.size.y
 		content.custom_minimum_size=Vector2(372,800 if revealed else 469)
 		attendant.accessibility_name="认证值班员" if revealed else "通行证头像"
-	display_hints.call(attendant_taps>=2)
+	display_hints.call(attendant_taps >= 2 and not reveal_after_attempt)
 	var reveal_attendant := func():
 		feedback_label.text=feedback
 		display_hints.call(true)
-	attendant.pressed.connect(func():
-		if attendant_taps>=2: return
-		attendant_taps+=1
-		if attendant_taps<2: return
-		feedback=ATTENDANT_FEEDBACK
+		if reveal_after_attempt:
+			scroll.ensure_control_visible.call_deferred(reply if reply.visible else return_to_form)
+	var animate_attendant := func():
 		if bool(b.s.native.get("settings",{}).get("reduced_motion",false)):
 			reveal_attendant.call()
 			return
@@ -210,7 +225,15 @@ void fragment() {
 		motion.parallel().tween_property(face,"rotation",-.16,.14)
 		motion.tween_property(face,"position:y",resting_y,.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 		motion.parallel().tween_property(face,"rotation",0.0,.18)
-		motion.tween_callback(reveal_attendant))
+		motion.tween_callback(reveal_attendant)
+	attendant.pressed.connect(func():
+		if attendant_taps >= 2: return
+		attendant_taps += 1
+		if attendant_taps < 2: return
+		feedback = ATTENDANT_FEEDBACK
+		animate_attendant.call())
+	if reveal_after_attempt:
+		root.ready.connect(animate_attendant, CONNECT_ONE_SHOT)
 	# Taps still reach their original controls; a swipe that starts over a
 	# control can reach ScrollContainer and cancel the pressed button normally.
 	for control: Control in content.find_children("*","Control",true,false):

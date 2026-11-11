@@ -1254,7 +1254,10 @@ func _refresh_phone_page(n: Dictionary,page: String) -> void:
 	quest_label.visible = false
 	footer_row.visible = false
 	phone_padding.visible = not bare
-	if is_instance_valid(phone_chrome): phone_chrome.refresh(State.d)
+	if is_instance_valid(phone_chrome):
+		phone_chrome.refresh(State.d)
+		if custom_body != null and custom_body.get_meta("reading_without_inventory", false):
+			phone_chrome.inventory.hide()
 	header_row.visible = custom_body == null and not bare
 	var handled_action_ids: Array = []
 	var fallback_parent: Control=page_body
@@ -2706,6 +2709,7 @@ func _show_local_world_feedback(message:String)->bool:
 
 func _feedback(message: String,tone: String="system",duration_override:float=-1) -> void:
 	if checkin_feedback_depth>0 and str(State.d.native.page)=="checkin" and phone_builder!=null and phone_builder.checkin_page.owns_feedback(message):return
+	if str(State.d.native.page) == "bonsai" and message in ["盆栽好像有点想开花。", "开花了？！"] and is_instance_valid(page_body) and page_body.find_child("BonsaiStatus", true, false) != null: return
 	if is_instance_valid(modal) and modal.has_method("owns_feedback") and modal.owns_feedback(): return
 	if _room302_studio_active():modal.set_feedback(message);return
 	if _virtual_run_owns_feedback(message) or _scene_owns_feedback(message):return
@@ -2745,6 +2749,11 @@ func _sync_selected_world_overlay() -> void:
 	for chrome: Control in [mobile_back,world_tasks,world_mode,inventory_handle,inventory_dock]:
 		if is_instance_valid(chrome): chrome.modulate.a=0.0 if reading else 1.0
 
+func _notification(what: int) -> void:
+	if what in [NOTIFICATION_PAUSED, NOTIFICATION_UNPAUSED, NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_APPLICATION_RESUMED] and is_node_ready() and not flc_entry_mode:
+		var entry := State.get_phone_entry_session()
+		if entry != null: entry.reset_tiyi_download_clock()
+
 func _process(delta: float) -> void:
 	if flc_entry_mode:return
 	_sync_selected_world_overlay()
@@ -2756,7 +2765,7 @@ func _process(delta: float) -> void:
 	_sync_inventory_dock_input()
 	if is_instance_valid(c3_device_panel) and is_instance_valid(world):
 		c3_device_panel.set_feedback(world.subtitle if world.subtitle_left>0 else "")
-	for cue: String in State.advance_phone_entry(delta*1000): _play_presentation_cue(cue)
+	for cue: String in State.advance_phone_entry(delta*1000, Time.get_ticks_usec()): _play_presentation_cue(cue)
 	_advance_notices(delta)
 	if _screenshot_requested and Engine.get_process_frames() > 90:
 		_screenshot_requested = false

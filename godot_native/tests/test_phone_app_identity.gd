@@ -28,7 +28,7 @@ func fixture(kind:String,state:Dictionary,view:Dictionary={},presence_audit:bool
 	if kind=="tiyi" and load("res://scripts/chapters/tiyi_access.gd").update_required(b.s):
 		var controller=load("res://scripts/chapters/chapter1_2.gd").new()
 		b.s.native.page="wechat"
-		for intent in ["c2_tiyi_discover","c2_tiyi_acquire","c2_tiyi_install"]: controller.dispatch(b.s,intent)
+		preload("res://tests/helpers/tiyi_update_driver.gd").install(controller, b.s)
 	var expected: Dictionary=expected_cases[fixture_index];fixture_index+=1
 	b.s.native.page="tiyi" if kind=="tiyi" else "weather"
 	b.entry_session.route(b.s);b.entry_session.advance(1400)
@@ -91,7 +91,10 @@ func fixture(kind:String,state:Dictionary,view:Dictionary={},presence_audit:bool
 		check(is_equal_approx(fresh.size.x,378.0),kind+" canonical authored width")
 		if kind=="weather":
 			var icon=fresh.find_child("WeatherConditionIcon",true,false)
-			check(icon!=null and icon.kind==("cloud" if state.qizhenLake.rainSafetyCleared else "rain"),"condition icon matches story weather")
+			check(icon!=null and icon.kind==("sun" if state.qizhenLake.rainSafetyCleared else "rain"),"condition icon matches story weather")
+			var backdrop: TextureRect = fresh.find_child("WeatherBackdrop", true, false)
+			var expected_background := "zijingang_sunny.webp" if state.qizhenLake.rainSafetyCleared else "zijingang_rain.webp"
+			check(backdrop != null and backdrop.texture != null and backdrop.texture.resource_path.get_file() == expected_background, "weather backdrop uses the reviewed state-specific plate")
 			entry.iconSize=str(icon.size*full_scale)
 		frameset.append(entry)
 	var metrics=[]

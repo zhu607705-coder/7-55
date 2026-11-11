@@ -32,6 +32,7 @@ func _draw() -> void:
 	var lane=Motion.path_between()
 	draw_polyline(lane,Color("edceba"),58,true)
 	draw_polyline(lane,Color("bb6b5a"),50,true)
+	draw_polyline(lane,Color("974f41"),Motion.LANE*2,true)
 	for offset in [-24.0,-12.0,0.0,12.0,24.0]:
 		draw_polyline(Motion.path_between(0,Motion.LENGTH,Motion.RADIUS+offset),Color("efd7c2"),1.1,true)
 	# Parallel straights and tangent semicircles form a closed running track.
@@ -62,6 +63,10 @@ func _draw() -> void:
 		if i==motion.completed:draw_arc(p,20+2*sin(motion.clock*3),0,TAU,32,Color("fff5bb"),2,true)
 		if i<motion.completed:draw_polyline(PackedVector2Array([p+Vector2(-5,0),p+Vector2(-1,5),p+Vector2(7,-5)]),Color.WHITE,2,true)
 		else:draw_string(font,p+Vector2(-4 if i<9 else -8,5),str(i+1),HORIZONTAL_ALIGNMENT_LEFT,-1,14,Color("614e3f"))
+		if i==motion.completed and motion.fix_duration()>0.0:
+			draw_arc(p,24,0,TAU,32,Color("77583b"),2,true)
+			var fill: float=motion.fix_elapsed/motion.fix_duration()
+			if fill>0.0:draw_arc(p,24,-PI/2,-PI/2+TAU*fill,32,Color("fff5bb"),3,true)
 	var cursor: Vector2=motion.position
 	if dragging:draw_line(cursor,cursor+(aim-cursor).limit_length(52),Color("2c6dac"),2,true)
 	draw_circle(cursor+Vector2(0,4),15,Color(0,.14,.22,.18))
@@ -71,4 +76,4 @@ func _draw() -> void:
 	# Pace bars make speed and the safe signal-zone threshold observable.
 	for i in range(5):
 		var filled=motion.velocity.length()>i*25
-		draw_rect(Rect2(145+i*15,211,9,5+i*3),Color("d58a30") if filled and motion.velocity.length()>80 and not hazard.is_empty() else Color("205b74") if filled else Color("b8c7ab"))
+		draw_rect(Rect2(145+i*15,211,9,5+i*3),Color("d58a30") if filled and motion.velocity.length()>Motion.SIGNAL_SPEED_LIMIT and not hazard.is_empty() else Color("205b74") if filled else Color("b8c7ab"))

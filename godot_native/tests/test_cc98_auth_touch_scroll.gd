@@ -66,7 +66,7 @@ func run() -> void:
 		check(scroll.scroll_vertical>0,"raw swipe can start over an interactive card")
 		check(not state.d.actOne.cc98Login.studentIdDiscovered,"dragging the card button never activates it")
 		await tap(reader)
-		check(state.d.actOne.cc98Login.studentIdDiscovered,"a stationary raw touch still reads the original campus card")
+		check(not state.d.actOne.cc98Login.studentIdDiscovered,"a stationary raw touch does not read the campus card")
 		scroll=node("Cc98LoginScroll");area=rect(scroll)
 		await swipe(area.position+area.size*Vector2(.84,.75),area.position+area.size*Vector2(.84,.25))
 		var reply: Button=node("Cc98RevealHint")

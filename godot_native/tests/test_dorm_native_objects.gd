@@ -98,9 +98,9 @@ func run() -> void:
 	state.d=prerequisites;world.refresh_world();state.act("c2_use_gamepad")
 	check(state.d.actOne.controlsInstalled and state.d.actOne.movementEnabled and not state.d.items.gamepad,"controller alone consumes gamepad and enables manual control")
 	check(not state.d.actOne.manualControlTested,"connection does not fake first movement")
-	# Source exercise pacing uses wall-clock time before connection. Restore the
-	# declared checkpoint spawn so a single input cannot begin beside furniture.
-	world.player=Vector2(480,720);world._sync_player()
+	# Exercise pacing uses wall-clock time before connection. Start the
+	# manual input checks on the open floor just inside the door.
+	world.player=Vector2(480,690);world._sync_player()
 	var keyboard_start: Vector2=world.player
 	check(world.can_stand(keyboard_start) and world.can_stand(keyboard_start+Vector2(4.8,0)),"keyboard fixture and intended step are walkable")
 	world.grab_focus()
@@ -112,7 +112,7 @@ func run() -> void:
 	check(not state.d.actOne.canLeaveDorm,"manual movement still requires original reservation")
 	state.act("c2_dorm_exit");check(state.d.native.scene=="dorm_hub","movement alone cannot bypass reservation")
 	await fixture("c2-manual-movement",Vector2i(390,844));state.act("c2_use_gamepad")
-	world.player=Vector2(480,720);world._sync_player()
+	world.player=Vector2(480,690);world._sync_player()
 	var touch_start: Vector2=world.player
 	check(world.can_stand(touch_start) and world.can_stand(touch_start+Vector2(-4.8,0)),"touch fixture and intended step are walkable")
 	world.touch_axis=Vector2.LEFT;world._process(.03);world.touch_axis=Vector2.ZERO

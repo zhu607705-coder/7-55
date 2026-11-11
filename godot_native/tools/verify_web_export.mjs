@@ -2115,7 +2115,26 @@ async function browserCase(id, width, height, touch, dpr = 1) {
           for (let step=1;step<=12;step++) { await active.cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:a.x+(b.x-a.x)*step/12,y:a.y+(b.y-a.y)*step/12,id:1}]}); await interval(20); }
           await active.cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
         } else await active.cdp.send('Input.dispatchMouseEvent',{type:'mouseWheel',x:a.x,y:a.y,deltaX:0,deltaY:down?260:-260});
-      }, record: value => { active.phoneNavigation=value; }, capture: value => active.screenshots.push(value) });
+      },
+      drag: async (from, to) => {
+        const send = (type, point) => touch
+          ? active.cdp.send('Input.dispatchTouchEvent', {
+            type: {start:'touchStart', move:'touchMove', end:'touchEnd'}[type],
+            touchPoints: type === 'end' ? [] : [{...point, id: 4}],
+          })
+          : active.cdp.send('Input.dispatchMouseEvent', {
+            type: {start:'mousePressed', move:'mouseMoved', end:'mouseReleased'}[type],
+            button: 'left', buttons: type === 'end' ? 0 : 1, clickCount: 1, ...point,
+          });
+        await send('start', from);
+        await interval(260);
+        for (let step = 1; step <= 12; step++) {
+          await send('move', {x: from.x + (to.x - from.x) * step / 12, y: from.y + (to.y - from.y) * step / 12});
+          await interval(20);
+        }
+        await send('end', to);
+      },
+      record: value => { active.phoneNavigation=value; }, capture: value => active.screenshots.push(value) });
     else if (!['library', 'boot-font-failure', 'flc-activity'].includes(scenarios)) await portableSaveCase();
     if (scenarios === 'corners') await cornerNavigationCase();
     if (scenarios === 'checkin') await checkinPresentationCase();

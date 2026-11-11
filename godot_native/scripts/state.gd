@@ -149,11 +149,11 @@ func get_library_story_session(delta_ms: float = 0) -> RefCounted:
 func get_phone_entry_session() -> RefCounted:
 	return game_architecture().get_system("Chapters").get_phone_entry_session()
 
-func advance_phone_entry(delta_ms: float) -> Array:
+func advance_phone_entry(delta_ms: float, sample_usec: int = -1) -> Array:
 	var session:=get_phone_entry_session()
 	if session==null: return []
 	var cues: Array=[]
-	for event: Dictionary in session.advance(delta_ms):
+	for event: Dictionary in session.advance(delta_ms, sample_usec):
 		if event.get("action")=="phone_refresh": changed.emit()
 		elif event.has("action"): act(str(event.action),event.get("value"))
 		elif event.has("feedback"): feedback.emit(str(event.feedback))

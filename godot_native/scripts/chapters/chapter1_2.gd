@@ -156,7 +156,7 @@ func actions(page: String, s: Dictionary) -> Array:
 			if TiyiAccess.update_required(s):
 				var stage: String=str(s.actOne.get("tiyiUpdateStage","not_started"))
 				if stage=="not_started": out.append(_action("c2_tiyi_discover", "浙大体育与艺术 · 联系我们"))
-				elif stage=="official_entry_found": out.append(_action("c2_tiyi_acquire", "模拟扫码获取更新"))
+				elif stage=="official_entry_found" and entry_session.tiyi_download_rates.is_empty(): out.append(_action("c2_tiyi_acquire", "下载更新包"))
 				elif stage=="package_ready": out.append(_action("c2_tiyi_install", "安装更新"))
 			return out
 		"system_chat":
@@ -493,7 +493,7 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 			a.characterNamed = true
 			a.identityVerified = true
 			return _ok("姓名和学号一致。很好，他现在知道自己是谁了。")
-		"c2_tiyi_discover", "c2_tiyi_acquire", "c2_tiyi_install":
+		"c2_tiyi_discover", "c2_tiyi_acquire", "c2_tiyi_install", "c2_tiyi_download_finished":
 			if not TiyiAccess.update_required(s): return _ok("当前无需重新安装体艺客户端。")
 			var stage: String=str(a.get("tiyiUpdateStage","not_started"))
 			if TiyiAccess.installed(s): return _ok("更新已安装，请重新进入浙大体艺。")
@@ -504,8 +504,12 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 				if stage=="package_ready": return _ok("更新包已就绪，等待安装。")
 				if stage!="official_entry_found": return _ok("请先从公众号底部的「联系我们」打开下载卡。")
 				if s.networkMode=="offline": return _ok("需要联网才能获取更新包。")
+				entry_session.start_tiyi_download()
+				return _ok("")
+			if action=="c2_tiyi_download_finished":
+				if stage!="official_entry_found" or not entry_session.take_completed_tiyi_download(): return _ok("")
 				a.tiyiUpdateStage="package_ready"
-				return _ok("模拟扫码完成，更新包已就绪。安装后再进入浙大体艺。")
+				return _ok("%d MB 更新包已下载完成，可以安装了。"%PhoneEntry.TIYI_PACKAGE_MB)
 			if stage!="package_ready": return _ok("请先从官方入口获取更新包。")
 			a.tiyiUpdateStage="installed"
 			return _ok("更新已安装，请重新进入浙大体艺。")

@@ -1,6 +1,7 @@
 extends SceneTree
 ## Headless actual-input fixtures, not a manual campaign or screenshot claim.
 const VirtualRun = preload("res://scripts/games/virtual_run.gd")
+const Driver = preload("res://tests/helpers/virtual_run_driver.gd")
 const Ui = preload("res://scripts/ui/native_ui_theme.gd")
 var checks := 0
 var failures := 0
@@ -104,8 +105,7 @@ func steer_segment(touch_input: bool=false) -> void:
 	var before: int=game.completed
 	route_event(game.track.to_screen(game.motion.position),true,touch_input)
 	for i in range(1600):
-		var offset: Vector2=game.motion.goal()-game.motion.position
-		route_motion(game.track.to_screen(game.motion.position+offset.limit_length(16)),touch_input)
+		route_motion(game.track.to_screen(Driver.target(game.motion)),touch_input)
 		game._step(1.0/60)
 		if game.completed!=before or game.pending_result:break
 	route_event(game.track.to_screen(game.motion.position),false,touch_input)
@@ -128,6 +128,16 @@ func run() -> void:
 	var right=quarter+geometry.STRAIGHT+PI*geometry.RADIUS
 	check(is_equal_approx(geometry.at_distance(right+25).x,geometry.at_distance(right+105).x),"right straight has no polygon kink")
 	check(geometry.at_distance(0).distance_to(geometry.at_distance(geometry.LENGTH))<.01,"oval start and finish share one closed line")
+	var pace_samples: Array[float]=[]
+	for look_ahead: float in [13.0,28.0]:
+		await spawn(Vector2i(390,844))
+		route_event(game.track.to_screen(game.motion.position),true,true)
+		for frame: int in range(24):
+			route_motion(game.track.to_screen(Driver.target(game.motion,look_ahead)),true)
+			game._step(1.0/60)
+		pace_samples.append(game.motion.pace_seconds_per_km(false))
+		check(game.completed==0 and game.motion.distance_km()>0 and game.stat_values[2].text!="--′--″","pace changes during actual forward motion before the first fix")
+	check(pace_samples[0]>pace_samples[1] and pace_samples[1]>0,"faster valid coordinates give a faster displayed pace")
 	for view: Vector2i in [Vector2i(390,844),Vector2i(430,860)]:
 		await spawn(view);verify_layout()
 		game._step(1000)
@@ -138,7 +148,8 @@ func run() -> void:
 		check(game.completed==0,"clicking all ten points never completes a segment")
 		await press_key(KEY_ENTER);await press_key(KEY_SPACE)
 		check(game.completed==0,"accept keys cannot replace traversal")
-		await steer_segment();check(game.stat_values[0].text=="01:00" and game.stat_values[1].text=="0.30","one traversed segment records original time and distance")
+		await steer_segment()
+		check(game.motion.active_seconds>0 and is_equal_approx(game.motion.distance_km(),.225),"first fix records measured time and its actual route distance")
 		await steer_segment(true)
 		var position: Vector2=game.motion.position
 		for i in range(100):game._step(.016)
@@ -156,13 +167,15 @@ func run() -> void:
 		await resize(Vector2i(430,860) if view.x==390 else Vector2i(390,844));verify_layout()
 		check(game.completed==2,"resize preserves only genuine progress")
 		for i in range(7):await steer_segment(view.x==390)
-		check(results.is_empty() and game.stat_values[1].text=="2.70","nine traversed segments cannot finish")
+		check(results.is_empty() and is_equal_approx(game.motion.distance_km(),2.625),"nine traversed segments cannot finish")
 		await steer_segment(view.x==390)
 		check(results.size()==1 and game.pending_result and not game.accepted,"last gate submits once and waits for authority")
 		check(results[0]=={"failed":false,"points":10,"elapsedSeconds":600,"distanceMeters":3000},"original proof payload retained")
 		game._step(.05);check(results.size()==1,"pending cannot resubmit")
 		game.resolve(true);await frames();verify_layout()
 		check(game.return_button.visible and game.accepted,"only authority unlocks success")
+		var expected_pace: float=game.motion.simulated_seconds()/3.0
+		check(game.stat_titles[2].text=="平均配速" and game.stat_values[2].text==game._format_duration(expected_pace,"′","″"),"accepted summary uses measured time divided by the verified 3 km")
 		await mouse_click(game.return_button);check(cancels==1,"return closes once")
 	await spawn(Vector2i(390,844))
 	for i in range(3):await steer_segment(true)
@@ -172,6 +185,15 @@ func run() -> void:
 	route_motion(game.track.to_screen(fast_target),true)
 	for i in range(120):game._step(.016)
 	check(game.completed==3 and game.motion.retries==1,"rushing the visible signal zone rejects only current segment")
+	check(is_equal_approx(game.motion.distance_km(),.825),"a rejected segment awards no distance")
+	route_event(game.track.to_screen(game.motion.position),true,true)
+	for frame: int in range(600):
+		route_motion(game.track.to_screen(Driver.target(game.motion)),true)
+		game._step(1.0/60)
+		if game.motion.fix_elapsed>0.1:break
+	check(game.completed==3 and game.motion.fix_elapsed>0.0,"slow valid approach starts the visible lock")
+	route_event(game.track.to_screen(game.motion.position),false,true)
+	check(game.motion.fix_elapsed==0.0 and game.completed==3,"releasing before the lock completes resets only the dwell")
 	await steer_segment(true)
 	check(game.completed==4 and game.motion.retries==1,"slower real touch path crosses the same interference safely")
 	await spawn(Vector2i(430,860))

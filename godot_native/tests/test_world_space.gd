@@ -78,7 +78,15 @@ func run()->void:
 				var water:Rect2=world.world_space.regions[0]
 				check(not world.can_stand(Vector2(water.position.x+1,water.get_center().y),heading),label+" whole rotated hull rejects water-edge overhang")
 		check(JSON.stringify(state.d)==before,label+" collision and depth queries cannot advance the story")
-		if row.scene=="dorm_hub":check(not world.can_stand(Vector2(100,500)),"dorm black gutter is not walkable floor")
+		if row.scene=="dorm_hub":
+			check(not world.can_stand(Vector2(100,500)),"dorm black gutter is not walkable floor")
+			for x:float in [420.0,480.0,540.0]:
+				var start:=Vector2(x,680)
+				var contact:Vector2=world._axis_destination(start,Vector2(0,180))
+				var feet:Rect2=Body.foot_rect(contact,world.scene_id)
+				check(world.can_stand(start) and contact.y>start.y and absf(feet.end.y-742.0)<.01,
+					"dorm south wall and closed door stop the feet at the same inner edge: "+str(x))
+			check(not world.can_stand(Vector2(480,780)),"dorm exterior step is outside the closed doorway")
 		if row.scene=="campus_bootstrap":check(world.world_space.source_foregrounds.size()==4,"campus uses only the four source-enabled landmark polygons")
 		if row.scene=="campus_qizhen_loop":check(world.world_space.source_foregrounds.size()==4 and world.world_space.mask_definition.gridWidth==3417,"side-view keeps its own source mask and foreground props")
 		if row.scene=="qizhen_lake" and row.vehicle=="on_foot":

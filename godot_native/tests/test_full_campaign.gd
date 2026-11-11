@@ -188,9 +188,8 @@ func run_exercise_segment() -> void:
 	var down:=InputEventMouseButton.new();down.button_index=MOUSE_BUTTON_LEFT;down.pressed=true
 	down.position=game.track.to_screen(game.motion.position);down.global_position=down.position;root.push_input(down,true)
 	for frame:int in range(1600):
-		var offset:Vector2=game.motion.goal()-game.motion.position
 		var motion:=InputEventMouseMotion.new();motion.button_mask=MOUSE_BUTTON_MASK_LEFT
-		motion.position=game.track.to_screen(game.motion.position+offset.limit_length(16));motion.global_position=motion.position
+		motion.position=game.track.to_screen(preload("res://tests/helpers/virtual_run_driver.gd").target(game.motion));motion.global_position=motion.position
 		root.push_input(motion,true);game._step(1.0/60)
 		if game.completed!=before or game.pending_result:break
 	var up:=InputEventMouseButton.new();up.button_index=MOUSE_BUTTON_LEFT
@@ -253,6 +252,7 @@ func beginning() -> void:
 	await show_phone("wechat")
 	await step("c2_tiyi_discover")
 	await step("c2_tiyi_acquire")
+	state.advance_phone_entry(preload("res://scripts/chapters/phone_entry_session.gd").TIYI_DOWNLOAD_MS)
 	await step("c2_tiyi_install")
 	check(state.d.actOne.tiyiUpdateStage=="installed" and not state.d.actOne.exerciseStarted,"official update installed without granting exercise")
 	await show_phone("tiyi")

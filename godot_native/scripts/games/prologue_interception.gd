@@ -406,9 +406,12 @@ func _retained_sentence()->String:
 func _retained_words(y:float)->void:
 	var sentence=_retained_sentence()
 	if sentence.is_empty():return
-	# This is a record of all six real contacts, never another completion gate.
-	draw_rect(Rect2(30,y,370,60),PAPER)
-	_text(sentence,y+34,INK,20,338,true)
+	# The earned line shares the field instead of popping in as a dark bar.
+	var opacity := 1.0 if reduced_motion else smoothstep(.25, .76, elapsed)
+	if holding and not reduced_motion:
+		opacity *= 1.0 - smoothstep(1170.0, 1400.0, hold_ms)
+	_text(sentence, y + 35, Color(CharacterFlow.BACKGROUND, opacity), 20, 338, true)
+	_text(sentence, y + 34, Color(INK, opacity), 20, 338, true)
 
 func _update_terminal_field()->void:
 	var bodies=PackedVector4Array();bodies.resize(CharacterFlow.WORD_SLOTS)
@@ -513,7 +516,7 @@ func _draw()->void:
 			var center=_lock_center()
 			draw_arc(center,55,0,TAU,64,CharacterFlow.RULE,1)
 			draw_arc(center,62,-PI/2,-PI/2+TAU*hold_ms/1400,60,CharacterFlow.ACCENT,3)
-			if elapsed>=.55 and not session.captures.is_empty():_retained_words(520)
+			if not session.captures.is_empty():_retained_words(520)
 			if lock_help_open:_text("按住空格 / Enter / 手柄 A",624,CharacterFlow.MUTED,15)
 		elif phase=="caught":
 			var line:String=DIALOGUE[dialogue_index]

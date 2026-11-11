@@ -80,6 +80,11 @@ func _run() -> void:
 	expect(p.zjuding_page=="hub","Learn back returns to hub")
 	# Every campus service opens from the first chapter; detail pages own action conditions.
 	s.actOne.inventoryRecovered=false; s.items.campusCard=false; await show("zjuding")
+	await click(node("ZjudingTab_messages")); await show("zjuding")
+	var filters: Control = node("ZjudingMessageFilter_all")
+	expect(filters != null and filters.position.y == 14, "message filters start immediately under the identity header")
+	expect(node("ZjudingMessage_network") is Button, "campus network notice still opens from the message list")
+	await click(nav("back")); await show("zjuding")
 	for app in p.ZJU_APPS:
 		expect(node("ZjudingApp_"+str(app[0])) is Button,"Campus service opens before identity: "+str(app[0]))
 	await click(node("ZjudingApp_campus_map"));await show("zjuding")
@@ -217,7 +222,7 @@ func _run() -> void:
 	await show("weather"); expect(node("WeatherTemperature").text=="18°C","Weather uses source light-rain temperature")
 	expect(node("WeatherWaterCard").disabled,"Water card unavailable before exercise")
 	s.actOne.exerciseStarted=true; await show("weather"); await click(node("WeatherWaterCard")); expect(s.actOne.weatherWaterTaken,"Weather water card executes existing clue intent")
-	s.qizhenLake.rainSafetyCleared=true; await show("weather"); expect(node("WeatherTemperature").text=="19°C","Weather reflects source overcast projection")
+	s.qizhenLake.rainSafetyCleared=true; await show("weather"); expect(node("WeatherTemperature").text=="19°C","Weather reflects the sunny projection after lake clearance")
 	# Source line pacing: no state mutation from rendering/partial dialogue.
 	for mode in ["inventory","inventory_ready","departure","reservation"]:
 		s=fresh(); s.actOne.phase="system_required" if mode in ["inventory","inventory_ready"] else "system_return_required" if mode=="departure" else "reservation_briefing_required"

@@ -76,7 +76,15 @@ export async function phoneNavigationCase(h) {
   h.check(!find(s, 'Cc98AttendantRemark') && !find(s, 'Cc98RevealHint'), `${h.id}: password hints start hidden`);
   await shot('auth-initial');
   await scrollTo('Cc98ReadCampusCard'); await click('Cc98ReadCampusCard');
-  await h.poll(async () => (await read()).state.actOne.cc98Login.studentIdDiscovered, 'campus card read by original controller');
+  h.check(!(await read()).state.actOne.cc98Login.studentIdDiscovered, `${h.id}: tapping the reader does not fill the ID`);
+  if (!(await read()).state.ui.inventoryOpen) await click('InventoryHandle');
+  const card = await h.poll(async () => find(await read(), 'Item_campusCard'), 'owned campus card in the inventory drawer');
+  const target = find(await read(), 'Cc98ReadCampusCard');
+  const center = rect => ({x: rect.x + rect.width / 2, y: rect.y + rect.height / 2});
+  const current = await read();
+  await h.drag(await h.renderPoint(center(card.rect), current), await h.renderPoint(center(target.rect), current));
+  await h.poll(async () => (await read()).state.actOne.cc98Login.studentIdDiscovered, 'dragged campus card read by original controller');
+  if ((await read()).state.ui.inventoryOpen) await click('InventoryHandle');
   await click('Cc98AttendantIcon');
   h.check(!find(await read(), 'Cc98AttendantRemark'), `${h.id}: one activation leaves the password hints hidden`);
   await click('Cc98AttendantIcon');
