@@ -874,7 +874,7 @@ async function cornerNavigationCase() {
     return s?.content?.blocking === false && s.world?.visible && s.world.scene_id === 'campus_bootstrap'
       && ['WorldPhoneButton', 'WorldMode'].every(name => controls(s).some(c => c.name === name && !c.disabled));
   }, 'campus navigation is available after the Library unlock', bootTimeout);
-  await acceptPortraitFallback();
+  await enterLandscapeScene();
   const before = await snapshot();
   const facts = s => JSON.stringify([s.items, s.actOne, s.ui.libraryFinalsPhase, s.canteenHunt, s.theaterHunt, s.qizhenLake, s.chapter4, s.rpgScene, s.rpgCheckpoint]);
   const originalFacts = facts(state(before));
@@ -1769,7 +1769,7 @@ async function directWorldCase(value) {
   check(value.world.input.owners.some(owner => owner.role === 'stick') && mobileDistance(value.world.touch_axis, { x: 0, y: 0 }) < .001, `${active.id}: rotation retains a real neutral stick owner`);
   value = await rotateMobileWorld(value, true, 'direct-stick-portrait');
   value = await assertWorldStopped(value, 'direct-stick-rotation');
-  await worldTouches('touchCancel'); await acceptPortraitFallback();
+  await worldTouches('touchCancel'); await enterLandscapeScene();
   value = await rotateMobileWorld(value, false, 'direct-stick-landscape');
   check(mobileFacts(value) === stickFacts, `${active.id}: stick interruption and rotation preserve all earned facts`);
   active.mobileWorld.coverage.push('coexisting joystick movement and release', 'stick touchCancel', 'held stick modal cancellation', 'held stick rotation cancellation');
