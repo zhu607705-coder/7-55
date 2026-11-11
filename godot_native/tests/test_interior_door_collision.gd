@@ -57,7 +57,7 @@ func run()->void:
 		for spawn_y:float in [792.5,842.0]:
 			fixture("library_interior",Vector2(715,spawn_y));world.size=dimensions;world.mobile_exploration=true;world.touch_controls=true;world._update_camera();world.queue_redraw();await process_frame
 			check(not world.can_stand(Vector2(452,817.875)) and not world.can_stand(Vector2(1084,817.875)),"painted west/east south-wall bases stop the real foot body "+str(dimensions))
-			check(world.can_stand(Vector2(452,760)) and world.can_stand(Vector2(1084,760)) and world.can_stand(Vector2(715,842)),"adjacent clear interior floor and authored central spawn stay open")
+			check(world.can_stand(Vector2(452,686)) and world.can_stand(Vector2(1084,710)) and world.can_stand(Vector2(715,842)),"adjacent clear interior floor and authored central spawn stay open")
 			# The former point now hits the visible entrance reader. Aim at clear
 			# floor farther inside, so this still exercises routing across the gate.
 			var goal:=Vector2.INF
@@ -74,12 +74,23 @@ func run()->void:
 			var fixed:Vector2=world.player
 			for i:int in range(320):world._process(.016)
 			check(world.player==fixed and not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"blocked outer-wall route never moves the actor or grants original access")
-	for x:float in [452.,1084.]:
-		fixture("library_interior",Vector2(x,780));world.grab_focus()
+	# Measure the inside edge of each painted cap using the full shared foot box.
+	for row: Vector2 in [Vector2(350,798),Vector2(1320,798),Vector2(416,769),Vector2(1081,769),Vector2(475,742),Vector2(1020,742)]:
+		var floor_point := Metrics.anchor_from_foot_center(row-Vector2(0,6))
+		var wall_point := floor_point+Vector2(0,2)
+		check(world.can_stand(floor_point),"floor remains walkable within one source pixel of cap "+str(row))
+		check(not world.can_stand(wall_point),"foot box cannot enter the cap or step "+str(row))
+		check(not world._floor_segment_clear(floor_point,wall_point),"tap route rejects the same wall edge "+str(row))
+	for x:float in [350.,1320.]:
+		fixture("library_interior",Vector2(x,735));world.grab_focus()
 		keyboard(KEY_S,true)
 		for i:int in range(20):world._process(.05)
 		keyboard(KEY_S,false)
-		check(world.player.y>780 and world.player.y<789.1 and world.can_stand(world.player),"actual keyboard body stops against the visible fixed south-wall base "+str(x))
+		var feet := Metrics.foot_rect(world.player,world.scene_id)
+		check(feet.end.y>789 and feet.end.y<=798 and world.can_stand(world.player),"actual keyboard stops at the painted inside edge "+str(x))
+		fixture("library_interior",Vector2(x,780))
+		var restored := Metrics.foot_rect(world.player,world.scene_id)
+		check(world.can_stand(world.player) and restored.end.y<=798 and absf(world.player.x-x)<42,"old wall pose returns to nearby floor on the same side "+str(x))
 	for side: int in [Gate.INWARD,Gate.OUTWARD]:
 		var start := Vector2(620 if side < 0 else 900, 842)
 		var goal := Vector2(500 if side < 0 else 1000, start.y)

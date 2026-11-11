@@ -29,7 +29,7 @@ func run()->void:
 	world=load("res://scripts/world.gd").new();world.size=Vector2(960,540);root.add_child(world)
 	await process_frame;world.set_process(false);world.mobile_exploration=true;world.touch_controls=true
 	var metrics:Dictionary=world.mobile_control_metrics()
-	check(metrics.scheme=="direct_world" and not metrics.has("stick") and not metrics.has("interact"),"direct scene exposes no permanent or invisible virtual controls")
+	check(metrics.scheme=="direct_world" and metrics.has("stick") and not metrics.has("interact"),"direct scene exposes a visible movement stick without interaction confirmation")
 	check(metrics.gestureArea==world.exploration_safe_rect(true),"visible safe scene and actual gesture area share geometry")
 	var reader: Vector2 = local(world.library_gate.reader_rect(0).get_center())
 	touch(29,reader,true);touch(29,reader,false)
@@ -41,6 +41,13 @@ func run()->void:
 	check(world._floor_route.is_empty() and actions.is_empty(),"finger down does not move or interact")
 	touch(1,target,false)
 	check(not world._floor_route.is_empty(),"ordinary real scene tap plans through an earned open entrance")
+	var stick_center:Vector2=world.mobile_control_metrics().stick.get_center()
+	touch(60,stick_center,true)
+	check(world.mobile_stick_id==60 and world._floor_route.is_empty(),"ordinary stick acquisition cancels prior automatic route")
+	touch(60,stick_center,false)
+	check(world.mobile_stick_id==-1 and world._floor_route.is_empty(),"stick release cannot revive prior automatic route")
+	touch(1,target,true);touch(1,target,false)
+	check(not world._floor_route.is_empty(),"fresh floor tap works immediately after joystick use")
 	var steps:=0
 	while not world._floor_route.is_empty() and steps<400:
 		var previous:Vector2=world.player;world._process(.016);steps+=1

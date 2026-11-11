@@ -17,8 +17,7 @@ func reading_geometry_matches(frame: Control) -> bool:
 	var scale: float=absf(frame.get_global_transform_with_canvas().get_scale().x)
 	var app := rect(frame)
 	var content := rect(frame.content)
-	var left_inset := maxi(18,main.phone_chrome.recovery_inventory_inset())
-	return absf((content.position.x-app.position.x)/scale-left_inset)<.5 and absf((app.end.x-content.end.x)/scale-18)<.5 and absf(frame.content.size.x-(406-left_inset))<.5
+	return absf((content.position.x-app.position.x)/scale-18)<.5 and absf((app.end.x-content.end.x)/scale-18)<.5 and absf(frame.content.size.x-388)<.5
 func semantic_controls(node: Node) -> Array:
 	var result: Array=[]
 	if (node is Label and not node.text.is_empty()) or node is Button:result.append(node)
@@ -33,7 +32,7 @@ func visible_rect(control: Control) -> Rect2:
 	return bounds
 func check_reading_geometry(frame: Control, label: String) -> void:
 	var app := rect(frame)
-	check(reading_geometry_matches(frame),"reading margins clear the inventory shelf: "+label)
+	check(reading_geometry_matches(frame),"reading margins are equal: "+label)
 	check(frame.footer_margin.get_theme_constant("margin_left")==18 and frame.footer_margin.get_theme_constant("margin_right")==18,"footer keeps its own equal margins: "+label)
 	for fraction: float in [0.0,.5,1.0]:
 		var bar: VScrollBar=frame.scroll.get_v_scroll_bar()
@@ -44,9 +43,9 @@ func check_reading_geometry(frame: Control, label: String) -> void:
 	var bag: Control=main.phone_chrome.inventory
 	var was_visible: bool=bag.visible
 	bag.hide();main._layout();await frames()
-	check(reading_geometry_matches(frame),"hiding the shelf restores the ordinary reading margins: "+label)
+	check(reading_geometry_matches(frame),"hiding the shelf leaves both margins alone: "+label)
 	bag.visible=was_visible;main._layout();await frames()
-	check(reading_geometry_matches(frame),"showing the shelf reserves the same reading clearance: "+label)
+	check(reading_geometry_matches(frame),"showing the shelf leaves both margins alone: "+label)
 	frame.scroll.scroll_vertical=0
 	await frames()
 func touch(control: Control) -> void:
@@ -129,7 +128,14 @@ func run() -> void:
 		var down := InputEventScreenTouch.new();down.index=0;down.position=point;down.pressed=true;Input.parse_input_event(down);Input.flush_buffered_events();await frames(1)
 		var drag := InputEventScreenDrag.new();drag.index=0;drag.position=point+Vector2(0,44);drag.relative=Vector2(0,44);Input.parse_input_event(drag);Input.flush_buffered_events();await frames(1)
 		var up := InputEventScreenTouch.new();up.index=0;up.position=drag.position;up.pressed=false;Input.parse_input_event(up);Input.flush_buffered_events();await frames()
-		check(rect(chrome.inventory_handle)==trigger_before and not chrome.inventory_open,"dragging off the shelf does not displace or open the drawer")
+		var moved_trigger := rect(chrome.inventory_handle)
+		check(is_equal_approx(moved_trigger.position.x,trigger_before.position.x) and moved_trigger.position.y>trigger_before.position.y+20 and not chrome.inventory_open,"touch drag repositions the closed drawer along the left rail")
+		recovery_frame=main.page_body.get_child(0)
+		check(rect(recovery_frame.content)==content_before,"repositioning the drawer does not shift reading content")
+		await touch(chrome.inventory_handle)
+		check(chrome.inventory_open,"a deliberate tap still opens the moved drawer")
+		await touch(chrome.inventory_handle)
+		check(not chrome.inventory_open and rect(chrome.inventory_handle).is_equal_approx(moved_trigger),"collapse restores the moved entry")
 		var open: Button=null
 		for button: Button in main.page_body.find_children("*","Button",true,false):
 			if button.text=="查看划船帖":open=button

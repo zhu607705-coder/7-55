@@ -354,7 +354,8 @@ func dispatch(s: Dictionary,action: String,value: Variant=null) -> Dictionary:
 	if action=="c4_puzzle_trace": return _progressive_result(s,value)
 	if action=="c4_prologue":
 		if c.prologueSeen or s.qizhenLake.phase!="complete" or s.chapterThreeInterlude.phase!="replay_ready" or not s.chapterThreeInterlude.replayUnlocked: return _locked("prologue_requirements_unmet")
-		return _game(s,"prologue","c4_prologue_end",{"durationMs":43834,"video":"res://assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.ogv"})
+		var route: Dictionary=s.native.get("c35_investigation",{})
+		return _game(s,"prologue","c4_prologue_end",{"durationMs":43834,"video":"res://assets/rpg/cinematics/chapter4-prologue/chapter35_to_chapter4_h3_transition.ogv","c35VerifiedReplay":route.get("entry_side","")=="west" and route.get("broadcast_heard",false)})
 	if action=="c4_prologue_end":
 		if not _proof(s,action,value) or float(value.get("elapsedMs",0))<43834 or not value.get("acknowledged",false): return _locked("prologue_requirements_unmet")
 		c.prologueSeen=true; s.chapterThreeInterlude.phase="complete"; s.chapterThreeInterlude.completed=true; _phase(c,"opening_handoff"); _go(s,"A1"); pending={}

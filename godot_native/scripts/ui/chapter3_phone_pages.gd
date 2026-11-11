@@ -79,7 +79,9 @@ func build(page: String, _view: Dictionary, s: Dictionary) -> Control:
 		frame.background.color=LakePalette.BACKDROP
 	match page:
 		"c35_recovery": recovery(frame.content)
-		"c35_journal": journal(frame)
+		"c35_journal":
+			if Investigation.has_route(s): frame.enable_touch_reading()
+			journal(frame)
 		"c35_photos":
 			if photo_view_id.is_empty():photos(frame.content)
 			else:photo_viewer(frame.content)
@@ -364,25 +366,48 @@ func recovery(root: VBoxContainer) -> void:
 
 func journal(frame: Control) -> void:
 	var root: VBoxContainer=frame.content
+	var new_route := Investigation.has_route(state)
 	var article := card(root,LakePalette.PAPER)
-	article.add_child(label("启真湖划船记录｜风景很好，返程提前了",23))
+	article.add_child(label("【实况】今晚启真湖风有点大，准备靠岸了" if new_route else "启真湖划船记录｜风景很好，返程提前了",23))
 	article.add_child(label("林星宇  ·  楼主",16,Color("346589")))
 	var photo := image_node("res://assets/ui/photo-evidence/chapter35_live_lake_memory_a.webp",Vector2(0,202))
 	photo.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	article.add_child(photo)
-	article.add_child(label("从小码头下水。湖面比岸边安静，风从剧场方向过来。最后一张照片没同步上来，我先回岸上整理。",17))
-	article.add_child(label("启真湖 · 22:37:05",15,MUTED))
+	var body := "从小码头下水。湖面比岸边安静，风从剧场方向过来。最后一张照片没同步上来，我先回岸上整理。"
+	if new_route: body="本来想在湖心再划一会儿，后来风起来了。手电只剩一格，我往小码头划，靠岸再回帖。"
+	article.add_child(label(body,17))
+	article.add_child(label("启真湖 · 22:28:14" if new_route else "启真湖 · 22:37:05",15,MUTED))
 	var published: bool=state.chapterThreeInterlude.evidenceIds.has("journal_start")
-	if published:
+	if published and not new_route:
 		var receipt := card(root,LakePalette.SELECTED)
 		receipt.name="C35JournalReceipt"
 		receipt.add_child(label("收尾回复已发布 · 离湖时间已保存",15,LakePalette.INK))
 	var replies := card(root,LakePalette.PAPER)
-	for reply: Array in [["2楼","晚上水面反光挺亮，靠岸别太快。"],["3楼","最后一张图像是朝东边拍的。"]]:
+	var history := [["2楼","晚上水面反光挺亮，靠岸别太快。"],["3楼","最后一张图像是朝东边拍的。"]]
+	if new_route:
+		history=[
+			["2 楼 · 22:31:02","晚上水面反光挺亮，靠岸别太快。"],
+			["3 楼 · 22:34:40","刚路过北教，看见保安拿着手电在巡楼。楼主上岸了没？"],
+			["4 楼 · 22:36:15","呼叫楼主，人呢？拴好船回个平安。"],
+		]
+	for reply: Array in history:
 		if replies.get_child_count()>0:rule(replies)
 		replies.add_child(label(reply[0],15,MUTED))
 		replies.add_child(label(reply[1],17))
-	if published: return
+	if published:
+		if new_route:
+			investigation_pages.build_note(self,frame,state,state.native[Investigation.KEY])
+			rule(replies)
+			var choice: String=state.qizhenLake.journal.summaryChoice
+			var posted: String=str(module.copy_data().journalReplies.get(choice,{}).get("body","人和船都已回到小码头。"))
+			replies.add_child(label("5 楼 · 林星宇 · 22:37:05",15,LakePalette.INK))
+			replies.add_child(label(posted,17))
+			frame.ready.connect(func() -> void:
+				await frame.get_tree().process_frame
+				if not is_instance_valid(frame) or not frame.is_inside_tree(): return
+				var bar := frame.scroll.get_v_scroll_bar() as VScrollBar
+				frame.scroll.scroll_vertical=ceili(bar.max_value-bar.page))
+		return
 	var choices: Dictionary={}
 	for id: String in ["safe_return","details_withheld"]:
 		var reply: Dictionary=module.copy_data().journalReplies[id]

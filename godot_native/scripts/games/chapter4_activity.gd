@@ -54,6 +54,7 @@ var snapshot_clock: float=0
 var built: bool=false
 var plate: Texture2D
 var prologue_focused := true
+var recovered_broadcast: AudioStreamPlayer
 var prologue_fallback := false
 var prologue_reduced := false
 var prologue_notice: Label
@@ -208,6 +209,13 @@ func _finish(proof: Dictionary={}) -> void:
 	var result: Dictionary={"kind":kind,"session":config.get("session",""),"elapsedMs":elapsed}
 	result.merge(proof,true); completed.emit(result)
 func _prologue() -> void:
+	if config.get("c35VerifiedReplay",false):
+		var prologue: Dictionary=source.prologue
+		prologue.subtitles.append({"at":26000,"durationMs":3100,"text":"22:44:57。我沿着长绿地绕过东门，推开了西侧大厅的玻璃门。"})
+		for subtitle: Dictionary in prologue.subtitles:
+			if subtitle.get("id","")=="guard":
+				subtitle.text="22:45:00。清楼广播响起。三秒前接入的信号断了。"
+		prologue.subtitles.append({"at":40000,"durationMs":3600,"text":"我往 A1 走廊看了一眼。那张异常的签到纸就在里面。"})
 	prologue_reduced=bool(config.get("settings",{}).get("reduced_motion",false))
 	var path: String=config.get("video","")
 	prologue_fallback=prologue_reduced or not ResourceLoader.exists(path)
@@ -328,6 +336,18 @@ func _draw_prologue_fallback() -> void:
 		var art: Texture2D=prologue_portraits[int(elapsed/680)%2]; var dimensions: Vector2=art.get_size(); dimensions*=minf(270/dimensions.x,310/dimensions.y)
 		draw_texture_rect(art,Rect2(Vector2(942-dimensions.x,532-dimensions.y),dimensions),false)
 func _cue(event: String) -> void:
+	if is_instance_valid(recovered_broadcast) and event in ["chapter4_prologue_skip","chapter4_prologue_closed","chapter4_prologue_finished"]:
+		recovered_broadcast.stop()
+		recovered_broadcast.queue_free()
+	if event=="chapter4_prologue_guard_line" and config.get("c35VerifiedReplay",false):
+		recovered_broadcast=AudioStreamPlayer.new()
+		recovered_broadcast.stream=load("res://assets/native/chapter35_recovery_20261023/late_hall_recording.ogg")
+		var volume: float=float(config.get("settings",{}).get("volume",1.0))
+		recovered_broadcast.volume_db=linear_to_db(maxf(.001,volume))
+		add_child(recovered_broadcast)
+		recovered_broadcast.finished.connect(recovered_broadcast.queue_free)
+		recovered_broadcast.play(3.0)
+		return
 	if not get_signal_connection_list("presentation_requested").is_empty():
 		presentation_requested.emit(event,{})
 		return
@@ -543,6 +563,7 @@ func _process(delta: float) -> void:
 		return
 	if kind=="prologue" and focused!=prologue_focused:
 		prologue_focused=focused
+		if is_instance_valid(recovered_broadcast): recovered_broadcast.stream_paused=not focused
 		if is_instance_valid(video):
 			video.paused=not focused or stage=="card"
 			if focused: _sync_prologue_video(true)

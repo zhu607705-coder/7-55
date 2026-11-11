@@ -2,6 +2,7 @@ extends "res://scripts/chapters/c3_base.gd"
 const VoiceSession = preload("res://scripts/media/c3_voice_session.gd")
 const Investigation = preload("res://scripts/chapters/c35_investigation.gd")
 var voice_session: RefCounted
+var voice_state: Dictionary = {}
 
 const EVIDENCE: Array=["journal_start","photo_direction","network_destination","broadcast_end"]
 const PHOTOS: Array=["paper_left","paper_middle","paper_right"]
@@ -71,7 +72,7 @@ func view(page: String, s: Dictionary) -> Dictionary:
 			for recording: Dictionary in content("chapter3-interlude-voice-memos.audio.content").recordings:
 				body+="\n"+str(recording.code)
 				if voice_reviewed(s,str(recording.id)): body+=" · "+str(recording.time)+"\n"+str(recording.revealZh)
-			return {"title":"录音","body":body,"media_session":voice_session}
+			return {"title":"录音","body":body,"media_session":voice_session if is_same(s,voice_state) else null}
 		"c35_official": return {"title":"紫金港楼宇服务 · 22:40","body":"校园楼宇运行通知\n夜间闭楼与入口调整\n22:45 起，北教学区一处楼宇进入夜间清楼。A 楼一层东侧入口暂停通行，人员请从大厅主入口进入。\n主电梯保留运行，楼层开放情况以现场提示为准。"}
 		"c35_messages":
 			var body: String="群聊 · 18人"
@@ -140,11 +141,18 @@ func exclusions_ready(c: Dictionary) -> bool:
 
 func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionary:
 	if not action.begins_with("c35_"): return {}
+	if not is_same(s,voice_state):
+		# Import/restore installs a new snapshot before Main retires its audio.
+		# The old player's final sample belongs only to the displaced snapshot.
+		if voice_session!=null: voice_session.stop()
+		voice_session=null
+		voice_state=s
+		if action=="c35_media_event": return response()
 	var c: Dictionary=s.chapterThreeInterlude
 	if s.qizhenLake.phase!="complete" or c.completed: return locked()
 	if action.begins_with("c35_trace:"): return Investigation.dispatch(s,action.trim_prefix("c35_trace:"),value)
 	if Investigation.has_route(s) and action=="c35_begin": return locked("先看看浙大钉刚收到的消息。")
-	if Investigation.has_route(s) and action=="c35_journal" and Investigation.step(s)!="journal" and not c.evidenceIds.has("journal_start"): return locked("先处理浙大钉里的补交通知。")
+	if Investigation.has_route(s) and action=="c35_journal" and Investigation.step(s)!="journal" and not c.evidenceIds.has("journal_start"): return locked("先从最近照片里打开那张划船照。")
 	if action=="c35_begin":
 		c.recoveryOpened=true
 		c.rebootSeen=true
@@ -167,7 +175,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 		s.qizhenLake.journal.memoryCardUnlocked=true
 		s.qizhenLake.journal.status="archived"
 		evidence(c,"journal_start")
-		if Investigation.step(s)=="journal": s.native[Investigation.KEY].step="group"
+		Investigation.finish_journal(s)
 		c.phase="evidence_collection"
 		return response()
 	if not c.evidenceIds.has("journal_start"): return locked("先在记录恢复中确认划船帖的离湖时间。")
@@ -314,10 +322,10 @@ func objective(s: Dictionary) -> String:
 		return {
 			"inbox":"查看浙大钉里的新消息","notice":"查看课程群的补交通知","assignment":"整理第十周作业的附件",
 			"camera":"用文档相机拍下作业","files":"找出第十周作业","file":"预览作业并选作附件",
-			"attached":"把作业私信发给助教","file_error":"处理助教打不开的附件","receipt":"查看相册中未同步的照片",
+			"attached":"把作业私信发给助教","file_error":"处理助教打不开的附件","receipt":"看看相册提醒和课程群消息",
 			"album_trace":"回到照片对应的划船帖","journal":"回复划船帖，留下离湖时间",
 			"group":"问问同学刚才去了哪里","seen":"找收到过位置的同学私聊","private":"打开那张旧位置卡",
-			"map":"从全校地图找西侧大厅入口","arrival":"核对入口的短接入记录","confirmed":"回看离湖后的那段路",
+			"map":"在全校地图上找出周琪说的楼群","entrance":"沿着残片判断绕行的方向","arrival":"对照录音与校园网连接记录","confirmed":"回看离湖后的那段路",
 		}.get(Investigation.step(s),"查看未同步记录")
 	if not c.recoveryOpened: return "打开未同步记录"
 	if not c.evidenceIds.has("journal_start"): return "查清离开湖边的时间"
@@ -350,7 +358,7 @@ func media_command(command_name: String) -> Dictionary:
 	return {"command":command_name,"session":voice_session,"on_event":"c35_media_event"}
 
 func accept_voice_receipt(s: Dictionary) -> Dictionary:
-	if voice_session==null: return locked()
+	if voice_session==null or not is_same(s,voice_state): return locked()
 	if voice_session.heard_ready:
 		if not s.native.has("c35_listened"): s.native.c35_listened=[]
 		unique(s.native.c35_listened,voice_session.clip_id)

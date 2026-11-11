@@ -25,6 +25,11 @@ var content: VBoxContainer
 var footer: VBoxContainer
 var footer_margin: MarginContainer
 var footer_background: ColorRect
+var _reading_touch := -1
+var _reading_start := 0.0
+var _reading_scroll := 0
+var _reading_dragging := false
+
 
 func _init() -> void:
 	custom_minimum_size=EXTENT
@@ -72,7 +77,47 @@ static func make_label(copy: String, font_size: int, color: Color) -> Label:
 	result.add_theme_font_size_override("font_size",font_size);result.add_theme_color_override("font_color",color)
 	result.mouse_filter=Control.MOUSE_FILTER_IGNORE;return result
 
-func _ready() -> void: _layout()
+func _ready() -> void:
+	set_process_input(false)
+	_layout()
+
+func enable_touch_reading() -> void:
+	# Godot's emulated mouse scroll can be intercepted by chat bubbles and cards.
+	# Opt in only where the investigation owns the vertical reading surface.
+	ready.connect(func() -> void: set_process_input(true))
+
+func _input(event: InputEvent) -> void:
+	if not is_visible_in_tree() or scroll.vertical_scroll_mode==ScrollContainer.SCROLL_MODE_DISABLED:
+		_reading_touch=-1
+		_reading_dragging=false
+		return
+	if event is InputEventScreenTouch:
+		if event.pressed and _reading_touch<0:
+			var bar := scroll.get_v_scroll_bar()
+			var bounds := scroll.get_global_transform_with_canvas() * Rect2(Vector2.ZERO,scroll.size)
+			if bar.max_value<=bar.page or not bounds.has_point(event.position): return
+			for child_name: String in ["C35ChoiceSheet","C35GroupSettingsView","C35NoteDrawer"]:
+				if has_node(child_name): return
+			var seek_bar := content.find_child("C35RecordingSeek",true,false) as Control
+			if seek_bar!=null and (seek_bar.get_global_transform_with_canvas()*Rect2(Vector2.ZERO,seek_bar.size)).has_point(event.position): return
+			_reading_touch=event.index
+			_reading_start=event.position.y
+			_reading_scroll=scroll.scroll_vertical
+		elif event.index==_reading_touch and (not event.pressed or event.canceled):
+			_reading_touch=-1
+			if _reading_dragging: scroll.propagate_notification(Control.NOTIFICATION_SCROLL_END)
+			_reading_dragging=false
+	elif event is InputEventScreenDrag and event.index==_reading_touch:
+		var scale_y := maxf(.001,absf(scroll.get_global_transform_with_canvas().get_scale().y))
+		var delta: float=(event.position.y-_reading_start)/scale_y
+		if not _reading_dragging:
+			if absf(delta)<10: return
+			_reading_dragging=true
+			scroll.propagate_notification(Control.NOTIFICATION_SCROLL_BEGIN)
+		scroll.scroll_vertical=_reading_scroll-roundi(delta)
+		get_viewport().set_input_as_handled()
+	elif event is InputEventMouseMotion and event.device==InputEvent.DEVICE_ID_EMULATION and _reading_dragging:
+		get_viewport().set_input_as_handled()
 
 func configure(title: String, subtitle: String, offset: int=0, exits: bool=false) -> void:
 	title_label.text=title;subtitle_label.text=subtitle
@@ -88,11 +133,6 @@ func configure(title: String, subtitle: String, offset: int=0, exits: bool=false
 	back_button.set_meta("phone_nav_kind","exit" if exits else "back")
 	back_button.set_meta("phone_nav_label",back_button.tooltip_text)
 	scroll.set_deferred("scroll_vertical",offset)
-
-func set_reading_left_inset(width: int) -> void:
-	var inset := maxi(READING_INSET,width)
-	if content_margin.get_theme_constant("margin_left")!=inset:
-		content_margin.add_theme_constant_override("margin_left",inset)
 
 func _layout() -> void:
 	toolbar.size=Vector2(size.x,NAV_HEIGHT)

@@ -211,12 +211,70 @@ for(const nativeCrypto of [true,false]) {
   check(Buffer.from(loaded.buffer).equals(payload),'A denied WebCrypto operation falls back to the independently verified JS implementation');
 }
 {
-  const table=chunked(payload),stored=new Map(),bad=Buffer.from(payload.subarray(0,block));bad[4]^=255;
-  const f=fixture({stored,fetcher:url=>{const chunk=table.chunks.find(item=>url.endsWith(item.file));return new Response(chunk.offset===0?bad:payload.subarray(chunk.offset,chunk.offset+chunk.bytes));}});
+  // Keep the rejected digest distinct from valid siblings, which may commit
+  // before cancellation. The generic patterned payload repeats its first block.
+  const distinct=Buffer.from(payload);distinct[block]^=128;
+  const table=chunked(distinct),stored=new Map(),bad=Buffer.from(distinct.subarray(0,block));bad[4]^=255;
+  const f=fixture({stored,fetcher:url=>{const chunk=table.chunks.find(item=>url.endsWith(item.file));return new Response(chunk.offset===0?bad:distinct.subarray(chunk.offset,chunk.offset+chunk.bytes));}});
   await assert.rejects(f.cache.load(table),/Chunk digest or size differs/);
   // Cancellation may race an already committed independently valid chunk.
   await new Promise(resolve=>setTimeout(resolve,20));
   check(!stored.has('chunk:'+table.chunks[0].sha256),'A corrupt static chunk never becomes a durable cache entry or usable boot resource');
+}
+// Model the browser HTTP cache separately from IndexedDB. Removing rejected
+// IDB records does not evict a cacheable response from the Fetch HTTP cache.
+for (const staticKind of ['boot', 'deferred']) {
+  const bytes=Buffer.from('A repaired content-addressed chunk.'),bad=Buffer.from(bytes);bad[0]^=255;
+  const table=chunked(bytes);
+  if(staticKind==='deferred') {
+    table.id='chapter2_repair';table.family='chapter2';table.file=`content/${table.id}-${table.sha256.slice(0,16)}.pck`;
+    table.transportChunks=table.chunks.map((part,index)=>({...part,file:`content/chunks/${table.id}-${String(index+1).padStart(4,'0')}-${part.sha256.slice(0,16)}.bin`}));
+    delete table.chunks;
+  }
+  let httpCached=bad,network=0;
+  const f=fixture({nativeCrypto:true,fetcher:(_url,init)=>{
+    if(init.cache==='reload'){network++;httpCached=bytes;}
+    return new Response(httpCached);
+  }});
+  const loaded=await f.cache.load(table);
+  check(Buffer.from(loaded.buffer).equals(bytes)&&network===1&&f.requests.length===2&&f.requests[0].init.cache==='force-cache'&&f.requests[1].init.cache==='reload',`${staticKind}: a corrupt HTTP-cached chunk gets one fresh fetch and passes exact SHA before admission`);
+  check(f.stored.size===1&&Buffer.from([...f.stored.values()][0].bytes).equals(bytes),`${staticKind}: only repaired verified bytes enter IndexedDB`);
+  const warm=await f.cache.load(table);
+  check(warm.source==='verified-cache'&&f.requests.length===2,`${staticKind}: repaired bytes are reusable without another network request`);
+}
+{
+  const bytes=Buffer.from('Still broken content.'),bad=Buffer.from(bytes);bad[0]^=255;
+  const f=fixture({nativeCrypto:true,fetcher:()=>new Response(bad)});
+  await assert.rejects(f.cache.load(chunked(bytes)),/Chunk digest or size differs/);
+  check(f.requests.length===2&&f.requests[1].init.cache==='reload'&&f.stored.size===0,'Persistent corruption fails visibly after exactly one fresh fetch and stores no unverified bytes');
+}
+for (const paced of [false,true]) for (const failure of ['short','long','digest']) {
+  const bytes=Buffer.from('Fresh bytes after a cached integrity failure.');
+  const bad=failure==='short'?bytes.subarray(1):failure==='long'?Buffer.concat([bytes,Buffer.from([0])]):Buffer.alloc(bytes.length);
+  let pacedBytes=0;
+  const f=fixture({noIDB:true,nativeCrypto:true,fetcher:(_url,init)=>new Response(init.cache==='reload'?bytes:bad)});
+  const loaded=await f.cache.load(chunked(bytes),{response:!paced,...(paced?{pace:async count=>{pacedBytes+=count;}}:{})});
+  const output=paced?loaded.buffer:await loaded.response.arrayBuffer();
+  check(Buffer.from(output).equals(bytes)&&f.requests.length===2&&(!paced||pacedBytes>=bytes.length),`${paced?'paced background':'foreground WASM'} ${failure} repair keeps verification and in-memory fallback`);
+}
+for (const stage of ['initial','fresh']) for (const failure of ['http','network']) {
+  const bytes=Buffer.from('The retry must not hide server failures.'),bad=Buffer.alloc(bytes.length);
+  const f=fixture({nativeCrypto:true,fetcher:(_url,init)=>{
+    if(stage==='fresh'&&init.cache==='force-cache')return new Response(bad);
+    if(failure==='network')throw new Error('Network failure fixture');
+    return new Response('',{status:503});
+  }});
+  await assert.rejects(f.cache.load(chunked(bytes)),failure==='http'?/Chunk HTTP 503/:/Network failure fixture/);
+  check(f.requests.length===(stage==='initial'?1:2)&&f.stored.size===0,`${stage} ${failure} error stays visible without another retry or invalid cache write`);
+}
+for(const when of ['before-fresh','during-fresh']) {
+  const bytes=Buffer.from('Cancelling a fresh transfer remains final.'),bad=Buffer.alloc(bytes.length),controller=new AbortController();
+  const f=fixture({nativeCrypto:true,fetcher:(_url,init)=>{
+    if(when==='before-fresh'||init.cache==='reload')controller.abort();
+    return new Response(bad);
+  }});
+  await assert.rejects(f.cache.load(chunked(bytes),{signal:controller.signal}),{name:'AbortError'});
+  check(f.requests.length===(when==='before-fresh'?1:2)&&f.stored.size===0,`${when} cancellation aborts recovery without accepting or persisting bytes`);
 }
 {
   let active=0,maximum=0;

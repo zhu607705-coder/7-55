@@ -148,7 +148,7 @@ func entrance_record(b, view: Dictionary) -> Control:
 
 func home(b) -> Control:
 	var root=base(b,"浙大移动图书馆",func(): b._return_zjuding())
-	var inner=body(b,root,"home",805,60)
+	var inner=body(b,root,"home",0,60)
 	b._panel(inner,Rect2(0,0,378,132),Color("2b8bc9"))
 	b._panel(inner,Rect2(-27,80,240,90),Color("357b56"),Color.TRANSPARENT,65)
 	b._panel(inner,Rect2(151,80,285,90),Color("2c6b4e"),Color.TRANSPARENT,65)
@@ -159,17 +159,20 @@ func home(b) -> Control:
 	b._label(inner,"3250100755 ▱" if identity else "▓▓▓▓▓▓▓▓",Rect2(97,58,194,24),14,Color.WHITE)
 	b._label(inner,"✉",Rect2(313,19,48,44),28,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
 	b._label(inner,"?",Rect2(336,92,24,27),20,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
-	b._panel(inner,Rect2(14,139,345,251),Color.WHITE,Color("a8a59d"),0,3)
 	var reservation=b.s.actOne.phase in ["reservation_required","movement_ready","complete"] or b.s.ui.librarySeatReserved
 	var recovery_open=b.s.ui.libraryFinalsPhase in ["top_ten_reached","recovery_application","pass_ready","backpack_removed","seat_recovered","friend_contacted"]
 	var apps=[
 		["catalog","馆藏检索","⌕",b.s.ui.libraryFinalsPuzzle.catalogUnlocked],
 		["borrow","借阅信息","阅",false],["reserve","座位预约","24",reservation],["space","空间预约","⌂",false],
-		["recommend","求是荐书","荐",false],["new","新书通报","新",false],["citation","查收查引","引",false],["fees","图书馆缴费","¥",false],
 		["recovery","022恢复申请","PASS",recovery_open],["return","返回现场","↗",b.s.ui.libraryFinalsPhase!="idle"]]
 	if b.s.ui.libraryFinalsPuzzle.archivedRuleCollected: apps.append(["rule","旧版离座规则","规",true])
+	const COLUMNS := 4
+	const GRID_TOP := 139.0
+	const ROW_HEIGHT := 79.0
+	var grid_height := ceili(float(apps.size())/COLUMNS)*ROW_HEIGHT+14
+	b._panel(inner,Rect2(14,GRID_TOP,345,grid_height),Color.WHITE,Color("a8a59d"),0,3)
 	for i in range(apps.size()):
-		var app: Array=apps[i]; var point=Vector2(23+(i%4)*83,149+int(i/4)*79)
+		var app: Array=apps[i]; var point=Vector2(23+(i%COLUMNS)*83,GRID_TOP+10+floori(float(i)/COLUMNS)*ROW_HEIGHT)
 		var open_app=func():
 			match app[0]:
 				"catalog": b.page_requested.emit("library_catalog")
@@ -188,7 +191,7 @@ func home(b) -> Control:
 		b._label(target,str(app[2]),Rect2(15,0,46,46),14 if app[0]=="recovery" else 23,Color.WHITE,HORIZONTAL_ALIGNMENT_CENTER)
 		var name: Label=b._label(target,str(app[1]),Rect2(0,50,75,21),10,INK,HORIZONTAL_ALIGNMENT_CENTER)
 		if not app[3]:name.name="LibraryLocked_"+app[0]
-	var y=403
+	var y := GRID_TOP+grid_height+13
 	if b.s.ui.libraryFinalsPhase=="top_ten_reached":
 		var alert: Button=b._button(inner,"",Rect2(14,y,345,61),func(): open_recovery(b),Color("e9f3ff"),BLUE,0,BLUE); alert.name="LibraryRecoveryAlert"
 		b._label(alert,"022 座位恢复申请已开放",Rect2(12,6,303,24),15,BLUE)
@@ -200,7 +203,7 @@ func home(b) -> Control:
 		b._label(inner,str(entry[0]),Rect2(27,y+10,317,25),17)
 		b._label(inner,str(entry[1]),Rect2(27,y+43,317,27),14,MUTED)
 		y+=93
-	inner.custom_minimum_size.y=y+12
+	inner.custom_minimum_size.y=maxf(inner.custom_minimum_size.y,y+12)
 	bottom_nav(b,root)
 	return root
 

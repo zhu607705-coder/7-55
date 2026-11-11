@@ -192,7 +192,7 @@ var _slot_ids: Array=[]
 var inventory_gestures := preload("res://scripts/ui/inventory_gesture.gd").new()
 var _bar_drag_start := 0.0
 var _bar_top_start := 0.0
-var _bar_dragging := false
+var _bar_pointer := -2
 var _bar_moved := false
 var _suppress_handle_click := false
 var _acquisition_started := -1.0
@@ -283,7 +283,7 @@ func _build() -> void:
 	inventory=Control.new(); inventory.name="Inventory"; inventory.position=Vector2(0,240); inventory.z_index=45; inventory.mouse_filter=Control.MOUSE_FILTER_IGNORE; add_child(inventory)
 	inventory_body=Panel.new(); inventory_body.name="InventoryBody"; inventory_body.mouse_default_cursor_shape=Control.CURSOR_VSIZE
 	var body_style:=Hardware.style(Hardware.TRAY,Hardware.EDGE); body_style.border_width_left=0
-	inventory_body.add_theme_stylebox_override("panel",body_style); inventory_body.gui_input.connect(_on_handle_input); inventory.add_child(inventory_body)
+	inventory_body.add_theme_stylebox_override("panel",body_style); inventory_body.gui_input.connect(_on_handle_input.bind(inventory_body)); inventory.add_child(inventory_body)
 	inventory_scroll=ScrollContainer.new(); inventory_scroll.name="InventoryScroll"; inventory_scroll.position=Vector2(8,10); inventory_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED; inventory_scroll.vertical_scroll_mode=ScrollContainer.SCROLL_MODE_AUTO; inventory_body.add_child(inventory_scroll)
 	var scrollbar:=inventory_scroll.get_v_scroll_bar(); scrollbar.custom_minimum_size.x=6
 	scrollbar.add_theme_stylebox_override("scroll",_style(Color(16/255.0,17/255.0,22/255.0,0.65)))
@@ -292,7 +292,7 @@ func _build() -> void:
 	inventory_tip=_label(inventory_body,"",11,Color("e8e4d8")); inventory_tip.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER; inventory_tip.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	inventory_handle=InventoryHandle.new(); inventory_handle.name="InventoryHandle"; inventory_handle.mouse_default_cursor_shape=Control.CURSOR_VSIZE
 	inventory_handle.set_meta("phone_button_role","navigation")
-	inventory_handle.pressed.connect(_toggle_inventory); inventory_handle.gui_input.connect(_on_handle_input); inventory.add_child(inventory_handle)
+	inventory_handle.pressed.connect(_toggle_inventory); inventory_handle.gui_input.connect(_on_handle_input.bind(inventory_handle)); inventory.add_child(inventory_handle)
 	var backpack:=_make_icon(inventory_handle,"backpack",26); backpack.name="BackpackIcon"; backpack.position=Vector2(5,10)
 	inventory_arrow=_label(inventory_handle,"›",15,Color("e8e4d8")); inventory_arrow.position=Vector2(5,38); inventory_arrow.size=Vector2(26,15); inventory_arrow.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	inventory_count=_label(inventory_handle,"0",9,Color.WHITE); inventory_count.name="InventoryCount"; inventory_count.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
@@ -324,6 +324,9 @@ func set_display_brightness(value: float) -> void:
 
 func _notification(what: int) -> void:
 	if what==NOTIFICATION_WM_WINDOW_FOCUS_OUT or (what==NOTIFICATION_VISIBILITY_CHANGED and not is_visible_in_tree()):
+		if _bar_pointer!=-2:
+			_bar_pointer=-2
+			_suppress_handle_click=true
 		set_display_brightness(float(state.get("ui",{}).get("brightness",100)))
 
 func refresh(next_state: Dictionary) -> void:
@@ -535,31 +538,34 @@ func _inspect_inventory_item(id: String) -> void:
 	inventory_gestures.reset()
 	inspect_requested.emit(catalog.get(id,{"id":id,"name":id}))
 
-func _on_handle_input(event: InputEvent) -> void:
-	if _recovery_inventory_dock(): return
-	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
-		if event.pressed:
-			_bar_dragging=true; _bar_moved=false; _bar_drag_start=get_global_mouse_position().y; _bar_top_start=inventory_top
-		else:
-			_suppress_handle_click=_bar_moved; _bar_dragging=false
-	elif event is InputEventScreenTouch:
-		if event.pressed:
-			_bar_dragging=true; _bar_moved=false; _bar_drag_start=event.position.y; _bar_top_start=inventory_top
-		else: _suppress_handle_click=_bar_moved; _bar_dragging=false
+func _on_handle_input(event: InputEvent, grip: Control) -> void:
+	if _bar_pointer!=-2 or input_blocked: return
+	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and event.pressed:
+		_bar_pointer=-1
+	elif event is InputEventScreenTouch and event.pressed:
+		_bar_pointer=event.index
+	else: return
+	_bar_moved=false
+	_suppress_handle_click=false
+	_bar_drag_start=(grip.get_global_transform_with_canvas()*event.position).y
+	_bar_top_start=inventory_top
 
 func _input(event: InputEvent) -> void:
-	if not _bar_dragging or input_blocked: return
-	var pointer_y:=0.0
-	if event is InputEventMouseMotion: pointer_y=event.global_position.y
-	elif event is InputEventScreenDrag: pointer_y=event.position.y
-	elif event is InputEventMouseButton and not event.pressed:
-		_suppress_handle_click=_bar_moved; _bar_dragging=false; return
-	elif event is InputEventScreenTouch and not event.pressed:
-		_suppress_handle_click=_bar_moved; _bar_dragging=false; return
-	else: return
-	var global_scale:=maxf(0.001,get_global_transform().get_scale().y)
-	var delta_y:=(pointer_y-_bar_drag_start)/global_scale
-	if absf(delta_y)>3: _bar_moved=true
+	if _bar_pointer==-2 or input_blocked: return
+	if event is InputEventMouseButton and _bar_pointer==-1 and event.button_index==MOUSE_BUTTON_LEFT and not event.pressed:
+		_suppress_handle_click=_bar_moved
+		_bar_pointer=-2
+		return
+	if event is InputEventScreenTouch and event.index==_bar_pointer and (not event.pressed or event.canceled):
+		_suppress_handle_click=_bar_moved or event.canceled
+		_bar_pointer=-2
+		return
+	var mouse_drag := event is InputEventMouseMotion and _bar_pointer==-1
+	var touch_drag: bool=event is InputEventScreenDrag and event.index==_bar_pointer
+	if not mouse_drag and not touch_drag: return
+	var global_scale:=maxf(0.001,get_global_transform_with_canvas().get_scale().y)
+	var delta_y: float=(event.position.y-_bar_drag_start)/global_scale
+	if absf(delta_y)>6: _bar_moved=true
 	if _bar_moved: set_inventory_top(_bar_top_start+delta_y)
 
 func set_inventory_top(top: float) -> void:
@@ -587,7 +593,7 @@ func _layout_inventory_anchor() -> void:
 	if not _inventory_anchor_context.is_empty() and context!=_inventory_anchor_context and (context[0] or _inventory_anchor_context[0]):
 		# A pointer owned by the outgoing page/anchor cannot drop into its replacement.
 		# Deliberate vertical movement of an open drawer is not a context change.
-		inventory_gestures.reset();_bar_dragging=false;_bar_moved=false;_suppress_handle_click=false
+		inventory_gestures.reset();_bar_pointer=-2;_bar_moved=false;_suppress_handle_click=false
 		for slot in inventory_slots.get_children():slot.cancel_gesture()
 	_inventory_anchor_context=context
 	var recovery := _recovery_inventory_dock()
@@ -596,10 +602,10 @@ func _layout_inventory_anchor() -> void:
 	_inventory_anchor_signature=signature
 	var icon: Control=inventory_handle.get_node("BackpackIcon")
 	icon.visible=not inventory_open
-	inventory.position=Vector2(INVENTORY_SHELF_X,INVENTORY_TOP_DEFAULT) if recovery else Vector2(0,inventory_top)
+	inventory.position=Vector2(INVENTORY_SHELF_X if recovery else 0,inventory_top)
 	inventory_body.position=Vector2.ZERO
-	inventory_body.mouse_default_cursor_shape=Control.CURSOR_ARROW if recovery else Control.CURSOR_VSIZE
-	inventory_handle.mouse_default_cursor_shape=Control.CURSOR_POINTING_HAND if recovery else Control.CURSOR_VSIZE
+	inventory_body.mouse_default_cursor_shape=Control.CURSOR_VSIZE
+	inventory_handle.mouse_default_cursor_shape=Control.CURSOR_VSIZE
 	if inventory_open:
 		_layout_inventory_collapse()
 		return
@@ -633,11 +639,6 @@ func _layout_inventory_collapse() -> void:
 func _inventory_hit_minimum(physical_width: float) -> float:
 	return physical_width/maxf(.001,get_global_transform().get_scale().x)
 
-func recovery_inventory_inset() -> int:
-	if not _built or not _recovery_inventory_dock() or not inventory.is_visible_in_tree(): return 0
-	# Keep the reading column steady while the drawer overlays it.
-	return ceili(INVENTORY_SHELF_X+maxf(INVENTORY_TAB_SIZE.x,_inventory_hit_minimum(28.0)))+8
-
 func _set_inventory_painted_rect(rect:Rect2) -> void:
 	# The hit area can be larger than its face. Flat fill/focus follow the face,
 	# so transparent hit padding never looks like a floating block above the phone.
@@ -658,7 +659,7 @@ func set_input_blocked(blocked: bool) -> void:
 	status_right.disabled=blocked; task_button.disabled=blocked; inventory_handle.disabled=blocked
 	for child in inventory_slots.get_children(): child.disabled=blocked
 	if blocked:
-		_bar_dragging=false; inventory_gestures.reset()
+		_bar_pointer=-2; inventory_gestures.reset()
 		for child in inventory_slots.get_children(): child.cancel_gesture()
 
 func _start_acquisition(id: String) -> void:
