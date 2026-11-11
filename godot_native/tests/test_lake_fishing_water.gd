@@ -112,7 +112,7 @@ func run() -> void:
 		view.advance_view(.016);view.advance_view(.08)
 		check(view.water_lens.mouse_filter==Control.MOUSE_FILTER_IGNORE,"lens never owns pointer input")
 		check(view.water.drops.size()>0,"actual viewport provides a readable safe lens band: "+str(extent))
-		for drop: Dictionary in view.water.drops:check(view.water_safe_rect().encloses(Water.drop_bounds(drop)),"lens lifetime cannot cross header, rhythm or tension panels")
+		for drop: Dictionary in view.water.drops:check(view.water_safe_rect().encloses(Water.drop_bounds(drop)),"lens lifetime stays inside the lake's safe area")
 		host.toggle_pause();var clock: float=view.water.clock;view.advance_view(2)
 		check(view.water.clock==clock and not view.water_lens.visible,"pause freezes water and keeps modal unobscured")
 		host.toggle_pause();view.advance_view(.01)

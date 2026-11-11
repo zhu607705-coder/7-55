@@ -9,6 +9,13 @@ const GOLD = Color("ffdd83")
 const PALE = Color("e8f5cc")
 const MINT = Color("76dfc9")
 const RED = Color("f27f69")
+const CAST_POWER_MIN := .30
+const CAST_POWER_MAX := .90
+const AMBIENT_WATER_LIGHT := Color("9bb4b8")
+const AMBIENT_RIPPLE_CENTERS := [
+	Vector2(.24, .41), Vector2(.67, .45), Vector2(.42, .49), Vector2(.84, .55),
+	Vector2(.17, .58), Vector2(.62, .64), Vector2(.33, .70), Vector2(.77, .76)
+]
 var host: Control
 var background: Texture2D
 var angler: Texture2D
@@ -47,7 +54,7 @@ var water_lens: ColorRect
 func _ready() -> void:
 	clip_contents = true
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	background = load("res://assets/rpg/qizhen_fishing/lake_fishing_cleanplate.png")
+	background = load("res://assets/rpg/qizhen_fishing/lake_fishing_soft_dawn.png")
 	angler = load("res://assets/rpg/qizhen_fishing/player_blue_fishing_skiff.png")
 	angler_poses = {"pull":load("res://assets/rpg/qizhen_fishing/angler_pull.png"),"release":load("res://assets/rpg/qizhen_fishing/angler_release.png")}
 	actor_textures = {
@@ -70,7 +77,7 @@ func _ready() -> void:
 	water_lens.material=ShaderMaterial.new(); water_lens.material.shader=Lens
 	add_child(water_lens); water_lens.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	water_lens.visible=false
-	for key in ["title","target","phase","instruction","feedback","swan","tension","progress","guide","beat_action","next_beat","count_in","result","result_body","modal","modal_body"]:
+	for key in ["title","target","instruction","feedback","swan","beat_action","next_beat","count_in","result","result_body","modal","modal_body"]:
 		var label := Label.new()
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -79,7 +86,7 @@ func _ready() -> void:
 		label.add_theme_font_override("font",font)
 		# Source-palette edge keeps cues legible over both sky and water.
 		label.add_theme_color_override("font_outline_color",INK)
-		label.add_theme_constant_override("outline_size",1)
+		label.add_theme_constant_override("outline_size",4)
 		label.add_theme_color_override("font_color",PALE)
 		add_child(label)
 		labels[key] = label
@@ -90,7 +97,7 @@ func _ready() -> void:
 		label.add_theme_font_override("font",font)
 		# Source-palette edge keeps cues legible over both sky and water.
 		label.add_theme_color_override("font_outline_color",INK)
-		label.add_theme_constant_override("outline_size",1)
+		label.add_theme_constant_override("outline_size",3)
 		add_child(label)
 		labels["beat"+str(i)] = label
 
@@ -134,7 +141,7 @@ func _advance_depth(delta: float) -> void:
 
 func water_safe_rect() -> Rect2:
 	var top: float=rhythm_y()+68
-	return Rect2(10,top,maxf(0,size.x-20),maxf(0,meter_plate_rect().position.y-14-top))
+	return Rect2(10,top,maxf(0,size.x-20),maxf(0,size.y-22-top))
 
 func _advance_water(delta: float) -> void:
 	if current_depth.is_empty(): return
@@ -178,6 +185,22 @@ func _draw_water() -> void:
 			draw_line(point+offset,point+offset-velocity.normalized()*(3+strength*5)*scale_factor,Color(MINT,fade*.70),maxf(1,radius),true)
 			draw_circle(point+offset,radius,Color(PALE,fade*.90))
 
+func _draw_ambient_ripples(time: float) -> void:
+	# Low-contrast sky reflections widen toward the foreground and fade into the lake at both ends.
+	for i in range(AMBIENT_RIPPLE_CENTERS.size()):
+		var anchor: Vector2 = AMBIENT_RIPPLE_CENTERS[i]
+		var depth := inverse_lerp(.39, .78, anchor.y)
+		var phase := time * .52 + i * 1.7
+		var center := size * anchor + Vector2(sin(phase) * lerpf(1.5, 6.0, depth), cos(phase) * .65)
+		var half_length := size.x * lerpf(.027, .081, depth)
+		var half_thickness := lerpf(.55, 1.35, depth)
+		var edge := Color(AMBIENT_WATER_LIGHT, 0.0)
+		var crest := Color(AMBIENT_WATER_LIGHT, .12 + sin(phase) * .018)
+		draw_polygon(PackedVector2Array([
+			center - Vector2(half_length, 0), center - Vector2(0, half_thickness),
+			center + Vector2(half_length, 0), center + Vector2(0, half_thickness)
+		]), PackedColorArray([edge, crest, edge, crest]))
+
 func _label(key: String,text: String,rect: Rect2,point_size: int,color: Color=PALE,shown: bool=true) -> void:
 	var label: Label = labels[key]
 	label.visible = shown
@@ -195,25 +218,18 @@ func _layout_labels() -> void:
 	var short := h<420
 	var ending: bool = host.sent or m.phase in ["failed","completed"]
 	var modal: bool = not host.running and not host.paused
+	var active: bool = host.running and not host.paused and not ending
 	var header := header_rect()
-	var stage_text: String = {"casting":"01 · 瞄准抛竿","count_in":"02 · 四拍预备","fighting":"03 · 跟拍遛鱼"}.get(m.stage,"")
-	_label("title","启真湖拒绝被钓",Rect2(header.position+Vector2(16,6),Vector2(header.size.x-32,26)),18)
-	_label("target","这一竿 · "+str(host.config.get("title","")),Rect2(header.position+Vector2(16,34),Vector2(header.size.x*.56-16,22)),13,Color("c2d0b3"))
-	_label("phase",stage_text,Rect2(header.position+Vector2(header.size.x*.56,34),Vector2(header.size.x*.44-16,22)),13,GOLD,not ending)
-	var holding: bool = m.controls.has("hook")
-	var instruction := "蓄到绿色区 · 松手抛竿" if holding else "左右对准鱼影 · 按住蓄力"
-	if str(m.cue).begins_with("抛偏") or str(m.cue).begins_with("太轻") or str(m.cue).begins_with("太重"): instruction = m.cue
-	_label("instruction",instruction,instruction_rect().grow(-4),14,Color("fff0c2"),m.stage=="casting" and not modal and not ending)
+	_label("title","启真湖拒绝被钓",Rect2(header.position,Vector2(header.size.x,25)),18)
+	_label("target","这一竿 · "+str(host.config.get("title","")),Rect2(header.position+Vector2(0,25),Vector2(header.size.x,21)),13,PALE)
+	var instruction := cast_instruction(m)
+	_label("instruction",instruction,instruction_rect(),14,Color("fff0c2"),m.stage=="casting" and active)
 	_label("feedback",feedback,Rect2(18,h*.60-18,w-36,36),16,GOLD if reaction_good else Color("ffb195"),visual_time<feedback_until and not ending and not host.paused)
 	var swan_text := "嘎！松手！" if m.rushing_at(m.elapsed) else "现在，起鱼！"
-	_label("swan",swan_text,Rect2(w*.82-72,h*.39-55,140,26),13,Color("efe0aa"),not ending and not modal and not short and (m.rushing_at(m.elapsed) or m.lift_ready()))
-	var meter := meter_plate_rect()
-	_label("tension","抛竿力度" if m.stage=="casting" else "张力 %d%%"%roundi(m.tension),Rect2(meter.position+Vector2(16,3),Vector2(116,23)),13,PALE,not ending and not modal)
-	_label("progress","收竿 %d / %d"%[m.judged,m.notes.size()],Rect2(meter.position+Vector2(meter.size.x-138,3),Vector2(122,23)),12,Color("bac8a6"),not ending and not modal)
-	_label("guide",guide_text(),Rect2(8,h-25,w-16,21),12,Color("d5ddbb"),not ending and not modal)
+	_label("swan",swan_text,Rect2(w*.82-72,h*.39-55,140,26),13,Color("efe0aa"),active and not short and (m.rushing_at(m.elapsed) or m.lift_ready()))
 	var rhythm: Vector2 = m.rhythm_position(m.elapsed)
 	var beat_y: float = rhythm_y()
-	var music_visible: bool = m.stage!="casting" and not ending and not modal
+	var music_visible: bool = m.stage!="casting" and active
 	var spacing: float = rhythm_spacing()
 	var commands := ["按住稳线","松开放线","按住收线","松开起鱼"]
 	_label("beat_action","听四拍，准备开始" if m.stage=="count_in" else commands[int(rhythm.x)],Rect2(w/2-180,beat_y-42,360,25),16,GOLD,music_visible)
@@ -221,39 +237,39 @@ func _layout_labels() -> void:
 	for i in range(4):
 		_label("beat"+str(i),["按住","松开","按住","松开"][i],Rect2(w/2+(i-1.5)*spacing-28,beat_y+9,56,21),12,GOLD if i==int(rhythm.x) else Color("9daf99"),music_visible)
 	var count_in: int = maxi(1,4-int((m.elapsed-m.cast_at)/m.beat_sec))
-	_label("count_in","预备 %d"%count_in,Rect2(12,h*.43,w-24,42),24,GOLD,m.stage=="count_in" and not modal)
+	_label("count_in","预备 %d"%count_in,Rect2(12,h*.43,w-24,42),24,GOLD,m.stage=="count_in" and active)
 	var result_text := "这一口，湖认输了" if host.sent else "这次，湖把你钓走了"
 	var result_body: String = str(host.config.get("title",""))+"浮上来了\n%s · 收获 %d / %d"%[str(m.final_result.get("grade","")),m.final_result.get("notes_hit",0),m.notes.size()] if host.sent else host._fishing_hint()
 	var panel := modal_rect()
 	_label("result",result_text,Rect2(panel.position+Vector2(16,12),Vector2(panel.size.x-32,32)),20,GOLD,ending)
 	_label("result_body",result_body,Rect2(panel.position+Vector2(20,48),Vector2(panel.size.x-40,64)),15,PALE,ending)
 	_label("modal","准备好了吗？",Rect2(panel.position+Vector2(16,12),Vector2(panel.size.x-32,32)),20,PALE,modal and not ending)
-	var instructions := "先对准鱼影，按住水面蓄力\n拖动控线 · 松手抛竿" if host.fishing_controls_enabled else "A / D 控线，空格蓄力再松开\n也可直接按住水面拖动"
-	_label("modal_body",instructions,Rect2(panel.position+Vector2(20,48),Vector2(panel.size.x-40,58)),15,MINT,modal and not ending)
+	_label("modal_body",control_instructions(),Rect2(panel.position+Vector2(20,48),Vector2(panel.size.x-40,58)),15,PALE,modal and not ending)
 
 func header_rect() -> Rect2:
-	var width := minf(size.x-28,480)
-	return Rect2((size.x-width)/2,10,width,64)
+	var width := minf(maxf(0,size.x-152),440)
+	return Rect2((size.x-width)/2,13,width,46)
 
-func guide_height() -> float:
-	return 25.0
-
-func meter_plate_rect() -> Rect2:
-	var width := minf(size.x-32,400 if size.y<420 else 480)
-	var left := size.x-width-28 if size.y<420 else (size.x-width)/2
-	return Rect2(left,size.y-83,width,51)
-
-func meter_y() -> float:
-	return meter_plate_rect().position.y+30
-
-func guide_text() -> String:
+func control_instructions() -> String:
 	if host.fishing_controls_enabled:
-		return "按住水面蓄力 · 拖动控线 · 松手抛竿" if host.model.stage=="casting" else "拖动跟住鱼影 · 按住收线 / 松开提竿"
-	return "A / D 控线 · 空格按住 / 松开 · 可拖动水面"
+		return "按住水面蓄力，拖动对准鱼影\n浮标变绿时松手抛竿"
+	return "按住水面拖动，浮标变绿时松手抛竿\n也可用 A / D 控线，空格蓄力与松手"
+
+func cast_instruction(model: RefCounted) -> String:
+	if model.controls.has("hook"):
+		var power: float = model.cast_power()
+		if power > CAST_POWER_MAX: return "蓄过头了 · 松手重来"
+		if power >= CAST_POWER_MIN: return "力度合适 · 松手抛竿"
+		return "继续蓄力，等浮标变绿"
+	var cue: String = model.cue
+	if cue.begins_with("抛偏"): return cue
+	if cue.begins_with("太轻"): return "太轻了 · 等浮标变绿再松手"
+	if cue.begins_with("太重"): return cue
+	return "对准鱼影 · 按住蓄力"
 
 func instruction_rect() -> Rect2:
 	var width := minf(size.x-36,390)
-	return Rect2((size.x-width)/2,84,width,38)
+	return Rect2((size.x-width)/2,64,width,28)
 
 func rhythm_y() -> float:
 	return 128.0 if size.y<420 else 133.0
@@ -298,10 +314,7 @@ func _draw() -> void:
 	_draw_fish(Vector2(fish_x,water_y),fish_scale,t,fish_color,current_motion,float(current_depth.target_alpha))
 	_water_veil(Rect2(Vector2(fish_x,water_y)-Vector2(41,23)*fish_scale,Vector2(68,47)*fish_scale),float(current_depth.target_veil)*float(current_depth.target_alpha))
 	# Reflections pass above submerged objects and below surface actors.
-	for i in range(38):
-		var x: float = fmod(i*97.31+sin(t*.4+i)*9,w)
-		var y: float = h*.39+fmod(i*43.7,h*.39)
-		draw_line(Vector2(x,y),Vector2(x+5+i%15,y),Color(GOLD if i%3==0 else MINT,.10+sin(t+i)*.035),1)
+	_draw_ambient_ripples(t)
 	_ring(Vector2(fish_x,water_y+4),Vector2(80,23)*fish_scale,Color(GOLD if m.lift_ready() else MINT,.65 if m.aligned() else .22),1)
 	if float(current_depth.target_alpha)>.2:_draw_resistance(Vector2(fish_x,water_y),fish_scale,current_motion)
 	_draw_swan(Vector2(w*.82+sin(t*.5)*10,h*.39),.67 if portrait else .85,t,m.rushing_at(m.elapsed))
@@ -311,38 +324,23 @@ func _draw() -> void:
 	var tip := _draw_angler(Vector2(w*(.26 if portrait else .16),h*.82),.73 if portrait else 1,t,m.line_x,m.tension,m.controls.has("hook"),not ending)
 	_draw_fishing_line(tip,Vector2(hook_x,water_y+9),m.tension,current_motion)
 	_draw_submerged_leader(Vector2(hook_x,water_y+17),creature.mouth,current_motion,float(current_depth.fish_merge))
-	_draw_float(Vector2(hook_x,water_y+9),m.aligned(),t)
+	var cast_power: float = m.cast_power() if active and m.stage=="casting" and m.controls.has("hook") else -1.0
+	_draw_float(Vector2(hook_x,water_y+9),m.aligned(),t,cast_power)
 	_draw_splash(Vector2(hook_x,water_y+10),visual_time-reaction_at,reaction_good)
 	if m.lift_ready() and m.stage=="fighting":
 		_ring(Vector2(fish_x,water_y+4),Vector2(89,27)*fish_scale,Color(GOLD,.45+.2*sin(t*5)),1)
 	_draw_water()
-	# Compact code-owned HUD draws last, with no artwork baked into the plate.
-	_hud_plate(header_rect())
-	if active:
-		if m.stage=="casting": _hud_plate(instruction_rect(),.87)
-		else: _draw_rhythm(m)
-		_draw_meter(m)
+	if active and m.stage!="casting":
+		_draw_rhythm(m)
 	if (ending or not host.running) and not host.paused:
-		# Keep the lake visible around a bounded, readable dialog.
-		draw_rect(Rect2(Vector2.ZERO,size),Color(INK,.24))
-		_hud_plate(modal_rect(),.96)
+		# Pause has its own shared surface. Only ready/results dim the lake here.
+		draw_rect(Rect2(Vector2.ZERO,size),Color(INK,.55))
 		if host.sent: _draw_catch(Vector2(w/2,modal_rect().position.y-35+sin(t*3)*2),str(host.config.get("spotId","fish")))
-
-func _hud_plate(rect: Rect2,opacity: float=.93) -> void:
-	_round(rect.grow(2),Color("071f25",.38),9)
-	_round(rect,Color("123b3b",opacity),7,Color("b9b37a",.82))
-	_round(rect.grow(-4),Color(0,0,0,0),4,Color("719381",.3))
-	for corner: Vector2 in [rect.position,Vector2(rect.end.x,rect.position.y),rect.end,Vector2(rect.position.x,rect.end.y)]:
-		var dir := Vector2(1 if corner.x==rect.position.x else -1,1 if corner.y==rect.position.y else -1)
-		draw_line(corner+dir*Vector2(8,3),corner+dir*Vector2(15,3),Color("dbcc8f",.85))
-		draw_line(corner+dir*Vector2(3,8),corner+dir*Vector2(3,15),Color("dbcc8f",.85))
 
 func _draw_rhythm(m: RefCounted) -> void:
 	var rhythm: Vector2 = m.rhythm_position(m.elapsed)
 	var y: float = rhythm_y()
 	var spacing: float = rhythm_spacing()
-	var width := minf(size.x-28,430)
-	_hud_plate(Rect2((size.x-width)/2,y-47,width,81 if size.y<420 else 104),.91)
 	var first := size.x/2-1.5*spacing
 	draw_line(Vector2(first,y),Vector2(first+spacing*3,y),Color("809d83",.55),1)
 	var cursor: float = first+minf(3,rhythm.x+rhythm.y)*spacing
@@ -357,19 +355,6 @@ func _draw_rhythm(m: RefCounted) -> void:
 			var pulse: float = 0 if reduced_motion else exp(-rhythm.y*8)
 			draw_arc(center,11+(1-pulse)*3,0,TAU,28,Color(GOLD,pulse*.42))
 
-func _draw_meter(m: RefCounted) -> void:
-	var rect := meter_plate_rect()
-	_hud_plate(rect,.91)
-	var x: float = rect.position.x+20
-	var width: float = rect.size.x-40
-	var value: float = m.cast_power() if m.stage=="casting" else m.tension/100
-	_round(Rect2(x,meter_y(),width,9),Color("08252c"),3,Color("79927b",.65))
-	if m.stage=="casting": draw_rect(Rect2(x+width*.3,meter_y()+1,width*.6,7),Color(MINT,.27))
-	var meter_color: Color = (MINT if value>=.3 and value<=.9 else GOLD) if m.stage=="casting" else (RED if value>=.8 else GOLD)
-	if value>0:
-		_round(Rect2(x+1,meter_y()+1,maxf(2,(width-2)*minf(value,1)),7),Color(meter_color,.92),2)
-		draw_line(Vector2(x+width*minf(value,1),meter_y()-2),Vector2(x+width*minf(value,1),meter_y()+11),PALE,1)
-
 func _water_veil(rect: Rect2,opacity: float) -> void:
 	if not background: return
 	var factor: float = maxf(size.x/background.get_width(),size.y/background.get_height())
@@ -378,14 +363,18 @@ func _water_veil(rect: Rect2,opacity: float) -> void:
 	# Same screen-aligned lake texels add natural reflection detail and depth.
 	draw_texture_rect_region(background,clipped,Rect2((clipped.position-origin)/factor,clipped.size/factor),Color(1,1,1,opacity))
 
-func _draw_float(p: Vector2,aligned: bool,t: float) -> void:
+func _draw_float(p: Vector2,aligned: bool,t: float,cast_power: float) -> void:
 	var bob: float = sin(t*2.7)*.7
 	p.y+=bob
+	# The float shows the same release window where the player is already looking.
+	var in_window := cast_power>=CAST_POWER_MIN and cast_power<=CAST_POWER_MAX
+	var cap_color := MINT if in_window else (RED if cast_power>CAST_POWER_MAX else (Color("c95e43") if aligned else Color("9a6e58")))
+	var rise := maxf(0,cast_power)*8
 	_ring(p+Vector2(0,10),Vector2(34+sin(t*2)*3,7),Color(PALE,.48))
-	_ring(p+Vector2(0,10),Vector2(51,11),Color(GOLD,.20))
-	draw_line(p+Vector2(0,-19),p+Vector2(0,-10),Color("e2d9b0"),1)
-	_round(Rect2(p+Vector2(-4,-10),Vector2(8,20)),Color("153d3c"),2)
-	_round(Rect2(p+Vector2(-3,-10),Vector2(6,10)),Color("c95e43") if aligned else Color("9a6e58"),2)
+	_ring(p+Vector2(0,10),Vector2(51,11),Color(MINT,.58) if in_window else Color(GOLD,.20))
+	draw_line(p+Vector2(0,-19-rise),p+Vector2(0,-10-rise),Color("e2d9b0"),1)
+	_round(Rect2(p+Vector2(-4,-10-rise),Vector2(8,20+rise)),Color("153d3c"),2)
+	_round(Rect2(p+Vector2(-3,-10-rise),Vector2(6,10+rise)),cap_color,2)
 	draw_rect(Rect2(p+Vector2(-3,0),Vector2(6,8)),Color("ddd6ad"))
 	draw_line(p+Vector2(-2,-8),p+Vector2(-2,6),Color("fff0c7",.8),1)
 	_water_veil(Rect2(p+Vector2(-5,7),Vector2(10,6)),.55)

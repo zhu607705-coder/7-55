@@ -100,7 +100,7 @@ func run() -> void:
 		check(Rect2(Vector2.ZERO,host.fishing_view.size).has_point(geometry.mouth) and Rect2(Vector2.ZERO,host.fishing_view.size).intersection(geometry.rect).size.x>=80,"tracked head and readable body remain visible at "+str(extent))
 		if host.fishing_view.size.y<420:
 			check(geometry.rect.position.y>=host.fishing_view.rhythm_y()+34,"compact rising fish clears beat panel")
-			check(geometry.rect.end.y<host.fishing_view.meter_plate_rect().position.y,"compact rising fish clears tension panel")
+			check(Rect2(Vector2.ZERO, host.fishing_view.size).encloses(geometry.rect),"compact rising fish fits entirely in the lake viewport")
 		var breathing: Dictionary=host.fishing_view.creature_geometry(host.fishing_view.size.x*.5,host.fishing_view.size.y*.56,near_depth,1.0)
 		check(is_equal_approx(float(breathing.mouth.y-geometry.mouth.y),float(breathing.position.y-geometry.position.y)),"leader mouth shares the rendered breathing offset")
 		host.fishing_view.reset_view()

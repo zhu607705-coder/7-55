@@ -65,6 +65,7 @@ var font: Font
 const FG = Color("eff4e8")
 const AQUA = Color("64d2cd")
 const GOLD = Color("f5cd74")
+const FISHING_ACTION_HIGHLIGHT := Color("9ae9d8")
 
 func _ready() -> void:
 	shared_pause_overlay = SharedPauseOverlay.mount(self, begin)
@@ -417,7 +418,7 @@ func _refresh() -> void:
 	_sync_shared_pause()
 	if not is_instance_valid(headline): return
 	_layout_overlay()
-	pause_button.text="继续" if paused else "暂停"
+	if mode!="rhythm": pause_button.text="继续" if paused else "暂停"
 	headline.text=str(config.get("title",{"chase":"755 米 · 追上纸条","rhythm":"启真湖 · 控线钓鱼","kayak":"启真湖 · 双桨航行"}.get(mode,"7:55")))
 	for button: Button in control_buttons.values(): button.visible=running and not paused and mode!="rhythm"
 	if model==null:
@@ -451,11 +452,6 @@ func _refresh() -> void:
 		if model.charge>0 and running and not paused: hint.text="蓄力 %d%% · 松开空格或跳跃按钮起跳"%roundi(model.charge*100)
 	queue_redraw()
 	if mode=="rhythm":
-		var keys_visible: bool=not fishing_controls_enabled and size.x>=680
-		pause_button.text=("继续" if paused else "暂停")+(" · Esc" if keys_visible else "")
-		retry_button.text="重试 · R" if keys_visible else "重试"
-		exit_button.text="收竿 · X" if keys_visible else "收竿离开"
-		fishing_controls_button.text="收起按键" if fishing_controls_enabled else "触控按键"
 		_sync_fishing_button_states()
 	if is_instance_valid(chase_view) and chase_view.visible: chase_view.queue_redraw()
 	_sync_shared_pause()
@@ -919,32 +915,49 @@ func _apply_fishing_control_layout() -> void:
 	var enabled: bool=_fishing_wants_touch_controls()
 	if enabled==fishing_controls_enabled: return
 	fishing_controls_enabled=enabled
-	_overlay_signature=""
 	_refresh()
 
-func _put_fishing_button(button: Button,rect: Rect2,point_size: int=16) -> void:
-	# Visible borders and input bounds share the same physical pixel grid.
-	_put(button,Rect2(rect.position.round(),rect.size.floor()),point_size)
-	NativeUi.apply_button(button,Color("143639"),Color("e5dfb6"),Color("928d67"),5,1,point_size,Vector2(8,5),Color("76dfc9"))
-	var pressed: StyleBoxFlat=NativeUi.box(Color("dcc783"),Color("092f36"),2,0,Vector2(8,5))
-	pressed.content_margin_left=9;pressed.content_margin_right=7
-	pressed.content_margin_top=6;pressed.content_margin_bottom=4
-	button.add_theme_stylebox_override("pressed",pressed)
-	button.add_theme_stylebox_override("hover_pressed",pressed)
-	button.add_theme_color_override("font_pressed_color",Color("092f36"))
-	button.add_theme_color_override("font_hover_pressed_color",Color("092f36"))
-	button.set_meta("fishing_rest_normal",button.get_theme_stylebox("normal"))
-	button.set_meta("fishing_rest_hover",button.get_theme_stylebox("hover"))
+func _put_fishing_button(button: Button,rect: Rect2,point_size: int,ink: Color) -> void:
+	# These controls are drawn over the lake. Keep the generic registry from
+	# replacing their text style and touch rect with an opaque tactile key.
+	button.set_meta("tactile_exempt",true)
+	var material_state := button.get_node_or_null("TactileMaterialState")
+	if material_state != null:
+		material_state.free()
+		button.custom_minimum_size=Vector2.ZERO
+		button.remove_theme_font_override("font")
+	var empty := StyleBoxEmpty.new()
+	var underline := StyleBoxFlat.new()
+	underline.draw_center = false
+	underline.border_width_bottom = 1
+	underline.border_color = FISHING_ACTION_HIGHLIGHT
+	underline.expand_margin_left = -10
+	underline.expand_margin_right = -10
+	for state: String in ["normal","hover","disabled"]:
+		button.add_theme_stylebox_override(state,empty)
+	for state: String in ["pressed","hover_pressed","focus"]:
+		button.add_theme_stylebox_override(state,underline)
+	button.add_theme_color_override("font_color",ink)
+	for state: String in ["font_hover_color","font_pressed_color","font_hover_pressed_color","font_focus_color"]:
+		button.add_theme_color_override(state,FISHING_ACTION_HIGHLIGHT)
+	button.add_theme_color_override("font_outline_color",Color("092f36"))
+	button.add_theme_constant_override("outline_size",2)
+	button.add_theme_font_size_override("font_size",point_size)
+	button.mouse_default_cursor_shape=Control.CURSOR_POINTING_HAND
+	button.position=rect.position.round()
+	button.size=rect.size.floor()
+	button.set_meta("fishing_rest_style",empty)
+	button.set_meta("fishing_rest_ink",ink)
 	button.set_meta("fishing_held",false)
 
 func _set_fishing_button_held(button: Button,held: bool) -> void:
-	if not is_instance_valid(button) or not button.has_meta("fishing_rest_normal"): return
+	if not is_instance_valid(button) or not button.has_meta("fishing_rest_style"): return
 	if bool(button.get_meta("fishing_held",false))==held: return
 	button.set_meta("fishing_held",held)
-	button.add_theme_stylebox_override("normal",button.get_theme_stylebox("pressed") if held else button.get_meta("fishing_rest_normal"))
-	button.add_theme_stylebox_override("hover",button.get_theme_stylebox("pressed") if held else button.get_meta("fishing_rest_hover"))
-	var ink:=Color("092f36") if held else Color("fff0c2")
-	button.add_theme_color_override("font_color",ink);button.add_theme_color_override("font_hover_color",ink)
+	var face: StyleBox=button.get_theme_stylebox("pressed") if held else button.get_meta("fishing_rest_style")
+	button.add_theme_stylebox_override("normal",face)
+	button.add_theme_stylebox_override("hover",face)
+	button.add_theme_color_override("font_color",FISHING_ACTION_HIGHLIGHT if held else button.get_meta("fishing_rest_ink"))
 
 func _sync_fishing_button_states() -> void:
 	if not model is Fishing: return
@@ -953,22 +966,34 @@ func _sync_fishing_button_states() -> void:
 
 func _layout_fishing_activity() -> void:
 	if not is_instance_valid(fishing_view) or not control_buttons.has("hook"): return
-	var signature := str([size,control_buttons.size(),fishing_controls_enabled])
+	var terminal: bool=model.phase in ["failed","completed"]
+	var signature := str([size,running,paused,sent,terminal])
 	if signature==_overlay_signature: return
 	_overlay_signature=signature
 	headline.hide();status.hide();hint.hide();chase_view.hide()
-	# Input-scheme preference now affects hints only; no simulated button row.
-	fishing_view.position=Vector2.ZERO;fishing_view.size=Vector2(size.x,maxf(220,size.y-50));fishing_view.show()
+	fishing_view.position=Vector2.ZERO;fishing_view.size=size;fishing_view.show()
 	for button: Button in control_buttons.values(): button.hide()
 	fishing_controls_button.hide()
-	var toolbar: Array=[pause_button,retry_button,exit_button]
-	var column: float=110 if size.x>=680 else floorf((size.x-32)/3.0)
-	var left: float=size.x-3*column-24 if size.x>=680 else 8
-	for i in range(3):
-		var x: float=left+i*(column+8)
-		var width: float=(size.x-8-x) if size.x<680 and i==2 else column
-		_put_fishing_button(toolbar[i],Rect2(x,size.y-47,width,44),14)
-	_put_fishing_button(start_button,fishing_view.start_rect(),16)
+	var show_dialog: bool=not running and not paused and not sent
+	pause_button.text="暂停"
+	pause_button.tooltip_text="暂停（Esc）"
+	pause_button.visible=supports_player_pause() and not paused
+	_put_fishing_button(pause_button,Rect2(size.x-72,8,64,44),14,FG)
+	start_button.text="重试" if terminal else "开始"
+	retry_button.text="重试"
+	exit_button.text="收竿离开"
+	start_button.visible=show_dialog
+	retry_button.hide()
+	exit_button.visible=show_dialog
+	var panel: Rect2=fishing_view.modal_rect()
+	var row_y: float=maxf(panel.position.y+116,fishing_view.start_rect().position.y)
+	var row_width: float=minf(panel.size.x,240.0)
+	var actions: Array[Button]=[exit_button,start_button]
+	var button_width: float=(row_width-8.0*(actions.size()-1))/actions.size()
+	for i in range(actions.size()):
+		var button: Button=actions[i]
+		var rect:=Rect2((size.x-row_width)/2+i*(button_width+8),row_y,button_width,44)
+		_put_fishing_button(button,rect,16,GOLD if button==start_button else FG)
 	fishing_view.advance_view(0)
 
 func _clear_fishing_controls() -> void:
@@ -1040,15 +1065,21 @@ func _sync_shared_pause() -> void:
 	if not is_instance_valid(shared_pause_overlay): return
 	var pause_actions: Array[Dictionary] = []
 	for button in [retry_button,exit_button]:
-		if is_instance_valid(button) and button.visible:
+		if _has_pause_action(button):
 			pause_actions.append({"text":button.text,"callback":_activate_pause_action.bind(button),"disabled":button.disabled})
 	shared_pause_overlay.set_actions(pause_actions)
 	shared_pause_overlay.present(is_visible_in_tree() and paused and supports_player_pause())
 	pause_button.visible = supports_player_pause() and not paused
 	if paused: start_button.hide()
 
+func _has_pause_action(button: Button) -> bool:
+	if not is_instance_valid(button): return false
+	# Fishing's shared pause surface owns these actions; no duplicate host controls.
+	if mode=="rhythm": return paused and supports_player_pause() and button in [retry_button,exit_button]
+	return button.visible
+
 func _activate_pause_action(button: Button) -> void:
 	# Reuse the authored signal, including its existing confirmation flow.
-	if not is_instance_valid(button) or button.disabled or not button.visible: return
+	if not _has_pause_action(button) or button.disabled: return
 	button.pressed.emit()
 	if is_inside_tree(): _sync_shared_pause()
