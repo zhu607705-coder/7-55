@@ -25,6 +25,8 @@ var blocked_hint_sent:=false
 var tiyi_download_elapsed_ms := 0.0
 var tiyi_downloaded_mb := 0.0
 var tiyi_download_rates: Array[float] = []
+var tiyi_download_sample_usec := -1
+var tiyi_download_sample_online := false
 
 static func app_family(page: String) -> String:
 	if page in ["system_chat","zjuding","directory","c3_campus_map","c35_network"] or page.begins_with("library_"): return "zjuding"
@@ -63,6 +65,8 @@ func start_tiyi_download() -> void:
 	if not tiyi_download_rates.is_empty(): return
 	tiyi_download_elapsed_ms = 0.0
 	tiyi_downloaded_mb = TIYI_CACHED_MB
+	tiyi_download_sample_usec = Time.get_ticks_usec()
+	tiyi_download_sample_online = true
 	# Pair the random rates around the mean so the 42 MB still takes 30 online seconds.
 	var intervals := roundi(TIYI_DOWNLOAD_MS / TIYI_RATE_INTERVAL_MS)
 	for _pair: int in range(floori(intervals * .5)):
@@ -82,9 +86,21 @@ func take_completed_tiyi_download() -> bool:
 	tiyi_download_rates.clear()
 	return true
 
-func _advance_tiyi_download(delta_ms: float) -> bool:
+func reset_tiyi_download_clock() -> void:
+	tiyi_download_sample_usec = -1
+
+func _advance_tiyi_download(delta_ms: float, sample_usec: int) -> bool:
 	if tiyi_download_rates.is_empty(): return false
-	if owner.get("networkMode") != "offline":
+	var online: bool = owner.get("networkMode") != "offline"
+	if sample_usec >= 0:
+		# Process delta is clamped when rendering stalls. The download uses
+		# the time between active samples, with no credit across a pause.
+		delta_ms = 0.0
+		if tiyi_download_sample_usec >= 0 and tiyi_download_sample_online:
+			delta_ms = (sample_usec - tiyi_download_sample_usec) / 1000.0
+		tiyi_download_sample_usec = sample_usec
+		tiyi_download_sample_online = online
+	if online:
 		var until := minf(TIYI_DOWNLOAD_MS, tiyi_download_elapsed_ms + maxf(0.0, delta_ms))
 		while tiyi_download_elapsed_ms < until:
 			var interval_end := (floori(tiyi_download_elapsed_ms / TIYI_RATE_INTERVAL_MS) + 1) * TIYI_RATE_INTERVAL_MS
@@ -95,9 +111,9 @@ func _advance_tiyi_download(delta_ms: float) -> bool:
 	tiyi_downloaded_mb = TIYI_PACKAGE_MB
 	return true
 
-func advance(delta_ms: float) -> Array:
+func advance(delta_ms: float, sample_usec: int = -1) -> Array:
 	var events: Array=[]
-	if _advance_tiyi_download(delta_ms):
+	if _advance_tiyi_download(delta_ms, sample_usec):
 		events.append({"action": "c2_tiyi_download_finished"})
 	elapsed_ms+=maxf(0,delta_ms)
 	if family=="tiyi":

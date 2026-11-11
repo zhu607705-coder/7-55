@@ -2749,6 +2749,11 @@ func _sync_selected_world_overlay() -> void:
 	for chrome: Control in [mobile_back,world_tasks,world_mode,inventory_handle,inventory_dock]:
 		if is_instance_valid(chrome): chrome.modulate.a=0.0 if reading else 1.0
 
+func _notification(what: int) -> void:
+	if what in [NOTIFICATION_PAUSED, NOTIFICATION_UNPAUSED, NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_APPLICATION_RESUMED] and is_node_ready() and not flc_entry_mode:
+		var entry := State.get_phone_entry_session()
+		if entry != null: entry.reset_tiyi_download_clock()
+
 func _process(delta: float) -> void:
 	if flc_entry_mode:return
 	_sync_selected_world_overlay()
@@ -2760,7 +2765,7 @@ func _process(delta: float) -> void:
 	_sync_inventory_dock_input()
 	if is_instance_valid(c3_device_panel) and is_instance_valid(world):
 		c3_device_panel.set_feedback(world.subtitle if world.subtitle_left>0 else "")
-	for cue: String in State.advance_phone_entry(delta*1000): _play_presentation_cue(cue)
+	for cue: String in State.advance_phone_entry(delta*1000, Time.get_ticks_usec()): _play_presentation_cue(cue)
 	_advance_notices(delta)
 	if _screenshot_requested and Engine.get_process_frames() > 90:
 		_screenshot_requested = false

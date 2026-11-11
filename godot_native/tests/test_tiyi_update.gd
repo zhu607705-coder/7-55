@@ -103,6 +103,25 @@ func run() -> void:
 	check(act("c2_exercise").has("game"),"installed identity can open existing run")
 	act("c2_exercise_result",PROOF); act("c2_weather_drop")
 	check(s.actOne.exerciseStarted and s.actOne.weatherWaterTaken,"existing ten-point proof then grants C2 weather water")
+	fresh()
+	act("c2_tiyi_discover"); act("c2_tiyi_acquire")
+	transfer = controller.phone_entry_session(s)
+	var sample: int = transfer.tiyi_download_sample_usec
+	transfer.advance(16.0, sample + 5000000)
+	check(transfer.tiyi_download_elapsed_ms == 5000.0, "slow frames use elapsed monotonic time for the download")
+	s.networkMode = "offline"
+	transfer.advance(16.0, sample + 10000000)
+	s.networkMode = "campus_wifi"
+	transfer.advance(16.0, sample + 15000000)
+	check(transfer.tiyi_download_elapsed_ms == 5000.0, "reconnecting does not count offline time")
+	transfer.reset_tiyi_download_clock()
+	transfer.advance(16.0, sample + 35000000)
+	check(transfer.tiyi_download_elapsed_ms == 5000.0, "resuming after a platform pause starts a fresh sample")
+	check(transfer.advance(16.0, sample + 59999000).is_empty(), "one remaining millisecond still gates the download")
+	var completed: Array = transfer.advance(16.0, sample + 60000000)
+	check(completed.size() == 1 and completed[0].action == "c2_tiyi_download_finished", "only 30 seconds of active online time produces the completion intent")
+	act("c2_tiyi_download_finished")
+	check(s.actOne.tiyiUpdateStage == "package_ready", "the controller accepts the measured transfer completion")
 	fresh(); s.actOne.phase="prologue"; s.ui.libraryFinalsPhase="evidence_gathering"; s.ui.libraryFinalsPuzzle.investigationOpened=true
 	var draft=s.ui.libraryFinalsPuzzle.auditArrivalMinutes
 	act("lib_audit_value",{"field":"arrival","value":7}); act("lib_audit",["7","47","3"])
