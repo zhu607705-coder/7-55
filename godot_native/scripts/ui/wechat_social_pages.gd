@@ -4,10 +4,13 @@ const Palette=preload("res://scripts/ui/phone_palette.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
 const NativeUi=preload("res://scripts/ui/native_ui_theme.gd")
 const Chrome=preload("res://scripts/ui/wechat_chrome.gd")
+const Contacts=preload("res://scripts/ui/wechat_contacts_page.gd")
 const Official=preload("res://scripts/ui/wechat_official_pages.gd")
 const Bubble=preload("res://scripts/ui/wechat_message_bubble.gd")
 const TiyiAccess=preload("res://scripts/chapters/tiyi_access.gd")
 const CAMPUS_CONTENT="res://data/source/chapter4-wechat.content.json"
+const FOOTER_HEIGHT := 68.0
+var contacts=Contacts.new()
 var campus: Dictionary=load_campus_content()
 var social_copy: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/wechat-social-content.json"))
 var tab="chats"
@@ -72,6 +75,7 @@ func route(state: Dictionary, page: String, previous: String) -> void:
 	if not is_same(owner,state):
 		owner=state;tab="chats";panel="";article="";history_open=false;scrolls.clear();likes.clear()
 		official_read.clear();official_following.clear();official_query="";official_mode="feed";profile_articles_only=false
+		contacts.reset()
 	if page!=previous and page not in ["wechat","control_center"]:
 		tab="chats";panel="";article="";history_open=false;official_mode="feed";official_query="";profile_articles_only=false
 
@@ -147,19 +151,31 @@ func header(b, root: Control, title: String, back: Callable=Callable(), id: Stri
 	if nav:nav.name=id
 
 func footer(b, root: Control) -> void:
-	var height=68.0
-	b._panel(root,Rect2(0,b.APP_HEIGHT-height,378,height),Palette.CHROME,Palette.LINE,0,1)
-	var ids=["chats","contacts","discover","me"]
-	for i in range(4):
-		var selected: String=ids[i]
-		var color: Color=Palette.ACCENT if tab==selected else Palette.INK
-		var action=b._button(root,"",Rect2(i*94.5,b.APP_HEIGHT-height,94.5,height),func():tab=selected;panel="";article="";b.tiyi_official_open=false;refresh(b),Palette.CHROME,Palette.INK,0,Color.TRANSPARENT)
-		action.name="WechatTab_"+selected
-		action.set_meta("phone_button_role","navigation")
-		action.set_meta("phone_button_selected",tab==selected)
-		Chrome.icon(action,selected,Rect2(33,7,29,29),color)
-		var caption=b._label(action,["微信","通讯录","发现","我"][i],Rect2(0,40,94.5,23),mini(17,font_size(b,13)),color,HORIZONTAL_ALIGNMENT_CENTER)
-		caption.name="WechatTabCaption"
+	var bar: Panel = b._panel(root, Rect2(0, b.APP_HEIGHT - FOOTER_HEIGHT, 378, FOOTER_HEIGHT), Palette.CHROME, Palette.LINE, 0, 1)
+	bar.name = "WechatFooter"
+	var ids := ["chats", "contacts", "discover", "me"]
+	var labels := ["微信", "通讯录", "发现", "我"]
+	var width := bar.size.x / ids.size()
+	for i in range(ids.size()):
+		var id: String = ids[i]
+		var color := Palette.ACCENT if tab == id else Palette.INK
+		var action: Button = b._button(bar, "", Rect2(i * width, 0, width, FOOTER_HEIGHT), _select_tab.bind(b, id), Palette.CHROME, Palette.INK, 0, Color.TRANSPARENT)
+		action.name = "WechatTab_" + id
+		action.accessibility_name = labels[i]
+		action.set_meta("phone_button_role", "navigation")
+		action.set_meta("phone_button_selected", tab == id)
+		Chrome.icon(action, id, Rect2((width - 29) / 2, 7, 29, 29), color)
+		var caption: Label = b._label(action, labels[i], Rect2(0, 40, width, 23), mini(17, font_size(b, 13)), color, HORIZONTAL_ALIGNMENT_CENTER)
+		caption.name = "WechatTabCaption"
+
+func _select_tab(b, id: String) -> void:
+	if id == tab:
+		return
+	tab = id
+	panel = ""
+	article = ""
+	b.tiyi_official_open = false
+	refresh(b)
 
 func open_panel(b, value: String) -> void:
 	if value.is_empty() and panel=="officials":
@@ -201,15 +217,11 @@ func build_extra(b) -> Control:
 	if panel=="liked":return moments(b,true)
 	if panel in ["roommate","mentor","helper"]:return conversation(b,panel)
 	if tab=="chats":return null
+	if tab=="contacts":return contacts.build(b,self)
 	var root=b._base(Palette.BACKGROUND,b.APP_HEIGHT)
-	header(b,root,{"contacts":"通讯录","discover":"发现","me":"我"}[tab],func():b.page_requested.emit("phone_home"),"PhoneNav_exit")
-	var column=feed(b,root,57,68,tab)
+	header(b,root,{"discover":"发现","me":"我"}[tab],func():b.page_requested.emit("phone_home"),"PhoneNav_exit")
+	var column=feed(b,root,57,FOOTER_HEIGHT,tab)
 	match tab:
-		"contacts":
-			button(column,"公众号",func():open_panel(b,"officials"),"WechatPublicAccounts")
-			button(column,"朋友",func():b._open_wechat_friend(),"WechatContact_friend")
-			button(column,"室友",func():open_panel(b,"roommate"),"WechatContact_roommate")
-			button(column,"导师",func():open_panel(b,"mentor"),"WechatContact_mentor")
 		"discover":
 			button(column,"朋友圈",func():open_panel(b,"moments"),"WechatMoments")
 			button(column,"公众号 · 历史文章",func():open_panel(b,"officials"),"WechatDiscoverAccounts")

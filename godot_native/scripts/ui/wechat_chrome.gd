@@ -42,6 +42,15 @@ class Mark extends Control:
 				draw_polyline(PackedVector2Array([Vector2(3,18),Vector2(10,11),Vector2(15,17),Vector2(19,14),Vector2(29,21)]),ink,2,true)
 				draw_line(Vector2(4,24),Vector2(28,24),ink,2,true)
 				draw_line(Vector2(10,28),Vector2(24,28),ink,2,true)
+			"transfer":
+				draw_polyline(PackedVector2Array([Vector2(4,10),Vector2(18,10),Vector2(18,6),Vector2(27,13),Vector2(18,20),Vector2(18,16),Vector2(4,16)]),ink,2,true)
+				draw_line(Vector2(5,23),Vector2(23,23),ink,2,true)
+			"roommate":
+				draw_polyline(PackedVector2Array([Vector2(3,15),Vector2(16,5),Vector2(29,15)]),ink,2,true)
+				draw_polyline(PackedVector2Array([Vector2(7,13),Vector2(7,26),Vector2(25,26),Vector2(25,13)]),ink,2,true)
+				draw_rect(Rect2(14,18,5,8),ink)
+			"mentor":
+				draw_polyline(PackedVector2Array([Vector2(16,10),Vector2(10,7),Vector2(4,7),Vector2(4,23),Vector2(10,23),Vector2(16,26),Vector2(22,23),Vector2(28,23),Vector2(28,7),Vector2(22,7),Vector2(16,10),Vector2(16,26)]),ink,2,true)
 			"officials":
 				draw_colored_polygon(PackedVector2Array([Vector2(4,7),Vector2(12,10),Vector2(15,17),Vector2(15,28),Vector2(7,23),Vector2(4,17)]),ink)
 				draw_colored_polygon(PackedVector2Array([Vector2(28,7),Vector2(20,10),Vector2(17,17),Vector2(17,28),Vector2(25,23),Vector2(28,17)]),ink)
