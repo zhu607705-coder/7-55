@@ -672,17 +672,31 @@ func _wechat(_view: Dictionary) -> Control:
 	_panel(root,Rect2(0,0,378,52),PhonePalette.CHROME)
 	_nav(root,"exit","退出微信，返回手机主页",func(): page_requested.emit("phone_home"),Rect2(6,3,40,44),PhonePalette.CHROME)
 	_label(root,"微信",Rect2(70,7,222,36),wechat_social.font_size(self,20),INK,HORIZONTAL_ALIGNMENT_CENTER)
-	var search_toggle=_button(root,"",Rect2(286,3,40,44),func():wechat_social.search_open=not wechat_social.search_open;action_requested.emit("phone_refresh",null),PhonePalette.CHROME,INK,0,Color.TRANSPARENT)
-	search_toggle.name="WechatSearchToggle";search_toggle.tooltip_text="搜索"
+	var searching: bool = wechat_social.search_open or not wechat_query.is_empty()
+	var search_toggle := _button(root,"",Rect2(286,3,40,44),func():
+		wechat_social.search_open = not searching
+		if searching:
+			wechat_query = ""
+		action_requested.emit("phone_refresh",null),PhonePalette.CHROME,INK,0,Color.TRANSPARENT)
+	search_toggle.name = "WechatSearchToggle"
+	search_toggle.accessibility_name = "关闭会话搜索" if searching else "搜索会话"
+	search_toggle.tooltip_text = search_toggle.accessibility_name
 	WechatChrome.icon(search_toggle,"search",Rect2(8,9,25,25))
 	var add=_button(root,"",Rect2(330,3,42,44),func():wechat_social.tab="contacts";action_requested.emit("phone_refresh",null),PhonePalette.CHROME,INK,0,Color.TRANSPARENT)
 	add.name="WechatOpenContacts";add.tooltip_text="通讯录"
 	WechatChrome.icon(add,"plus",Rect2(7,8,28,28))
-	var searching: bool=wechat_social.search_open or not wechat_query.is_empty()
-	var search := LineEdit.new();search.name="WechatSearch";search.position=Vector2(12,56);search.size=Vector2(354,34);search.visible=searching
-	search.placeholder_text="搜索";search.text=wechat_query;Typography.apply_body(search);search.add_theme_font_size_override("font_size",16)
+	var search := LineEdit.new()
+	search.name = "WechatSearch"
+	search.position = Vector2(12,57)
+	search.size = Vector2(354,42)
+	search.visible = searching
+	search.placeholder_text = "搜索"
+	search.accessibility_name = "搜索会话"
+	search.clear_button_enabled = true
+	search.text = wechat_query
+	Typography.apply_body(search)
 	NativeUi.apply_input(search,PhonePalette.SURFACE,PhonePalette.INK,Color.TRANSPARENT,4,16,Vector2(8,4),PhonePalette.ACCENT);root.add_child(search)
-	var column=wechat_social.feed(self,root,98 if searching else 52,68,"chats",0)
+	var column=wechat_social.feed(self,root,104 if searching else 52,wechat_social.FOOTER_HEIGHT,"chats",0)
 	column.add_theme_constant_override("separation",0)
 	var margins=column.get_parent() as MarginContainer
 	margins.add_theme_constant_override("margin_top",0);margins.add_theme_constant_override("margin_bottom",0)
