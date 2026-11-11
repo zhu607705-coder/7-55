@@ -103,6 +103,7 @@ func invalidate_progressive_activities() -> void:
 
 func open_page(page: String) -> void:
 	if input_locked(): return
+	if d.actOne.phase == "prologue" and d.flags.checkinDone and page != "ending": return
 	invalidate_progressive_activities()
 	# P10's revealed flower digit is local to its mounted page.
 	if str(d.native.page)=="bonsai" and page!="bonsai": d.native.erase("flower_eight_visible")

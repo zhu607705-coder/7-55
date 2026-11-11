@@ -53,6 +53,7 @@ var earned_catalog_title = EarnedCatalogTitle.new()
 var cc98_login = Cc98Login.new()
 const LakeApps = preload("res://scripts/ui/c3_lake_app_context.gd")
 var lake_apps = LakeApps.new()
+const RainDrop = preload("res://scripts/ui/phone_rain_drop.gd")
 const Utilities = preload("res://scripts/chapters/phone_utilities.gd")
 const DropButton = preload("res://scripts/ui/phone_drop_button.gd")
 const BonsaiGrowthSession = preload("res://scripts/presentation/bonsai_growth_session.gd")
@@ -406,7 +407,8 @@ func _home() -> Control:
 	var root = _base(PAPER,643)
 	root.set_meta("handles_app_grid",true)
 	var artwork=HomeArt.new(); artwork.name="SourceHomeArtwork"; artwork.size=Vector2(378,APP_HEIGHT); artwork.tower_open=s.flags.towerOpened; artwork.flower_bloomed=s.flags.flowerBloomed; root.add_child(artwork)
-	if s.actOne.phase=="prologue":
+	var chapter_one_pickups: bool = s.actOne.phase == "prologue" and not s.flags.checkinDone
+	if chapter_one_pickups:
 		var tower=_drop_action(root,_home_rect(288,116,66,330),"c1_tower"); tower.name="TowerDropTarget"; tower.disabled=s.native.get("tower_key_pending",false)
 		if s.native.get("tower_key_pending",false) and s.items.towerKey and not s.flags.towerOpened: _animate_tower_key(root)
 	var bonsai=_button(root,"",HomeArt.bonsai_hit_rect(),func(): page_requested.emit("bonsai"),Color.TRANSPARENT,INK,0,Color.TRANSPARENT); bonsai.name="HomeBonsaiOpen"; bonsai.tooltip_text="湖边盆栽，已开花" if s.flags.flowerBloomed else "湖边盆栽"
@@ -431,12 +433,26 @@ func _home() -> Control:
 		var weather_target=_button(root,"",_home_rect(15,56,212,182),func(): page_requested.emit("weather"),Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
 		weather_target.name="HomeWeatherOpen"; weather_target.tooltip_text="打开天气"
 		for mode in ["normal","hover","pressed"]: weather_target.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
-	elif rain and s.flags.codeScattered and not s.flags.waterDropTaken:
-		var drop=_act(root,"",_home_rect(60,116,28,30),"c1_rain_drop",null,Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
-		_panel(drop,Rect2(10,4,8,14),Color("7db6ec")).name="HomeCollectibleDropGlyph"; drop.name="HomeLiveWaterDrop"; drop.tooltip_text="收集水滴"
+	elif chapter_one_pickups and rain and s.flags.codeScattered and not s.flags.waterDropTaken and not s.items.waterDrop and not s.items.wateredHeadphone:
+		var drop := RainDrop.new()
+		var target := _home_rect(60,116,28,30)
+		drop.name = "HomeLiveWaterDrop"
+		drop.position = target.position
+		drop.size = target.size
+		drop.accessibility_name = "雨滴"
+		var hint_text := "把耳机拖到雨滴上接水" if s.items.headphone else "按住雨滴往下拖"
+		drop.tooltip_text = hint_text
+		_panel(drop,Rect2(10,4,8,14),Color("7db6ec")).name = "HomeCollectibleDropGlyph"
+		root.add_child(drop)
+		var hint := _label(root,"",_home_rect(37,221,168,17),12,BLUE)
+		drop.inspected.connect(func(): hint.text = hint_text)
+		drop.pulled.connect(func(): action_requested.emit("c1_rain_drop", "pull"))
+		drop.item_dropped.connect(func(item: String): action_requested.emit("c1_rain_fill", item))
+		handled.append("c1_rain_drop")
+		handled.append("c1_rain_fill")
 	var chapter=int(s.native.get("chapter",1))
 	_build_home_apps(root)
-	if s.flags.gearFallen and not s.flags.gearNineTaken: _home_gear_pickup(root)
+	if chapter_one_pickups and s.flags.gearFallen and not s.flags.gearNineTaken: _home_gear_pickup(root)
 	var notifications=_home_notifications()
 	var heights: Array=[]; var group_height=0
 	for notice in notifications:
@@ -938,7 +954,7 @@ func _controls() -> Control:
 	_source_icon(music,"music",Rect2(11,9,27,27))
 	_label(music,"正在播放：早八进行曲" if s.ui.musicPlaying else "未在播放",Rect2(47,12,225,25),12)
 	_act(music,"❚❚" if s.ui.musicPlaying else "▶",Rect2(12,51,49,40),"c1_music",null,INK,PAPER,0,INK).name="ControlMusicPlay"
-	if not s.flags.headphoneFallen:
+	if s.actOne.phase == "prologue" and not s.flags.checkinDone and not s.flags.headphoneFallen:
 		var headphones=_button(music,"",Rect2(74,51,42,40),func(): pass,Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
 		headphones.name="ControlHeadphones"; headphones.tooltip_text="耳机"
 		_source_icon(headphones,"headphone",Rect2(5,4,29,29))
@@ -954,7 +970,7 @@ func _controls() -> Control:
 			var fall=root.create_tween(); fall.tween_property(headphones,"position:y",headphones.position.y+220/PHONE_SCALE,.55)
 			fall.parallel().tween_property(headphones,"modulate:a",0.0,.55)
 			fall.tween_callback(func(): action_requested.emit("c1_headphone",null)))
-	else: _label(music,"耳机不见了",Rect2(76,60,153,25),10,MUTED)
+	elif s.flags.headphoneFallen: _label(music,"耳机不见了",Rect2(76,60,153,25),10,MUTED)
 	handled.append("c1_headphone")
 	var slider=Control.new(); slider.position=Vector2(307,117); slider.size=Vector2(57,104); slider.focus_mode=Control.FOCUS_ALL; slider.mouse_default_cursor_shape=Control.CURSOR_VSIZE; slider.name="ControlBrightness"; slider.tooltip_text="亮度"; panel.add_child(slider)
 	_panel(slider,Rect2(0,0,57,104),Color("b8bcc4"),INK,0,2)

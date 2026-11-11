@@ -228,7 +228,7 @@ func beginning() -> void:
 	await show_phone("phone_home")
 	await create_timer(1.9).timeout
 	check(state.d.flags.towerOpened,"real tower insertion and rotation")
-	for pair in [["c1_music",null],["c1_headphone",null],["c1_rain_drop",null],["c1_combine",["waterDrop","headphone"]],["c1_plant","wateredHeadphone"],["c1_plant","fertilizer"],["c1_brightness",85],["c1_plant_light",null],["c1_flower",null],["c1_collect_flower",null],["c1_network","校园网"]]: await step(pair[0],pair[1])
+	for pair in [["c1_music",null],["c1_headphone",null],["c1_rain_drop","pull"],["c1_combine",["waterDrop","headphone"]],["c1_plant","wateredHeadphone"],["c1_plant","fertilizer"],["c1_brightness",85],["c1_plant_light",null],["c1_flower",null],["c1_collect_flower",null],["c1_network","校园网"]]: await step(pair[0],pair[1])
 	if not check(state.d.digits=={"d1":"0","d2":"7","d3":"9","d4":"8"},"four authored digits collected"): return
 	game=make_game(await step("c1_checkin","0798"))
 	if game==null: return

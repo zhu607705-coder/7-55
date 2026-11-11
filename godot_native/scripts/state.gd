@@ -698,6 +698,9 @@ func _upgrade_legacy_net_receipt(snapshot: Dictionary) -> void:
 func _sanitize_runtime_resume(snapshot: Dictionary) -> void:
 	if snapshot.theaterHunt.propBoxOpened: preload("res://scripts/games/theater_chest_mechanism.gd").ensure(snapshot)
 	_upgrade_legacy_phone_state(snapshot)
+	if snapshot.actOne.phase == "prologue" and snapshot.flags.checkinDone:
+		snapshot.currentScene = "ending"
+		snapshot.native.page = "ending"
 	# An early save from before the gate may already be dark. Restore the
 	# accessible mode before presenting a world that has no switch yet.
 	if not ChapterSystem.mode_switch_unlocked(snapshot):

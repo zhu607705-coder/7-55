@@ -58,9 +58,9 @@ func _movement(s: Dictionary) -> bool:
 
 func pages(s: Dictionary) -> Array:
 	if int(s.native.get("chapter", 1)) > 2: return [{"id":"control_center","label":"控制中心"}]
+	if _prologue(s) and s.flags.checkinDone: return [{"id":"ending","label":"经度与纬度不存在"}]
 	if s.native.get("page", "alarm") == "alarm": return [{"id":"alarm","label":"闹钟"}]
 	if s.native.get("page", "") == "desktop": return [{"id":"desktop","label":"07:55"}]
-	if _prologue(s) and s.flags.checkinDone: return [{"id":"ending","label":"经度与纬度不存在"}]
 	var result: Array = [{"id":"phone_home","label":"手机主页"}, {"id":"wechat","label":"微信"}, {"id":"zjuding","label":"浙大钉"}, {"id":"tiyi","label":"浙大体艺"}, {"id":"control_center","label":"控制中心"}]
 	if _prologue(s):
 		result.append({"id":"checkin","label":"学在浙大"})
@@ -127,8 +127,9 @@ func view(page: String, s: Dictionary) -> Dictionary:
 func actions(page: String, s: Dictionary) -> Array:
 	if page == "control_center":
 		var out = [_action("c1_network", "切换网络", "choice", ["校园网", "移动数据", "离线"]), _action("c1_brightness", "调整屏幕亮度", "number"), _action("c1_auto_rotate", "开关自动旋转"), _action("c1_music", "播放 / 暂停音乐")]
-		if _prologue(s) and not s.flags.headphoneFallen: out.append(_action("c1_headphone", "触碰挂着的耳机"))
+		if _prologue(s) and not s.flags.checkinDone and not s.flags.headphoneFallen: out.append(_action("c1_headphone", "触碰挂着的耳机"))
 		return out
+	if _prologue(s) and s.flags.checkinDone and page != "ending": return []
 	if int(s.native.get("chapter", 1)) > 2: return []
 	var lib_actions: Array = library.actions(page, s)
 	if not lib_actions.is_empty(): return lib_actions
@@ -141,7 +142,6 @@ func actions(page: String, s: Dictionary) -> Array:
 			if _prologue(s) and not s.flags.checkinDone:
 				out.append(_action("c1_gear", "查看设置齿轮"))
 				if s.flags.gearFallen and not s.flags.gearNineTaken: out.append(_action("c1_collect_gear", "拾起掉落齿轮"))
-				if s.flags.codeScattered and not s.flags.waterDropTaken: out.append(_action("c1_rain_drop", "接住屏幕上的雨滴"))
 				out.append(_action("c1_tower", "将道具放进钟楼锁孔", "choice", _owned(s)))
 			if _movement(s) and s.actOne.exerciseStarted and not s.actOne.pushTriangleTaken: out.append(_action("c2_triangle", "触碰推送头像的三角形"))
 			out.append(_form("c1_combine", "组合两件道具", [{"id":"a","label":"第一件道具","type":"choice","options":_owned(s)},{"id":"b","label":"第二件道具","type":"choice","options":_owned(s)}]))
@@ -239,6 +239,8 @@ func _control(s: Dictionary, action: String, value: Variant) -> Dictionary:
 	return {}
 
 func _chapter_one(s: Dictionary, action: String, value: Variant) -> Dictionary:
+	if _prologue(s) and s.flags.checkinDone and action not in ["c1_checkin", "c1_resume_ending", "c1_intervention_result"]:
+		return _ok("")
 	if action == "c1_combine": return _combine(s, value)
 	if action in ["c1_tiyi_load","c1_tiyi_crash","c1_tiyi_exit"]:
 		if entry_session.family!="tiyi" or entry_session.entry_allowed: return _ok("")
@@ -330,8 +332,19 @@ func _chapter_one(s: Dictionary, action: String, value: Variant) -> Dictionary:
 			f.headphoneFallen = true
 			items.headphone = true
 			return _ok("耳机掉了下来，背面朝下。")
-		"c1_rain_drop":
-			if not f.codeScattered or f.waterDropTaken: return _ok("没有可收集的新雨滴。")
+		"c1_rain_drop", "c1_rain_fill":
+			if s.native.page != "phone_home" or not f.codeScattered or f.waterDropTaken or items.waterDrop or items.wateredHeadphone or s.qizhenLake.rainSafetyCleared:
+				return _ok("没有可收集的新雨滴。")
+			if action == "c1_rain_fill":
+				if value != "headphone" or not items.headphone:
+					return _ok("找个有凹槽的东西接住雨滴。")
+				items.headphone = false
+				items.wateredHeadphone = true
+				f.waterDropTaken = true
+				if s.native.get("selected_item", "") == "headphone": s.native.selected_item = ""
+				if s.ui.selectedItem == "headphone": s.ui.selectedItem = null
+				return _ok("雨滴落进耳机背面的凹槽里。")
+			if value != "pull": return _ok("按住雨滴，往下拖一小段。")
 			f.waterDropTaken = true
 			items.waterDrop = true
 			return _ok("接住了一滴早八雨。")
@@ -380,11 +393,15 @@ func _chapter_one(s: Dictionary, action: String, value: Variant) -> Dictionary:
 			if s.networkMode != "campus_wifi": return _ok("请连接校园网。")
 			if str(value).strip_edges() != "0798": return _ok("签到码错误。")
 			f.checkinDone = true
+			entry_session.close_friend()
+			for pending in ["friend_scatter_pending", "tower_key_pending", "flower_eight_visible"]: s.native[pending] = false
 			for item in ["waterDrop", "headphone", "wateredHeadphone"]: items[item] = false
+			s.ui.controlCenterOpen = false
 			s.ui.inventoryOpen = false
 			s.ui.selectedItem = null
 			s.native.selected_item = ""
 			s.native.page = "ending"
+			s.currentScene = "ending"
 			return _ending_game(false)
 		"c1_resume_ending":
 			if not f.checkinDone: return _ok("签到尚未完成。")
@@ -417,6 +434,7 @@ func _combine(s: Dictionary, value: Variant) -> Dictionary:
 	if a == b or not s.items.get(a, false) or not s.items.get(b, false): return _ok("两件道具都必须在道具栏里。")
 	for recipe in [["slashLine","reverseGear","towerKey","钥匙"], ["waterDrop","headphone","wateredHeadphone","盛水的耳机"], ["pushTriangle","mentorLine","rightArrow","右移箭头"]]:
 		if (recipe[0] == a and recipe[1] == b) or (recipe[0] == b and recipe[1] == a):
+			if s.flags.checkinDone and recipe[2] != "rightArrow": return _ok("这两件道具的机关已经关闭。")
 			s.items[a] = false
 			s.items[b] = false
 			s.items[recipe[2]] = true

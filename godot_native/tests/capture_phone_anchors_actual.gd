@@ -1,6 +1,6 @@
 extends SceneTree
 ## Manual CUA route. F6 selects the next source checkpoint/layout only.
-## The source collectible must be clicked normally; no reward action is injected.
+## Use the visible source controls; no reward action is injected.
 var shell: Control
 var state: Node
 var output: String
@@ -62,7 +62,8 @@ func next_case() -> void:
 	state.developer_mode=false
 	preparing=false
 	await capture("before")
-	print("PHONE_ANCHOR_READY ",case_key," original source checkpoint; click the visible object; then F6")
+	var interaction: String = "pull the visible raindrop down" if entry.anchor == "03" else "click the visible object"
+	print("PHONE_ANCHOR_READY ",case_key," original source checkpoint; ",interaction,"; then F6")
 func on_action(action: String,_before: Dictionary,after: Dictionary,_result: Dictionary) -> void:
 	if preparing or action not in ["c1_absence","c1_tiyi_digit","c1_rain_drop"]:return
 	accepted_at=Time.get_ticks_msec();capture_until=accepted_at+900

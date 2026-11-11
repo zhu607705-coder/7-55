@@ -57,7 +57,8 @@ func run() -> void:
 	s.native.page="tiyi"; act("c1_tiyi_digit")
 	check(s.digits.d2=="7" and s.flags.tiyiCountTaken,"C1 cellular still earns 7 without reinstall")
 	act("c2_tiyi_discover"); check(s.actOne.tiyiUpdateStage=="not_started","C1 cannot preinstall C2 update")
-	s.flags.codeScattered=true; act("c1_rain_drop")
+	s.native.page="phone_home"
+	s.flags.codeScattered=true; act("c1_rain_drop","pull")
 	check(s.flags.waterDropTaken and s.items.waterDrop,"C1 plant water remains independent")
 	fresh()
 	for network in ["campus_wifi","cellular","offline","cellular"]:

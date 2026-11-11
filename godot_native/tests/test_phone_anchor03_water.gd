@@ -14,11 +14,50 @@ func fixture(dimensions: Vector2i,reduced: bool=false) -> void:
 	shell._refresh(); shell._layout(); await frames(4)
 	host.set_process(false); cues.clear(); actions.clear()
 	check(named("HomeLiveWaterDrop")!=null and named("HomeCollectibleDropGlyph")!=null,"source collectible drop has actual visible glyph and hotspot")
+
+func drag_between(start: Vector2, end: Vector2, touch: bool = false, cancel: bool = false) -> void:
+	if touch:
+		var down := InputEventScreenTouch.new()
+		down.position=start; down.pressed=true; down.index=0
+		Input.parse_input_event(down)
+	else:
+		var enter := InputEventMouseMotion.new()
+		enter.position=start; enter.global_position=start
+		Input.parse_input_event(enter)
+		var down := InputEventMouseButton.new()
+		down.position=start; down.global_position=start; down.pressed=true; down.button_index=MOUSE_BUTTON_LEFT
+		Input.parse_input_event(down)
+	Input.flush_buffered_events(); await process_frame
+	var previous := start
+	for index in range(1, 9):
+		var point := start.lerp(end, index/8.0)
+		if touch:
+			var motion := InputEventScreenDrag.new()
+			motion.position=point; motion.relative=point-previous; motion.index=0
+			Input.parse_input_event(motion)
+		else:
+			var motion := InputEventMouseMotion.new()
+			motion.position=point; motion.global_position=point; motion.relative=point-previous
+			motion.button_mask=MOUSE_BUTTON_MASK_LEFT
+			Input.parse_input_event(motion)
+		previous=point
+		Input.flush_buffered_events(); await process_frame
+	if touch:
+		var up := InputEventScreenTouch.new()
+		up.position=end; up.index=0; up.canceled=cancel
+		Input.parse_input_event(up)
+	else:
+		var up := InputEventMouseButton.new()
+		up.position=end; up.global_position=end; up.button_index=MOUSE_BUTTON_LEFT
+		Input.parse_input_event(up)
+	Input.flush_buffered_events(); await frames(4)
+
 func collect(touch: bool=false) -> void:
 	var before: int=host.started_count
 	var open_before: bool=state.d.ui.inventoryOpen
 	var world_before: Rect2=rect(named("SourceHomeArtwork"))
-	await click(named("HomeLiveWaterDrop"),touch)
+	var target := rect(named("HomeLiveWaterDrop"))
+	await drag_between(target.get_center(),target.get_center()+Vector2(0,target.size.y*1.3),touch)
 	check(state.d.flags.waterDropTaken and state.d.items.waterDrop,"original controller commits water before340ms picture")
 	check(actions.count("c1_rain_drop")==1 and host.started_count==before+1,"one gesture starts one accepted water presentation")
 	check(not host.current.is_empty() and host.current.spec.anchor=="03","accepted water rise starts the source-bound copy")
@@ -29,6 +68,35 @@ func collect(touch: bool=false) -> void:
 	check(rect(named("SourceHomeArtwork"))==world_before,"home plate and clouds do not move")
 	check(not shell.phone_chrome.acquisition.visible and shell.phone_chrome.recent_item=="","generic acquisition VFX is retired for this water receipt only")
 	check(cues.count(WATER_SOUND)==1,"existing18_ sound plays once without a new duplicate route")
+
+func check_container_route(touch: bool) -> void:
+	await fixture(Vector2i(430,860))
+	state.d.items.headphone=true
+	state.d.items.reverseGear=true
+	state.d.flags.headphoneFallen=true
+	state.d.ui.inventoryOpen=true
+	shell._refresh(); await frames(4)
+	var rain := rect(named("HomeLiveWaterDrop"))
+	await click(named("HomeLiveWaterDrop"),touch)
+	check(not state.d.flags.waterDropTaken and not state.d.items.waterDrop,"tapping only inspects the rain source")
+	await drag_between(rain.get_center(),rain.get_center()+Vector2(rain.size.x*1.3,0),touch)
+	check(not state.d.flags.waterDropTaken,"a sideways drag does not collect the rain")
+	if touch:
+		await drag_between(rain.get_center(),rain.get_center()+Vector2(0,rain.size.y*1.3),true,true)
+		check(not state.d.flags.waterDropTaken,"cancelled touch keeps the rain available")
+	var wrong: Control=shell.find_child("Item_reverseGear",true,false)
+	await drag_between(rect(wrong).get_center(),rain.get_center(),touch)
+	check(state.d.items.reverseGear and state.d.items.headphone and not state.d.flags.waterDropTaken,"wrong inventory item can be dropped and retried")
+	var headphone: Control=shell.find_child("Item_headphone",true,false)
+	await drag_between(rect(headphone).get_center(),rain.get_center()+Vector2(65,20),touch)
+	check(state.d.items.headphone and not state.d.flags.waterDropTaken,"release outside the rain keeps the earphone")
+	headphone=shell.find_child("Item_headphone",true,false)
+	await drag_between(rect(headphone).get_center(),rain.get_center(),touch)
+	check(state.d.flags.waterDropTaken and state.d.items.wateredHeadphone,"inventory earphone catches the source on release")
+	check(not state.d.items.headphone and not state.d.items.waterDrop,"direct catch produces exactly one filled item")
+	check(named("HomeLiveWaterDrop")==null and actions.count("c1_rain_fill")==2,"accepted catch removes the source after the earlier wrong attempt")
+	check(cues.count(WATER_SOUND)==1,"catch uses the existing rain sound once")
+
 func verify_poses(dimensions: Vector2i) -> void:
 	if host.current.is_empty(): return
 	var original: String=JSON.stringify(state.d)
@@ -79,6 +147,8 @@ func run() -> void:
 		await fixture(dimensions,true); await collect()
 		var a: Dictionary=host.sample_at(0); var b: Dictionary=host.sample_at(260)
 		check(a==b and a.ripple==0 and a.scale==Vector2.ONE,"reduced motion has no fall, squash or ripple")
+	await check_container_route(false)
+	await check_container_route(true)
 	for cancellation: String in ["page","rebuild","replacement","modal","reset","next-input"]:
 		await fixture(Vector2i(430,860)); await collect()
 		match cancellation:
@@ -94,13 +164,23 @@ func run() -> void:
 		check(host.current.is_empty() and host.pending.is_empty(),"water owner clears after "+cancellation)
 		check(state.d.items.waterDrop and state.d.flags.waterDropTaken,"accepted water survives "+cancellation)
 	await fixture(Vector2i(430,860)); state.d.flags.codeScattered=false; shell._refresh(); await frames()
-	shell._on_phone_action("c1_rain_drop",null); await frames()
+	shell._on_phone_action("c1_rain_drop","pull"); await frames()
 	check(not state.d.items.waterDrop and host.current.is_empty(),"early rejected action has no reward or animation")
 	await fixture(Vector2i(430,860)); await collect(); state.developer_mode=false
 	check(state.save_game(),"accepted water saves during340ms effect")
 	state.d=state.initial(); check(state.load_game(),"ordinary water save reload succeeds")
 	shell._refresh(); await frames()
 	check(state.d.items.waterDrop and named("HomeLiveWaterDrop")==null and host.current.is_empty(),"reload restores acquired item and no collectible source or replay")
+	await fixture(Vector2i(430,860),true)
+	state.d.networkMode = "campus_wifi"
+	state.open_page("checkin"); await frames(4)
+	for digit: String in ["0", "7", "9", "8"]: await click(named("CheckinKey_"+digit))
+	await click(named("CheckinSubmit"))
+	check(state.d.flags.checkinDone and state.d.native.page=="ending" and state.d.digits=={"d1":null,"d2":null,"d3":null,"d4":null},"actual keypad accepts the shortcut without granting the uncollected digits")
+	state.open_page("phone_home"); await frames()
+	check(state.d.native.page=="ending" and named("HomeLiveWaterDrop")==null,"old phone navigation cannot reopen the rain pickup")
+	state.developer_mode=false
+	check(state.save_game() and state.load_game() and state.d.native.page=="ending" and state.d.flags.checkinDone,"ordinary save and load resume the ending after direct check-in")
 	Input.emulate_mouse_from_touch=touch_before; state.developer_mode=true
 	await shell.shutdown(); shell.queue_free(); await frames()
 	var report: String=OS.get_environment("PHONE_ANCHOR_REPORT")

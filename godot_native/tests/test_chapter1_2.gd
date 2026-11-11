@@ -14,6 +14,7 @@ func act(id: String, value: Variant = null) -> Dictionary:
 func _initialize() -> void:
 	s = JSON.parse_string(FileAccess.get_file_as_string("res://data/initial_state.json"))
 	s.native = {"chapter":1,"page":"alarm","scene":"","mode":"light","selected_item":""}
+	_test_checkin_shortcut(s.duplicate(true))
 	act("c2_recover_card")
 	expect(not s.items.campusCard,"campus card locked in chapter one")
 	act("c1_start_alarm")
@@ -50,10 +51,25 @@ func _initialize() -> void:
 	act("c1_tower_complete",{"elapsedMs":1700})
 	act("c1_headphone")
 	expect(not s.items.headphone,"headphone requires music")
+	var container_first := s.duplicate(true)
+	act("c1_rain_drop")
+	expect(not s.flags.waterDropTaken and not s.items.waterDrop,"tapping the rain cannot collect it")
+	act("c1_rain_drop","pull")
+	expect(s.flags.waterDropTaken and s.items.waterDrop and not s.items.headphone,"pulling rain can precede getting the headphone")
 	act("c1_music")
 	act("c1_headphone")
-	act("c1_rain_drop")
 	act("c1_combine",["waterDrop","headphone"])
+	expect(s.items.wateredHeadphone and not s.items.waterDrop and not s.items.headphone,"existing rain and headphone combine once")
+	c.dispatch(container_first,"c1_music")
+	c.dispatch(container_first,"c1_headphone")
+	container_first.items.reverseGear = true
+	for i in range(2): c.dispatch(container_first,"c1_rain_fill","reverseGear")
+	expect(container_first.items.reverseGear and container_first.items.headphone and not container_first.flags.waterDropTaken,"wrong drops leave the rain and items available")
+	c.dispatch(container_first,"c1_rain_fill","headphone")
+	expect(container_first.flags.waterDropTaken and container_first.items.wateredHeadphone and not container_first.items.headphone and not container_first.items.waterDrop,"headphone catches the source directly")
+	c.dispatch(container_first,"c1_plant","wateredHeadphone")
+	c.dispatch(container_first,"c1_rain_drop","pull")
+	expect(container_first.flags.plantWatered and not container_first.items.waterDrop and not container_first.items.wateredHeadphone,"the same source cannot be acquired again after watering")
 	act("c1_plant","wateredHeadphone")
 	act("c1_plant","fertilizer")
 	act("c1_flower")
@@ -126,6 +142,45 @@ func _initialize() -> void:
 	_library_tests()
 	print("CHAPTER1_2_TESTS: %d checks; %d failures" % [checks, failures])
 	quit(1 if failures else 0)
+
+func _test_checkin_shortcut(shortcut: Dictionary) -> void:
+	shortcut.native.page = "checkin"
+	shortcut.flags.codeScattered = true
+	shortcut.flags.gearFallen = true
+	shortcut.flags.slashHalfDropped = true
+	shortcut.flags.slashTapCount = 2
+	shortcut.flags.flowerBloomed = true
+	shortcut.native.flower_eight_visible = true
+	shortcut.items.towerKey = true
+	shortcut.ui.musicPlaying = true
+	c.dispatch(shortcut, "c1_tower", "towerKey")
+	shortcut.networkMode = "cellular"
+	expect(not c.dispatch(shortcut, "c1_checkin", "0798").has("game"), "correct shortcut code without campus wifi is rejected")
+	shortcut.networkMode = "campus_wifi"
+	expect(not c.dispatch(shortcut, "c1_checkin", "0000").has("game"), "wrong shortcut code is rejected")
+	expect(not shortcut.flags.checkinDone and not c.actions("checkin", shortcut).is_empty(), "rejected submissions leave the clue hunt available")
+	var result: Dictionary = c.dispatch(shortcut, "c1_checkin", "0798")
+	expect(result.has("game") and shortcut.flags.checkinDone and shortcut.native.page == "ending", "correct code reaches interception without collecting any digit")
+	expect(not shortcut.native.tower_key_pending and not shortcut.native.flower_eight_visible, "check-in clears pending pickup animations")
+	var inventory: Dictionary = shortcut.items.duplicate()
+	for action: String in ["c1_absence", "c1_collect_gear", "c1_avatar", "c1_headphone", "c1_collect_flower"]:
+		c.dispatch(shortcut, action)
+	c.dispatch(shortcut, "c1_tower_complete", {"elapsedMs": 1700})
+	shortcut.native.page = "phone_home"
+	c.dispatch(shortcut, "c1_rain_drop", "pull")
+	shortcut.native.page = "ending"
+	c.dispatch(shortcut, "c1_network", "cellular")
+	c.dispatch(shortcut, "c1_tiyi_digit")
+	expect(shortcut.items == inventory and shortcut.digits == {"d1":null,"d2":null,"d3":null,"d4":null}, "late pickup intents and callbacks cannot grant items or digits")
+	expect(c.actions("phone_home", shortcut).is_empty() and c.dispatch(shortcut, "c1_resume_ending").has("game"), "old phone actions are hidden and ending can resume")
+	c.dispatch(shortcut, "c1_intervention_result", {"interceptedCount":3,"lockHeldMs":1400,"failed":false,"dialogueCount":4,"whiteoutCompleted":true})
+	c.dispatch(shortcut, "c2_friend_exchange")
+	expect(shortcut.actOne.phase == "system_required", "shortcut still hands off to the ordinary second chapter")
+	shortcut.items.slashLine = true
+	shortcut.items.reverseGear = true
+	shortcut.items.towerKey = false
+	c.dispatch(shortcut, "c1_combine", ["slashLine", "reverseGear"])
+	expect(not shortcut.items.towerKey and shortcut.items.slashLine and shortcut.items.reverseGear, "previously earned parts cannot produce a chapter-one item after transition")
 
 func _finish_library_story(id: String) -> void:
 	var session: RefCounted=c.library.story_session(s)
