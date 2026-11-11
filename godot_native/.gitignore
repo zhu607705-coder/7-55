@@ -8,6 +8,12 @@ assets/*
 !assets/derived/
 assets/derived/*
 !assets/derived/chase_transition_3d/
+# Native fishing plate is authored here, outside the source-sync asset set.
+!assets/rpg/
+assets/rpg/*
+!assets/rpg/qizhen_fishing/
+assets/rpg/qizhen_fishing/*
+!assets/rpg/qizhen_fishing/lake_fishing_soft_dawn.png
 data/source/
 .screenshots/
 
