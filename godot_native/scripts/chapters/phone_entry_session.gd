@@ -2,6 +2,11 @@ extends RefCounted
 const TiyiAccess=preload("res://scripts/chapters/tiyi_access.gd")
 ## Transient mount/presentation clock, owned by ChapterOne. Never serialized.
 ## Source: P06_Tiyi, P14_Wechat, P15_Zjuding useState/useEffect mount contracts.
+const TIYI_PACKAGE_MB := 87.0
+const TIYI_CACHED_MB := 45.0
+const TIYI_DOWNLOAD_MS := 30000.0
+const TIYI_RATE_INTERVAL_MS := 2000.0
+const TIYI_AVERAGE_MBPS := (TIYI_PACKAGE_MB - TIYI_CACHED_MB) / (TIYI_DOWNLOAD_MS / 1000.0)
 var owner: Dictionary={}
 var family: String=""
 var elapsed_ms:=0.0
@@ -17,6 +22,9 @@ var friend_skipped:=false
 var laugh_at_ms:=13942.0
 var arrival_sent:=false
 var blocked_hint_sent:=false
+var tiyi_download_elapsed_ms := 0.0
+var tiyi_downloaded_mb := 0.0
+var tiyi_download_rates: Array[float] = []
 
 static func app_family(page: String) -> String:
 	if page in ["system_chat","zjuding","directory","c3_campus_map","c35_network"] or page.begins_with("library_"): return "zjuding"
@@ -27,6 +35,10 @@ func route(state: Dictionary) -> void:
 	if page=="control_center" and is_same(owner,state): return
 	var next:=app_family(page)
 	if is_same(owner,state) and next==family: return
+	if not is_same(owner, state):
+		tiyi_download_rates.clear()
+		tiyi_download_elapsed_ms = 0.0
+		tiyi_downloaded_mb = 0.0
 	owner=state; family=next; elapsed_ms=0; phase=""; crash_recorded=false; blocked_hint_sent=false
 	close_friend()
 	tiyi_update_blocked=family=="tiyi" and TiyiAccess.needs_update(state)
@@ -47,8 +59,46 @@ func skip_friend() -> bool:
 	friend_skipped=true; laugh_at_ms=friend_elapsed_ms
 	return true
 
+func start_tiyi_download() -> void:
+	if not tiyi_download_rates.is_empty(): return
+	tiyi_download_elapsed_ms = 0.0
+	tiyi_downloaded_mb = TIYI_CACHED_MB
+	# Pair the random rates around the mean so the 42 MB still takes 30 online seconds.
+	var intervals := roundi(TIYI_DOWNLOAD_MS / TIYI_RATE_INTERVAL_MS)
+	for _pair: int in range(floori(intervals * .5)):
+		var speed := randi_range(8, 20) / 10.0
+		tiyi_download_rates.append(speed)
+		tiyi_download_rates.append(2.0 * TIYI_AVERAGE_MBPS - speed)
+	tiyi_download_rates.append(TIYI_AVERAGE_MBPS)
+	tiyi_download_rates.shuffle()
+
+func tiyi_download_speed() -> float:
+	if tiyi_download_rates.is_empty() or owner.get("networkMode") == "offline": return 0.0
+	var index := mini(floori(tiyi_download_elapsed_ms / TIYI_RATE_INTERVAL_MS), tiyi_download_rates.size() - 1)
+	return tiyi_download_rates[index]
+
+func take_completed_tiyi_download() -> bool:
+	if tiyi_download_rates.is_empty() or tiyi_download_elapsed_ms < TIYI_DOWNLOAD_MS: return false
+	tiyi_download_rates.clear()
+	return true
+
+func _advance_tiyi_download(delta_ms: float) -> bool:
+	if tiyi_download_rates.is_empty(): return false
+	if owner.get("networkMode") != "offline":
+		var until := minf(TIYI_DOWNLOAD_MS, tiyi_download_elapsed_ms + maxf(0.0, delta_ms))
+		while tiyi_download_elapsed_ms < until:
+			var interval_end := (floori(tiyi_download_elapsed_ms / TIYI_RATE_INTERVAL_MS) + 1) * TIYI_RATE_INTERVAL_MS
+			var stop_at := minf(until, interval_end)
+			tiyi_downloaded_mb += tiyi_download_speed() * (stop_at - tiyi_download_elapsed_ms) / 1000.0
+			tiyi_download_elapsed_ms = stop_at
+	if tiyi_download_elapsed_ms < TIYI_DOWNLOAD_MS: return false
+	tiyi_downloaded_mb = TIYI_PACKAGE_MB
+	return true
+
 func advance(delta_ms: float) -> Array:
 	var events: Array=[]
+	if _advance_tiyi_download(delta_ms):
+		events.append({"action": "c2_tiyi_download_finished"})
 	elapsed_ms+=maxf(0,delta_ms)
 	if family=="tiyi":
 		if phase=="loading" and entry_allowed and elapsed_ms>=1400:

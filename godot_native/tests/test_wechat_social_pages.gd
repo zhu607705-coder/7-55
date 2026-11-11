@@ -185,18 +185,25 @@ func run() -> void:
 	await press("WechatLocalBack")
 	check(node("WechatArticle_lost-found")!=null,"article back returns to same account")
 	await press("WechatLocalBack");await press("WechatLocalBack")
-	await press("WechatTab_discover");await press("WechatMoments")
-	check(surface.find_children("WechatMoment_*","VBoxContainer",true,false).size()==4,"four opening-day Moments are populated")
-	var scroll: ScrollContainer=node("WechatScroll")
-	scroll.scroll_vertical=120;await frames()
-	await press("WechatLike_breakfast")
-	check(pages.wechat_social.likes.get("breakfast",false),"like changes local browsing state")
-	check(node("WechatScroll").scroll_vertical==120,"like refresh preserves reading position")
-	await press("WechatLocalBack");await press("WechatTab_me");await press("WechatMyMoments")
-	check(node("WechatMoment_breakfast")!=null and node("WechatMoment_rain")==null,"liked view contains only liked posts")
-	await press("WechatLike_breakfast")
-	check(surface.find_children("WechatMoment_*","VBoxContainer",true,false).is_empty(),"unlike removes the entry from liked view")
-	check(JSON.stringify(state)==before,"all early browsing, article reading and likes leave the story snapshot unchanged")
+	for tab: String in ["discover", "me"]:
+		var button := node("WechatTab_" + tab) as Button
+		check(button != null and button.disabled and button.focus_mode == Control.FOCUS_NONE,
+			"locked footer tab is disabled and excluded from keyboard focus: " + tab)
+		if button != null:
+			for down: bool in [true, false]:
+				var event := InputEventMouseButton.new()
+				event.button_index = MOUSE_BUTTON_LEFT
+				event.pressed = down
+				event.position = button.get_global_rect().get_center()
+				event.global_position = event.position
+				root.push_input(event, true)
+				await frames(1)
+			button.pressed.emit()
+		check(pages.wechat_social.tab == "chats", "locked footer tab cannot open: " + tab)
+	await press("WechatTab_contacts")
+	check(pages.wechat_social.tab == "contacts", "contacts remains usable")
+	await press("WechatTab_chats")
+	check(JSON.stringify(state)==before,"early browsing and reading leave the story snapshot unchanged")
 	# A later save can legitimately have no C1 scatter animation receipt.
 	state.native.chapter=2;state.actOne.phase="movement_required";state.flags.codeScattered=false
 	pages.wechat_social.panel="";pages.wechat_social.tab="chats";pages.friend_open=true

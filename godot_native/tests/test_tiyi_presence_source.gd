@@ -18,7 +18,7 @@ func fresh(row: Dictionary) -> Dictionary:
 	s.ui.libraryFinalsPuzzle.presenceProofCollected=row.passed
 	var controller=load("res://scripts/chapters/chapter1_2.gd").new()
 	s.native.page="wechat"
-	for intent in ["c2_tiyi_discover","c2_tiyi_acquire","c2_tiyi_install"]: controller.dispatch(s,intent)
+	preload("res://tests/helpers/tiyi_update_driver.gd").install(controller, s)
 	s.native.page="tiyi"
 	return s
 func report() -> void:

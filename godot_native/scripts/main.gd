@@ -1254,7 +1254,10 @@ func _refresh_phone_page(n: Dictionary,page: String) -> void:
 	quest_label.visible = false
 	footer_row.visible = false
 	phone_padding.visible = not bare
-	if is_instance_valid(phone_chrome): phone_chrome.refresh(State.d)
+	if is_instance_valid(phone_chrome):
+		phone_chrome.refresh(State.d)
+		if custom_body != null and custom_body.get_meta("reading_without_inventory", false):
+			phone_chrome.inventory.hide()
 	header_row.visible = custom_body == null and not bare
 	var handled_action_ids: Array = []
 	var fallback_parent: Control=page_body
@@ -2706,6 +2709,7 @@ func _show_local_world_feedback(message:String)->bool:
 
 func _feedback(message: String,tone: String="system",duration_override:float=-1) -> void:
 	if checkin_feedback_depth>0 and str(State.d.native.page)=="checkin" and phone_builder!=null and phone_builder.checkin_page.owns_feedback(message):return
+	if str(State.d.native.page) == "bonsai" and message in ["盆栽好像有点想开花。", "开花了？！"] and is_instance_valid(page_body) and page_body.find_child("BonsaiStatus", true, false) != null: return
 	if is_instance_valid(modal) and modal.has_method("owns_feedback") and modal.owns_feedback(): return
 	if _room302_studio_active():modal.set_feedback(message);return
 	if _virtual_run_owns_feedback(message) or _scene_owns_feedback(message):return

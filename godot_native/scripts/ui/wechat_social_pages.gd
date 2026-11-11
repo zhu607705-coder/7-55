@@ -8,8 +8,10 @@ const Contacts=preload("res://scripts/ui/wechat_contacts_page.gd")
 const Official=preload("res://scripts/ui/wechat_official_pages.gd")
 const Bubble=preload("res://scripts/ui/wechat_message_bubble.gd")
 const TiyiAccess=preload("res://scripts/chapters/tiyi_access.gd")
+const PhoneEntry=preload("res://scripts/chapters/phone_entry_session.gd")
 const CAMPUS_CONTENT="res://data/source/chapter4-wechat.content.json"
 const FOOTER_HEIGHT := 68.0
+const LOCKED_TABS := ["discover", "me"]
 var contacts=Contacts.new()
 var campus: Dictionary=load_campus_content()
 var social_copy: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/wechat-social-content.json"))
@@ -158,10 +160,13 @@ func footer(b, root: Control) -> void:
 	var width := bar.size.x / ids.size()
 	for i in range(ids.size()):
 		var id: String = ids[i]
-		var color := Palette.ACCENT if tab == id else Palette.INK
+		var locked := id in LOCKED_TABS
+		var color := Palette.MUTED if locked else (Palette.ACCENT if tab == id else Palette.INK)
 		var action: Button = b._button(bar, "", Rect2(i * width, 0, width, FOOTER_HEIGHT), _select_tab.bind(b, id), Palette.CHROME, Palette.INK, 0, Color.TRANSPARENT)
 		action.name = "WechatTab_" + id
 		action.accessibility_name = labels[i]
+		action.disabled = locked
+		if locked: action.focus_mode = Control.FOCUS_NONE
 		action.set_meta("phone_button_role", "navigation")
 		action.set_meta("phone_button_selected", tab == id)
 		Chrome.icon(action, id, Rect2((width - 29) / 2, 7, 29, 29), color)
@@ -169,7 +174,7 @@ func footer(b, root: Control) -> void:
 		caption.name = "WechatTabCaption"
 
 func _select_tab(b, id: String) -> void:
-	if id == tab:
+	if id == tab or id in LOCKED_TABS:
 		return
 	tab = id
 	panel = ""
@@ -257,13 +262,16 @@ func tiyi_account(b) -> Control:
 		copy(download,"浙大体艺 APP",font_size(b,22))
 		copy(download,"客户端服务",font_size(b,13),Palette.MUTED)
 		if stage=="official_entry_found":
-			button(download,word("acquire_update"),func():b.action_requested.emit("c2_tiyi_acquire",null),"TiyiAcquireUpdate",true)
-			copy(download,word("network"),font_size(b,13),Palette.MUTED)
+			if b.entry_session.tiyi_download_rates.is_empty():
+				copy(download,"更新包 %d MB · 已缓存 %d MB"%[PhoneEntry.TIYI_PACKAGE_MB,PhoneEntry.TIYI_CACHED_MB],font_size(b,15),Palette.MUTED)
+				button(download,"继续下载",func():b.action_requested.emit("c2_tiyi_acquire",null),"TiyiAcquireUpdate",true)
+			else:
+				_tiyi_download_status(b,download)
 		elif stage=="package_ready":
 			copy(download,word("package_ready"),font_size(b,17))
 			button(download,"安装更新",func():b.action_requested.emit("c2_tiyi_install",null),"TiyiInstallUpdate",true)
 		else:
-			copy(download,word("installed"),font_size(b,17))
+			copy(download,"%s · %d MB"%[word("installed"),PhoneEntry.TIYI_PACKAGE_MB],font_size(b,17))
 			button(download,word("return_home"),func():b.page_requested.emit("phone_home"),"TiyiUpdateReturnHome",true)
 	Official.profile_articles(b,self,column,"tiyi")
 	b._panel(root,Rect2(0,b.APP_HEIGHT-57,378,57),Palette.CHROME,Palette.LINE,0,1)
@@ -274,6 +282,37 @@ func tiyi_account(b) -> Control:
 			else:article=social_copy.tiyi_articles[index].id;article_parent="tiyi";refresh(b),Palette.CHROME,Palette.INK,0,Palette.LINE)
 		menu.name=["TiyiStudyMenu","TiyiVenueMenu","TiyiContact"][i]
 	return root
+
+func _tiyi_download_status(b, parent: Control) -> void:
+	var session: RefCounted = b.entry_session
+	var status := copy(parent,"",font_size(b,17))
+	status.name="TiyiTransferStatus"
+	var progress := ProgressBar.new()
+	progress.name="TiyiTransferProgress"
+	progress.max_value=PhoneEntry.TIYI_PACKAGE_MB
+	progress.show_percentage=false
+	progress.custom_minimum_size.y=6
+	progress.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	progress.add_theme_stylebox_override("background",NativeUi.box(Palette.LINE,Color.TRANSPARENT,0,3))
+	progress.add_theme_stylebox_override("fill",NativeUi.box(Palette.ACCENT,Color.TRANSPARENT,0,3))
+	parent.add_child(progress)
+	var amount := copy(parent,"",font_size(b,14),Palette.MUTED)
+	amount.name="TiyiTransferAmount"
+	var detail := copy(parent,"",font_size(b,13),Palette.MUTED)
+	detail.name="TiyiTransferSpeed"
+	var refresh_status := func():
+		var speed: float = session.tiyi_download_speed()
+		var remaining := ceili((PhoneEntry.TIYI_DOWNLOAD_MS - session.tiyi_download_elapsed_ms) / 1000.0)
+		status.text="正在下载 · 剩余 %d 秒"%remaining if speed>0.0 else "下载已暂停"
+		progress.value=session.tiyi_downloaded_mb
+		amount.text="%.1f / %d MB · 已缓存 %d MB"%[progress.value,PhoneEntry.TIYI_PACKAGE_MB,PhoneEntry.TIYI_CACHED_MB]
+		detail.text="当前网速 %.1f MB/s"%speed if speed>0.0 else "联网后继续下载"
+	var timer := Timer.new()
+	timer.wait_time=.15
+	timer.autostart=true
+	timer.timeout.connect(refresh_status)
+	parent.add_child(timer)
+	refresh_status.call()
 
 func moments(b, only_liked: bool=false) -> Control:
 	var root=b._base(Palette.BACKGROUND,b.APP_HEIGHT)

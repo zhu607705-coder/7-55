@@ -490,8 +490,18 @@ export async function phoneRecoveryCase(h) {
       await h.poll(async () => (await read()).state.actOne.tiyiUpdateStage === 'official_entry_found', 'ordinary Contact action reveals the official update entry');
       h.check((await read()).state.actOne.tiyiUpdateStage === 'official_entry_found', `${h.id}: real Contact menu discovers the official download card`);
       h.progress?.('c2-official-entry-found');
+      const transferStarted = Date.now();
       await click('TiyiAcquireUpdate');
-      await h.poll(async () => (await read()).state.actOne.tiyiUpdateStage === 'package_ready', 'ordinary update acquisition produces the package');
+      const transfer = await h.poll(async () => {
+        const s = await read();
+        const amount = s.visibleControls.find(c => c.name === 'TiyiTransferAmount');
+        const speed = s.visibleControls.find(c => c.name === 'TiyiTransferSpeed');
+        return amount && speed ? {amount: amount.text, speed: speed.text} : null;
+      }, 'download shows its size and speed');
+      h.check(transfer.amount.includes('/ 87 MB') && /(?:0\.[89]|1\.\d|2\.0) MB\/s/.test(transfer.speed),
+        `${h.id}: real download card exposes 87 MB and a speed between 0.8 and 2.0 MB/s`);
+      await h.poll(async () => (await read()).state.actOne.tiyiUpdateStage === 'package_ready', 'ordinary update acquisition produces the package', 50000);
+      h.check(Date.now() - transferStarted >= 29500, `${h.id}: install stays gated for the 30-second download`);
       h.check((await read()).state.actOne.tiyiUpdateStage === 'package_ready', `${h.id}: ordinary simulated acquisition does not install automatically`);
       h.progress?.('c2-package-ready');
       await shot('tiyi-package-ready'); await click('TiyiInstallUpdate');

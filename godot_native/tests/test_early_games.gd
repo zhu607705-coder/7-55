@@ -70,12 +70,12 @@ func _run() -> void:
 	run.finished.connect(func(r): runs.append(r))
 	run.start({})
 	for i in range(1800):
-		run.pointer_id=-1;run.pointer_target=run.motion.position+(run.motion.goal()-run.motion.position).limit_length(16)
+		run.pointer_id=-1;run.pointer_target=preload("res://tests/helpers/virtual_run_driver.gd").target(run.motion)
 		run._step(.05)
 		if run.completed==9:break
 	check(runs.is_empty(),"partial virtual run cannot complete")
 	for i in range(400):
-		run.pointer_id=-1;run.pointer_target=run.motion.position+(run.motion.goal()-run.motion.position).limit_length(16)
+		run.pointer_id=-1;run.pointer_target=preload("res://tests/helpers/virtual_run_driver.gd").target(run.motion)
 		run._step(.05)
 		if run.pending_result:break
 	check(runs.size()==1 and runs[0].distanceMeters==3000,"tenth point yields authored run")

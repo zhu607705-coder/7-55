@@ -1,0 +1,9 @@
+# 林星宇校园卡证件照
+
+- 2026-11-12 用 Codex 内置 imagegen 生成。身份与服装参考 `src/assets/rpg/player/player_down_0.png` 和 `godot_native/assets/native/library_animation_20261105/player_down_idle.png`，两张均为项目角色帧。
+- `lin_xingyu_portrait_master.png` 为 1190 × 1322 的生成原图，SHA-256 为 `ca5d693a63b1fbbe9bd412b5bd6f2657bfa877023c12d344752003acdb97c702`。
+- 居中裁切至 1062 × 1322 后缩至 90 × 112，用 FFmpeg 7.1 的 24 色调色板无抖动导出为 `godot_native/assets/native/campus_card/lin_xingyu_portrait.png`。图像全不透明，Godot 在证件照槽内等比显示并使用最近邻采样。运行图 SHA-256 为 `c0bff289cb1510123883badde3fec92096fcc4e2c943990317fe0fd3739b6e27`。
+
+## 生成提示词
+
+> Use case: illustration-story. Create one production 2D pixel-art student ID photo for the Chinese campus game 7:55, of the fictional young adult protagonist Lin Xingyu. The two attached frames are identity and costume references of the same character, current Godot on the second image. Draw him at eye level, looking straight into camera, with the same short, tousled dark blue-black hair, dark eyes and brows, deep muted blue casual jacket over light cream crew-neck shirt. Adapt the in-world sprite to believable young-adult face proportions, distinct brow/eyelids/nose/mouth/ears, calm natural expression. Frame a centered head and upper chest with a little headroom and complete hair silhouette, vertically composed 4:5 portrait that fills the frame edge to edge. Plain, solid, pale desaturated blue ID backdrop. Gentle upper-left diffuse lighting, low-contrast shadows. Deliberate 90 x 112-scale fine pixel-art grid aesthetic with coherent larger color clusters, crisp shaped hair and fabric, limited color ramps, and facial features legible in a 90 x 112 pixel slot. Use warm skin colors and cool slate-blue clothing. No gradients, photographic realism, 3D rendering, shiny skin, checkerboard, heavy dithering, isolated dot textures, big chibi eyes, anime gloss, scenery, frame, card, text, symbols, or UI. The output is only the finished portrait.

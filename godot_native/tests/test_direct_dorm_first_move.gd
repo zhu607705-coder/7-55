@@ -20,7 +20,7 @@ func run()->void:
 		shell._show_world_mobile();await frames();var w:Control=shell.world;w.set_process(false);w.native_dorm.set_process(false)
 		# The authored exercise automatically paces before the gamepad is connected.
 		# Use its safe source aisle, then check input ownership before any pacing tick.
-		w.player=Vector2(480,720);w._sync_player();w._update_camera();w.queue_redraw();await frames();actions.clear()
+		w.player=Vector2(480,690);w._sync_player();w._update_camera();w.queue_redraw();await frames();actions.clear()
 		var floor:=floor_touch_point(Vector2.RIGHT,48.0)
 		check(floor.is_finite() and not state.d.actOne.controlsInstalled and not state.d.actOne.manualControlTested,"fresh fixture has visible empty floor and no installed controls "+str(extent))
 		if floor.is_finite():await tap(floor)

@@ -2,6 +2,7 @@ extends RefCounted
 ## Additive source app content. Only existing controller intents grant evidence.
 const DropButton=preload("res://scripts/ui/phone_drop_button.gd")
 const Chrome=preload("res://scripts/ui/phone_chrome.gd")
+const NativeUi=preload("res://scripts/ui/native_ui_theme.gd")
 const PostStore=preload("res://scripts/data/cc98_store.gd")
 const INK=Color("163f4a")
 const TEAL=Color("247990")
@@ -192,13 +193,16 @@ func weather_available(s: Dictionary) -> bool:
 	return q.phase=="rain_recovery" and q.rainRescueCompleted and q.weatherAdjustmentRequested and s.items.hairDryer and not q.rainSafetyCleared
 func weather_advice(s: Dictionary) -> String:
 	return "返回码头确认" if s.qizhenLake.rainSafetyCleared else "处理湖区云图" if s.qizhenLake.weatherAdjustmentRequested and s.items.hairDryer else "暂不适合下水"
-func weather_card(b,root: Control) -> void:
+func weather_card(b,root: Control,bounds: Rect2) -> void:
 	var q: Dictionary=b.s.qizhenLake
 	var available: bool=weather_available(b.s)
 	var complete: bool=q.rainSafetyCleared
-	var card:=DropButton.new(); card.position=Vector2(16,439); card.size=Vector2(346,126); card.name="QizhenWeatherDevice"; card.disabled=not available
-	for mode in ["normal","hover","pressed","disabled"]: card.add_theme_stylebox_override(mode,b._style(Color("e7f3e7") if complete else Color("f7fbfd"),Color("37704a") if complete else b.BLUE,0,3))
+	var card:=DropButton.new(); card.position=bounds.position; card.size=bounds.size; card.name="QizhenWeatherDevice"; card.disabled=not available
+	var fill: Color=Color("f2f1d9",.98) if complete else b.WEATHER_PAPER
+	NativeUi.apply_button(card,fill,INK,b.WEATHER_EDGE,4,2)
+	if card.disabled: (card.get_theme_stylebox("disabled") as StyleBoxFlat).bg_color=fill
 	root.add_child(card)
+	b._panel(card,Rect2(60,16,1,bounds.size.y-32),b.WEATHER_RULE)
 	var fail=func(message: String): weather_feedback=message; b.action_requested.emit("phone_refresh",{})
 	card.item_dropped.connect(func(item: String):
 		if item=="hairDryer" and available: weather_feedback=""; b.action_requested.emit("c3_weather_start",null)
@@ -219,6 +223,6 @@ func weather_card(b,root: Control) -> void:
 		device.position=Vector2(15,21);device.size=Vector2(42,49);card.add_child(device)
 	else: b._label(card,"+",Rect2(15,21,42,49),31,b.BLUE,HORIZONTAL_ALIGNMENT_CENTER)
 	var title: String="湖区状态已更新" if complete else "接入寝室吹风机" if q.weatherAdjustmentRequested and b.s.items.hairDryer else "缺少可用设备" if q.weatherAdjustmentRequested else "暂无湖区记录"
-	var detail: String="返回码头确认"+(" · 最少 %d 次校正"%q.weatherControlBestMoves if q.weatherControlBestMoves>0 else "") if complete else weather_feedback if available and not weather_feedback.is_empty() else "从左侧道具栏拖到此接口" if available else "先检查寝室书桌" if q.weatherAdjustmentRequested else "完成码头检查后再查看"
-	b._label(card,title,Rect2(69,10,263,37),18,INK)
-	b._label(card,detail,Rect2(69,50,263,67),15,Color("5f6b73"))
+	var detail: String="返回码头确认" if complete else weather_feedback if available and not weather_feedback.is_empty() else "从左侧道具栏拖到此接口" if available else "先检查寝室书桌" if q.weatherAdjustmentRequested else "完成码头检查后再查看"
+	b._label(card,title,Rect2(75,10,250,37),18,INK)
+	b._label(card,detail,Rect2(75,50,250,67),15,b.WEATHER_MUTED)

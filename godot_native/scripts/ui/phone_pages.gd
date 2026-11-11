@@ -89,6 +89,7 @@ var zjuding_feedback_status = ""
 const HomeButton = preload("res://scripts/ui/home_app_button.gd")
 const PhoneChrome = preload("res://scripts/ui/phone_chrome.gd")
 const Posts = preload("res://scripts/data/cc98_store.gd")
+const Cc98Avatar = preload("res://scripts/ui/cc98_avatar.gd")
 var settings_page = "root"
 var settings_query = ""
 var settings_scroll=0
@@ -106,6 +107,10 @@ var home_focus_id = ""
 var home_editing = false
 const INK = Color("222322")
 const PAPER = Color("fff4d8")
+const WEATHER_PAPER := Color("fff8e5",.98)
+const WEATHER_EDGE := Color("27302d")
+const WEATHER_RULE := Color("d8c49a")
+const WEATHER_MUTED := Color("62594a")
 const BLUE = Color("174d9d")
 const MUTED = Color("637080")
 var handled: Array = []
@@ -180,6 +185,8 @@ func build(page: String, view: Dictionary, state: Dictionary) -> Control:
 	outer.set_meta("handled_action_ids",handled.duplicate())
 	outer.set_meta("handles_app_grid",root.get_meta("handles_app_grid",false))
 	outer.set_meta("source_page",true)
+	if root.has_meta("reading_without_inventory"):
+		outer.set_meta("reading_without_inventory",true)
 	outer.set_meta("bare",bare)
 	outer.set_meta("source_overlay",root.get_meta("source_overlay",false))
 	outer.set_meta("handles_all_actions",root.get_meta("handles_all_actions",false))
@@ -416,14 +423,21 @@ func _home() -> Control:
 	# Exact source widget geometry. Whole-card click has no extra visible button.
 	var rain=not s.qizhenLake.rainSafetyCleared
 	_panel(root,_home_rect(15,56,212,182),Color("fff8e2",.85),INK,0,2)
-	var cloud=Polygon2D.new(); cloud.color=Color("bfd1db")
-	var cloud_points=PackedVector2Array()
-	for point in [[0,53],[13,53],[13,35],[27,35],[27,17],[40,17],[40,2],[63,2],[63,16],[78,16],[78,34],[92,34],[92,53],[100,53],[100,77],[0,77]]:
-		cloud_points.append((Vector2(42,82)+Vector2(point[0]*.7,point[1]*.36)-Vector2(0,40))/PHONE_SCALE)
-	cloud.polygon=cloud_points; root.add_child(cloud)
 	if rain:
+		var cloud=Polygon2D.new(); cloud.color=Color("bfd1db")
+		var cloud_points=PackedVector2Array()
+		for point in [[0,53],[13,53],[13,35],[27,35],[27,17],[40,17],[40,2],[63,2],[63,16],[78,16],[78,34],[92,34],[92,53],[100,53],[100,77],[0,77]]:
+			cloud_points.append((Vector2(42,82)+Vector2(point[0]*.7,point[1]*.36)-Vector2(0,40))/PHONE_SCALE)
+		cloud.polygon=cloud_points; root.add_child(cloud)
 		for drop in [[59,129],[83,126],[97,135]]: _panel(root,_home_rect(drop[0],drop[1],6,12),Color("6aa8df"))
-	_label(root,"小雨" if rain else "多云",_home_rect(119,77,84,27),16)
+	else:
+		var icon := WeatherIcon.new()
+		var frame := _home_rect(42,79,70,62)
+		icon.kind="sun"
+		icon.position=frame.position
+		icon.size=frame.size
+		root.add_child(icon)
+	_label(root,"小雨" if rain else "晴天",_home_rect(119,77,84,27),16)
 	_label(root,"18°C" if rain else "19°C",_home_rect(119,108,94,41),34)
 	_label(root,"最高 20°C / 最低 15°C",_home_rect(37,160,177,21),12)
 	_panel(root,_home_rect(37,190,168,2),Color("decfb4"))
@@ -534,7 +548,7 @@ func _home_notifications() -> Array:
 			rows.append(_home_notification("theater_ticket","CC98 · 学生剧《7:55》",message,time,"cc98","c3_ticket_post"))
 		rows.append_array([_home_notification("overdue_book","图书馆","您有一本书已逾期 755 天","08:25","schedule"),_home_notification("shelf_reply","CC98","Re: 三楼书架是不是多了一层？","08:24","cc98"),_home_notification("new_photo","照片","新增照片「看不清的书脊」","08:23","photos")])
 		return rows
-	return [_home_notification("triangle","课程提醒","签到记录未更新。你本人仍未抵达。","07:50","schedule"),_home_notification("campus","浙大钉" if s.actOne.dormHubUnlocked else "学在浙大","校园地图已恢复访问，寝室入口可用。" if s.actOne.dormHubUnlocked else "课堂签到仍在等待四位代码。","07:45","zjuding"),_home_notification("weather","天气","小雨。局部黏着物可能松动。" if not s.qizhenLake.rainSafetyCleared else "多云。启真湖小码头降水已经停止。","07:35","weather","weather" if s.actOne.phase!="prologue" else "")]
+	return [_home_notification("triangle","课程提醒","签到记录未更新。你本人仍未抵达。","07:50","schedule"),_home_notification("campus","浙大钉" if s.actOne.dormHubUnlocked else "学在浙大","校园地图已恢复访问，寝室入口可用。" if s.actOne.dormHubUnlocked else "课堂签到仍在等待四位代码。","07:45","zjuding"),_home_notification("weather","天气","小雨。局部黏着物可能松动。" if not s.qizhenLake.rainSafetyCleared else "晴天。启真湖小码头降水已经停止。","07:35","weather","weather" if s.actOne.phase!="prologue" else "")]
 
 func _home_chapter4_objective() -> Dictionary:
 	var chapter: Dictionary=s.chapter4; var clues: Array=chapter.clueIds
@@ -1060,7 +1074,6 @@ func _checkin() -> Control:
 	return checkin_page.build(self)
 
 func _campus_card() -> Control:
-	# P04 is CSS-authored: its crest and portrait are shapes, not a missing raster.
 	# Coordinates below preserve p04-campus-card.css inside the 424×854 source frame.
 	var root=_base(Color("eef0f6"),APP_HEIGHT)
 	_panel(root,_home_rect(0,40,424,108),Color("2c56a8"))
@@ -1081,14 +1094,10 @@ func _campus_card() -> Control:
 	_label(root,"浙江大学",_home_rect(70,182,106,24),16,Color("f2f6ff"))
 	_label(root,"ZHEJIANG UNIVERSITY",_home_rect(188,189,205,16),8,Color("c7d5ee"))
 	_panel(root,_home_rect(30,218,364,2),Color(1,1,1,.25))
-	# Pixel portrait proportions, eyes and hoodie ties follow the original CSS.
 	_panel(root,_home_rect(30,232,96,118),Color("7ea4e0"),Color("cfdcf5"),0,3)
-	_panel(root,_home_rect(49,247,56,34),Color("3a2c22"))
-	_panel(root,_home_rect(57,265,40,34),Color("f2c9a0"))
-	for x in [64,86]: _panel(root,_home_rect(x,279,5,5),Color("2c2118"))
-	_panel(root,_home_rect(41,297,72,52),Color("2f5fb3"))
-	_panel(root,_home_rect(41,297,72,3),Color("244b8f"))
-	for x in [67,81]: _panel(root,_home_rect(x,306,4,20),Color.WHITE)
+	var portrait := _image(root,"native/campus_card/lin_xingyu_portrait.png",_home_rect(33,235,90,112))
+	portrait.name = "CampusCardPortrait"
+	portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	var identity=s.actOne.inventoryRecovered and s.items.campusCard
 	for row in [["学　号：","3250100755" if identity else "▓▓▓▓▓▓▓▓"],["姓　名：","林星宇" if identity else "▓▓▓"],["卡账户：","1000100000"]]:
 		var i=[["学　号："],["姓　名："],["卡账户："]].find([row[0]])
@@ -1166,9 +1175,11 @@ func _bonsai() -> Control:
 	button.pressed.connect(func(): plant.finish(); action_requested.emit("c1_flower",null))
 	button.tooltip_text="盛开的盆栽" if s.flags.flowerBloomed else "盆栽"
 	root.add_child(button)
-	var status="开花了？！" if s.flags.flowerBloomed else "它绝对不会开花" if stage==0 else "好像有点想开花"
+	var status = "开花了？！" if s.flags.flowerBloomed and (not bonsai_growth.active() or plant.reduced) else ("它绝对不会开花" if stage == 0 else "好像有点想开花")
 	_panel(root,Rect2(54,18,270,45),Color("fff9e8"),INK,1,2)
-	_label(root,status,Rect2(61,22,256,37),21,INK,HORIZONTAL_ALIGNMENT_CENTER).name="BonsaiStatus"
+	var caption := _label(root,status,Rect2(61,22,256,37),21,INK,HORIZONTAL_ALIGNMENT_CENTER)
+	caption.name = "BonsaiStatus"
+	plant.growth_finished.connect(func(): caption.text = "开花了？！")
 	for i in range(3):
 		var active = [s.flags.plantWatered,s.flags.plantLit,s.flags.plantFertilized][i]
 		var box=_panel(root,Rect2(91+i*69,APP_HEIGHT-62,46,46),Color("fffdf4") if active else Color("97859f"),INK,0,2)
@@ -1246,6 +1257,9 @@ func _cc98(view: Dictionary) -> Control:
 		return _cc98_thread(opened)
 	var root=_base(Color("f4f5f6"),630)
 	root.set_meta("handles_all_actions",true)
+	var note_search_pending: bool = s.ui.libraryFinalsPhase == "evidence_gathering" and not s.ui.libraryFinalsPuzzle.investigationOpened
+	if not note_search_pending and not lake_apps.active(s):
+		root.set_meta("reading_without_inventory", true)
 	_panel(root,Rect2(0,0,378,56),Color("28769b"))
 	_nav(root,"exit","退出 CC98，返回手机主页",func(): page_requested.emit("phone_home"),Rect2(7,6,40,44),Color("28769b"),Color.WHITE)
 	_label(root,"热门话题",Rect2(51,9,213,38),25,Color.WHITE)
@@ -1257,7 +1271,7 @@ func _cc98(view: Dictionary) -> Control:
 	_label(root,"今日　 发现　 本周　 本月　 往年今日　 活动",Rect2(11,61,359,36),14,Color("337ea3"),HORIZONTAL_ALIGNMENT_CENTER)
 	var search=_line_edit(root,"搜索帖子、版面与校园资料",Rect2(12,104,354,37),cc98_query)
 	search.name="Cc98Search"
-	if s.ui.libraryFinalsPhase=="evidence_gathering" and s.items.occupancyNote and not s.ui.libraryFinalsPuzzle.investigationOpened:
+	if note_search_pending and s.items.occupancyNote:
 		search.set_drag_forwarding(Callable(),func(_at,data):
 			return data is Dictionary and data.get("kind")=="inventory_item" and data.get("item")=="occupancyNote",func(_at,_data):
 			cc98_query="022 占座";cc98_note_ready=true;action_requested.emit("phone_refresh",{}))
@@ -1269,7 +1283,7 @@ func _cc98(view: Dictionary) -> Control:
 	scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED; root.add_child(scroll)
 	var feed=VBoxContainer.new(); feed.size_flags_horizontal=Control.SIZE_EXPAND_FILL; feed.add_theme_constant_override("separation",0); scroll.add_child(feed)
 	var cards: Array=[]
-	if s.ui.libraryFinalsPhase=="evidence_gathering" and s.ui.libraryFinalsPuzzle.occupancyNoteCollected and not s.ui.libraryFinalsPuzzle.investigationOpened:
+	if note_search_pending and s.ui.libraryFinalsPuzzle.occupancyNoteCollected:
 		_cc98_note_search(feed)
 	lake_apps.cc98_search(self,feed)
 	if cc98_tab=="boards" and cc98_board.is_empty():
@@ -1341,7 +1355,7 @@ func _cc98_feed_card(feed: Control, post: Dictionary) -> Control:
 		_label(card,str(post.title),Rect2(13,48,351,48),19,Color("152b3a"))
 		_label(card,"%s 回复 · %s 浏览" % [post.replies,post.views],Rect2(13,105,206,24),12,MUTED)
 		_label(card,str(post.time),Rect2(223,105,141,24),11,MUTED,HORIZONTAL_ALIGNMENT_RIGHT)
-	_panel(card,Rect2(14,8,30,30),Color("c6d8df"),Color("7098a8"),15,1)
+	Cc98Avatar.attach(card, post, Rect2(14, 8, 30, 30))
 	_label(card,str(post.get("rank","")),Rect2(206,8,45,28),14,Color("d98932"),HORIZONTAL_ALIGNMENT_CENTER)
 	_panel(card,Rect2(0,card.size.y-1,378,1),Color("dce3e8"))
 	feed.add_child(card)
@@ -1383,27 +1397,37 @@ func _cc98_edit_post(post: Dictionary) -> Control:
 func _cc98_text_height(text: String, width: float, font_size: int) -> float:
 	return ceil(Typography.body_font().get_multiline_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,width,font_size,-1,TextServer.BREAK_MANDATORY|TextServer.BREAK_WORD_BOUND|TextServer.BREAK_ADAPTIVE).y)+4
 
+func _cc98_thread_text_height(text: String, width: float, font_size: int) -> float:
+	var font := Typography.body_font()
+	var paragraph := TextParagraph.new()
+	paragraph.width = width
+	paragraph.break_flags = TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND | TextServer.BREAK_ADAPTIVE | TextServer.BREAK_TRIM_START_EDGE_SPACES | TextServer.BREAK_TRIM_END_EDGE_SPACES
+	paragraph.add_string(text, font, font_size)
+	var rows := paragraph.get_line_count()
+	var height := 3.0 * maxi(0, rows - 1)
+	for row: int in range(rows):
+		height += ceilf(maxf(font.get_height(font_size), paragraph.get_line_size(row).y))
+	return height + 6.0
+
 func _cc98_thread(post: Dictionary) -> Control:
 	var replies: Array=Posts.thread_replies(post)
 	var root=_base(Color("eef0f3"),APP_HEIGHT)
 	root.set_meta("handles_all_actions",true)
+	root.set_meta("reading_without_inventory",true)
 	_panel(root,Rect2(0,0,378,56),Color("28769b"))
 	_button(root,"‹",Rect2(9,10,37,37),func(): cc98_post=""; action_requested.emit("phone_refresh",{}),Color("28769b"),Color.WHITE,0,Color.TRANSPARENT).name="Cc98BackToFeed"
 	_label(root,"CC98小程序",Rect2(59,9,233,38),24,Color.WHITE)
 	_nav(root,"close","退出帖子，返回热门话题",func(): cc98_post=""; action_requested.emit("phone_refresh",{}),Rect2(328,6,40,44),Color("28769b"),Color.WHITE).name="Cc98CloseThread"
 	_label(root,"热门",Rect2(14,65,220,28),14,Color("337ea3"))
-	# The collapsed bag includes its touch-sized face, count badge and shadow.
-	# These authored canvases keep their right edge while reserving that column.
-	# Short 360x640 phones still keep a 44-physical-pixel drawer target.
-	var text_left=72.0
-	var text_width=282.0
-	var title_height=_cc98_text_height(str(post.title),text_width,23)
+	var text_left := 22.0
+	var text_width := 334.0
+	var title_height=_cc98_thread_text_height(str(post.title),text_width,23)
 	var title=_label(root,str(post.title),Rect2(text_left,104,text_width,title_height),23,Color("173143"))
 	title.name="Cc98ThreadTitle";title.vertical_alignment=VERTICAL_ALIGNMENT_TOP
 	var y=title.position.y+title_height+14
 	var author=str(post.author)+"　　楼主　1楼"
-	var author_height=_cc98_text_height(author,text_width,17)
-	var body_height=_cc98_text_height(str(post.body),text_width,18)
+	var author_height=_cc98_thread_text_height(author,text_width,17)
+	var body_height=_cc98_thread_text_height(str(post.body),text_width,18)
 	var post_height=12+author_height+8+body_height+14
 	_panel(root,Rect2(10,y,358,post_height),Color.WHITE).name="Cc98ThreadPost"
 	_label(root,author,Rect2(text_left,y+12,text_width,author_height),17,Color("28769b"))
@@ -1427,21 +1451,23 @@ func _cc98_thread(post: Dictionary) -> Control:
 		if is_owner:
 			reply_author = "匿名楼主" if anonymous_owner else str(post.author)
 		var heading := reply_author + ("　楼主" if is_owner and not anonymous_owner else "") + "　" + str(reply.get("floor", ""))
-		var heading_height=_cc98_text_height(heading,text_width,15)
-		var reply_height=_cc98_text_height(str(reply.get("text","")),text_width,17)
+		var heading_height=_cc98_thread_text_height(heading,text_width,15)
+		var reply_height=_cc98_thread_text_height(str(reply.get("text","")),text_width,17)
 		var metadata=str(reply.get("time",""))+"　♡ "+str(reply.get("likes","0"))
-		var metadata_height=_cc98_text_height(metadata,text_width,12)
+		var metadata_height=_cc98_thread_text_height(metadata,text_width,12)
 		var row_height=12+heading_height+8+reply_height+10+metadata_height+12
 		_panel(root,Rect2(10,y,358,row_height),Color.WHITE,Color("dce3e8"),0,1)
 		_label(root,heading,Rect2(text_left,y+12,text_width,heading_height),15,Color("28769b"))
 		var reply_body=_label(root,str(reply.get("text","")),Rect2(text_left,y+12+heading_height+8,text_width,reply_height),17)
 		reply_body.name="Cc98ThreadReply_"+str(visible_replies);reply_body.vertical_alignment=VERTICAL_ALIGNMENT_TOP
-		_label(root,metadata,Rect2(text_left,y+row_height-12-metadata_height,text_width,metadata_height),12,MUTED)
+		_label(root,metadata,Rect2(text_left,y+row_height-12-metadata_height,text_width,metadata_height),12,MUTED).name="Cc98ThreadReplyMeta_"+str(visible_replies)
 		y+=row_height+8;visible_replies+=1
 	if visible_replies>0:
 		_button(root,"阅读回复 ↓",Rect2(246,61,118,38),func():
 			var target=root.get_node_or_null("Cc98ThreadReplies")
 			if target: cc98_investigation.scroll_to(target),Color("e4eef3"),Color("28769b"),0,Color.TRANSPARENT).name="Cc98ThreadRepliesJump"
+	for label: Label in root.find_children("*", "Label", false, false):
+		label.add_theme_constant_override("line_spacing", 3)
 	root.custom_minimum_size.y=y+14; root.size.y=y+14
 	if post.id=="qizhen-wet-paper-witness": lake_apps.witness_footer(self,root,y+10)
 	return root
@@ -1672,15 +1698,6 @@ func _zju_identity_card(body: Control) -> void:
 func _zju_messages(root: Control) -> void:
 	var body := _zju_scroll(root,69,Color.WHITE)
 	_zju_identity_header(root,true)
-	var tools := [["learn","学在浙大"],["smart_classroom","智云课堂"],["network_account","网络缴费"],["all_apps","全部应用"]]
-	for i in range(tools.size()):
-		var entry: Array=tools[i]
-		var x := 11.0+i*89
-		var shortcut := ZjudingChrome.round_button(_button(body,"",Rect2(x,4,87,46),func(): _zju_open(entry[0]),Color.WHITE,ZjudingChrome.INK,0,Color.TRANSPARENT),9)
-		shortcut.accessibility_name=entry[1]
-		ZjudingChrome.icon(shortcut,entry[0],Rect2(5,13,18,18),ZjudingChrome.MUTED)
-		_label(shortcut,entry[1],Rect2(28,0,58,46),12,ZjudingChrome.MUTED)
-	ZjudingChrome.panel(body,Rect2(0,54,378,1),Color("e8ebef"),0)
 	var network: String={"campus_wifi":"校园网已连接","cellular":"当前使用移动数据","offline":"当前处于离线状态"}.get(s.networkMode,"")
 	var messages := [["network","校园网状态",network,"network_account",true]]
 	if _zju_identity():
@@ -1690,12 +1707,12 @@ func _zju_messages(root: Control) -> void:
 	var unread := 0
 	for entry: Array in messages:
 		if zjuding_seen_messages.get(entry[0])!=entry[2]: unread+=1
-	ZjudingChrome.panel(body,Rect2(12,67,354,41),ZjudingChrome.PILL,20)
+	ZjudingChrome.panel(body,Rect2(12,12,354,41),ZjudingChrome.PILL,20)
 	var filters := [["all","消息"],["pinned","置顶"],["unread","未读 "+str(unread)]]
 	for i in range(filters.size()):
 		var filter: Array=filters[i]
 		var selected: bool=zjuding_message_filter==filter[0]
-		var button := ZjudingChrome.round_button(_button(body,filter[1],Rect2(15+i*116,69,115,37),func():
+		var button := ZjudingChrome.round_button(_button(body,filter[1],Rect2(15+i*116,14,115,37),func():
 			zjuding_message_filter=filter[0]
 			action_requested.emit("phone_refresh",{}),Color.WHITE if selected else ZjudingChrome.PILL,ZjudingChrome.INK if selected else ZjudingChrome.MUTED,0,Color.TRANSPARENT),18)
 		button.name="ZjudingMessageFilter_"+filter[0]
@@ -1706,8 +1723,8 @@ func _zju_messages(root: Control) -> void:
 		if zjuding_message_filter=="pinned" and not entry[4]: continue
 		if zjuding_message_filter=="unread" and zjuding_seen_messages.get(entry[0])==entry[2]: continue
 		shown.append(entry)
-	_label(body,"校园通知 · %d 条消息" % shown.size(),Rect2(15,114,348,28),12,ZjudingChrome.MUTED)
-	var y := 147.0
+	_label(body,"校园通知 · %d 条消息" % shown.size(),Rect2(15,59,348,28),12,ZjudingChrome.MUTED)
+	var y := 92.0
 	for entry: Array in shown:
 		var row := ZjudingChrome.round_button(_button(body,"",Rect2(10,y,358,70),func():
 			zjuding_seen_messages[entry[0]]=entry[2]
@@ -1900,41 +1917,50 @@ func _tiyi(view: Dictionary) -> Control:
 	return tiyi_identity.build(self)
 
 func _weather() -> Control:
-	# Weather identity: clear condition silhouette, cool sky palette, calm cards.
-	# Source text, weather branches, actions and lake workflow remain unchanged.
-	var root = _base(Color("e5f0f6"),APP_HEIGHT)
+	var root = _base(PAPER,APP_HEIGHT)
 	var rain = not s.qizhenLake.rainSafetyCleared
-	_panel(root,Rect2(0,4,378,57),Color("eef4f6"))
-	_panel(root,Rect2(0,59,378,3),Color("26333b"))
-	_nav(root,"exit","退出天气，返回手机主页",func(): page_requested.emit("phone_home"),Rect2(11,10,40,44),Color("eef4f6"))
-	_label(root,"杭州 · 紫金港",Rect2(57,12,256,40),16,Color("17212a"),HORIZONTAL_ALIGNMENT_CENTER)
-	_label(root,"07:55",Rect2(313,18,53,28),12,INK,HORIZONTAL_ALIGNMENT_RIGHT)
-	var hero = _panel(root,Rect2(16,75,346,219),Color("b5d7ea") if rain else Color("cbdce7"),Color("7facc4"),14,1)
-	var condition_icon=WeatherIcon.new(); condition_icon.kind="rain" if rain else "cloud"
-	condition_icon.position=Vector2(116,4); condition_icon.size=Vector2(114,92); condition_icon.name="WeatherConditionIcon"; hero.add_child(condition_icon)
-	_label(hero,"小雨" if rain else "多云",Rect2(8,94,330,27),16,Color("102736"),HORIZONTAL_ALIGNMENT_CENTER)
-	_label(hero,"18°C" if rain else "19°C",Rect2(8,123,330,56),50,Color("102736"),HORIZONTAL_ALIGNMENT_CENTER).name="WeatherTemperature"
-	_label(hero,"体感温度 17°C" if rain else "体感温度 19°C",Rect2(8,184,330,22),12,Color("102736"),HORIZONTAL_ALIGNMENT_CENTER)
-	var details=[["湿度","88%" if rain else "76%"],["风向","西南风 2级"],["降水","正在发生" if rain else "已经停止"],["建议",lake_apps.weather_advice(s) if lake_apps.weather_context(s) else "处理黏着物"]]
+	var art_path := "native/weather/zijingang_rain.webp" if rain else "native/weather/zijingang_sunny.webp"
+	var backdrop := _image(root,art_path,Rect2(0,0,378,APP_HEIGHT))
+	backdrop.name="WeatherBackdrop"
+	backdrop.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
+	backdrop.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	var ink := Color("152c3b")
+	var secondary := WEATHER_MUTED
+	_panel(root,Rect2(0,0,378,52),WEATHER_PAPER)
+	_panel(root,Rect2(0,51,378,1),WEATHER_RULE)
+	_nav(root,"exit","退出天气，返回手机主页",func(): page_requested.emit("phone_home"),Rect2(11,4,44,44),Color.TRANSPARENT,ink)
+	_label(root,"杭州 · 紫金港",Rect2(58,6,262,40),17,ink,HORIZONTAL_ALIGNMENT_CENTER)
+	_label(root,"07:55",Rect2(312,12,53,28),12,ink,HORIZONTAL_ALIGNMENT_RIGHT)
+	var condition_icon=WeatherIcon.new(); condition_icon.kind="rain" if rain else "sun"
+	condition_icon.position=Vector2(137,75); condition_icon.size=Vector2(104,78); condition_icon.name="WeatherConditionIcon"; root.add_child(condition_icon)
+	_label(root,"小雨" if rain else "晴天",Rect2(20,155,338,30),17,ink,HORIZONTAL_ALIGNMENT_CENTER)
+	_label(root,"18°C" if rain else "19°C",Rect2(20,187,338,71),55,ink,HORIZONTAL_ALIGNMENT_CENTER).name="WeatherTemperature"
+	_label(root,"体感温度 17°C" if rain else "体感温度 19°C",Rect2(20,261,338,25),13,secondary,HORIZONTAL_ALIGNMENT_CENTER)
+	var lake_weather: bool=lake_apps.weather_context(s)
+	var details=[["湿度","88%" if rain else "76%"],["风向","西南风 2级"],["降水","正在发生" if rain else "已经停止"],["建议",lake_apps.weather_advice(s) if lake_weather else "处理黏着物"]]
+	var metrics := _panel(root,Rect2(18,310,342,132),WEATHER_PAPER,WEATHER_EDGE,6,2)
+	_panel(metrics,Rect2(12,66,318,1),WEATHER_RULE)
+	_panel(metrics,Rect2(171,10,1,112),WEATHER_RULE)
 	for i in range(4):
-		var rect=Rect2(16+i%2*177,306+int(i/2)*66,169,56)
-		_panel(root,rect,Color("f6fbfd"),Color("b0cad8"),9,1)
-		var metric_label=_label(root,details[i][0],Rect2(rect.position+Vector2(9,5),Vector2(128,18)),12,Color("536d7d"))
-		metric_label.size.y=18
-		_label(root,details[i][1],Rect2(rect.position+Vector2(9,26),Vector2(151,23)),13,Color("17212a"))
-		if i<3:
-			var metric_icon=WeatherIcon.new(); metric_icon.kind=["drop","wind","rain" if rain else "cloud"][i]
-			metric_icon.position=rect.position+Vector2(137,5); metric_icon.size=Vector2(25,24); root.add_child(metric_icon)
-	if lake_apps.weather_context(s):
-		lake_apps.weather_card(self,root)
+		var at := Vector2(17+i%2*171,9+int(i/2)*66)
+		_label(metrics,details[i][0],Rect2(at,Vector2(112,22)),13,secondary)
+		_label(metrics,details[i][1],Rect2(at+Vector2(0,27),Vector2(141,25)),16,ink)
+		var metric_icon=WeatherIcon.new(); metric_icon.kind=["drop","wind","rain" if rain else "cloud","advice"][i]
+		metric_icon.position=at+Vector2(109,0); metric_icon.size=Vector2(25,25); metrics.add_child(metric_icon)
+	if lake_weather:
+		lake_apps.weather_card(self,root,Rect2(18,APP_HEIGHT-142,342,126))
 		return root
 	var collected=s.actOne.weatherWaterTaken
 	var available=s.actOne.exerciseStarted
-	var water=_act(root,"",Rect2(16,439,346,88),"c2_weather_drop",null,Color("f7fbfd"),INK,10,Color("37704a") if collected else Color("388dcc"))
+	var water=_act(root,"",Rect2(18,APP_HEIGHT-104,342,88),"c2_weather_drop",null,WEATHER_PAPER,ink,4,Color.TRANSPARENT)
 	water.name="WeatherWaterCard"; water.disabled=not available and not collected
+	var fill := Color("f2f1d9",.98) if collected else WEATHER_PAPER
+	NativeUi.apply_button(water,fill,ink,WEATHER_EDGE,4,2)
+	if water.disabled: (water.get_theme_stylebox("disabled") as StyleBoxFlat).bg_color=fill
+	_panel(water,Rect2(60,14,1,60),WEATHER_RULE)
 	var glyph=WeatherIcon.new(); glyph.kind="drop"; glyph.position=Vector2(14,13); glyph.size=Vector2(46,60); glyph.name="WeatherCollectibleDrop"; water.add_child(glyph)
-	_label(water,"水滴已收集" if collected else "接住一滴水" if available else "还没有开始外出打卡",Rect2(69,8,263,30),16)
-	_label(water,"它正在道具栏里等着被使用" if collected else "这滴水看起来比天气预报更有用" if available else "你都还没有开始外出打卡，一滴雨都不会落到你身上。",Rect2(69,40,263,39),12,Color("5f6b73"))
+	_label(water,"水滴已收集" if collected else "接住一滴水" if available else "还没有开始外出打卡",Rect2(75,8,250,30),16,ink)
+	_label(water,"它正在道具栏里等着被使用" if collected else "这滴水看起来比天气预报更有用" if available else "你都还没有开始外出打卡，一滴雨都不会落到你身上。",Rect2(75,40,250,39),13,secondary)
 	return root
 
 func _directory() -> Control:

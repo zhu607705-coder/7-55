@@ -66,18 +66,15 @@ func run()->void:
   check(rect(node("Cc98BridgeKeyword")).position.y>rect(labels.back()).end.y,"original keyword summary remains after all replies")
   check(node("Cc98ThreadBody").text=="如题。" and labels.map(func(label):return label.text)==expected_replies,"source body and complete reply sequence preserved")
   check(shell.page_body.find_children("Cc98ThreadReply_*","Label",true,false).size()==expected_replies.size(),"source replies render exactly once without duplicates")
-  var rail_clear=true;var sampled_lines=0
-  var chrome=shell.phone_chrome
+  check(not shell.phone_chrome.inventory.is_visible_in_tree(),"generic reader hides the inventory rail")
+  check(node("Cc98ThreadBody").position.x<=24 and node("Cc98ThreadBody").size.x>=330,"body uses the left margin and full reading width")
+  var sampled_lines=0
   for fraction:float in [0.0,0.25,0.5,0.75,1.0]:
    shell.phone_scroll.scroll_vertical=roundi((shell.phone_scroll.get_v_scroll_bar().max_value-shell.phone_scroll.get_v_scroll_bar().page)*fraction);await frames(1)
-   var shadow=rect(chrome.inventory_handle);shadow.position+=Vector2(3,3)*chrome.inventory_handle.get_global_transform_with_canvas().get_scale()
    for line:Label in shell.page_body.find_children("*","Label",true,false):
     if not rect(line).intersects(scroll_rect):continue
     sampled_lines+=1
-    for rail:Rect2 in [rect(chrome.inventory_handle),rect(chrome.inventory_count),shadow]:
-     if rect(line).intersects(rail):rail_clear=false
   check(sampled_lines>=20,"real source text sampled across scroll range")
-  check(rail_clear,"collapsed inventory rail, badge and shadow never cover thread text")
   shell.phone_scroll.scroll_vertical=0;await frames()
   await capture("witness-first-"+str(dim.x))
   await touch(replies_jump)

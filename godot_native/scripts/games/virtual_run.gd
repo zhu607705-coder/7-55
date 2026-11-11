@@ -18,7 +18,7 @@ var POINTS=Motion.gates()
 const BLUE = Color("1a63ad")
 const INK = Color("12365c")
 const GREEN = Color("256b43")
-var completed = 0
+var completed := 0
 var closed = false
 var pending_result = false
 var accepted = false
@@ -49,7 +49,7 @@ func _ready() -> void:
 	mouse_filter = MOUSE_FILTER_STOP
 	header = _panel(self,BLUE,Color("174d88"),12)
 	eyebrow = _label(header,"体艺 · 紫云田径场 / GPS",13,Color("d5edff"))
-	title = _label(header,"10 分钟跑完 3 km",21,Color.WHITE)
+	title = _label(header,"3 km 定位跑",21,Color.WHITE)
 	exit_button = Button.new()
 	exit_button.name = "ExitRun"
 	exit_button.text = "×"
@@ -57,11 +57,14 @@ func _ready() -> void:
 	Ui.apply_button(exit_button,Color("f4f8ff"),INK,Color("a9c9ef"),9,1,26,Vector2.ZERO,INK)
 	exit_button.pressed.connect(_cancel)
 	header.add_child(exit_button)
-	for caption: String in ["记录用时", "距离 · km", "配速 / km"]:
+	var stat_names := ["RunElapsed", "RunDistance", "RunPace"]
+	for caption: String in ["定位用时", "距离 · km", "实时配速"]:
 		var panel := _panel(self,Color.WHITE,Color("bed1e2"),9)
 		stat_panels.append(panel)
 		stat_titles.append(_label(panel,caption,13,Color("51677c")))
-		stat_values.append(_label(panel,"",23,INK))
+		var value := _label(panel,"",23,INK)
+		value.name=stat_names[stat_values.size()]
+		stat_values.append(value)
 	track = Track.new();track.motion=motion;track.name="VirtualRunTrack"
 	add_child(track)
 	visibility_changed.connect(func():if not is_visible_in_tree():_release_input())
@@ -116,7 +119,7 @@ func _step(delta: float) -> void:
 	if pointer_id!=-2:
 		direction=pointer_target-motion.position;throttle=clampf(direction.length()/42,0,1)
 		if direction.length()<2:direction=Vector2.ZERO
-	var event: String=motion.advance(delta,direction,throttle,bool(held.get(KEY_SPACE,false)))
+	var event: String=motion.advance(delta,direction,throttle,bool(held.get(KEY_SPACE,false)),pointer_id!=-2)
 	if not direction.is_zero_approx():has_moved=true
 	completed=motion.completed
 	if event=="lost":
@@ -129,11 +132,17 @@ func _step(delta: float) -> void:
 			_update_target(false)
 			finished.emit({"failed":false,"points":10,"elapsedSeconds":600,"distanceMeters":3000})
 			return
-	elif event=="warning":feedback=copy.slow;feedback_warning=true
+	elif event in ["off_lane","rushing"]:
+		feedback=copy.lane if event=="off_lane" else copy.slow
+		feedback_warning=true
+	elif not direction.is_zero_approx() and (feedback in [copy.intro,copy.paused,copy.segment] or (feedback_warning and motion.integrity>=.85)):
+		feedback=""
+		feedback_warning=false
 	_update_target(false)
 
 func _release_input() -> void:
 	pointer_id=-2;held.clear();motion.stop()
+	motion.fix_elapsed=0.0
 	if is_instance_valid(track):track.dragging=false
 
 func _notification(what: int) -> void:
@@ -246,17 +255,32 @@ func owns_result_feedback(message: String) -> bool:
 		if line in ["锻炼记录已同步。", "10:00 / 3.00km / 03′20″\n锻炼记录已同步。"]: return true
 	return (pending_result or result_rejected) and line in ["本次锻炼无效。", "必须依次完成十个定位点。"]
 
+func _format_duration(seconds: float, minute_separator: String, second_suffix: String = "") -> String:
+	var total := maxi(0, roundi(seconds))
+	return "%02d%s%02d%s"%[floori(total/60.0),minute_separator,total%60,second_suffix]
+
 func _update_target(_focus_current: bool = true) -> void:
 	if not is_instance_valid(track):return
-	stat_values[0].text="%02d:00"%completed
-	stat_values[1].text="%.2f"%(completed*.3)
-	stat_values[2].text="--′--″" if completed==0 else "03′20″"
+	var final_metrics := completed == 10
+	var pace: float = motion.pace_seconds_per_km(final_metrics)
+	stat_titles[2].text="平均配速" if final_metrics else "实时配速"
+	stat_values[0].text=_format_duration(motion.simulated_seconds(),":")
+	stat_values[1].text="%.2f"%motion.distance_km()
+	stat_values[2].text=_format_duration(pace,"′","″") if pace>0.0 else "--′--″"
 	progress.value=completed+motion.fraction() if completed<10 else 10
 	progress_label.text="已记录 %d / 10 点"%completed
 	gps.text="GPS · 轨迹锁定" if accepted else "GPS · 核验记录" if pending_result else "GPS · %d%%"%roundi(motion.integrity*100)
-	title.text="课外锻炼已同步" if accepted else "10 分钟跑完 3 km"
+	title.text="课外锻炼已同步" if accepted else "3 km 定位跑"
 	next_title.text="10 / 10 · 锻炼记录正式生效" if accepted else "10 / 10 · 正在核验记录" if pending_result else "下一站 %02d · %s"%[completed+1,FIX_NAMES[completed]]
-	next_detail.text="10:00 · 3.00 km · 03′20″ / km" if accepted else "10:00 · 3.00 km · 提交锻炼记录" if pending_result else copy.slow if not motion.interference().is_empty() else copy.intro if not has_moved else copy.segment
+	var dwell: float=motion.fix_duration()
+	if accepted:
+		next_detail.text="%s · %s km · %s / km"%[stat_values[0].text,stat_values[1].text,stat_values[2].text]
+	elif pending_result:
+		next_detail.text="3.00 km · 提交锻炼记录"
+	elif dwell>0.0:
+		next_detail.text="定位校验中　%d%%" % mini(99,floori(motion.fix_elapsed/dwell*100)) if motion.fix_elapsed>0.0 else copy.fix if motion.interference().is_empty() else copy.hazard_fix
+	else:
+		next_detail.text=copy.intro if not has_moved else copy.approach
 	status.text="" if feedback==next_detail.text else feedback
 	status.add_theme_color_override("font_color",Color("8b3d1c") if feedback_warning else GREEN)
 	next_card.add_theme_stylebox_override("panel",Ui.box(Color("e0f1df") if accepted else Color("fff7d6"),Color("70a880") if accepted else Color("d8bc55"),1,10))

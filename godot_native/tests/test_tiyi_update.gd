@@ -3,6 +3,7 @@ extends SceneTree
 const Chapter=preload("res://scripts/chapters/chapter1_2.gd")
 const Access=preload("res://scripts/chapters/tiyi_access.gd")
 const Pages=preload("res://scripts/ui/phone_pages.gd")
+const Driver=preload("res://tests/helpers/tiyi_update_driver.gd")
 const PROOF={"failed":false,"points":10,"distanceMeters":3000,"elapsedSeconds":600}
 var checks=0
 var failures=0
@@ -74,7 +75,24 @@ func run() -> void:
 	check(s.actOne.tiyiUpdateStage=="official_entry_found","offline acquisition does not create a package")
 	act("c2_tiyi_install"); check(not Access.installed(s),"discovery alone cannot install")
 	s.networkMode="campus_wifi"; act("c2_tiyi_acquire")
+	var transfer: RefCounted = controller.phone_entry_session(s)
+	check(is_equal_approx(transfer.tiyi_downloaded_mb, 45.0), "87 MB package starts with 45 MB cached")
+	act("c2_tiyi_download_finished"); act("c2_tiyi_install")
+	check(s.actOne.tiyiUpdateStage=="official_entry_found", "unearned completion and early install are rejected")
+	s.networkMode="offline"; Driver.advance(controller, s, 5000)
+	check(transfer.tiyi_download_elapsed_ms==0 and is_equal_approx(transfer.tiyi_downloaded_mb, 45.0), "offline time does not spend progress")
+	s.networkMode="campus_wifi"
+	for segment: int in range(15):
+		var rate: float = transfer.tiyi_download_speed()
+		var before: float = transfer.tiyi_downloaded_mb
+		var step := 1999.0 if segment == 14 else 2000.0
+		check(rate>=.8-.00001 and rate<=2.0+.00001, "random download rate stays in the requested range")
+		Driver.advance(controller,s,step)
+		check(is_equal_approx(transfer.tiyi_downloaded_mb-before,rate*step/1000.0), "displayed rate agrees with transferred bytes")
+	check(s.actOne.tiyiUpdateStage=="official_entry_found" and transfer.tiyi_downloaded_mb<87, "install remains gated at 29.999 online seconds")
+	Driver.advance(controller,s,1)
 	check(s.actOne.tiyiUpdateStage=="package_ready" and not Access.allowed(s),"network transfers package but does not install")
+	check(is_equal_approx(transfer.tiyi_downloaded_mb,87.0), "the 30th online second completes the 87 MB package")
 	act("c2_exercise_result",PROOF); act("c2_weather_drop")
 	check(not s.actOne.exerciseStarted and not s.actOne.weatherWaterTaken,"package grants neither exercise nor C2 water")
 	act("c2_tiyi_install"); var installed=s.duplicate(true)
@@ -96,7 +114,11 @@ func run() -> void:
 	await render(); await click("TiyiOfficialAccount")
 	check(s.actOne.tiyiUpdateStage=="not_started","opening account does not grant discovery")
 	await click("TiyiContact"); check(s.actOne.tiyiUpdateStage=="official_entry_found","contact button discovers actual card")
-	await click("TiyiAcquireUpdate"); check(s.actOne.tiyiUpdateStage=="package_ready","card pointer acquires package")
+	await click("TiyiAcquireUpdate")
+	check(page.find_child("TiyiTransferStatus",true,false)!=null and page.find_child("TiyiInstallUpdate",true,false)==null,"card pointer shows a transfer before the install action")
+	Driver.advance(controller,s,30000)
+	await render()
+	check(s.actOne.tiyiUpdateStage=="package_ready","download completion exposes the install button")
 	await click("TiyiInstallUpdate"); check(s.actOne.tiyiUpdateStage=="installed" and not s.actOne.exerciseStarted,"install pointer does not fabricate exercise")
 	page.free()
 	# Normal import path, with native v35 absence migrated narrowly.

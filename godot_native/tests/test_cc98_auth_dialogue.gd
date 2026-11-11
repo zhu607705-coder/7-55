@@ -61,6 +61,11 @@ func click(id: String) -> void:
 		root.push_input(event,true)
 		await create_timer(0.06).timeout
 
+func drop_card(item: String = "campusCard") -> void:
+	var reader: Button = node("Cc98ReadCampusCard")
+	reader._drop_data(reader.size / 2.0, {"kind": "inventory_item", "item": item})
+	await process_frame
+
 func scroll_to_bottom() -> void:
 	node("Cc98LoginScroll").scroll_vertical = 1000
 	await process_frame
@@ -118,6 +123,10 @@ func run() -> void:
 	check_readable()
 	await capture("desktop-initial")
 	await click("Cc98ReadCampusCard")
+	expect(not state.actOne.cc98Login.studentIdDiscovered, "clicking the reader cannot fill identity")
+	await drop_card("cartridge")
+	expect(not state.actOne.cc98Login.studentIdDiscovered, "a different dragged item cannot fill identity")
+	await drop_card()
 	await show()
 	expect(state.actOne.cc98Login.studentIdDiscovered and node("Cc98LoginStudentId").text=="3250100755","Existing identity intent reads and fills the campus card")
 	await reveal_attendant()
@@ -177,20 +186,35 @@ func run() -> void:
 	pages.cc98_login.reset()
 	await show()
 	await scroll_to_bottom()
-	await click("Cc98ReadCampusCard")
+	await drop_card()
 	await show()
 	expect(not state.actOne.cc98Login.studentIdDiscovered and node("Cc98LoginStudentId").text.is_empty(),"Presentation never fabricates a missing identity card")
 	state = fresh()
 	pages.cc98_login.reset()
 	await show()
 	await scroll_to_bottom()
-	await click("Cc98ReadCampusCard")
+	await drop_card()
 	await show()
 	node("Cc98LoginScroll").scroll_vertical = 0
 	await process_frame
 	enter_password("ZJU1897!")
 	await click("Cc98LoginSubmit")
 	expect(state.actOne.cc98Login.authenticated and state.actOne.cc98Login.revealedHintCount==0,"Correct original credentials remain sufficient without a new dialogue gate")
+	state = fresh()
+	state.native.settings = {"reduced_motion": true}
+	pages.cc98_login.reset()
+	await show()
+	await drop_card()
+	await show()
+	for attempt: int in range(1, 4):
+		enter_password("wrong")
+		await click("Cc98LoginSubmit")
+		await show()
+		expect(state.actOne.cc98Login.failureCount == attempt, "controller records one wrong password")
+		expect(node("Cc98PasswordHints").is_visible_in_tree() == (attempt == 3),
+			"attendant opens automatically on the third failure")
+	expect(state.actOne.cc98Login.revealedHintCount == 0 and not state.actOne.cc98Login.authenticated,
+		"auto opening the attendant leaves authored hint and authentication gates intact")
 	state=fresh();state.native.settings={"reduced_motion":true}
 	pages.cc98_login.reset()
 	await show()

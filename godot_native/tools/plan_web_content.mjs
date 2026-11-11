@@ -67,6 +67,7 @@ function classify(name) {
   // Shared UI font and its OFL travel with first paint, not a chapter pack.
   if (name.startsWith('ui_assets/fonts/') || name.startsWith('ui_assets/phone_icons/')) return 'core';
   if (!name.startsWith('assets/')) return null;
+  if (name.startsWith('assets/native/campus_card/')) return 'core';
   if (/^assets\/audio\/(library-finals)\//.test(name)) return 'chapter2';
   if (/^assets\/audio\/(chapter4)\//.test(name)) return 'chapter4';
   if (/^assets\/audio\/(chapter3-qizhen|chapter3-interlude)\//.test(name)) return 'chapter35';
@@ -82,6 +83,7 @@ function classify(name) {
   if (/^assets\/native\/(qizhen_rain_rescue|lake_assembly|kayak)\//.test(name)) return 'chapter35';
   // Layered campus is loaded with campus_bootstrap, never the opening phone.
   if (/^assets\/native\/campus_layered\//.test(name)) return 'chapter2';
+  if (name.startsWith('assets/native/weather/')) return 'chapter2';
   if (/^assets\/native\/north_objects_20261025\//.test(name)) return 'chapter4';
   if (/^assets\/native\/(library_rebuild_20261020|library_object_depth_20261104|library_animation_20261105|library_interactions_20261105)\//.test(name)) return 'chapter2';
   if (/^assets\/native\/(theater_rebuild_20261020|liangzhu_performance_20261021|theater_chest_20261023)\//.test(name)) return 'chapter3';
