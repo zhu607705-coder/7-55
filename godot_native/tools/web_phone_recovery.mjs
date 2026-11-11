@@ -517,7 +517,15 @@ export async function phoneRecoveryCase(h) {
       await h.startStory(true);
       h.check((await read()).state.actOne.tiyiUpdateStage === 'installed', `${h.id}: real browser reload retains installation`);
       h.progress?.('c2-reloaded');
-      await click('HomeApp_tiyi'); await click('TiyiExercise');
+      await click('HomeApp_tiyi');
+      // The launcher can appear before a reloaded runtime finishes mounting
+      // the app's deferred resources. Wait for the actual usable surface.
+      await h.poll(async () => {
+        const current = await read();
+        return current.content?.blocking === false && current.state.native.page === 'tiyi'
+          && current.visibleControls.some(control => control.name === 'TiyiExercise' && !control.disabled);
+      }, 'reloaded Tiyi content and exercise entry are ready', h.bootTimeout);
+      await click('TiyiExercise');
       h.progress?.('c2-exercise-start');
       await continuousExercise(h, evidence);
       h.progress?.('c2-exercise-accepted');
