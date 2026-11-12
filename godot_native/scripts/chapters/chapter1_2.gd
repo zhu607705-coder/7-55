@@ -2,6 +2,9 @@ extends RefCounted
 ## Native chapter-one and movement-prelude authority. Presentation never grants facts.
 const Utilities = preload("res://scripts/chapters/phone_utilities.gd")
 const TiyiAccess = preload("res://scripts/chapters/tiyi_access.gd")
+const TIYI_UPDATE_HINT = "旧客户端未能启动。\n官方公众号似乎把新版安装包藏在了联络入口里。"
+const RAIN_CATCH_HINT = "光靠手心可兜不住水。"
+const RAIN_PULL_HINT = "雨滴挂在边缘，似乎再借一点向下的力就会落下来。"
 var utilities = Utilities.new()
 const Library022 = preload("res://scripts/chapters/library022.gd")
 const MOVEMENT_PHASES = ["movement_required", "reservation_briefing_required", "reservation_required", "movement_ready"]
@@ -105,7 +108,7 @@ func view(page: String, s: Dictionary) -> Dictionary:
 		"checkin": return {"title":"学在浙大 · 校务签到", "body":"本周缺勤 0 次\n请输入四位签到码\n签到需使用校园网"}
 		"ending": return {"title":"经度与纬度不存在", "body":"坐标系统无法确认你的到场记录。"}
 		"tiyi":
-			if TiyiAccess.needs_update(s): return {"title":"浙大体艺", "body":"旧客户端未能启动。\n请到微信「浙大体育与艺术」公众号的「联系我们」获取更新并安装。", "art":"ui/tiyi_loading.png"}
+			if TiyiAccess.needs_update(s): return {"title":"浙大体艺", "body":TIYI_UPDATE_HINT, "art":"ui/tiyi_loading.png"}
 			if not _tiyi_entry_allowed(s): return {"title":"浙大体艺", "body":"正在连接……\n校园网已经尽力了，你也是。", "art":"ui/tiyi_loading.png"}
 			return {"title":"浙大体艺", "body":"课外锻炼　47\n运动记录\n" + ("10:00 / 3.00km / 03′20″" if s.actOne.exerciseStarted else "尚无有效课外锻炼记录"), "art":"ui/tiyi_main.png"}
 		"bonsai": return {"title":"盆栽", "body":"开花了？！" if s.flags.flowerBloomed else "它绝对不会开花。\n水分、光照、养分各缺不得。", "art":"ui/bonsai_bloom.png" if s.flags.flowerBloomed else "ui/bonsai_bud.png"}
@@ -251,7 +254,7 @@ func _chapter_one(s: Dictionary, action: String, value: Variant) -> Dictionary:
 			s.flags.tiyiCrashCount+=1
 			return _ok("",{"presentation":["native_tiyi_crash"]})
 		if entry_session.elapsed_ms<3620 or not entry_session.crash_recorded: return _ok("")
-		if entry_session.tiyi_update_blocked: return _page(s,"phone_home","旧客户端未能启动。请到微信「浙大体育与艺术」公众号的「联系我们」获取更新并安装。")
+		if entry_session.tiyi_update_blocked: return _page(s,"phone_home",TIYI_UPDATE_HINT)
 		var result:=_page(s,"phone_home","「浙大体艺」已停止运行。" if s.flags.tiyiCrashCount==1 else "「浙大体艺」又双叒停止运行了。" if s.flags.tiyiCrashCount==2 else "")
 		if s.flags.tiyiCrashCount>=3: result.presentation=["native_tiyi_crash_taunt"]
 		return result
@@ -337,14 +340,14 @@ func _chapter_one(s: Dictionary, action: String, value: Variant) -> Dictionary:
 				return _ok("没有可收集的新雨滴。")
 			if action == "c1_rain_fill":
 				if value != "headphone" or not items.headphone:
-					return _ok("找个有凹槽的东西接住雨滴。")
+					return _ok(RAIN_CATCH_HINT)
 				items.headphone = false
 				items.wateredHeadphone = true
 				f.waterDropTaken = true
 				if s.native.get("selected_item", "") == "headphone": s.native.selected_item = ""
 				if s.ui.selectedItem == "headphone": s.ui.selectedItem = null
 				return _ok("雨滴落进耳机背面的凹槽里。")
-			if value != "pull": return _ok("按住雨滴，往下拖一小段。")
+			if value != "pull": return _ok(RAIN_PULL_HINT)
 			f.waterDropTaken = true
 			items.waterDrop = true
 			return _ok("接住了一滴早八雨。")
@@ -481,7 +484,7 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 		"c2_inspect_character":
 			if not _movement(s): return _ok("小人站在寝室里。")
 			a.characterPromptSeen = true
-			return _ok("别戳他了，他听不见。没绑定姓名和学号之前，他就是个没加载完的默认建模。" if not a.characterNamed else "他好像没什么动力走。" if not a.exerciseStarted else "他走起来了，但他不知道该往哪里走。")
+			return _ok("别戳他了，他听不见。连自己叫什么、学号多少都还不清楚，他只是个没加载完的默认建模。" if not a.characterNamed else "他好像没什么动力走。" if not a.exerciseStarted else "他走起来了，但他不知道该往哪里走。")
 		"c2_card_identity":
 			if not a.inventoryRecovered or not items.campusCard: return _ok("需要随身校园卡。")
 			a.cc98Login.studentIdDiscovered = true
@@ -502,7 +505,7 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 				return _ok("已找到浙大体育与艺术的下载卡。这里只模拟获取与安装，不会下载真实应用。")
 			if action=="c2_tiyi_acquire":
 				if stage=="package_ready": return _ok("更新包已就绪，等待安装。")
-				if stage!="official_entry_found": return _ok("请先从公众号底部的「联系我们」打开下载卡。")
+				if stage!="official_entry_found": return _ok(TIYI_UPDATE_HINT)
 				if s.networkMode=="offline": return _ok("需要联网才能获取更新包。")
 				entry_session.start_tiyi_download()
 				return _ok("")
@@ -514,7 +517,7 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 			a.tiyiUpdateStage="installed"
 			return _ok("更新已安装，请重新进入浙大体艺。")
 		"c2_exercise":
-			if TiyiAccess.needs_update(s): return _ok("请先从「浙大体育与艺术」公众号的「联系我们」获取更新并安装。")
+			if TiyiAccess.needs_update(s): return _ok(TIYI_UPDATE_HINT)
 			if not _movement(s) or not a.characterNamed or not _tiyi_entry_allowed(s) or not TiyiAccess.allowed(s): return _ok("需要有效身份和移动数据连接。")
 			if a.exerciseStarted: return _ok("锻炼记录已经同步。")
 			return _ok("", {"game":{"script":"res://scripts/games/virtual_run.gd","on_success":"c2_exercise_result","title":"虚拟定位跑步","viewport":[430,820]}})
@@ -549,7 +552,7 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 			if a.balanceShifted: return _ok("小数点已经移动过了。")
 			a.balanceShifted = true
 			s.wallet.campusCardCents = 600
-			return _ok("小数点往右挪了两位。0.06 元变成了 6.00 元，够买手柄了。")
+			return _ok("小数点往右挪了两位。0.06 元变成了 6.00 元，手头总算宽裕了。")
 		"c2_login_hint":
 			a.cc98Login.revealedHintCount = mini(3, int(a.cc98Login.revealedHintCount) + 1)
 			return _ok("认证提示已展开。")
@@ -633,7 +636,7 @@ func objective(s: Dictionary) -> String:
 		var digits: Array = []
 		for key in ["d1", "d2", "d3", "d4"]: digits.append(str(s.digits[key]) if s.digits[key] != null else "□")
 		return "找回签到码　" + " ".join(digits)
-	var objectives = {"friend_message_required":"查看朋友的新消息", "system_required":"找到系统", "inventory_required":"在寝室找回校园卡与道具栏", "system_return_required":"带着道具栏回去找系统", "movement_required":"找到移动的办法", "reservation_briefing_required":"查看系统的新消息", "reservation_required":"按系统的说明预约图书馆座位", "movement_ready":"从寝室门出发"}
+	var objectives = {"friend_message_required":"查看朋友的新消息", "system_required":"揪出藏在办公软件里的系统", "inventory_required":"回寝室找回遗落的随身家当", "system_return_required":"带着道具栏回去找系统", "movement_required":"找到移动的办法", "reservation_briefing_required":"查看系统的新消息", "reservation_required":"办妥进馆前的预约手续", "movement_ready":"从寝室门出发"}
 	return str(objectives.get(s.actOne.phase, library.objective(s)))
 
 func targets(scene: String, s: Dictionary) -> Array:

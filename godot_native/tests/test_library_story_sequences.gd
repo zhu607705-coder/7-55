@@ -107,9 +107,9 @@ func run() -> void:
 	s=parallel_start; library=Library.new(); s.networkMode="cellular"
 	act("lib_audit",["7","47","3"]); play("tiyi_presence_proof_issued")
 	var detail:String=library.view("library_archive",s).guidance
-	check(detail.contains("【待办】在 022 桌面夹缝") and detail.contains("【已备齐·可复查】《本人来过证明》"),"receipt-last route lists its actual remaining proof")
+	check(detail.contains("【待办】《022 座位小票》") and detail.contains("【已备齐】《本人来过证明》"),"receipt-last route lists its actual remaining proof")
 	act("lib_receipt"); play("library_seat_receipt_recovered")
-	check(library.objective(s).contains("公示") and not library.objective(s).contains("补齐"),"both evidence orders converge on the same public upload objective")
+	check(library.objective(s).contains("公开材料 0/4"),"both evidence orders converge on the same public upload objective")
 	# Save replacement and stale capabilities, plus source recovery priority.
 	s=fresh(); s.ui.libraryFinalsPhase="evidence_gathering"; s.ui.libraryFinalsPuzzle.archivedRuleRead=true
 	var stale: RefCounted=library.story_session(s); stale.attach(s,witness)
