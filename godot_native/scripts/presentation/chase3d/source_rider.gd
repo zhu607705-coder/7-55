@@ -70,7 +70,7 @@ func _indices(steer: float,phase: float) -> Dictionary:
 	var p0: int=mini(frames-1,int(floor(p)));var pw: float=p-p0
 	return {"ids":[s0*(frames+1)+p0,s0*(frames+1)+p0+1,s1*(frames+1)+p0,s1*(frames+1)+p0+1],"pw":pw,"sw":sw}
 
-func apply_pose(steer: float,phase: float,reduced: bool=false) -> void:
+func apply_pose(steer: float,phase: float,reduced: bool=false,charge: float=0.0,compression: float=0.0) -> void:
 	if manifest.is_empty():return
 	# Model clock owns phase. Repeated or paused rendering cannot advance it.
 	last_steer=steer;last_phase=phase
@@ -98,7 +98,7 @@ func apply_pose(steer: float,phase: float,reduced: bool=false) -> void:
 		var contacts: Dictionary={}
 		for id: String in ["leftGrip","rightGrip","leftPedal","rightPedal"]:contacts[id]=global_transform.affine_inverse()*reference_world(id).origin
 		if is_instance_valid(saddle):contacts.seat=saddle_contact()
-		campus_human.apply_ride(contacts,phase,steer,reduced)
+		campus_human.apply_ride(contacts,phase,steer,reduced,charge,compression)
 
 func saddle_contact() -> Vector3:
 	var bounds: AABB=saddle.get_aabb()

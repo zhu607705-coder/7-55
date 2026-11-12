@@ -10,6 +10,8 @@ var rider_actions:=RiderActions.new()
 var action_pose: Dictionary={}
 const CampusHuman=preload("res://scripts/presentation/chase3d/campus_human_rig.gd")
 const CampusPelican=preload("res://scripts/presentation/chase3d/campus_pelican_rig.gd")
+const RideLayout=preload("res://scripts/presentation/chase3d/ride_render_layout.gd")
+const NativeUi=preload("res://scripts/ui/native_ui_theme.gd")
 const FinePixel=preload("res://scripts/presentation/chase3d/fine_pixel_style.gd")
 const FeatherTransition=preload("res://scripts/presentation/chase3d/pelican_transform.gd")
 var pelican_enabled: bool=true
@@ -20,6 +22,8 @@ var rider_bicycle: Node3D
 var source_hip_height_range:=Vector2.ZERO
 var material_adapter:=MaterialAdapter.new()
 var ready3d: bool=false
+var ride_safe_insets:=Vector4.ZERO
+var compact_render:=false
 var failure_reason: String=""
 const SCENE_PATH := "res://assets/derived/chase_transition_3d/source_geometry.scn"
 const MANIFEST_PATH := "res://assets/derived/chase_transition_3d/source_runtime.json"
@@ -108,6 +112,7 @@ func _ready() -> void:
 	source_environment.fog_depth_begin=38
 	source_environment.fog_depth_end=105
 	source_environment.fog_depth_curve=1
+	if not validation_reference: FinePixel.add_campus_sky(source_environment)
 	world_environment.environment=source_environment;view3d.add_child(world_environment)
 	source_sun=_light("ffecd3",2.4,Vector3(8,14,7),Vector3(0,1.2,-8))
 	source_fill=_light("b3d7e8",.38,Vector3(-9,6,-7),Vector3.ZERO)
@@ -123,6 +128,7 @@ func _ready() -> void:
 	pause_cover=ColorRect.new();pause_cover.color=Color(.025,.05,.07,.56);pause_cover.size=LOGICAL_SIZE
 	pause_cover.mouse_filter=Control.MOUSE_FILTER_IGNORE;film.add_child(pause_cover);pause_cover.hide()
 	ready3d=true
+	_layout()
 	_redraw()
 
 func _register_source_node(node: Node) -> void:
@@ -150,6 +156,43 @@ func source_frame_position(seconds: float) -> float:
 
 func source_frame_seconds(at: float) -> float:
 	return at/FPS if validation_reference else RiderActions.seconds_at(stage,at)
+
+func configure_ride_safe_area(insets: Vector4) -> void:
+	ride_safe_insets=insets
+
+func configure_activity_layout(available: Vector2,compact: bool) -> void:
+	compact_render=compact
+	super.configure_activity_layout(available,compact)
+
+func film_rect() -> Rect2:
+	return super.film_rect() if validation_reference else RideLayout.picture_rect(size)
+
+func _layout() -> void:
+	super._layout()
+	if validation_reference or not is_instance_valid(surface):return
+	var bounds:=film_rect()
+	var density: float=get_viewport().get_final_transform().get_scale().abs().x
+	var resolution:=RideLayout.render_size(bounds.size,density,compact_render)
+	if view3d.size!=resolution:
+		view3d.size=resolution
+		_rendered_frame=-1
+	film.size=bounds.size/film.scale.x
+	surface.size=film.size
+	var right:=size.x-ride_safe_insets.z-10.0
+	var bottom:=size.y-ride_safe_insets.w-10.0
+	exit_button.position=Vector2(right-60,bottom-44)
+	exit_button.size=Vector2(60,44)
+	skip_button.position=Vector2(right-160,bottom-44)
+	skip_button.size=Vector2(92,44)
+	for button: Button in [skip_button,exit_button]:
+		button.set_meta("tactile_exempt",true)
+		NativeUi.apply_button(button,Color(0.09,.17,.21,.88),Color("fff2d5"),Color("748c91"),3,1,14,Vector2(4,2),Color("b2d4d7"))
+	caption.position=Vector2(ride_safe_insets.x+12,bottom-88)
+	caption.size=Vector2(size.x-ride_safe_insets.x-ride_safe_insets.z-24,34)
+	caption.add_theme_font_size_override("font_size",16)
+	caption.add_theme_color_override("font_shadow_color",Color("102028"))
+	caption.add_theme_constant_override("shadow_offset_y",2)
+	_redraw()
 
 func _redraw() -> void:
 	super._redraw()
@@ -229,11 +272,24 @@ func render_source_frame(which: String,at: int,fraction: float=0) -> void:
 	var np: Array=following.cameraPosition;var nq: Array=following.cameraQuaternion
 	source_camera.position=Vector3(p[0],p[1],p[2]).lerp(Vector3(np[0],np[1],np[2]),weight)
 	source_camera.quaternion=Quaternion(q[0],q[1],q[2],q[3]).slerp(Quaternion(nq[0],nq[1],nq[2],nq[3]),weight)
-	source_camera.fov=lerpf(float(sample.cameraFov),float(following.cameraFov),weight)
+	var authored_fov:=lerpf(float(sample.cameraFov),float(following.cameraFov),weight)
+	if not validation_reference:
+		# Match the playable chase framing at the two cuts, then ease into
+		# the authored side shots for mounting, braking and parking.
+		var source_at: float=index+motion_weight
+		var blend: float=smoothstep(78,90,source_at) if which=="start" else 1-smoothstep(0,9,source_at)
+		if blend>0:
+			var bike_center:=Vector3(rider_bicycle.global_position.x,0,rider_bicycle.global_position.z)
+			var follow:=Transform3D(Basis.IDENTITY,bike_center+RideLayout.CAMERA_OFFSET)
+			follow=follow.looking_at(bike_center+RideLayout.CAMERA_LOOK_OFFSET)
+			source_camera.transform=source_camera.transform.interpolate_with(follow,blend)
+			authored_fov=lerpf(authored_fov,RideLayout.CAMERA_FOV,blend)
+	source_camera.fov=authored_fov if validation_reference else RideLayout.vertical_fov(authored_fov,Vector2(view3d.size))
 	source_environment.background_color=Color.hex((int(sample.background)<<8)|255)
 	source_environment.tonemap_exposure=float(sample.exposure)
 	var macro: bool=str(sample.camera) in ["grip_pedal_macro","brake_wheel_macro"]
 	source_environment.fog_enabled=not macro
+	if not validation_reference: source_environment.background_mode=Environment.BG_COLOR if macro else Environment.BG_SKY
 	source_sun.light_energy=(1.8 if macro else 2.4)/PI
 	source_fill.light_energy=(.68 if macro else .38)/PI
 	source_portrait.light_energy=(.66 if macro else .46)/PI

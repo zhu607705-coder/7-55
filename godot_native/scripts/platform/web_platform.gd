@@ -638,9 +638,14 @@ func read_snapshot() -> Dictionary:
 			game["model"] = _properties(active.model, ["status", "distance", "lane", "charge", "air_height", "air_velocity", "collisions", "tick"])
 			if is_instance_valid(active.native_chase_view):
 				var view: Control = active.native_chase_view
-				game["nativeChaseView"] = _properties(view, ["ready3d", "presented", "failure_reason", "animation_seconds", "viewport_resolution"])
+				game["nativeChaseView"] = _properties(view, ["ready3d", "presented", "failure_reason", "animation_seconds", "viewport_resolution", "quality"])
+				game.nativeChaseView["picture"] = _rect(view.get_global_rect())
 				game.nativeChaseView["heroPosition"] = _json_value(view.hero.position) if is_instance_valid(view.hero) else null
 				game.nativeChaseView["meshInstances"] = view.viewport3d.find_children("*", "MeshInstance3D", true, false).size() if is_instance_valid(view.viewport3d) else 0
+		elif active.get_script().resource_path == "res://scripts/presentation/chase_transition_3d_presenter.gd":
+			game["rideTransition"] = _properties(active, ["stage", "frame", "status", "ready3d"])
+			game.rideTransition["picture"] = _rect(active.film_rect())
+			game.rideTransition["viewport_resolution"] = _json_value(active.view3d.size) if is_instance_valid(active.view3d) else null
 	var world: Dictionary = {}
 	if is_instance_valid(shell.world):
 		world = _properties(shell.world, ["scene_id", "player", "camera", "zoom", "size", "mobile_exploration", "last_zone", "last_vehicle", "subtitle", "subtitle_left", "nearby", "touch_axis", "facing", "player_flip", "mobile_confirmed_target_id"])

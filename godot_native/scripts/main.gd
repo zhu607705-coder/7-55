@@ -832,7 +832,9 @@ func _layout() -> void:
 		phone_chrome.set_display_covered(is_instance_valid(active_game))
 		phone_chrome.set_input_blocked(is_instance_valid(modal) or is_instance_valid(active_game) or is_instance_valid(phone_document))
 	if active_game:
-		if fitted_activity: active_game.configure_activity_layout(available,compact_layout)
+		if fitted_activity:
+			if active_game.has_method("configure_ride_safe_area"): active_game.configure_ride_safe_area(safe_insets)
+			active_game.configure_activity_layout(available,compact_layout)
 		else:
 			var game_scale := minf((available.x-20)/game_viewport.x,(available.y-20)/game_viewport.y)
 			active_game.scale=Vector2.ONE*game_scale

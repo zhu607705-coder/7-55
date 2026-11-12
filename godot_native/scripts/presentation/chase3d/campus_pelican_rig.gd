@@ -96,8 +96,8 @@ func _pose_girdle(torso: Vector3,hips: Vector3,torso_basis: Basis) -> void:
 	var facing:=Basis(Vector3.UP,torso_basis.get_euler().y)
 	_pose("Tail",hips+facing*(rests.Tail-rests.Hips),facing)
 
-func apply_ride(contacts: Dictionary,phase: float,steer: float,reduced: bool=false) -> void:
-	super.apply_ride(contacts,phase,steer,reduced)
+func apply_ride(contacts: Dictionary,phase: float,steer: float,reduced: bool=false,charge: float=0.0,compression: float=0.0) -> void:
+	super.apply_ride(contacts,phase,steer,reduced,charge,compression)
 	# Keep the neck long and the gaze forward instead of folding it into the chest.
 	var torso: Vector3=joint_point("Torso")
 	var yaw:=Basis(Vector3.UP,-steer*.22)

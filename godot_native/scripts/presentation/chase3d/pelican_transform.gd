@@ -31,8 +31,10 @@ func update_pose(stage: String,source_at: float,camera: Camera3D,reduced: bool,j
 	student.position=Vector3(hips.x,1.48,hips.z)
 	student.flip_h=stage=="finish"
 	student.texture=student_frames[int(fposmod(float(joints.get("walk_phase",0)),1)*8)] if float(joints.get("walk_weight",0))>.01 and not reduced else student_frames[0]
-	center=camera.unproject_position(Vector3(hips.x,1.8,hips.z))
-	radius=clampf(center.distance_to(camera.unproject_position(Vector3(hips.x,3.25,hips.z))),40,170)
+	var to_film: Vector2=get_parent().size/camera.get_viewport().get_visible_rect().size
+	center=camera.unproject_position(Vector3(hips.x,1.8,hips.z))*to_film
+	var top:=camera.unproject_position(Vector3(hips.x,3.25,hips.z))*to_film
+	radius=clampf(center.distance_to(top),40,170)
 	visible=transforming and not reduced
 	queue_redraw()
 
