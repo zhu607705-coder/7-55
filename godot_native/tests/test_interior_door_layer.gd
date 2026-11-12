@@ -1,5 +1,6 @@
 extends SceneTree
 const Door=preload("res://scripts/presentation/interior_door_layer.gd")
+const Metrics=preload("res://scripts/player_metrics.gd")
 var failures:=0
 var checks:=0
 func _initialize() -> void: call_deferred("run")
@@ -8,10 +9,11 @@ func check(value: bool,label: String) -> void:
 	if not value: failures+=1; push_error(label)
 func run() -> void:
 	var door:=Door.new()
-	var s: Dictionary={"native":{"scene":"canteen_interior","player":{"x":1349,"y":835},"settings":{"reduced_motion":false}},"canteenHunt":{"active":true,"phase":"tray_search"}}
+	var s: Dictionary={"native":{"scene":"canteen_interior","player":{"x":1339,"y":865},"settings":{"reduced_motion":false}},"canteenHunt":{"active":true,"phase":"tray_search"}}
 	door.tick(0,s)
-	check(door.sensor_open,"canteen source approach sensor")
-	check(door.opening==Rect2(1305,795,88,105),"source map opening")
+	check(door.sensor_open,"canteen south approach sensor")
+	check(door.opening==Rect2(1291,877,96,64),"south-wall opening")
+	check(door.canteen_face.size.x==106 and door.canteen_face.size.y>100 and door.canteen_face.end.y==924,"upright door is uniformly scaled and rooted at the bottom wall")
 	check(door.duration_ms==460,"source duration")
 	door.advance(174)
 	check(not door.passable(),"before source .38 passage")
@@ -19,16 +21,21 @@ func run() -> void:
 	check(door.passable(),"rounded175ms source passage")
 	door.advance(285)
 	check(is_equal_approx(door.progress,1),"door fully open")
-	check(is_equal_approx(door.leaf_rects()[0].size.x,44*.18),"folded source18percent width")
-	check(door.leaf_rects()[1].end.x==1393,"right leaf remains hinged")
-	s.native.player={"x":1140,"y":710}; door.tick(0,s)
-	check(door.sensor_open,"source wider hold band prevents flicker")
-	s.native.player.x=1134; door.tick(.46,s)
+	var leaves:=door.collision_rects()
+	check(leaves.size()==2 and leaves[0].end.x+Metrics.FOOT_SIZE.x<=leaves[1].position.x,"open door retains left and right leaf collisions with body-width clearance")
+	check(leaves.size()==2 and leaves[0].position.x==1297 and leaves[1].end.x==1381,"open leaves stay attached to both jambs")
+	s.native.player={"x":1251,"y":800}; door.tick(0,s)
+	check(door.sensor_open,"wider hold band prevents flicker")
+	s.native.player.x=1235; door.tick(.46,s)
 	check(not door.sensor_open and is_zero_approx(door.progress),"outside hold closes")
-	s.native.player={"x":1349,"y":835}; s.canteenHunt.phase="exit_blocking"; door.tick(.5,s)
+	s.native.player={"x":1339,"y":865}; s.canteenHunt.phase="exit_blocking"; door.tick(.5,s)
 	check(not door.sensor_open,"active blocked phase cannot open")
 	s.canteenHunt.active=false; door.tick(.46,s)
 	check(door.sensor_open and door.passable(),"inactive source canteen permits exit")
+	door.configure("canteen_interior")
+	s.native.player={"x":1339,"y":898.5,"scene":"canteen_interior"}
+	door.restore(s)
+	check(door.sensor_open and door.progress==1,"Continue at the south threshold restores an open doorway")
 	s.native.scene="theater_interior"; s.native.player={"x":836,"y":800}; door.tick(0,s)
 	check(door.duration_ms==520 and door.sensor_open,"theater authored sensor and duration")
 	check(door.opening==Rect2(748,845,176,70),"theater opening")

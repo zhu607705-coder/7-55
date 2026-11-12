@@ -1,7 +1,7 @@
 extends RefCounted
 ## CanteenInteriorScene.createDarkModeLayer / playModeTransition, presentation only.
 ## No timer, random call, controller dispatch, inventory write, or completion event.
-const POINTS := [Vector2(790,218),Vector2(82,250),Vector2(1380,850),Vector2(1235,227)]
+const CanteenLayout := preload("res://scripts/space/canteen_layout.gd")
 const COLOR := Color("8be6ff",.92)
 const DEPTH := 1602.0
 const FADE_MS := 220.0
@@ -18,6 +18,11 @@ var fade_from: Array[float] = [0.0,0.0,0.0,0.0]
 var loop_ms: Array[float] = [0.0,0.0,0.0,0.0]
 var loop_backward: Array[bool] = [false,false,false,false]
 var loop_mix: Array[float] = [0.0,0.0,0.0,0.0]
+var points: Array[Vector2]
+
+func _init() -> void:
+	var side_exit: Dictionary=CanteenLayout.data().side_exit.target
+	points=[Vector2(790,218),Vector2(82,250),Vector2(side_exit.x,side_exit.y),Vector2(1235,227)]
 
 func sync(state: Dictionary,reset: bool=false) -> void:
 	var native: Dictionary=state.get("native",{})
@@ -77,5 +82,5 @@ func entries() -> Array:
 		var delay:=0.0 if reduced else minf(80,i*9.0)
 		if mode!="dark" and (fade_ms==INF or fade_ms>=fade_duration+delay): continue
 		var mix_value:=0.0 if reduced else loop_mix[i]
-		result.append({"id":"mode_fiber_"+str(i),"kind":"circle","point":POINTS[i]+Vector2(11 if i%2==0 else -9,-9)*mix_value,"radius":2+i%2,"color":COLOR,"alpha":_alpha(i),"depth":DEPTH})
+		result.append({"id":"mode_fiber_"+str(i),"kind":"circle","point":points[i]+Vector2(11 if i%2==0 else -9,-9)*mix_value,"radius":2+i%2,"color":COLOR,"alpha":_alpha(i),"depth":DEPTH})
 	return result

@@ -19,6 +19,8 @@ data/source/
 
 # Godot-generated import metadata is rebuilt from portable source assets.
 *.import
+# Preserve the authored RGBA values of the translucent walk sprite edges.
+!assets/native/library_animation_20261105/player_walk_full.png.import
 # Untracked script UIDs are generated on a clean import as well. Existing
 # committed UIDs stay tracked; new path-based scripts need no random UID input.
 *.uid

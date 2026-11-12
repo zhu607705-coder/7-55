@@ -1,6 +1,6 @@
 # Mixer anchor 28: independent source-derived parts
 
-The runtime backdrop is the existing clean tasting-counter image. It contains
+The close-up backdrop is the existing clean tasting-counter image. It contains
 no foreground glass, three ingredient bottles, or their contact shadows. The
 whole original concept is never drawn underneath the active objects.
 
@@ -23,16 +23,19 @@ The cup's fill and stream are native geometry, clipped inside a fixed
 perspective interior mask. The glass, its contact point, and the counter never
 scale or jump on a result. Bubble and foam effects are local to the vessel.
 
-`c3_mixer_surface.gd` mounts the physical objects in the existing mixer modal.
-Buttons target the bottles rather than replacing them with text or colored
-rectangles. The original randomized slot order and missing-ingredient feedback
-are preserved. `c3_mixer_motion.gd` also supplies the normal-world performance.
-Only `mixer_counter` uses the clean worktop crop; `drink_shelf` retains its
-original cabinet and baked drink-dispenser artwork as a different object.
+`c3_mixer_surface.gd` mounts the physical objects in the mixer modal. It keeps
+the randomized slot order and missing-ingredient feedback. The canteen map's
+`mixer_counter` uses the separately drawn `../canteen_objects/canteen_mixer_station.png`
+at 1:1 with nearest filtering. The 92×96 transparent sprite uses the campus
+palette and straight horizontal floor-plane edges. Its source rectangle is
+`(214, 721, 92, 96)` and the collision footprint follows the cabinet base.
+The world rig mounts the selectors, paddles and cup at `(260, 788)` with a
+uniform scale of `0.2`, aligned to the map sprite's openings and drip tray.
 
 ## SHA-256 provenance
 
 - `canteen_tasting_counter_clean_background.png`: `1c11116324f137a9795025ae069320424a96abf01cda4e2b13baa739b6244e85`
+- `../canteen_objects/canteen_mixer_station.png` (original map sprite): `ce95ab60e0f25e2af02b384fb84f4868bf4deb0895373f17b9851bf93906ce05`
 - `canteen_tasting_counter_concept.png`: `55cccaff02372cf25f0f069f329b3f9badd6f6c92a6fec7df3774260876a9452`
 - `glass_rgba_v1.png`: `1947dd5c871bcabd38f019ea5650fff62088ccd28f6ac78b9aeedec0d1dc5715`
 - `blackCoffee_rgba_v1.png`: `2aa19e22701ed12dab64840fd3072bfe05bea27d14a859a7673e731ed0995586`

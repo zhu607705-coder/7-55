@@ -59,10 +59,7 @@ func _room(canvas:CanvasItem,milliseconds:float)->void:
 		if background!=null:canvas.draw_texture_rect(background,Rect2(Vector2.ZERO,Timeline.ROOM),false)
 		for e:Dictionary in entries:_actor(canvas,e)
 		return
-	canvas.draw_texture_rect_region(furniture.textures.empty_floor,Rect2(11,1,1659,940),Rect2(11,1,1659,940))
-	for opening:Dictionary in furniture.layout.get("floor_openings",[]):
-		var src:Array=opening.source;var dst:Array=opening.destination
-		canvas.draw_texture_rect_region(furniture.textures.empty_floor,Rect2(dst[0],dst[1],dst[2],dst[3]),Rect2(src[0],src[1],src[2],src[3]))
+	furniture.paint_floor(canvas)
 	var actor_planes:Array=[]
 	for e:Dictionary in entries:
 		var tex:Texture2D=_texture(e.asset)
@@ -83,8 +80,6 @@ func _room(canvas:CanvasItem,milliseconds:float)->void:
 		elif item.kind=="feature":furniture.draw_feature(canvas,item.role,true)
 		else:
 			var prop:Node2D=item.entry.object;var part:Dictionary=item.entry.part
-			if prop.definition.has("door"):
-				canvas.draw_rect(Rect2(prop.position+prop.top_left,prop.dimensions),Color("172020"));continue
 			canvas.draw_texture_rect_region(prop.texture,Rect2(prop.position+part.position,part.region.size*prop.scale_value),part.region)
 		_transform(canvas)
 func draw(canvas:CanvasItem,viewport:Rect2,p:Dictionary)->void:

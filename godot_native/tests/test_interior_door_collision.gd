@@ -57,7 +57,7 @@ func run()->void:
 		for spawn_y:float in [792.5,842.0]:
 			fixture("library_interior",Vector2(715,spawn_y));world.size=dimensions;world.mobile_exploration=true;world.touch_controls=true;world._update_camera();world.queue_redraw();await process_frame
 			check(not world.can_stand(Vector2(452,817.875)) and not world.can_stand(Vector2(1084,817.875)),"painted west/east south-wall bases stop the real foot body "+str(dimensions))
-			check(world.can_stand(Vector2(452,686)) and world.can_stand(Vector2(1084,710)) and world.can_stand(Vector2(715,842)),"adjacent clear interior floor and authored central spawn stay open")
+			check(world.can_stand(Vector2(452,690)) and world.can_stand(Vector2(1084,720)) and world.can_stand(Vector2(715,842)),"floor in front of the south pillars and the authored central spawn stay open")
 			# The former point now hits the visible entrance reader. Aim at clear
 			# floor farther inside, so this still exercises routing across the gate.
 			var goal:=Vector2.INF
@@ -75,19 +75,19 @@ func run()->void:
 			for i:int in range(320):world._process(.016)
 			check(world.player==fixed and not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"blocked outer-wall route never moves the actor or grants original access")
 	# Measure the inside edge of each painted cap using the full shared foot box.
-	for row: Vector2 in [Vector2(350,798),Vector2(1320,798),Vector2(416,769),Vector2(1081,769),Vector2(475,742),Vector2(1020,742)]:
+	for row: Vector2 in [Vector2(350,798),Vector2(1320,798),Vector2(416,770),Vector2(1081,770),Vector2(475,742),Vector2(1020,742)]:
 		var floor_point := Metrics.anchor_from_foot_center(row-Vector2(0,6))
 		var wall_point := floor_point+Vector2(0,2)
 		check(world.can_stand(floor_point),"floor remains walkable within one source pixel of cap "+str(row))
 		check(not world.can_stand(wall_point),"foot box cannot enter the cap or step "+str(row))
 		check(not world._floor_segment_clear(floor_point,wall_point),"tap route rejects the same wall edge "+str(row))
-	for x:float in [350.,1320.]:
+	for x:float in [356.,1180.,1320.]:
 		fixture("library_interior",Vector2(x,735));world.grab_focus()
 		keyboard(KEY_S,true)
 		for i:int in range(20):world._process(.05)
 		keyboard(KEY_S,false)
 		var feet := Metrics.foot_rect(world.player,world.scene_id)
-		check(feet.end.y>789 and feet.end.y<=798 and world.can_stand(world.player),"actual keyboard stops at the painted inside edge "+str(x))
+		check(world.player.y>735 and absf(feet.end.y-798)<.002 and world.can_stand(world.player),"actual keyboard stops at the painted inside edge "+str(x))
 		fixture("library_interior",Vector2(x,780))
 		var restored := Metrics.foot_rect(world.player,world.scene_id)
 		check(world.can_stand(world.player) and restored.end.y<=798 and absf(world.player.x-x)<42,"old wall pose returns to nearby floor on the same side "+str(x))
@@ -232,6 +232,6 @@ func run()->void:
 	check(world.player==Vector2(836,880) and world.chapter3_layers.doors.progress==1,"restored occupied theater door never relocates player")
 	fixture("library_interior",Vector2(715,842))
 	var gate = world.library_gate
-	check(not world.chapter3_layers.doors.departure_held and world._door_collision_rects().size()==gate.fixed_collision_rects.size()+gate.guardrails.size()+4,"scene retirement restores all library barriers")
+	check(not world.chapter3_layers.doors.departure_held and world._door_collision_rects().size()==gate.guardrails.size()+4,"scene retirement restores the library gate wings and rails")
 	world.queue_free();await process_frame
 	print("INTERIOR_DOOR_COLLISION: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)

@@ -1,6 +1,7 @@
 extends SceneTree
 const Fixture=preload("res://tests/canteen_native_fixture.gd")
 const TrayFrames=preload("res://scripts/presentation/c3_tray_frames.gd")
+const CanteenLayout=preload("res://scripts/space/canteen_layout.gd")
 var checks:=0
 var failures:=0
 var records:Array=[]
@@ -16,6 +17,8 @@ func sample(world:Control,ms:float)->Dictionary:
 		if is_instance_valid(sprite) and sprite.visible:return {"id":id,"position":sprite.position,"rotation":sprite.rotation,"scale":sprite.scale,"source":sprite.region_rect,"texture":sprite.texture.resource_path}
 	return {}
 func verify_depth_handover(world:Control,state:Node,reduced:bool,point:Vector2,tray_at:Vector2)->void:
+	point.x=CanteenLayout.x_on_floor(point.x,"dining_table")
+	tray_at.x=CanteenLayout.x_on_floor(tray_at.x,"dining_table")
 	Fixture.install(state);state.d.native.settings.reduced_motion=reduced
 	world.world_key="";world.refresh_world();world.player=point;world._sync_player()
 	var scene:Node2D=world.native_canteen
@@ -61,7 +64,7 @@ func run()->void:
 		var first:=sample(world,0);var middle:=sample(world,duration/2);var near_end:=sample(world,duration-.1);var held:=sample(world,duration)
 		check(first.get("id")=="tray_pickup" and held.get("id")=="carried_tray","original duration owns animation-to-held switch")
 		if first.is_empty() or held.is_empty():continue
-		check(first.position.distance_to(world.chapter3_layers.pickup_start)<.001,"first visible pose stays at original tray position")
+		check(first.position.is_equal_approx(Vector2(tray.position[0],tray.position[1])),"first visible pose stays at the tray's relocated resting position")
 		check(near_end.position.distance_to(held.position)<.1,"last pickup frame meets held pose within a tenth source pixel")
 		check(held.position.distance_to(world.player+Vector2(0,-3))<.001 and absf(held.rotation)<.001,"held tray is level at original adapter hand anchor")
 		check(is_equal_approx(middle.rotation,0) and middle.texture==TrayFrames.ATLAS_ASSET,"genuine keypose owns tilt without rotating or squashing the runtime canvas")

@@ -11,6 +11,7 @@ const ATLAS_COLUMNS := 4
 const ATLAS_ROWS := 2
 const SOURCE_OFFSET := Vector2(64, 40)
 const CELL_TO_SOURCE_SCALE := 2.0
+const CLEARANCE_REFERENCE_SCALE := 88.0 / 766.0
 
 # Measured centered alpha-free widths, not assumed angles or uniform frame timing.
 const CENTERED_CLEAR_WIDTHS := [0.0, 1.6083550914, 9.4203655352, 21.3681462141, 33.7754569191, 41.5874673629, 46.182767624, 48.9399477807]
@@ -34,6 +35,9 @@ static func atlas_region(frame: int) -> Rect2:
 
 static func canvas_rect(source_top_left: Vector2, uniform_scale: float) -> Rect2:
 	return Rect2(source_top_left - SOURCE_OFFSET * uniform_scale * CELL_TO_SOURCE_SCALE, FRAME_SIZE * uniform_scale * CELL_TO_SOURCE_SCALE)
+
+static func clear_width(frame: int, uniform_scale: float) -> float:
+	return float(CENTERED_CLEAR_WIDTHS[frame]) * uniform_scale / CLEARANCE_REFERENCE_SCALE
 
 static func sample(visual_progress: float, passable: bool, source_top_left: Vector2, uniform_scale: float) -> Dictionary:
 	var frame := frame_index(visual_progress, passable)

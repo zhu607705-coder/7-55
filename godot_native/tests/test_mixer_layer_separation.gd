@@ -25,10 +25,15 @@ func run() -> void:
 	for row in original.objects:
 		if str(row.id)=="mixer_counter":mixer_row=row
 		if str(row.id)=="drink_shelf":shelf_row=row
-	check(str(mixer_row.asset)=="mixer_clean_worktop","only mixer uses clean worktop instead of three baked urns")
+	check(str(mixer_row.asset)=="mixer_world_station","mixer uses the separate orthographic station in the world")
+	var world_art: Dictionary=original.assets[mixer_row.asset]
+	var station_image: Image=(load(world_art.texture) as Texture2D).get_image()
+	check(station_image.get_size()==Vector2i(92,96) and mixer_row.scale==1.0,"station fits the neighboring world kiosks at native pixel size")
+	check(station_image.get_pixel(0,0).a==0.0 and station_image.get_pixel(46,70).a==1.0,"station cutout leaves the actual floor visible around the cabinet")
 	check(str(shelf_row.asset)=="drink_station_cabinet","original drinks shelf keeps its original object identity")
 	var node:=WorldMotion.new();root.add_child(node);node.set_process(false)
-	var initial_scale: Vector2=Vector2.ONE*.36
+	var initial_scale: Vector2=Vector2.ONE*WorldMotion.WORLD_SCALE
+	check(not node.rig.body.visible and node.world_buttons.all(func(button):return button.visible),"world station has one housing and keeps the live selector layers")
 	var fixed_hinges: Array=node.rig.pivots.map(func(pivot):return pivot.transform)
 	var fixed_nozzles: Array=node.rig.nozzles.map(func(nozzle):return nozzle.transform)
 	for reduced: bool in [false,true]:

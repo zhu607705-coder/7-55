@@ -1,0 +1,31 @@
+{
+  "generator": "built-in image_gen",
+  "generated_at": "2026-11-11",
+  "sheets": {
+    "side": {
+      "source": "originals/walk_16_side_20261111.png",
+      "generated_file": "exec-c07c8322-8da1-4df6-a355-288179322e62.png",
+      "sha256": "057c75f72fe4e0cec9bd282994044bdd8cbd42c7d6bad2964c4f74dde9619bfa",
+      "prompt": "Generate one transparent 4×4 sprite sheet of sixteen complete full-body cels for a single walking loop in RIGHT-FACING SIDE PROFILE. The character is the same compact dark-haired campus student in the first reference, with the exact original clothing, face, silhouette and crisp pixel art. The second reference is the old library side walk, for how his legs swing and recover. Draw him in a relaxed walk at the game's slightly elevated view, with natural counter-swing of both arms and a steady character design.\nThe grid is chronological in row-major order. The top two rows show a step led by the leg NEAREST the viewer, then the bottom two rows show the corresponding step led by the OTHER leg. Top-left contact pose: near shoe is ahead of the hip toward screen right, far shoe is behind; near arm swings behind and far arm swings forward. At the start of row three, the FAR shoe is ahead toward screen right and the near shoe is behind, with the NEAR arm swinging forward. Both contact poses must read as opposite legs taking the lead. Normal shading and overlap make the near and far limbs identifiable while retaining matching trousers and shoes. In each half, progress naturally through foot load, the other foot passing low and then extending. Continuous moderate pace, natural shifts of weight and posture. Keep him facing right in all 16 complete cels, transparent gutters, no text, no grid lines, no props or shadows."
+    },
+    "down": {
+      "source": "originals/walk_16_down_20261111.png",
+      "generated_file": "exec-0e466270-0846-4e1f-b4ba-544cc6eb2fca.png",
+      "sha256": "6f798efca9da8c952a2ede88919006febc0c859a4850bde29782e4cb574404cd",
+      "prompt": "Generate one transparent 4×4 sprite sheet of sixteen complete full-body drawings of the same small campus RPG student from the reference walking DOWN toward the viewer. Use the actual campus sprites in the middle row of the reference for the exact same recognizable face, haircut, compact build, blue jacket, light shirt, dark jeans and sneakers, style and slightly elevated camera. Retain their clear pixel texture, proportions and quiet walking rhythm.\nRead in row-major order. The first eight cels are one ordinary step and the next eight are the matching step led by the other foot. The visible forward shoe shifts from the left of the image to the right and the arms change lead too. Animate the support shift, small head/shoulder follow-through, believable passing feet and natural arm counter-swing. Keep face, hair clusters, clothing seams, silhouette and scale consistent across the loop. No side views, no scenery, no writing. Sixteen complete figures, regular grid, empty transparent gutters."
+    },
+    "up": {
+      "source": "originals/walk_16_up_20261111.png",
+      "generated_file": "exec-bcb10029-f87d-4ae6-be0b-48ef6d601f1e.png",
+      "sha256": "afdcce084c5e68cb9c9b01ba74342f707a9bdb28a58aee6006c68576288c367d",
+      "prompt": "Generate one transparent 4×4 sprite sheet of sixteen complete full-body drawings of the same small campus RPG student from the reference walking UP away from the viewer. Use the actual campus sprites in the bottom row of the reference for the exact same recognizable hair, blue jacket, backpack, compact build, dark jeans and sneakers, style and slightly elevated camera. Retain their clean pixel texture, proportions and relaxed walking rhythm.\nRead in row-major order. The first eight cels show one ordinary step and the next eight the matching step led by the other foot. Clearly alternate which heel lifts, which shoe takes the weight and which sleeve swings back beside the bag. Let the shoulders follow the weight shift. Stable silhouette, hair shape, backpack, jacket and scale. This is a clean loop of two normal steps at the same pace. No scenery, text, shadows or props. Sixteen complete back-facing figures, regular grid, empty transparent gutters."
+    }
+  },
+  "references": [
+    "assets/rpg/player/player_{side,down,up}_{0..7}.png",
+    "art_source/library_animation_20261105/originals/walk_side.png",
+    "assets/rpg/player/source/player_walk_24pose_transparent_v2.png"
+  ],
+  "runtime": "assets/native/library_animation_20261105/player_walk_full.png",
+  "runtime_sha256": "d8d65873c3d68e6661bd3599f0d7b1cee252de8d62744933104ed140d18d6a4e"
+}

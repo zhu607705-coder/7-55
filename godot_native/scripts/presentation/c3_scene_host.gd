@@ -21,7 +21,7 @@ func setup(world_view: Control,state_reader: Callable,provider: Callable,action_
 	world=world_view; read_state=state_reader; request_session=provider; dispatch=action_sink; cue=cue_sink; runtime_reader=runtime_state_reader
 	process_priority=50; mouse_filter=Control.MOUSE_FILTER_IGNORE
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	opening=OpeningView.new(); add_child(opening)
+	opening=OpeningView.new(); opening.world=world; add_child(opening)
 	opening.advance.connect(_advance); opening.skip.connect(_skip)
 	paper=PaperView.new(); paper.world=world; world.add_child(paper)
 func owns_world_contract() -> bool:

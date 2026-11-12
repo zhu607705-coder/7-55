@@ -1314,7 +1314,7 @@
    来源：[src/data/library-finals.content.json:419](../src/data/library-finals.content.json#L419)；[src/data/library-finals.content.json:447](../src/data/library-finals.content.json#L447)
 181. 浙大体艺本人来过补录单
    来源：[src/data/library-finals.content.json:420](../src/data/library-finals.content.json#L420)
-182. 从刷卡入馆到抵达 022 的分钟差
+182. 本人来过证明上记载的到馆时长
    来源：[src/data/library-finals.content.json:422](../src/data/library-finals.content.json#L422)
 183. BD 四位热度口令
    来源：[src/data/library-finals.content.json:426](../src/data/library-finals.content.json#L426)
@@ -12965,7 +12965,7 @@
    来源：[src/data/items.config.json:130](../src/data/items.config.json#L130)；[src/data/presentation-cues.ts:151](../src/data/presentation-cues.ts#L151)；[src/scenes/phone/P15_Zjuding/index.tsx:212](../src/scenes/phone/P15_Zjuding/index.tsx#L212)；[src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx:107](../src/scenes/phone/P15_Zjuding/ZjudingUtilityPanel.tsx#L107)
 1899. 用细长物件从一层书库 022 桌面夹缝里拨出来的原始座位小票，座位号末位印着醒目的「2」。备齐三份证明后，先回 CC98 调查帖上传公示，再交去图书馆服务申领 PASS。
    来源：[src/data/items.config.json:131](../src/data/items.config.json#L131)
-1900. 在浙大体艺填对「入馆至到座耗时 7 分钟、关联公示号 47、证明类别 3 项」后补录成功的到馆证明。连同另外两份证明和旧版规则一起回 CC98 公示，就能解锁 022 恢复申请。
+1900. 在浙大体艺填对「到馆时长 7 分钟、关联公示号 47、证明类别 3 项」后补录成功的到馆证明。连同另外两份证明和旧版规则一起回 CC98 公示，就能解锁 022 恢复申请。
    来源：[src/data/items.config.json:138](../src/data/items.config.json#L138)
 1901. 解除占座 PASS
    来源：[src/data/items.config.json:144](../src/data/items.config.json#L144)；[src/data/presentation-cues.ts:192](../src/data/presentation-cues.ts#L192)

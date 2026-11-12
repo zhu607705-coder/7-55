@@ -7,13 +7,14 @@ static func current(s: Dictionary) -> Dictionary:
 	if s.get("chapterThreeInterlude",{}).get("completed",false) or s.get("chapter4",{}).get("prologueSeen",false): return {}
 	if s.get("qizhenLake",{}).get("active",false) or s.get("theaterHunt",{}).get("active",false): return {}
 	var phase:=str(hunt.get("phase",""))
-	if phase=="tracking":
-		return {"id":"tracking","title":"追上逃跑的记录纸条","detail":"纸条钻进了食堂。前往东区食堂，继续追踪。"}
+	var dark: bool=s.get("native",{}).get("mode","light")=="dark"
+	if phase in ["tracking","canteen_reached"]:
+		var detail := "沿纸条留下的脚印前往东区食堂。" if dark else "切到深色模式，沿脚印追到东区食堂。"
+		return {"id":"tracking","title":"追上逃跑的记录纸条","detail":detail}
 	if phase=="chase_ready": return bike_handoff(s,hunt)
 	if phase not in ["tray_search","drink_mix","menu_order","pickup_search"]: return {}
 	if not hunt.get("entryPaperEscaped",false):
 		return {"id":"paper_entry","title":"靠近食堂里的异常纸条","detail":"纸条停在入口附近。靠近它，继续追踪。"}
-	var dark: bool=s.get("native",{}).get("mode","light")=="dark"
 	if not hunt.get("trayTaskStarted",false):
 		return {"id":"tray_start","title":"与收餐口阿姨交谈","detail":"切回浅色操作，再到右侧收餐口与阿姨交谈。" if dark else "到右侧收餐口，与阿姨交谈。"}
 	var returned:=0

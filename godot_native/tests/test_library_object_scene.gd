@@ -74,6 +74,46 @@ func check_east_contact(center:Vector2,edge:float,label:String)->void:
 	var feet:=Metrics.foot_rect(stopped,world.scene_id)
 	check(world.can_stand(start) and world.can_stand(stopped) and absf(feet.position.x-edge)<.002 and not world.can_stand(stopped+Vector2.LEFT),label+" keeps the body outside the painted side")
 
+func perimeter_contact()->void:
+	for sample: Array in [
+		[Vector2(253,120), Vector2.UP, 74, "north window"],
+		[Vector2(144,120), Vector2.UP, 87, "north pillar"],
+		[Vector2(1170,115), Vector2.UP, 87, "reading room north window"],
+		[Vector2(85,130), Vector2.LEFT, 50, "northwest wall"],
+		[Vector2(85,345), Vector2.LEFT, 38, "west inset"],
+		[Vector2(93,675), Vector2.LEFT, 50, "southwest wall"],
+		[Vector2(1416,158), Vector2.RIGHT, 1454, "northeast wall"],
+		[Vector2(1416,245), Vector2.RIGHT, 1446, "east window turn"],
+		[Vector2(1410,315), Vector2.RIGHT, 1444, "reading room east window"],
+		[Vector2(1426,615), Vector2.RIGHT, 1455, "southeast wall"],
+		[Vector2(80,764), Vector2.DOWN, 770, "southwest corner beyond the planter"],
+		[Vector2(356,740), Vector2.DOWN, 798, "southwest sill"],
+		[Vector2(452,710), Vector2.DOWN, 742, "west entrance pillar"],
+		[Vector2(1020,710), Vector2.DOWN, 742, "east entrance pillar"],
+		[Vector2(1180,740), Vector2.DOWN, 798, "southeast sill"],
+		[Vector2(1434,725), Vector2.DOWN, 770, "southeast corner"],
+	]:
+		var start := Metrics.anchor_from_foot_center(sample[0])
+		var direction: Vector2 = sample[1]
+		var stopped: Vector2 = world._axis_destination(start, direction * 100.0)
+		var feet := Metrics.foot_rect(stopped, world.scene_id)
+		var edge := feet.position if direction.x + direction.y < 0 else feet.end
+		var coordinate := edge.x if direction.x != 0 else edge.y
+		check(world.can_stand(start) and world.can_stand(stopped) and absf(coordinate - sample[2]) < .002 and not world.can_stand(stopped + direction),
+			"feet reach and stop at the visible " + sample[3])
+	# Both endpoints are inside, but the direct segment would cut the shoulder.
+	var start := Metrics.anchor_from_foot_center(Vector2(365, 784))
+	var goal := Metrics.anchor_from_foot_center(Vector2(416, 749))
+	var prior_position: Vector2 = world.player
+	var prior_bounds: Rect2 = world._floor_bounds
+	world._floor_bounds = Rect2(Vector2.ZERO, world.world_size)
+	world.player = start
+	check(world.can_stand(start) and world.can_stand(goal) and not world._floor_segment_clear(start, goal), "floor routing sees the stepped south wall")
+	var route: Array[Vector2] = world._floor_plan(goal, world._floor_obstacles())
+	check(route.size() > 1 and route[-1] == goal, "floor routing finds the inside turn around the south wall")
+	world.player = prior_position
+	world._floor_bounds = prior_bounds
+
 func capture(id:String,center:Vector2,scale_value:float=1.0,focus:=Vector2(750,450))->void:
 	if output.is_empty() or DisplayServer.get_name()=="headless":return
 	world.player=center-Metrics.FOOT_CENTER_OFFSET
@@ -91,6 +131,7 @@ func run()->void:
 	check(scene.ready,"complete sprite family and clean plate activate together")
 	if not scene.ready:print(scene.issues);quit(1);return
 	counter_contact()
+	perimeter_contact()
 	check(scene.areas.keys().all(func(id:String):return scene.areas[id]==scene.geometry(id).rect),"all fitted objects share the registered paint pixel grid")
 	var counter:Rect2=scene.areas.front_desk_counter
 	check(stand(counter.position+Vector2(30,25)) and not stand(counter.position+Vector2(30,37)),"the approach behind the raised arm remains open to its measured rear ground edge")
@@ -101,8 +142,11 @@ func run()->void:
 		var poses:Array=world.library_layers.animations.walks[direction].duplicate()
 		poses.append(world.library_layers.animations.idles[direction])
 		for texture:Texture2D in poses:
-			var top:Rect2i=texture.get_image().get_region(Rect2i(0,0,96,104)).get_used_rect()
-			var radius:=maxi(48-top.position.x,top.end.x-48)*Metrics.DISPLAY_SCALE
+			var cell := Vector2i(texture.get_size())
+			var density := float(cell.x) / Metrics.FRAME.x
+			var top := texture.get_image().get_region(Rect2i(0, 0, cell.x, roundi(104 * density))).get_used_rect()
+			var center := cell.x * 0.5
+			var radius := maxf(center - top.position.x, top.end.x - center) * Metrics.DISPLAY_SCALE / density
 			body_fits=body_fits and radius<=measured_width/2
 	check(body_fits,"the collision width covers the upper body in every actual library walk and idle frame")
 	var catalog:Rect2=scene.areas.catalog_desk

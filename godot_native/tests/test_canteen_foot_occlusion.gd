@@ -3,6 +3,7 @@ extends SceneTree
 const Fixture=preload("res://tests/canteen_native_fixture.gd")
 const Metrics=preload("res://scripts/player_metrics.gd")
 const Prop=preload("res://scripts/objects/canteen_scene_object.gd")
+const CanteenLayout=preload("res://scripts/space/canteen_layout.gd")
 var checks:=0
 var failures:=0
 var world:Control
@@ -15,6 +16,9 @@ func pose(point:Vector2)->void:
 	world.player=point;world._sync_player();world.transition_alpha=0
 	world.camera=point;world.zoom=2.2
 	world.native_canteen.configure_view(world.size/2-world.camera*world.zoom,world.zoom,point)
+func dining_pose(point:Vector2)->void:
+	point.x=CanteenLayout.x_on_floor(point.x,"dining_table")
+	pose(point)
 func verify_partition(prop:Node2D)->void:
 	var next:float=prop.source_region.position.y
 	for part:Dictionary in prop.parts:
@@ -52,25 +56,34 @@ func run()->void:
 	world=load("res://scripts/world.gd").new();root.size=Vector2i(1280,800);world.size=root.size;root.add_child(world);await process_frame;world.set_process(false)
 	var scene:Node2D=world.native_canteen
 	var original:Dictionary=state.d.duplicate(true)
+	for row:int in range(1,4):
+		for column:int in range(1,8):
+			var prefix:="dining_%d_%d_"%[row,column]
+			var tabletop:Rect2=scene.objects[prefix+"table"].geometry().rect
+			var left_bench:Rect2=scene.objects[prefix+"bench_left"].geometry().rect
+			var right_bench:Rect2=scene.objects[prefix+"bench_right"].geometry().rect
+			var left_gap:float=tabletop.position.x-left_bench.end.x
+			var right_gap:float=right_bench.position.x-tabletop.end.x
+			check(left_gap>0 and absf(left_gap-right_gap)<.01,"tabletop is centered between its two separate benches: "+prefix)
 	# First-row empty table: rear, front and both side aisles are real standable
 	# positions. Tests cross the ground-depth plane alongside, never through it.
 	for point:Vector2 in [Vector2(675,273),Vector2(675,390),Vector2(616,325),Vector2(743,325),Vector2(616,360),Vector2(616,370)]:
-		pose(point)
-		check(world.can_stand(point),"fixture pose is physically clear "+str(point))
+		dining_pose(point)
+		check(world.can_stand(world.player),"fixture pose is physically clear "+str(world.player))
 		verify_partition(scene.objects.dining_1_4_table);verify_partition(scene.objects.dining_1_4_bench_left)
 		actor_order(scene,{"depth":scene.player_sprite.get_meta("source_depth"),"canvas_z":scene.player_sprite.z_index,"root_order":scene.player_sprite.get_index()})
-	pose(Vector2(616,325));await capture("wide-table-side")
-	pose(Vector2(675,273));await capture("wide-table-behind")
-	pose(Vector2(675,390));await capture("wide-table-front")
+	dining_pose(Vector2(616,325));await capture("wide-table-side")
+	dining_pose(Vector2(675,273));await capture("wide-table-behind")
+	dining_pose(Vector2(675,390));await capture("wide-table-front")
 	# Exercise every authored spawn slot, not just the twelve current trays.
 	var saved_slots:Array=state.d.native.c3_tray_slots.duplicate(true)
 	var slots:Array=world.worlds.canteen_interior.constants.CANTEEN_TRAY_SLOTS
 	for offset in range(0,slots.size(),12):
 		var batch:Array=[]
 		for i in range(12):batch.append(slots[(offset+i)%slots.size()])
-		state.d.native.c3_tray_slots=batch;world.refresh_world();pose(Vector2(616,325))
+		state.d.native.c3_tray_slots=batch;world.refresh_world();dining_pose(Vector2(616,325))
 		verify_trays(scene)
-	state.d.native.c3_tray_slots=saved_slots;world.refresh_world();pose(Vector2(616,325))
+	state.d.native.c3_tray_slots=saved_slots;world.refresh_world();dining_pose(Vector2(616,325))
 	# A player and two distinct seated NPC planes can overlap one tabletop. The
 	# pure partition must be deterministic when actor enumeration changes.
 	var table:Node2D=scene.objects.dining_1_2_table
@@ -78,14 +91,13 @@ func run()->void:
 	var forward:Array=table.depth_slices(actors);actors.reverse()
 	check(forward==table.depth_slices(actors),"three simultaneous actor planes have stable slices")
 	check(forward.size()==5,"three actor boundaries need only four top pieces plus the front")
-	pose(Vector2(445,343))
+	dining_pose(Vector2(445,343))
 	for surface:Dictionary in scene.entity_surfaces:
 		if scene._is_grounded_actor(str(surface.node.name)):
 			check(float(surface.depth)==float(surface.node.get_meta("source_depth")),"NPC depth remains its authored bottom anchor")
 			actor_order(scene,{"depth":surface.depth,"canvas_z":surface.node.z_index,"root_order":surface.node.get_index()})
 	await capture("wide-seated-npc")
-	for id:String in ["west_mat","southeast_mat"]:
-		check(scene.objects[id].parts[0].depth==0 and scene.objects[id].parts[0].sprite.z_index==0,"door mat remains on the floor "+id)
+	check(scene.objects.west_mat.parts[0].depth==0 and scene.objects.west_mat.parts[0].sprite.z_index==0,"west door mat remains on the floor")
 	for id:String in ["dish_return","tray_station","drink_shelf","side_cabinet","mixer_counter","south_counter"]:
 		var prop:Node2D=scene.objects[id]
 		check(prop.parts.size()==1 and prop.parts[0].depth==prop.sort_depth,"upright cabinet sorts at its physical floor contact "+id)
@@ -94,25 +106,26 @@ func run()->void:
 		check(prop.sort_depth>support.sort_depth,"supported object stays above its own counter "+id)
 	pose(Vector2(1422,270));await capture("wide-cabinet-behind")
 	pose(Vector2(1422,355));await capture("wide-cabinet-front")
-	pose(Vector2(1349,865));await capture("wide-door-mat")
-	root.size=Vector2i(390,844);world.size=root.size;pose(Vector2(616,325));await capture("portrait-table-side")
+	var side_stand:Dictionary=scene.layout.side_exit.target.stand
+	pose(Vector2(side_stand.x,side_stand.y));await capture("wide-side-door")
+	root.size=Vector2i(390,844);world.size=root.size;dining_pose(Vector2(616,325));await capture("portrait-table-side")
 	var static_updates:Dictionary={}
 	for prop:Node2D in scene.objects.values():static_updates[prop.object_id]=prop.slice_updates
 	var warm_nodes:int=get_node_count()
-	for i in range(20):pose(Vector2(616,325))
+	for i in range(20):dining_pose(Vector2(616,325))
 	for prop:Node2D in scene.objects.values():check(prop.slice_updates==static_updates[prop.object_id],"stationary actors do not rebuild slices "+prop.object_id)
 	check(get_node_count()==warm_nodes,"stationary view never allocates painter nodes")
 	var distant_updates:int=scene.objects.dining_3_7_table.slice_updates
-	pose(Vector2(616,330))
+	dining_pose(Vector2(616,330))
 	check(scene.objects.dining_3_7_table.slice_updates==distant_updates,"movement only updates overlapping furniture")
 	var total_parts:=0;var pool_parts:=0
 	for prop:Node2D in scene.objects.values():total_parts+=prop.parts.size();pool_parts+=prop.part_pool.size()
 	var started:int=Time.get_ticks_usec()
-	for i in range(120):pose(Vector2(616,300+float(i%80)))
+	for i in range(120):dining_pose(Vector2(616,300+float(i%80)))
 	var duration:int=Time.get_ticks_usec()-started
 	var warmed_pool:=0
 	for prop:Node2D in scene.objects.values():warmed_pool+=prop.part_pool.size()
-	for i in range(80):pose(Vector2(616,300+float(i)))
+	for i in range(80):dining_pose(Vector2(616,300+float(i)))
 	var repeated_pool:=0
 	for prop:Node2D in scene.objects.values():repeated_pool+=prop.part_pool.size()
 	check(repeated_pool==warmed_pool,"repeating a walk reuses every existing surface node")

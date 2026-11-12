@@ -26,10 +26,14 @@ func run() -> void:
 	check(state.save_game(),"valid formal baseline persists before DEV")
 	var formal:=JSON.stringify(state.d)
 	var save_hash:=FileAccess.get_sha256(state.SAVE_PATH)
+	var default_brightness: float = state.d.ui.brightness
 	var source_fixtures: Array=state.developer_checkpoints()
+	check(not source_fixtures.is_empty(),"bundled checkpoints load")
 	var source_before:=JSON.stringify(source_fixtures).sha256_text()
 	for fixture: Dictionary in source_fixtures:
 		check(state.begin_checkpoint(str(fixture.id)),"first exact source visit "+str(fixture.id))
+		var expected_brightness := 33.0 if fixture.id == "c2-photo-report" else default_brightness
+		check(is_equal_approx(float(state.d.ui.brightness), expected_brightness), "checkpoint uses the authored phone brightness "+str(fixture.id))
 		var clue_before: Array=state.d.qizhenLake.mapClueIds.duplicate(true)
 		var facts_before: Array=state.d.chapter4.factIds.duplicate(true)
 		# Deliberate DEV-only mutation, never an accepted story action/proof.

@@ -29,7 +29,6 @@ class Passage:
 	var used := false
 
 var cabinets: Array[Rect2] = []
-var fixed_collision_rects: Array[Rect2] = []
 var guardrails: Array[Rect2] = []
 var lanes: Array[Passage] = [Passage.new(), Passage.new()]
 var aperture_x: Vector2
@@ -50,8 +49,6 @@ func _init() -> void:
 		var box := Rules.rect(bounds)
 		# Fallback uses the same floor position as the cabinet tiles.
 		cabinets.append(Rect2(roundf(box.get_center().x - 9.5), box.position.y, 19, box.size.y))
-	for row: Dictionary in layout.fixedCollisionRects:
-		fixed_collision_rects.append(Rules.rect(row.rect))
 	_fit_gate_row()
 
 func bind_cabinets(objects: RefCounted) -> void:
@@ -213,7 +210,6 @@ func _wing(index: int, side: int) -> PackedVector2Array:
 func collision_rects() -> Array[Rect2]:
 	var out: Array[Rect2] = []
 	if not active: return out
-	out.append_array(fixed_collision_rects)
 	out.append_array(guardrails)
 	for index in lanes.size():
 		for side in 2:
