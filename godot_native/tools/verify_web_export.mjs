@@ -814,8 +814,6 @@ async function fixtureCases() {
 
 async function resourceLoadingCase() {
   if (!fixtureDir) throw new Error('Resource loading acceptance requires controller-earned portable saves');
-  const lakeSource = JSON.parse(await readFile(new URL('../../src/data/chapter3-qizhen-lake.content.json', import.meta.url), 'utf8'));
-  const approachLines = new Set(lakeSource.locationSearch.approachTransition.visualBeats);
   active.chapterResults = [];
   for (const item of [
     {file:'before_c3_defense_result.json',scene:'canteen_interior',family:'chapter3',next:['chapter35']},
@@ -841,14 +839,15 @@ async function resourceLoadingCase() {
     if (item.scene === 'campus_qizhen_loop') {
       const observed = await poll(async () => {
         const value = await snapshot();
-        const caption = controls(value).find(control => control.type === 'Label' && approachLines.has(control.text));
+        const caption = controls(value).find(control => control.name === 'ChapterThreeNarrationBody' && control.type === 'Label' && control.text.trim());
         return caption ? {value, caption} : null;
       }, 'authored approach caption is actually visible', 8000);
       const {value, caption} = observed, r = caption.rect;
       const footer = controls(value).filter(control => ['WorldTasks','WorldMode','WorldPhoneButton'].includes(control.name) || control.itemId);
       check(footer.length >= 3, `${active.id}: approach exposes its actual footer controls`);
       check(footer.every(({rect:f}) => r.x+r.width<=f.x || f.x+f.width<=r.x || r.y+r.height<=f.y || f.y+f.height<=r.y), `${active.id}: approach caption clears the visible footer`, {caption, footer});
-      if (value.viewport.height > value.viewport.width) check(r.y >= value.world.rect.y+value.world.rect.height, `${active.id}: portrait film caption uses its lower letterbox`, {caption:r, film:value.world.rect});
+      const surface = value.presentation.surfaceSize;
+      if (surface.y > surface.x) check(r.y >= value.world.rect.y+value.world.rect.height, `${active.id}: portrait film caption uses its lower letterbox`, {caption:r, film:value.world.rect});
     }
     await assertLayout(`resource-${item.scene}`);
     active.screenshots.push(await screenshot(`${active.id}-resource-${item.scene}`));

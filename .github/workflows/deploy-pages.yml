@@ -439,8 +439,11 @@ jobs:
           if (!streaming.requiredFailure?.content.blocking || !streaming.requiredFailure.content.retryVisible || streaming.recovery?.realKeyboardMovement !== true || streaming.recovery.content.blocking) throw Error('Missing required-content failure and real user-retry map recovery');
           const reload = streaming.reload;
           if (!reload || reload.oldDocumentTimeOrigin === reload.newDocumentTimeOrigin || reload.afterEvidence?.chapter !== 2 || !Array.isArray(reload.chapter2HttpRequests) || reload.chapter2HttpRequests.length !== 0) throw Error('Missing cache-only real-document C2 reload');
-          const expectedPacks = streaming.deferredPacks?.filter(pack => pack.family === 'chapter2'), cachedPacks = reload.cache?.packs;
+          const campusFamilies = ['phone_zjuding', 'chapter2', 'chapter2_campus'];
+          const expectedPacks = streaming.deferredPacks?.filter(pack => campusFamilies.includes(pack.family)), cachedPacks = reload.cache?.packs;
           if (!expectedPacks?.length || !Array.isArray(cachedPacks) || cachedPacks.length !== expectedPacks.length || new Set(expectedPacks.map(pack => pack.id)).size !== expectedPacks.length || new Set(cachedPacks.map(pack => pack.id)).size !== cachedPacks.length) throw Error('Missing exact C2 cache coverage');
+          const requiredIds = streaming.requiredFailure.content.requiredIds;
+          if (!campusFamilies.every(family => expectedPacks.some(pack => pack.family === family)) || !Array.isArray(requiredIds) || requiredIds.length !== expectedPacks.length || new Set(requiredIds).size !== requiredIds.length || !expectedPacks.every(pack => requiredIds.includes(pack.id))) throw Error('Campus resume must require precisely the app, shared and campus packs');
           for (const pack of expectedPacks) {
             const cached = cachedPacks.find(value => value.id === pack.id);
             const verified = copy => copy?.complete === true && copy.bytes === pack.bytes && copy.sha256 === pack.sha256;

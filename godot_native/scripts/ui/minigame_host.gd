@@ -868,7 +868,8 @@ func _layout_chase_activity() -> void:
 		native_chase_view.position=picture.position
 		native_chase_view.size=picture.size
 		native_chase_view.fit_resolution(picture.size,density,activity_compact)
-	var controls_y:=safe.end.y-48
+	var control_height:=56.0
+	var controls_y:=size.y-ride_safe_insets.w-8.0-control_height
 	for row: Array in [
 		["left","←","左转",safe.position.x,48],
 		["right","→","右转",safe.position.x+54,48],
@@ -880,7 +881,7 @@ func _layout_chase_activity() -> void:
 		button.text=row[1]
 		button.accessibility_name=row[2]
 		button.tooltip_text=row[2]
-		_put(button,Rect2(row[3],controls_y,row[4],48),18 if row[0] in ["left","right"] else 14)
+		_put(button,Rect2(row[3],controls_y,row[4],control_height),18 if row[0] in ["left","right"] else 14)
 	var hint_width:=minf(450.0,safe.size.x)
 	var hint_y:=safe.end.y-100
 	_put(hint,Rect2(safe.get_center().x-hint_width/2,hint_y,hint_width,44),15)
@@ -1122,12 +1123,15 @@ func _sync_shared_pause() -> void:
 	shared_pause_overlay.set_actions(pause_actions)
 	shared_pause_overlay.present(is_visible_in_tree() and paused and supports_player_pause())
 	pause_button.visible = supports_player_pause() and not paused
+	if mode=="chase":
+		retry_button.visible=not paused
+		exit_button.visible=not paused
 	if paused: start_button.hide()
 
 func _has_pause_action(button: Button) -> bool:
 	if not is_instance_valid(button): return false
-	# Fishing's shared pause surface owns these actions; no duplicate host controls.
-	if mode=="rhythm": return paused and supports_player_pause() and button in [retry_button,exit_button]
+	# These activities expose their secondary actions through the pause surface.
+	if mode in ["rhythm","chase"]: return paused and supports_player_pause() and button in [retry_button,exit_button]
 	return button.visible
 
 func _activate_pause_action(button: Button) -> void:

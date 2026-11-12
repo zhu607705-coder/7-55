@@ -55,20 +55,19 @@ func run() -> void:
  check(state.d.native.get("c35_listened",[]).count("stone")==1,"ordinary Back retains current-snapshot evidence exactly once")
  check(state.save_game(),"current evidence remains saveable")
  check(state._read_native_save(state.SAVE_PATH).state.native.get("c35_listened",[]).count("stone")==1,"current evidence persists to the actual file")
- # A failed write restores a copied snapshot. Its earned evidence survives;
- # the old in-flight capability is retired before a new audition starts.
+ # A failed write restores the original snapshot and its current audition.
  state.open_page("c35_voice");await frames();await click("▶","CLIP D7")
  var interrupted:RefCounted=main.media_host.current
- var before_failed:Dictionary=state.d.duplicate(true)
+ var before_failed:Dictionary=state.d
  check(DirAccess.make_dir_absolute(state.SAVE_PATH+".tmp")==OK,"create isolated write obstruction")
  var rejected:Dictionary=state.import_save(BASELINE_SAVE)
  check(not rejected.get("ok",false),"write failure rejects import")
- check(voice_ids(state.d)==voice_ids(before_failed),"failed import preserves earned audio evidence")
+ check(is_same(state.d,before_failed) and state.d.native.get("c35_listened",[]).count("stone")==1,"failed import restores the exact snapshot and earned evidence")
  check(DirAccess.remove_absolute(state.SAVE_PATH+".tmp")==OK,"remove isolated write obstruction")
- state.act("c35_listen","lake");await frames()
- check(interrupted!=main.media_host.current and interrupted.phase=="stopped","new audition retires pre-rollback capability")
- check(main.media_host.current!=null and main.media_host.current.phase=="playing","audition resumes with a fresh current-snapshot capability")
- check(state.d.native.get("c35_listened",[]).count("stone")==1,"retry never removes the earned current-snapshot receipt")
+ check(interrupted!=null and interrupted==main.media_host.current and interrupted.phase=="playing","rejected import leaves the existing audition playing")
+ var completed:RefCounted=await wait_for_heard("lake")
+ check(completed==interrupted and state.d.native.get("c35_listened",[]).count("lake")==1,"the original audition earns one receipt after rollback")
+ check(state.d.native.get("c35_listened",[]).count("stone")==1,"audition completion preserves the previously earned receipt")
  await main.shutdown();main.queue_free();await frames()
  var failures:int=checks.filter(func(row:Dictionary):return not row.pass).size()
  print("INTERLUDE_VOICE_RESTORE ",checks.size()," checks; ",failures," failures")

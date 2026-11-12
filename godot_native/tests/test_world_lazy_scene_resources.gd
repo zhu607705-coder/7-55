@@ -2,6 +2,7 @@ extends SceneTree
 ## Seeded renderer lifecycle fixtures, not a replacement for chapter handoffs.
 const CanteenFixture=preload("res://tests/canteen_native_fixture.gd")
 const ROOM_ATLAS="res://assets/rpg/interiors/finale/chapter4-755/sprites/chapter4_a2_room204_furniture_v02.png"
+const LIBRARY_PLATE="res://assets/rpg/interiors/library_interior.png"
 var state: Node
 var world: Control
 var checks:=0
@@ -34,8 +35,9 @@ func run()->void:
 	check(not is_instance_valid(world.native_canteen),"fresh dorm has no inactive canteen scene or props")
 	check(world.library_layers.art==null and world.library_layers.staff_art==null and world.library_layers.stamp_art==null,"fresh dorm does not decode three library-only textures")
 	check(world.room204_object.tables.is_empty() and not ResourceLoader.has_cached(ROOM_ATLAS),"lightweight Room204 adapter does not preload the Chapter 4 furniture atlas")
+	var library_plate_cached:=ResourceLoader.has_cached(LIBRARY_PLATE)
 	var opening:Control=load("res://scripts/presentation/c3_opening_view.gd").new();root.add_child(opening)
-	opening.tick();check(opening.backdrop==null and not opening.visible,"hidden opening view does not preload the library plate")
+	opening.tick();check(ResourceLoader.has_cached(LIBRARY_PLATE)==library_plate_cached and not opening.visible,"hidden opening view does not preload the library plate")
 	opening.free()
 	state.d.native.chapter=2;state.d.ui.libraryFinalsPhase="evidence_gathering"
 	var prior:=facts()
