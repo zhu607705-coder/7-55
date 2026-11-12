@@ -34,7 +34,21 @@ fs.mkdirSync(path.join(dest,'data/source'),{recursive:true});
 fs.cpSync(path.join(root,'src/data'),path.join(dest,'data/source'),{recursive:true,filter:(s)=>fs.statSync(s).isDirectory()||s.endsWith('.json')});
 console.log('Applied native Chinese display revisions:', synchronizeSourceTextRevisions(root));
 fs.cpSync(path.join(root,'src/assets'),path.join(dest,'assets'),{recursive:true});
-let assets=[];function walk(p){for(const n of fs.readdirSync(p)){const f=path.join(p,n);if(fs.statSync(f).isDirectory())walk(f);else assets.push({path:'assets/'+path.relative(path.join(root,'src/assets'),f),bytes:fs.statSync(f).size,sha256:crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex')});}}walk(path.join(root,'src/assets'));
+const sourceAssets = path.join(root, 'src/assets');
+const assets = [];
+function walkAssets(directory) {
+ for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+  const file = path.join(directory, entry.name);
+  if (entry.isDirectory()) {
+   walkAssets(file);
+   continue;
+  }
+  const bytes = fs.readFileSync(file);
+  const resourcePath = path.relative(sourceAssets, file).split(path.sep).join('/');
+  assets.push({ path: `assets/${resourcePath}`, bytes: bytes.length, sha256: crypto.createHash('sha256').update(bytes).digest('hex') });
+ }
+}
+walkAssets(sourceAssets);
 fs.writeFileSync(path.join(dest,'data/asset_manifest.json'),JSON.stringify({sourceCommit:'39ccde029b0cd25a6011739a4e4f98f8c898b2c3',assetCount:assets.length,totalBytes:assets.reduce((a,b)=>a+b.bytes,0),assets},null,2)+'\n');console.log('Synchronized initial state, JSON and '+assets.length+' source assets.');
 
 const itemModule=await import('data:text/javascript;base64,'+Buffer.from(stripTypeScriptTypes(fs.readFileSync(path.join(root,'src/data/itemCatalog.ts'),'utf8'),{mode:'transform'})).toString('base64'));

@@ -23,6 +23,8 @@
 *.godot text eol=lf
 *.uid text eol=lf
 *.import text eol=lf
+src/assets/**/*.svg text eol=lf
+src/assets/**/*.txt text eol=lf
 .githooks/* text eol=lf
 *.ps1 text eol=crlf
 *.bat text eol=crlf
