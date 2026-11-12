@@ -78,6 +78,7 @@ func run() -> void:
 			check(button.position.y>=game.size.y-64,"controls sit along the thumb edge")
 		game.press_action("jump","test");game._process(.1)
 		game.configure_activity_layout(Vector2(dims.y,dims.x),true)
+		check(game.shared_pause_overlay.surface.size==game.size,"pause panel follows oriented activity extent independently of the window")
 		check(game.model.held.is_empty() and game.model.charge==0,"rotation clears held input without a release jump")
 		game.restart()
 	game.begin();var reference:=Chase.new();reference.update(.2);game._process(.2)

@@ -14,7 +14,9 @@ func run() -> void:
 	var error: float=0;var length_error: float=0;var seat_error: float=0
 	for steer: float in [-.32,0,.32]:
 		for frame: int in range(121):
-			rider.apply_pose(steer,TAU*frame/120.0)
+			var charge: float=1.0 if frame%3==1 else 0.0
+			var compression: float=.12 if frame%3==2 else 0.0
+			rider.apply_pose(steer,TAU*frame/120.0,false,charge,compression)
 			seat_error=maxf(seat_error,bird.surface_contact("seat","").distance_to(rider.saddle_contact()))
 			for side: String in ["L","R"]:
 				var left: bool=side=="L"

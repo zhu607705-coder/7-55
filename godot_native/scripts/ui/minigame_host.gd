@@ -843,6 +843,7 @@ func _layout_chase_activity() -> void:
 	var signature:=str([size,activity_compact,ride_safe_insets,density,control_buttons.size()])
 	if signature==_overlay_signature:return
 	_overlay_signature=signature
+	shared_pause_overlay.configure_activity_extent(size)
 	var picture:=RideLayout.picture_rect(size)
 	var safe:=Rect2(Vector2(ride_safe_insets.x,ride_safe_insets.y),size-Vector2(ride_safe_insets.x+ride_safe_insets.z,ride_safe_insets.y+ride_safe_insets.w)).grow(-10)
 	var button_width:=maxf(44.0,minf(64.0,safe.size.x*.14))
