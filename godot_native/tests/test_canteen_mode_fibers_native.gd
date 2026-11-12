@@ -25,6 +25,7 @@ func run() -> void:
 	for i in range(20): world.chapter3_layers.tick(.017,state.d)
 	paint(world); await frames()
 	check(view.is_visible_in_tree() and view.samples.size()==4,"production dark mode actually consumes four circle entries")
+	check(view.samples.size()==4 and world.chapter3_layers.doors.opening.has_point(view.samples[2].point),"dark residual sits inside the current side-door opening")
 	check(view.z_index==Prop.draw_layer(1602) and view.get_meta("source_depth")==1602.0,"fiber view preserves source1602 in native layer ordering")
 	check(not view.is_processing() and view.get_parent()==scene.source_space,"native view uses the shared source transform and no second clock")
 	check(scene.entity_surfaces.all(func(e:Dictionary)->bool:return not str(e.node.name).begins_with("mode_fiber")),"circles add no pick or collision surfaces")

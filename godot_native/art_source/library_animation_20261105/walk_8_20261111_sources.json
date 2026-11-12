@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-11",
+  "tool": "Codex built-in image generation",
+  "frames_per_direction": 8,
+  "milliseconds_per_frame": 110,
+  "side": {
+    "source": "originals/walk_8_side_20261111.png",
+    "generated_file": "exec-d0047d14-6ee9-4599-aacb-c5f95cd96d2b.png",
+    "row": 0,
+    "sha256": "0228e3ff39c6b8d717bd6fa9abd42f73b6e4a193187dc194ca898a0590cb796d"
+  },
+  "vertical": {
+    "source": "originals/walk_8_vertical_20261111.png",
+    "generated_file": "exec-2c729989-eea6-48b4-9834-c643114d3adc.png",
+    "rows": [
+      "down",
+      "up"
+    ],
+    "sha256": "8d9313e03f3531de138fbd553e6f79e89578b12602d51b468a69f4e2afa3df1c"
+  },
+  "runtime": "assets/native/library_animation_20261105/player_walk_full.png",
+  "runtime_sha256": "f32f72bc528eb3b9080e3c39645b3c29703596267d64d957bb6851112a3a963a",
+  "previous_atlas": "archived_player_walk_16_20261111.png",
+  "previous_sha256": "d8d65873c3d68e6661bd3599f0d7b1cee252de8d62744933104ed140d18d6a4e"
+}

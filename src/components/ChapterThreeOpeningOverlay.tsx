@@ -67,7 +67,7 @@ function createOpeningBeats(
   const motionDuration = (durationMs: number, reducedDurationMs: number) =>
     reducedMotion ? reducedDurationMs : durationMs;
   const beats: CutsceneBeat[] = [];
-  lines.slice(0, 8).forEach((line, lineIndex) => {
+  lines.slice(0, 6).forEach((line, lineIndex) => {
     beats.push({ phase: "conversation", durationMs: lineDuration(line), lineIndex });
   });
   beats.push({
@@ -76,11 +76,11 @@ function createOpeningBeats(
     lineIndex: null,
     caption: TRANSITION_CAPTIONS.record_scan
   });
-  lines.slice(8, 18).forEach((line, offset) => {
+  lines.slice(6, 13).forEach((line, offset) => {
     beats.push({
       phase: "record_escape",
       durationMs: lineDuration(line),
-      lineIndex: 8 + offset
+      lineIndex: 6 + offset
     });
   });
   beats.push({
@@ -89,11 +89,11 @@ function createOpeningBeats(
     lineIndex: null,
     caption: TRANSITION_CAPTIONS.mode_unlock
   });
-  lines.slice(18, 22).forEach((line, offset) => {
+  lines.slice(13, 14).forEach((line, offset) => {
     beats.push({
       phase: "mode_explanation",
       durationMs: lineDuration(line),
-      lineIndex: 18 + offset
+      lineIndex: 13 + offset
     });
   });
   beats.push({
@@ -102,11 +102,11 @@ function createOpeningBeats(
     lineIndex: null,
     caption: TRANSITION_CAPTIONS.paper_burst
   });
-  lines.slice(22, 26).forEach((line, offset) => {
+  lines.slice(14, 20).forEach((line, offset) => {
     beats.push({
       phase: "paper_dialogue",
       durationMs: lineDuration(line),
-      lineIndex: 22 + offset
+      lineIndex: 14 + offset
     });
   });
   beats.push({

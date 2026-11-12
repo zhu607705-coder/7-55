@@ -15,38 +15,43 @@
       "visualBounds": "background"
     },
     "library_interior": {
-      "projection": "source plate",
+      "projection": "clean library plate, measured at the inner wall and landing edges",
       "groundRegions": [
-        [
-          76,
-          105,
-          1337,
-          723
-        ],
-        [
-          529,
-          803,
-          457,
-          87
-        ],
-        [
-          34,
-          401,
-          42,
-          99
-        ]
+        [50, 94, 1394, 648],
+
+        [50, 74, 37, 20],
+        [87, 87, 105, 7],
+        [192, 74, 174, 20],
+        [366, 86, 82, 8],
+        [448, 74, 186, 20],
+        [634, 87, 79, 7],
+        [713, 74, 190, 20],
+        [903, 91, 60, 3],
+        [963, 87, 491, 7],
+
+        [38, 224, 12, 416],
+        [1444, 94, 10, 146],
+        [1444, 240, 7, 1],
+        [1444, 241, 5, 6],
+        [1444, 247, 4, 2],
+        [1444, 249, 2, 2],
+        [1444, 563, 11, 179],
+
+        [50, 742, 389, 28],
+        [104, 770, 290, 28],
+        [1062, 742, 393, 28],
+        [1096, 770, 283, 28],
+        [523, 742, 455, 63],
+        [536, 805, 433, 84]
       ]
     },
     "canteen_interior": {
       "projection": "source plate with native registered furniture",
       "groundRegions": [
-        [
-          35,
-          51,
-          1609,
-          890
-        ]
-      ]
+        [35, 51, 1609, 865],
+        [1291, 913, 96, 28]
+      ],
+      "registrationNote": "The continuous low south wall starts at the front edge of the bottom aisle. The doorway apron is centered between the food counter's east end and the east wall."
     },
     "theater_interior": {
       "projection": "source plate with native registered stage and seating",

@@ -11,6 +11,14 @@ func _initialize()->void:call_deferred("run")
 func pose(world:Control,point:Vector2)->void:
 	world.player=point;world._sync_player();world.camera=Vector2(836,470.5);world.zoom=.7;world.transition_alpha=0
 	world.native_canteen.configure_view(world.size/2-world.camera*world.zoom,world.zoom,world.player)
+func walk(world:Control,direction:Vector2,frames:int)->bool:
+	world.touch_axis=direction
+	var legal:=true
+	for frame:int in frames:
+		world._process(.05)
+		legal=legal and world.can_stand(world.player)
+	world.touch_axis=Vector2.ZERO
+	return legal
 func opaque_point(world:Control,id:String)->Vector2:
 	var geometry:Dictionary=world.native_canteen.target_geometry(id)
 	if geometry.is_empty():return Vector2.INF
@@ -25,12 +33,40 @@ func run()->void:
 	var state:Node=root.get_node("State");Fixture.install(state)
 	var world:Control=load("res://scripts/world.gd").new();world.size=Vector2(1280,800);root.add_child(world);await process_frame;world.set_process(false)
 	pose(world,Vector2(1194,834));var scene:Node2D=world.native_canteen
-	check(scene.is_active() and scene.floor_sprite.texture.resource_path.ends_with("canteen_empty_floor.png"),"the visible base is the supplied empty floor")
+	var base:Image=scene.textures.empty_floor.get_image()
+	var visible_floor:Image=scene.floor_sprite.texture.get_image()
+	check(scene.is_active() and visible_floor.get_size()==base.get_size() and visible_floor.get_pixel(1342,450)==base.get_pixel(1342,450),"the composite retains the supplied floor outside the repairs")
+	check(base.get_pixel(1265,925).a>.5 and visible_floor.get_pixel(1265,925).a==0.0 and visible_floor.get_pixel(1426,925).a==0.0,"the floor edge erases both retired pillar silhouettes")
+	var paper_exit: Dictionary=scene.layout.side_exit.paperExitPoint
+	check(visible_floor.get_pixel(paper_exit.x,paper_exit.y)==scene.floor_pixels.get_pixel(paper_exit.x,paper_exit.y) and visible_floor.get_pixel(paper_exit.x,paper_exit.y).a>.5,"the rendered landing shares the physics plate")
+	var joined_edge:=true
+	for x in range(75,1644):
+		joined_edge=joined_edge and visible_floor.get_pixel(x,923).a>.5
+	check(joined_edge,"the visible southern edge continues between both side walls and across the sill")
 	check(scene.floor_sprite.z_index>=0,"floor stays above the opaque World canvas background")
 	check(scene.objects.size()>100 and scene.objects.dining_1_1_table.parts.size()>=2,"table/bench furniture has independent native roots and grounded surface pieces")
 	check(scene.dynamic_collisions.size()==13,"original light queue and return-worker thirteen foot solids are preserved")
 	check(world.can_stand(Vector2(1194,834)),"original entrance spawn is physically clear")
 	for point:Vector2 in [Vector2(1473,208),Vector2(1320,400),Vector2(1470,576),Vector2(260,870),Vector2(755,250),Vector2(1349,835)]:check(world.can_stand(point),"authored task approach has a visible clear foot position "+str(point))
+	check(not scene.objects.has("decorative_cart_2") and not scene.objects.has("decorative_cart_3"),"both decorative carts are removed from the lower aisles")
+	check(world.can_stand(Metrics.anchor_from_foot_center(Vector2(1176,697))) and world.can_stand(Metrics.anchor_from_foot_center(Vector2(1082,900))),"both former cart footprints are walkable")
+	for point: Vector2 in [Vector2(558,700),Vector2(558,850),Vector2(1080,850),Vector2(1268,642),Vector2(1274,738)]:
+		check(world.can_stand(Metrics.anchor_from_foot_center(point)),"the former divider's restored floor is walkable at "+str(point))
+	check(not world.can_stand(Metrics.anchor_from_foot_center(Vector2(1040,833))),"the hot counter's existing base still blocks feet")
+	pose(world,Vector2(1133,864))
+	var south_clear:=walk(world,Vector2.DOWN,12)
+	var edge:Vector2=world.player
+	check(south_clear and absf(Metrics.foot_rect(edge,"canteen_interior").end.y-916.0)<.1,"moving south stops with the whole foot box just inside the continuous rim")
+	check(walk(world,Vector2.LEFT,20) and world.player.x<1050 and is_equal_approx(world.player.y,edge.y),"player can move left past the cart's old position after reaching the lower edge")
+	check(walk(world,Vector2.RIGHT,20) and world.player.is_equal_approx(edge),"player can walk back along the same lower edge")
+	var shelf_west:=Metrics.anchor_from_foot_center(Vector2(1400,251))
+	var shelf_east:=Metrics.anchor_from_foot_center(Vector2(1560,251))
+	world._floor_bounds=Rect2(Vector2.ZERO,world.world_size)
+	check(world._floor_segment_clear(shelf_west,shelf_east),"the removed rear shelf bar leaves a clear walking route for the full foot box")
+	pose(world,shelf_west)
+	check(walk(world,Vector2.RIGHT,20) and world.player.x>1540,"directional movement passes through the restored rear shelf aisle")
+	check(walk(world,Vector2.LEFT,20) and world.player.is_equal_approx(shelf_west),"player can return along the rear shelf aisle")
+	pose(world,Vector2(1194,834))
 	var prop:Node2D=scene.objects.dining_1_1_table
 	check(prop.blocks_feet(Rect2(prop.base_position+Vector2(-4,-22),Vector2(8,8))),"table's real base blocks feet")
 	check(not prop.blocks_feet(Rect2(prop.base_position+Vector2(70,-22),Vector2(8,8))),"side aisle is not an invisible furniture rectangle")

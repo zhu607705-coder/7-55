@@ -122,7 +122,12 @@ const entrance=JSON.parse(fs.readFileSync(path.join(root,'data/native/library-en
 const turnstileFeet=[contact(19,88,0,52,19,88)];
 for(const [i,bounds] of entrance.cabinetBounds.entries())add('entrance_turnstile_'+i,'turnstile',bounds,turnstileFeet);
 const plantFeet=[contact(59,94,17,84,44,94)];
-for(const [i,r] of [[71,713,53,77],[83,423,50,90],[28,151,57,82],[920,401,59,99],[1386,434,59,94],[462,704,58,138],[982,706,59,136],[1095,522,47,57],[1235,520,47,59],[1370,648,58,104],[945,20,52,76],[1365,23,45,65],[99,23,35,59],[333,28,31,50],[607,28,31,50],[867,28,31,50]].entries())add('plant_'+i,'plant',r,plantFeet);
+const plantPlacements=[
+ [60,681,53,77], // Beside the water dispenser, inside the southwest wall step.
+ [51,407,50,90], // Inside the blue alcove, away from the counter-side aisle.
+ [28,151,57,82],[920,401,59,99],[1386,434,59,94],[462,704,58,138],[982,706,59,136],[1095,522,47,57],[1235,520,47,59],[1370,648,58,104],[945,20,52,76],[1365,23,45,65],[99,23,35,59],[333,28,31,50],[607,28,31,50],[867,28,31,50]
+];
+for(const [i,r] of plantPlacements.entries())add('plant_'+i,'plant',r,plantFeet);
 for(const [i,x] of [1090,1202,1314].entries())add('south_rail_'+i,'rail',[x,534,114,28],[contact(114,17,0,13,114,17)]);
 // Bottom contacts of the two posts in the transparent rail sprite.
 add('diagonal_rail','diagonal_rail',[925,480,64,65],[],[],{diagonalSolid:true,depthLine:[[.10,.42],[.91,1]]});

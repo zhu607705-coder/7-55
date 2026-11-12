@@ -1,6 +1,7 @@
 extends SceneTree
 const Fibers=preload("res://scripts/presentation/c3_mode_fibers.gd")
 const View=preload("res://scripts/presentation/c3_mode_fiber_view.gd")
+const CanteenLayout=preload("res://scripts/space/canteen_layout.gd")
 var checks:=0
 var failures:=0
 func _initialize() -> void: call_deferred("run")
@@ -11,6 +12,11 @@ func initial(mode: String="dark",reduced: bool=false) -> Dictionary:
 	return {"native":{"scene":"canteen_interior","mode":mode,"settings":{"reduced_motion":reduced}},"canteenHunt":{"phase":"tray_search","mode":mode,"active":true},"items":{"campusCard":true}}
 func run() -> void:
 	var oracle: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/canteen_mode_fibers_source.json"))
+	var exit: Dictionary=CanteenLayout.data().side_exit.target
+	var points: Array[Vector2]=[]
+	for source: Dictionary in oracle.fibers:
+		points.append(Vector2(source.point[0],source.point[1]))
+	points[2]=Vector2(exit.x,exit.y)
 	var state:=initial(); var model:=Fibers.new(); model.sync(state,true)
 	var before:=JSON.stringify(state)
 	for step in range(oracle.deltas.size()):
@@ -20,7 +26,8 @@ func run() -> void:
 		for i in range(4):
 			var source: Dictionary=oracle.fibers[i]
 			var mix_value: float=oracle.loops[i].samples[step]
-			var expected:=Vector2(source.point[0],source.point[1]).lerp(Vector2(source.to[0],source.to[1]),mix_value)
+			var offset:=Vector2(source.to[0]-source.point[0],source.to[1]-source.point[1])
+			var expected:=points[i]+offset*mix_value
 			check(samples[i].point.is_equal_approx(expected) and is_equal_approx(samples[i].alpha,lerpf(source.alpha.from,source.alpha.to,mix_value)),"actual Phaser TweenData position/alpha "+str(step)+":"+str(i))
 			if step==0:
 				check(samples[i].radius==source.radius and samples[i].depth==source.depth and samples[i].color==Color("8be6ff",source.fillAlpha),"source radius, fill and exact depth "+str(i))
@@ -49,7 +56,7 @@ func run() -> void:
 	check(model.entries().is_empty(),"last circle hides after source27ms stagger")
 	state=initial("light",true); model.sync(state,true); state.native.mode="dark"; model.sync(state); model.tick(.06,state)
 	for i in range(4):
-		check(model.entries()[i].point==Fibers.POINTS[i] and is_equal_approx(model.entries()[i].alpha,.45),"reduced source120ms fade has no delay or displacement "+str(i))
+		check(model.entries()[i].point==points[i] and is_equal_approx(model.entries()[i].alpha,.45),"reduced source120ms fade has no delay or displacement "+str(i))
 	model.tick(.06,state); stationary=model.entries(); model.tick(2,state)
 	check(model.entries()==stationary and is_equal_approx(stationary[0].alpha,.9),"reduced mode suppresses indefinite motion and flicker")
 	state=initial("light"); model.sync(state,true); state.native.mode="dark"; model.sync(state); model.tick(.08,state)
@@ -64,7 +71,7 @@ func run() -> void:
 	state.native.scene="campus_bootstrap"; model.sync(state); model.tick(1,state)
 	check(model.entries().is_empty() and model.clock_ms==0,"scene exit clears all fiber motion and clock")
 	state.native.scene="canteen_interior"; model.sync(state)
-	check(model.entries().size()==4 and model.entries()[0].point==Fibers.POINTS[0],"reentry starts only one clean source layer")
+	check(model.entries().size()==4 and model.entries()[0].point==points[0],"reentry starts only one clean source layer")
 	seed(755); var expected_rng:=randi(); seed(755)
 	for i in range(20): model.tick(.017,state); model.entries()
 	check(randi()==expected_rng,"fiber animation never consumes gameplay RNG")

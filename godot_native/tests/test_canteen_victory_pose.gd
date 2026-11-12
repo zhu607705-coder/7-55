@@ -3,6 +3,8 @@ const Chapter=preload("res://scripts/chapters/chapter3.gd")
 const Session=preload("res://scripts/presentation/c3_narrative_session.gd")
 const Model=preload("res://scripts/games/canteen_defense_model.gd")
 const View=preload("res://scripts/presentation/c3_narrative_world_view.gd")
+const CanteenLayout=preload("res://scripts/space/canteen_layout.gd")
+const Door=preload("res://scripts/presentation/interior_door_layer.gd")
 var checks:=0
 var failures:=0
 
@@ -31,11 +33,17 @@ func _initialize() -> void:call_deferred("run")
 func run() -> void:
 	var owner:=Node.new();root.add_child(owner)
 	var oracle: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/canteen_victory_source.json"))
+	var side_exit: Dictionary=CanteenLayout.data().side_exit
+	var native_destination:=Vector2(side_exit.paperExitPoint.x,side_exit.paperExitPoint.y)
+	check(Door.bounds(side_exit.opening).has_point(native_destination),"paper exits through the visible side door")
 	var draw_session: RefCounted
 	for entry: Dictionary in oracle.cases:
 		var state: Dictionary=initial(entry.reduced)
 		state.canteenHunt.phase="chase_ready"
 		var start: Dictionary=entry.initial
+		var source_start:=Vector2(start.point[0],start.point[1])
+		var source_end: Array=entry.samples[-1].point
+		var source_travel:=Vector2(source_end[0],source_end[1])-source_start
 		var authored: Array=[]
 		for line: Dictionary in entry.lines:authored.append(line.text)
 		var session:=Session.new(state,{"id":"canteen_escape","scene":"canteen_interior","paperStart":start.point,"paperFrame":start.frame,"paperFlip":start.flip,"paperAngle":start.angle,"lines":authored,"delayMs":entry.hideAtMs,"stepMs":1200,"tailMs":166 if entry.reduced else 475})
@@ -47,7 +55,9 @@ func run() -> void:
 			advance(session,state,owner,float(sample.atMs))
 			var pose: Dictionary=session.paper_pose()
 			var label: String="reduced=%s frame=%s at=%s" % [entry.reduced,start.frame,sample.atMs]
-			check(pose.point.is_equal_approx(Vector2(sample.point[0],sample.point[1])),"source position "+label)
+			var source_offset:=Vector2(sample.point[0],sample.point[1])-source_start
+			var source_progress:=source_offset.dot(source_travel)/source_travel.length_squared()
+			check(pose.point.is_equal_approx(source_start.lerp(native_destination,source_progress)),"source flight timing mapped to the side exit "+label)
 			check(is_equal_approx(float(pose.scale),1.0) and pose.scaleXY.is_equal_approx(Vector2(sample.scale[0],sample.scale[1])),"source nonuniform scales "+label)
 			check(is_equal_approx(float(pose.angle),float(sample.angle)),"source quadratic angle from terminal angle "+label)
 			check(pose.frame==sample.frame and pose.flip==sample.flip,"frozen run texture/mirror, then idle reset "+label)

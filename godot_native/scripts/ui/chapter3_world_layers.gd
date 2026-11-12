@@ -4,6 +4,7 @@ const Facing=preload("res://scripts/character_facing.gd")
 ## Source-sized Phaser actors and dynamic props. This renderer never writes story facts.
 const Metrics=preload("res://scripts/player_metrics.gd")
 const SpatialRules=preload("res://scripts/space/spatial_rules.gd")
+const CanteenLayout=preload("res://scripts/space/canteen_layout.gd")
 const NPC_FOOT_SIZE:=Vector2(19.5,14.625)
 const QizhenLocker=preload("res://scripts/presentation/qizhen_locker_object.gd")
 var qizhen_locker:RefCounted=QizhenLocker.new()
@@ -87,7 +88,7 @@ func sync(s: Dictionary,scene_changed: bool=false) -> void:
 			var trays: Array=worlds.canteen_interior.constants.CANTEEN_TRAYS
 			for i in range(trays.size()):
 				if str(trays[i].id)==id and i<s.native.get("c3_tray_slots",[]).size():
-					var point: Dictionary=s.native.c3_tray_slots[i]; pickup_start=Vector2(point.x,point.y); pickup_ms=0
+					var point: Dictionary=s.native.c3_tray_slots[i]; pickup_start=Vector2(CanteenLayout.x_on_floor(point.x,"dining_table"),point.y); pickup_ms=0
 		last_carried=s.canteenHunt.carriedTrayIds.duplicate()
 	for entry: Dictionary in worlds.theater_interior.interactionTargets:
 		if entry.get("kind")=="program" and s.theaterHunt.collectedProgramIds.has(entry.programId) and not collected_programs.has(entry.programId):
@@ -160,7 +161,7 @@ func entries(s: Dictionary) -> Array:
 			for group: Array in [["CANTEEN_SEATED_NPC_PLACEMENTS","canteenSeatedStudentsSheetUrl"],["CANTEEN_SEATED_EXTRA_NPC_PLACEMENTS","canteenSeatedStudentsExtraSheetUrl"]]:
 				for i in range(c[group[0]].size()):
 					var p: Dictionary=c[group[0]][i]; var extra: bool=str(group[0]).contains("EXTRA")
-					result.append(_npc(str(group[0])+str(i),group[1],Vector2(p.x,p.y),p.framePair,p.y+120,1.5+(i%3)*.13 if extra else 1.45+(i%4)*.12,310+(i*173)%620 if extra else 220+(i*149)%640,s))
+					result.append(_npc(str(group[0])+str(i),group[1],Vector2(CanteenLayout.seated_x(p,extra),p.y),p.framePair,p.y+120,1.5+(i%3)*.13 if extra else 1.45+(i%4)*.12,310+(i*173)%620 if extra else 220+(i*149)%640,s))
 			var return_p: Dictionary=c.CANTEEN_RETURN_NPC_POSITION
 			result.append(_npc("return_worker","canteenReturnAuntieSheetUrl",Vector2(return_p.x,return_p.y),0,return_p.y+120,1.65,390,s))
 		if shadow_alpha>0:
