@@ -291,17 +291,17 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 		"lib_register_arrival":
 			if phase == "library_entered" and s.native.scene == "library_interior" and not _record_available(s):
 				s.native.lib_admission_recorded = true
-				return _ok("刚刷过卡。打开浙大钉里的图书馆，到座位预约的「我的」里查入馆记录。")
+				return _ok(_guide("currentObjectives","stage_01_check_gate"))
 			return _ok("")
 		"lib_record":
 			if p.entranceRecordRead: return _ok("")
-			if phase != "library_entered" or not _record_available(s): return _ok("请先刷卡入馆。")
+			if phase != "library_entered" or not _record_available(s): return _ok(_guide("operationRecovery","enter_library_without_gate"))
 			p.entranceRecordRead = true
 			_unique(p.clueIds,"arrival_7_minutes")
 			_request_story(s,"library_gate_record_checked")
 			return _ok("")
 		"lib_backpack":
-			if not p.entranceRecordRead or phase not in ["library_entered","occupied_seat_found"] or s.native.scene != "library_interior": return _ok("请先在座位预约的「我的」中核对入馆记录。")
+			if not p.entranceRecordRead or phase not in ["library_entered","occupied_seat_found"] or s.native.scene != "library_interior": return _ok(_guide("currentObjectives","stage_01_check_gate"))
 			if p.backpackInspected: return _ok("")
 			p.backpackInspected = true
 			s.ui.libraryFinalsPhase = "occupied_seat_found"
@@ -540,14 +540,14 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			_request_story(s,"library_seat_release_pass_issued")
 			return _ok("")
 		"lib_apply_pass":
-			if phase != "pass_ready" or not p.evictionPassGenerated or not items.seatReleasePass or s.native.scene != "library_interior": return _ok("书包只接受有效的解除占座 PASS。")
+			if phase != "pass_ready" or not p.evictionPassGenerated or not items.seatReleasePass or s.native.scene != "library_interior": return _ok(_guide("operationRecovery","backpack_wrong_item_used"))
 			p.backpackEvicted = true
 			items.seatReleasePass = false
 			s.ui.libraryFinalsPhase = "backpack_removed"
 			_request_story(s,"library_backpack_evicted")
 			return _ok("")
 		"lib_sit":
-			if phase != "backpack_removed" or not p.backpackEvicted or s.native.scene != "library_interior": return _ok("座位仍被占用。")
+			if phase != "backpack_removed" or not p.backpackEvicted or s.native.scene != "library_interior": return _ok(_guide("operationRecovery","seat_click_while_occupied"))
 			p.playerSeated = true
 			s.ui.librarySelectedSeat = "022"
 			s.ui.librarySeatReserved = true
@@ -597,9 +597,9 @@ func objective(s: Dictionary) -> String:
 	match _phase(s):
 		"idle", "library_route_unlocked": return "前往基础图书馆寻找系统的朋友"
 		"library_entered":
-			if p.entranceRecordRead: return "前往一层书库寻找 022"
-			return "打开浙大钉里的图书馆，在座位预约的「我的」中查看入馆记录" if _record_available(s) else "刷卡进入基础图书馆"
-		"occupied_seat_found": return "检查 022 书包旁的纸条"
+			if p.entranceRecordRead: return _guide("currentObjectives","stage_02_find_022")
+			return _guide("currentObjectives","stage_01_check_gate")
+		"occupied_seat_found": return _guide("currentObjectives","stage_03_pick_note")
 		"evidence_gathering":
 			if not p.investigationOpened: return _guide("currentObjectives","stage_04_search_cc98")
 			if not p.callNumberCollected: return _guide("currentObjectives","stage_06_query_catalog")

@@ -454,11 +454,11 @@ func _home() -> Control:
 		drop.position = target.position
 		drop.size = target.size
 		drop.accessibility_name = "雨滴"
-		var hint_text := "把耳机拖到雨滴上接水" if s.items.headphone else "按住雨滴往下拖"
+		var hint_text := "光靠手心可兜不住水。" if s.items.headphone else "雨滴挂在边缘，似乎再借一点向下的力就会落下来。"
 		drop.tooltip_text = hint_text
 		_panel(drop,Rect2(10,4,8,14),Color("7db6ec")).name = "HomeCollectibleDropGlyph"
 		root.add_child(drop)
-		var hint := _label(root,"",_home_rect(37,221,168,17),12,BLUE)
+		var hint := _label(root,"",_home_rect(37,221,168,30),12,BLUE)
 		drop.inspected.connect(func(): hint.text = hint_text)
 		drop.pulled.connect(func(): action_requested.emit("c1_rain_drop", "pull"))
 		drop.item_dropped.connect(func(item: String): action_requested.emit("c1_rain_fill", item))

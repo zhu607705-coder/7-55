@@ -146,9 +146,9 @@ func _sources(b,root: Control,p: Dictionary) -> void:
 	var trip: Dictionary=content.library.audit.arrivalTrip
 	var travel_record: String="%s %s出发 → %s %s入馆\n填从出发到入馆的分钟数。" % [trip.departureTime,trip.departurePlace,trip.arrivalTime,trip.arrivalPlace]
 	var entries=[
-		["01 入馆记录 · 核对到馆时长",travel_record if p.entranceRecordRead else "未取得 · 在图书馆座位预约的「我的」中查看入馆记录"],
-		["02 论坛公示 · 关联原始记录","23 楼编辑：本次 022 公示记录编号 %s\n用来关联公示，不填楼层、排名或 BD 口令" % int(content.cc98.post.publicNoticeFloor) if p.investigationOpened else "未取得 · 在 022 座位拿到占座纸条，用它打开 CC98 调查帖"],
-		["03 旧版规则 · 核对材料完整性","本人确实到馆；目标座位与凭据一致；当前占用物不具备本人身份。\n填写要求的类别数，不是背包中的道具总数" if p.archivedRuleRead else "未取得 · 按索书号找到 06 架南端上层的 755 号书，抽出并读完规则"]
+		["01 入馆记录 · 核对到馆时长",travel_record if p.entranceRecordRead else "未取得 · 还缺你的刷卡入馆记录"],
+		["02 论坛公示 · 关联原始记录","23 楼编辑：本次 022 公示记录编号 %s\n用来关联公示，不填楼层、排名或 BD 口令" % int(content.cc98.post.publicNoticeFloor) if p.investigationOpened else "未取得 · 还缺与 022 会话关联的公示编号"],
+		["03 旧版规则 · 核对材料完整性","本人确实到馆；目标座位与凭据一致；当前占用物不具备本人身份。\n填写要求的类别数，不是背包中的道具总数" if p.archivedRuleRead else "未取得 · 还缺旧版规则列出的证明类别"]
 	]
 	for i in range(entries.size()):
 		var y=706+i*150

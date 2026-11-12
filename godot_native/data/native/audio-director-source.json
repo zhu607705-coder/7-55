@@ -6518,7 +6518,7 @@
     "act2_character_cannot_hear": {
       "kind": "taunt",
       "speaker": "system",
-      "subtitleZh": "别戳他了，他听不见。没绑定姓名和学号之前，他就是个没加载完的默认建模。"
+      "subtitleZh": "别戳他了，他听不见。连自己叫什么、学号多少都还不清楚，他只是个没加载完的默认建模。"
     },
     "act2_character_named": {
       "kind": "taunt",
@@ -6573,7 +6573,7 @@
     "library_story_library_entered_02": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "在入馆闸机最后的登记记录里。她一直待在一层书库。"
+      "subtitleZh": "在入馆最后的登记记录里，她一直待在一层书库。"
     },
     "library_story_library_entered_03": {
       "kind": "dialogue",
@@ -6623,17 +6623,17 @@
     "library_story_library_entered_12": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "先刷卡进馆。入馆记录在手机图书馆的座位预约里，点「我的」就能查。"
+      "subtitleZh": "进馆得先过门禁留痕。核对好你的入馆登记，我们再去书库找她。"
     },
     "library_story_library_gate_record_checked_01": {
       "kind": "dialogue",
       "speaker": "narrator",
-      "subtitleZh": "手机屏幕显示：08:02 刷卡入馆，一层书库 022 会话未闭合。"
+      "subtitleZh": "记录显示：08:02 刷卡入馆，一层书库 022 会话未闭合。"
     },
     "library_story_library_gate_record_checked_02": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "入馆记录确认了。进馆去一层书库 022，对照桌牌找到座位。"
+      "subtitleZh": "门禁状态对上了。去书库深处看看那位“老朋友”吧。"
     },
     "library_story_library_occupied_seat_found_01": {
       "kind": "dialogue",
@@ -6643,22 +6643,22 @@
     "library_story_library_occupied_seat_found_02": {
       "kind": "dialogue",
       "speaker": "narrator",
-      "subtitleZh": "022 座位被一个书包占着，旁边压着一张占座纸条。"
+      "subtitleZh": "022 座位被一个书包稳稳占着，旁边还压着半截字条。"
     },
     "library_story_library_occupied_seat_found_03": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "明明预约了 022，位置却被书包占了。"
+      "subtitleZh": "明明预约了 022，位置却被占了。"
     },
     "library_story_library_occupied_seat_found_04": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "先别直接挪动它。拿起旁边的占座纸条看看上面写了什么。"
+      "subtitleZh": "贸然动手会被判违规。先看看现场留下了什么说法。"
     },
     "library_story_library_occupation_note_picked_01": {
       "kind": "dialogue",
       "speaker": "narrator",
-      "subtitleZh": "占座纸条上写着：“主人马上回来（临时离座规则详见 CC98）”，落款时间停在 08:02。"
+      "subtitleZh": "字条上写着：“主人马上回来（临时离座规则详见 CC98）”，落款时间停在 08:02。"
     },
     "library_story_library_occupation_note_picked_02": {
       "kind": "dialogue",
@@ -6668,22 +6668,22 @@
     "library_story_library_occupation_note_picked_03": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "打开手机里的 CC98，用纸条上的关键词搜出 022 的调查帖。"
+      "subtitleZh": "毕竟是桩悬案。顺着字条上的话，去热闹的地方打听一下 022 的来龙去脉吧。"
     },
     "library_story_cc98_occupation_post_opened_01": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "翻看帖子里提到的旧规书名，确认怎么处理超时占座。"
+      "subtitleZh": "帖子里人多嘴杂，看看有没有人提到真正的旧规条文。"
     },
     "library_story_cc98_occupation_post_opened_02": {
       "kind": "dialogue",
       "speaker": "player",
-      "subtitleZh": "12 楼提到一本《三分钟离座法及其例外》。"
+      "subtitleZh": "有人提到一本《三分钟离座法及其例外》。"
     },
     "library_story_cc98_occupation_post_opened_03": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "把书名记进任务记录。去馆内的馆藏检索终端查这本书的架位。"
+      "subtitleZh": "既然馆里有这本册子，总能查到它收在哪一排架子上。"
     },
     "library_story_library_catalog_match_found_01": {
       "kind": "dialogue",
@@ -6693,7 +6693,7 @@
     "library_story_library_catalog_match_found_02": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "架位已经记下了。去基础馆一层 06 架南端上层，抽出索书号 755 的旧版离座规则。"
+      "subtitleZh": "位置清楚了。按着编号找过去，把那本旧规翻出来看看。"
     },
     "library_story_library_archived_rule_recovered_01": {
       "kind": "dialogue",
@@ -6708,7 +6708,7 @@
     "library_story_library_archived_rule_recovered_03": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "它要求集齐三类申请证明，还要连同本册规则一起发到 CC98 完成四项公开公示。"
+      "subtitleZh": "它要求集齐三类申请证明，还要连同本册规则一起公开公示。"
     },
     "library_story_library_archived_rule_recovered_04": {
       "kind": "dialogue",
@@ -6718,12 +6718,12 @@
     "library_story_library_archived_rule_recovered_05": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "规则只认材料：022 座位小票、本人来过证明、书包非本人证明。"
+      "subtitleZh": "规则只认材料：座位原本的凭据、你按时到场的记录，还有那只书包不是人的证明。"
     },
     "library_story_library_archived_rule_recovered_06": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "三条取证线已经记入任务记录。先回 022 桌面夹缝和书包现场取证，或去前台和体艺处理。"
+      "subtitleZh": "要求都记下了。从现场、服务窗口或者你的随身软件里，把这三样东西凑齐吧。"
     },
     "library_story_library_front_desk_proof_request_01": {
       "kind": "dialogue",
@@ -6738,7 +6738,7 @@
     "library_story_library_front_desk_proof_request_03": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "系统里它目前登记为座位使用者。请先回 022 给书包拍照，与相册里的旧照完成核对，再把生成的核验报告交来前台盖章。"
+      "subtitleZh": "系统里它目前登记为座位使用者。得先拍下它的标签，和存档的旧照比对出报告，我这里才能盖章。"
     },
     "library_story_library_front_desk_proof_request_04": {
       "kind": "dialogue",
@@ -6748,7 +6748,7 @@
     "library_story_library_front_desk_proof_request_05": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "注意把相机显示亮度调到 20 以下，否则书包标签过曝无法识别。"
+      "subtitleZh": "顺便提醒一句，那块标签材质很吃光，画面太亮的话什么字都拍不出来。"
     },
     "library_story_library_bag_nonperson_proof_issued_01": {
       "kind": "dialogue",
@@ -6758,7 +6758,7 @@
     "library_story_library_bag_nonperson_proof_issued_02": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "《书包非本人证明》拿到了。打开任务记录查看还缺哪项材料；若三份证明已齐，就回 CC98 调查帖上传公示。"
+      "subtitleZh": "《书包非本人证明》到手了。看看那三样材料还差多少，凑齐了就能去走公示流程。"
     },
     "library_story_library_bag_nonperson_proof_issued_03": {
       "kind": "dialogue",
@@ -6768,22 +6768,22 @@
     "library_story_library_crevice_inspected_01": {
       "kind": "dialogue",
       "speaker": "narrator",
-      "subtitleZh": "022 桌面夹缝深处卡着一张座位小票，徒手伸不进去。"
+      "subtitleZh": "缝隙深处卡着一张纸片，徒手伸不进去。"
     },
     "library_story_library_crevice_inspected_02": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "直接拿够不到。找找身边或桌面上有没有细长硬实的物件，把 022 座位小票拨出来。"
+      "subtitleZh": "指尖差了一截。得借个顺手的小物件把它拨出来。"
     },
     "library_story_library_seat_receipt_recovered_01": {
       "kind": "dialogue",
       "speaker": "narrator",
-      "subtitleZh": "小票从桌面夹缝里滑了出来，上面印着：基础馆一层 022。"
+      "subtitleZh": "纸片从缝隙里滑了出来，上面印着：基础馆一层 022。"
     },
     "library_story_library_seat_receipt_recovered_02": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "《022 座位小票》拿到了。可查看任务记录继续补齐剩余证明，集齐后回 CC98 调查帖公示。"
+      "subtitleZh": "《022 座位小票》拿到了。离凑齐全部材料又近了一步。"
     },
     "library_story_tiyi_presence_proof_issued_01": {
       "kind": "dialogue",
@@ -6803,7 +6803,7 @@
     "library_story_tiyi_presence_proof_issued_04": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "到馆记录已归档。按任务记录核对剩余缺项；若三项证明均已备齐，即可回 CC98 调查帖上传公示。"
+      "subtitleZh": "到馆记录也归档了。核对一下手头的材料，齐了就可以去把它们公之于众。"
     },
     "library_story_cc98_evidence_set_completed_01": {
       "kind": "dialogue",
@@ -6813,7 +6813,7 @@
     "library_story_cc98_evidence_set_completed_02": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "还差公开确认。看置顶说明：按上传栏从上到下的顺序，给每项材料找一条对应的数字回复点 bd，拼出四位热度口令。"
+      "subtitleZh": "贴上去只是第一步，帖子没热度可不算公示生效。留意楼里的规则说明，把对应的数字顶上去。"
     },
     "library_story_cc98_evidence_set_completed_03": {
       "kind": "dialogue",
@@ -6823,7 +6823,7 @@
     "library_story_cc98_evidence_set_completed_04": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "bd 是“帮顶”。每点一次数字回复上的 bd，对应数字就会按顺序写入热度口令。"
+      "subtitleZh": "bd 是“帮顶”。每顶一次带数字的楼层，那个数字就会写进热度口令里。"
     },
     "library_story_cc98_top_ten_reached_01": {
       "kind": "dialogue",
@@ -6833,12 +6833,12 @@
     "library_story_cc98_top_ten_reached_02": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "公示完成了。打开手机里的「图书馆服务 → 022 恢复申请」，提交三份申请证明领取解除占座 PASS。"
+      "subtitleZh": "公示这关过了。接下来去办正式的座位恢复手续，把清退许可领出来吧。"
     },
     "library_story_library_seat_release_pass_issued_01": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "《解除占座 PASS》已发放。带它回一层书库 022，把解除占座 PASS 用在书包上。"
+      "subtitleZh": "《解除占座 PASS》批下来了。是时候回去请那位占座的“常客”让位了。"
     },
     "library_story_library_seat_release_pass_issued_02": {
       "kind": "dialogue",
@@ -6873,7 +6873,7 @@
     "library_story_library_backpack_evicted_06": {
       "kind": "dialogue",
       "speaker": "system",
-      "subtitleZh": "占座纸条上的这句话已经留了三天。现在 022 空出来了，坐下吧。"
+      "subtitleZh": "纸条上的这句话已经留了三天。现在位置腾出来了。"
     },
     "library_story_library_friend_contacted_01": {
       "kind": "dialogue",

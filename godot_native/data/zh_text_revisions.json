@@ -250,7 +250,7 @@
         "subtitleZh"
       ],
       "oldText": "他听不到你说话。现在的他连一个能回应的名字都没有。",
-      "newText": "别戳他了，他听不见。没绑定姓名和学号之前，他就是个没加载完的默认建模。",
+      "newText": "别戳他了，他听不见。连自己叫什么、学号多少都还不清楚，他只是个没加载完的默认建模。",
       "recordIds": [
         "T00428"
       ],
@@ -656,7 +656,7 @@
         "text"
       ],
       "oldText": "她最后留下入馆记录的地方。",
-      "newText": "在入馆闸机最后的登记记录里。她一直待在一层书库。",
+      "newText": "在入馆最后的登记记录里，她一直待在一层书库。",
       "recordIds": [
         "T03306"
       ],
@@ -895,7 +895,7 @@
         "text"
       ],
       "oldText": "这张记录没有固定时长。先在门口闸机核对入馆记录。",
-      "newText": "先刷卡进馆。入馆记录在手机图书馆的座位预约里，点「我的」就能查。",
+      "newText": "进馆得先过门禁留痕。核对好你的入馆登记，我们再去书库找她。",
       "proposalId": "library-phone-arrival-record"
     },
     {
@@ -907,8 +907,1241 @@
         "text"
       ],
       "oldText": "闸机屏幕亮起：08:02 刷卡入馆，一层书库 022 会话未闭合。",
-      "newText": "手机屏幕显示：08:02 刷卡入馆，一层书库 022 会话未闭合。",
+      "newText": "记录显示：08:02 刷卡入馆，一层书库 022 会话未闭合。",
       "proposalId": "library-phone-arrival-record"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_gate_record_checked",
+        1,
+        "text"
+      ],
+      "oldText": "入馆记录确认了。进馆去一层书库 022，对照桌牌找到座位。",
+      "newText": "门禁状态对上了。去书库深处看看那位“老朋友”吧。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_occupied_seat_found",
+        1,
+        "text"
+      ],
+      "oldText": "022 座位被一个书包占着，旁边压着一张占座纸条。",
+      "newText": "022 座位被一个书包稳稳占着，旁边还压着半截字条。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_occupied_seat_found",
+        2,
+        "text"
+      ],
+      "oldText": "明明预约了 022，位置却被书包占了。",
+      "newText": "明明预约了 022，位置却被占了。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_occupied_seat_found",
+        3,
+        "text"
+      ],
+      "oldText": "先别直接挪动它。拿起旁边的占座纸条看看上面写了什么。",
+      "newText": "贸然动手会被判违规。先看看现场留下了什么说法。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_occupation_note_picked",
+        0,
+        "text"
+      ],
+      "oldText": "占座纸条上写着：“主人马上回来（临时离座规则详见 CC98）”，落款时间停在 08:02。",
+      "newText": "字条上写着：“主人马上回来（临时离座规则详见 CC98）”，落款时间停在 08:02。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_occupation_note_picked",
+        2,
+        "text"
+      ],
+      "oldText": "打开手机里的 CC98，用纸条上的关键词搜出 022 的调查帖。",
+      "newText": "毕竟是桩悬案。顺着字条上的话，去热闹的地方打听一下 022 的来龙去脉吧。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "cc98_occupation_post_opened",
+        0,
+        "text"
+      ],
+      "oldText": "翻看帖子里提到的旧规书名，确认怎么处理超时占座。",
+      "newText": "帖子里人多嘴杂，看看有没有人提到真正的旧规条文。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "cc98_occupation_post_opened",
+        1,
+        "text"
+      ],
+      "oldText": "12 楼提到一本《三分钟离座法及其例外》。",
+      "newText": "有人提到一本《三分钟离座法及其例外》。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "cc98_occupation_post_opened",
+        2,
+        "text"
+      ],
+      "oldText": "把书名记进任务记录。去馆内的馆藏检索终端查这本书的架位。",
+      "newText": "既然馆里有这本册子，总能查到它收在哪一排架子上。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_catalog_match_found",
+        1,
+        "text"
+      ],
+      "oldText": "架位已经记下了。去基础馆一层 06 架南端上层，抽出索书号 755 的旧版离座规则。",
+      "newText": "位置清楚了。按着编号找过去，把那本旧规翻出来看看。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_archived_rule_recovered",
+        2,
+        "text"
+      ],
+      "oldText": "它要求集齐三类申请证明，还要连同本册规则一起发到 CC98 完成四项公开公示。",
+      "newText": "它要求集齐三类申请证明，还要连同本册规则一起公开公示。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_archived_rule_recovered",
+        4,
+        "text"
+      ],
+      "oldText": "规则只认材料：022 座位小票、本人来过证明、书包非本人证明。",
+      "newText": "规则只认材料：座位原本的凭据、你按时到场的记录，还有那只书包不是人的证明。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_archived_rule_recovered",
+        5,
+        "text"
+      ],
+      "oldText": "三条取证线已经记入任务记录。先回 022 桌面夹缝和书包现场取证，或去前台和体艺处理。",
+      "newText": "要求都记下了。从现场、服务窗口或者你的随身软件里，把这三样东西凑齐吧。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_front_desk_proof_request",
+        2,
+        "text"
+      ],
+      "oldText": "系统里它目前登记为座位使用者。请先回 022 给书包拍照，与相册里的旧照完成核对，再把生成的核验报告交来前台盖章。",
+      "newText": "系统里它目前登记为座位使用者。得先拍下它的标签，和存档的旧照比对出报告，我这里才能盖章。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_front_desk_proof_request",
+        4,
+        "text"
+      ],
+      "oldText": "注意把相机显示亮度调到 20 以下，否则书包标签过曝无法识别。",
+      "newText": "顺便提醒一句，那块标签材质很吃光，画面太亮的话什么字都拍不出来。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_bag_nonperson_proof_issued",
+        1,
+        "text"
+      ],
+      "oldText": "《书包非本人证明》拿到了。打开任务记录查看还缺哪项材料；若三份证明已齐，就回 CC98 调查帖上传公示。",
+      "newText": "《书包非本人证明》到手了。看看那三样材料还差多少，凑齐了就能去走公示流程。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_crevice_inspected",
+        0,
+        "text"
+      ],
+      "oldText": "022 桌面夹缝深处卡着一张座位小票，徒手伸不进去。",
+      "newText": "缝隙深处卡着一张纸片，徒手伸不进去。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_crevice_inspected",
+        1,
+        "text"
+      ],
+      "oldText": "直接拿够不到。找找身边或桌面上有没有细长硬实的物件，把 022 座位小票拨出来。",
+      "newText": "指尖差了一截。得借个顺手的小物件把它拨出来。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_seat_receipt_recovered",
+        0,
+        "text"
+      ],
+      "oldText": "小票从桌面夹缝里滑了出来，上面印着：基础馆一层 022。",
+      "newText": "纸片从缝隙里滑了出来，上面印着：基础馆一层 022。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_seat_receipt_recovered",
+        1,
+        "text"
+      ],
+      "oldText": "《022 座位小票》拿到了。可查看任务记录继续补齐剩余证明，集齐后回 CC98 调查帖公示。",
+      "newText": "《022 座位小票》拿到了。离凑齐全部材料又近了一步。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "tiyi_presence_proof_issued",
+        3,
+        "text"
+      ],
+      "oldText": "到馆记录已归档。按任务记录核对剩余缺项；若三项证明均已备齐，即可回 CC98 调查帖上传公示。",
+      "newText": "到馆记录也归档了。核对一下手头的材料，齐了就可以去把它们公之于众。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "cc98_evidence_set_completed",
+        1,
+        "text"
+      ],
+      "oldText": "还差公开确认。看置顶说明：按上传栏从上到下的顺序，给每项材料找一条对应的数字回复点 bd，拼出四位热度口令。",
+      "newText": "贴上去只是第一步，帖子没热度可不算公示生效。留意楼里的规则说明，把对应的数字顶上去。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "cc98_evidence_set_completed",
+        3,
+        "text"
+      ],
+      "oldText": "bd 是“帮顶”。每点一次数字回复上的 bd，对应数字就会按顺序写入热度口令。",
+      "newText": "bd 是“帮顶”。每顶一次带数字的楼层，那个数字就会写进热度口令里。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "cc98_top_ten_reached",
+        1,
+        "text"
+      ],
+      "oldText": "公示完成了。打开手机里的「图书馆服务 → 022 恢复申请」，提交三份申请证明领取解除占座 PASS。",
+      "newText": "公示这关过了。接下来去办正式的座位恢复手续，把清退许可领出来吧。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_seat_release_pass_issued",
+        0,
+        "text"
+      ],
+      "oldText": "《解除占座 PASS》已发放。带它回一层书库 022，把解除占座 PASS 用在书包上。",
+      "newText": "《解除占座 PASS》批下来了。是时候回去请那位占座的“常客”让位了。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "storyDialogues",
+        "library_backpack_evicted",
+        5,
+        "text"
+      ],
+      "oldText": "占座纸条上的这句话已经留了三天。现在 022 空出来了，坐下吧。",
+      "newText": "纸条上的这句话已经留了三天。现在位置腾出来了。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "cc98",
+        "storyReplies",
+        2,
+        "text"
+      ],
+      "oldText": "看4楼说的确实核对不上。真要查旧版离座处理办法，去馆内的「馆藏检索终端」搜《三分钟离座法及其例外》，按查到的架位去书架上把原书抽出来看。",
+      "newText": "看4楼说的确实核对不上。真要查旧版离座处理办法，馆里其实还收着那本《三分钟离座法及其例外》，查到架位就能翻看原书。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "cc98",
+        "storyReplies",
+        4,
+        "text"
+      ],
+      "oldText": "【置顶说明】我把四份公开材料的核对办法整理一下，免得大家被楼里的其他数字带跑。\n按上传栏从上到下的顺序来：\n① 旧版离座规则：数恢复申请要求的证明类别数。\n② 书包非本人证明：数姓名、学号、人格中通过核验的项目数。\n③ 022 座位小票：取座位编号 022 的最后一位数字。\n④ 本人来过证明：取证明上写的到馆时长。\n拿自己的材料核对后，按这个顺序给对应的四条数字回复点 bd；每点一次，就把那条回复的数字接到口令末尾。公示编号、索书号和帖子排名都不是这四项。",
+      "newText": "【置顶说明】四份公开材料的核对口令要按上传栏从上到下的顺序排：\n① 旧版离座规则：看恢复申请要求的证明分几大类。\n② 书包非本人证明：看姓名、学号、人格里有几项通过核验。\n③ 022 座位小票：看座位编号的末尾数字。\n④ 本人来过证明：看上面记载的到馆耗时。\n对照手头的材料，按顺序给四条对应的数字回复点 bd；公示编号、索书号和帖子排名都是干扰项。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "cc98",
+        "storyReplies",
+        5,
+        "text"
+      ],
+      "oldText": "022 这次会话挂在公示记录编号 47 下。去浙大体艺做本人来过补录时要用这个编号 47，把本人来过证明关联到同一份公示；别填本楼楼层 23，也别填帖子排名。等四项材料上传并顶上十大第一完成公示后，去「图书馆服务 → 022 恢复申请」提交三份申请证明，就能领到解除占座 PASS。",
+      "newText": "补充一下：022 这次会话挂在公示记录编号 47 下，补录到场证明时关联的就是这个 47（别错填成楼层或排名）。等四项材料传完、帖子冲上十大第一后，凭三份证明原件就能去办座位恢复申请了。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "cc98",
+        "evidenceSlots",
+        0,
+        "source"
+      ],
+      "oldText": "基础馆一层 · 06架南端上层（索书号 755）",
+      "newText": "馆藏《三分钟离座法及其例外》"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "cc98",
+        "evidenceSlots",
+        1,
+        "source"
+      ],
+      "oldText": "022 拍书包核对相册后交前台盖章",
+      "newText": "实名核验盖章件"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "cc98",
+        "evidenceSlots",
+        2,
+        "source"
+      ],
+      "oldText": "一层书库 022 桌面夹缝",
+      "newText": "022 现场原始票据"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "cc98",
+        "evidenceSlots",
+        2,
+        "infoType"
+      ],
+      "oldText": "座位编号 022 的末位数字",
+      "newText": "座位编号的末位数字"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "cc98",
+        "evidenceSlots",
+        3,
+        "source"
+      ],
+      "oldText": "浙大体艺本人来过补录单",
+      "newText": "行程补录审核件"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "cc98",
+        "evidenceSlots",
+        3,
+        "infoType"
+      ],
+      "oldText": "从刷卡入馆到抵达 022 的分钟差",
+      "newText": "从出发至入馆的分钟差"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "cc98",
+        "bdPassword",
+        "prompt"
+      ],
+      "oldText": "按上传栏从上到下，给每项证据找一条对应数字回复。",
+      "newText": "按上传栏从上到下的顺序，将每项材料的特征数字顶入热度口令。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "cc98",
+        "bdPassword",
+        "clues",
+        0,
+        "instruction"
+      ],
+      "oldText": "数恢复申请要求的证明类别数",
+      "newText": "恢复申请要求的证明类别数"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "cc98",
+        "bdPassword",
+        "clues",
+        1,
+        "instruction"
+      ],
+      "oldText": "数姓名、学号、人格通过核验项数",
+      "newText": "姓名、学号、人格通过核验项数"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "cc98",
+        "bdPassword",
+        "clues",
+        2,
+        "instruction"
+      ],
+      "oldText": "取座位编号 022 的末位数字",
+      "newText": "座位编号的末位数字"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "cc98",
+        "bdPassword",
+        "clues",
+        3,
+        "instruction"
+      ],
+      "oldText": "取证明上写的到馆时长",
+      "newText": "证明记载的到馆时长"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "entryRecord",
+        "note"
+      ],
+      "oldText": "07:55 从紫云五舍出发，08:02 在基础图书馆刷卡入馆。请前往一层书库 022 核对现场状态。",
+      "newText": "07:55 从紫云五舍出发，08:02 在基础图书馆刷卡入馆。预约座位仍处于未闭合状态。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "catalogResults",
+        0,
+        "note"
+      ],
+      "oldText": "本书不可外借，请在 06 架南端上层现场翻阅。内含 022 座位恢复所需的三类证明要求及公示前置说明。",
+      "newText": "本书不可外借，仅供架位现场翻阅。内含座位恢复所需的三类证明规范及公示前置要求。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "catalogResults",
+        1,
+        "note"
+      ],
+      "oldText": "写的是去走廊接水，碰上熟人聊半小时还算不算离席。没有 022 的座位恢复条款。",
+      "newText": "写的是去走廊接水，碰上熟人聊半小时还算不算离席。没有座位恢复条款。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "catalogResults",
+        2,
+        "note"
+      ],
+      "oldText": "拿保温杯和草稿纸举例，讲怎么看出人刚离开。没有 022 的附件。",
+      "newText": "拿保温杯和草稿纸举例，讲怎么看出人刚离开。没有相关附件。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "catalogResults",
+        4,
+        "note"
+      ],
+      "oldText": "解释为什么一排空椅子前都放着《微积分》。没写怎么处理占座书包。",
+      "newText": "解释为什么一排空椅子前都放着《微积分》。没写怎么处理占座物。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "catalogResults",
+        5,
+        "note"
+      ],
+      "oldText": "这是科幻小说，题名与调查帖提到的《三分钟离座法及其例外》不符。",
+      "newText": "这是科幻小说，与要查的旧版离座规则无关。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "catalogResults",
+        6,
+        "note"
+      ],
+      "oldText": "这是科幻小说，题名与调查帖提到的《三分钟离座法及其例外》不符。",
+      "newText": "这是科幻小说，与要查的旧版离座规则无关。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "catalogResults",
+        7,
+        "note"
+      ],
+      "oldText": "这是科幻小说，题名与调查帖提到的《三分钟离座法及其例外》不符。",
+      "newText": "这是科幻小说，与要查的旧版离座规则无关。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "archivedRuleBook",
+        "pages",
+        1
+      ],
+      "oldText": "【第二条：三类申请证明（共 3 项）】申请人须备齐以下 3 类原件：\n1.《书包非本人证明》：在 022 拍摄占座书包，核对相册旧照生成报告，交图书馆前台核验盖章（姓名、学号、人格 3 项有效值为 0）；\n2.《022 座位小票》：于一层书库 022 桌面夹缝处取回原始座位小票；\n3.《本人来过证明》：凭入馆记录时间差、调查帖公示编号与本规则要求的证明类别数（3 类），在浙大体艺完成本人来过补录。",
+      "newText": "【第二条：三类申请证明（共 3 项）】申请人须备齐以下 3 类原件：\n1.《书包非本人证明》：采集占座物标签影像并与存档旧照完成比对，经服务台核验盖章（姓名、学号、人格 3 项有效值为 0）；\n2.《022 座位小票》：找回该座位遗留的原始纸质小票；\n3.《本人来过证明》：凭入馆用时、关联公示编号与本规则要求的证明类别数（3 类），完成本人行程补录。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "archivedRuleBook",
+        "pages",
+        2
+      ],
+      "oldText": "【第三条：前置公示与恢复流程】公示是恢复座位的前置手续。申请人须先将「本册旧版离座规则 + 上述 3 份证明」（公开材料共 4 项）上传至 CC98 对应调查帖，凭四位热度口令顶上十大第一完成公示；随后打开手机「图书馆服务 → 022 恢复申请」，提交 3 份申请证明原件，即可领取《解除占座 PASS》。",
+      "newText": "【第三条：前置公示与恢复流程】公示是恢复座位的前置手续。申请人须先将「本册旧版离座规则 + 上述 3 份证明」（公开材料共 4 项）在对应调查帖内顶上十大第一完成公示；随后凭 3 份申请证明原件办理恢复手续，核发《解除占座 PASS》。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "photo",
+        "overexposedHint"
+      ],
+      "oldText": "照片上的书包标签反光过曝，无法读取文字。请在显示设置中将亮度调低，再回到照片核对标签。",
+      "newText": "照片上的书包标签反光刺眼，白茫茫一片。得让光线暗下来，字迹才显出来。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "photo",
+        "albumCompareHint"
+      ],
+      "oldText": "照片已清晰捕获标签。请打开手机相册核对旧照，生成比对报告后交至图书馆前台盖章。",
+      "newText": "标签字迹终于清晰了。找找以前留下的照片做个比对，才有拿去盖章的依据。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "seatCrevice",
+        "unreachableHint"
+      ],
+      "oldText": "022 座位小票卡在桌面夹缝深处，手指够不到。请使用身边可移动它的细长物件将小票拨出。",
+      "newText": "小票卡在窄缝深处，手指探不进去。得借个细长硬实的东西搭把手。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "seatCrevice",
+        "wrongToolHint"
+      ],
+      "oldText": "这件物品不能移出小票。看看背包里有没有能把它向外移动的物件。",
+      "newText": "这东西塞不进窄缝，换个形状更趁手的试试。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "seatCrevice",
+        "successHint"
+      ],
+      "oldText": "已从桌面夹缝中拨出《022 座位小票》。",
+      "newText": "已从缝隙中拨出《022 座位小票》。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "audit",
+        "entryConditionHint"
+      ],
+      "oldText": "请确认体艺更新已安装，并切换至移动数据。按下列三项来源填写补录单。",
+      "newText": "客户端与网络环境就绪后，根据已掌握的行程与档案记录填写补录单。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "audit",
+        "fields",
+        0,
+        "sourceHint"
+      ],
+      "oldText": "来源：「入馆记录」里从 07:55 出发到 08:02 刷卡入馆的分钟数。",
+      "newText": "提示：从寝室动身到刷卡进馆之间走过的分钟数。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "audit",
+        "fields",
+        0,
+        "errorHint"
+      ],
+      "oldText": "到馆时长不符。请用刷卡入馆时间 08:02 减去出发时间 07:55。",
+      "newText": "时长对不上。回想一下动身与进门各自停在几点几分。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "audit",
+        "fields",
+        1,
+        "sourceHint"
+      ],
+      "oldText": "来源：CC98 调查帖 23 楼「楼主编辑」注明的公示记录编号（切勿填楼层号或排名）。",
+      "newText": "提示：调查帖楼主后来补充编辑时提到的那串归档编号。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "audit",
+        "fields",
+        1,
+        "errorHint"
+      ],
+      "oldText": "公示记录编号错误。请回看 CC98 调查帖 23 楼楼主编辑给出的编号。",
+      "newText": "编号不对。既不是楼层号也不是排名，再翻翻楼主补充的说明。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "audit",
+        "fields",
+        2,
+        "sourceHint"
+      ],
+      "oldText": "来源：《三分钟离座法及其例外》（旧版离座规则）第二条列出的申请证明类别总数。",
+      "newText": "提示：旧版离座规则第二条里列明的申请证明种类数。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "audit",
+        "fields",
+        2,
+        "errorHint"
+      ],
+      "oldText": "证明类别数不符。请回看《旧版离座规则》中要求提交的证明一共分为几类。",
+      "newText": "数目不符。回想一下规则书里一共要求哪几类证明原件。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "seatReleaseApplication",
+        "prerequisiteNote"
+      ],
+      "oldText": "前置条件：CC98 调查帖已上传「公开材料 4 项」并完成十大第一公示（旧版离座规则已从公示自动核验）。",
+      "newText": "前置条件：4 项公开材料已在论坛完成十大第一公示。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "library",
+        "seatReleaseApplication",
+        "missingProofHint"
+      ],
+      "oldText": "申请证明尚未交齐。请对照下方缺项列表补交原件，《旧版离座规则》已在公示环节完成核验无需重复提交。",
+      "newText": "申请证明尚未交齐。补齐剩余原件后方可核发清退许可。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_01_check_gate"
+      ],
+      "oldText": "在基础图书馆门口闸机核对「入馆记录」，确认一层书库 022 的预约状态。",
+      "newText": "确认自己的入馆登记状态。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_02_find_022"
+      ],
+      "oldText": "前往基础馆一层书库 022，对照桌牌查看座位情况。",
+      "newText": "前往一层书库，找到预约的 022 号座位。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_03_pick_note"
+      ],
+      "oldText": "查看并拿起 022 桌上的「占座纸条」，确认临时离座的依据。",
+      "newText": "留意占座现场留下的字迹。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_04_search_cc98"
+      ],
+      "oldText": "打开手机 CC98，用「占座纸条」上的线索找到 022 占座调查帖。",
+      "newText": "顺着字条上的说法，打听 022 占座的来龙去脉。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_05_read_post_for_book"
+      ],
+      "oldText": "阅读 CC98 022 调查帖（重点看 12 楼），记录旧规书名《三分钟离座法及其例外》。",
+      "newText": "在讨论串里寻找处理超时占座的旧规依据。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_06_query_catalog"
+      ],
+      "oldText": "前往馆内「馆藏检索终端」，搜索调查帖提到的《三分钟离座法及其例外》以获取架位。",
+      "newText": "查清《三分钟离座法及其例外》在馆内的存放位置。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_07_fetch_rule_book"
+      ],
+      "oldText": "前往基础馆一层 · 06 架南端上层，抽出索书号 755 的《三分钟离座法及其例外》并读完规则。",
+      "newText": "按查到的架位找到旧版离座规则并读完。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_08_parallel_evidence",
+        "header"
+      ],
+      "oldText": "按《旧版离座规则》集齐 3 份恢复 022 所需的申请证明（已完成项可随时复查）：",
+      "newText": "按旧版离座规则集齐 3 份恢复座位所需的证明："
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_08_parallel_evidence",
+        "branches",
+        "bag_non_person_proof",
+        "pending"
+      ],
+      "oldText": "【待办】在 022 拍摄占座书包（亮度调至 20 以下）、核对相册旧照生成报告，交图书馆前台盖章领取《书包非本人证明》。",
+      "newText": "【待办】《书包非本人证明》：证明座位上的书包并非登记使用者本人。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_08_parallel_evidence",
+        "branches",
+        "bag_non_person_proof",
+        "completed"
+      ],
+      "oldText": "【已备齐·可复查】《书包非本人证明》（已由前台核验盖章）。",
+      "newText": "【已备齐】《书包非本人证明》（已核验盖章）。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_08_parallel_evidence",
+        "branches",
+        "seat_022_receipt",
+        "pending"
+      ],
+      "oldText": "【待办】在 022 桌面夹缝处借助细长物件取出《022 座位小票》。",
+      "newText": "【待办】《022 座位小票》：找回遗留在 022 现场的原始座位凭据。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_08_parallel_evidence",
+        "branches",
+        "seat_022_receipt",
+        "completed"
+      ],
+      "oldText": "【已备齐·可复查】《022 座位小票》（座位号 022）。",
+      "newText": "【已备齐】《022 座位小票》（座位号 022）。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_08_parallel_evidence",
+        "branches",
+        "library_presence_proof",
+        "pending"
+      ],
+      "oldText": "【待办】打开手机「浙大体艺」本人来过补录单，对照入馆记录、调查帖 23 楼与旧版离座规则完成补录，获取《本人来过证明》。",
+      "newText": "【待办】《本人来过证明》：补录从寝室出发到按时入馆的行程记录。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_08_parallel_evidence",
+        "branches",
+        "library_presence_proof",
+        "completed"
+      ],
+      "oldText": "【已备齐·可复查】《本人来过证明》（到馆时长 7 分钟，已关联 47 号公示）。",
+      "newText": "【已备齐】《本人来过证明》（已关联 47 号公示）。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_09_upload_public_notice"
+      ],
+      "oldText": "回到手机 CC98 的 022 调查帖，将《旧版离座规则》与 3 份证明上传至公示区（公开材料 {uploadedCount}/4）。",
+      "newText": "将旧版规则与三份证明公之于众（公开材料 {uploadedCount}/4）。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_10_bd_password"
+      ],
+      "oldText": "在 CC98 调查帖内按上传栏从上到下的顺序，给每项材料对应的数字回复点 bd，完成四位热度口令公示。",
+      "newText": "按材料顺序凑齐四位热度口令，把公示顶上十大。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_11_apply_seat_recovery"
+      ],
+      "oldText": "打开手机「图书馆服务 → 022 恢复申请」，提交 3 份申请证明原件以领取《解除占座 PASS》。",
+      "newText": "凭生效的公示与三份证明原件，申领清退占座物的许可。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "currentObjectives",
+        "stage_12_use_pass_on_bag"
+      ],
+      "oldText": "回一层书库 022，把《解除占座 PASS》用在占座书包上，清退书包后坐到 022。",
+      "newText": "回一层书库清退占座物，收回 022。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "onSiteHandoffs",
+        "gate_swiped"
+      ],
+      "oldText": "入馆记录显示「一层书库 022 会话未闭合（08:02 入馆）」，前往一层书库找到 022。",
+      "newText": "入馆时间停在 08:02，022 的会话还开着。该去书库深处看看了。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "onSiteHandoffs",
+        "backpack_clicked_before_note"
+      ],
+      "oldText": "书包占着 022。先拿起旁边的「占座纸条」看看留了什么话。",
+      "newText": "一只沉默的书包堵在座位上，旁边似乎压着张字条。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "onSiteHandoffs",
+        "note_picked"
+      ],
+      "oldText": "占座纸条写明「临时离座规则详见 CC98」，打开手机去 CC98 搜索调查帖。",
+      "newText": "字条把规矩推给了论坛，去那边看看有没有人讨论这桩怪事。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "onSiteHandoffs",
+        "post_12f_seen"
+      ],
+      "oldText": "调查帖 12 楼点出书名《三分钟离座法及其例外》，去馆内「馆藏检索终端」查它的架位。",
+      "newText": "有人提到了《三分钟离座法及其例外》，馆里应该能查到这本书收在哪。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "onSiteHandoffs",
+        "catalog_matched"
+      ],
+      "oldText": "馆藏定位于「基础馆一层 · 06 架南端上层 · 索书号 755」，按架号牌去 06 架南端上层取书。",
+      "newText": "06 架南端上层、索书号 755——顺着标牌找过去吧。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "onSiteHandoffs",
+        "rule_book_read_to_end"
+      ],
+      "oldText": "规则要求集齐 3 类证明并先在 CC98 完成 4 项材料公示。任务记录已列出三条取证线。",
+      "newText": "三份证明加四项公示，规矩虽然繁琐，但至少有路可走。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "onSiteHandoffs",
+        "all_three_proofs_ready"
+      ],
+      "oldText": "三份申请证明与《旧版离座规则》均已备齐，打开手机回到 CC98 的 022 调查帖上传公示。",
+      "newText": "手头的材料都齐了，该去论坛把它们晒出来了。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "onSiteHandoffs",
+        "public_notice_4_of_4"
+      ],
+      "oldText": "公开材料 4/4 上传完毕。请按置顶说明，从上到下依次为每项材料点击一条对应数字楼层的 bd。",
+      "newText": "四份材料已就位，还差对应的四位数字把帖子顶上去。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "onSiteHandoffs",
+        "top_ten_unlocked"
+      ],
+      "oldText": "公示已冲上十大第一！打开手机「图书馆服务 → 022 恢复申请」提交三份证明领取 PASS。",
+      "newText": "帖子冲上榜首了，现在可以去办正式的座位恢复手续了。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "onSiteHandoffs",
+        "pass_claimed"
+      ],
+      "oldText": "已领取《解除占座 PASS》，回一层书库 022 把它用在占座书包上。",
+      "newText": "清退许可已经到手，回 022 做个了结吧。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "operationRecovery",
+        "enter_library_without_gate"
+      ],
+      "oldText": "尚未核对入馆时间。请先在门口闸机查看「入馆记录」。",
+      "newText": "门禁还没确认你的到场时间。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "operationRecovery",
+        "open_cc98_without_note"
+      ],
+      "oldText": "还没看现场留下的字条。请先回 022 桌面拿起「占座纸条」获取搜索关键词。",
+      "newText": "连现场留了什么话都还不清楚，先回座位旁看看吧。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "operationRecovery",
+        "catalog_wrong_book_selected"
+      ],
+      "oldText": "这本不是调查帖提到的规则书。请核对任务记录中的题名《三分钟离座法及其例外》（索书号 755），检索框已为你保留当前输入。",
+      "newText": "这本只是名字相近的闲书，不是帖子里说的那本旧规。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "operationRecovery",
+        "shelf_wrong_location"
+      ],
+      "oldText": "架位不对。请先找「06 架」的架号牌，再看「南端上层」，抽出索书号 755 的书。",
+      "newText": "这里的架号对不上检索出来的记录。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "operationRecovery",
+        "shelf_short_pull_or_cancel"
+      ],
+      "oldText": "未完全抽出书册，书脊已回弹原位。请按住索书号 755 的书脊继续向外拉出。",
+      "newText": "手松得太早，书脊又滑回原位了。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "operationRecovery",
+        "rule_book_closed_early"
+      ],
+      "oldText": "书页停在这里，合书扣仍未松开。",
+      "newText": "后面的条款还没翻完，合书扣依然紧锁。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "operationRecovery",
+        "photo_brightness_too_high"
+      ],
+      "oldText": "照片上的书包标签反光过曝，无法读取文字。请在显示设置中将亮度调低，再回到照片核对标签。",
+      "newText": "标签反光太强，白花花一片。得在更暗的画面下才能看清字迹。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "operationRecovery",
+        "front_desk_missing_report"
+      ],
+      "oldText": "缺少比对报告。请先去 022 拍下清晰的书包标签，并在手机相册中与旧照完成核对后再来前台盖章。",
+      "newText": "光靠口头说明可没法盖章，得先拿出照片比对的核验报告。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "operationRecovery",
+        "crevice_hand_reach_failed"
+      ],
+      "oldText": "022 座位小票卡在桌面夹缝深处，手指够不到。请选用包里或桌边的细长硬物把它拨出来。",
+      "newText": "缝隙太窄，徒手够不着里面的纸片。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "operationRecovery",
+        "tiyi_field_mismatch"
+      ],
+      "oldText": "补录字段核验未通过：请对照字段下方的来源提示，分别回看「入馆记录」的时间差、CC98 调查帖 23 楼的公示编号、以及《旧版离座规则》的证明类别数。",
+      "newText": "填写的数值与既有记录对不上，再核对一下入馆时差、归档编号和证明类别数。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "operationRecovery",
+        "cc98_upload_incomplete"
+      ],
+      "oldText": "公示区还缺待传材料（当前公开材料 {uploadedCount}/4）。请查看上传栏标出的未上传项，已归档材料无需重新收集。",
+      "newText": "公示栏还有空缺（当前 {uploadedCount}/4），材料齐了才算有效。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "operationRecovery",
+        "bd_wrong_first_try"
+      ],
+      "oldText": "热度口令的数字来源或先后顺序不合。请严格按照上传栏从上到下的材料顺序选择对应的 bd 数字楼层。",
+      "newText": "顶帖的数字或先后顺序不对，留意上传栏从上到下的排列。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "operationRecovery",
+        "bd_wrong_repeated"
+      ],
+      "oldText": "请对照上传栏并排提示核对数字：①旧版离座规则→证明类别数；②书包非本人证明→身份核验通过项数；③022座位小票→座位号末位；④本人来过证明→证明上的到馆时长。具体数字请回看对应证据原件。",
+      "newText": "每一项材料各对应一个特征数字：规则看类别数，非本人证明看通过项数，小票看末位，到场证明看耗时。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "operationRecovery",
+        "application_missing_proofs"
+      ],
+      "oldText": "022 恢复申请仍缺证明原件（已交 {submittedCount}/3）。《旧版离座规则》已从 CC98 公示自动核验，请补齐页面标红的剩余证明。",
+      "newText": "恢复申请还缺证明原件（已交 {submittedCount}/3）。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "operationRecovery",
+        "backpack_wrong_item_used"
+      ],
+      "oldText": "占座书包只接受《解除占座 PASS》。请先完成 CC98 公示并在「图书馆服务 → 022 恢复申请」中领取 PASS。",
+      "newText": "那只书包纹丝不动，它只认正式的清退许可。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "operationRecovery",
+        "seat_click_while_occupied"
+      ],
+      "oldText": "022 目前仍被书包占用，无法直接入座。请对书包使用《解除占座 PASS》。",
+      "newText": "座位还被占着，得先名正言顺地请走这位“常客”。"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "shortConfirmations",
+        "gate_record_saved"
+      ],
+      "oldText": "已记录：入馆记录（08:02 入馆，022 会话未闭合）",
+      "newText": "已记录：08:02 入馆，022 会话未闭合"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "shortConfirmations",
+        "book_title_logged"
+      ],
+      "oldText": "任务记录已更新：检索《三分钟离座法及其例外》",
+      "newText": "已记下线索：《三分钟离座法及其例外》"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "shortConfirmations",
+        "shelf_coord_logged"
+      ],
+      "oldText": "任务记录已更新：基础馆一层 · 06 架南端上层 · 索书号 755",
+      "newText": "已记下位置：06 架南端上层 · 索书号 755"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "shortConfirmations",
+        "rule_book_archived"
+      ],
+      "oldText": "已归档：《旧版离座规则》（解锁三项取证任务）",
+      "newText": "已归档：《旧版离座规则》"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "shortConfirmations",
+        "seat_receipt_obtained"
+      ],
+      "oldText": "已获得：《022 座位小票》（桌下夹缝取回）",
+      "newText": "已获得：《022 座位小票》"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "shortConfirmations",
+        "presence_proof_obtained"
+      ],
+      "oldText": "已获得：《本人来过证明》（体艺补录完成）",
+      "newText": "已获得：《本人来过证明》"
+    },
+    {
+      "sourceFile": "library-finals.content.json",
+      "path": [
+        "guidance",
+        "shortConfirmations",
+        "public_notice_completed"
+      ],
+      "oldText": "CC98 公示生效：022 恢复申请入口已开放",
+      "newText": "公示生效：座位恢复通道已开启"
     }
   ],
   "nativeRevisions": [
