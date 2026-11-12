@@ -2,6 +2,9 @@ extends "res://tests/test_canteen_defense_resume.gd"
 ## Source-phase fixture, real Main and controller-validated sixty-second proof.
 ## This is native integration coverage, not a manually earned campaign run.
 const Chapter=preload("res://scripts/chapters/chapter3.gd")
+const CanteenLayout=preload("res://scripts/space/canteen_layout.gd")
+const Overlay=preload("res://scripts/ui/world_overlay_layout.gd")
+const SelectedTheme=preload("res://scripts/ui/selected_ui_theme.gd")
 var oracle: Dictionary={}
 var exploration_zoom: float=0
 
@@ -50,7 +53,8 @@ func check_camera(label: String) -> void:
 	var room: Rect2=Rect2(world.size/2-world.camera*world.zoom,world.world_size*world.zoom)
 	var bounds:=Rect2(Vector2.ZERO,world.size)
 	check(bounds.encloses(room),"complete source room remains visible: "+label)
-	for point: Vector2 in [host.current.origin,Vector2(1380,852),host.current.paper_pose().point]:
+	var exit: Dictionary=CanteenLayout.data().side_exit.paperExitPoint
+	for point: Vector2 in [host.current.origin,Vector2(exit.x,exit.y),host.current.paper_pose().point]:
 		check(bounds.has_point((point-world.camera)*world.zoom+world.size/2),"start, destination and current flight point stay in view: "+label)
 	check(world.transition_alpha==0,"world-entry overlay cannot cover flight: "+label)
 	check(shell.world_frame.is_visible_in_tree() and not shell.phone.visible,"world remains visible: "+label)
@@ -67,18 +71,20 @@ func check_subtitle(label: String) -> void:
 	var body: Label=host.view.body
 	var measured: Vector2=body.get_theme_font("font").get_multiline_string_size(body.text,HORIZONTAL_ALIGNMENT_LEFT,body.size.x,body.get_theme_font_size("font_size"))
 	check(measured.y<=body.size.y+.5,"entire source line fits without clipping: "+label)
-	check(host.view.get_viewport()==root and body.get_theme_font_size("font_size")==ceili(14*state.d.native.settings.text_scale),"subtitle uses exact selected native physical font size: "+label)
+	var body_size:=maxi(Overlay.BODY_PX,SelectedTheme.size("dialogue","body"))
+	var expected_size:=ceili(body_size*state.d.native.settings.text_scale*Overlay.ui_scale(host.view.size))
+	check(host.view.get_viewport()==root and body.get_theme_font_size("font_size")==expected_size,"subtitle uses selected screen-space typography: "+label)
 	var caption:Rect2=host.view.panel.get_global_rect()
 	var film:Rect2=shell.world_view.get_global_rect()
 	if host.view.get_parent()==shell.world:caption=Rect2(film.position+caption.position*host.view.display_scale,caption.size*host.view.display_scale)
-	var door:Node2D=shell.world.native_canteen.objects.southeast_door
-	var source:=Rect2(door.position+door.top_left,door.dimensions)
+	var source: Rect2=shell.world.chapter3_layers.doors.opening
 	var local:=Rect2((source.position-shell.world.camera)*shell.world.zoom+shell.world.size/2,source.size*shell.world.zoom)
 	var film_scale:Vector2=film.size/shell.world.size
 	var target:=Rect2(film.position+local.position*film_scale,local.size*film_scale)
-	check(not caption.intersects(target),"source southeast doorway remains clear of dialogue: "+label)
-	var arrival:Vector2=film.position+((Vector2(1380,852)-shell.world.camera)*shell.world.zoom+shell.world.size/2)*film_scale
-	check(not caption.grow(8).has_point(arrival),"source exit arrival point remains clear of dialogue: "+label)
+	check(not caption.intersects(target),"right-wall doorway remains clear of dialogue: "+label)
+	var exit: Dictionary=CanteenLayout.data().side_exit.paperExitPoint
+	var arrival:Vector2=film.position+((Vector2(exit.x,exit.y)-shell.world.camera)*shell.world.zoom+shell.world.size/2)*film_scale
+	check(not caption.grow(8).has_point(arrival),"paper's side exit remains clear of dialogue: "+label)
 
 func run() -> void:
 	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated fixture save profile")
@@ -138,8 +144,17 @@ func run() -> void:
 			advance_to(exit_start+1)
 			check(host.blocks_movement() and session.motion_origin!=Vector2.INF,"scripted exit takes movement ownership at original time")
 			check_camera("scripted exit")
-			advance_to(session.duration_ms-1)
+			var clear_frames:=true
+			while session.elapsed_ms<session.duration_ms-1:
+				var step:=minf(10,session.duration_ms-1-session.elapsed_ms)
+				world._process(step/1000.0)
+				host.tick(step,true)
+				clear_frames=clear_frames and world.can_stand(world.player)
+			check(clear_frames and session.exit_path.size()>2,"authored proof departs around the furniture through clear floor")
 			world._update_camera(); check_camera("last exit millisecond")
+			var exit: Dictionary=CanteenLayout.data().side_exit.exitPoint
+			var exit_point:=Vector2(exit.x,exit.y)
+			check(world.player.distance_to(exit_point)<8.0,"scripted player exit reaches the open side doorway")
 			check(JSON.stringify(state.d.canteenHunt)==facts and JSON.stringify(state.d.items)==items,"presentation cannot mutate facts or rewards")
 			host.tick(1,true); shell._refresh()
 			check(session.status=="consumed" and host.current==null and not host.apply_owned_camera(),"completed exit releases camera owner exactly once")

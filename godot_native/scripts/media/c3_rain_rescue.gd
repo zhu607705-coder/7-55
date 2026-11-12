@@ -7,6 +7,7 @@ const Model=preload("res://scripts/media/c3_rain_rescue_model.gd")
 const KayakRig=preload("res://scenes/objects/kayak_rig.tscn")
 const NativeRenderer=preload("res://scripts/media/c3_rain_rescue_native/renderer.gd")
 const Metrics=preload("res://scripts/player_metrics.gd")
+const COMPACT_CAPTION_RECT := Rect2(12, 428, 936, 108)
 var session: RefCounted
 var read_state: Callable
 var world: Control
@@ -19,6 +20,8 @@ var caption: Label
 var skip: Button
 var skip_display_scale: float=-1.0
 var compact_caption: bool=false
+var caption_display_scale: float=-1.0
+var caption_layout_text: String=""
 var visual: Node2D
 var walker: Sprite2D
 var splash: Node2D
@@ -163,31 +166,41 @@ func _layout_caption(s: Dictionary) -> void:
 	var native_visible: bool=is_instance_valid(native_renderer) and native_renderer.visible
 	if is_instance_valid(caption_back):
 		caption_back.visible=not native_visible
-		caption_back.position=Vector2(12,424) if compact_caption else Vector2(12,434)
-		caption_back.size=Vector2(936,116) if compact_caption else Vector2(936,94)
+		caption_back.position=Vector2(8,424) if compact_caption else Vector2(12,434)
+		caption_back.size=Vector2(944,116) if compact_caption else Vector2(936,94)
 	if native_visible:
 		native_renderer.external_caption=compact_caption
 		if compact_caption: caption.text=native_renderer.caption_text()
 		caption.visible=compact_caption
 	else: caption.show()
 	if not compact_caption:
+		caption_display_scale=-1.0
 		caption.position=Vector2(24,440); caption.size=Vector2(912,78)
 		caption.max_lines_visible=-1; caption.clip_text=false
+		caption.remove_theme_constant_override("line_spacing")
 		caption.add_theme_font_size_override("font_size",20)
 		return
+	if caption_display_scale==display_scale and caption_layout_text==caption.text: return
+	caption_display_scale=display_scale
+	caption_layout_text=caption.text
 	# Keep all original words. Only the compact embedding owns larger wrapping
 	# text in the existing footer; the renderer and scene geometry do not move.
-	caption.position=Vector2(24,428); caption.size=Vector2(912,108)
-	caption.max_lines_visible=2; caption.clip_text=true
+	var paragraph:=TextParagraph.new()
+	paragraph.width=COMPACT_CAPTION_RECT.size.x
+	paragraph.break_flags=TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND | TextServer.BREAK_ADAPTIVE | TextServer.BREAK_TRIM_START_EDGE_SPACES | TextServer.BREAK_TRIM_END_EDGE_SPACES
+	var font_size:=ceili(14.0/display_scale)
 	for physical_size: float in [16.0,15.0,14.0]:
-		var font_size: int=int(ceil(physical_size/display_scale))
-		caption.add_theme_font_size_override("font_size",font_size)
-		var lines: int=caption.get_line_count()
-		var text_height: float=font.get_height(font_size)*lines+caption.get_theme_constant("line_spacing")*maxi(0,lines-1)
-		if lines<=2 and text_height<=108: break
-	# A temporary larger font can increase Label minimum size. Restore the
-	# authored footer after choosing the final fitting font.
-	caption.size=Vector2(912,108)
+		font_size=ceili(physical_size/display_scale)
+		paragraph.clear()
+		paragraph.add_string(caption.text,font,font_size)
+		var lines:=paragraph.get_line_count()
+		var text_height:=maxf(font.get_height(font_size)*lines,paragraph.get_size().y)
+		if lines<=2 and text_height<=COMPACT_CAPTION_RECT.size.y: break
+	caption.position=COMPACT_CAPTION_RECT.position
+	caption.max_lines_visible=2; caption.clip_text=true
+	caption.add_theme_constant_override("line_spacing",0)
+	caption.add_theme_font_size_override("font_size",font_size)
+	caption.size=COMPACT_CAPTION_RECT.size
 
 func _request_finish(result: String) -> void:
 	if reported or session==null or not read_state.is_valid() or not is_instance_valid(world): return

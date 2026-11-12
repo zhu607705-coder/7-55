@@ -80,6 +80,7 @@ func snapshot() -> Dictionary:
 
 func reduced_motion() -> bool: return _reduced
 func phase() -> String: return _phase
+func belongs_to(s: Dictionary) -> bool: return is_same(s,_bound_state)
 
 func cancel() -> void:
 	if _phase=="consumed": return

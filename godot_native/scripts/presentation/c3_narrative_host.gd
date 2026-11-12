@@ -5,6 +5,7 @@ signal cinematic_started
 const View=preload("res://scripts/presentation/c3_narrative_view.gd")
 const PromoTimeline=preload("res://scripts/presentation/c3_promo_timeline.gd")
 const WorldView=preload("res://scripts/presentation/c3_narrative_world_view.gd")
+const FloorRoute=preload("res://scripts/mobile_floor_route.gd")
 var world: Control
 var read_state: Callable
 var provider: Callable
@@ -150,15 +151,31 @@ func inspector_closed(id: String) -> bool:
 	if current==null or id!="decoyPaper" or not current.mark_inspector_closed(read_state.call(),self): return false
 	dispatch.call("c3_reversal_inspect_closed",current)
 	tick(0,_focused()); return true
+func _prepare_canteen_departure() -> void:
+	var start: Vector2=world._find_safe(world.player)
+	var stand: Dictionary=current.runtime.target.stand
+	var obstacles: Array=world._floor_obstacles()
+	var clear:=func(a: Vector2,b: Vector2) -> bool:
+		return world._floor_segment_clear(a,b,obstacles,true)
+	var route:=FloorRoute.new().plan(start,Vector2(stand.x,stand.y),obstacles,Rect2(Vector2.ZERO,world.world_size),world.can_stand,clear)
+	if not route.is_empty():
+		var exit: Dictionary=current.runtime.exitPoint
+		route.append(Vector2(exit.x,exit.y))
+	current.set_exit_motion(start,route)
 func _apply_motion(delta_ms: float) -> void:
 	if current==null: return
-	if current.sequence_id=="canteen_escape" and current.blocks_movement() and current.elapsed_ms>=float(current.spec.delayMs) and current.motion_origin==Vector2.INF:
-		current.motion_origin=world.player
+	var canteen_exit: bool=current.sequence_id=="canteen_escape"
+	if canteen_exit and current.blocks_movement() and current.elapsed_ms>=float(current.spec.delayMs) and current.motion_origin==Vector2.INF:
+		_prepare_canteen_departure()
 	var point: Vector2=current.player_pose()
 	if point!=Vector2.INF:
 		var prior: Vector2=world.player
+		# The final stretch runs through the live door, whose leaves still own
+		# clearance. A late opening or an obstructed route holds the actor.
+		if canteen_exit and not world.can_stand(point): point=prior
 		world.player=point; world.move_target=Vector2.INF; world.touch_axis=Vector2.ZERO
-		if point.distance_to(prior)>0.01: world.walk_clock+=maxf(0,delta_ms)/1000; world.facing="side"; world.player_flip=point.x<prior.x
+		if canteen_exit: world._apply_player_motion(point-prior,Vector2.ZERO,delta_ms/1000)
+		elif point.distance_to(prior)>0.01: world.walk_clock+=maxf(0,delta_ms)/1000; world.facing="side"; world.player_flip=point.x<prior.x
 		else: world.walk_clock=0
 		if world.has_method("_sync_player"): world._sync_player()
 	if current.sequence_id=="canteen_promo" and current.elapsed_ms<=float(current.spec.delayMs):

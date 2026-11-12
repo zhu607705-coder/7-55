@@ -5,6 +5,7 @@ signal presentation_ready
 signal presentation_failed(reason: String)
 
 const Rider=preload("res://scripts/presentation/chase3d/source_rider.gd")
+const RideLayout=preload("res://scripts/presentation/chase3d/ride_render_layout.gd")
 const FinePixel=preload("res://scripts/presentation/chase3d/fine_pixel_style.gd")
 const MaterialAdapter=preload("res://scripts/presentation/chase3d/source_material_adapter.gd")
 const CampusEnvironment=preload("res://scripts/presentation/chase3d/zijingang_campus_environment.gd")
@@ -20,7 +21,9 @@ var disposed: bool=false
 var failure_reason: String=""
 var presented: bool=false
 var gameplay_active: bool=true
-var fitted_size:=Vector2(960,540)
+var fitted_size:=RideLayout.AUTHORED_SIZE
+var fitted_density:=1.0
+var compact_render:=false
 var viewport3d: SubViewport
 var world: Node3D
 var hero: Node3D
@@ -55,12 +58,12 @@ var shadow_enabled_at_start: bool=false
 var quality: String="high"
 var measured_frames: int=0
 var measured_frame_ms: float=0
-var last_collisions: int=0
-var collision_flash: float=0
+var landing_compression: float=0
+var was_airborne: bool=false
 var viewport_resolution:=Vector2i(960,540)
 
 ## Configure once before add_child. This API owns presentation only.
-## Internal resolution remains16:9; the containing Control may have any size.
+## The camera renders to the same aspect as the actual scene rectangle.
 func configure(options: Dictionary={}) -> bool:
 	if is_inside_tree() or disposed:return false
 	asset_directory=str(options.get("asset_directory",asset_directory)).trim_suffix("/")+"/"
@@ -125,6 +128,7 @@ func _ready() -> void:
 	environment.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR;environment.ambient_light_color=Color("b7caba");environment.ambient_light_energy=2.0/PI
 	environment.tonemap_mode=Environment.TONE_MAPPER_ACES;environment.tonemap_exposure=1.02
 	environment.fog_enabled=true;environment.fog_mode=Environment.FOG_MODE_DEPTH;environment.fog_light_color=Color("d6e4df");environment.fog_depth_begin=45;environment.fog_depth_end=120;environment.fog_depth_curve=1
+	if rebuilt_campus: FinePixel.add_campus_sky(environment)
 	env.environment=environment;world.add_child(env)
 	sun=_light("ffecd3",2.4,Vector3(7,15,6),Vector3.ZERO)
 	sun.shadow_enabled=enable_live_shadows;shadow_enabled_at_start=enable_live_shadows
@@ -164,7 +168,7 @@ func _instance_effect_material(effect: Node3D) -> StandardMaterial3D:
 func reset_view() -> void:
 	if not ready3d or disposed:return
 	presented=false;view_paused=false
-	animation_seconds=0;pedal_phase=0;wheel_phase=0;previous_distance=0;previous_x=0;previous_tick=0;smoothed_velocity=0;body_steer=0;handlebar_steer=0;body_roll=0;clear_starts.clear();last_collisions=0;collision_flash=0
+	animation_seconds=0;pedal_phase=0;wheel_phase=0;previous_distance=0;previous_x=0;previous_tick=0;smoothed_velocity=0;body_steer=0;handlebar_steer=0;body_roll=0;clear_starts.clear();landing_compression=0;was_airborne=false
 	camera.position=Vector3.ZERO;camera.fov=51
 	for node: Node in obstacles.values():node.queue_free()
 	for node: Node in stunt_objects.values():node.queue_free()
@@ -193,26 +197,40 @@ func render_model(model: RefCounted,delta: float=-1,paused: bool=false) -> void:
 	var wheel_delta: float=maxf(0,model.distance-previous_distance)*WORLD_PER_METER/(.5*1.28)
 	wheel_phase-=wheel_delta
 	if not reduced_motion and not paused:pedal_phase+=wheel_delta/2.2
-	var bob: float=0 if reduced_motion else .008*(.5-cos(pedal_phase*2)*.5)
-	hero.position=Vector3(x,.08+bob+model.air_height,z)
-	hero.rotation=Vector3(-.12 if model.air_height>.05 else model.charge*.06,0,body_roll)
-	hero.apply_pose(handlebar_steer,0 if reduced_motion else pedal_phase);hero.spin_wheels(wheel_phase)
+	var airborne: bool=model.air_height>.035
+	if was_airborne and not airborne and not reduced_motion:
+		landing_compression=.12
+	was_airborne=airborne
+	landing_compression=lerpf(landing_compression,0,response(11,dt))
+	var charge: float=0.0 if reduced_motion else model.charge
+	hero.position=Vector3(x,.08+model.air_height,z)
+	var pitch: float=clampf(-float(model.air_velocity)*.025,-.17,.14) if airborne else charge*.05+landing_compression*.28
+	hero.rotation=Vector3(pitch,0,body_roll)
+	hero.apply_pose(handlebar_steer,0 if reduced_motion else pedal_phase,reduced_motion,charge,landing_compression)
+	hero.spin_wheels(wheel_phase)
 	_update_obstacles(model);_update_stunts(model);_update_pedestrians(model.distance)
 	if enable_live_shadows:
 		sun.position=Vector3(7,15,z+8);sun.look_at(Vector3(x*.18,1.15,z-10),Vector3.UP)
 	paper.position=Vector3((model.paper_lane-1)*3.4,3.25+sin(animation_seconds*5.2)*.28,z-model.paper_gap)
 	paper.rotation=Vector3(0,sin(animation_seconds*3.1)*.3,sin(animation_seconds*4.4)*.12)
 	var camera_ease: float=1 if reduced_motion else response(5.5,dt)
-	camera.position.x=lerpf(camera.position.x,x*.34+1.7,camera_ease)
-	var progress: float=clampf((model.distance+70)/755,0,1)
-	var target_fov: float=53 if reduced_motion else 53+progress*5+(7 if model.boost>0 else 0)
-	camera.fov=lerpf(camera.fov,target_fov,camera_ease)
-	var camera_bob: float=0 if reduced_motion else sin(animation_seconds*(7+progress*3))*.012
-	camera.position=Vector3(camera.position.x,3.85+camera_bob+model.air_height*.35,z+8.1)
-	camera.look_at(Vector3(x*.46,1.1,z-13.5),Vector3.UP)
-	if model.collisions>last_collisions:collision_flash=.22
-	collision_flash=maxf(0,collision_flash-dt);last_collisions=model.collisions
-	environment.background_color=Color("b86868") if collision_flash>0 else Color("c4dfe4")
+	if rebuilt_campus:
+		var tracking_x: float=x*.32+clampf(smoothed_velocity*.12,-.65,.65)
+		camera.position.x=lerpf(camera.position.x,tracking_x,camera_ease)
+		var target_fov: float=RideLayout.CAMERA_FOV+(5.0 if model.boost>0 and not reduced_motion else 0.0)
+		camera.fov=lerpf(camera.fov,RideLayout.vertical_fov(target_fov,fitted_size),camera_ease)
+		var camera_rise: float=0 if reduced_motion else model.air_height*.18
+		camera.position=Vector3(camera.position.x,camera_rise,z)+RideLayout.CAMERA_OFFSET
+		camera.look_at(Vector3(x*.28,0,z)+RideLayout.CAMERA_LOOK_OFFSET,Vector3.UP)
+	else:
+		# Preserve source-camera comparison captures alongside the campus cut.
+		camera.position.x=lerpf(camera.position.x,x*.34+1.7,camera_ease)
+		var progress: float=clampf((model.distance+70)/755,0,1)
+		var source_fov: float=53 if reduced_motion else 53+progress*5+(7 if model.boost>0 else 0)
+		camera.fov=lerpf(camera.fov,source_fov,camera_ease)
+		var camera_bob: float=0 if reduced_motion else sin(animation_seconds*(7+progress*3))*.012
+		camera.position=Vector3(camera.position.x,3.85+camera_bob+model.air_height*.35,z+8.1)
+		camera.look_at(Vector3(x*.46,1.1,z-13.5),Vector3.UP)
 	previous_distance=model.distance;previous_tick=model.tick
 	presented=true
 	viewport3d.render_target_update_mode=SubViewport.UPDATE_ONCE
@@ -299,29 +317,34 @@ func _set_hero_shadow(visible_shadow: bool) -> void:
 	for record: Dictionary in hero.manifest.nodes:
 		if record.original=="canteen-chase-rider-shadow" and hero.nodes.has(record.name):hero.nodes[record.name].visible=visible_shadow
 
-## Caller may submit measured renderer time; these are the original source's
-##24-frame thresholds, clipping distances and fallback shadow policy.
+## Sample the running scene. Ready screens and paused frames do not choose the tier.
 func observe_frame_time(milliseconds: float) -> void:
-	if milliseconds<=0 or milliseconds>1000 or measured_frames>=50:return
-	measured_frames+=1;measured_frame_ms+=milliseconds
-	if measured_frames!=24:return
+	if milliseconds<=0 or milliseconds>1000 or quality=="light":return
+	measured_frames+=1
+	measured_frame_ms+=minf(milliseconds,90.0)
+	if measured_frames<48:return
 	var mean: float=measured_frame_ms/measured_frames
-	quality="light" if mean>65 else ("balanced" if mean>34 else "high")
-	if quality=="high":return
-	enable_live_shadows=false;sun.shadow_enabled=false;_set_hero_shadow(true)
+	measured_frames=0
+	measured_frame_ms=0
+	var next: String="light" if mean>46 else ("balanced" if mean>26 else quality)
+	if next==quality:return
+	quality=next
+	enable_live_shadows=false
+	sun.shadow_enabled=false
+	_set_hero_shadow(true)
 	camera.far=92 if quality=="light" else 115
-	environment.fog_depth_begin=34;environment.fog_depth_end=camera.far-4
-	fit_resolution(fitted_size)
+	environment.fog_depth_begin=34
+	environment.fog_depth_end=camera.far-4
+	fit_resolution(fitted_size,fitted_density,compact_render)
 
-## Source handleResize clamps CSS width to480..960, at a native pixel ratio of1.
-## Geometry, camera aspect and source16:9 composition do not change on rotation.
-func fit_resolution(available: Vector2) -> void:
+func fit_resolution(available: Vector2,density: float=1.0,compact: bool=false) -> void:
 	fitted_size=available
-	var fitted: float=minf(available.x,available.y*16.0/9.0)
-	var width: int=clampi(roundi(fitted),480,960)
-	# Original source light tier uses pixelRatio .78 after CSS-size clamp.
-	var ratio: float=.78 if quality=="light" else 1.0
-	var next_size:=Vector2i(roundi(width*ratio),roundi(width*9.0/16.0*ratio))
+	fitted_density=density
+	compact_render=compact
+	var quality_scale: float=.66 if quality=="light" else (.82 if quality=="balanced" else 1.0)
+	var next_size:=RideLayout.render_size(available,density,compact,quality_scale)
 	if viewport_resolution==next_size:return
 	viewport_resolution=next_size
-	if is_instance_valid(viewport3d):viewport3d.size=next_size;presented=false
+	if is_instance_valid(viewport3d):
+		viewport3d.size=next_size
+		presented=false

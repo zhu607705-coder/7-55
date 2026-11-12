@@ -1,5 +1,6 @@
 extends "res://scripts/chapters/c3_base.gd"
 const CanteenObjective = preload("res://scripts/presentation/canteen_objective.gd")
+const CanteenLayout = preload("res://scripts/space/canteen_layout.gd")
 const SceneSession = preload("res://scripts/presentation/c3_scene_session.gd")
 const RehearsalSession = preload("res://scripts/games/theater_rehearsal_session.gd")
 const RehearsalModel = preload("res://scripts/games/theater_shadow_rehearsal_model.gd")
@@ -530,7 +531,10 @@ func _initial_npcs(s: Dictionary) -> Array:
 	for x: float in c.CANTEEN_COUNTER_NPC_X:
 		for y: float in c.CANTEEN_QUEUE_NPC_Y: queue.append({"x":x,"y":y})
 	queue.shuffle()
-	var seated: Array=c.CANTEEN_SEATED_NPC_PLACEMENTS.duplicate(true)+c.CANTEEN_SEATED_EXTRA_NPC_PLACEMENTS.duplicate(true)
+	var seated: Array=[]
+	for group: String in ["CANTEEN_SEATED_NPC_PLACEMENTS","CANTEEN_SEATED_EXTRA_NPC_PLACEMENTS"]:
+		for placement: Dictionary in c[group]:
+			seated.append({"x":CanteenLayout.seated_x(placement,group.contains("EXTRA")),"y":placement.y})
 	seated.shuffle()
 	for i in range(c.CANTEEN_QUEUE_NPC_DIALOGUE.size()):
 		npc_targets.append({"id":"initial-queue-npc-"+str(i),"label":"交谈","x":queue[i].x,"y":queue[i].y,"proximity":48,"kind":"npc","dialogue":c.CANTEEN_QUEUE_NPC_DIALOGUE[i]})
@@ -544,6 +548,9 @@ func definitions(scene: String, s: Dictionary) -> Array:
 	if scene!=npc_scene:
 		npc_scene=scene; npc_targets=[]
 	var list: Array = source_targets(scene).duplicate(true)
+	if scene=="canteen_interior":
+		list=list.filter(func(entry: Dictionary)->bool: return str(entry.id)!=CanteenLayout.EXIT_TARGET_ID)
+		list.append(CanteenLayout.data().side_exit.target)
 	if scene=="theater_interior": list.append(REHEARSAL_TARGET.duplicate(true))
 	if scene=="campus_bootstrap" and s.canteenHunt.phase=="chase_ready":
 		var bike: Dictionary=world(scene).manifest.canteen.bike
@@ -561,7 +568,11 @@ func definitions(scene: String, s: Dictionary) -> Array:
 		var trays: Array = constants.CANTEEN_TRAYS
 		for index: int in range(trays.size()):
 			var slot: Dictionary = s.native.c3_tray_slots[index]
-			list.append({"id":trays[index].id,"label":"餐盘","kind":"tray","x":slot.x,"y":slot.y,"width":26,"height":40,"proximity":85,"stand":slot.stand})
+			# Save the source slot identity and apply native furniture placement only when reading it.
+			var tray := {"id":trays[index].id,"label":"餐盘","kind":"tray","x":CanteenLayout.x_on_floor(slot.x,"dining_table"),"y":slot.y,"width":26,"height":40,"proximity":85}
+			if slot.get("stand") is Dictionary:
+				tray.stand = {"x":CanteenLayout.x_on_floor(slot.stand.x,"dining_table"),"y":slot.stand.y}
+			list.append(tray)
 	return list
 
 func get_definition(scene: String, id: String, s: Dictionary) -> Dictionary:
@@ -683,6 +694,9 @@ func canteen_target(s: Dictionary, entry: Dictionary) -> Dictionary:
 			return {"handled":true,"open_canteen_device":"bike"}
 		"exit":
 			if not side_active(c): return locked()
+			var pose: Variant = s.native.get("player", {})
+			if not pose is Dictionary or not pose.has_all(["x", "y"]) or not CanteenLayout.exit_contains_player(Vector2(pose.x, pose.y)):
+				return locked("走进食堂南门即可离开。")
 			return enter(s,"campus_bootstrap","c3_canteen","campus_canteen_gate")
 	return locked()
 

@@ -48,7 +48,8 @@ func import_browser(payload: Variant, label: String) -> Dictionary:
 		reload_matches(expected.state,label)
 	return result
 func reject_raw(raw: String, label: String) -> void:
-	var previous: Dictionary = state.d.duplicate(true)
+	var active: Dictionary = state.d
+	var previous: Dictionary = active.duplicate(true)
 	var prior_primary := bytes(state.SAVE_PATH)
 	var prior_backup := bytes(state.BACKUP_PATH)
 	var prior_posts := bytes(Store.posts_path)
@@ -58,7 +59,7 @@ func reject_raw(raw: String, label: String) -> void:
 	write_text(INPUT,raw)
 	var result: Dictionary = state.import_save(INPUT)
 	check(not result.get("ok",false),label + " rejected")
-	check(state.d == previous and state.developer_mode == preview and state.formal_snapshot == formal,label + " does not mutate current or preview state")
+	check(is_same(state.d, active) and state.d == previous and state.developer_mode == preview and state.formal_snapshot == formal,label + " does not mutate current or preview state")
 	check(bytes(state.SAVE_PATH) == prior_primary and bytes(state.BACKUP_PATH) == prior_backup,label + " leaves both autosave files byte-identical")
 	check(bytes(Store.posts_path) == prior_posts and bytes(Store.quest_path) == prior_overrides,label + " leaves separate CC98 files byte-identical")
 

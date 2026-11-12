@@ -1,5 +1,6 @@
 extends SceneTree
 const Metrics = preload("res://scripts/player_metrics.gd")
+const CanteenLayout = preload("res://scripts/space/canteen_layout.gd")
 var failures := 0
 func _initialize() -> void: call_deferred("_run")
 func check(value: bool,message: String) -> void:
@@ -51,8 +52,8 @@ func _check_native_canteen(world: Control) -> void:
 	var native: Node2D = world.native_canteen
 	check(is_instance_valid(native) and native.is_active(),"canteen native collision owner is active")
 	if not is_instance_valid(native): return
-	check(layout.structures.size() == 15 and native.structures.size() == 15,"canteen retains all 15 measured structures")
-	check(layout.objects.size() == 132 and native.objects.size() == 132,"canteen retains all 132 independent objects")
+	check(layout.structures.size() == 11 and native.structures.size() == 11,"canteen retains all 11 measured fixed structures")
+	check(layout.objects.size() == 127 and native.objects.size() == 127,"canteen retains all 127 independent objects")
 	for row: Dictionary in layout.structures:
 		var polygon := _polygon(row.polygon)
 		var registered := false
@@ -65,13 +66,16 @@ func _check_native_canteen(world: Control) -> void:
 	for row: Dictionary in layout.objects:
 		if row.get("footprint",[]).is_empty(): continue
 		solid_props += 1
-		var polygon := _polygon(row.footprint,Vector2(row.position[0],row.position[1]))
+		var position:=Vector2(row.position[0],row.position[1])
+		if str(row.id).begins_with("dining_"):
+			position.x=CanteenLayout.x_on_floor(position.x,row.asset)
+		var polygon := _polygon(row.footprint,position)
 		var prop: Node2D = native.objects.get(row.id)
 		check(is_instance_valid(prop),"canteen solid prop is registered "+str(row.id))
 		if is_instance_valid(prop):
 			check(prop.collision_polygon() == polygon and prop.body.collision_layer == 1,"canteen active prop matches authored footprint "+str(row.id))
 		_check_solid_polygon(world,polygon,"canteen prop "+str(row.id))
-	check(solid_props == 96,"canteen checks all 96 solid prop footprints")
+	check(solid_props == 93,"canteen checks all 93 solid prop footprints")
 	for box: Dictionary in native.dynamic_collisions:
 		check(not world.can_stand(world._rect(box).get_center()-Metrics.FOOT_CENTER_OFFSET),"canteen dynamic foot collision "+str(box.get("id","")))
 	# Keep positive space coverage: a blanket blocker must not satisfy the solids.

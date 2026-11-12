@@ -16,6 +16,7 @@ var _resume_keys: Dictionary={}
 var _can_resume:=true
 var _requested_active:=false
 var _opened_order:=0
+var _activity_extent:=Vector2.ZERO
 static var _next_order:=0
 static var _environment_blocked:=false
 const GROUP:="native_pause_surfaces"
@@ -51,9 +52,16 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_layout)
 	surface.hide();_layout()
 
+func configure_activity_extent(extent: Vector2) -> void:
+	if _activity_extent==extent:return
+	_activity_extent=extent
+	_layout()
+
 func _layout() -> void:
 	if not is_instance_valid(surface) or not is_instance_valid(panel):return
-	var extent:=get_viewport().get_visible_rect().size
+	# The canvas may already be turned by the game on mobile Web. Size the
+	# pause layer in the same logical axes as its owner before that transform.
+	var extent:=_activity_extent if _activity_extent!=Vector2.ZERO else get_viewport().get_visible_rect().size
 	surface.position=Vector2.ZERO;surface.size=extent
 	# Match the phone's 430px shell and 424/378 authored overlay scale in
 	# portrait/desktop. Very short landscapes retain a legible common minimum.

@@ -2,9 +2,9 @@ extends Node2D
 ## Independent furniture, original Chapter3 state-owned actors and deterministic picking.
 const Prop=preload("res://scripts/objects/canteen_scene_object.gd")
 const Metrics=preload("res://scripts/player_metrics.gd")
+const CanteenLayout=preload("res://scripts/space/canteen_layout.gd")
 const ModeFiberView=preload("res://scripts/presentation/c3_mode_fiber_view.gd")
 const TrayFrames=preload("res://scripts/presentation/c3_tray_frames.gd")
-const DoorFrames=preload("res://scripts/presentation/c3_door_frames.gd")
 class Feature extends Node2D:
 	var owner_scene:Node2D
 	var role:String
@@ -23,7 +23,6 @@ var structures:Array=[]
 var mode_fiber_view:Node2D
 var source_space:Node2D
 var floor_sprite:Sprite2D
-var floor_patches:Array[Sprite2D]=[]
 var player_sprite:Sprite2D
 var player_shadow:Polygon2D
 var entities:Dictionary={}
@@ -60,22 +59,24 @@ var furniture_tint:=Color.WHITE
 var furniture_view_ready:=false
 func setup(owner_world:Control)->void:
 	world=owner_world;name="CanteenIndependentObjects"
-	layout=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/canteen-object-layout.json"))
+	layout=CanteenLayout.data()
 	font=preload("res://scripts/ui/native_typography.gd").body_font()
 	if world!=null:layers=world.chapter3_layers
 	source_space=Node2D.new();source_space.name="SourceCoordinates";add_child(source_space)
 	mode_fiber_view=ModeFiberView.new();mode_fiber_view.z_index=Prop.draw_layer(ModeFiberView.SOURCE_DEPTH);source_space.add_child(mode_fiber_view)
 	for key:String in layout.assets:textures[key]=load(layout.assets[key].texture)
-	floor_pixels=textures.empty_floor.get_image()
+	floor_pixels=textures.empty_floor.get_image().duplicate()
 	if floor_pixels.is_compressed():floor_pixels.decompress()
-	floor_sprite=Sprite2D.new();floor_sprite.name="EmptyFloor";floor_sprite.texture=textures.empty_floor;floor_sprite.centered=false;floor_sprite.z_index=0
+	for patch:Dictionary in layout.get("floor_openings",[]):
+		_register_floor_pixels(patch)
+	floor_sprite=Sprite2D.new();floor_sprite.name="EmptyFloor";floor_sprite.texture=ImageTexture.create_from_image(floor_pixels);floor_sprite.centered=false;floor_sprite.z_index=0
 	var fr:Array=layout.background.region;floor_sprite.region_enabled=true;floor_sprite.region_rect=Rect2(fr[0],fr[1],fr[2],fr[3]);floor_sprite.position=Vector2(fr[0],fr[1]);source_space.add_child(floor_sprite)
-	for opening:Dictionary in layout.get("floor_openings",[]):
-		var patch:=Sprite2D.new();patch.name=str(opening.id);patch.texture=textures.empty_floor;patch.centered=false;patch.region_enabled=true;patch.z_index=0
-		var src:Array=opening.source;var dst:Array=opening.destination
-		patch.region_rect=Rect2(src[0],src[1],src[2],src[3]);patch.position=Vector2(dst[0],dst[1]);patch.scale=Vector2(dst[2]/float(src[2]),dst[3]/float(src[3]));source_space.add_child(patch);floor_patches.append(patch)
 	for row:Dictionary in layout.objects:
-		var prop:=Prop.new();prop.configure(row,layout.assets[row.asset],textures[row.asset]);source_space.add_child(prop);objects[row.id]=prop;prop.attach_surfaces(source_space)
+		var placement:=row
+		if str(row.id).begins_with("dining_"):
+			placement=row.duplicate()
+			placement.position=[CanteenLayout.x_on_floor(row.position[0],row.asset),row.position[1]]
+		var prop:=Prop.new();prop.configure(placement,layout.assets[row.asset],textures[row.asset]);source_space.add_child(prop);objects[row.id]=prop;prop.attach_surfaces(source_space)
 		for part:Dictionary in prop.parts:sorted_parts.append({"object":prop,"part":part,"depth":part.depth})
 	for prop:Node2D in objects.values():
 		var support_id:String=prop.definition.get("supported_by","")
@@ -98,7 +99,7 @@ func setup(owner_world:Control)->void:
 	source_space.add_child(player_shadow)
 	player_sprite=Sprite2D.new();player_sprite.name="OriginalPlayer";player_sprite.centered=false;source_space.add_child(player_sprite)
 	for role:String in ["pickup_slots","mixer","drink_screens","return_contact","promo_glow","door_opening"]:
-		var feature:=Feature.new();feature.name=role;feature.role=role;feature.owner_scene=self;var depth:float={"pickup_slots":244,"mixer":818,"drink_screens":230,"return_contact":615,"promo_glow":1699,"door_opening":0}[role];feature.set_meta("source_depth",depth);feature.z_index=0 if role=="door_opening" else Prop.draw_layer(depth);source_space.add_child(feature);features.append(feature)
+		var feature:=Feature.new();feature.name=role;feature.role=role;feature.owner_scene=self;var depth:float={"pickup_slots":244,"mixer":818,"drink_screens":230,"return_contact":615,"promo_glow":1699,"door_opening":layout.side_exit.frame.baseY}[role];feature.set_meta("source_depth",depth);feature.z_index=Prop.draw_layer(depth);source_space.add_child(feature);features.append(feature)
 		if role=="return_contact":feature.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
 	mixer_performance=load("res://scripts/objects/canteen_mixer_performance.gd").new();source_space.add_child(mixer_performance);mixer_performance.setup(world)
 	drink_performance=load("res://scripts/objects/canteen_drink_performance.gd").new();source_space.add_child(drink_performance);drink_performance.setup(world)
@@ -212,7 +213,6 @@ func configure_view(origin:Vector2,zoom:float,player:Vector2)->void:
 	if not _active:return
 	_lease_story_layers();_origin=origin;_zoom=zoom;_player=player;source_space.position=origin;source_space.scale=Vector2.ONE*zoom
 	var tint:=Color.WHITE.lerp(Color(.03,.15,.26),float(world.mode_mix)*.3);floor_sprite.modulate=tint
-	for patch:Sprite2D in floor_patches:patch.modulate=tint
 	var actor:Dictionary=world.player_visual()
 	player_sprite.texture=actor.texture
 	var depth:=Metrics.ground_depth_y(player)
@@ -230,7 +230,7 @@ func configure_view(origin:Vector2,zoom:float,player:Vector2)->void:
 		for prop:Node2D in objects.values():
 			for part:Dictionary in prop.parts:sorted_parts.append({"object":prop,"part":part,"depth":part.depth})
 		sorted_parts.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return a.depth<b.depth)
-	_update_door();_configure_return_depth();_apply_draw_order();record_surfaces()
+	_configure_return_depth();_apply_draw_order();record_surfaces()
 	for feature:Node2D in features:feature.queue_redraw()
 	get_node("CanteenInterface").queue_redraw()
 func with_supported_planes(actors:Array)->Array:
@@ -323,22 +323,6 @@ func _table_under(point:Vector2)->Node2D:
 			resting_supports[point]=prop;return prop
 	resting_supports[point]=null
 	return null
-func _update_door()->void:
-	var door:Node2D=objects.southeast_door
-	var same_scene:bool=layers.doors.scene_id=="canteen_interior"
-	var progress:float=layers.doors.visual_progress if same_scene else 0.0
-	var passable:bool=same_scene and layers.doors.passable()
-	for part:Dictionary in door.parts:part.sprite.visible=false
-	var at:Vector2=door.position+door.top_left
-	var pose:Dictionary=DoorFrames.sample(progress,passable,at,door.scale_value)
-	if pose.closed:
-		# Paint the exact full-resolution original endpoint, not a generated copy.
-		_place_entity("southeast_door_closed",door.texture,door.source_region,Rect2(at,door.dimensions),900,["southeast_exit"])
-		return
-	# Registered opaque leaves swing independently behind the unchanged source
-	# jambs and hinge plates. No scale animation, frame fade or collision writes.
-	_place_entity("southeast_door_leaves",layers.texture(DoorFrames.LEAVES_ASSET),pose.source,pose.rect,900,["southeast_exit"])
-	_place_entity("southeast_door_frame",layers.texture(DoorFrames.FRAME_ASSET),Rect2(Vector2.ZERO,door.source_region.size),Rect2(at,door.dimensions),900,["southeast_exit"])
 func owns_target(id:String)->bool:
 	return _active and (id.begins_with("initial-") or id.begins_with("tray_") or id.begins_with("drink-machine-") or id.begins_with("pickup_window_") or id in ["ordering_kiosk","queue-column-three-front","drink-bottle-shelf","canteen-mixer","canteen-promo-board","auntie","southeast_exit"])
 func target_geometry(id:String)->Dictionary:
@@ -346,8 +330,10 @@ func target_geometry(id:String)->Dictionary:
 func record_surfaces()->void:
 	if world==null or not _active:return
 	world.object_picker.clear();last_surface_ids.clear()
-	# The open, visible doorway remains the exit affordance after its leaves fold.
-	world.object_picker.add(["southeast_exit"],{"rect":Rect2(1305,795,88,105)},false)
+	# The fixed jamb is the pick surface in both door states.
+	var exit_geometry:={"rect":layers.doors.canteen_pick_rect()}
+	world.object_picker.add(["southeast_exit"],exit_geometry,false)
+	last_surface_ids.southeast_exit=exit_geometry
 	var ordered:Array=[]
 	for prop:Node2D in objects.values():ordered.append_array(prop.surfaces())
 	for surface:Dictionary in entity_surfaces:surface["root_order"]=surface.node.get_index()
@@ -372,9 +358,28 @@ func record_surfaces()->void:
 	for surface:Dictionary in ordered:
 		world.object_picker.add(surface.ids,surface.geometry)
 		for id:String in surface.ids:last_surface_ids[id]=surface.geometry
+func _register_floor_pixels(patch: Dictionary) -> void:
+	var texture: Texture2D = load(str(patch.texture)) if patch.has("texture") else textures.empty_floor
+	var pixels := texture.get_image()
+	if pixels.is_compressed(): pixels.decompress()
+	if pixels.get_format() != floor_pixels.get_format(): pixels.convert(floor_pixels.get_format())
+	var src: Array = patch.source
+	var dst: Array = patch.destination
+	var source := Rect2i(src[0], src[1], src[2], src[3])
+	var size := Vector2i(dst[2], dst[3])
+	if size != source.size:
+		pixels = pixels.get_region(source)
+		pixels.resize(size.x, size.y, Image.INTERPOLATE_NEAREST)
+		source = Rect2i(Vector2i.ZERO, size)
+	# A replacement can remove old pixels as well as cover them. The rendered
+	# plate and the walkable alpha edge come from this same composite.
+	floor_pixels.blit_rect(pixels, source, Vector2i(dst[0], dst[1]))
+
 func blocks_feet(feet:Rect2)->bool:
 	if not _active:return false
-	for point:Vector2 in [feet.position,Vector2(feet.end.x,feet.position.y),feet.end,Vector2(feet.position.x,feet.end.y),feet.get_center()]:
+	# A foot touching the floor's outer edge still occupies the last interior pixel.
+	var sample := feet.grow(-.001)
+	for point:Vector2 in [sample.position,Vector2(sample.end.x,sample.position.y),sample.end,Vector2(sample.position.x,sample.end.y),sample.get_center()]:
 		if point.x<0 or point.y<0 or point.x>=floor_pixels.get_width() or point.y>=floor_pixels.get_height() or floor_pixels.get_pixel(int(point.x),int(point.y)).a<.5:return true
 	var box:=PackedVector2Array([feet.position,Vector2(feet.end.x,feet.position.y),feet.end,Vector2(feet.position.x,feet.end.y)])
 	for row:Dictionary in structures:
@@ -383,6 +388,8 @@ func blocks_feet(feet:Rect2)->bool:
 		if prop.blocks_feet(feet):return true
 	for row:Dictionary in dynamic_collisions:
 		if Rect2(row.left,row.top,row.right-row.left,row.bottom-row.top).intersects(feet):return true
+	for leaf:Rect2 in layers.doors.collision_rects():
+		if leaf.intersects(feet):return true
 	return false
 func navigation_rects()->Array:
 	var groups:Dictionary={};var result:Array=[]
@@ -394,6 +401,7 @@ func navigation_rects()->Array:
 	for row:Dictionary in structures:result.append_array(_polygon_rectangles(row.polygon))
 	result.append_array(groups.values())
 	for row:Dictionary in dynamic_collisions:result.append(Rect2(row.left,row.top,row.right-row.left,row.bottom-row.top))
+	if layers!=null: result.append_array(layers.doors.collision_rects())
 	return result
 func _polygon_rectangles(poly:PackedVector2Array)->Array:
 	# Orthogonal wall legs remain separate. A concave frame never becomes a room box.
@@ -415,7 +423,7 @@ func _polygon_crossings(poly:PackedVector2Array,y:float)->Array:
 		if (a.y>y)!=(b.y>y):xs.append(a.x+(y-a.y)*(b.x-a.x)/(b.y-a.y))
 	xs.sort();return xs
 func navigation_obstacles(foot:Rect2)->Array:
-	var signature:=JSON.stringify(dynamic_collisions)+str(state.canteenHunt.phase)+str(foot)
+	var signature:=JSON.stringify(dynamic_collisions)+str(state.canteenHunt.phase)+str(foot)+str(layers.doors.collision_rects())
 	if signature==navigation_signature:return navigation_cache
 	navigation_signature=signature
 	var expanded:Array=[]
@@ -450,15 +458,14 @@ func draw_feature(canvas:CanvasItem,role:String,force:bool=false)->void:
 		for i in range(5):
 			var x:float=[346,595,835,1080,1235][i];canvas.draw_rect(Rect2(x-19,209,38,20),Color("7c6742"));canvas.draw_rect(Rect2(x-15,213,30,8),Color("152525"));canvas.draw_string(font,Vector2(x-3,228),str(i+1),HORIZONTAL_ALIGNMENT_LEFT,-1,8,Color("f5e6b8"))
 	elif role=="mixer":
-		var at:=Vector2(260,758)
-		canvas.draw_line(at+Vector2(5,5),at+Vector2(20,-40),Color("d4bf8b"),3);canvas.draw_rect(Rect2(226,783,68,19),Color("314e48"));canvas.draw_string(font,Vector2(232,797),"混合台",HORIZONTAL_ALIGNMENT_LEFT,-1,13,Color("ecdeb5"))
+		canvas.draw_string(font, Vector2(242, 805), "混合台", HORIZONTAL_ALIGNMENT_CENTER, 36, 10, Color("e8e0c8"))
 	elif role=="drink_screens":
 		var colors:Array=[Color("477bbd"),Color("ded8b1"),Color("3c3130")]
 		for i in range(3):
 			var x:float=[1421,1473,1525][i];canvas.draw_rect(Rect2(x-8,127,16,32),colors[i]);canvas.draw_rect(Rect2(x-5,135,10,19),Color("dee8dc",.6));canvas.draw_rect(Rect2(x-3,132,6,4),Color("29372f"))
 	elif role=="promo_glow":
 		for e:Dictionary in glow_entries:canvas.draw_rect(Rect2(e.point-e.size/2,e.size),Color("9af4ff",e.alpha))
-	elif role=="door_opening":canvas.draw_rect(Rect2(1305,795,88,105),Color("172020"))
+	elif role=="door_opening" and layers!=null:layers.doors.draw_canteen_exit(canvas)
 	elif role=="return_contact" and return_age<TrayFrames.return_duration(bool(state.native.settings.reduced_motion)):
 		var pose:Dictionary=return_pose()
 		var tex:Texture2D=layers.texture(str(pose.asset))
@@ -466,20 +473,17 @@ func draw_feature(canvas:CanvasItem,role:String,force:bool=false)->void:
 		var side:float=float(pose.size)
 		canvas.draw_texture_rect_region(tex,Rect2(Vector2.ONE*(-side/2),Vector2.ONE*side),pose.source,Color(1,1,1,float(pose.alpha)))
 		canvas.draw_set_transform(Vector2.ZERO)
+func paint_floor(canvas:CanvasItem)->void:
+	canvas.draw_texture_rect_region(floor_sprite.texture,Rect2(floor_sprite.position,floor_sprite.region_rect.size),floor_sprite.region_rect)
+	draw_feature(canvas,"door_opening",true)
+
 func paint_defense(canvas:CanvasItem,front:bool,feet_y:float)->void:
 	# Same manifest on the existing deterministic defense board; model untouched.
-	if not front:
-		canvas.draw_texture_rect_region(textures.empty_floor,Rect2(11,1,1659,940),Rect2(11,1,1659,940))
-		for opening:Dictionary in layout.get("floor_openings",[]):
-			var src:Array=opening.source;var dst:Array=opening.destination
-			canvas.draw_texture_rect_region(textures.empty_floor,Rect2(dst[0],dst[1],dst[2],dst[3]),Rect2(src[0],src[1],src[2],src[3]))
+	if not front:paint_floor(canvas)
 	var ordered:Array=[]
 	var planes:Array=with_supported_planes([{"depth":feet_y,"rect":Rect2(-1000,-1000,10000,10000)}])
 	for prop:Node2D in objects.values():
 		if prop.definition.get("decorative_cart",false):continue
-		if prop.definition.has("door"):
-			if not front:canvas.draw_rect(Rect2(prop.position+prop.top_left,prop.dimensions),Color("172020"))
-			continue
 		for part:Dictionary in prop.depth_slices(planes):
 			if (float(part.depth)>feet_y)==front:ordered.append({"prop":prop,"part":part,"depth":part.depth})
 	ordered.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return a.depth<b.depth)

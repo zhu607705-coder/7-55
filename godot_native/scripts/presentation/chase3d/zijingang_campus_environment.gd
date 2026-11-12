@@ -34,9 +34,12 @@ func build_transition(stage: String) -> Node3D:
 		for n: int in range(4):_tree(b,Vector3(side*11,0,15-n*14),n+side*7)
 		_lamp(b,Vector3(side*6.15,0,4),side)
 	if stage=="start":
+		_forecourt(b,Vector3(-12,.06,-13),18)
 		if not _has_module("campus_glass_canopy"):_canteen(b,Vector3(-24,0,-16))
 		_cycle_shelter(b,Vector3(11.7,0,1))
-	elif not _has_module("campus_theater_foyer"):_theater(b,Vector3(0,0,-23))
+	else:
+		_forecourt(b,Vector3(0,.06,-24),32)
+		if not _has_module("campus_theater_foyer"):_theater(b,Vector3(0,0,-23))
 	var node: Node3D=b.finish("ZijingangDeparture" if stage=="start" else "ZijingangArrival")
 	if stage=="start":_module(node,"campus_glass_canopy",Vector3(-24,0,-16),PI/2,1.5)
 	else:_module(node,"campus_theater_foyer",Vector3(0,0,-27))
@@ -52,6 +55,8 @@ func update_distance(distance: float,ahead: float=115) -> void:
 		if index<first or index>last:chunks[index].queue_free();chunks.erase(index)
 	if landmarks==null:
 		var b:=Batch.new();b.materials=material_cache
+		_forecourt(b,Vector3(-16,.06,-16),18)
+		_forecourt(b,Vector3(0,.06,-822),32)
 		if not _has_module("campus_glass_canopy"):_canteen(b,Vector3(-24,0,-16))
 		if not _has_module("campus_theater_foyer"):_theater(b,Vector3(0,0,-824))
 		landmarks=b.finish("ZijingangLandmarks");add_child(landmarks)
@@ -89,12 +94,22 @@ func build_chunk(index: int) -> Node3D:
 		for x: float in [-1.675,1.675]:b.box("E8E0C8",Vector3(x,-.011,z+17-n*8),Vector3(.1,.008,3.2))
 	if waterside:
 		b.box("547F9D",Vector3(-28,-.38,z),Vector3(29,.04,40))
+		b.box("A39B87",Vector3(-11.95,.007,z),Vector3(2.2,.09,40))
+		b.box("A9BCC2",Vector3(-12.95,.068,z),Vector3(.22,.14,40))
+		b.box("C5C1A9",Vector3(-11.07,.059,z),Vector3(.10,.012,40))
 		b.box("766E63",Vector3(-13.5,-.12,z),Vector3(.7,.65,40))
 		b.pole("C5C1A9",Vector3(-13.2,.85,z-20),Vector3(-13.2,.85,z+20),.045)
 		for n: int in range(20):
 			b.pole("C5C1A9",Vector3(-13.2,0,z+19-n*2),Vector3(-13.2,.9,z+19-n*2),.045)
 			b.box("83A7B6",Vector3(-18-posmod(n,5)*3,-.348,z+18-n*2),Vector3(1.6,.006,.07))
 		if index%2==0 and _has_module("campus_willow_verge"):_willow_leaves(b,Vector3(-12.1,6.1,z+4.1),index)
+	if arrival:
+		# Paved theater approach and darker planting bases read from riding height.
+		for side: int in [-1,1]:
+			b.box("A39B87",Vector3(side*14,.012,z),Vector3(10,.12,40))
+			for at: float in [-14.0,0.0,14.0]:
+				b.box("766E63",Vector3(side*11.5,.34,z+at),Vector3(2.8,.60,3.3))
+				b.box("C5C1A9",Vector3(side*11.5,.64,z+at),Vector3(2.93,.11,3.43))
 	if works:_construction(b,z)
 	elif index in [1,3,6,8,15,17] and not _has_module("campus_glass_canopy"):
 		_teaching_facade(b,Vector3(24 if index%2 else -24,0,z),index)
@@ -108,6 +123,15 @@ func build_chunk(index: int) -> Node3D:
 	node.set_meta("distance_start",(index*40-20)/WORLD_PER_METER)
 	node.set_meta("distance_end",(index*40+20)/WORLD_PER_METER)
 	return node
+
+func _forecourt(b: RefCounted,center: Vector3,width: float) -> void:
+	b.box("A39B87",center,Vector3(width,.09,16))
+	for row: int in range(4):
+		b.box("C5C1A9",center+Vector3(0,.052,-6+row*4),Vector3(width,.012,.075))
+	for side: int in [-1,1]:
+		var verge: Vector3=center+Vector3(side*(width*.5-.52),.23,-4)
+		b.box("766E63",verge,Vector3(.8,.42,7))
+		b.box("49634A",verge+Vector3(0,.35,0),Vector3(.86,.38,6.5))
 
 func _willow_leaves(b: RefCounted,center: Vector3,seed: int) -> void:
 	# Rodin returned a bare branching tree. Add original narrow willow leaves,

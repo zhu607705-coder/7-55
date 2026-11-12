@@ -42,10 +42,12 @@ func _init(state: Dictionary={}, type: String="opening", reduce: bool=false) -> 
 		var audio: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/native/audio-director-source.json"))
 		opening_durations=audio.get("chapter3OpeningDurationMsByKey",{})
 		lines=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/library-finals.content.json")).library.dialogue022
-		_add_lines(0,8,"conversation"); _beat("record_scan",1350,850)
-		_add_lines(8,18,"record_escape"); _beat("mode_unlock",1700,1050)
-		_add_lines(18,22,"mode_explanation"); _beat("paper_burst",1000,850)
-		_add_lines(22,26,"paper_dialogue"); _beat("exit_observation",900,850)
+		# Show the scan after 022 opens the log, the mode card after the system
+		# unlocks it, and the paper before the player notices it at the door.
+		_add_lines(0,6,"conversation"); _beat("record_scan",1350,850)
+		_add_lines(6,13,"record_escape"); _beat("mode_unlock",1700,1050)
+		_add_lines(13,14,"mode_explanation"); _beat("paper_burst",1000,850)
+		_add_lines(14,20,"paper_dialogue"); _beat("exit_observation",900,850)
 		_beat("cart_clear",900,850); _beat("route_confirm",600,500); _beat("arrival",1300,900)
 	else:
 		prompt_lines=JSON.parse_string(FileAccess.get_file_as_string("res://data/source/chapter3-canteen.content.json")).entryDialogue

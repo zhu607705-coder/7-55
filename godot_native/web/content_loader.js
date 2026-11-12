@@ -251,13 +251,22 @@
         received+=bytes.byteLength;
         if(options.onProgress)options.onProgress(received,resource.bytes,{reusedBytes:reused,networkBytes:network,storage:stats.storage});
       }
-      let cached=[];
+      let cached=[], legacyRows=[];
       for(let index=0;index<chunks.length;index++) {
         checkSignal(signal);
-        if(index%8===0)cached=await operation('readonly',store=>chunks.slice(index,index+8).map(chunk=>store.get(chunkKey(chunk))))||[];
-        const chunk=chunks[index], canonical=chunkKey(chunk);
-        let saved=cached[index%8], legacy=false;cached[index%8]=null;
-        if(!saved){saved=await operation('readonly',store=>store.get(key(resource,index)));legacy=!!saved;}
+        if(index%8===0) {
+          const batch=chunks.slice(index,index+8);
+          cached=await operation('readonly',store=>batch.map(chunk=>store.get(chunkKey(chunk))))||[];
+          const misses=batch.map((_,offset)=>offset).filter(offset=>!cached[offset]);
+          legacyRows=[];
+          if(misses.length) {
+            const rows=await operation('readonly',store=>misses.map(offset=>store.get(key(resource,index+offset))))||[];
+            misses.forEach((offset,position)=>{legacyRows[offset]=rows[position];});
+          }
+        }
+        const chunk=chunks[index], canonical=chunkKey(chunk), slot=index%8;
+        const saved=cached[slot]||legacyRows[slot], legacy=!!legacyRows[slot];
+        cached[slot]=null;legacyRows[slot]=null;
         const bytes=saved && saved.bytes instanceof ArrayBuffer?new Uint8Array(saved.bytes):null;
         // Missing cache entries do not consume content bytes. Deferring each
         // miss would delay the first network request by the whole chunk count.
@@ -435,7 +444,7 @@
     globalThis.fetch=scoped;
     try{return await engine.init(executable);}finally{if(globalThis.fetch===scoped)globalThis.fetch=original;}
   }
-  const families = new Set(['phone_bonsai', 'phone_tiyi', 'chapter2', 'chapter3', 'chapter35', 'chapter4', 'flc_activity', 'campus_shared', 'campus_chaoyang', 'campus_haidian', 'campus_changping']);
+  const families = new Set(['phone_bonsai', 'phone_tiyi', 'phone_zjuding', 'chapter2', 'chapter2_campus', 'chapter2_library', 'chapter3', 'chapter35', 'chapter4', 'flc_activity', 'campus_shared', 'campus_chaoyang', 'campus_haidian', 'campus_changping']);
   function validate(manifest) {
     if (!manifest || manifest.schema !== '755-web-content-v1' || !Array.isArray(manifest.packs) || manifest.packs.length > 100) throw new Error('Invalid content manifest');
     const ids = new Set();
@@ -526,6 +535,17 @@
         record.source = loaded.source;
         record.buffer = loaded.buffer;
         if(pace)await pace(0,signal);
+        current(run);
+        // A complete, SHA-verified IndexedDB pack needs no Godot allocation
+        // until a scene asks for it. Where storage failed, keep the existing
+        // mount/CacheStorage fallback so optional work is still reusable.
+        if(run.optional && !foreground.has(record.pack.id) && loaded.indexedDBComplete) {
+          record.status='prefetched';
+          record.buffer=null;
+          active=null;
+          pump();
+          return;
+        }
         mountDownloaded(run);
         return;
       }
@@ -594,12 +614,20 @@
         if (!Array.isArray(selected) || selected.length > 1 || selected.some(family => !manifest.backgroundOrder.includes(family))) return;
         prefetchFamilies = new Set(selected);preemptOptional();pump();
       },
-      request: raw => { if(disposed)return;for (const id of selectIds(raw)) foreground.add(id);budget.wake();preemptOptional();pump(); },
+      request: raw => {
+        if(disposed)return;
+        for(const id of selectIds(raw)) {
+          foreground.add(id);
+          const record=records.get(id);
+          if(record.status==='prefetched')record.status='idle';
+        }
+        budget.wake();preemptOptional();pump();
+      },
       retry: raw => {
         if(disposed)return;
         for (const id of selectIds(raw)) {
           const record = records.get(id); foreground.add(id);
-          if (record.status === 'error') { record.status = 'idle'; record.error = ''; }
+          if (record.status === 'error' || record.status === 'prefetched') { record.status = 'idle'; record.error = ''; }
         }
         budget.wake();preemptOptional();pump();
       },

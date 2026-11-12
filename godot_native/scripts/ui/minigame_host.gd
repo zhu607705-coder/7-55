@@ -7,6 +7,7 @@ signal cancelled
 signal presentation_requested(id: String, payload: Dictionary)
 const CompactOverlay = preload("res://scripts/ui/compact_overlay_layout.gd")
 const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
+const RideLayout = preload("res://scripts/presentation/chase3d/ride_render_layout.gd")
 const Chase = preload("res://scripts/games/chase_stunt_model.gd")
 const Fishing = preload("res://scripts/games/rhythm_fishing_model.gd")
 const Kayak = preload("res://scripts/games/kayak_model.gd")
@@ -47,6 +48,9 @@ var fishing_direction := ""
 var fishing_pointer_target := 0.0
 var native_chase_view: Control
 var chase_presentation_error: String=""
+var ride_safe_insets := Vector4.ZERO
+var ride_feedback := ""
+var ride_feedback_until := 0
 var toolbar_touches: Dictionary={}
 var control_buttons: Dictionary={}
 var action_sources: Dictionary={}
@@ -122,6 +126,8 @@ func restart() -> void:
 	match mode:
 		"chase":
 			model=Chase.new()
+			ride_feedback=""
+			ride_feedback_until=0
 			_ensure_native_chase_view()
 			if is_instance_valid(native_chase_view): native_chase_view.reset_view()
 			_control("left","← A",Rect2(20,446,108,74))
@@ -242,6 +248,9 @@ func cancel_game() -> void:
 	if mode=="rhythm": presentation_requested.emit("qizhen_fishing_cancelled",_fishing_payload({"reason":"player_cancel"}))
 	cancelled.emit()
 
+func on_browser_hidden() -> void:
+	if mode=="rhythm": cancel_game()
+
 func _notification(what: int) -> void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_WM_WINDOW_FOCUS_OUT]:
 		_lifecycle_suspended=true
@@ -323,6 +332,20 @@ func _input(event: InputEvent) -> void:
 		if event.pressed: press_action(action,"key:%d"%code)
 		else: release_action(action,"key:%d"%code)
 		get_viewport().set_input_as_handled()
+	if mode=="chase" and event is InputEventScreenDrag and touch_sources.has(event.index):
+		var touch: Dictionary=touch_sources[event.index]
+		if touch.has("steering"):
+			var point: Vector2=get_global_transform_with_canvas().affine_inverse()*event.position
+			var offset: float=point.x-touch.start.x
+			var direction: String="left" if offset < -14 else ("right" if offset > 14 else "")
+			var previous: String=touch.action
+			if direction!=previous:
+				var source: String="touch:%d"%event.index
+				if not previous.is_empty(): release_action(previous,source)
+				touch.action=direction
+				if not direction.is_empty(): press_action(direction,source)
+			get_viewport().set_input_as_handled()
+		return
 	if event is InputEventScreenTouch:
 		var point: Vector2=get_global_transform_with_canvas().affine_inverse()*event.position
 		var source: String="touch:%d"%event.index
@@ -339,7 +362,10 @@ func _input(event: InputEvent) -> void:
 					touch_sources[event.index]={"action":action,"start":point}
 					if mode!="kayak": press_action(action,source)
 					get_viewport().set_input_as_handled()
-					break
+					return
+			if mode=="chase" and running and not paused and chase_view.get_rect().has_point(point):
+				touch_sources[event.index]={"action":"","start":point,"steering":true}
+				get_viewport().set_input_as_handled()
 		elif mode in ["chase","rhythm"] and toolbar_touches.has(event.index):
 			var button: Button=toolbar_touches[event.index]
 			toolbar_touches.erase(event.index)
@@ -355,7 +381,7 @@ func _input(event: InputEvent) -> void:
 			if mode=="kayak" and running and not paused:
 				model.stroke(touch.action,point.y-touch.start.y>25)
 				_check_terminal()
-			else: release_action(touch.action,source)
+			elif not str(touch.action).is_empty(): release_action(touch.action,source)
 			touch_sources.erase(event.index)
 			get_viewport().set_input_as_handled()
 
@@ -384,7 +410,8 @@ func _process(delta: float) -> void:
 		_audio_update()
 		_check_terminal()
 	if mode=="chase" and is_instance_valid(native_chase_view):
-		native_chase_view.observe_frame_time(delta*1000.0)
+		if running and not paused and not sent and model.tick>120:
+			native_chase_view.observe_frame_time(delta*1000.0)
 		native_chase_view.update_view(model,minf(delta,.25),paused,running and not sent)
 	if mode=="rhythm" and is_instance_valid(fishing_view): fishing_view.advance_view(delta)
 	_refresh()
@@ -420,16 +447,26 @@ func _refresh() -> void:
 	_layout_overlay()
 	if mode!="rhythm": pause_button.text="继续" if paused else "暂停"
 	headline.text=str(config.get("title",{"chase":"755 米 · 追上纸条","rhythm":"启真湖 · 控线钓鱼","kayak":"启真湖 · 双桨航行"}.get(mode,"7:55")))
-	for button: Button in control_buttons.values(): button.visible=running and not paused and mode!="rhythm"
+	var show_controls:=running and not paused and mode!="rhythm"
+	if mode=="chase" and activity_layout_configured: show_controls=show_controls and activity_compact
+	for button: Button in control_buttons.values(): button.visible=show_controls
 	if model==null:
 		queue_redraw()
 		return
 	if mode=="chase":
-		status.text="%d / 755 m    机会 %d    连击 %d    %s"%[int(model.distance),model.lives,model.combo,"餐盘护体" if model.shield else ("道具："+{"tray":"餐盘护具","gust":"顺风纸团"}.get(model.powerup,"") if model.powerup!="" else "")]
-		if activity_compact:
-			var item: String="餐盘护体" if model.shield else ({"tray":"餐盘护具","gust":"顺风纸团"}.get(model.powerup,"") if not str(model.powerup).is_empty() else "暂无道具")
-			status.text="%d / 755 m  ·  机会 %d  ·  连击 %d%s%s  ·  %s"%[int(model.distance),model.lives,model.combo,"\n" if activity_portrait else "  ·  ","铃铛就绪" if model.bell_cooldown<=0 else "铃铛 %.1fs"%model.bell_cooldown,item]
-		hint.text=model.feedback
+		headline.hide()
+		status.text="%d / 755 m   ·   机会 %d"%[int(model.distance),model.lives]
+		if model.combo>=2: status.text+="   ·   连击 %d"%model.combo
+		if model.feedback!=ride_feedback:
+			ride_feedback=model.feedback
+			ride_feedback_until=model.tick+276
+		hint.text=ride_feedback if model.tick<ride_feedback_until else ""
+		if activity_layout_configured:
+			if activity_compact: hint.text=hint.text.replace(" · E 使用","")
+			control_buttons.bell.modulate=Color.WHITE if model.bell_cooldown<=0 else Color(.74,.74,.74)
+			control_buttons.item.modulate=Color.WHITE if model.powerup!="" else Color(.74,.74,.74)
+			control_buttons.item.text={"tray":"餐盘","gust":"顺风"}.get(model.powerup,"道具")
+
 	elif mode=="rhythm":
 		status.text="%s · %s    收竿 %d / %d    鱼线张力 %d%%"%[model.rhythm_name,{"casting":"对准鱼影抛竿","count_in":"预备拍","fighting":"跟鱼 · 避猛拽 · 闪金提竿"}[model.stage],model.judged,model.notes.size(),int(model.tension)]
 		hint.text=_fishing_hint()
@@ -440,7 +477,9 @@ func _refresh() -> void:
 	if not running and not sent:
 		hint.text=str(config.get("instructions",hint.text)) if (mode=="rhythm" and model.phase=="idle") or (mode!="rhythm" and model.status=="running") else hint.text
 	if mode=="chase" and not running and not sent and model.status=="running":
-		hint.text="A / D 或方向键转向 · 空格蓄力/松开跳\nJ 响铃 · E 使用道具"
+		hint.text="左右滑动转向 · 按住跳跃，松手起跳" if activity_compact else "方向键转向 · 空格蓄力，松开起跳\nJ 响铃 · E 使用道具"
+	if mode=="chase" and not running and model.status=="lost":
+		hint.text="从赛道起点重试"
 	if sent: hint.text="骑行完成，纸条飞向剧院" if mode=="chase" else ("收竿成功" if mode=="rhythm" else "")
 	if paused: hint.text=""
 	hint.visible=mode!="rhythm" and (mode!="kayak" or not hint.text.is_empty())
@@ -449,7 +488,7 @@ func _refresh() -> void:
 		start_button.disabled=true
 	elif mode=="chase":
 		start_button.disabled=false
-		if model.charge>0 and running and not paused: hint.text="蓄力 %d%% · 松开空格或跳跃按钮起跳"%roundi(model.charge*100)
+		if model.charge>0 and running and not paused: hint.text="蓄力 %d%%"%roundi(model.charge*100)
 	queue_redraw()
 	if mode=="rhythm":
 		_sync_fishing_button_states()
@@ -790,8 +829,12 @@ func configure_activity_layout(available: Vector2,compact: bool) -> void:
 	custom_minimum_size=Vector2.ZERO
 	size=available;scale=Vector2.ONE;position=Vector2.ZERO
 	chase_view.show()
-	_overlay_signature=""
 	_refresh()
+
+func configure_ride_safe_area(insets: Vector4) -> void:
+	if ride_safe_insets==insets:return
+	ride_safe_insets=insets
+	_overlay_signature=""
 
 func _clear_chase_controls() -> void:
 	if model!=null and (not model.held.is_empty() or model.charge>0 or not is_zero_approx(model.velocity)):
@@ -799,58 +842,59 @@ func _clear_chase_controls() -> void:
 	action_sources.clear(); touch_sources.clear(); toolbar_touches.clear()
 
 func _layout_chase_activity() -> void:
-	var signature:=str([size,activity_portrait,control_buttons.size()])
+	var density: float=get_viewport().get_final_transform().get_scale().abs().x
+	var signature:=str([size,activity_compact,ride_safe_insets,density,control_buttons.size()])
 	if signature==_overlay_signature:return
 	_overlay_signature=signature
-	control_buttons.left.text="← A";control_buttons.right.text="D →"
-	control_buttons.jump.text="空格 · 蓄力\n松开跳跃";control_buttons.jump.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-	control_buttons.bell.text="响铃 J";control_buttons.item.text="道具 E"
-	headline.clip_text=true;status.clip_text=true
-	var footer: float=size.y-142
-	if activity_portrait:
-		_put(headline,Rect2(12,8,size.x-24,35),22)
-		var third: float=(size.x-40)/3
-		_put(pause_button,Rect2(12,46,third,44),16);_put(retry_button,Rect2(20+third,46,third,44),16);_put(exit_button,Rect2(28+third*2,46,third,44),16)
-		_put(status,Rect2(12,96,size.x-24,58),16)
-		_put(chase_view,Rect2(10,162,size.x-20,maxf(120,size.y-366)))
-		_put(hint,Rect2(12,size.y-198,size.x-24,52),14)
-		_put(control_buttons.left,Rect2(12,footer,third,64),16)
-		_put(control_buttons.jump,Rect2(20+third,footer,third,64),14)
-		_put(control_buttons.right,Rect2(28+third*2,footer,third,64),16)
-		var half: float=(size.x-32)/2
-		_put(control_buttons.bell,Rect2(12,size.y-70,half,56),16)
-		_put(control_buttons.item,Rect2(20+half,size.y-70,half,56),16)
-	elif size.y<600:
-		_put(headline,Rect2(12,8,size.x-260,35),20)
-		_put(pause_button,Rect2(size.x-240,8,68,44),16);_put(retry_button,Rect2(size.x-164,8,68,44),16);_put(exit_button,Rect2(size.x-88,8,76,44),16)
-		_put(status,Rect2(12,52,size.x-24,30),14)
-		_put(chase_view,Rect2(150,94,size.x-300,size.y-158))
-		_put(hint,Rect2(150,size.y-60,size.x-300,54),14)
-		_put(control_buttons.left,Rect2(12,116,126,64),16)
-		_put(control_buttons.right,Rect2(12,188,126,64),16)
-		_put(control_buttons.jump,Rect2(size.x-138,110,126,70),14)
-		_put(control_buttons.bell,Rect2(size.x-138,188,126,64),16)
-		_put(control_buttons.item,Rect2(size.x-138,260,126,64),16)
-	else:
-		_put(headline,Rect2(16,10,size.x-292,35),24)
-		_put(pause_button,Rect2(size.x-260,10,74,44),18);_put(retry_button,Rect2(size.x-176,10,74,44),18);_put(exit_button,Rect2(size.x-92,10,76,44),18)
-		_put(status,Rect2(16,58,size.x-32,32),18)
-		_put(chase_view,Rect2(16,98,size.x-32,size.y-276))
-		_put(hint,Rect2(24,size.y-166,size.x-48,56),18)
-		var bw: float=(minf(size.x,1040)-64)/5.0
-		var left: float=(size.x-(bw*5+40))/2
-		for i: int in range(5):
-			_put(control_buttons[["left","right","jump","bell","item"][i]],Rect2(left+i*(bw+10),size.y-96,bw,72),18)
+	shared_pause_overlay.configure_activity_extent(size)
+	var picture:=RideLayout.picture_rect(size)
+	var safe:=Rect2(Vector2(ride_safe_insets.x,ride_safe_insets.y),size-Vector2(ride_safe_insets.x+ride_safe_insets.z,ride_safe_insets.y+ride_safe_insets.w)).grow(-10)
+	var button_width:=maxf(44.0,minf(64.0,safe.size.x*.14))
+	var toolbar_x:=safe.end.x-3*button_width-12
+	var toolbar_y:=safe.position.y
+	var status_y:=toolbar_y+3
+	var status_width:=toolbar_x-safe.position.x-12
+	if activity_portrait or status_width<176:
+		status_y=toolbar_y+47
+		status_width=safe.size.x
+	for i: int in range(3):
+		var button: Button=[pause_button,retry_button,exit_button][i]
+		_put(button,Rect2(toolbar_x+i*(button_width+6),toolbar_y,button_width,44),14)
+	_put(headline,Rect2(safe.position,Vector2(120,32)),16)
+	status.clip_text=true
+	_put(status,Rect2(safe.position.x+8,status_y,maxf(80,status_width-8),27),15)
+	_put(chase_view,picture)
 	if is_instance_valid(native_chase_view):
-		native_chase_view.position=chase_view.position;native_chase_view.size=chase_view.size
-		native_chase_view.fit_resolution(chase_view.size)
-	_put(start_button,Rect2(chase_view.position+chase_view.size/2+Vector2(-100,26),Vector2(200,52)),16)
-	overlay_layout={"compact":true}
+		native_chase_view.position=picture.position
+		native_chase_view.size=picture.size
+		native_chase_view.fit_resolution(picture.size,density,activity_compact)
+	var control_height:=56.0
+	var controls_y:=size.y-ride_safe_insets.w-8.0-control_height
+	for row: Array in [
+		["left","←","左转",safe.position.x,48],
+		["right","→","右转",safe.position.x+54,48],
+		["item","道具","使用道具",safe.end.x-160,48],
+		["bell","响铃","响铃",safe.end.x-106,48],
+		["jump","跳跃","按住蓄力，松开跳跃",safe.end.x-52,52]
+	]:
+		var button: Button=control_buttons[row[0]]
+		button.text=row[1]
+		button.accessibility_name=row[2]
+		button.tooltip_text=row[2]
+		_put(button,Rect2(row[3],controls_y,row[4],control_height),18 if row[0] in ["left","right"] else 14)
+	var hint_width:=minf(450.0,safe.size.x)
+	var hint_y:=safe.end.y-100
+	_put(hint,Rect2(safe.get_center().x-hint_width/2,hint_y,hint_width,44),15)
+	_put(start_button,Rect2(safe.get_center().x-68,safe.end.y-48,136,44),16)
+	overlay_layout={"compact":activity_compact}
 
 func _put(control: Control,rect: Rect2,point_size: int=0) -> void:
 	if point_size>0:control.add_theme_font_size_override("font_size",point_size)
-	if control is Button:NativeUi.apply_button(control,Color("1a4544"),Color("ffedb9"),Color("e6ce8c"),0,1,point_size,Vector2(6,4),Color("83d9ef"))
-	control.position=rect.position;control.size=rect.size
+	if control is Button:
+		control.set_meta("tactile_exempt",true)
+		NativeUi.apply_button(control,Color("172b35",.88),Color("fff2d5"),Color("748c91",.78),3,1,point_size,Vector2(4,2),Color("b2d4d7"))
+	control.position=rect.position
+	control.size=rect.size
 
 func chase_field_scale(field: Control) -> float:
 	if field==null:return 1.0
@@ -868,15 +912,23 @@ func _field_point(field: Control,ahead: float,lane: float) -> Vector3:
 	return Vector3(origin.x+point.x*zoom,origin.y+point.y*zoom,point.z*zoom)
 
 func draw_chase_field(field: Control) -> void:
-	if model==null:return
-	if not running and not paused:
-		var panel:=Rect2(6,field.size.y/2-72,field.size.x-12,162)
-		field.draw_rect(panel,Color(.03,.08,.12,.95))
-		var title: String="准备好了吗？"
-		if sent:title="追上了！"
-		elif model.status=="lost":title="从安全点重试"
-		field.draw_string(font,panel.position+Vector2(6,36),title,HORIZONTAL_ALIGNMENT_CENTER,panel.size.x-12,22,FG)
-		if not sent: field.draw_string(font,panel.position+Vector2(6,72),"755 米 · 骑行追纸",HORIZONTAL_ALIGNMENT_CENTER,panel.size.x-12,16,AQUA)
+	if model==null or not activity_layout_configured:return
+	# Draw under the native labels. Only small occupied regions need a contrast plate.
+	var status_rect:=Rect2(status.position-field.position-Vector2(8,0),status.size)
+	var line_width:=font.get_string_size(status.text,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x+16.0
+	status_rect.size.x=minf(status_rect.size.x+8,line_width)
+	field.draw_rect(status_rect,Color("101c24",.85))
+	var progress:=clampf(model.distance/755.0,0,1)
+	var track:=Rect2(Vector2(status_rect.position.x,status_rect.end.y),Vector2(status_rect.size.x,2))
+	field.draw_rect(track,Color("48616a"))
+	field.draw_rect(Rect2(track.position,Vector2(track.size.x*progress,track.size.y)),Color("efd094"))
+	if hint.visible and not hint.text.is_empty():
+		var hint_width:=0.0
+		for line: String in hint.text.split("\n"):
+			hint_width=maxf(hint_width,font.get_string_size(line,HORIZONTAL_ALIGNMENT_LEFT,-1,15).x)
+		hint_width=minf(hint_width+22,hint.size.x)
+		var hint_rect:=Rect2(hint.position-field.position+Vector2((hint.size.x-hint_width)*.5,0),Vector2(hint_width,hint.size.y))
+		field.draw_rect(hint_rect,Color("101c24",.87))
 
 ## Rendering has no input, audio, proof or progression authority.
 func _ensure_native_chase_view() -> void:
@@ -889,6 +941,7 @@ func _ensure_native_chase_view() -> void:
 	var reduced_motion: bool=state_owner!=null and bool(state_owner.d.native.settings.get("reduced_motion",false))
 	native_chase_view.configure({"asset_directory":"res://assets/native_755/ride/","reduced_motion":reduced_motion,"live_shadows":not DisplayServer.is_touchscreen_available(),"render_width":960})
 	add_child(native_chase_view);move_child(native_chase_view,0)
+	move_child(chase_view,1)
 	chase_view.show()
 	native_chase_view.update_view(model,0,false)
 
@@ -1070,12 +1123,15 @@ func _sync_shared_pause() -> void:
 	shared_pause_overlay.set_actions(pause_actions)
 	shared_pause_overlay.present(is_visible_in_tree() and paused and supports_player_pause())
 	pause_button.visible = supports_player_pause() and not paused
+	if mode=="chase":
+		retry_button.visible=not paused
+		exit_button.visible=not paused
 	if paused: start_button.hide()
 
 func _has_pause_action(button: Button) -> bool:
 	if not is_instance_valid(button): return false
-	# Fishing's shared pause surface owns these actions; no duplicate host controls.
-	if mode=="rhythm": return paused and supports_player_pause() and button in [retry_button,exit_button]
+	# These activities expose their secondary actions through the pause surface.
+	if mode in ["rhythm","chase"]: return paused and supports_player_pause() and button in [retry_button,exit_button]
 	return button.visible
 
 func _activate_pause_action(button: Button) -> void:

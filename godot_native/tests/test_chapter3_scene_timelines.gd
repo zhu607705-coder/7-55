@@ -4,6 +4,7 @@ const DisplayFixture=preload("res://tests/zh_text_fixture.gd")
 const Library=preload("res://scripts/chapters/library022.gd")
 const Chapter=preload("res://scripts/chapters/chapter3.gd")
 const Host=preload("res://scripts/presentation/c3_scene_host.gd")
+const PlayerMetrics=preload("res://scripts/player_metrics.gd")
 var checks: int=0
 var errors: int=0
 var s: Dictionary
@@ -158,27 +159,107 @@ func test_real_shell() -> void:
 	var state: Node=root.get_node("State")
 	state.developer_mode=true
 	state.d=state.initial()
-	state.d.native.chapter=2; state.d.native.scene="library_interior"; state.d.native.page="library_022_dialogue"
+	state.d.native.chapter=2; state.d.native.scene="library_interior"; state.d.native.page="library_world"
 	state.d.runtimeMode="rpg"; state.d.rpgScene="library_interior"
-	state.d.ui.libraryFinalsPhase="seat_recovered"; state.d.ui.libraryFinalsPuzzle.playerSeated=true
+	state.d.ui.libraryFinalsPhase="backpack_removed"; state.d.ui.libraryFinalsPuzzle.backpackEvicted=true
+	state.d.ui.libraryFinalsPuzzle.entranceRecordRead=true
 	state.d.rpgCheckpoint="library_seat_022"
+	var old_position: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://data/worlds.json")).worlds.campus_bootstrap.manifest.canteen.approach
+	state.d.native.positions={"campus_bootstrap:":old_position.duplicate()}
 	root.size=Vector2i(1440,900)
 	var shell: Control=load("res://scenes/main.tscn").instantiate(); root.add_child(shell)
 	await process_frame; await process_frame
-	check(shell.c3_scene_host.current!=null and shell.c3_scene_host.current.valid(state.d),"real shell authoritative reader preserves controller session identity")
-	shell.c3_scene_host.set_process(false)
-	shell.c3_scene_host._skip(); shell.c3_scene_host._advance()
+	var real_world: Control=shell.world
+	real_world.set_process(false)
+	real_world._window_focused=true
+	var chair: Dictionary={}
+	for target: Dictionary in real_world.targets:
+		if target.id=="seat_022_chair": chair=target; break
+	check(not chair.is_empty(),"unoccupied 022 exposes its physical chair")
+	if chair.is_empty(): return
+	real_world.player=real_world.library_layers.chair_approach(chair.id)
+	real_world._sync_player()
+	real_world._interact_clicked_target(chair)
+	for step in 12: real_world._process(.05)
+	await process_frame; await process_frame
+	var scene_host: Control=shell.c3_scene_host
+	check(is_instance_valid(scene_host) and scene_host.current!=null and scene_host.current.valid(state.d),"sitting in the actual 022 chair mounts the controller-issued opening")
+	if not is_instance_valid(scene_host) or scene_host.current==null: return
+	scene_host.set_process(false)
+	var opening: RefCounted=scene_host.current
+	var presented_lines: Array[int]=[]
+	var presented_beats: Array[String]=[]
+	while scene_host.current==opening:
+		scene_host.tick(0,true)
+		var shot: Dictionary=opening.snapshot()
+		if shot.lineIndex!=null: presented_lines.append(int(shot.lineIndex))
+		else: presented_beats.append(str(shot.phase))
+		check(scene_host.opening.visible and not shell.phone.visible and not shell.world_frame.visible,"opening owns the visible surface for beat "+str(shot.beatIndex))
+		scene_host.opening.advance_button.pressed.emit()
+		if opening.beat_index==int(shot.beatIndex) and opening.status=="playing":
+			check(false,"visible advance moves to the next opening beat")
+			break
+	check(presented_lines==range(20),"all 20 authored lines appear in order in the real shell")
+	check(presented_beats==["record_scan","mode_unlock","paper_burst","exit_observation","cart_clear","route_confirm","arrival"],"real shell presents all seven transition beats")
 	await process_frame
-	check(state.d.native.chapter==3 and state.d.native.scene=="campus_bootstrap" and shell.world.scene_id=="campus_bootstrap","real shell arrival completion refreshes the campus world")
-	state.d=state.initial()
-	state.d.native.chapter=3; state.d.native.scene="canteen_interior"; state.d.native.page="c3_canteen"
-	state.d.runtimeMode="rpg"; state.d.rpgScene="canteen_interior"
-	state.d.canteenHunt.active=true; state.d.canteenHunt.phase="tray_search"; state.d.rpgCheckpoint="canteen_entrance"
-	shell._refresh(); shell.world.player=Vector2(1053,660); shell.world._sync_player(); shell.c3_scene_host.tick(0)
-	check(shell.c3_scene_host.blocks_world_input() and shell.world._scene_presentation_blocks(),"real world movement and interaction guard use active canteen host")
-	for i in range(712): shell.c3_scene_host.tick(10)
+	check(state.d.native.chapter==3 and real_world.scene_id=="campus_bootstrap" and shell.world_frame.visible and real_world.can_stand(real_world.player),"arrival returns to playable campus outside the library")
+	var footprints: RefCounted=real_world.canteen_footprints
+	var marks: Array=footprints.marks
+	var library_gate: Dictionary=real_world.spec.manifest.libraryGate
+	var entrance: Dictionary=real_world.spec.manifest.canteen.gate
+	check(real_world.player.distance_to(Vector2(library_gate.x,library_gate.y))<100.0,"022 returns to the library checkpoint instead of a previous campus position")
+	check(marks.size()>=20,"campus presentation registers an outdoor trail with repeated prints")
+	if not marks.is_empty():
+		check(marks.front().point.distance_to(Vector2(library_gate.x,library_gate.y))<100.0,"first footprint belongs to the library exit")
+		check(marks.back().point.distance_to(Vector2(entrance.x,entrance.y))<24.0,"last footprint reaches the canteen forecourt")
+		var all_on_floor:=true
+		var route_length:=0.0
+		var largest_gap:=0.0
+		var previous: Vector2=marks.front().point
+		for mark: Dictionary in marks:
+			all_on_floor=all_on_floor and is_finite(mark.heading) and real_world.can_stand(PlayerMetrics.anchor_from_foot_center(mark.point,real_world.scene_id))
+			var gap:=previous.distance_to(mark.point)
+			route_length+=gap
+			largest_gap=maxf(largest_gap,gap)
+			previous=mark.point
+		check(all_on_floor,"all prints use legal campus foot centers and finite headings")
+		check(route_length>marks.front().point.distance_to(marks.back().point)*1.15 and largest_gap<=66.1,"ordered steps follow a continuous detour around the buildings")
+	check(not footprints.visible(real_world.scene_id,state.d),"light mode hides the campus footprints")
+	var hunt_before: Dictionary=state.d.canteenHunt.duplicate(true)
+	state.toggle_mode()
+	check(state.d.native.mode=="dark" and footprints.visible(real_world.scene_id,state.d),"the normal mode action reveals the campus footprints")
+	var later_hunt: Dictionary=state.d.duplicate()
+	later_hunt.canteenHunt=state.d.canteenHunt.duplicate()
+	later_hunt.canteenHunt.phase="chase_ready"
+	check(not footprints.visible(real_world.scene_id,later_hunt),"later canteen phases cannot reveal the old trail")
+	state.toggle_mode()
+	check(state.d.native.mode=="light" and not footprints.visible(real_world.scene_id,state.d) and state.d.canteenHunt==hunt_before,"returning to light hides the trail without changing hunt progress")
+	var canteen_gate: Dictionary={}
+	for target: Dictionary in real_world.targets:
+		if target.id=="c3_canteen_gate": canteen_gate=target; break
+	check(not canteen_gate.is_empty() and not state.d.canteenHunt.entryPaperEscaped,"the same hunt exposes the campus canteen gate with discovery pending")
+	if canteen_gate.is_empty(): return
+	real_world._interact_clicked_target(canteen_gate)
+	check(not real_world._floor_route.is_empty(),"canteen gate is reachable from the library along the real campus route")
+	for step in 620:
+		if real_world._floor_route.is_empty(): break
+		real_world._process(.05)
+	await process_frame; await process_frame
+	scene_host.tick(0,true)
+	var entry: RefCounted=scene_host.current
+	check(real_world.scene_id=="canteen_interior" and entry!=null and entry.status=="waiting","campus gate enters the canteen with its paper scene waiting")
+	check(footprints.marks.is_empty() and not footprints.visible(real_world.scene_id,state.d),"entering the canteen retires the outdoor footprint trail")
+	if entry==null or entry.status!="waiting": return
+	for segment: Array in [[Vector2.RIGHT,5],[Vector2.UP,34]]:
+		real_world.touch_axis=segment[0]
+		for step in int(segment[1]):
+			real_world._process(.05)
+			scene_host.tick(0,true)
+			if entry.status!="waiting": break
+	check(scene_host.blocks_world_input() and real_world._scene_presentation_blocks(),"ordinary movement from the canteen entrance discovers the paper and locks during the cinematic")
+	for i in range(712): scene_host.tick(10,true)
 	await process_frame
-	check(state.d.canteenHunt.entryPaperEscaped and not shell.world.targets.is_empty(),"real shell completion refreshes canteen target affordances")
+	check(state.d.canteenHunt.entryPaperEscaped and not real_world.targets.is_empty(),"the same save completes discovery and reveals the canteen interactions")
 	state.story_reset.emit()
 	check(shell.c3_scene_host.current==null and not shell.c3_scene_host.blocks_world_input(),"real story reset clears scene host state")
 	# Retire all audio owners through the production shutdown contract, not only movies.

@@ -27,6 +27,7 @@ func _ready() -> void:
 		var label:=Label.new(); label.mouse_filter=Control.MOUSE_FILTER_IGNORE;label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		Typography.apply_body(label)
 		panel.add_child(label); set(field,label)
+	body.name="ChapterThreeNarrationBody"
 	body_scroll=OverflowText.new();panel.add_child(body_scroll);body_scroll.setup(body)
 	visible=false
 func tick() -> void:

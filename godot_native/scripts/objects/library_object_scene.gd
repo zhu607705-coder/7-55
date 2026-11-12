@@ -145,12 +145,12 @@ func seat_point(id: String) -> Vector2:
 	var point: Array = rows[id].seatPoint
 	return area.position + area.size * Vector2(float(point[0]), float(point[1]))
 func collisions(source:Array)->Array:
-	# Exterior and closed architectural alcove retain their original source boundaries.
+	# WorldSpace owns the clean plate perimeter. The closed alcove is an interior solid.
 	var out:Array=[]
 	for row:Dictionary in source:
 		var id := str(row.id)
 		if id in ["entrance_west_glass", "entrance_east_glass"]: continue
-		if not ready or "wall" in id or id=="lost_found_room": out.append(row.duplicate(true))
+		if not ready or id=="lost_found_room": out.append(row.duplicate(true))
 	if ready: out.append_array(solids)
 	return out
 func shifted_collision(row:Dictionary,shelf_offset:float)->Dictionary:

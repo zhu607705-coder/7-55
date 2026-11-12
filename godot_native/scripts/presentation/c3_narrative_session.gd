@@ -2,6 +2,7 @@ extends RefCounted
 ## Timed source queueDialogue capability. No saved facts, callbacks or input authority.
 ## CanteenInteriorScene.queueDialogue, TheaterInteriorScene.queueDialogue and
 ## QizhenLoopScene.queueTransitionSubtitles remain the timing/content oracle.
+const CanteenLayout=preload("res://scripts/space/canteen_layout.gd")
 var bound_state: Dictionary
 var spec: Dictionary
 var sequence_id: String=""
@@ -18,6 +19,8 @@ var reduced: bool=false
 var runtime: Dictionary={}
 var origin:=Vector2.ZERO
 var motion_origin:=Vector2.INF
+var exit_path: Array[Vector2]=[]
+var exit_path_length:=0.0
 var audio_keys: Dictionary={}
 var visual_acknowledged: bool=false
 var inspector_acknowledged: bool=false
@@ -51,7 +54,7 @@ func _init(s: Dictionary={},request: Dictionary={}) -> void:
 		runtime=JSON.parse_string(FileAccess.get_file_as_string("res://data/worlds.json")).worlds.campus_qizhen_loop.manifest.qizhen.approachTransition
 		duration_ms=160+float(spec.completeAtMs)
 	elif sequence_id=="canteen_escape":
-		runtime=JSON.parse_string(FileAccess.get_file_as_string("res://data/worlds.json")).worlds.canteen_interior.constants.CANTEEN_SOUTHEAST_EXIT_DOOR
+		runtime=CanteenLayout.data().side_exit
 		var p: Variant=spec.get("paperStart",[1053,302])
 		origin=Vector2(clampf(float(p[0]),28,1644),clampf(float(p[1]),16,923))
 
@@ -137,6 +140,14 @@ func snapshot() -> Dictionary:
 	var text: String=str(current.get("text",""))
 	var colon: int=text.find("：")
 	return {"sequenceId":sequence_id,"text":text.substr(colon+1) if colon>=0 else text,"rawText":text,"speaker":text.substr(0,colon) if colon>=0 else "","paused":paused,"elapsedMs":elapsed_ms,"lineIndex":maxi(0,emitted_lines-1)}
+func set_exit_motion(start: Vector2, path: Array[Vector2]) -> void:
+	motion_origin=start
+	exit_path=path
+	exit_path_length=0.0
+	var previous:=start
+	for point: Vector2 in path:
+		exit_path_length+=previous.distance_to(point)
+		previous=point
 func player_pose() -> Vector2:
 	if sequence_id=="qizhen_approach":
 		var p:=Vector2(runtime.start.x,runtime.start.y)
@@ -152,7 +163,15 @@ func player_pose() -> Vector2:
 		var start: float=float(lines[-1].atMs)+float(lines[-1].durationMs)+120
 		var door_wait: float=46 if reduced else 175
 		var ratio: float=clampf((elapsed_ms-start-door_wait)/(120.0 if reduced else 300.0),0,1)
-		return motion_origin.lerp(Vector2(runtime.exitPoint.x,runtime.exitPoint.y),floorf(ratio*10)/10)
+		var remaining:=ratio*exit_path_length
+		var previous:=motion_origin
+		for point: Vector2 in exit_path:
+			var distance:=previous.distance_to(point)
+			if distance>0.0 and remaining<=distance:
+				return previous.lerp(point,remaining/distance)
+			remaining-=distance
+			previous=point
+		return previous
 	return Vector2.INF
 func paper_pose() -> Dictionary:
 	if sequence_id=="qizhen_approach":
@@ -169,7 +188,8 @@ func paper_pose() -> Dictionary:
 		# finishDefense restores the idle texture/transform and hides the paper
 		# after the 260/60ms hold, before the first escape dialogue line.
 		var visible: bool=elapsed_ms<float(spec.delayMs)
-		return {"point":origin.lerp(Vector2(1380,852),eased),"scale":1.0,"scaleXY":Vector2(lerpf(1.16,0.28,eased),lerpf(1.16,0.84,eased)) if visible else Vector2.ONE,"angle":lerpf(float(spec.get("paperAngle",0)),86,eased) if visible else 0.0,"frame":int(spec.get("paperFrame",0)) if visible else -1,"flip":bool(spec.get("paperFlip",false)) if visible else false,"alpha":1.0 if visible else 0.0,"wet":false}
+		var destination:=Vector2(runtime.paperExitPoint.x,runtime.paperExitPoint.y)
+		return {"point":origin.lerp(destination,eased),"scale":1.0,"scaleXY":Vector2(lerpf(1.16,0.28,eased),lerpf(1.16,0.84,eased)) if visible else Vector2.ONE,"angle":lerpf(float(spec.get("paperAngle",0)),86,eased) if visible else 0.0,"frame":int(spec.get("paperFrame",0)) if visible else -1,"flip":bool(spec.get("paperFlip",false)) if visible else false,"alpha":1.0 if visible else 0.0,"wet":false}
 	return {}
 func trail() -> Array:
 	if sequence_id!="qizhen_approach": return []

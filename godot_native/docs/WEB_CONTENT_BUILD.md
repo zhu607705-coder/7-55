@@ -39,14 +39,26 @@ Existing manifests without this policy remain readable. Merged packs over the
 6 MB target use the same independently verified 1 MiB transport slices; the
 extra slices also count toward the existing 950 MB delivery budget.
 
-Cache reuse is based on verified content identity, not on the chapter name.
-The first upgrade from the former 24 MB grouping changes PCK membership and
-hashes, so previously cached whole chapter packs cannot satisfy the new packs.
-Unchanged boot chunks remain reusable. Subsequent retries reuse verified static
-slices and complete packs with matching identities; interrupted, unverified
-bytes are downloaded again. This pass keeps the existing chapter-family entry
-gates, so smaller transfers do not reduce the total resources required to enter
-a chapter.
+Cache reuse uses verified byte identities. Unchanged boot slices can be reused
+across releases. When PCK membership changes, matching slices and complete
+packs are reusable. Interrupted transfers keep their already verified and
+committed blocks.
+
+Chapter 2 loads shared actor, dorm, audio and phone resources through
+`chapter2`. The north-up map and its layer data travel in `chapter2_campus`.
+Library interior and catalog art travel in `chapter2_library`. The saved scene
+and the active phone view determine which packs must mount before the view
+opens. The Chapter 1 entry leaves both world packs deferred. The dorm warms
+the campus pack, and the campus warms the library pack. Chapters 3, 3.5 and
+4 retain their shared chapter dependencies for earlier inventory and clues.
+
+The browser warms one eligible family at a time. Verified packs with a complete
+IndexedDB receipt stay in browser storage until a view requests them. At that
+point the loader reads and revalidates the cached bytes before Godot mounts the
+PCK. A foreground request can promote an in-flight transfer immediately. The
+existing mount and CacheStorage fallback handles unavailable persistent block
+storage. Background traffic pauses when the page is hidden, offline, or Data
+Saver is enabled.
 
 The published directory contains:
 

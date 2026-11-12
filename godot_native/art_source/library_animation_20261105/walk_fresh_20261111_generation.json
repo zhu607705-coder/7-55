@@ -1,0 +1,48 @@
+{
+  "date": "2026-11-11",
+  "tool": "Codex built-in image generation",
+  "model": "The built-in tool does not expose the backend model or a model selector.",
+  "reference_images": [],
+  "transparent_background": true,
+  "source_sheets": {
+    "side": {
+      "prompt": "A Chinese university student, age 20, compact stylized build with natural limbs and a mildly large head (body about 4.4 heads tall), tousled black hair with swept fringe, ink-blue open jacket over an ivory crewneck, charcoal straight trousers, light warm-gray sneakers with dark soles, and a small navy backpack with two straps. Same proportions, outfit, colors, construction and light direction across all drawings. Hard-edged handcrafted fine pixel art for a modern orthographic RPG, restrained highlights and clean color clusters; read clearly at a 70px rendered height. The camera is looking slightly down from a fixed elevated angle. Full figures drawn as a sprite animator would draw clean sequential cels for the same character.\nAll sixteen figures face screen right in a fixed profile. Animate one ordinary human walk, two clearly distinguishable alternating steps. The near leg is the student's right leg and is slightly brighter. The far leg is the student's left leg and is in cool shadow, with its light shoe still clearly visible in front at the second contact. Show the two thighs joining the hip independently; do not create an extra ankle or shoe. The supporting knee is almost straight at midstance. Both arms swing, on the opposite beat to their legs, and the far hand is visible whenever it naturally clears the torso. Read frames in each row left to right, then go to the next row. Row 1 starts with the near right heel landing well forward of the hip, far left foot trailing on the toe, near arm back; roll into weight acceptance and lift the far heel. Row 2 shows the far left shoe unmistakably clearing the supporting near shoe, then the far knee and heel moving forward to just before contact. Row 3 starts with the far left heel landing well forward of the hip and near right foot trailing on the toe, near arm forward; roll into weight acceptance and lift the near heel. Row 4 shows the near right shoe clearing the supporting far shoe and the near knee and heel moving forward to just before the first pose. In both contact poses the side angle and shirt, hair and shoes remain identical. Make the far-leading stride equally legible and long as the near-leading stride.\nDeliver a single square transparent PNG sprite sheet containing exactly sixteen complete figures, one per equal cell in a regular 4 by 4 grid. The figures fill around two thirds of each cell height, with comfortable transparent space on all sides and their ground line consistent within each row. Transparent negative space between arms and body and between separated feet. No ground, floor line, shadows on the ground, text, gridlines, numbers, objects, second viewpoint, border, or thumbnails. Crisp opaque pixel edges, coherent fine pixel grid. The center of mass stays over the same origin and rises slightly as the weight passes over the stance leg; head stays connected to the torso and the backpack follows with a tiny natural bounce. All sixteen are continuous locomotion at the same speed, no standing poses or duplicated starting image. Prioritize a smooth, grounded gait.",
+      "source_file": "originals/walk_fresh_side_20261111.png",
+      "generated_file": "exec-50bec23c-ba3b-495b-8f51-9dde26004a48.png",
+      "sha256": "99f6cf5cedb81177a13e716705f89fd81256c27c1f6e01837a0fcf0229b9e727"
+    },
+    "down": {
+      "prompt": "Transparent game sprite sheet, exact regular 4 by 4 grid, one full figure per cell, for an orthographic pixel-art campus RPG. A 20-year-old East Asian student with tousled black hair, ink-blue jacket, ivory crewneck, charcoal trousers, light warm gray sneakers and a small navy backpack. Moderate top-down view, stylized 4.4-head proportions and steady shape. One entire walking cycle on the spot, heel to toe, natural measured tempo and slight rise and fall. The sheet contains 16 individual drawings. No lines, labels, floor or shadow. Use crisp large pixel clusters, restrained texture and stable colors; leave a clear gap between sprites. Match the four row instructions exactly. Camera is locked.\nAll figures walking straight toward the camera, facing down-screen. Both shoes point toward us. Row 1: use only right-foot-forward poses (the right shoe is on the viewer's left and lower), letting the left heel start rising. Row 2: use only the first passing poses, where the two toes are nearly level and the left foot catches up with the planted right foot, arms relaxing closer to the sides. Row 3: use only left-foot-forward poses (the left shoe is on the viewer's right and lower) with the opposite hand forward. Row 4: use only the opposite passing poses with the right foot catching up with the planted left foot. Make the difference between the rows striking at first glance. Each row has four incremental variations around that phase. On contact the two soles are separated vertically by only 10% of the whole character height, so the transition is smooth.",
+      "source_file": "originals/walk_fresh_down_20261111.png",
+      "generated_file": "exec-33fe212a-d469-484d-a44b-fb4ff698b018.png",
+      "sha256": "86f553376b3391cf8e262360d39da04e40b8a4d9a315a883400a883f9b23f274"
+    },
+    "up": {
+      "prompt": "Transparent game sprite sheet, exact regular 4 by 4 grid, one full figure per cell, for an orthographic pixel-art campus RPG. A 20-year-old East Asian student with tousled black hair, ink-blue jacket, ivory crewneck, charcoal trousers, light warm gray sneakers and a small navy backpack. Moderate top-down view, stylized 4.4-head proportions and steady shape. One entire walking cycle on the spot, heel to toe, natural measured tempo and slight rise and fall. The sheet contains 16 individual drawings. No lines, labels, floor or shadow. Use crisp large pixel clusters, restrained texture and stable colors; leave a clear gap between sprites. Match the four row instructions exactly. Camera is locked.\nAll figures walking straight away from the camera, facing up-screen with backpack toward the viewer. Row 1: right outsole on the viewer's right is lifted visibly backward while the left shoe is planted further up the screen. Row 2: both shoes nearly level as the right toe passes under the hip, with shoulders square and hands closer to neutral. Row 3: left outsole on the viewer's left is lifted visibly backward while the right shoe is planted further up the screen; keep the left and right hand swings opposite to Row 1. Row 4: the other passing pose, both shoes nearly level as the left toe passes under the hip. Make the left and right shoes easy to identify. Each row has four incremental variations around that phase. The swinging foot lifts a little; the body stays upright without a sprint or leap.",
+      "source_file": "originals/walk_fresh_up_20261111.png",
+      "generated_file": "exec-ba01e2da-5817-4e34-b298-2d1d54bb3212.png",
+      "sha256": "b35891a6ef67652b779de83c726c357d61c25832477fa01e0c79fa3d10c3fcd9"
+    }
+  },
+  "builder": "res://tools/build_library_walk_sheet.gd",
+  "poses_per_direction": 16,
+  "frame_duration_ms": 55,
+  "registration": "Whole-pose cell extraction, transparent matte cleanup, uniform nearest-neighbor scaling per direction, and foot registration. Downward poses are reordered by gait. All visible RGB values are retained.",
+  "runtime_sha256": "ec1c7aa7c76c047dba62cd0640d1b909c589e51db84d879e9d9b2b5ced45a872",
+  "standing": {
+    "down": {
+      "walk_frame": 12
+    },
+    "up": {
+      "walk_frame": 7
+    },
+    "side": {
+      "source_cell": 0,
+      "prompt": "Create an exact 2x2 transparent game sprite sheet with four complete neutral standing variants of the same East Asian male university student, age 20, for a top-down campus pixel-art RPG. All four face screen right, from an elevated orthographic side profile. Both soles are flat on the same ground line with the far shoe partially visible, shoulders and arms relaxed, hands by the sides. Character build compact but natural, 4.4 heads tall, black tousled hair swept slightly forward, ink-blue lightweight open jacket over an ivory crewneck (thin ivory strip visible in profile), charcoal straight trousers, light warm-gray low-top sneakers with dark soles, small navy backpack with shoulder straps. The dark jacket is approximately RGB 47, 54, 72 and hair dark warm charcoal. A small amount of pixel-cluster shading and a sharp continuous dark outer edge. The image must read clearly at 70px tall in gameplay. Each pose uses the same natural silhouette, subtle variation in hair/hand shape only, leave generous space around each complete figure. Hard-edged clean handmade fine pixel art, grounded design with restrained contrast. No text, floor, shadow, background, icons, white matte or border. Transparent around all four isolated full-body sprites.",
+      "source_file": "originals/walk_fresh_idle_side_20261111.png",
+      "sha256": "83ac737f1077ee054a26a6657d83597496acf0f94b95e67c11992b31ca528579",
+      "generated_file": "exec-97d77d8a-40e9-40d8-a85b-0710c8e68c3e.png"
+    }
+  },
+  "archived_atlas": "archived_player_walk_fresh_20261111.png"
+}

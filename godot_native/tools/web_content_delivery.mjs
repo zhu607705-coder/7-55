@@ -12,7 +12,9 @@ import { verifyContentPacking } from './web_content_packing.mjs';
 const planner = fileURLToPath(new URL('./plan_web_content.mjs', import.meta.url));
 export const CONTENT_SCHEMA = '755-web-content-v1';
 export { CONTENT_PACK_TARGET, CONTENT_PACK_LIMIT };
-const backgroundOrder = ['chapter2', 'chapter3', 'chapter35', 'chapter4'];
+const chapter2SceneFamilies = ['chapter2_campus', 'chapter2_library'];
+const laterChapters = ['chapter3', 'chapter35', 'chapter4'];
+const backgroundOrder = ['chapter2', ...chapter2SceneFamilies, ...laterChapters];
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const json = filename => JSON.parse(fs.readFileSync(filename, 'utf8'));
 const writeJson = (filename, value) => fs.writeFileSync(filename, JSON.stringify(value, null, 2) + '\n');
@@ -84,7 +86,8 @@ export function createContentDelivery({ exportDirectory, intermediateDirectory }
     return { id: group.id, family: family(group.id), file, bytes: group.bytes, sha256: group.sha256, ...(exception ? { sizeException: exception } : {}) };
   });
   const packs = createContentChunks(exportDirectory, packRecords);
-  const manifest = { schema: CONTENT_SCHEMA, engine: '4.7.1', core, packs, backgroundOrder, packPolicy: packing.merges.length ? CONTENT_PRESSURE_PACK_POLICY : CONTENT_PACK_POLICY };
+  const order = packs.some(pack => chapter2SceneFamilies.includes(pack.family)) ? backgroundOrder : ['chapter2', ...laterChapters];
+  const manifest = { schema: CONTENT_SCHEMA, engine: '4.7.1', core, packs, backgroundOrder: order, packPolicy: packing.merges.length ? CONTENT_PRESSURE_PACK_POLICY : CONTENT_PACK_POLICY };
   writeJson(path.join(exportDirectory, 'content-manifest.json'), manifest);
   const owned = new Map();
   const groupInventories = result.groups.map(group => {
@@ -116,7 +119,9 @@ export function verifyContentDelivery(exportDirectory, { verifiedCompressedFiles
   const pressurePolicy = JSON.stringify(manifest.packPolicy) === JSON.stringify(CONTENT_PRESSURE_PACK_POLICY);
   if (sizedPacks && !pressurePolicy && JSON.stringify(manifest.packPolicy) !== JSON.stringify(CONTENT_PACK_POLICY)) throw new Error('Unknown deferred content pack policy');
   if (!sizedPacks && manifest.packs.some(pack => Object.hasOwn(pack, 'sizeException') || Object.hasOwn(pack, 'transportChunks'))) throw new Error('Deferred content extensions require an explicit pack policy');
-  if (JSON.stringify(manifest.backgroundOrder) !== JSON.stringify(backgroundOrder)) throw new Error('Content background order differs from the story chapter order');
+  const expectedOrder = manifest.packs.some(pack => chapter2SceneFamilies.includes(pack.family))
+    ? backgroundOrder : ['chapter2', ...laterChapters];
+  if (JSON.stringify(manifest.backgroundOrder) !== JSON.stringify(expectedOrder)) throw new Error('Content background order differs from the story chapter order');
   if (inventory.full?.engine !== '4.7.1' || inventory.full.count !== inventory.entries.length || contentMapDigest(inventory.entries) !== inventory.full.contentMapSha256) throw new Error('Complete-export inventory lost or changed a resource');
   const original = inventory.entries.map(({ group, ...entry }) => entry);
   if (digest(JSON.stringify(original)) !== inventory.full.inventorySha256) throw new Error('Complete-export inventory does not match its original SHA-256');

@@ -1,6 +1,7 @@
 extends Control
 ## Decorative source art only. PhoneChrome and the entry session own all UI.
-const ART = preload("res://assets/ui/zjuding_loading.png")
+const ART_PATH := "res://assets/ui/zjuding_loading.png"
+var art: Texture2D
 # The source's status/back controls end at y221; its home indicator starts
 # below y1640. Crop both while retaining the full cyan-to-blue art gradient.
 const SOURCE_REGION = Rect2(0,224,941,1408)
@@ -26,6 +27,7 @@ void fragment() {
 """
 
 func _init() -> void:
+	art = load(ART_PATH)
 	name = "ZjudingLoadingArt"
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -43,4 +45,4 @@ func fitted_art_rect() -> Rect2:
 	return Rect2((size - extent) / 2.0, extent)
 
 func _draw() -> void:
-	draw_texture_rect_region(ART, fitted_art_rect(), SOURCE_REGION)
+	if art != null: draw_texture_rect_region(art, fitted_art_rect(), SOURCE_REGION)

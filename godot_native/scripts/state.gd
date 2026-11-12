@@ -251,6 +251,10 @@ func cancel_progressive_activity(action: String, value: Dictionary) -> bool:
 		var lake = lake_module()
 		if lake != null and lake.has_method("cancel_logistics_session"):
 			return lake.cancel_logistics_session(value.get("session"))
+	elif action == "c3_fishing_cancel":
+		var lake = lake_module()
+		if lake != null:
+			return lake.cancel_fishing_session(value.get("session"))
 	elif action == "c3_rehearsal_cancel":
 		for module in modules:
 			if module.has_method("cancel_rehearsal_session"):
@@ -423,7 +427,8 @@ func install_cloud_bundle(prepared: Dictionary) -> Dictionary:
 	var paths: Array[String]=[SAVE_PATH,BACKUP_PATH,service.posts_path,service.quest_path]
 	var prior: Dictionary={}
 	for path in paths: prior[path]=FileAccess.get_file_as_bytes(path) if FileAccess.file_exists(path) else null
-	var previous: Dictionary=d.duplicate(true)
+	# Keep the original owner so a failed install cannot invalidate its sessions.
+	var previous: Dictionary=d
 	var document_error: Error=service.import_bundle(prepared.stores)
 	if document_error==OK:
 		d=candidate
@@ -807,7 +812,9 @@ func import_save(path: String) -> Dictionary:
 	if portable_media:
 		installed_images=JOURNAL_ARCHIVE.install(candidate,pending_images)
 		if not installed_images.ok: return {"ok":false,"message":"存档照片写入失败，当前进度未改变。"}
-	var previous := d.duplicate(true)
+	# Candidate writes never touch the prior dictionary. Restore its identity
+	# as well as its values if the disk write fails.
+	var previous := d
 	var was_developer := developer_mode
 	var previous_backup := formal_snapshot.duplicate(true)
 	d = candidate

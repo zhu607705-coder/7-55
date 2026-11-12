@@ -175,21 +175,34 @@ func run() -> void:
 
 	world.player = anchor(path_start)
 	world._update_camera()
+	world.facing = "down"
+	world.player_turn.clear()
 	var down := InputEventKey.new()
 	down.keycode = KEY_DOWN
 	down.physical_keycode = KEY_DOWN
 	down.pressed = true
 	Input.parse_input_event(down)
 	Input.flush_buffered_events()
+	var slid_sideways := false
+	var kept_facing_down := true
+	var gait_matches_movement := true
 	for i in 230:
 		if Metrics.foot_center(world.player, "campus_bootstrap").y >= 1350.0: break
+		var before: Vector2 = world.player
 		world._process(1.0 / 60.0)
+		var step: Vector2 = world.player - before
+		slid_sideways = slid_sideways or absf(step.x) > absf(step.y)
+		kept_facing_down = kept_facing_down and world.facing == "down" and world.player_visual().direction == "down"
+		gait_matches_movement = gait_matches_movement and ((world.walk_clock > 0.0) == not step.is_zero_approx())
 	var release := down.duplicate() as InputEventKey
 	release.pressed = false
 	Input.parse_input_event(release)
 	Input.flush_buffered_events()
 	var path_finish := Metrics.foot_center(world.player, "campus_bootstrap")
 	check(path_finish.y >= 1350.0 and path_finish.x < 2950.0 and world.can_stand(world.player), "one held arrow slides around the path bends and onto the road (actual %s)" % path_finish)
+	check(slid_sideways and kept_facing_down, "a held down arrow keeps the sprite facing down through sideways collision steps")
+	world._process(1.0 / 60.0)
+	check(gait_matches_movement and world.walk_clock == 0.0 and world.facing == "down", "actual movement drives the gait and release keeps the last heading at idle")
 
 	# Actual playtest click on opposite sides of the lawn and canal. These
 	# foot coordinates come from CampusPathGrid with the current source mask.

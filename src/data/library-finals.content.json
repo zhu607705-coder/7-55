@@ -419,7 +419,7 @@
         "label": "本人来过证明",
         "source": "浙大体艺本人来过补录单",
         "category": "both_public_and_application",
-        "infoType": "从刷卡入馆到抵达 022 的分钟差"
+        "infoType": "本人来过证明上记载的到馆时长"
       }
     ],
     "bdPassword": {

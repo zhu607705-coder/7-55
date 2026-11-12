@@ -13,6 +13,7 @@ var logistics_session: Dictionary = {}
 var logistics_owner: Dictionary = {}
 const LOGISTICS_PHASES: Array = ["dock_outfitting","boarding_tutorial","lake_exploration","tool_chain","swan_exchange","paper_capture"]
 var fishing_session: Dictionary = {}
+var fishing_owner: Dictionary = {}
 var session_counter: int = 0
 const CLUES: Dictionary = {"bridge":"bridgeKeyword","reflection":"reflectionKeyword","lake":"lakeKeyword"}
 const CATCH_ZONE: Dictionary = {"locker_key":"open_water","net_frame":"channel","fish":"open_water","paper":"swan_cove"}
@@ -413,21 +414,37 @@ func precheck_cast(s: Dictionary, spot: String) -> bool:
 		"paper": return own(s,"magneticFishingRod") and q.swanFed and q.magneticRodCombined and q.phase=="paper_capture"
 	return false
 
+func fishing_session_active(s: Dictionary, session_id: Variant) -> bool:
+	return not fishing_session.is_empty() and fishing_session.id==session_id and is_same(s,fishing_owner) and s.native.scene=="qizhen_lake" and s.qizhenLake.active and s.qizhenLake.phase==fishing_session.phase and precheck_cast(s,fishing_session.spotId)
+
+func invalidate_fishing_session() -> void:
+	fishing_session={}
+	fishing_owner={}
+
+func cancel_fishing_session(session_id: Variant) -> bool:
+	if fishing_session.is_empty() or fishing_session.id!=session_id: return false
+	invalidate_fishing_session()
+	return true
+
 func request_cast(s: Dictionary, spot: String) -> Dictionary:
 	if not precheck_cast(s,spot): return locked("当前钓具或目标条件不匹配。")
+	if fishing_session_active(s,fishing_session.get("id")): return locked("已经抛竿，请先完成或退出这一竿。")
 	session_counter+=1
-	fishing_session={"id":session_counter,"spotId":spot,"zone":s.qizhenLake.zone}
+	fishing_owner=s
+	fishing_session={"id":session_counter,"spotId":spot,"phase":s.qizhenLake.phase}
 	return {"handled":true,"game":{"type":"rhythm","on_success":"c3_fishing_result","title":prose("chapter3-qizhen-lake.content","items."+{"locker_key":"rustedLockerKey","net_frame":"brokenNetFrame","fish":"smallCarp","paper":"magneticFishingRod"}[spot]),"spotId":spot,"chartId":spot,"session_id":session_counter,"chart":content("chapter3-qizhen-fishing.charts").charts[spot],"instructions":"按住并在节拍处松开；保持四拍收放。失败不会消耗道具。"}}
 
 func fishing_result(s: Dictionary, value: Variant) -> Dictionary:
-	if not value is Dictionary or fishing_session.is_empty(): return locked("没有进行中的抛竿记录。")
+	if not value is Dictionary or not fishing_session_active(s,value.get("session_id")):
+		return locked("这次抛竿记录已失效。")
 	var spot: String=fishing_session.spotId
+	if value.get("spotId")!=spot: return locked("抛竿目标与记录不符。")
 	var audio_session_id: String=str(fishing_session.id)
-	var valid: bool=value.get("session_id")==fishing_session.id and value.get("spotId")==spot and value.get("success")==true and Fishing.validate_result(value,spot)
-	# Result is single-use even on cancellation or failure; story items remain intact.
-	fishing_session={}
-	if not valid: return _fishing_audio(locked("本次节奏记录未通过，道具保持原状。"), [{"cueId":"qizhen_fishing_failed","payload":{"sessionId":audio_session_id,"spotId":spot,"reason":"invalid_result"}}])
-	if not precheck_cast(s,spot): return locked("本次节奏记录未通过，道具保持原状。")
+	# Consume only this exact attempt. A delayed result from a retired view
+	# must leave any replacement attempt intact.
+	invalidate_fishing_session()
+	if value.get("success")!=true or not Fishing.validate_result(value,spot):
+		return _fishing_audio(locked("本次节奏记录未通过，道具保持原状。"), [{"cueId":"qizhen_fishing_failed","payload":{"sessionId":audio_session_id,"spotId":spot,"reason":"invalid_result"}}])
 	var audio_payload: Dictionary={"sessionId":audio_session_id,"spotId":spot,"grade":value.get("grade","C"),"accuracy":value.get("accuracy",0)}
 	var audio_cues: Array=[{"cueId":"qizhen_fishing_completed","payload":audio_payload},{"cueId":"qizhen_fishing_paper_completed" if spot=="paper" else "qizhen_fishing_catch_completed","payload":audio_payload}]
 	var q: Dictionary=s.qizhenLake
@@ -449,7 +466,7 @@ func fishing_result(s: Dictionary, value: Variant) -> Dictionary:
 			var captured_pose: Dictionary=SwanEntranceSession.capture_pose(s,live_session)
 			q.paperCaptured=true
 			q.swanReleased=true
-			pending_entry={"from":"swan_cove","to":"channel"}
+			_queue_entry_spawn(s,"channel")
 			q.phase="swan_chase"
 			q.zone="channel"
 			q.vehicle="kayak"
@@ -465,14 +482,16 @@ func fishing_result(s: Dictionary, value: Variant) -> Dictionary:
 
 func rain_rescue_request(s: Dictionary) -> Dictionary:
 	if not RainSession.eligible(s): return locked()
-	if rain_session!=null and rain_session.phase() not in ["cancelled","consumed"]: return locked("救援演出正在进行。")
+	if rain_session!=null and rain_session.phase() not in ["cancelled","consumed"]:
+		if rain_session.belongs_to(s): return locked("救援演出正在进行。")
+		rain_session.cancel()
 	rain_session=RainSession.new()
 	var p: Dictionary=s.native.get("player",{})
 	rain_session.configure(bool(s.native.get("settings",{}).get("reduced_motion",false)),Vector2(float(p.get("x",690)),float(p.get("y",620))),s)
 	return {"handled":true,"world_effect":{"script":"res://scripts/media/c3_rain_rescue.gd","session":rain_session,"on_event":"c3_rain_rescue_result","blocks_input":true}}
 
 func rain_rescue_result(s: Dictionary,value: Variant) -> Dictionary:
-	if not value is RainSession or value!=rain_session: return locked("救援记录不匹配。")
+	if not value is RainSession or value!=rain_session or not value.belongs_to(s): return locked("救援记录不匹配。")
 	if value.phase()=="cancelled":
 		rain_session=null
 		return response("救援演出已中断。回到码头可以重新尝试。")
@@ -503,19 +522,24 @@ func enter_zone(s: Dictionary,zone: String) -> Dictionary:
 	var q: Dictionary=s.qizhenLake
 	if q.vehicle!="kayak" or not q.boardingTutorialCompleted or zone not in ["dock","open_water","channel","swan_cove"]: return locked()
 	if q.phase=="swan_chase" and zone not in ["channel","dock"]: return locked()
-	pending_entry={"from":str(q.zone),"to":zone}
+	_queue_entry_spawn(s,zone)
 	q.zone=zone
 	if zone=="dock": q.vehicle="on_foot"
 	q.safeSpawnId="channel_chase" if q.phase=="swan_chase" and zone=="channel" else ("dock_entry" if zone=="dock" else zone+"_entry")
 	var checkpoint: String="qizhen_chase" if q.phase=="swan_chase" and zone=="channel" else "qizhen_"+zone
 	return _fishing_audio(enter(s,"qizhen_lake","c3_lake",checkpoint),[{"cueId":"qizhen_zone_entered","payload":{"zone":zone,"vehicle":q.vehicle}}])
 
+func _queue_entry_spawn(s: Dictionary, zone: String) -> void:
+	pending_entry={"owner":s,"from":str(s.qizhenLake.zone),"to":zone}
+
 func take_entry_spawn(s: Dictionary) -> Dictionary:
-	# Consumed by world refresh only on an actual source-zone transition.
-	if pending_entry.is_empty() or pending_entry.to!=s.qizhenLake.zone: return {}
-	var spec: Dictionary=world("qizhen_lake").zones[str(pending_entry.to)]
-	var spawn: Dictionary=spec.onFootSpawn if s.qizhenLake.vehicle=="on_foot" else spec.get("kayakEntrySpawns",{}).get(str(pending_entry.from),spec.kayakSpawn)
+	# A transition pose belongs to its in-memory story only. Ordinary Continue
+	# uses the safe spawn persisted by the destination checkpoint.
+	var entry := pending_entry
 	pending_entry={}
+	if entry.is_empty() or not is_same(entry.owner,s) or entry.to!=s.qizhenLake.zone: return {}
+	var spec: Dictionary=world("qizhen_lake").zones[str(entry.to)]
+	var spawn: Dictionary=spec.onFootSpawn if s.qizhenLake.vehicle=="on_foot" else spec.get("kayakEntrySpawns",{}).get(str(entry.from),spec.kayakSpawn)
 	return spawn.duplicate()
 
 func bind_world(s: Dictionary,host: Node) -> RefCounted:
@@ -544,8 +568,9 @@ func world_stroke(s: Dictionary,host: Node,side: String,reverse: bool=false) -> 
 			q.boardingLastSide=side
 		payload={"side":side,"direction":direction,"alternating":alternating,"count":q.boardingStrokeCount}
 		if q.boardingStrokeCount>=4:
+			_queue_entry_spawn(s,"open_water")
 			q.boardingTutorialCompleted=true; q.phase="lake_exploration"; q.zone="open_water"; q.safeSpawnId="open_water_entry"
-			pending_entry={"from":"dock","to":"open_water"}; s.rpgCheckpoint="qizhen_open_water"
+			s.rpgCheckpoint="qizhen_open_water"
 			cues.append({"cueId":"qizhen_boarding_completed","payload":payload})
 			var result: Dictionary=enter(s,"qizhen_lake","c3_lake","qizhen_open_water")
 			result.message=prose("chapter3-qizhen-lake.content","boarding.complete")

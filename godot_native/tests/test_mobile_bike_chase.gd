@@ -21,9 +21,19 @@ func bounds(game: Control) -> void:
 	check(view.surface.stretch_mode==TextureRect.STRETCH_KEEP_ASPECT_CENTERED,"source16:9 film is contained without portrait stretching")
 	check(view.camera.keep_aspect==Camera3D.KEEP_HEIGHT and is_equal_approx(view.camera.near,.1),"source vertical camera FOV/near plane is retained")
 	check(game.background==null and game.rider==null,"legacy2D fallback cannot replace original3D")
-	var scale: float=minf(view.size.x/960,view.size.y/540)
-	var extent:=Vector2(960,540)*scale
-	check(Rect2(Vector2.ZERO,view.size).encloses(Rect2((view.size-extent)/2,extent)),"entire authored film fits the native field")
+	var output: Vector2=Vector2(view.viewport_resolution)
+	check(absf(output.aspect()-view.size.aspect())<.015,"render buffer follows the visible picture aspect")
+	if game.size.x>=game.size.y:
+		check(view.position==Vector2.ZERO and view.size==game.size,"landscape road reaches all four edges")
+	else:
+		check(is_equal_approx(view.size.aspect(),16.0/9),"portrait fallback retains the original road aspect")
+
+func drag_at(point: Vector2,id: int) -> void:
+	var event:=InputEventScreenDrag.new()
+	event.index=id
+	event.position=point
+	root.push_input(event)
+
 func run() -> void:
 	state=root.get_node("State");state.developer_mode=true;state.d=state.initial()
 	state.d.native.chapter=3;state.d.native.page="phone_home";state.d.native.scene="campus_bootstrap"
@@ -37,10 +47,19 @@ func run() -> void:
 		for control: Control in [game.headline,game.status,game.hint,game.pause_button,game.retry_button,game.exit_button,game.start_button]:
 			check(screen.encloses(control.get_global_rect()),"physical HUD/control stays in viewport: "+control.text)
 			check(control.get_theme_font_size("font_size")>=14,"HUD/control label >=14px")
+		check(not game.start_button.get_rect().intersects(game.hint.get_rect()),"ready instructions never sit behind Start")
 		await tap(game.start_button)
 		for control: Button in game.control_buttons.values():
 			check(control.size.x>=44 and control.size.y>=44 and screen.encloses(control.get_global_rect()),"usable thumb target "+control.text)
-			check(not control.get_rect().intersects(game.chase_view.get_rect()),"thumb target never hides a hazard")
+			check(control.position.y>=game.size.y-64,"thumb controls stay at the bottom edge")
+		var road_center: Vector2=game.chase_view.get_global_rect().get_center()
+		finger_event(road_center,12,true)
+		drag_at(road_center+Vector2(30,0),12)
+		check(game.model.held.has("right"),"road drag steers through the original held-action model")
+		drag_at(road_center-Vector2(30,0),12)
+		check(game.model.held.has("left") and not game.model.held.has("right"),"reversing a drag replaces its direction")
+		finger_event(road_center,12,false)
+		check(game.model.held.is_empty(),"releasing the road clears the drag direction")
 		var story_before:=JSON.stringify(state.d)
 		press_control(game,"left",0,true);game._process(.1)
 		press_control(game,"jump",1,true);game._process(.1)

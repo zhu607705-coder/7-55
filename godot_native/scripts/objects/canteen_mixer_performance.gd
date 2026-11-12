@@ -6,13 +6,19 @@ var bound_state:Dictionary={}
 var region_active:=false
 var world_buttons:Array[Sprite2D]=[]
 const WORLD_BUTTON_ORDER=["sparklingWater","lemonTea","blackCoffee"]
+const WORLD_ORIGIN := Vector2(260, 788)
+const WORLD_SCALE := 0.2
 func _ready()->void:
+	scale = Vector2.ONE * WORLD_SCALE
 	super._ready()
+	# The map prop contains the cabinet and housing. The rig still animates
+	# the independently registered switches, paddles, cup, and liquid.
+	rig.body.hide()
 	slot_ids=WORLD_BUTTON_ORDER.duplicate();world_buttons.assign(rig.selectors)
 	for index in range(3):rig.set_color(index,_color(WORLD_BUTTON_ORDER[index]))
 	_pose()
 func setup(owner_world:Control)->void:
-	world=owner_world;name="MixerPerformance";position=Vector2(260,775);scale=Vector2.ONE*.36
+	world=owner_world;name="MixerPerformance";position=WORLD_ORIGIN
 	set_meta("source_depth",818.0);z_index=preload("res://scripts/objects/canteen_scene_object.gd").draw_layer(818)
 	if world==null:return
 	state_node=world.get_node("/root/State");state_node.action_completed.connect(_on_action)
@@ -33,7 +39,5 @@ func _process(delta:float)->void:
 		if playing:reset(bound_state.get("canteenHunt",{}).get("drinkMixSequence",[]))
 		return
 	super._process(delta)
-func _pose()->void:
-	super._pose();scale=Vector2.ONE*.36
 func _exit_tree()->void:
 	if is_instance_valid(state_node) and state_node.action_completed.is_connected(_on_action):state_node.action_completed.disconnect(_on_action)

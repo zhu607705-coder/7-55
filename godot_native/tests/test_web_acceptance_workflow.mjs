@@ -202,15 +202,17 @@ await test('moved streaming validator still rejects every missing original fault
     writeFileSync(path.join(earned, 'fixture-provenance.json'), JSON.stringify({ streamingFixture: fixture }));
     writeFileSync(path.join(verification, 'verified-streaming-inputs.json'), JSON.stringify(bundle));
     const run = (mutate = () => {}) => {
+      const deferredPacks = ['chapter2', 'chapter2_campus', 'phone_zjuding', 'chapter2_library'].map((family, index) => ({ id: `${family}_001`, family, bytes: (index + 1) * 1048576, sha256: String(index + 1).repeat(64) }));
+      const campusPacks = deferredPacks.filter(pack => pack.family !== 'chapter2_library');
       const report = { passed: true, exportManifest: { sourceCommit: sha, engine: '4.7.1.stable.official' },
         cases: [{ id: 'desktop-1280', passed: true, imports: [{ filename: fixture.fixture, sha256: fixture.sha256 }],
           streaming: { controlledFailures: [{ url: 'synthetic.pck' }],
-            deferredPacks: [1, 2].map(index => ({ id: 'chapter2_' + index, family: 'chapter2', bytes: index * 1048576, sha256: String(index).repeat(64) })),
+            deferredPacks,
             freshWithBlockedBackground: { evidence: { chapter: 1 }, content: { blocking: false } },
-            requiredFailure: { content: { blocking: true, retryVisible: true } },
+            requiredFailure: { content: { blocking: true, retryVisible: true, requiredIds: campusPacks.map(pack => pack.id) } },
             recovery: { realKeyboardMovement: true, content: { blocking: false } },
             reload: { oldDocumentTimeOrigin: 1, newDocumentTimeOrigin: 2, afterEvidence: { chapter: 2 }, chapter2HttpRequests: [],
-              cache: { packs: [1, 2].map(index => ({ id: 'chapter2_' + index, indexedDB: { complete: true, bytes: index * 1048576, sha256: String(index).repeat(64) }, cacheStorage: { present: false, complete: false } })) } } } }] };
+              cache: { packs: campusPacks.map(({id, bytes, sha256}) => ({ id, indexedDB: { complete: true, bytes, sha256 }, cacheStorage: { present: false, complete: false } })) } } } }] };
       mutate(report);
       writeFileSync(path.join(directory, 'web-acceptance.json'), JSON.stringify(report));
       return spawnSync(process.execPath, ['--input-type=module'], { input: code, cwd: root,
@@ -241,6 +243,7 @@ await test('moved streaming validator still rejects every missing original fault
       ['background blocks C1', r => { r.cases[0].streaming.freshWithBlockedBackground.content.blocking = true; }],
       ['required fault not blocking', r => { r.cases[0].streaming.requiredFailure.content.blocking = false; }],
       ['missing retry', r => { r.cases[0].streaming.requiredFailure.content.retryVisible = false; }],
+      ['campus resume waits on Library assets', r => { r.cases[0].streaming.requiredFailure.content.requiredIds[1] = 'chapter2_library_001'; }],
       ['missing real keyboard', r => { r.cases[0].streaming.recovery.realKeyboardMovement = false; }],
       ['recovery still blocking', r => { r.cases[0].streaming.recovery.content.blocking = true; }],
       ['missing reload', r => { delete r.cases[0].streaming.reload; }],

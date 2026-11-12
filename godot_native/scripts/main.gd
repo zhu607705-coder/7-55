@@ -468,6 +468,7 @@ func _restore_shell_surface() -> void:
 	mobile_world = _has_world_scene() and str(State.d.get("runtimeMode","phone")) == "rpg"
 
 func _surface_navigation_blocked(ignore_world_presentation: bool=false) -> bool:
+	if _chapter_three_opening_visible(): return true
 	if is_instance_valid(modal) or is_instance_valid(phone_document) or is_instance_valid(active_game) or bool(State.d.ui.controlCenterOpen) or capture_busy: return true
 	if State.story_input_locked():
 		# A compact reload may already have a paused world dialogue. Its only
@@ -684,9 +685,12 @@ func _library_world_presentation(cue: String,payload: Dictionary,layer: RefCount
 	world_page_origin_scene="library_interior"
 	_open_library_world_document("library_rule")
 
+func _chapter_three_opening_visible() -> bool:
+	return is_instance_valid(c3_scene_host) and is_instance_valid(c3_scene_host.opening) and c3_scene_host.opening.is_visible_in_tree()
+
 func mobile_surface_prefers_landscape() -> bool:
 	if is_instance_valid(active_game): return game_viewport.x > game_viewport.y
-	return flc_entry_mode or (mobile_world and _has_world_scene())
+	return flc_entry_mode or _chapter_three_opening_visible() or (mobile_world and _has_world_scene())
 
 func _layout_mobile_surface() -> void:
 	if not mobile_surface_managed: return
@@ -720,6 +724,7 @@ func _layout() -> void:
 	var available := size
 	var compact_layout := _uses_compact_layout()
 	var fitted_activity: bool = _activity_owns_scene()
+	var opening := _chapter_three_opening_visible()
 	var has_world := _has_world_scene()
 	if not has_world: mobile_world = false
 	var safe_insets := _world_safe_insets() if compact_layout else Vector4.ZERO
@@ -737,7 +742,7 @@ func _layout() -> void:
 	phone.scale = Vector2.ONE * phone_scale
 	phone.size = Vector2(430,860)
 	phone.position = Vector2(phone_insets.x+(phone_width-430*phone_scale)/2,phone_top+(phone_space.y-860*phone_scale)/2)
-	phone.visible = not mobile_world and not fitted_activity
+	phone.visible = not mobile_world and not fitted_activity and not opening
 	# Return, resize and activity cancellation may reveal a retained dirty page
 	# without another State.changed signal. Coalesce one current-state rebuild.
 	if phone.visible and phone_page_dirty: _schedule_refresh()
@@ -754,7 +759,7 @@ func _layout() -> void:
 	if not phone.visible: photo_brightness_session.reset()
 	elif not photo_brightness_session.mounted and str(State.d.native.page)=="photos":
 		photo_brightness_session.observe("photos",State.d.ui)
-	world_frame.visible = mobile_world and not fitted_activity
+	world_frame.visible = mobile_world and not fitted_activity and not opening
 	world_viewport.gui_disable_input = not world_frame.visible
 	mobile_back.visible=world_frame.visible and not is_instance_valid(active_game)
 	world_tasks.visible=mobile_back.visible
@@ -827,7 +832,9 @@ func _layout() -> void:
 		phone_chrome.set_display_covered(is_instance_valid(active_game))
 		phone_chrome.set_input_blocked(is_instance_valid(modal) or is_instance_valid(active_game) or is_instance_valid(phone_document))
 	if active_game:
-		if fitted_activity: active_game.configure_activity_layout(available,compact_layout)
+		if fitted_activity:
+			if active_game.has_method("configure_ride_safe_area"): active_game.configure_ride_safe_area(safe_insets)
+			active_game.configure_activity_layout(available,compact_layout)
 		else:
 			var game_scale := minf((available.x-20)/game_viewport.x,(available.y-20)/game_viewport.y)
 			active_game.scale=Vector2.ONE*game_scale
@@ -2351,9 +2358,13 @@ func _open_game(config: Dictionary) -> void:
 func _retire_progressive_game(owner: Control) -> void:
 	if not is_instance_valid(owner) or owner.get_meta("progressive_session_retired",false): return
 	var script: Script = owner.get_script()
-	if script == null or script.resource_path not in ["res://scripts/games/progressive_transport.gd","res://scripts/games/theater_shadow_rehearsal.gd"]: return
+	if script == null or script.resource_path not in ["res://scripts/games/progressive_transport.gd","res://scripts/games/theater_shadow_rehearsal.gd","res://scripts/ui/minigame_host.gd"]: return
 	var request: Variant = owner.get("config")
-	if not request is Dictionary or request.get("kind","") not in ["progressive_transport","theater_shadow_rehearsal"]: return
+	if not request is Dictionary: return
+	if request.get("on_success","")=="c3_fishing_result":
+		State.cancel_progressive_activity("c3_fishing_cancel",{"session":request.get("session_id")})
+		return
+	if request.get("kind","") not in ["progressive_transport","theater_shadow_rehearsal"]: return
 	var session: Variant = request.get("session",{})
 	if not session is Dictionary: return
 	owner.set_meta("progressive_session_retired",true)
@@ -2407,6 +2418,9 @@ func _open_game_now(config: Dictionary) -> void:
 	if config.get("kind","")=="future_learning_center" and OS.has_feature("web"):
 		if not await WebContent.ensure_families(["chapter2","flc_activity"],true):return
 	if not await _content_ready(): return
+	if config.get("on_success","")=="c3_fishing_result":
+		var lake := State.lake_module()
+		if lake==null or not lake.fishing_session_active(State.d,config.get("session_id")): return
 	if flc_entry_mode:
 		_open_flc_entry_activity(config)
 		return
@@ -2807,7 +2821,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			else: _return_from_phone()
 			get_viewport().set_input_as_handled()
 			return
-		if event.keycode == KEY_ESCAPE and not mobile_world:
+		if event.keycode == KEY_ESCAPE and not mobile_world and phone.visible:
 			_back_from_phone()
 			get_viewport().set_input_as_handled()
 			return
@@ -2869,6 +2883,7 @@ func _sync_story_hosts() -> void:
 		add_child(c3_scene_host)
 		c3_scene_host.cinematic_started.connect(_layout)
 		c3_scene_host.setup(world,func() -> Dictionary: return State.d,State.get_scene_session,State.act,_game_presentation,_read_runtime_state)
+		c3_scene_host.opening.visibility_changed.connect(_layout)
 	_story_host_active(library_story_host,needs_library)
 	_story_host_active(c3_scene_host,needs_scene)
 	_story_host_active(c3_narrative_host,needs_narrative)

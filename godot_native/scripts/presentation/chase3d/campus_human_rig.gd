@@ -207,15 +207,16 @@ func _pose_girdle(torso: Vector3,hips: Vector3,torso_basis: Basis) -> void:
 		var name: String="Clavicle"+suffix
 		if bone_ids.has(name):_pose(name,torso+torso_basis*(rests[name]-rests.Torso),torso_basis)
 
-func apply_ride(contacts: Dictionary,phase: float,steer: float,reduced: bool=false) -> void:
+func apply_ride(contacts: Dictionary,phase: float,steer: float,reduced: bool=false,charge: float=0.0,compression: float=0.0) -> void:
 	var bob: float=0 if reduced else -absf(sin(phase))*.012
 	var sway: float=0 if reduced else sin(phase)*.012
 	var hips:=Vector3(sway,1.64+bob,.24)
 	if contacts.has("seat"):hips=contacts.seat-Vector3(0,-.10,.10)*rig_scale+Vector3(sway,bob,0)
-	var torso_basis:=Basis(Vector3.RIGHT,-.62)
+	var crouch:=clampf(charge*.075+compression*.6,0.0,.12)
+	var torso_basis:=Basis(Vector3.RIGHT,-.62-crouch*.6)
 	# Preserve the imported hip-to-chest length while leaning toward the bars.
 	var body_length: float=(rests.Torso-rests.Hips).length()
-	var body_rise: float=minf(.30*rig_scale,body_length*.75)
+	var body_rise: float=minf((.30-crouch)*rig_scale,body_length*.75)
 	var torso:=hips+Vector3(-steer*.04,body_rise,-sqrt(maxf(0,body_length*body_length-body_rise*body_rise)))
 	_pose("Hips",hips,Basis(Vector3.FORWARD,sway*.7))
 	_pose_girdle(torso,hips,torso_basis)

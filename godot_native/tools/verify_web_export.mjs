@@ -839,14 +839,15 @@ async function resourceLoadingCase() {
     if (item.scene === 'campus_qizhen_loop') {
       const observed = await poll(async () => {
         const value = await snapshot();
-        const caption = controls(value).find(control => control.type === 'Label' && /^(湿纸从剧场门边|路边只留下|水迹在湖畔)/.test(control.text));
+        const caption = controls(value).find(control => control.name === 'ChapterThreeNarrationBody' && control.type === 'Label' && control.text.trim());
         return caption ? {value, caption} : null;
       }, 'authored approach caption is actually visible', 8000);
       const {value, caption} = observed, r = caption.rect;
       const footer = controls(value).filter(control => ['WorldTasks','WorldMode','WorldPhoneButton'].includes(control.name) || control.itemId);
       check(footer.length >= 3, `${active.id}: approach exposes its actual footer controls`);
       check(footer.every(({rect:f}) => r.x+r.width<=f.x || f.x+f.width<=r.x || r.y+r.height<=f.y || f.y+f.height<=r.y), `${active.id}: approach caption clears the visible footer`, {caption, footer});
-      if (value.viewport.height > value.viewport.width) check(r.y >= value.world.rect.y+value.world.rect.height, `${active.id}: portrait film caption uses its lower letterbox`, {caption:r, film:value.world.rect});
+      const surface = value.presentation.surfaceSize;
+      if (surface.y > surface.x) check(r.y >= value.world.rect.y+value.world.rect.height, `${active.id}: portrait film caption uses its lower letterbox`, {caption:r, film:value.world.rect});
     }
     await assertLayout(`resource-${item.scene}`);
     active.screenshots.push(await screenshot(`${active.id}-resource-${item.scene}`));
@@ -1447,6 +1448,8 @@ async function observeOptionalBackgroundFailure(documentStart) {
 async function streamingCase() {
   const fresh = await snapshot();
   check(state(fresh)?.native.chapter === 1 && !fresh.content?.blocking, 'fresh C1 ordinary phone interaction and save/reload remain usable with every deferred HTTP URL blocked');
+  const campusFamilies = ['phone_zjuding', 'chapter2', 'chapter2_campus'].filter(family => active.streamingManifest.packs.some(pack => pack.family === family));
+  const campusReady = value => campusFamilies.every(family => value?.content?.readyFamilies?.includes(family));
   const backgroundFailed = await observeOptionalBackgroundFailure(active.fresh.reloadRequestedAt);
   check(backgroundFailed.content.enabled && !backgroundFailed.content.monolithic && !backgroundFailed.content.manifestError, 'the running engine uses the content coordinator and a valid split manifest');
   active.streaming.freshWithBlockedBackground = { evidence: storyEvidence(backgroundFailed), content: backgroundFailed.content };
@@ -1457,6 +1460,7 @@ async function streamingCase() {
   await importSave(path.join(fixtureDir, 'after_c2_dorm_exit.json'));
   const blocked = await poll(async () => { const value = await snapshot(); return value?.content?.blocking && value.content.retryVisible && controls(value).some(control => control.name === 'RetryRequiredContent') ? value : null; }, 'ordinary later save shows the real required-content retry control', 60000);
   check(state(blocked).native.chapter === 2 && state(blocked).native.scene === 'campus_bootstrap' && blocked.content.requiredIds.length > 0, 'validated earned C2 import is retained while required assets are unavailable');
+  check(blocked.content.requiredIds.every(id => campusFamilies.includes(blocked.content.packs.find(pack => pack.id === id)?.family)), 'a campus resume admits its active app, shared resources and campus without Library assets');
   const frozen = storyEvidence(blocked);
   await interval(1200);
   const whileBlocked = await snapshot();
@@ -1477,12 +1481,12 @@ async function streamingCase() {
   await clickControl('RetryRequiredContent', 'name');
   const ready = await poll(async () => {
     const value = await snapshot();
-    return value?.content?.readyFamilies?.includes('chapter2') && !value.content.blocking && value.world?.visible && value.world.scene_id === 'campus_bootstrap' && value.world.player ? value : null;
+    return campusReady(value) && !value.content.blocking && value.world?.visible && value.world.scene_id === 'campus_bootstrap' && value.world.player ? value : null;
   }, 'user Retry downloads every C2 block and reveals the real Godot campus map', bootTimeout);
   check(hash(JSON.stringify(state(ready).items)) === frozen.itemsSha256 && hash(JSON.stringify(state(ready).wallet)) === frozen.walletSha256 && state(ready).actOne.phase === frozen.actOnePhase, 'asset recovery preserves earned inventory, wallet and story phase');
-  const chapter2Packs = active.streamingManifest.packs.filter(pack => pack.family === 'chapter2');
+  const chapter2Packs = active.streamingManifest.packs.filter(pack => campusFamilies.includes(pack.family));
   check(chapter2Packs.length > 1 && chapter2Packs.every(pack => ready.content.packs.some(loaded => loaded.id === pack.id && loaded.status === 'ready')), 'family readiness requires every independently verified C2 content block');
-  const chapter2Chunks = [...delivery.deferredChunksByUrl.values()].filter(chunk => chunk.family === 'chapter2');
+  const chapter2Chunks = [...delivery.deferredChunksByUrl.values()].filter(chunk => campusFamilies.includes(chunk.family));
   if (chapter2Chunks.length) {
     await poll(() => chapter2Chunks.every(chunk => active.deferredResponses.some(row => row.url === chunk.url && !row.pending && !row.error && row.status === 200)), 'all C2 oversized-pack chunks have actual browser response evidence');
     for (const chunk of chapter2Chunks) {
@@ -1520,7 +1524,7 @@ async function streamingCase() {
   const requestStart = active.requests.length;
   const oldDocument = await evaluate('performance.timeOrigin');
   const reloaded = await startStory(true);
-  const resumed = await poll(async () => { const value = await snapshot(); return !value?.content?.blocking && value?.content?.readyFamilies?.includes('chapter2') && value.world?.visible && value.world.scene_id === 'campus_bootstrap' ? value : null; }, 'real document reload restores C2 entirely from verified content cache', 60000);
+  const resumed = await poll(async () => { const value = await snapshot(); return !value?.content?.blocking && campusReady(value) && value.world?.visible && value.world.scene_id === 'campus_bootstrap' ? value : null; }, 'real document reload restores C2 entirely from verified content cache', 60000);
   const chapter2Urls = new Set(chapter2Packs.flatMap(pack => [pack.file, ...(pack.transportChunks || []).map(chunk => chunk.file)]).map(file => new URL(file, new URL('.', url)).href));
   const requests = active.requests.slice(requestStart).filter(request => chapter2Urls.has(request.url));
   check(requests.length === 0, 'ordinary reload makes no C2 HTTP requests while all deferred URLs remain explicitly blocked', requests);

@@ -13,7 +13,11 @@ func model_snapshot(model: RefCounted) -> String:
 		if property.usage&PROPERTY_USAGE_SCRIPT_VARIABLE:value[property.name]=model.get(property.name)
 	return JSON.stringify(value)
 func run() -> void:
-	var view:=View.new();view.asset_directory="res://assets/native_755/ride/";view.size=Vector2(960,540);root.add_child(view);await process_frame
+	var view:=View.new()
+	view.configure({"asset_directory":"res://assets/native_755/ride/","rebuilt_campus":false})
+	view.size=Vector2(960,540)
+	root.add_child(view)
+	await process_frame
 	var model:=Model.new()
 	for sample: Dictionary in view.manifest.camera_samples:
 		model.distance=sample.distance

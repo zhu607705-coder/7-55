@@ -3,7 +3,7 @@
 // between lifecycle families or adds anything to the boot core.
 import { CONTENT_PACK_TARGET, CONTENT_PACK_LIMIT } from './web_content_chunks.mjs';
 
-export const CONTENT_FAMILY_ORDER = ['core', 'phone_bonsai', 'phone_tiyi', 'chapter2', 'chapter3', 'chapter35', 'chapter4', 'flc_activity', 'campus_shared', 'campus_chaoyang', 'campus_haidian', 'campus_changping'];
+export const CONTENT_FAMILY_ORDER = ['core', 'phone_bonsai', 'phone_tiyi', 'phone_zjuding', 'chapter2', 'chapter2_campus', 'chapter2_library', 'chapter3', 'chapter35', 'chapter4', 'flc_activity', 'campus_shared', 'campus_chaoyang', 'campus_haidian', 'campus_changping'];
 export function packContentFamilies(families, entries) {
   const byPath = new Map(entries.map(entry => [entry.path, entry]));
   const chunks = [];

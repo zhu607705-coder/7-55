@@ -4,23 +4,11 @@
   "sourceSize": [1500, 900],
   "cabinetBounds": [[667, 784, 28, 88], [737, 784, 28, 88], [807, 784, 28, 88]],
   "formerDoorBaseY": 736,
-  "fixedCollisionRects": [
-    {"id": "south_west_corner_return", "rect": [0, 769, 104, 131]},
-    {"id": "south_west_wall", "rect": [104, 798, 289, 102]},
-    {"id": "south_west_outer_step", "rect": [393, 769, 46, 131]},
-    {"id": "south_west_inner_step", "rect": [439, 742, 84, 158]},
-    {"id": "entrance_landing_west_trim", "rect": [523, 805, 13, 95]},
-    {"id": "entrance_landing_east_trim", "rect": [969, 805, 12, 95]},
-    {"id": "south_east_inner_step", "rect": [981, 742, 81, 158]},
-    {"id": "south_east_outer_step", "rect": [1062, 769, 34, 131]},
-    {"id": "south_east_wall", "rect": [1096, 798, 282, 102]},
-    {"id": "south_east_corner_return", "rect": [1378, 769, 122, 131]}
-  ],
   "clearCentralApertureX": [536, 969],
   "provenance": {
     "measuredAt": "2026-11-11",
     "basis": "Source-pixel inside edges of the painted caps on the active 1500 × 900 clean plate: main wall at y=798, corner returns and outer steps at y=769, inner steps at y=742, inside the one-pixel outline. The blue landing narrows at y=805.",
     "observedFailure": "Production Godot Web coarse landscape 844x390, closed record=false: real route from [715,792.5] through [705,847.875], [657,847.875], [452,817.875], [452,664.75], [505,642.75] to [715,641.5]. Every original body sample was accepted outside the painted west south wall.",
-    "scope": "The guardrails span from the landing's solid edges to the lowered cabinets. The wings pivot at the visible cabinet midpoint."
+    "scope": "The guardrails span from the landing edges registered in world-space.json to the lowered cabinets. The wings pivot at the visible cabinet midpoint."
   }
 }

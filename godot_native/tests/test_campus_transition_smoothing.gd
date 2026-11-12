@@ -1,5 +1,6 @@
 extends SceneTree
 ## Continuous source shots interpolate; cuts and controller-owned clock stay exact.
+const RideLayout=preload("res://scripts/presentation/chase3d/ride_render_layout.gd")
 const Presenter=preload("res://scripts/presentation/chase_transition_3d_presenter.gd")
 var checks: int=0
 var failures: int=0
@@ -27,7 +28,11 @@ func run() -> void:
 			var pa:=Vector3(a.cameraPosition[0],a.cameraPosition[1],a.cameraPosition[2])
 			var pb:=Vector3(b.cameraPosition[0],b.cameraPosition[1],b.cameraPosition[2])
 			var expected: Vector3=pa.lerp(pb,.5) if a.camera==b.camera else pa
-			check(view.source_camera.position.distance_to(expected)<.0001,"continuous camera midpoint or intact cut at "+stage+str(frame))
+			var bike: Vector3=view.rider_bicycle.global_position
+			var follow:=Vector3(bike.x,0,bike.z)+RideLayout.CAMERA_OFFSET
+			var blend: float=smoothstep(78,90,frame+.5) if stage=="start" else 1-smoothstep(0,9,frame+.5)
+			expected=expected.lerp(follow,blend)
+			check(view.source_camera.position.distance_to(expected)<.0001,"continuous source shot or ride-matched handoff at "+stage+str(frame))
 			var human: Node3D=view.campus_human
 			worst_neck=maxf(worst_neck,absf(human.joint_point("Head").distance_to(human.joint_point("Neck"))-human.rests.Head.distance_to(human.rests.Neck)))
 			worst_body=maxf(worst_body,absf(human.joint_point("Hips").distance_to(human.joint_point("Torso"))-human.rests.Hips.distance_to(human.rests.Torso)))

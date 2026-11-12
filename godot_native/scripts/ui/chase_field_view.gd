@@ -1,5 +1,5 @@
 extends Control
-## Clipped decorative background; every dynamic hazard is separately projected.
+## Contrast plates and progress ink above the 3D road and below native controls.
 var host: Control
 func _ready() -> void:
 	clip_contents=true;mouse_filter=Control.MOUSE_FILTER_IGNORE

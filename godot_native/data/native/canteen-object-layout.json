@@ -3,6 +3,32 @@
     1672,
     941
   ],
+  "dining_offsets_x": {
+    "dining_table": 22.5,
+    "bench_left": 18,
+    "bench_right": 22,
+    "small_tabletop_plant": 22.5
+  },
+  "side_exit": {
+    "opening": {"left": 1291, "top": 877, "right": 1387, "bottom": 941},
+    "threshold": {"left": 1297, "top": 921, "right": 1381, "bottom": 941},
+    "frame": {"width": 106, "baseY": 924},
+    "approachBounds": {"left": 1261, "top": 802, "right": 1417, "bottom": 900},
+    "holdOpenBounds": {"left": 1243, "top": 790, "right": 1435, "bottom": 910},
+    "exitPoint": {"x": 1339, "y": 898.5},
+    "paperExitPoint": {"x": 1339, "y": 935},
+    "target": {
+      "id": "southeast_exit",
+      "label": "食堂南门",
+      "kind": "exit",
+      "x": 1339,
+      "y": 909,
+      "width": 96,
+      "height": 64,
+      "stand": {"x": 1339, "y": 865},
+      "proximity": 34
+    }
+  },
   "background": {
     "texture": "res://assets/native/canteen_objects/canteen_empty_floor.png",
     "scale": 1,
@@ -170,20 +196,6 @@
         1127
       ],
       "sha256": "2c47c29e76046aa0699bc18bd6c013a72c1e0daed79b451e03bd308798f90a40"
-    },
-    "handcart_front": {
-      "texture": "res://assets/native/canteen_objects/canteen_handcart_front.png",
-      "canvas": [
-        1254,
-        1254
-      ],
-      "alpha_bounds": [
-        375,
-        257,
-        880,
-        996
-      ],
-      "sha256": "86df72023129bb1b7af8c30b3c77652f4b86d2e7ec0f1e979f07ff02b01f91e2"
     },
     "hanging_service_lamp": {
       "texture": "res://assets/native/canteen_objects/canteen_hanging_service_lamp.png",
@@ -494,25 +506,19 @@
       ],
       "sha256": "99c50a3fee2342e5e1f7e6380fa9714456125db2037ce6e0cbd5e131c312ba95"
     },
-    "mixer_clean_worktop": {
-      "texture": "res://assets/native/mixer/canteen_tasting_counter_clean_background.png",
+    "mixer_world_station": {
+      "texture": "res://assets/native/canteen_objects/canteen_mixer_station.png",
       "canvas": [
-        1536,
-        1024
+        92,
+        96
       ],
       "alpha_bounds": [
         0,
         0,
-        1536,
-        1024
+        92,
+        96
       ],
-      "source_bounds": [
-        465,
-        460,
-        1035,
-        955
-      ],
-      "sha256": "1c11116324f137a9795025ae069320424a96abf01cda4e2b13baa739b6244e85"
+      "sha256": "ce95ab60e0f25e2af02b384fb84f4868bf4deb0895373f17b9851bf93906ce05"
     }
   },
   "objects": [
@@ -3161,27 +3167,27 @@
       "id": "drink_fridge",
       "asset": "refrigerated_drink_machine",
       "position": [
-        1568.5,
-        224
+        1581,
+        196
       ],
-      "scale": 0.17040951122853368,
-      "depth": 224,
+      "scale": 0.132,
+      "depth": 196,
       "targets": [],
       "footprint": [
         [
-          -29.867,
-          -21.93
+          -23,
+          -17
         ],
         [
-          29.867,
-          -21.93
+          23,
+          -17
         ],
         [
-          31.867,
+          25,
           -2
         ],
         [
-          -31.867,
+          -25,
           -2
         ]
       ],
@@ -3226,10 +3232,10 @@
       "asset": "side_service_cabinet",
       "position": [
         1542.0,
-        384
+        355
       ],
       "scale": 0.18849840255591055,
-      "depth": 384,
+      "depth": 355,
       "targets": [],
       "footprint": [
         [
@@ -3421,36 +3427,34 @@
     },
     {
       "id": "mixer_counter",
-      "asset": "mixer_clean_worktop",
+      "asset": "mixer_world_station",
       "position": [
         260.0,
         817
       ],
-      "scale": 0.2,
+      "scale": 1.0,
       "depth": 817,
       "targets": [
         "canteen-mixer"
       ],
       "footprint": [
         [
-          -54.0,
-          -31.576
+          -44,
+          -22
         ],
         [
-          54.0,
-          -31.576
+          44,
+          -22
         ],
         [
-          57.0,
+          44,
           -2
         ],
         [
-          -57.0,
+          -44,
           -2
         ]
       ],
-      "front_slice": 0.77,
-      "back_depth": 1,
       "navigation_group": "mix_kiosks",
       "mixer": true
     },
@@ -3523,32 +3527,6 @@
       "ground_plane": true
     },
     {
-      "id": "southeast_door",
-      "asset": "double_door",
-      "position": [
-        1349.0,
-        900
-      ],
-      "scale": 0.11488250652741515,
-      "depth": 900,
-      "targets": [
-        "southeast_exit"
-      ],
-      "door": "southeast"
-    },
-    {
-      "id": "southeast_mat",
-      "asset": "exit_floor_mat",
-      "position": [
-        1352.0,
-        935
-      ],
-      "scale": 0.10416666666666667,
-      "depth": 935,
-      "targets": [],
-      "ground_plane": true
-    },
-    {
       "id": "decorative_cart_0",
       "asset": "handcart",
       "position": [
@@ -3573,96 +3551,6 @@
         ],
         [
           -25.714,
-          -2
-        ]
-      ],
-      "decorative_cart": true
-    },
-    {
-      "id": "decorative_cart_1",
-      "asset": "handcart_front",
-      "position": [
-        1467.5,
-        415
-      ],
-      "scale": 0.08389715832205684,
-      "depth": 415,
-      "targets": [],
-      "footprint": [
-        [
-          -16.43,
-          -19.22
-        ],
-        [
-          16.43,
-          -19.22
-        ],
-        [
-          18.43,
-          -2
-        ],
-        [
-          -18.43,
-          -2
-        ]
-      ],
-      "decorative_cart": true
-    },
-    {
-      "id": "decorative_cart_2",
-      "asset": "handcart_front",
-      "position": [
-        1176.5,
-        707
-      ],
-      "scale": 0.08389715832205684,
-      "depth": 707,
-      "targets": [],
-      "footprint": [
-        [
-          -16.43,
-          -19.22
-        ],
-        [
-          16.43,
-          -19.22
-        ],
-        [
-          18.43,
-          -2
-        ],
-        [
-          -18.43,
-          -2
-        ]
-      ],
-      "decorative_cart": true
-    },
-    {
-      "id": "decorative_cart_3",
-      "asset": "handcart_front",
-      "position": [
-        1082.5,
-        908
-      ],
-      "scale": 0.08389715832205684,
-      "depth": 908,
-      "targets": [],
-      "footprint": [
-        [
-          -16.43,
-          -19.22
-        ],
-        [
-          16.43,
-          -19.22
-        ],
-        [
-          18.43,
-          -2
-        ],
-        [
-          -18.43,
           -2
         ]
       ],
@@ -3822,11 +3710,11 @@
       "id": "plant_5",
       "asset": "square_plant_wood_pot",
       "position": [
-        1115.5,
-        853
+        1078,
+        830
       ],
       "scale": 0.07177033492822966,
-      "depth": 853,
+      "depth": 830,
       "targets": [],
       "footprint": [
         [
@@ -3912,41 +3800,40 @@
       "id": "corner_tree",
       "asset": "large_corner_tree",
       "position": [
-        1627.0,
-        941
+        1512,
+        874
       ],
-      "scale": 0.10672853828306264,
-      "depth": 941,
+      "scale": 0.082,
+      "depth": 874,
       "targets": [],
       "footprint": [
         [
-          -17.4,
-          -12.462
+          -13.4,
+          -10
         ],
         [
-          17.4,
-          -12.462
+          13.4,
+          -10
         ],
         [
-          18.4,
+          14.4,
           -2
         ],
         [
-          -18.4,
+          -14.4,
           -2
         ]
-      ],
-      "navigation_group": "southeast_frame"
+      ]
     },
     {
       "id": "red_bin",
       "asset": "red_bin",
       "position": [
-        1434.5,
-        919
+        1604,
+        802
       ],
       "scale": 0.08986175115207373,
-      "depth": 919,
+      "depth": 802,
       "targets": [],
       "footprint": [
         [
@@ -3965,8 +3852,7 @@
           -17.16,
           -2
         ]
-      ],
-      "navigation_group": "southeast_frame"
+      ]
     },
     {
       "id": "vent_0",
@@ -4190,36 +4076,6 @@
       "navigation_group": "east_boundary"
     },
     {
-      "id": "east_shelf_frame",
-      "polygon": [
-        [
-          1340,
-          252
-        ],
-        [
-          1627,
-          252
-        ],
-        [
-          1627,
-          258
-        ],
-        [
-          1360,
-          258
-        ],
-        [
-          1360,
-          367
-        ],
-        [
-          1340,
-          367
-        ]
-      ],
-      "navigation_group": "east_shelf"
-    },
-    {
       "id": "dish_return_back",
       "polygon": [
         [
@@ -4252,144 +4108,16 @@
     {
       "id": "tray_station_frame",
       "polygon": [
-        [
-          1262,
-          610
-        ],
-        [
-          1297,
-          610
-        ],
-        [
-          1297,
-          623
-        ],
-        [
-          1644,
-          623
-        ],
-        [
-          1644,
-          646
-        ],
-        [
-          1292,
-          646
-        ],
-        [
-          1292,
-          738
-        ],
-        [
-          1256,
-          738
-        ]
+        [1289, 623], [1644, 623], [1644, 646], [1289, 646]
       ],
       "navigation_group": "tray_station"
     },
     {
-      "id": "south_counter_left_pillar",
+      "id": "east_wall_lower",
       "polygon": [
-        [
-          542,
-          663
-        ],
-        [
-          578,
-          663
-        ],
-        [
-          578,
-          856
-        ],
-        [
-          541,
-          856
-        ]
+        [1623, 646], [1668, 646], [1668, 924], [1623, 924]
       ],
-      "navigation_group": "south_counter"
-    },
-    {
-      "id": "south_counter_right_pillar",
-      "polygon": [
-        [
-          1061,
-          662
-        ],
-        [
-          1098,
-          662
-        ],
-        [
-          1098,
-          857
-        ],
-        [
-          1062,
-          857
-        ]
-      ],
-      "navigation_group": "south_counter"
-    },
-    {
-      "id": "southeast_frame",
-      "polygon": [
-        [
-          1423,
-          744
-        ],
-        [
-          1671,
-          744
-        ],
-        [
-          1671,
-          770
-        ],
-        [
-          1460,
-          770
-        ],
-        [
-          1460,
-          880
-        ],
-        [
-          1671,
-          880
-        ],
-        [
-          1671,
-          922
-        ],
-        [
-          1423,
-          922
-        ]
-      ],
-      "navigation_group": "southeast_frame"
-    },
-    {
-      "id": "tray_station_lower_leg",
-      "polygon": [
-        [
-          1256,
-          818
-        ],
-        [
-          1292,
-          818
-        ],
-        [
-          1292,
-          921
-        ],
-        [
-          1256,
-          921
-        ]
-      ],
-      "navigation_group": "tray_station_lower_leg"
+      "navigation_group": "east_boundary"
     }
   ],
   "notes": [
@@ -4400,20 +4128,40 @@
   ],
   "floor_openings": [
     {
-      "id": "southeast_passage",
-      "source": [
-        1196,
-        738,
-        56,
-        80
-      ],
-      "destination": [
-        1256,
-        738,
-        56,
-        80
-      ],
-      "reason": "Supplied empty floor closes the unchanged southeast story exit; visible same-tile passage and matching feet aperture restore access without moving the original exit."
+      "id": "northeast_floor_repair",
+      "texture": "res://assets/native/canteen_objects/canteen_northeast_floor_repair.png",
+      "source": [0, 0, 338, 158],
+      "destination": [1320, 221, 338, 158]
+    },
+    {
+      "id": "south_floor",
+      "texture": "res://assets/native/canteen_objects/canteen_south_floor.png",
+      "source": [0, 0, 1644, 341],
+      "destination": [28, 600, 1644, 341]
+    },
+    {
+      "id": "north_service_wall_foot",
+      "texture": "res://assets/native/canteen_objects/canteen_wall_feet.png",
+      "source": [0, 0, 106, 57],
+      "destination": [97, 190, 106, 57]
+    },
+    {
+      "id": "north_thin_wall_foot",
+      "texture": "res://assets/native/canteen_objects/canteen_wall_feet.png",
+      "source": [106, 0, 86, 61],
+      "destination": [1115, 188, 86, 61]
+    },
+    {
+      "id": "north_east_wall_foot",
+      "texture": "res://assets/native/canteen_objects/canteen_wall_feet.png",
+      "source": [192, 0, 77, 54],
+      "destination": [1289, 186, 77, 54]
+    },
+    {
+      "id": "dish_return_wall_foot",
+      "texture": "res://assets/native/canteen_objects/canteen_wall_feet.png",
+      "source": [269, 0, 75, 55],
+      "destination": [1248, 470, 75, 55]
     }
   ]
 }

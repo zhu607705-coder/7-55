@@ -68,13 +68,17 @@ func run() -> void:
 		check(game.size==Vector2(dims) and game.scale==Vector2.ONE,"all chase layouts use physical input coordinates")
 		check(game.native_chase_view.size==game.chase_view.size and game.native_chase_view.position==game.chase_view.position,"source film and overlay share one field")
 		var resolution: Vector2i=game.native_chase_view.viewport_resolution
-		check(resolution.x>=480 and resolution.x<=960 and absf(float(resolution.x)/resolution.y-16.0/9.0)<.005,"source resize limits and camera aspect survive orientation")
+		var field: Vector2=game.chase_view.size
+		check(absf(Vector2(resolution).aspect()-field.aspect())<.015,"render target follows the displayed road aspect")
+		if dims.x>=dims.y:
+			check(field==Vector2(dims),"landscape road reaches all four edges")
 		game.begin()
 		for button: Button in game.control_buttons.values():
 			check(screen.encloses(button.get_global_rect()) and button.size.x>=44 and button.size.y>=44,"readable reachable native control: "+button.text)
-			check(not button.get_rect().intersects(game.chase_view.get_rect()),"controls cannot cover source obstacle field")
+			check(button.position.y>=game.size.y-64,"controls sit along the thumb edge")
 		game.press_action("jump","test");game._process(.1)
 		game.configure_activity_layout(Vector2(dims.y,dims.x),true)
+		check(game.shared_pause_overlay.surface.size==game.size,"pause panel follows oriented activity extent independently of the window")
 		check(game.model.held.is_empty() and game.model.charge==0,"rotation clears held input without a release jump")
 		game.restart()
 	game.begin();var reference:=Chase.new();reference.update(.2);game._process(.2)

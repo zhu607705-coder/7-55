@@ -1,66 +1,83 @@
 extends SceneTree
-const Assets=preload("res://scripts/objects/library_animation_assets.gd")
-const ActorTexture=preload("res://scripts/objects/library_actor_texture.gd")
-const Metrics=preload("res://scripts/player_metrics.gd")
-var checks:=0
-var failures:=0
-func _initialize()->void:run.call_deferred()
-func check(ok:bool,message:String)->void:
-	checks+=1
-	if not ok:failures+=1;push_error("LIBRARY_ANIMATION "+message)
+const Assets = preload("res://scripts/objects/library_animation_assets.gd")
+const ActorTexture = preload("res://scripts/objects/library_actor_texture.gd")
+const Builder = preload("res://tools/build_library_walk_sheet.gd")
+const Metrics = preload("res://scripts/player_metrics.gd")
+var checks := 0
+var failures := 0
 
-func jacket_luminance(image: Image) -> float:
-	var jacket := [Color("243f5a"), Color("344452"), Color("385b79"), Color("526b7a"), Color("547f9d")]
-	var total := 0.0
-	var count := 0
-	for y in range(54, 99):
-		for x in range(27, 70):
-			var pixel := image.get_pixel(x, y)
-			if pixel in jacket:
-				total += pixel.get_luminance()
-				count += 1
-	return 255.0 * total / maxi(1, count)
+func _initialize() -> void:
+	run.call_deferred()
 
-func run()->void:
-	var state:Node=root.get_node("State")
-	var before:String=JSON.stringify(state.d)
-	var assets:=Assets.new()
-	check(assets.ensure_loaded(),"complete generated family activates atomically")
-	if not assets.ready:quit(1);return
-	var palette:Dictionary={}
-	var art:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://docs/art/art_direction_v1.json"))
-	for hex:String in art.palette.colors:palette[Color(hex).to_rgba32()]=true
-	for direction:String in ["down","up","side"]:
-		var hashes:Dictionary={}
-		var idle_luma := jacket_luminance(assets.idles[direction].get_image())
-		var previous_luma := idle_luma
-		var first_luma := 0.0
-		check(assets.walks[direction].size()==16,"sixteen actual frames "+direction)
-		for index:int in 16:
-			var texture:Texture2D=assets.walks[direction][index]
-			var image:Image=texture.get_image()
-			if image.is_compressed():image.decompress()
-			var bounds:Rect2i=image.get_used_rect()
-			check(texture.get_size()==Metrics.FRAME,"same shared 96 by 128 placement frame")
-			check(bounds.end.y>=126 and bounds.end.y<=128,"soles share the registered foot baseline")
-			check(bounds.position.x>0 and bounds.end.x<96 and bounds.position.y>4,"complete silhouette has transparent margin")
-			var valid:=true
-			for y:int in image.get_height():
-				for x:int in image.get_width():
-					var color:Color=image.get_pixel(x,y)
-					if color.a!=0 and (color.a!=1 or not palette.has(color.to_rgba32())):valid=false
-			check(valid,"real cutout alpha and locked 32-color palette")
-			var luma := jacket_luminance(image)
-			check(absf(luma - previous_luma) <= 2.5, "coat stays on the same brightness ramp " + direction + " frame " + str(index))
-			if index == 0: first_luma = luma
-			previous_luma = luma
-			hashes[image.get_data().hex_encode().sha256_text()]=true
-			check(assets.actor(direction,false,index*55,true).texture==texture,"clock selects consecutive intermediate frame")
-		check(hashes.size()==16,"all walking frames are distinct "+direction)
-		check(maxf(absf(first_luma - previous_luma), absf(idle_luma - previous_luma)) <= 2.5, "wrap and stop preserve coat brightness "+direction)
-		check(assets.actor(direction,false,880,true).texture==assets.walks[direction][0],"cycle preserves the original 880 milliseconds")
-		check(assets.actor(direction,false,473,false).texture==assets.idles[direction],"stopping selects a stable matching idle")
-	check(assets.actor("left",false,55,true).flip_h and assets.actor("left",false,55,true).texture==assets.walks.side[1],"left uses the same complete character mirrored")
+func check(ok: bool, message: String) -> void:
+	checks += 1
+	if not ok:
+		failures += 1
+		push_error("LIBRARY_ANIMATION " + message)
+
+func connected_neck(image: Image, bounds: Rect2i) -> bool:
+	var previous := PackedByteArray()
+	for y in range(bounds.position.y + roundi(bounds.size.y * 0.27), bounds.position.y + roundi(bounds.size.y * 0.49)):
+		var occupied := PackedByteArray()
+		var overlap := 0
+		for x in range(bounds.position.x, bounds.end.x):
+			var solid := image.get_pixel(x, y).a >= 0.5
+			occupied.append(1 if solid else 0)
+			if solid and not previous.is_empty() and previous[x - bounds.position.x] == 1:
+				overlap += 1
+		if not previous.is_empty() and overlap < 8:
+			return false
+		previous = occupied
+	return true
+
+func run() -> void:
+	var state: Node = root.get_node("State")
+	var before := JSON.stringify(state.d)
+	var assets := Assets.new()
+	check(assets.ensure_loaded(), "complete generated family activates atomically")
+	if not assets.ready:
+		quit(1)
+		return
+	var frame_count := Assets.WALK_FRAMES
+	var frame_duration := 880.0 / frame_count
+	for row in Assets.WALK_DIRECTIONS.size():
+		var direction: String = Assets.WALK_DIRECTIONS[row]
+		var original_sheet := Image.load_from_file(Builder.source_path(direction))
+		var source_frames := Builder.build_direction(original_sheet, direction)
+		check(source_frames.size() == frame_count, "the generated sheet contains the complete cycle " + direction)
+		if source_frames.size() != frame_count:
+			quit(1)
+			return
+		var hashes := {}
+		var head_tops: Array[int] = []
+		check(assets.walks[direction].size() == frame_count, "complete frame count " + direction)
+		for index in frame_count:
+			var texture: Texture2D = assets.walks[direction][index]
+			var image := texture.get_image()
+			var bounds := image.get_used_rect()
+			head_tops.append(bounds.position.y)
+			check(image.get_size() == Assets.WALK_CELL, "walk uses the registered player frame")
+			check(bounds.end.y >= Assets.WALK_CELL.y - 13 and bounds.end.y <= Assets.WALK_CELL.y, "soles stay in the registered floor band")
+			check(bounds.position.x > 0 and bounds.end.x < Assets.WALK_CELL.x and bounds.position.y > 4, "complete silhouette has transparent margin")
+			check(connected_neck(image, bounds), "connected head and shoulders in each complete pose")
+			var colors := {}
+			for y in range(bounds.position.y, bounds.end.y):
+				for x in range(bounds.position.x, bounds.end.x):
+					var pixel := image.get_pixel(x, y)
+					if pixel.a == 0:
+						continue
+					colors[pixel.to_rgba32() >> 8] = true
+			check(not image.is_compressed() and image.get_format() == Image.FORMAT_RGBA8
+				and image.get_data() == source_frames[index].get_data() and colors.size() > 32,
+				"the walk frame retains uncompressed RGBA8 pixels from the source")
+			hashes[image.get_data().hex_encode().sha256_text()] = true
+			check(assets.actor(direction, false, (index + 0.5) * frame_duration, true).texture == texture, "clock selects consecutive full drawings")
+		check(hashes.size() == frame_count, "all walking frames are distinct " + direction)
+		check(head_tops.max() - head_tops.min() <= 12, "head height stays stable through both steps " + direction)
+		check(assets.actor(direction, false, 880, true).texture == assets.walks[direction][0], "cycle preserves the original 880 milliseconds")
+		check(assets.actor(direction, false, 473, false).texture == assets.idles[direction], "stopping selects the standing pose")
+	var left := assets.actor("left", false, frame_duration * 1.5, true)
+	check(left.flip_h and left.texture == assets.walks.side[1], "left mirrors the same complete side drawing")
 	check(assets.book.get_size()==Vector2(768,640),"book atlas has sixteen complete cells")
 	check(assets.book_source(15)==Rect2(576,480,192,160),"last page-turn frame has an exact atlas boundary")
 	var canvas := Node2D.new()

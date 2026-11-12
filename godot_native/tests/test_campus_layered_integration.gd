@@ -103,6 +103,13 @@ func run() -> void:
 	var opening: RefCounted = opening_host.current
 	check(opening != null and opening.kind == "opening" and not state.mode_switch_unlocked(), "the 022 conversation itself keeps mode switching locked")
 	if opening == null: quit(1); return
+	var opening_view: Control = opening_host.opening
+	var opening_projection: Dictionary = opening_view._library_projection()
+	check(opening_view.is_visible_in_tree() and not opening_projection.is_empty(), "the 022 opening projects the active layered library")
+	if not opening_projection.is_empty():
+		var library_bottom: float = opening_projection.origin.y + world.world_size.y * opening_projection.zoom
+		check(library_bottom < opening_view.subtitle_panel.position.y, "the narration card leaves the library entrance visible")
+	check(not main.phone.is_visible_in_tree() and not main.world_frame.is_visible_in_tree(), "the 022 opening has exclusive ownership of the scene")
 	opening.skip_to_arrival(state.d,opening_host)
 	opening.advance_current(state.d,opening_host)
 	opening_host.tick(0,true)

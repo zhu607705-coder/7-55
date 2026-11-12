@@ -391,6 +391,8 @@ func _update_suspension() -> void:
 	# Real-time activities retain their own explicit pause/Continue boundary.
 	var blocked:=_document_hidden or not _document_focused or _content_loading
 	PauseOverlay.set_environment_blocked(get_tree(),blocked)
+	if _document_hidden and is_instance_valid(shell.active_game) and shell.active_game.has_method("on_browser_hidden"):
+		shell.active_game.on_browser_hidden()
 	if is_instance_valid(shell.active_game) and shell.active_game.has_method("set_platform_suspended"):
 		shell.active_game.set_platform_suspended(blocked)
 	_apply_suspension(blocked)
@@ -638,9 +640,14 @@ func read_snapshot() -> Dictionary:
 			game["model"] = _properties(active.model, ["status", "distance", "lane", "charge", "air_height", "air_velocity", "collisions", "tick"])
 			if is_instance_valid(active.native_chase_view):
 				var view: Control = active.native_chase_view
-				game["nativeChaseView"] = _properties(view, ["ready3d", "presented", "failure_reason", "animation_seconds", "viewport_resolution"])
+				game["nativeChaseView"] = _properties(view, ["ready3d", "presented", "failure_reason", "animation_seconds", "viewport_resolution", "quality"])
+				game.nativeChaseView["picture"] = _rect(view.get_global_rect())
 				game.nativeChaseView["heroPosition"] = _json_value(view.hero.position) if is_instance_valid(view.hero) else null
 				game.nativeChaseView["meshInstances"] = view.viewport3d.find_children("*", "MeshInstance3D", true, false).size() if is_instance_valid(view.viewport3d) else 0
+		elif active.get_script().resource_path == "res://scripts/presentation/chase_transition_3d_presenter.gd":
+			game["rideTransition"] = _properties(active, ["stage", "frame", "status", "ready3d"])
+			game.rideTransition["picture"] = _rect(active.film_rect())
+			game.rideTransition["viewport_resolution"] = _json_value(active.view3d.size) if is_instance_valid(active.view3d) else null
 	var world: Dictionary = {}
 	if is_instance_valid(shell.world):
 		world = _properties(shell.world, ["scene_id", "player", "camera", "zoom", "size", "mobile_exploration", "last_zone", "last_vehicle", "subtitle", "subtitle_left", "nearby", "touch_axis", "facing", "player_flip", "mobile_confirmed_target_id"])
@@ -651,8 +658,8 @@ func read_snapshot() -> Dictionary:
 			var layers: RefCounted = shell.world.library_layers
 			world["librarySeat"] = {"id":layers.local_chair, "settled":layers.chair_age >= layers.SIT_SECONDS}
 		var actor:Dictionary=shell.world.player_visual()
-		if actor.get("animation","")=="library_generated_16":
-			world["actorAnimation"]={"family":actor.animation,"frame":actor.motion_frame,"direction":actor.direction,"mirrored":actor.flip_h,"cycleMs":880,"frames":16}
+		if actor.has("frame_count"):
+			world["actorAnimation"]={"family":actor.animation,"frame":actor.motion_frame,"direction":actor.direction,"mirrored":actor.flip_h,"cycleMs":880,"frames":actor.frame_count}
 		if is_instance_valid(shell.world.selected_overlay):
 			var overlay:Control=shell.world.selected_overlay
 			world["chrome"]={"taskColumnVisible":overlay.task.is_visible_in_tree(),"modeLabelVisible":overlay.mode.is_visible_in_tree(),"interactionRect":_rect(overlay.plaque.get_global_rect())}

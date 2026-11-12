@@ -131,6 +131,12 @@ func run() -> void:
 	DirAccess.remove_absolute(str(photo.nativeImagePath));DirAccess.remove_absolute(original)
 	var prepared: Dictionary=state.prepare_cloud_bundle(captured.bundle,captured.images)
 	check(prepared.ok,"downloaded complete bundle validates before installation")
+	var active: Dictionary=state.d
+	var before_failure: Dictionary=active.duplicate(true)
+	check(DirAccess.make_dir_absolute(state.SAVE_PATH+".tmp")==OK,"simulate a blocked cloud save write")
+	check(not state.install_cloud_bundle(prepared).ok,"cloud installation rejects failed save write")
+	check(is_same(active,state.d) and state.d==before_failure,"failed cloud save retains the active story owner and its fields")
+	check(DirAccess.remove_absolute(state.SAVE_PATH+".tmp")==OK,"remove test-only cloud write obstruction")
 	check(state.install_cloud_bundle(prepared).ok,"state, photos and documents restored together")
 	var restored: Dictionary=state.d.qizhenLake.journal.mainPhoto
 	check(restored.nativeImagePath.begins_with(Storage.journal_folder()),"downloaded photo installed in current owner namespace")

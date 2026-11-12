@@ -577,6 +577,9 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			s.native.chapter = 3
 			s.native.page = "phone_home"
 			s.currentScene = "phone_home"
+			# This exit starts the trail at the library, even after an earlier
+			# campus visit saved a position elsewhere.
+			if s.native.get("positions") is Dictionary: s.native.positions.erase("campus_bootstrap:")
 			s.rpgCheckpoint = "campus_library_gate"
 			var handoff := _world(s,"campus_bootstrap","022：深色模式也打开了。")
 			handoff["open_world"] = true

@@ -116,6 +116,19 @@ function check(name, value) { assert.ok(value, name); checks.push(name); }
   f.host.dispose();
 }
 
+// A durable background download stays on disk until its scene requests it.
+{
+  const f=fixture({idb:true, noCache:true, manifest:{...manifest,packs:[packs[0]]}});
+  f.host.startPrefetch(); await f.frame(); await f.frame();
+  await until(()=>record(f.host,packs[0].id).status==='prefetched','verified disk prefetch');
+  check('IndexedDB prefetch leaves the engine untouched',f.events.length===0 && f.copies.length===0 && f.requests.length===1);
+  request(f.host,packs[0].id);
+  await until(()=>f.events.length===1,'mount from prefetched cache');
+  check('Explicit admission mounts the cached bytes without a second fetch',f.requests.length===1 && f.copies.length===1 && record(f.host,packs[0].id).source==='verified-cache');
+  await f.host.acknowledge(packs[0].id,true,'');
+  f.host.dispose();
+}
+
 // Explicit foreground demand cancels optional transfer before its completion;
 // even a transport that resolves late must not reach MEMFS or the native callback.
 {
