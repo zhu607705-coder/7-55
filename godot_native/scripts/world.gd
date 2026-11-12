@@ -1053,6 +1053,7 @@ func _process(delta: float) -> void:
 	# Campus edge slides can move the feet sideways under a held direction.
 	_apply_player_motion(walked,axis,delta,face_keyboard)
 	if scene_id == "canteen_interior" and walked.y > 0.0 and _cross_canteen_exit(): return
+	if scene_id == "theater_interior" and axis.y > 0.0 and _cross_theater_exit(): return
 	# Arrival has no remaining movement input. Retire its walk frame now,
 	# before rendering/picking, rather than one process tick after arrival.
 	if floor_route_finished: walk_clock=0.0
@@ -1087,6 +1088,13 @@ func _cross_canteen_exit() -> bool:
 		var result := State.act(str(target.action))
 		return result.get("scene") == "campus_bootstrap"
 	return false
+
+func _cross_theater_exit() -> bool:
+	if not _window_focused or presentation_actor_hidden or _interaction_presentation_blocks(): return false
+	if State.d.native.scene != scene_id or State.d.theaterHunt.phase != "complete": return false
+	if not is_instance_valid(host_node) or not host_node.has_method("_begin_theater_departure") or chapter3_layers == null: return false
+	# Use outward input so an older save against the vestibule boundary can leave.
+	return chapter3_layers.doors.theater_exit_reached(player) and host_node._begin_theater_departure()
 
 func _apply_player_motion(motion:Vector2,intent:Vector2,delta:float,face_intent := false) -> void:
 	var facing_motion := intent if face_intent else motion
