@@ -68,6 +68,13 @@ func begin_departure(owned_clock:bool=false)->bool:
 func cancel_departure()->void:
 	departure_held=false;departure_clock_owned=false
 
+func theater_exit_reached(point: Vector2) -> bool:
+	if scene_id != "theater_interior" or not passable(): return false
+	var feet := Metrics.foot_rect(point, scene_id)
+	if feet.get_center().y < opening.end.y: return false
+	var leaves := leaf_rects()
+	return feet.position.x >= leaves[0].end.x and feet.end.x <= leaves[1].position.x
+
 func _occupied(point:Vector2)->bool:
 	return scene_id=="theater_interior" and Rect2(opening.position.x,opening.end.y-20,opening.size.x,28).intersects(Metrics.foot_rect(point))
 

@@ -14,8 +14,8 @@ func frames(count:int=4)->void:
 	for i:int in range(count):await process_frame
 func event(input:InputEvent)->void:
 	Input.parse_input_event(input);Input.flush_buffered_events()
-func key(down:bool)->void:
-	var input:=InputEventKey.new();input.keycode=KEY_SPACE;input.physical_keycode=KEY_SPACE;input.pressed=down;event(input)
+func key(down:bool,code:Key=KEY_SPACE)->void:
+	var input:=InputEventKey.new();input.keycode=code;input.physical_keycode=code;input.pressed=down;event(input)
 func touch(point:Vector2,down:bool)->void:
 	var input:=InputEventScreenTouch.new();input.index=9;input.position=point;input.pressed=down;event(input)
 func button(parent:Node,text:String)->Button:
@@ -121,6 +121,23 @@ func run()->void:
 			check(exits.size()==before_count,"cancelled owner has no usable late completion on "+fault)
 			check(not shell.world.chapter3_layers.doors.departure_held and not shell.world.chapter3_layers.doors.departure_clock_owned,"cancelled Main owner always releases sensor and clock")
 			await frames()
+		if dimensions.x >= 1100:
+			for start_y: float in [820.0, 892.4374]:
+				await reset()
+				shell.world.player=Vector2(836,start_y);shell.world._sync_player()
+				before_count=exits.size()
+				key(true,KEY_DOWN)
+				for i: int in range(20):
+					shell.world._process(.05)
+					if is_instance_valid(shell.world_effect): break
+				key(false,KEY_DOWN)
+				effect=shell.world_effect
+				check(is_instance_valid(effect),"outward movement starts departure at y=%s"%start_y)
+				if not is_instance_valid(effect): continue
+				effect.set_process(false)
+				tick(effect,100)
+				check(exits.size()==before_count+1 and state.d.native.scene=="campus_qizhen_loop","walking out hands off once from y=%s"%start_y)
+				await frames()
 		await shell.shutdown();shell.queue_free();await frames()
 	state.action_completed.disconnect(listener)
 	print("THEATER_DEPARTURE_MAIN: %d checks; %d failures"%[checks,failures]);quit(1 if failures else 0)
