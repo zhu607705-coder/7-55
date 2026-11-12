@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#182e3d">
+  <title>追光线</title>
+</head>
+<body>
+  <main id="game" aria-label="追光线跑酷">
+    <canvas id="scene" aria-label="屋顶跑酷场景"></canvas>
+    <header class="hud" id="hud" hidden>
+      <div class="route">
+        <span id="section">机房屋顶</span>
+        <div id="route-line" class="route-line" aria-hidden="true"><i id="route-fill"></i></div>
+        <span class="distance"><span id="distance">0</span> / <span id="route-length"></span> m</span>
+      </div>
+      <div class="hud-end">
+        <output id="clock" aria-label="用时">0.00</output>
+        <button class="icon" id="pause" aria-label="暂停" title="暂停（Esc）"><span class="pause-mark"></span></button>
+      </div>
+    </header>
+    <p id="cue" class="cue" role="status" hidden></p>
+    <div id="touch" class="touch" hidden aria-label="触屏控制">
+      <div>
+        <button data-action="left" aria-label="向左">←</button>
+        <button data-action="right" aria-label="向右">→</button>
+      </div>
+      <div>
+        <button data-action="slide" aria-label="滑铲">滑</button>
+        <button data-action="jump" aria-label="跳跃">跳</button>
+      </div>
+    </div>
+    <div class="veil" id="veil"></div>
+    <section id="menu" class="menu" aria-labelledby="menu-title">
+      <div class="menu-body">
+        <h1 id="menu-title">追光线</h1>
+        <p id="menu-copy">沿屋顶跑到信号塔。</p>
+        <div id="modes" class="modes" role="group" aria-label="难度">
+          <button data-mode="standard" aria-pressed="true">标准</button>
+          <button data-mode="challenge" aria-pressed="false">挑战</button>
+        </div>
+        <button id="primary" class="primary">起跑</button>
+        <div id="pause-actions" class="secondary-row" hidden>
+          <button id="restart">从头再跑</button>
+          <button id="sound" aria-pressed="false">静音</button>
+          <button id="quit">返回起点</button>
+        </div>
+        <p id="controls" class="controls">
+          <span class="keyboard-guide">A / D 转向　空格 跳跃　S 滑铲</span>
+          <span class="touch-guide">左右滑动转向　向上跳　向下滑</span>
+        </p>
+      </div>
+    </section>
+    <div id="flash" class="flash" aria-hidden="true"></div>
+  </main>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
