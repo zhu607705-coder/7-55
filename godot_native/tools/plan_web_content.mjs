@@ -63,12 +63,13 @@ function classify(name) {
   // and anonymous exported .scn payload must travel as one import unit.
   if (name === 'scenes/objects/lake_assembly_parts.tscn') return 'chapter35';
   if (name === 'scenes/theater/funhouse_stage_editable.scn') return 'chapter3';
+  if (name === 'data/native/campus_layered_map.json') return 'chapter2_campus';
   if (/^(scripts|scenes|data)\//.test(name) || name === 'project.binary' || /assets\/rpg\/fonts\//.test(name)) return 'core';
   // Shared UI font and its OFL travel with first paint, not a chapter pack.
   if (name.startsWith('ui_assets/fonts/') || name.startsWith('ui_assets/phone_icons/')) return 'core';
   if (!name.startsWith('assets/')) return null;
   if (name.startsWith('assets/native/campus_card/')) return 'core';
-  if (/^assets\/audio\/(library-finals)\//.test(name)) return 'chapter2';
+  if (name.startsWith('assets/audio/library-finals/')) return 'chapter2';
   if (/^assets\/audio\/(chapter4)\//.test(name)) return 'chapter4';
   if (/^assets\/audio\/(chapter3-qizhen|chapter3-interlude)\//.test(name)) return 'chapter35';
   if (/^assets\/audio\/(chapter3|chapter3-theater|chapter3-canteen|pursuit)\//.test(name)) return /(?:ch35|qizhen|night_wind|interlude)/.test(name) ? 'chapter35' : 'chapter3';
@@ -76,16 +77,16 @@ function classify(name) {
   // admitted. Prologue blackout and narrator chase remain first-chapter audio.
   if (/^assets\/audio\/act-one\/music\/music_act2_(?:manual_control|movement_puzzle|search)\.mp3$/.test(name)) return 'chapter2';
   if (/^assets\/audio\/(act-one|sfx|vo)\//.test(name)) return 'core';
-  if (/^assets\/phone\/library-search\//.test(name)) return 'chapter2';
+  if (/^assets\/phone\/library-search\//.test(name)) return 'chapter2_library';
   if (/^assets\/native_755\/ride\//.test(name) || /^assets\/derived\/chase_transition_3d\//.test(name)) return 'chapter3';
   if (/^assets\/(objectized\/chapter4|native\/(stair_b|endless_stair_b3|canruo))\//.test(name)) return 'chapter4';
   if (/^assets\/native\/chapter35_recovery_/.test(name)) return 'chapter35';
   if (/^assets\/native\/(qizhen_rain_rescue|lake_assembly|kayak)\//.test(name)) return 'chapter35';
   // Layered campus is loaded with campus_bootstrap, never the opening phone.
-  if (/^assets\/native\/campus_layered\//.test(name)) return 'chapter2';
+  if (name.startsWith('assets/native/campus_layered/')) return 'chapter2_campus';
   if (name.startsWith('assets/native/weather/')) return 'chapter2';
   if (/^assets\/native\/north_objects_20261025\//.test(name)) return 'chapter4';
-  if (/^assets\/native\/(library_rebuild_20261020|library_object_depth_20261104|library_animation_20261105|library_interactions_20261105)\//.test(name)) return 'chapter2';
+  if (/^assets\/native\/(library_rebuild_20261020|library_object_depth_20261104|library_animation_20261105|library_interactions_20261105|library_geometry)\//.test(name)) return 'chapter2_library';
   if (/^assets\/native\/(theater_rebuild_20261020|liangzhu_performance_20261021|theater_chest_20261023)\//.test(name)) return 'chapter3';
   if (/^assets\/native\/(canteen_objects|mixer|chapter3|canteen_animation|canteen_door)\//.test(name)) return 'chapter3';
   // Review-only dorm atlases are not the production first-chapter room. Keep
@@ -94,9 +95,10 @@ function classify(name) {
   // Source/native preview builds remain complete and do not use this planner.
   if (name.startsWith('assets/native/dorm_modular/')) return 'chapter2';
   if (name.startsWith('assets/native/dorm_cabinet/')) return 'chapter2';
+  if (/^assets\/ui\/zjuding_(?:home|loading)\.png$/.test(name)) return 'phone_zjuding';
   if (/^assets\/ui\/tiyi_(?:main|loading)\.png$/.test(name)) return 'phone_tiyi';
   if (name.startsWith('assets/native/bonsai/') || /^assets\/ui\/bonsai_(?:bloom|bud)\.png$/.test(name)) return 'phone_bonsai';
-  if (/^assets\/rpg\/(campus|landmarks)\//.test(name)) return /loop_panorama/.test(name) ? 'chapter35' : 'chapter2';
+  if (/^assets\/rpg\/(campus|landmarks)\//.test(name)) return /loop_panorama/.test(name) ? 'chapter35' : 'chapter2_campus';
   if (/^assets\/rpg\/(portraits|chapter4-stair)\//.test(name)) return 'chapter4';
   if (/^assets\/rpg\/(qizhen_fishing|qizhen)\//.test(name)) return 'chapter35';
   if (/^assets\/rpg\/(theater|canteen|canteen_chase|canteen-characters)\//.test(name)) return 'chapter3';
@@ -104,14 +106,14 @@ function classify(name) {
     if (/(?:finale|chapter4)/.test(name)) return 'chapter4';
     if (/(?:qizhen|lake|swan)/.test(name)) return 'chapter35';
     if (/(?:canteen|theater)/.test(name)) return 'chapter3';
-    if (/library/.test(name)) return 'chapter2';
+    if (/library/.test(name)) return 'chapter2_library';
     if (/dorm/.test(name)) return 'chapter2';
   }
   if (/^assets\/rpg\/npcs\//.test(name)) {
     if (/(?:finale|chapter4)/.test(name)) return 'chapter4';
     if (/(?:qizhen|lake|swan)/.test(name)) return 'chapter35';
     if (/(?:canteen|theater)/.test(name)) return 'chapter3';
-    if (/library/.test(name)) return 'chapter2';
+    if (/library/.test(name)) return 'chapter2_library';
   }
   if (/^assets\/rpg\/cinematics\//.test(name)) return /(?:chapter4-prologue|chapter4-755)/.test(name) ? 'chapter4' : /qizhen/.test(name) ? 'chapter35' : null;
   // World admits the Chapter 2 family before its first nonempty scene and
@@ -122,7 +124,7 @@ function classify(name) {
     if (/(?:chapter4|finale)/.test(name)) return 'chapter4';
     if (/(?:qizhen|lake|swan|fish|kayak)/.test(name)) return 'chapter35';
     if (/(?:canteen|theater)/.test(name)) return 'chapter3';
-    if (/library/.test(name)) return 'chapter2';
+    if (/library/.test(name)) return 'chapter2_library';
   }
   if (/^assets\/rpg\/tiles\//.test(name)) return 'chapter2';
   if (/^assets\/ui\//.test(name)) {
@@ -132,7 +134,7 @@ function classify(name) {
     if (name.startsWith('assets/ui/photo-evidence/campus-life/') || name.startsWith('assets/ui/cc98/')) return 'chapter2';
     // Retained Web room reference; the native dorm uses interiors/dorm_hub.
     if (name === 'assets/ui/dorm_room.png') return 'chapter2';
-    return /library/.test(name) ? 'chapter2' : 'core';
+    return /library/.test(name) ? 'chapter2_library' : 'core';
   }
   return null;
 }

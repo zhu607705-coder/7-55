@@ -3,7 +3,9 @@ extends Control
 ## the existing controller exit request after this presentation completes.
 signal completed
 signal cancelled(reason:String)
-const DESTINATION=Vector2(836,895)
+# The full foot box clears the door base at y=915 while staying inside the
+# registered vestibule, whose floor ends at y=934.
+const DESTINATION=Vector2(836,890)
 const ACTIVE_TIMEOUT_MS=8000.0
 const BLOCKED_TIMEOUT_MS=1200.0
 var world:Control

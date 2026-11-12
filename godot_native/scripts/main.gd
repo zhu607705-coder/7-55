@@ -2358,9 +2358,13 @@ func _open_game(config: Dictionary) -> void:
 func _retire_progressive_game(owner: Control) -> void:
 	if not is_instance_valid(owner) or owner.get_meta("progressive_session_retired",false): return
 	var script: Script = owner.get_script()
-	if script == null or script.resource_path not in ["res://scripts/games/progressive_transport.gd","res://scripts/games/theater_shadow_rehearsal.gd"]: return
+	if script == null or script.resource_path not in ["res://scripts/games/progressive_transport.gd","res://scripts/games/theater_shadow_rehearsal.gd","res://scripts/ui/minigame_host.gd"]: return
 	var request: Variant = owner.get("config")
-	if not request is Dictionary or request.get("kind","") not in ["progressive_transport","theater_shadow_rehearsal"]: return
+	if not request is Dictionary: return
+	if request.get("on_success","")=="c3_fishing_result":
+		State.cancel_progressive_activity("c3_fishing_cancel",{"session":request.get("session_id")})
+		return
+	if request.get("kind","") not in ["progressive_transport","theater_shadow_rehearsal"]: return
 	var session: Variant = request.get("session",{})
 	if not session is Dictionary: return
 	owner.set_meta("progressive_session_retired",true)
@@ -2414,6 +2418,9 @@ func _open_game_now(config: Dictionary) -> void:
 	if config.get("kind","")=="future_learning_center" and OS.has_feature("web"):
 		if not await WebContent.ensure_families(["chapter2","flc_activity"],true):return
 	if not await _content_ready(): return
+	if config.get("on_success","")=="c3_fishing_result":
+		var lake := State.lake_module()
+		if lake==null or not lake.fishing_session_active(State.d,config.get("session_id")): return
 	if flc_entry_mode:
 		_open_flc_entry_activity(config)
 		return

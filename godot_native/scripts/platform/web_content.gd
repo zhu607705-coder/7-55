@@ -2,9 +2,10 @@ extends Node
 ## Presentation-only content availability. Never changes State, quests or saves.
 signal blocking_changed(blocking: bool)
 signal content_changed
-const FAMILIES := ["chapter2", "chapter3", "chapter35", "chapter4", "flc_activity", "campus_shared", "campus_chaoyang", "campus_haidian", "campus_changping"]
 const STORY_FAMILIES := ["chapter2", "chapter3", "chapter35", "chapter4"]
 const ReleaseContent = preload("res://scripts/release_content_policy.gd")
+const PhoneEntry = preload("res://scripts/chapters/phone_entry_session.gd")
+const Investigation = preload("res://scripts/chapters/c35_investigation.gd")
 const Ui = preload("res://scripts/ui/native_ui_theme.gd")
 # Bound native verification as well as JS consumption. This is a byte/time
 # admission budget, not a guarantee about OS scheduling or PCK mount duration.
@@ -121,8 +122,8 @@ func _configure_manifest(value: Dictionary, host: Variant, supports_window: bool
 	return true
 
 static func required_families(snapshot: Dictionary) -> Array:
-	# Earlier content remains available to old inventories, photo albums and
-	# returns to prior scenes. This conservative dependency is intentional.
+	# Keep shared history for old inventories and albums. World art is gated
+	# by the actual scene or by a phone view that draws that world.
 	var native: Dictionary = snapshot.get("native", {})
 	var page := str(native.get("page", ""))
 	var scene := str(native.get("scene", ""))
@@ -131,7 +132,7 @@ static func required_families(snapshot: Dictionary) -> Array:
 	if scene in ["dorm_hub", "campus_bootstrap", "library_interior"] or page.begins_with("library_"): level = maxi(level, 1)
 	# Old imports may remember an app before updating the numeric chapter.
 	# The first-chapter CC98 network notice itself still needs no later pack.
-	if page=="photos" or (page in ["cc98","cc98_login"] and str(snapshot.get("actOne",{}).get("phase","prologue"))!="prologue"): level=maxi(level,1)
+	if page in ["photos", "weather"] or (page in ["cc98","cc98_login"] and str(snapshot.get("actOne",{}).get("phase","prologue"))!="prologue"): level=maxi(level,1)
 	if scene in ["canteen_interior", "theater_interior"] or page.begins_with("c3_"): level = maxi(level, 2)
 	var lake: Dictionary = snapshot.get("qizhenLake", {})
 	if scene in ["campus_qizhen_loop", "qizhen_lake"] or page.begins_with("c35_") or bool(lake.get("active", false)) or str(lake.get("phase", "inactive")) not in ["", "inactive"]: level = maxi(level, 3)
@@ -142,7 +143,14 @@ static func required_families(snapshot: Dictionary) -> Array:
 	if lake.get("phase", "") == "complete" and recovered.get("phase", "") == "replay_ready" and bool(recovered.get("replayUnlocked", false)): level = 4
 	if scene == "duan_yongping_temporal_maze" or page.begins_with("c4_") or bool(snapshot.get("chapter4", {}).get("prologueSeen", false)): level = 4
 	var families := STORY_FAMILIES.slice(0, level)
-	if page in ["bonsai", "tiyi"]: families.push_front("phone_" + page)
+	var recovery_map := page == "c35_recovery" and Investigation.step(snapshot) in ["private", "map", "entrance"]
+	if scene == "campus_bootstrap" or page == "c3_campus_map" or recovery_map or (page == "zjuding" and bool(lake.get("active", false))):
+		families.append("chapter2_campus")
+	if scene == "library_interior" or page.begins_with("library_") or page == "c3_lake_catalog":
+		families.append("chapter2_library")
+	var app := PhoneEntry.app_family(page)
+	if app in ["bonsai", "tiyi", "zjuding"]:
+		families.push_front("phone_" + app)
 	return families
 
 func _required_ids(families: Array) -> Array:
@@ -169,6 +177,10 @@ func ensure_state(snapshot: Dictionary) -> bool:
 
 static func next_prefetch_families(snapshot: Dictionary) -> Array:
 	var required := required_families(snapshot).filter(func(family): return family in STORY_FAMILIES)
+	if required.size() == 1:
+		var scene := str(snapshot.get("native", {}).get("scene", ""))
+		if scene == "dorm_hub": return ["chapter2_campus"]
+		if scene == "campus_bootstrap": return ["chapter2_library"]
 	return [STORY_FAMILIES[required.size()]] if required.size() < STORY_FAMILIES.size() else []
 
 func _set_prefetch_window(snapshot: Dictionary) -> void:

@@ -248,6 +248,9 @@ func cancel_game() -> void:
 	if mode=="rhythm": presentation_requested.emit("qizhen_fishing_cancelled",_fishing_payload({"reason":"player_cancel"}))
 	cancelled.emit()
 
+func on_browser_hidden() -> void:
+	if mode=="rhythm": cancel_game()
+
 func _notification(what: int) -> void:
 	if what in [NOTIFICATION_APPLICATION_FOCUS_OUT,NOTIFICATION_WM_WINDOW_FOCUS_OUT]:
 		_lifecycle_suspended=true

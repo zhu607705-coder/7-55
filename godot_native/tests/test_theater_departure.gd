@@ -1,5 +1,6 @@
 extends SceneTree
 const Departure=preload("res://scripts/presentation/theater_departure.gd")
+const Metrics=preload("res://scripts/player_metrics.gd")
 var state:Node
 var world:Control
 var checks:=0
@@ -45,7 +46,9 @@ func run()->void:
 	check(world.player==start and view.elapsed_ms==0 and world.chapter3_layers.doors.progress==0,"open control center pauses the same complete sequence")
 	state.d.ui.controlCenterOpen=false
 	frames(view,80)
-	check(view.finished and not view.was_cancelled and done==[Vector2(836,895)] and cancelled.is_empty(),"one completion follows real alignment and physical threshold crossing")
+	check(view.finished and not view.was_cancelled and done==[Vector2(836,890)] and cancelled.is_empty(),"one completion follows real alignment and physical threshold crossing")
+	var feet := Metrics.foot_rect(world.player)
+	check(feet.position.y>=world.chapter3_layers.doors.opening.end.y and feet.end.y<=934.0,"the complete foot box crosses the door within the authored floor")
 	check(facts()==initial and state.d.native.scene=="theater_interior","presentation completion never writes exit, lake, ticket, inventory or chapter facts")
 	check(not world.chapter3_layers.doors.departure_held and not world.chapter3_layers.doors.departure_clock_owned,"completion releases both door ownership fields")
 	view.cancel("late_cancel");check(done.size()==1 and cancelled.is_empty(),"late cancel cannot duplicate completion or cancellation")
@@ -72,7 +75,7 @@ func run()->void:
 			check(view.was_cancelled and not view.finished and notices.size()==1 and notices[0]!="completed","invalid/cancelled "+fault+" never completes or emits twice")
 			check(not world.chapter3_layers.doors.departure_held and not world.chapter3_layers.doors.departure_clock_owned,"cancelled "+fault+" restores ordinary sensor ownership")
 			if fault=="blocked_passage":
-				check(notices==["blocked_passage"] and world.player.x<=815.251 and world.can_stand(world.player),"blocked timeout stops against actual solid without teleporting through it")
+				check(notices==["blocked_passage"] and Metrics.foot_rect(world.player).end.x<=825.0 and world.can_stand(world.player),"blocked timeout stops against actual solid without teleporting through it")
 		if fault not in ["scene","phase","checkpoint"]:check(facts()==initial,"cancelled "+fault+" does not change original domain facts")
 		await process_frame
 	fixture();view=Departure.new();world.add_child(view);view.set_process(false)

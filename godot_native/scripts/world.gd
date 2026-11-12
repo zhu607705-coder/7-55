@@ -704,7 +704,10 @@ func _try_interact(target: Dictionary = {}) -> void:
 	if target.get("action","")=="c4_reach202":
 		guard_close_requested=true
 		return
-	if action=="c3_target:theater_exit" and is_instance_valid(host_node) and host_node.has_method("_begin_theater_departure") and host_node._begin_theater_departure():return
+	if action=="c3_target:theater_exit" and is_instance_valid(host_node) and host_node.has_method("_begin_theater_departure"):
+		if not host_node._begin_theater_departure():
+			State.feedback.emit("请靠近出口再试一次。")
+		return
 	if scene_id == "library_interior" and library_layers != null and library_layers.objects.ready:
 		var chair_id := "catalog_terminal" if action == "lib_catalog_terminal" else str(target.get("id", ""))
 		var chair_anchor := _library_chair_anchor(target)

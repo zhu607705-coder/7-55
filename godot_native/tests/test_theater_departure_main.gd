@@ -98,10 +98,10 @@ func run()->void:
 		if close!=null:await click(close)
 		check(not is_instance_valid(shell.modal) and shell.world_effect==effect,"actual modal-close click resumes the same departure")
 		tick(effect,100)
-		check(effect.finished and exits.size()==before_count+1,"one original controller exit follows the completed collision walk")
+		check(effect.finished and exits.size()==before_count+1,"one original controller exit follows the completed collision walk (%s, pose %s, blocked %.0fms, exits %d)"%[effect.phase,shell.world.player,effect.blocked_ms,exits.size()-before_count])
 		if exits.size()==before_count+1:
 			var receipt:Dictionary=exits.back()
-			check(receipt.player.x==836 and receipt.player.y==895 and receipt.from=="theater_interior" and receipt.to=="campus_qizhen_loop" and receipt.checkpoint=="campus_theater_junction","controller receives physical source endpoint before the existing lake-approach handoff")
+			check(receipt.player.x==836 and receipt.player.y==890 and receipt.from=="theater_interior" and receipt.to=="campus_qizhen_loop" and receipt.checkpoint=="campus_theater_junction","controller receives physical source endpoint before the existing lake-approach handoff")
 		effect.completed.emit()
 		check(exits.size()==before_count+1,"duplicate stale completion cannot request the original exit twice")
 		await frames()

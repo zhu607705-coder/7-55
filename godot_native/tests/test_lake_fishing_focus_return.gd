@@ -20,13 +20,25 @@ func run() -> void:
 	var s: Dictionary=state.d
 	s.native.chapter=3;s.native.scene="qizhen_lake";s.native.page="c3_lake";s.native.mode="light";s.runtimeMode="rpg";s.rpgScene="qizhen_lake"
 	s.qizhenLake.merge({"active":true,"phase":"tool_chain","zone":"open_water","vehicle":"kayak","boardingTutorialCompleted":true,"kayakEquipped":true,"leftPaddleEquipped":true,"rightPaddleEquipped":true},true)
+	s.items.fishingRod=true
+	s.qizhenLake.decoyBaitAttached=true
 	shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell);await frames()
 	shell.set_process(false);shell.world.set_process(false)
+	var bridge: Node=load("res://scripts/platform/web_platform.gd").new()
+	shell.add_child(bridge)
+	bridge.setup(shell,state)
 	var held_items: Dictionary=s.items.duplicate(true)
 	for dimensions: Vector2i in [Vector2i(390,844),Vector2i(430,860),Vector2i(1180,812),Vector2i(844,390)]:
 		root.size=dimensions;shell._show_world_mobile();shell._layout();await frames()
-		shell._open_game({"type":"rhythm","chartId":"locker_key","spotId":"locker_key","title":"锈蚀钥匙","session_id":"focus-only"})
-		await frames();var game: Control=shell.active_game;game.set_process(false)
+		s.native.player={"x":1040,"y":620}
+		var request: Dictionary=state.act("c3_lake_target:qizhen_fishing_item_1")
+		check(request.has("game"),"the real lake interaction issues one fishing attempt")
+		if not request.has("game"): break
+		await frames()
+		var game: Control=shell.active_game
+		check(is_instance_valid(game),"Main opens the issued attempt")
+		if not is_instance_valid(game): break
+		game.set_process(false)
 		check(game.size==Vector2(dimensions) and game.scale==Vector2.ONE,"real Main gives fishing the full physical viewport")
 		check(game.fishing_view.get_rect() == Rect2(Vector2.ZERO, Vector2(dimensions)),"the lake fills that viewport without a reserved footer")
 		check(not shell.world_frame.is_visible_in_tree(),"fishing owns presentation without old lake hints beneath it")
@@ -42,11 +54,21 @@ func run() -> void:
 		for button: Button in game.shared_pause_overlay.action_buttons:
 			if button.text==game.exit_button.text: exit=button
 		check(exit!=null and exit.is_visible_in_tree(),"shared Exit is visible")
-		if exit!=null: await tap(exit)
+		if dimensions==Vector2i(844,390):
+			bridge._apply_visibility(true)
+			check(not is_instance_valid(shell.active_game),"hiding the browser discards the active chart")
+			bridge._apply_visibility(false)
+			await frames()
+		elif exit!=null:
+			await tap(exit)
 		check(not is_instance_valid(shell.active_game) and shell.world_frame.is_visible_in_tree(),"Exit removes the sole game and returns the existing lake")
 		check(shell.world_viewport.gui_get_focus_owner()==shell.world,"Exit restores world keyboard focus without another click")
 		check(not shell.world._shell_input_blocked(),"lake input owner is unpaused after Exit")
-		check(s.items==held_items and s.qizhenLake.phase=="tool_chain","presentation and exit grant no catch or story progress")
+		check(state.lake_module().fishing_session.is_empty(),"Exit retires the controller's exact fishing attempt")
+		var proof: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/rhythm_locker_key.json"))
+		proof.session_id=request.game.session_id
+		state.act("c3_fishing_result",proof)
+		check(s.items==held_items and s.qizhenLake.phase=="tool_chain","a valid trace from the closed attempt cannot grant a catch")
 	await shell.shutdown();shell.queue_free();await frames()
 	print("LAKE_FISHING_FOCUS_RETURN: ",checks," checks; ",failures," failures")
 	quit(1 if failures else 0)

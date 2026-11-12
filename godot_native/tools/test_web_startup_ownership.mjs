@@ -58,9 +58,13 @@ try {
   resource('assets/native/north_objects_20261025/student_desk.png', 'chapter4');
   resource('assets/native/north_objects_20261025/wall_face.png', 'chapter4');
   resource('assets/ui/tiyi_main.png', 'phone_tiyi');
+  for (const art of ['home', 'loading']) resource(`assets/ui/zjuding_${art}.png`, 'phone_zjuding');
+  resource('assets/rpg/interiors/library_interior.png', 'chapter2_library');
+  records.set('data/native/campus_layered_map.json', Buffer.from('{}'));
+  expected.set('data/native/campus_layered_map.json', 'chapter2_campus');
   // Raw PNG tiles are runtime-loaded; preserve their chapter ownership.
   records.set('assets/native/campus_layered/test/0_0.png', Buffer.from('layer tile fixture'));
-  expected.set('assets/native/campus_layered/test/0_0.png', 'chapter2');
+  expected.set('assets/native/campus_layered/test/0_0.png', 'chapter2_campus');
   records.set('assets/unknown_owner.bin', Buffer.from('retain unknown ownership'));
   expected.set('assets/unknown_owner.bin', 'core');
   let offset = 0;

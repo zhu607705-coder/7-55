@@ -70,7 +70,8 @@ func check_notice_geometry() -> void:
 	check(shell.phone.size==Vector2(430,860),"notice never resizes canonical phone")
 	check(prank.scale==shell.phone.scale,"notice uses Main's single phone scale")
 func run() -> void:
-	var source: Image=Art.ART.get_image()
+	var texture: Texture2D=load(Art.ART_PATH)
+	var source: Image=texture.get_image()
 	check(source.get_size()==Vector2i(941,1672),"mask coordinates match actual checked-in source dimensions")
 	var pale_baked := 0
 	var pale_replacement := 0

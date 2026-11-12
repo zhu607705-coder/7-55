@@ -98,8 +98,9 @@ func invalidate_progressive_activities() -> void:
 		if module.has_method("invalidate_progressive_session"):
 			module.invalidate_progressive_session()
 	var lake = lake_module()
-	if lake != null and lake.has_method("invalidate_logistics_session"):
+	if lake != null:
 		lake.invalidate_logistics_session()
+		lake.invalidate_fishing_session()
 
 func open_page(page: String) -> void:
 	if input_locked(): return

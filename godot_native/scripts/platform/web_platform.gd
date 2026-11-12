@@ -391,6 +391,8 @@ func _update_suspension() -> void:
 	# Real-time activities retain their own explicit pause/Continue boundary.
 	var blocked:=_document_hidden or not _document_focused or _content_loading
 	PauseOverlay.set_environment_blocked(get_tree(),blocked)
+	if _document_hidden and is_instance_valid(shell.active_game) and shell.active_game.has_method("on_browser_hidden"):
+		shell.active_game.on_browser_hidden()
 	if is_instance_valid(shell.active_game) and shell.active_game.has_method("set_platform_suspended"):
 		shell.active_game.set_platform_suspended(blocked)
 	_apply_suspension(blocked)
