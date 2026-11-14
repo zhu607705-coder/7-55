@@ -3,6 +3,17 @@ extends RefCounted
 const PlayerBodyMetrics=preload("res://scripts/player_metrics.gd")
 const Picker=preload("res://scripts/world_object_picker.gd")
 const CONTACT_EPSILON:=.001
+const DORM_ORIGIN := Vector2(245, 0)
+const DORM_SCALE := .5
+
+static func source_to_world(point: Vector2, scene: String) -> Vector2:
+	return DORM_ORIGIN + point * DORM_SCALE if scene == "dorm_hub" else point
+
+static func world_to_source(point: Vector2, scene: String) -> Vector2:
+	return (point - DORM_ORIGIN) / DORM_SCALE if scene == "dorm_hub" else point
+
+static func obstacle_for_foot_anchor(obstacle: Rect2, foot: Rect2) -> Rect2:
+	return Rect2(obstacle.position - foot.end, obstacle.size + foot.size)
 
 static func foot_y(anchor:Vector2)->float:return PlayerBodyMetrics.ground_depth_y(anchor)
 static func depth_in_front(baseline:float,ground_y:float)->bool:return ground_y<=baseline+.01
@@ -11,6 +22,19 @@ static func legacy_baseline(depth:float,player_depth_offset:float)->float:
 	return depth-player_depth_offset+foot_y(Vector2.ZERO)
 static func record_baseline(cover:Dictionary)->float:
 	return float(cover.get("baselineY",cover.get("sortY",cover.get("bottom",0))))
+
+static func fits_horizontal_opening(body: Rect2, left: float, right: float) -> bool:
+	return body.position.x >= left and body.end.x <= right
+
+static func draw_plate_polygon(canvas: CanvasItem, plate: Texture2D, outline: PackedVector2Array, origin: Vector2, zoom: float, tint: Color) -> void:
+	var projected := PackedVector2Array()
+	var uv := PackedVector2Array()
+	var plate_size := plate.get_size()
+	for point: Vector2 in outline:
+		projected.append(origin + point * zoom)
+		uv.append(point / plate_size)
+	canvas.draw_polygon(projected, PackedColorArray([tint]), uv, plate)
+
 static func npc_cover_alpha(cover:Dictionary,ground_y:float,player:Vector2,player_ground_y:=INF)->float:
 	var baseline:=record_baseline(cover)
 	if not depth_in_front(baseline,ground_y):return 0.0
@@ -28,13 +52,11 @@ static func draw_actor_covers(canvas:CanvasItem,context:Dictionary,ground_y:floa
 		if not actor_bounds.intersects(bounds) or alpha<=0:continue
 		Picker.record(canvas,[],{"polygon":cover.polygon} if cover.has("polygon") else bounds)
 		var tint:=Color.WHITE.lerp(Color(.03,.15,.26),float(context.get("mode_mix",0))*.3);tint.a=alpha
-		canvas.draw_set_transform(Vector2(context.origin),0,Vector2.ONE*float(context.zoom))
 		if cover.has("polygon"):
-			var uv:=PackedVector2Array()
-			for point:Vector2 in cover.polygon:uv.append(point/plate.get_size())
-			canvas.draw_polygon(cover.polygon,PackedColorArray([tint]),uv,plate)
-		else:canvas.draw_texture_rect_region(plate,bounds,bounds,tint)
-		canvas.draw_set_transform(Vector2.ZERO)
+			draw_plate_polygon(canvas, plate, cover.polygon, context.origin, context.zoom, tint)
+		else:
+			var destination := Rect2(Vector2(context.origin) + bounds.position * float(context.zoom), bounds.size * float(context.zoom))
+			canvas.draw_texture_rect_region(plate, destination, bounds, tint)
 static func rect(value:Variant)->Rect2:
 	if value is Rect2:return value
 	if value is Array:return Rect2(float(value[0]),float(value[1]),float(value[2]),float(value[3]))

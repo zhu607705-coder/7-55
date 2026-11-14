@@ -102,10 +102,11 @@ func invalidate_progressive_activities() -> void:
 		lake.invalidate_logistics_session()
 		lake.invalidate_fishing_session()
 
-func open_page(page: String) -> void:
+func open_page(page: String, return_to_phone := false) -> void:
 	if input_locked(): return
 	if d.actOne.phase == "prologue" and d.flags.checkinDone and page != "ending": return
 	invalidate_progressive_activities()
+	if return_to_phone: d.runtimeMode = "phone"
 	# P10's revealed flower digit is local to its mounted page.
 	if str(d.native.page)=="bonsai" and page!="bonsai": d.native.erase("flower_eight_visible")
 	d.native.page = page
@@ -155,6 +156,7 @@ func input_locked() -> bool:
 func navigate(operation: String, value: String) -> void:
 	match operation:
 		"open_page": open_page(value)
+		"show_phone_home": open_page("phone_home", true)
 		"open_scene": open_scene(value)
 		"toggle_mode": toggle_mode()
 		"select_item": select_item(value)

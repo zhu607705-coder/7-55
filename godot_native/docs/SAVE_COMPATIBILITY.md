@@ -89,6 +89,14 @@ seven_fifty_five_state and seven_fifty_five_state_backup.
 The caller owns atomic installation and primary repair; it must not destroy
 a valid backup while repairing a damaged primary.
 
+Native autosaves compare the normalized durable state and the exact bytes of
+the active profile's primary file. Repeated saves with unchanged state preserve
+the preceding distinct backup, including after an ordinary reload of a current
+save. A damaged primary can still be repaired. Distinct saves stage and replace
+the backup before committing the new primary, and a backup staging failure leaves
+the primary intact. Web Save still waits for an exact, path-scoped IndexedDB
+receipt, including when it reuses an existing local write.
+
 The browser stores editable posts outside GameState:
 
 - seven-fifty-five.cc98-posts.v2

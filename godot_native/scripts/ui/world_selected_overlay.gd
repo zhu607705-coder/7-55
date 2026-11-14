@@ -98,7 +98,7 @@ func _layout_plaque() -> void:
 	var width:=minf(420,maxf(1,size.x*.76))
 	var height:=plaque.get_combined_minimum_size().y
 	var left:float=(size.x-width)/2
-	var top:float=maxf(8,_plaque_bottom_limit-height-8)
+	var top:float=maxf(8,_plaque_bottom_limit-height-_plaque_exclusion_gap)
 	if _plaque_exclusion.has_area() and Rect2(left,top,width,height).intersects(_plaque_exclusion):
 		left=_plaque_exclusion.end.x+_plaque_exclusion_gap
 		width=minf(width,maxf(1,size.x-left-_plaque_exclusion_gap))
@@ -107,7 +107,7 @@ func _layout_plaque() -> void:
 	# height; the next settlement reanchors the complete paper above the tools.
 	plaque.size=Vector2(width,0)
 	height=plaque.get_combined_minimum_size().y
-	plaque.position=Vector2(left,maxf(8,_plaque_bottom_limit-height-8))
+	plaque.position=Vector2(left,maxf(8,_plaque_bottom_limit-height-_plaque_exclusion_gap))
 
 func _clear_hidden_scroll_touch()->void:
 	if is_visible_in_tree() or _scroll_touch_id<0:return

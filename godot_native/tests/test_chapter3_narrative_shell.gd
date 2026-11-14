@@ -1,5 +1,7 @@
 extends SceneTree
 ## Exercise the actual State → main → world hooks, not a mock controller shell.
+const Overlay=preload("res://scripts/ui/world_overlay_layout.gd")
+const Chapter=preload("res://scripts/chapters/chapter3.gd")
 var checks: int=0
 var errors: int=0
 func check(ok: bool,label: String) -> void:
@@ -27,7 +29,10 @@ func check_approach_layout(main:Control,host:Control,state:Node) -> void:
 			for control:Control in [main.world_tasks,main.world_mode,main.inventory_dock,main.mobile_back]:
 				check(not control.is_visible_in_tree() or not panel.intersects(control.get_global_rect()),"approach caption clears actual footer "+control.name+" "+str(dimensions))
 			if dimensions.y>dimensions.x:check(panel.position.y>=main.world_view.get_global_rect().end.y,"portrait approach uses the lower letterbox")
-			check(main.world.size==Vector2(960,540) and host.view.body.get_theme_font_size("font_size")>=14,"authored camera and readable native text survive resize")
+			var film: Rect2=main.world_view.get_global_rect()
+			check(main.world.size==Vector2(960,540) and is_equal_approx(film.size.aspect(),16.0/9.0),"authored camera keeps the 960×540 logical frame "+str(dimensions))
+			var displayed_font: float=host.view.body.get_theme_font_size("font_size")*host.view.display_scale
+			check(displayed_font>=Overlay.BODY_PX*Overlay.MIN_UI_SCALE*text_scale-.01,"narration keeps its physical type scale "+str(dimensions)+" "+str(text_scale)+" ("+str(displayed_font)+" px)")
 			check(JSON.stringify(state.d)==before and host.current.elapsed_ms==elapsed,"caption layout does not advance story or its clock")
 	state.d.native.settings.text_scale=prior_scale
 	root.size=Vector2i(1280,720);main.size=Vector2(1280,720);main.mobile_world=prior_mobile;main._layout();host.tick(0,true)
@@ -50,7 +55,8 @@ func run() -> void:
 	check(host.current!=null and host.current.sequence_id=="canteen_tray_intro","real main attaches controller-issued auntie dialogue")
 	check(host.blocks_input() and not host.blocks_movement(),"ordinary queue distinguishes source interaction from movement lock")
 	check(world._interaction_presentation_blocks() and not world._scene_presentation_blocks(),"production world consumes separate lock types")
-	check(host.view.visible and host.view.body.text=="同学，桌上有三只脏盘，能不能帮我送回来？","real native subtitle shows only first source line")
+	var intro: String=Chapter.new().source_lines("chapter3-canteen.content","tray.introDialogue")[0]
+	check(intro.contains("：") and host.view.visible and host.view.body.text==intro.substr(intro.find("：")+1),"real native subtitle shows only first source line")
 	var starting: Vector2=world.player
 	for axis: Vector2 in [Vector2.RIGHT,Vector2.LEFT,Vector2.UP,Vector2.DOWN]:
 		if world.can_stand(starting+axis*8.25): world.touch_axis=axis; break

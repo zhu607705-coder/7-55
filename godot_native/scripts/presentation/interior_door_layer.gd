@@ -2,9 +2,20 @@ extends RefCounted
 ## Canteen hinged leaves and source-calibrated theater door motion.
 ## The layer owns no save facts, departure permission, or chapter completion.
 const Metrics=preload("res://scripts/player_metrics.gd")
+const SpatialRules = preload("res://scripts/space/spatial_rules.gd")
 const CanteenLayout=preload("res://scripts/space/canteen_layout.gd")
 const DoorFrames=preload("res://scripts/presentation/c3_door_frames.gd")
 const PHASES=["tray_search","drink_mix","menu_order","pickup_search","chase_ready"]
+const THEATER_OPEN_LEAF_WIDTH := 46.0
+const THEATER_LEAF_FOOTPRINT_DEPTH := 12.0
+const THEATER_OPEN_LEAF_BASE := 922.0
+const THEATER_POSTS: Array[Rect2] = [Rect2(714, 890, 34, 44), Rect2(924, 890, 34, 44)]
+const THEATER_OPEN_FOREGROUND := [
+	[Vector2(696, 858), Vector2(709, 858), Vector2(709, 847), Vector2(741, 847), Vector2(741, 925), Vector2(747, 925), Vector2(747, 934), Vector2(695, 934)],
+	[Vector2(748, 846), Vector2(794, 872), Vector2(794, 923), Vector2(748, 905)],
+	[Vector2(878, 872), Vector2(924, 846), Vector2(924, 905), Vector2(878, 923)],
+	[Vector2(925, 925), Vector2(930, 925), Vector2(930, 847), Vector2(959, 847), Vector2(959, 858), Vector2(971, 858), Vector2(975, 934), Vector2(925, 934)]
+]
 var scene_id: String=""
 var opening: Rect2
 var progress: float=0
@@ -73,7 +84,7 @@ func theater_exit_reached(point: Vector2) -> bool:
 	var feet := Metrics.foot_rect(point, scene_id)
 	if feet.get_center().y < opening.end.y: return false
 	var leaves := leaf_rects()
-	return feet.position.x >= leaves[0].end.x and feet.end.x <= leaves[1].position.x
+	return SpatialRules.fits_horizontal_opening(feet, leaves[0].end.x, leaves[1].position.x)
 
 func _occupied(point:Vector2)->bool:
 	return scene_id=="theater_interior" and Rect2(opening.position.x,opening.end.y-20,opening.size.x,28).intersects(Metrics.foot_rect(point))
@@ -92,10 +103,12 @@ func collision_rects()->Array[Rect2]:
 			out.append(Rect2(threshold.position.x,threshold.position.y,blocked_width,threshold.size.y))
 			out.append(Rect2(threshold.end.x-blocked_width,threshold.position.y,blocked_width,threshold.size.y))
 		return out
-	if scene_id!="theater_interior" or progress>=1.0:return out
+	if scene_id!="theater_interior":return out
 	# The physical base follows each visible leaf's horizontal extent. A single
 	# full-width threshold would allow walking through a partially open leaf.
-	for leaf:Rect2 in leaf_rects():out.append(Rect2(leaf.position.x,opening.end.y-12,leaf.size.x,12))
+	out.append_array(THEATER_POSTS)
+	for leaf: Rect2 in leaf_rects():
+		out.append(Rect2(leaf.position.x, theater_leaf_base() - THEATER_LEAF_FOOTPRINT_DEPTH, leaf.size.x, THEATER_LEAF_FOOTPRINT_DEPTH))
 	return out
 
 static func bounds(value: Dictionary) -> Rect2:
@@ -152,8 +165,11 @@ func advance(ms: float) -> void:
 func passable() -> bool: return progress>=0.38
 
 func leaf_rects() -> Array[Rect2]:
-	var width:=opening.size.x/2*lerpf(1,0.18,visual_progress)
+	var width := lerpf(opening.size.x / 2, THEATER_OPEN_LEAF_WIDTH, visual_progress)
 	return [Rect2(opening.position,Vector2(width,opening.size.y)),Rect2(Vector2(opening.end.x-width,opening.position.y),Vector2(width,opening.size.y))]
+
+func theater_leaf_base() -> float:
+	return lerpf(opening.end.y, THEATER_OPEN_LEAF_BASE, visual_progress)
 
 func _canteen_threshold() -> Rect2:
 	return bounds(spec.threshold)
@@ -171,13 +187,36 @@ func draw_canteen_exit(canvas: CanvasItem) -> void:
 	canvas.draw_texture_rect_region(canteen_leaves,pose.rect,pose.source)
 
 func draw_back(canvas: CanvasItem,context: Dictionary,_state: Dictionary) -> void:
+	if scene_id == "theater_interior":
+		_draw_theater_open_parts(canvas, context, false)
+		if context.player_ground_y > theater_leaf_base():
+			_draw_theater_leaves(canvas, context)
 	if scene_id!="canteen_interior": return
 	canvas.draw_set_transform(context.origin,0,Vector2.ONE*float(context.zoom))
 	draw_canteen_exit(canvas)
 	canvas.draw_set_transform(Vector2.ZERO)
 
 func draw_front(canvas: CanvasItem,context: Dictionary,_state: Dictionary) -> void:
-	if texture==null: return
+	if scene_id != "theater_interior":
+		return
+	_draw_theater_open_parts(canvas, context, true)
+	if context.player_ground_y <= theater_leaf_base():
+		_draw_theater_leaves(canvas, context)
+
+func _draw_theater_open_parts(canvas: CanvasItem, context: Dictionary, foreground: bool) -> void:
+	var plate: Texture2D = context.background
+	if plate == null:
+		return
+	for index in THEATER_OPEN_FOREGROUND.size():
+		var is_post := index == 0 or index == 3
+		var base := THEATER_POSTS[0].end.y if is_post else THEATER_OPEN_LEAF_BASE
+		if foreground != SpatialRules.depth_in_front(base, context.player_ground_y):
+			continue
+		if is_post or visual_progress >= 1.0:
+			SpatialRules.draw_plate_polygon(canvas, plate, PackedVector2Array(THEATER_OPEN_FOREGROUND[index]), context.origin, context.zoom, Color.WHITE)
+
+func _draw_theater_leaves(canvas: CanvasItem,context: Dictionary) -> void:
+	if texture==null or visual_progress>=1.0: return
 	var zoom: float=context.zoom; var origin: Vector2=context.origin
 	var rects: Array[Rect2]=leaf_rects()
 	for index in range(2):

@@ -100,6 +100,7 @@ func run() -> void:
 	_test_source_journal_strings()
 	_test_roundtrip_and_invalid()
 	_test_provenance()
+	_test_repeated_save()
 	_test_backup_recovery()
 	_test_cc98_coexistence()
 	print("Native save integration: ",checks," checks, ",imported," real-file browser imports, ",failures," failures")
@@ -174,7 +175,9 @@ func _test_roundtrip_and_invalid() -> void:
 		reject_raw(malformed,"invalid JSON/version " + malformed.left(45))
 	reject_raw(" ".repeat(8*1024*1024 + 1),"oversized actual input file")
 	check(DirAccess.make_dir_absolute(state.SAVE_PATH + ".tmp") == OK,"simulate inaccessible atomic-write destination")
-	reject_raw(JSON.stringify(envelope(expected)),"valid import with actual write failure")
+	var changed: Dictionary = expected.duplicate(true)
+	changed.native.page = "settings"
+	reject_raw(JSON.stringify(envelope(changed)), "valid changed import with actual write failure")
 	check(DirAccess.remove_absolute(state.SAVE_PATH + ".tmp") == OK,"remove test-only write obstruction")
 	var native_text := JSON.stringify(envelope(expected))
 	reject_raw(native_text.left(-1) + ",}","native trailing comma")
@@ -331,6 +334,41 @@ func set_mechanism(level: Dictionary, model: Dictionary, camera: Dictionary, id:
 func _step(level: Dictionary, model: Dictionary, camera: Dictionary, action: Dictionary, steps: Array) -> void:
 	check(StairModel.apply(level,model,camera,action),"genuine stair replay action " + str(action))
 	steps.append(action)
+
+func _test_repeated_save() -> void:
+	state.d = state.initial()
+	state.d.native.page = "weather"
+	check(state.save_game(), "first distinct snapshot writes")
+	state.d.native.page = "settings"
+	check(state.save_game(), "second distinct snapshot writes")
+	var prior := bytes(state.SAVE_PATH)
+	var backup := bytes(state.BACKUP_PATH)
+	var committed := FileAccess.get_sha256(state.SAVE_PATH)
+	var writes: Array[String] = []
+	var observe := func() -> void: writes.append(state.current_save_digest())
+	state.snapshot_saved.connect(observe)
+	state.d.ui.controlCenterOpen = true
+	state.d.ui.inventoryOpen = true
+	for index in range(12):
+		check(state.save_game(), "unchanged durable state still reports a usable save")
+	check(writes.is_empty() and bytes(state.SAVE_PATH) == prior and bytes(state.BACKUP_PATH) == backup, "twelve repeated saves cause no writes or backup rotation")
+	check(state.current_save_digest() == committed, "published digest reuses exact committed bytes")
+	check(state._read_native_save(state.BACKUP_PATH).state.native.page == "weather", "backup still contains the preceding distinct progress")
+	state.d = state.initial()
+	check(state.load_game(), "fresh process can read the exact primary receipt")
+	check(state.save_game() and writes.is_empty() and bytes(state.BACKUP_PATH) == backup, "first unchanged save after reload preserves the preceding distinct backup")
+	write_text(state.SAVE_PATH, "{corrupt")
+	check(state.save_game() and not state._read_native_save(state.SAVE_PATH).is_empty(), "same progress repairs an externally corrupted primary")
+	check(writes.size() == 1 and bytes(state.BACKUP_PATH) == backup, "repair preserves the last valid backup")
+	var normal_backup: String = state.BACKUP_PATH
+	var blocked := "user://missing-save-test-folder/save.previous.json"
+	state.BACKUP_PATH = blocked
+	prior = bytes(state.SAVE_PATH)
+	state.d.native.page = "photos"
+	check(not state.save_game() and bytes(state.SAVE_PATH) == prior and writes.size() == 1, "failed backup staging leaves the primary readable")
+	state.BACKUP_PATH = normal_backup
+	check(state.save_game() and writes.size() == 2 and state._read_native_save(state.SAVE_PATH).state.native.page == "photos", "retry commits exactly once after the backup path becomes writable")
+	state.snapshot_saved.disconnect(observe)
 
 func _test_backup_recovery() -> void:
 	state.d = state.initial()

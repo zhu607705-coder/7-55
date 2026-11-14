@@ -111,6 +111,13 @@ func run()->void:
 	await process_frame;world.set_process(false);world._process(0)
 	check(world.can_stand(Vector2(1080,590)),"original auditorium checkpoint remains open")
 	for foot:Vector2 in [Vector2(1160,560),Vector2(1160,592),Vector2(1160,624),Vector2(265,205)]:check(not world.can_stand(foot-Metrics.FOOT_CENTER_OFFSET),"real shared body is stopped by visible fixture "+str(foot))
-	for anchor:Vector2 in [Vector2(265,130),Vector2(420,200),Vector2(420,218),Vector2(560,206),Vector2(365,206),Vector2(665,790),Vector2(1080,750),Vector2(476,755),Vector2(1080,590)]:check(world.can_stand(anchor),"source interaction stand and clear former air wall remain open "+str(anchor))
+	for anchor:Vector2 in [Vector2(265,130),Vector2(560,206),Vector2(365,206),Vector2(665,790),Vector2(1080,750),Vector2(476,755),Vector2(1080,590)]:check(world.can_stand(anchor),"source interaction stand and clear former air wall remain open "+str(anchor))
+	var scanner_stand:=Vector2.INF
+	for target: Dictionary in world.spec.interactionTargets:
+		if target.id=="theater_prop_scanner":
+			scanner_stand=Vector2(target.stand.x,target.stand.y)
+			break
+	check(scanner_stand.is_finite() and world.can_stand(scanner_stand),"scanner's authored stand clears the shared foot collider")
+	check(not world.can_stand(Vector2(420,218)),"scanner approach does not make the stage riser walkable")
 	world.queue_free();await process_frame
 	print("THEATER_OBJECT_REBUILD: %d checks; %d failures; generated=%s"%[checks,failures,rebuild.mode()]);quit(1 if failures else 0)

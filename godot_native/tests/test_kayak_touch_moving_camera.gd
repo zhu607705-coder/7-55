@@ -7,12 +7,20 @@ func moving_fixture()->void:
  await reset(Vector2i(390,844))
  var world:Control=shell.world
  var placed:=false
- for y:int in range(260,700,40):
-  for x:int in range(320,1300,40):
-   if world.can_stand(Vector2(x,y)):
-    world.player=Vector2(x,y);world.kayak.position=world.player;placed=true;break
+ var heading:=Vector2.from_angle(world.kayak.heading)
+ var view_half:Vector2=world.size/(2*world.zoom)
+ for y:int in range(320,700,20):
+  for x:int in range(460,1240,20):
+   var candidate:=Vector2(x,y)
+   var ahead:=candidate+heading*35
+   var inside_follow_region:=Rect2(view_half,world.world_size-view_half*2).has_point(candidate)
+   if inside_follow_region and world.can_stand(candidate) and world.can_stand(ahead):
+    world.player=candidate
+    world.kayak.position=candidate
+    placed=true
+    break
   if placed:break
- check(placed,"fixture has legal water for real movement")
+ check(placed,"fixture has navigable water inside the follow camera bounds")
  state.lake_module().live_session=null;world.lake_session=state.lake_module().bind_world(state.d,world)
  world._sync_player();world._process(0);await frames()
  var first:Vector2=center("left")

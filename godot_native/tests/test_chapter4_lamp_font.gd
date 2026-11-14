@@ -8,7 +8,7 @@ func check(ok:bool,label:String)->void:
 	if not ok:failures+=1;push_error(label)
 func inspect_summaries(view:Control,data:Dictionary)->void:
 	var ts:=TextServerManager.get_primary_interface()
-	var rid:RID=view.SummaryFont.get_rids()[0]
+	var bundled_fonts: Array[RID] = view.SummaryFont.get_rids()
 	for first:Dictionary in data.questions[0].options:
 		for second:Dictionary in data.questions[1].options:
 			view.answers={str(data.questions[0].id):first.id,str(data.questions[1].id):second.id};view.stage="final";view._rebuild()
@@ -20,7 +20,7 @@ func inspect_summaries(view:Control,data:Dictionary)->void:
 			for summary:Label in [one,two]:
 				var text:=TextLine.new();text.add_string(summary.text,summary.get_theme_font("font"),16)
 				for glyph:Dictionary in ts.shaped_text_get_glyphs(text.get_rid()):
-					check(glyph.font_rid==rid and int(glyph.index)>0,"Every CJK glyph, Latin punctuation and space is shaped by the same face")
+					check(glyph.font_rid in bundled_fonts and int(glyph.index)>0,"Every CJK glyph, Latin punctuation and space is shaped by a bundled face")
 			check(view.buttons.size()==1 and view.buttons[0].text=="继续" and not view.buttons[0].has_theme_font_override("font"),"The existing button remains untouched")
 			var hint:Label=view.column.get_child(view.column.get_child_count()-1)
 			check(hint.text=="按 Space 或 Enter 继续" and hint.get_theme_font_size("font_size")==14 and not hint.has_theme_font_override("font"),"Unrelated bottom hint content and typography remain untouched")

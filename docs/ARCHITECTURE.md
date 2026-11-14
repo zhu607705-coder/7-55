@@ -46,6 +46,12 @@ flowchart LR
 
 对应源码：[状态入口](../godot_native/scripts/state.gd) · [章节系统](../godot_native/scripts/architecture/systems/chapter_system.gd) · [场景宿主](../godot_native/scripts/main.gd) · [世界宿主](../godot_native/scripts/world.gd) · [图书馆阅读器](../godot_native/scripts/ui/library_world_document.gd)。
 
+### 原生世界的步行与存档
+
+- 世界场景提供当前碰撞、可视范围、物件和门的状态。[步行几何](../godot_native/scripts/space/world_foot_navigation.gd)统一处理整脚扫掠、道路规划和校园墙缘滑移。图书馆书架、闸机、剧场门和北教动态障碍从同一批碰撞记录供给站立和寻路检查。食堂的独立场景继续提供自己的精确几何与寻路障碍。
+- [步行请求](../godot_native/scripts/space/world_walk_route.gd)保存临时路点、反馈和等待抵达的交互。走过的每段路径按当帧几何重新验证。交互目标或章节状态失效时取消请求。世界把抵达动作交给原章节控制器。
+- [状态入口](../godot_native/scripts/state.gd)和[进度模型](../godot_native/scripts/architecture/models/progression_model.gd)负责记录位置与手机、地图的选择。世界场景负责镜头、坐标和焦点，保留原有存档键、定时保存和显式返回的顺序。
+
 ## PR 审查与验收
 
 涉及架构边界的 PR 用一条玩家路径交代改动前后行为，并回答：谁发出动作，谁有权接受它，写入哪些持久化字段，什么时候能确认写入，失败或取消后回到哪里。标明旧入口是否仍有调用者、迁移旧数据时如何恢复，以及哪些约束由现有检查覆盖、哪些仍需人工审查。

@@ -43,6 +43,10 @@ var developer_mode := false
 var formal_snapshot: Dictionary = {}
 var last_result: Dictionary = {}
 var _saving := false
+# Only the active profile's last successful write is retained in memory.
+var _save_receipt_path := ""
+var _save_receipt_digest := ""
+var _committed_state_digest := ""
 var _journal_validator: RefCounted
 var _migration: RefCounted
 var _import_proof_cache: Dictionary = {}
@@ -268,6 +272,19 @@ func cancel_progressive_activity(action: String, value: Dictionary) -> bool:
 func open_page(page: String) -> void:
 	game_architecture().send_command(NavigationCommand.new("open_page", page))
 
+func show_phone_home() -> void:
+	game_architecture().send_command(NavigationCommand.new("show_phone_home"))
+
+func resume_world_surface() -> void:
+	# The shell still owns layout, focus and activity admission. Preserve the
+	# existing save-before-admission order without a second refresh signal.
+	if str(d.native.scene).is_empty(): return
+	d.runtimeMode = "rpg"
+	save_game()
+
+func record_world_position(scene: String, key: String, anchor: Vector2, source: Vector2) -> void:
+	game_architecture().get_model("Progression").record_world_position(scene, key, anchor, source)
+
 func open_scene(scene: String) -> void:
 	game_architecture().send_command(NavigationCommand.new("open_scene", scene))
 
@@ -352,6 +369,7 @@ func activate_profile(key: String, read_existing: bool=true) -> Dictionary:
 	if DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(ProfileStorage.folder()))!=OK: return {"ok":false,"message":"无法准备本机存档目录。"}
 	d=initial();developer_mode=false;formal_snapshot={};persistence_ready=true
 	save_compatibility_error=""
+	_invalidate_save_receipt()
 	var had_file:=FileAccess.file_exists(SAVE_PATH)
 	var loaded: bool=load_game() if read_existing else false
 	if not save_compatibility_error.is_empty(): return {"ok":false,"message":save_compatibility_error}
@@ -370,7 +388,7 @@ func capture_cloud_bundle(fresh: bool=false) -> Dictionary:
 func _capture_portable_bundle(fresh: bool=false) -> Dictionary:
 	var clean: Dictionary=initial() if fresh else d.duplicate(true)
 	if fresh and d.get("cc98") is Dictionary: clean.cc98=d.cc98.duplicate(true)
-	clean.ui.controlCenterOpen=false;clean.ui.inventoryOpen=false;clean.ui.selectedItem=null;clean.native.selected_item=""
+	_clear_transient_save_fields(clean)
 	if not validate_snapshot(clean): return {"ok":false,"message":"当前进度尚未通过存档校验。"}
 	# Validate legacy fields before retiring them from this portable copy.
 	_upgrade_legacy_phone_state(clean)
@@ -436,6 +454,7 @@ func install_cloud_bundle(prepared: Dictionary) -> Dictionary:
 			story_reset.emit();changed.emit()
 			return {"ok":true}
 	d=previous
+	_invalidate_save_receipt()
 	for path in prior:
 		if prior[path]==null:
 			if FileAccess.file_exists(path): DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
@@ -587,41 +606,84 @@ func _valid_stair_proof(value: Dictionary) -> bool:
 				_: return false
 	return load("res://scripts/games/chapter4_stair_model.gd").validate_result(proof)
 
+func _clear_transient_save_fields(snapshot: Dictionary) -> void:
+	snapshot.ui.controlCenterOpen = false
+	snapshot.ui.inventoryOpen = false
+	snapshot.ui.selectedItem = null
+	snapshot.native.selected_item = ""
+
+func _invalidate_save_receipt() -> void:
+	_save_receipt_path = ""
+	_save_receipt_digest = ""
+	_committed_state_digest = ""
+
+func current_save_digest() -> String:
+	if _save_receipt_path != SAVE_PATH:
+		_invalidate_save_receipt()
+		_save_receipt_path = SAVE_PATH
+		_save_receipt_digest = FileAccess.get_sha256(SAVE_PATH) if FileAccess.file_exists(SAVE_PATH) else ""
+	return _save_receipt_digest
+
 func save_game() -> bool:
 	if not persistence_ready or developer_mode or _saving or not validate_snapshot(d): return false
-	_saving = true
 	var clean := d.duplicate(true)
 	_upgrade_legacy_phone_state(clean)
-	clean.ui.controlCenterOpen = false
-	clean.ui.inventoryOpen = false
-	clean.ui.selectedItem = null
-	clean.native.selected_item = ""
-	var payload := JSON.stringify({"format":"7-55-godot-native", "version":1,"sourceVersion":SOURCE_VERSION,"savedAt":Time.get_datetime_string_from_system(true),"state":clean},"\t")
-	# Never write bytes the bounded strict reader cannot reload (including NUL,
-	# envelope-adjusted nesting and aggregate size beyond an individual field).
-	if payload.to_utf8_buffer().size() > 8*1024*1024 or not load("res://scripts/save_json_guard.gd").new().accepts(payload):
-		_saving = false
-		return false
-	var file := FileAccess.open(SAVE_PATH + ".tmp",FileAccess.WRITE)
-	if not file:
-		_saving = false
-		return false
-	file.store_string(payload)
-	file.flush()
-	var write_error := file.get_error()
-	file.close()
-	if write_error != OK:
-		_saving = false
-		return false
-	if not _read_native_save(SAVE_PATH).is_empty():
-		var backup := FileAccess.open(BACKUP_PATH,FileAccess.WRITE)
-		if backup:
-			backup.store_string(FileAccess.get_file_as_string(SAVE_PATH))
-			backup.close()
-	var error := DirAccess.rename_absolute(ProjectSettings.globalize_path(SAVE_PATH + ".tmp"),ProjectSettings.globalize_path(SAVE_PATH))
+	_clear_transient_save_fields(clean)
+	var state_digest := JSON.stringify(clean).sha256_text()
+	# Verify the file still exists and matches our receipt before reusing a
+	# write. A missing, damaged or externally replaced primary needs repair.
+	var prior_bytes := _read_save_bytes(SAVE_PATH)
+	var prior_digest := _digest_save_bytes(prior_bytes)
+	if _save_receipt_path == SAVE_PATH and not prior_digest.is_empty() and prior_digest == _save_receipt_digest and state_digest == _committed_state_digest:
+		return true
+	var envelope := {"format": "7-55-godot-native", "version": 1, "sourceVersion": SOURCE_VERSION,
+		"savedAt": Time.get_datetime_string_from_system(true), "state": clean}
+	var payload := JSON.stringify(envelope, "\t")
+	var bytes := payload.to_utf8_buffer()
+	if bytes.size() > 8*1024*1024 or not load("res://scripts/save_json_guard.gd").new().accepts(payload): return false
+	_saving = true
+	var error := _write_save_file(SAVE_PATH + ".tmp", bytes)
+	if error == OK and not prior_bytes.is_empty():
+		var known_primary := _save_receipt_path == SAVE_PATH and not _committed_state_digest.is_empty() and prior_digest == _save_receipt_digest
+		if known_primary or not _decode_native_save(prior_bytes.get_string_from_utf8()).is_empty():
+			error = _write_save_file(BACKUP_PATH + ".tmp", prior_bytes)
+			if error == OK: error = _replace_save_file(BACKUP_PATH)
+			if error != OK: _remove_save_temp(BACKUP_PATH)
+	if error == OK: error = _replace_save_file(SAVE_PATH)
 	_saving = false
-	if error==OK: snapshot_saved.emit()
-	return error == OK
+	if error != OK:
+		_remove_save_temp(SAVE_PATH)
+		_invalidate_save_receipt()
+		return false
+	_save_receipt_path = SAVE_PATH
+	_save_receipt_digest = _digest_save_bytes(bytes)
+	_committed_state_digest = state_digest
+	snapshot_saved.emit()
+	return true
+
+func _digest_save_bytes(bytes: PackedByteArray) -> String:
+	if bytes.is_empty(): return ""
+	var hash := HashingContext.new()
+	hash.start(HashingContext.HASH_SHA256)
+	hash.update(bytes)
+	return hash.finish().hex_encode()
+
+func _write_save_file(path: String, bytes: PackedByteArray) -> Error:
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null: return FileAccess.get_open_error()
+	file.store_buffer(bytes)
+	file.flush()
+	var error := file.get_error()
+	file.close()
+	return error
+
+func _replace_save_file(path: String) -> Error:
+	return DirAccess.rename_absolute(ProjectSettings.globalize_path(path + ".tmp"), ProjectSettings.globalize_path(path))
+
+func _remove_save_temp(path: String) -> void:
+	var temporary := path + ".tmp"
+	if FileAccess.file_exists(temporary):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(temporary))
 
 func _future_native_save(envelope: Variant) -> bool:
 	if not envelope is Dictionary: return false
@@ -632,11 +694,8 @@ func _protect_future_saves() -> bool:
 	# Inspect both files before selecting either: a valid primary must not rotate
 	# over a newer backup. Keep writes disabled until a compatible profile opens.
 	for path: String in [SAVE_PATH,BACKUP_PATH]:
-		var file:=FileAccess.open(path,FileAccess.READ)
-		if file==null: continue
-		var raw:=file.get_as_text() if file.get_length()<=8*1024*1024 else ""
-		file.close()
-		if not load("res://scripts/save_json_guard.gd").new().accepts(raw): continue
+		var raw := _read_save_bytes(path).get_string_from_utf8()
+		if raw.is_empty() or not load("res://scripts/save_json_guard.gd").new().accepts(raw): continue
 		var envelope: Variant=JSON.parse_string(raw)
 		if _future_native_save(envelope):
 			persistence_ready=false
@@ -644,15 +703,24 @@ func _protect_future_saves() -> bool:
 			return false
 	return true
 
-func _read_native_save(path: String) -> Dictionary:
-	if not FileAccess.file_exists(path): return {}
-	var file := FileAccess.open(path,FileAccess.READ)
-	if not file: return {}
-	if file.get_length() > 8*1024*1024:
-		file.close()
-		return {}
-	var raw := file.get_as_text()
+func _read_save_bytes(path: String) -> PackedByteArray:
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null: return PackedByteArray()
+	var length := file.get_length()
+	var bytes := file.get_buffer(length) if length <= 8*1024*1024 else PackedByteArray()
 	file.close()
+	return bytes
+
+func _read_native_save(path: String) -> Dictionary:
+	return _decode_native_save(_read_save_bytes(path).get_string_from_utf8())
+
+func _decode_native_save(raw: String) -> Dictionary:
+	var envelope := _parse_native_save(raw)
+	if not envelope.is_empty(): _upgrade_native_save(envelope.state)
+	return envelope
+
+func _parse_native_save(raw: String) -> Dictionary:
+	if raw.is_empty(): return {}
 	if not load("res://scripts/save_json_guard.gd").new().accepts(raw): return {}
 	var envelope = JSON.parse_string(raw)
 	if not envelope is Dictionary or envelope.get("format") != "7-55-godot-native": return {}
@@ -660,10 +728,12 @@ func _read_native_save(path: String) -> Dictionary:
 	if not (envelope.get("version") is int or envelope.get("version") is float) or envelope.version != 1: return {}
 	if not validate_snapshot(envelope.get("state"),envelope.get("sourceVersion")==35): return {}
 	if not _valid_native_v36_fields(envelope): return {}
-	_upgrade_legacy_net_receipt(envelope.state)
-	_upgrade_legacy_v36_fields(envelope.state)
-	_upgrade_legacy_phone_state(envelope.state)
 	return envelope
+
+func _upgrade_native_save(snapshot: Dictionary) -> void:
+	_upgrade_legacy_net_receipt(snapshot)
+	_upgrade_legacy_v36_fields(snapshot)
+	_upgrade_legacy_phone_state(snapshot)
 
 func _valid_native_v36_fields(envelope: Dictionary) -> bool:
 	# A missing field is an exact v35 migration, never an unbounded old-schema pass.
@@ -724,14 +794,23 @@ func at_unstarted_opening() -> bool:
 	return int(d.native.chapter) == 1 and d.native.page == "alarm" and d.native.scene == "" and not d.native.get("alarm_ringing", false)
 
 func load_game() -> bool:
+	_invalidate_save_receipt()
 	if not _protect_future_saves(): return false
-	for path in [SAVE_PATH,BACKUP_PATH]:
-		var envelope := _read_native_save(path)
-		if not envelope.is_empty():
-			d = merge_defaults(initial(),envelope.state)
-			_sanitize_runtime_resume(d)
-			if path == BACKUP_PATH: _record("主存档损坏，已恢复上一份有效存档。")
-			return true
+	for path: String in [SAVE_PATH, BACKUP_PATH]:
+		var bytes := _read_save_bytes(path)
+		var envelope := _parse_native_save(bytes.get_string_from_utf8())
+		if envelope.is_empty(): continue
+		if path == SAVE_PATH and envelope.get("sourceVersion") == SOURCE_VERSION:
+			# Compare future saves to the state exactly as it was stored.
+			# Resume repairs and schema upgrades will therefore still write.
+			_save_receipt_path = SAVE_PATH
+			_save_receipt_digest = _digest_save_bytes(bytes)
+			_committed_state_digest = JSON.stringify(envelope.state).sha256_text()
+		_upgrade_native_save(envelope.state)
+		d = merge_defaults(initial(), envelope.state)
+		_sanitize_runtime_resume(d)
+		if path == BACKUP_PATH: _record("主存档损坏，已恢复上一份有效存档。")
+		return true
 	return false
 
 func export_save(path: String) -> Error:

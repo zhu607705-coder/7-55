@@ -154,7 +154,7 @@ func _process(delta: float) -> void:
 		if card_age<.38 and world.scene_id=="dorm_hub":
 			# The restored bag changes available viewport size. Keep the copy on
 			# the same source desk through that layout change, not old screen pixels.
-			card_start=overlay.get_global_transform_with_canvas().affine_inverse()*_root_point(world.size/2-world.camera*world.zoom+(CARD_POINT*.5+Vector2(245,0))*world.zoom)
+			card_start=overlay.get_global_transform_with_canvas().affine_inverse()*_root_point(world.world_to_view(world.source_to_world(CARD_POINT)))
 			card_zoom=world.zoom*.5*_root_scale()
 		card_age+=maxf(0,delta)
 		var target:=card_start

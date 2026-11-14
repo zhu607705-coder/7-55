@@ -31,7 +31,9 @@ func run() -> void:
 				content.add_child(label)
 			await frames()
 			check(shell.modal_panel.size.y > compact_height,"long record grows naturally")
-			check(shell.modal_panel.size.y <= minf(700,dimensions.y-24),"long record capped")
+			var panel_height:float=shell.modal_panel.get_global_rect().size.y
+			var scale:float=shell.modal_panel.get_global_transform().get_scale().y
+			check(panel_height<=minf(700*scale,dimensions.y-24)+.5,"long record keeps logical cap and screen margins")
 			check(Rect2(Vector2.ZERO,Vector2(dimensions)).encloses(shell.modal_panel.get_global_rect()),"long dialog contained")
 			shell._close_modal()
 			await frames()

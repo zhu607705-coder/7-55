@@ -124,7 +124,7 @@ func crossed_inward(before: Vector2, after: Vector2) -> bool:
 		var lane := lanes[index]
 		if lane.direction != INWARD or lane.phase not in [Phase.OPENING, Phase.OPEN]: continue
 		var span := _lane_span(index)
-		if feet.position.x >= span.x and feet.end.x <= span.y: return true
+		if Rules.fits_horizontal_opening(feet, span.x, span.y): return true
 	return false
 
 func _begin(lane: Passage, direction: int, scan: bool) -> void:

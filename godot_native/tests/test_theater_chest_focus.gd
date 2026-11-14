@@ -2,7 +2,7 @@ extends SceneTree
 ## Isolated source-phase fixture: real Main, source scanner transaction, camera,
 ## mouse/touch Controls. This is not an earned campaign or physical-device run.
 const Chapter=preload("res://scripts/chapters/chapter3.gd")
-const STAND=Vector2(406,218)
+const STAND=Vector2(406,200)
 var state: Node
 var shell: Control
 var checks:=0

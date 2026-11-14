@@ -27,7 +27,9 @@ func run() -> void:
 	s.items.fishingRod=true; s.items.nylonCord=true
 	var before: String=JSON.stringify(s)
 	var body: String=lake.view("c3_lake",s).body
-	check(body.contains(lake.objective(s)) and body.contains("现在可以下水") and body.contains("从小码头上船"),"completed dock visit presents current goal and existing boarding action")
+	var clearance: String=lake.prose("chapter3-qizhen-lake.content","dock.safetyCleared")
+	var board_prompt: String=lake.prose("chapter3-qizhen-lake.content","prompts.board")
+	check(not clearance.is_empty() and not board_prompt.is_empty() and body.contains(lake.objective(s)) and body.contains(clearance) and body.contains(board_prompt),"completed dock visit presents current goal and existing boarding action")
 	check(not body.contains("交替前划四次"),"completed tutorial is not presented as unfinished")
 	check(not body.contains("浮排下方"),"unobserved net-frame route is not disclosed by the phone")
 	check(JSON.stringify(s)==before,"phone guidance does not change facts")

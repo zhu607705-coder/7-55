@@ -143,6 +143,27 @@ func run()->void:
 		check(departures.size() == exits_before + 1 and CanteenLayout.exit_contains_player(departures.back()),
 			"the controller receives exactly one departure after the whole foot enters the threshold (%s)" % input_name)
 		check(JSON.stringify(state.d.canteenHunt)==story_before and JSON.stringify(state.d.items)==items_before,"leaving through the south exit preserves hunt and inventory")
+	Fixture.install(state)
+	world.world_key = ""
+	world.refresh_world()
+	motion.set_open(true)
+	motion.advance(motion.duration_ms)
+	var edge: Vector2 = world._axis_destination(threshold, Vector2(0, 20))
+	check(CanteenLayout.exit_contains_player(edge) and world._axis_destination(edge, Vector2(0, 8)) == edge,
+		"legacy fixture is wholly through the opening with no remaining outward movement")
+	state.d.native.positions["canteen_interior:"] = {"x": edge.x, "y": edge.y}
+	state.d.native.player = {"scene": "canteen_interior", "x": edge.x, "y": edge.y}
+	world.scene_id = ""
+	world.world_key = ""
+	world.refresh_world()
+	var exits_before_restore := departures.size()
+	world._process(.05)
+	check(world.player == edge and state.d.native.scene == "canteen_interior", "restoring at the edge waits for outward input")
+	keyboard(KEY_S, true)
+	world._process(.05)
+	keyboard(KEY_S, false)
+	check(state.d.native.scene == "campus_bootstrap" and departures.size() == exits_before_restore + 1,
+		"holding outward after restoring at the edge leaves through the same controller once")
 	Fixture.install(state, "exit_blocking")
 	world.world_key = ""
 	world.refresh_world()

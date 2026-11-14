@@ -55,9 +55,9 @@ func run() -> void:
 	for extent: Vector2 in [Vector2(370,712),Vector2(410,728)]:
 		host.size=extent;host.mobile_exploration=true;host.subtitle=original;host._update_camera()
 		var hud: Dictionary=host.hud_metrics(original)
-		var footer:=Rect2(hud.body_gap,extent.y-hud.body_gap-hud.body_height,extent.x-hud.body_gap*2,hud.body_height)
-		var needed: Vector2=host.font.get_multiline_string_size(original,HORIZONTAL_ALIGNMENT_CENTER,hud.body_width,hud.body_font)
-		check(needed.y+16<=hud.body_height and needed.x<=hud.body_width+.01,"full original reverse instructions fit compact footer")
+		var footer:Rect2=hud.body_rect
+		var needed: Vector2=host.hud_font.get_multiline_string_size(original,HORIZONTAL_ALIGNMENT_LEFT,hud.body_width,hud.body_font)
+		check(not hud.body_overflow and needed.y+2.0*hud.body_inset<=hud.body_height+.01 and needed.x<=hud.body_width+.01,"full original reverse instructions fit compact footer")
 		for rectangle: Rect2 in host.kayak_paddle_rects().values():
 			check(not rectangle.intersects(footer),"expanded original hint leaves visible paddle targets clear")
 		s.native.settings.text_scale=3.0

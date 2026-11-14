@@ -95,7 +95,7 @@ func run() -> void:
 		printer.advance(-1)
 		check(is_equal_approx(printer.elapsed_ms, 580.0), "negative elapsed time never rewinds paper")
 		printer.advance(.40)
-		check(printer.paper_depth > Receipt.Metrics.foot_rect(shell.world.player).end.y and printer.z_index == scene.objects.ordering_terminal.parts[0].sprite.z_index, "loose paper reaches the hand plane while the terminal mechanism stays fixed")
+		check(printer.paper_depth > float(scene.player_sprite.get_meta("source_depth")) and printer.paper.z_index >= scene.player_sprite.z_index and printer.z_index == scene.objects.ordering_terminal.parts[0].sprite.z_index, "loose paper reaches the hand plane while the terminal mechanism stays fixed")
 		await capture("03_take")
 		if dim.x == 390:
 			state.d = state.d.duplicate(true); scene.sync(state.d, "canteen_interior")

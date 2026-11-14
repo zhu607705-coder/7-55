@@ -32,6 +32,7 @@ var _persistence_host: Variant
 var _save_callback: JavaScriptObject
 var _save_token := 0
 var _save_digest := ""
+var _save_path := ""
 var _save_observed_digest := ""
 var _save_acknowledged_digest := ""
 var _save_pending := false
@@ -262,7 +263,7 @@ func _on_browser_touch_cancel(args: Array) -> void:
 		else:Input.parse_input_event(event)
 
 func _current_save_digest() -> String:
-	return FileAccess.get_sha256(state.SAVE_PATH) if state != null and FileAccess.file_exists(state.SAVE_PATH) else ""
+	return state.current_save_digest() if state != null else ""
 
 func _force_save_sync() -> void:
 	# Official Godot API requests a sync; only the independently observed backing
@@ -285,6 +286,7 @@ func _advance_save_sync(now_ms: int) -> void:
 func _begin_save_persistence(digest: String, explicit: bool = false) -> int:
 	_save_token += 1
 	_save_digest = digest
+	_save_path = state.SAVE_PATH
 	_save_observed_digest = ""
 	_save_pending = true
 	_save_error = ""
@@ -300,11 +302,16 @@ func _begin_save_persistence(digest: String, explicit: bool = false) -> int:
 func _observe_save_digest(digest: String) -> void:
 	# Do not retry a failed observation every frame. An explicit Save or a new
 	# successful native write starts a fresh bounded attempt.
-	if _persistence_host != null and not digest.is_empty() and digest != _save_digest:
+	if _persistence_host != null and not digest.is_empty() and (digest != _save_digest or state.SAVE_PATH != _save_path):
 		_begin_save_persistence(digest)
+	elif _save_pending and state.SAVE_PATH != _save_path:
+		_finish_save_persistence(false, "profile_changed")
 
 func _on_save_observation(args: Array) -> void:
 	if args.size() != 3 or typeof(args[0]) not in [TYPE_INT, TYPE_FLOAT] or int(args[0]) != _save_token or not _save_pending: return
+	if state.SAVE_PATH != _save_path:
+		_finish_save_persistence(false, "profile_changed")
+		return
 	var error := str(args[2])
 	if not error.is_empty():
 		_finish_save_persistence(false, error)
@@ -585,8 +592,8 @@ func _world_input_observation() -> Dictionary:
 	var target_rows: Array = []
 	for target: Dictionary in view.targets:
 		var source: Vector2 = view._target_point(target)
-		var local: Vector2 = (source - view.camera) * view.zoom + view.size / 2
-		target_rows.append({"id": str(target.get("id", "")), "label": str(target.get("label", "")), "point": _json_value(_world_root_point(local)), "worldPoint": _json_value(source), "distance": view._distance(target), "radius": float(target.get("radius", 100)) * (0.5 if view.scene_id == "dorm_hub" else 1.0)})
+		var local: Vector2 = view.world_to_view(source)
+		target_rows.append({"id": str(target.get("id", "")), "label": str(target.get("label", "")), "point": _json_value(_world_root_point(local)), "worldPoint": _json_value(source), "distance": view._distance(target), "radius": view.target_radius(target)})
 	var owners: Array = []
 	for index: Variant in view.direct_gestures.pointers:
 		owners.append({"index": index, "role": str(view.direct_gestures.pointers[index].role)})
@@ -595,7 +602,7 @@ func _world_input_observation() -> Dictionary:
 	if is_instance_valid(view.selected_overlay):
 		var overlay: Control = view.selected_overlay
 		plaque = {"visible": overlay.plaque.is_visible_in_tree(), "rect": _rect(_control_rect(overlay.plaque)), "text": overlay.object_heading.text}
-	return {"dormPropActions": _observed_dorm_prop_actions, "geometryAvailable": geometry_available, "geometryFrame": observed.get("frame", -1) if geometry_available else -1, "scheme": metrics.get("scheme", ""), "gestureArea": _rect(metrics.get("gestureArea", Rect2())), "stick": _json_value(_world_root_point(stick.get_center())) if geometry_available and metrics.has("stick") else null, "stickRect": _rect(Rect2(_world_root_point(stick.position), _world_root_point(stick.end) - _world_root_point(stick.position))) if geometry_available and stick.has_area() else {}, "confirmRect": _rect(metrics.get("interact", Rect2())), "targets": target_rows, "owners": owners, "mouseOwned": view.direct_gestures.pointers.has(-999), "routeWaypointCount":view._floor_route.size(), "inventoryOwned": view._inventory_owns_pointer(), "modalVisible": is_instance_valid(shell.modal), "plaque": plaque}
+	return {"dormPropActions": _observed_dorm_prop_actions, "geometryAvailable": geometry_available, "geometryFrame": observed.get("frame", -1) if geometry_available else -1, "scheme": metrics.get("scheme", ""), "gestureArea": _rect(metrics.get("gestureArea", Rect2())), "stick": _json_value(_world_root_point(stick.get_center())) if geometry_available and metrics.has("stick") else null, "stickRect": _rect(Rect2(_world_root_point(stick.position), _world_root_point(stick.end) - _world_root_point(stick.position))) if geometry_available and stick.has_area() else {}, "confirmRect": _rect(metrics.get("interact", Rect2())), "targets": target_rows, "owners": owners, "mouseOwned": view.direct_gestures.pointers.has(-999), "routeWaypointCount":view.floor_route.waypoints.size(), "inventoryOwned": view._inventory_owns_pointer(), "modalVisible": is_instance_valid(shell.modal), "plaque": plaque}
 
 func _visible_controls(node: Node, controls: Array, audio: Array, video: Array) -> void:
 	if node is Control and node.is_visible_in_tree() and (node.get_viewport() != shell.world_viewport or shell.world_frame.is_visible_in_tree()) and (node is BaseButton or node is LineEdit or node is Label or node.name in ["ControlBrightness", "LibraryWorldDocumentScroll", "C35CampusPinMap"]):
@@ -633,6 +640,8 @@ func read_snapshot() -> Dictionary:
 			var field: Rect2 = active.get("field")
 			game["field"] = _rect(active.get_global_transform() * field)
 		if active.get_script().resource_path == "res://scripts/games/prologue_interception.gd":
+			if active.phase in ["success", "signal_loss"]:
+				game["receipt"] = _json_value(active.success_view.read_presentation())
 			game["session"] = _properties(active.session, ["phase", "board_x", "stage", "completed_stages", "total_misses", "reviewing", "cards", "collected", "hint"])
 			game.session["missing"] = active.session.missing()
 			game.session["current"] = active.session.current().duplicate(true)
@@ -675,7 +684,7 @@ func read_snapshot() -> Dictionary:
 		effect["script"]=shell.world_effect.get_script().resource_path
 		effect["blocksInput"]=shell.world_effect.get_meta("blocks_input",false)
 	world["worldEffect"]=effect
-	var save := FileAccess.get_file_as_string(state.SAVE_PATH) if FileAccess.file_exists(state.SAVE_PATH) else ""
+	var save_digest := _current_save_digest()
 	var content: Dictionary = shell.get_node("/root/WebContent").read_snapshot()
 	var library_story: Dictionary = {}
 	if is_instance_valid(shell.library_story_host) and shell.library_story_host.current!=null:
@@ -683,7 +692,7 @@ func read_snapshot() -> Dictionary:
 	var landscape_preferred: bool=shell.mobile_surface_prefers_landscape()
 	var phone_portrait: bool=not landscape_preferred and (is_instance_valid(shell.active_game) or (is_instance_valid(shell.phone) and shell.phone.is_visible_in_tree()))
 	if content.get("retryVisible", false): controls.append({"name": "RetryRequiredContent", "text": "重试", "type": "Button", "rect": content.retryRect, "disabled": false})
-	return {"sampleFrame": Engine.get_process_frames(), "engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "documentFocused": _document_focused, "platformPaused": _suspended, "awaitingResume": false, "content": content, "savePersistence": read_save_persistence(), "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "activity":game.get("activity",{}), "world": world, "libraryStory": library_story, "presentation":{"landscapePreferred":landscape_preferred, "portraitRequired":phone_portrait, "rotation":shell.mobile_surface_rotation, "surfaceSize":_json_value(shell.size)}, "phoneRect": _rect(shell.phone.get_global_rect()) if is_instance_valid(shell.phone) else {}, "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save.sha256_text() if not save.is_empty() else "", "developerToolsAvailable": state.developer_tools_available()}
+	return {"sampleFrame": Engine.get_process_frames(), "engine": "Godot", "version": Engine.get_version_info().string, "web": OS.has_feature("web"), "documentHidden": _document_hidden, "documentFocused": _document_focused, "platformPaused": _suspended, "awaitingResume": false, "content": content, "savePersistence": read_save_persistence(), "persistentStorageAvailable": OS.is_userfs_persistent(), "state": state.d.duplicate(true), "visibleControls": controls, "activeGame": game, "activity":game.get("activity",{}), "world": world, "libraryStory": library_story, "presentation":{"landscapePreferred":landscape_preferred, "portraitRequired":phone_portrait, "rotation":shell.mobile_surface_rotation, "surfaceSize":_json_value(shell.size)}, "phoneRect": _rect(shell.phone.get_global_rect()) if is_instance_valid(shell.phone) else {}, "viewport": _rect(shell.get_viewport_rect()), "audio": audio, "video": video, "saveDigest": save_digest, "developerToolsAvailable": state.developer_tools_available()}
 
 func _exit_tree() -> void:
 	if _owns_tree_pause and is_inside_tree():TreePauseLease.release(get_tree(),self)

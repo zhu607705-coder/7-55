@@ -40,7 +40,7 @@ func run()->void:
 			check(FileAccess.file_exists(person.path),"existing transparent resource exists")
 			var geometry:Dictionary=world.npc_geometry(person)
 			check(geometry.texture.get_size()==Vector2(192,128),"existing image frame dimensions")
-			check(geometry.rect==Body.visual_rect(world.npc_foot(person)-Body.FOOT_CENTER_OFFSET),"same scale and calibrated foot anchor as player")
+			check(geometry.rect==Body.visual_rect(world.npc_foot(person)-Body.DEPTH_CENTER_OFFSET),"same scale and calibrated foot anchor as player")
 			var foot_box:=Body.foot_rect(world.npc_foot(person)-Body.FOOT_CENTER_OFFSET)
 			var solid_conflicts:Array[String]=[]
 			for prop:Dictionary in world.data.objects:

@@ -115,7 +115,7 @@ func fixture(dimensions: Vector2i,reduced: bool=false) -> void:
 	# Spatial setup only: progress and item ownership above are controller-earned.
 	# Stand in the aisle beside the row shelf, within its original64px reach
 	# and clear of both the cabinet and its entire16px slide footprint.
-	shell.world.player=Vector2(609,230); shell.world.move_target=Vector2.INF
+	shell.world.player=Vector2(617,230); shell.world.move_target=Vector2.INF
 	shell.world.touch_axis=Vector2.ZERO; shell.world.pan_offset=Vector2.ZERO
 	shell.world._sync_player(); shell.world._update_camera(); shell.world.queue_redraw(); await frames()
 	check(shell.world.can_stand(shell.world.player),"near-shelf spatial fixture is collision-safe")

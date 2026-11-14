@@ -42,7 +42,9 @@ func run()->void:
 			check(view.speaker.get_theme_font("font")==Selected.font("dialogue","heading"),"heading uses real selected bold face")
 			check(view.body.get_theme_color("font_color")==Notice.INK,"dialogue body uses shared paper ink")
 			if script==Narrative:
-				check(view.body.get_theme_font_size("font_size")==ceili(Overlay.BODY_PX*Overlay.ui_scale(extent)),"map dialogue scales its body with the fitted game surface")
+				var intrinsic_px:=maxi(Overlay.BODY_PX,ceili(14.0/ui_scale))
+				var rendered_px:int=view.body.get_theme_font_size("font_size")
+				check(rendered_px==ceili(intrinsic_px*ui_scale) and rendered_px>=14,"map dialogue scales with the fitted game surface above its 14px floor")
 			check(view.body.get_theme_constant("outline_size")==0,"no glyph outline")
 			check(view.body.get_theme_constant("shadow_offset_y")==1 and view.body.get_theme_color("font_shadow_color").a==0,"paper text keeps its metrics without a dark halo")
 			check(view.body.text==view.session.snapshot().text,"source words unchanged")

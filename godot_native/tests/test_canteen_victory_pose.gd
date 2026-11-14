@@ -8,11 +8,6 @@ const Door=preload("res://scripts/presentation/interior_door_layer.gd")
 var checks:=0
 var failures:=0
 
-class MockWorld extends Control:
-	var scene_id: String="canteen_interior"
-	var camera:=Vector2(1040,660)
-	var zoom: float=.56525
-
 func check(ok: bool,label: String) -> void:
 	checks+=1
 	if not ok:failures+=1;push_error(label)
@@ -117,7 +112,13 @@ func run() -> void:
 
 	# Exercise the actual narrative draw call with a flipped, angled, nonuniform
 	# run frame. Pixel/GUI acceptance remains an additional integration check.
-	var world:=MockWorld.new();root.add_child(world);world.size=Vector2(960,540)
+	var world: Control = load("res://scripts/world.gd").new()
+	root.add_child(world)
+	world.size = Vector2(960, 540)
+	world.scene_id = "canteen_interior"
+	world.camera = Vector2(1040, 660)
+	world.zoom = .56525
+	world.set_process(false)
 	var view:=View.new();world.add_child(view);view.world=world;view.session=draw_session
 	await process_frame
 	await process_frame

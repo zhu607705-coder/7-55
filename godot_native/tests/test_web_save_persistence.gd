@@ -4,7 +4,9 @@ const Platform = preload("res://scripts/platform/web_platform.gd")
 var checks := 0
 var failures := 0
 class FakeState extends Node:
-	const SAVE_PATH := "user://receipt-unit-save.json"
+	var SAVE_PATH := "user://receipt-unit-save.json"
+	func current_save_digest() -> String:
+		return FileAccess.get_sha256(SAVE_PATH) if FileAccess.file_exists(SAVE_PATH) else ""
 	var bytes := PackedByteArray()
 	var writes := 0
 	func save_game() -> bool:
@@ -149,6 +151,15 @@ func run() -> void:
 	requests_before = host.requests.size()
 	bridge._observe_save_digest(digest(b))
 	check(host.requests.size() == requests_before and bridge._save_error == "read_failed", "failed observations do not retry every frame")
+	bridge._observe_save_digest(digest(a))
+	var old_profile_token := bridge._save_token
+	var previous_path := state.SAVE_PATH
+	state.SAVE_PATH = "user://receipt-unit-other-profile.json"
+	bridge._on_save_observation([old_profile_token, a, ""])
+	check(not bridge._save_pending and bridge._save_error == "profile_changed", "same bytes from the previous profile cannot acknowledge after a switch")
+	bridge._observe_save_digest(digest(a))
+	check(bridge._save_token > old_profile_token and host.requests.back().filename.ends_with(state.SAVE_PATH.get_file()), "identical bytes in a different profile require their own disk observation")
+	state.SAVE_PATH = previous_path
 	bridge._observe_save_digest(digest(a))
 	var last_token := bridge._save_token
 	bridge._exit_tree()

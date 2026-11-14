@@ -1,6 +1,6 @@
 extends Button
 ## Shared pointer contract: tap selects; double tap / Enter inspects; drag uses
-## Godot's single native drop dispatch. This class never mutates owned items.
+## the same target and controller for mouse and touch. This class never mutates owned items.
 signal selection_requested(item: String)
 signal inspection_requested(item: String)
 signal drag_finished(landed: bool)
@@ -116,10 +116,7 @@ func _input(event: InputEvent) -> void:
 			if _scroll_horizontal: _scroll.scroll_horizontal=roundi(_scroll_start.x-delta.x/maxf(.001,scroll_scale.x))
 			else: _scroll.scroll_vertical=roundi(_scroll_start.y-delta.y/maxf(.001,scroll_scale.y))
 		elif _touch_dragging:
-			var motion:=InputEventMouseMotion.new(); motion.position=event.position; motion.global_position=event.position; motion.button_mask=MOUSE_BUTTON_MASK_LEFT
-			# This event is already in viewport pixels. Feed it to the GUI that
-			# owns the drag instead of routing it through the browser window again.
-			get_viewport().push_input(motion,true)
+			_update_touch_drag_hover(get_viewport(),event.position)
 		get_viewport().set_input_as_handled()
 	elif event is InputEventScreenTouch and not event.pressed and event.index==_touch_index:
 		get_viewport().set_input_as_handled()
@@ -128,22 +125,34 @@ func _input(event: InputEvent) -> void:
 		if event.canceled: cancel_gesture()
 		elif _touch_dragging:
 			_touch_index=-1; _touch_dragging=false
-			if touch_drop.is_valid():
-				var viewport := get_viewport()
-				var data: Variant = viewport.gui_get_drag_data()
-				_drag_was_started=false
-				if touch_drop.call(event.position,data):
-					if viewport.gui_is_dragging(): viewport.gui_cancel_drag()
-					drag_finished.emit(true)
-					return
-				_drag_was_started=true
-			var release:=InputEventMouseButton.new(); release.button_index=MOUSE_BUTTON_LEFT; release.position=event.position; release.global_position=event.position
-			get_viewport().push_input(release,true)
+			_finish_touch_drag(event.position)
 		else:
 			_touch_index=-1
 			var local: Vector2=get_global_transform_with_canvas().affine_inverse()*event.position
 			if not _scrolling and Rect2(Vector2.ZERO,size).has_point(local): _activate(event.position)
 			else: gestures.reset()
+
+func _update_touch_drag_hover(viewport: Viewport,point: Vector2) -> void:
+	var motion:=InputEventMouseMotion.new()
+	motion.position=point; motion.global_position=point; motion.button_mask=MOUSE_BUTTON_MASK_LEFT
+	viewport.push_input(motion,true)
+
+func _finish_touch_drag(point: Vector2) -> void:
+	var viewport:=get_viewport()
+	var data: Variant=viewport.gui_get_drag_data()
+	_drag_was_started=false
+	var landed:=false
+	if data is Dictionary and data.get("kind")=="inventory_item" and data.get("item")==item_id:
+		# Godot's mouse-release path polls the system cursor. Use its GUI hit
+		# test at the finger's final position, then the actual drop controls.
+		if viewport.get_visible_rect().has_point(point):
+			_update_touch_drag_hover(viewport,point)
+			landed=Gesture.drop_at_hover(viewport,point,data)
+		if not landed and touch_drop.is_valid():
+			landed=touch_drop.call(point,data)
+	if viewport.gui_is_dragging(): viewport.gui_cancel_drag()
+	viewport.set_input_as_handled()
+	drag_finished.emit(landed)
 
 func _restore_emulation() -> void:
 	Gesture.release_touch(self)

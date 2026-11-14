@@ -65,7 +65,9 @@ func run()->void:
 	var line:=SourceLine.new();var library:Control=shell.library_story_host
 	library.current=line;library.view.session=line;library.view.tick();shell._layout();shell._process(8)
 	check(not shell.toast.visible,"library dialogue hides the generic notice while its clock continues")
-	check_paper_caption(library.view,"library caption")
+	var phone_paper:StyleBox=library.view.panel.get_theme_stylebox("panel")
+	check(library.view.on_phone and phone_paper is StyleBoxFlat and phone_paper.bg_color==Color.WHITE and phone_paper.border_width_top>0,"library phone caption uses its opaque reader paper")
+	check(library.view.body.get_theme_color("font_color")==Notice.INK and Ui._contrast(Notice.INK,Color.WHITE)>=4.5,"library phone caption retains readable dark ink")
 	library.current=null;library.view.session=null;library.view.tick();shell._layout();shell._process(0)
 	check(shell.toast.text.is_empty() and shell.notice_queue.current.is_empty(),"dialogue close cannot revive an expired notice")
 	shell._feedback("C3对白前的通知")

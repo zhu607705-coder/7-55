@@ -46,7 +46,10 @@ func tick() -> void:
 		region=Rect2(margin,margin,size.x-margin*2,size.y-margin*2)
 	# Use the same bottom safe edge in exploration and authored film letterboxes.
 	var ui_scale:=Overlay.ui_scale(size*physical_scale)
-	var metrics:=DialogueLayout.metrics(region,physical_scale,str(v.speaker),str(v.text),"",text_scale,Overlay.BODY_PX,ui_scale)
+	# Exploration/film subtitles need a physical reading floor even when the
+	# fitted stage shrinks. The shared phone and Library reader roles still scale normally.
+	var body_px:=maxi(Overlay.BODY_PX,ceili(14.0/maxf(.01,ui_scale*text_scale)))
+	var metrics:=DialogueLayout.metrics(region,physical_scale,str(v.speaker),str(v.text),"",text_scale,body_px,ui_scale)
 	panel.position=metrics.panel.position; panel.size=metrics.panel.size
 	if align_left:panel.position.x=region.position.x
 

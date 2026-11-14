@@ -209,6 +209,19 @@ func run()->void:
 		var safe := restored.restore_anchor(right_axis, Vector2(715,842))
 		check(restored.lanes[1].progress==0 and safe!=right_axis and restored.outside(safe),"a saved pose at the wing reloads clear of a closed lane")
 		check(world.collisions==original and state.d.items==items,"motion leaves cabinet solids, inventory and story authority unchanged")
+	for direction: String in ["up", "side", "down"]:
+		fixture("library_interior", Vector2(715,842))
+		world.mobile_exploration = false
+		world.touch_controls = false
+		world.facing = direction
+		world._process(0)
+		check(world.nearby.get("id") == "library_exit", "outside landing selects the same exit when facing " + direction)
+		var interact := InputEventKey.new()
+		interact.keycode = KEY_SPACE
+		interact.pressed = true
+		world._gui_input(interact)
+		check(state.d.native.scene == "campus_bootstrap" and state.d.rpgCheckpoint == "campus_library_gate",
+			"normal Space input returns to the campus library gate when facing " + direction)
 	fixture("theater_interior",Vector2(836,800))
 	world._floor_bounds=Rect2(Vector2.ZERO,world.world_size)
 	var motion:RefCounted=world.chapter3_layers.doors
@@ -222,6 +235,10 @@ func run()->void:
 	for i:int in range(12):world._process(.05)
 	var landing:=Metrics.anchor_from_foot_center(Vector2(836,929))
 	check(motion.passable() and motion.progress==1 and world.can_stand(landing),"departure opens a complete body-sized passage up to the original ground edge")
+	for solid_x: float in [731.0, 780.0, 892.0, 941.0]:
+		var solid := Metrics.anchor_from_foot_center(Vector2(solid_x, 916))
+		check(not world.can_stand(solid), "fully open south door retains the visible leaf or post footprint at x=%s" % solid_x)
+	check(world.can_stand(Metrics.anchor_from_foot_center(Vector2(836, 916))), "the visible central gap remains walkable")
 	move_input(Vector2.DOWN,12,false)
 	check(world.player.y>890 and world.can_stand(world.player),"real keyboard motion crosses opened theater door")
 	check(state.d.native.scene=="theater_interior" and state.d.theaterHunt.phase!="complete","opening a door cannot finish chapter or exit")

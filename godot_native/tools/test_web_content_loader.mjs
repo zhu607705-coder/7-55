@@ -409,6 +409,22 @@ for(const failure of [{idbDenied:true},{idbAbortAfterWrites:0},{idbAbortAfterWri
   }
 }
 
+// Resource quota can be exhausted by one chapter while an earlier pack
+// remains fully available to the same running loader.
+{
+  const f = fixture({ idb: true, idbAbortAfterWrites: 1 });
+  const cache = f.api.createResourceCache();
+  const earlier = await cache.load(packs[0]);
+  const later = await cache.load(packs[1]);
+  check('Quota failure leaves the newly downloaded pack usable and marks IDB read-only',
+    earlier.indexedDBComplete && !later.indexedDBComplete && cache.snapshot().storage === 'indexeddb-readonly');
+  const before = f.requests.length;
+  const reused = await cache.load(packs[0]);
+  check('After a write failure the same loader still reads exact committed bytes without network',
+    f.requests.length === before && reused.indexedDBComplete && reused.reusedBytes === packs[0].bytes && digest(new Uint8Array(reused.buffer)) === packs[0].sha256);
+  f.host.dispose();
+}
+
 // A failed pack owns its release-bound records, not independently verified
 // content-addressed blocks shared with an already accepted offline release.
 {

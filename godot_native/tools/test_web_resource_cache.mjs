@@ -341,9 +341,25 @@ for(const when of ['before-fresh','during-fresh']) {
   restored=true;const reloaded=await f.cache.load(table);
   check(f.requests.length===6&&Buffer.from(reloaded.buffer).equals(payload),'The same cache can refill all three network slots and complete after queued and active cancellation');
 }
-for(const options of [{noIDB:true},{failWrites:true}]) {
-  const f=fixture(options),loaded=await f.cache.load(resource);
-  check(Buffer.from(loaded.buffer).equals(payload)&&f.cache.snapshot().storage==='unavailable','Unavailable/quota-denied IndexedDB falls back to a verified in-memory transfer');
+{
+  const missing = fixture({ noIDB: true });
+  const unavailable = await missing.cache.load(resource);
+  check(Buffer.from(unavailable.buffer).equals(payload) && !unavailable.indexedDBComplete &&
+    missing.cache.snapshot().storage === 'unavailable', 'Unavailable IndexedDB falls back to a verified in-memory transfer');
+
+  const saved = new Map();
+  await fixture({ stored: saved }).cache.load(resource);
+  const changed = Buffer.from(payload);
+  changed[0] ^= 1;
+  const newResource = { ...resource, sha256: hash(changed) };
+  const readOnly = fixture({ stored: saved, failWrites: true, fetcher: () => new Response(changed) });
+  const downloaded = await readOnly.cache.load(newResource);
+  check(Buffer.from(downloaded.buffer).equals(changed) && !downloaded.indexedDBComplete &&
+    readOnly.cache.snapshot().storage === 'indexeddb-readonly', 'Quota denial verifies new network bytes and retains read-only storage');
+  const before = readOnly.requests.length;
+  const reused = await readOnly.cache.load(resource);
+  check(readOnly.requests.length === before && reused.indexedDBComplete && Buffer.from(reused.buffer).equals(payload),
+    'Quota denial preserves access to previously committed bytes');
 }
 {
   const f=fixture();const manifest={core:resource};

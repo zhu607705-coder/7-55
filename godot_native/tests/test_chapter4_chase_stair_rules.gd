@@ -40,8 +40,8 @@ func run():
 			var entry:Dictionary=Model.guard_entry(landing,lead);var original:Dictionary=Model.data().landings[landing]
 			check(entry.player==Model.point(original.spawn) and entry.guard==Model.point(original.guard),"Original landing spawn/guard")
 			check(is_equal_approx(entry.delayMs,(clampf(lead,650,2000)-entry.player.distance_to(entry.guard))/174*1000),"Source lead-derived delay")
-	check(not Model.player_open(Vector2(763.5,900)),"Original full foot rejects baseline wall overlap")
-	check(Model.player_open(Vector2(765,900)),"Legal source corridor remains open")
+	check(not Model.player_open(Vector2(762.5,900)),"Current 16px foot rejects a half-pixel overlap of the authored x=755 wall")
+	check(Model.player_open(Vector2(763,900)),"Legal source corridor remains open")
 	check(not Model.player_open(Vector2(INF,800)),"Nonfinite pose rejected")
 	check(not Model.player_open(Vector2(833,940)),"Full body remains within source map")
 	var first:Array=path_from(0,[Vector2(989,826),Vector2(989,426)])

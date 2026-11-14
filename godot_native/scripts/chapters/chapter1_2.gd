@@ -552,7 +552,8 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 			if a.balanceShifted: return _ok("小数点已经移动过了。")
 			a.balanceShifted = true
 			s.wallet.campusCardCents = 600
-			return _ok("小数点往右挪了两位。0.06 元变成了 6.00 元，手头总算宽裕了。")
+			var balance_line: Dictionary = _content("act-one-bootstrap.content.json").audioNarration.act2_balance_shifted
+			return _ok(str(balance_line.subtitleZh))
 		"c2_login_hint":
 			a.cc98Login.revealedHintCount = mini(3, int(a.cc98Login.revealedHintCount) + 1)
 			return _ok("认证提示已展开。")

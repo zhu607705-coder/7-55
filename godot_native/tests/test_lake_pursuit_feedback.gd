@@ -38,16 +38,18 @@ func run() -> void:
 	shell._clear_notice_presentations();shell.world.subtitle="";shell.world.subtitle_left=0
 	state.feedback.emit("其他交互提示")
 	check(is_equal_approx(shell.world.subtitle_left,2.4),"unrelated short feedback retains generic duration")
+	var ordinary_failure_duration:=clampf(1.6+failure_text.length()*.12,2.4,6.5)
+	check(not is_equal_approx(ordinary_failure_duration,3.0),"ordinary failure fixture distinguishes the catch deadline")
 	var facts: Dictionary=s.duplicate(true)
 	var result: Dictionary=state.last_result.duplicate(true)
 	shell._clear_notice_presentations();shell.world.subtitle="";shell.world.subtitle_left=0
 	state.last_result={"message":failure_text,"presentation":[]}
 	state.feedback.emit(failure_text)
-	check(is_equal_approx(shell.world.subtitle_left,4.6),"matching wording without the issued catch cue keeps ordinary duration")
+	check(is_equal_approx(shell.world.subtitle_left,ordinary_failure_duration),"matching wording without the issued catch cue keeps ordinary duration")
 	shell._clear_notice_presentations();shell.world.subtitle="";shell.world.subtitle_left=0
 	state.last_result.presentation=[{"cueId":"qizhen_chase_failed","payload":{"reason":"same_side_strokes"}}]
 	state.feedback.emit(failure_text)
-	check(is_equal_approx(shell.world.subtitle_left,4.6),"other failure reasons do not inherit the swan-catch deadline")
+	check(is_equal_approx(shell.world.subtitle_left,ordinary_failure_duration),"other failure reasons do not inherit the swan-catch deadline")
 	shell._clear_notice_presentations();shell.world.subtitle="";shell.world.subtitle_left=0
 	state.last_result.presentation=[{"cueId":"qizhen_chase_failed","payload":{"reason":"swan_caught"}}]
 	state.feedback.emit(failure_text)

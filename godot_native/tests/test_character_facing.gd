@@ -1,6 +1,7 @@
 extends SceneTree
 const Facing=preload("res://scripts/character_facing.gd")
 const Metrics=preload("res://scripts/player_metrics.gd")
+const Locomotion = preload("res://scripts/player_locomotion.gd")
 const Phases=preload("res://scripts/ui/chapter4_phase_layers.gd")
 const Layers=preload("res://scripts/ui/chapter4_world_layers.gd")
 var checks:=0
@@ -25,7 +26,7 @@ func run()->void:
 		check(world.facing==row.facing,"actual movement selects "+row.facing)
 		for tick in 4:world._process(.05)
 		var visual:Dictionary=world.player_visual()
-		check(visual.texture.resource_path.contains(row.path),"movement uses actual direction pixels "+row.path)
+		check(visual.texture in world.player_walk_art.walks[row.facing], "movement uses shared whole-body direction pixels " + row.path)
 		check(visual.flip_h==row.flip,"only real side art is mirrored for left")
 		for i in 18:world._process(.05)
 		check(world.walk_clock>0,"walk cycle runs while moving")
@@ -48,12 +49,12 @@ func run()->void:
 			var goal:Vector2=world.player+Vector2(row.axis)*.5
 			world._floor_route.assign([goal]);world._floor_goal=goal+Metrics.FOOT_CENTER_OFFSET
 			world._floor_bounds=Rect2(Vector2.ZERO,world.world_size)
-			world._floor_world_key=world.world_key;world._floor_view_size=world.size;world._floor_view_zoom=world.zoom;world._floor_expected_camera=world.camera
+			world.floor_route.remember_view(world.world_key, world.size, world.zoom, world.camera)
 			world._floor_status="moving";world.touch_axis=Vector2.ZERO
 			world._process(.01)
 			check(world.player==goal and world._floor_route.is_empty() and world._floor_status=="arrived","route reaches exact endpoint for "+row.facing+" phase "+str(phase))
 			check(world.walk_clock==0 and world.player_visual().angle==0,"arrival publishes idle before next render/pick for "+row.facing+" phase "+str(phase))
-			var idle:Texture2D=world.player_side_idle if row.facing=="side" else world.player_frames[row.facing][0]
+			var idle: Texture2D = world.player_walk_art.idles[row.facing]
 			check(world.player_visual().texture==idle and world.player_visual().flip_h==row.flip,"arrival retains actual heading and idle pixels")
 	world._cancel_floor_route();world.mobile_exploration=false
 	# Actual axis collision code: x blocked, y moves. Face the resulting slide.
@@ -71,7 +72,7 @@ func run()->void:
 	world.touch_axis=Vector2.RIGHT;var blocked:Vector2=world.player;world._process(.05)
 	check(world.player==blocked and world.facing=="side" and not world.player_flip,"wall contact turns in place toward intent")
 	for tick in 4:world._process(.05)
-	check(world.walk_clock==0 and world.player_visual().texture==world.player_side_idle,"blocked player stops the walk cycle")
+	check(world.walk_clock==0 and world.player_visual().texture==world.player_walk_art.idles.side,"blocked player stops the walk cycle")
 	world.touch_axis=Vector2.ZERO;world._process(.05)
 	check(world.facing=="side" and not world.player_flip,"release after wall contact holds heading")
 	check(Facing.pose(Vector2.ZERO,Vector2.ZERO,"side",true)=={"facing":"side","flip":true},"idle preserves full heading")
@@ -94,7 +95,7 @@ func run()->void:
 	check(Facing.turn_pose(reversal).facing=="down","side reversal has original front transition")
 	world.player_turn.clear();world.facing="up";world.player_flip=false
 	world._apply_player_motion(Vector2.LEFT,Vector2.LEFT,.01);world._apply_player_motion(Vector2.ZERO,Vector2.ZERO,.06)
-	check(world.facing=="side" and world.player_visual().direction=="side" and world.player_visual().angle==-6,"release during turn keeps its intermediate source pose")
+	check(world.facing=="side" and world.player_visual().direction=="side" and world.player_visual().angle==0,"release during turn keeps the intermediate whole-body cel aligned to the pixel grid")
 	var original_foot:Rect2=Metrics.foot_rect(world.player)
 	var geometry:Dictionary=world.player_geometry()
 	check(geometry.transform*world.player==world.player and Metrics.foot_rect(world.player)==original_foot,"visual tilt pivots around anchor without moving foot collision")
@@ -115,6 +116,19 @@ func run()->void:
 	check(world.player_visual().direction=="left" and not world.player_visual().flip_h,"complete authored left cycle is selected without mirroring")
 	world.walk_clock=0;check(world.player_visual().texture==world.player_left_idle,"authored left idle shares renderer selection")
 	world.player_frames.left=[];world.player_left_idle=null
+	world.facing = "up"
+	world.player_flip = false
+	world.walk_clock = .37
+	var shared: Dictionary = world.player_visual()
+	for scene: String in ["dorm_hub", "campus_bootstrap", "library_interior", "canteen_interior", "theater_interior", "campus_qizhen_loop", "qizhen_lake", "duan_yongping_temporal_maze"]:
+		world.scene_id = scene
+		var visual: Dictionary = world.player_visual()
+		check(visual.texture == shared.texture and visual.motion_frame == shared.motion_frame, "ordinary walking selects the same cel across " + scene)
+	var other_actor := Locomotion.new()
+	other_actor.advance(Vector2.RIGHT, Vector2.RIGHT, .05)
+	check(other_actor.art == world.locomotion.art and not other_actor.turn.is_empty(), "actors share loaded textures and retain individual turns")
+	other_actor.stop()
+	check(other_actor.sample().motion_frame == -1 and world.player_visual() == shared, "stopping another actor does not reset the current world's animation")
 	# Guard rendering belongs to its lazily loaded Chapter 4 scene.
 	state.d.native.scene="duan_yongping_temporal_maze";world.refresh_world();world.set_process(false)
 	check(world.guard_sheets.has_all(["side","up","down"]),"entering the guard scene loads every authored directional sheet")

@@ -1,7 +1,7 @@
 extends "res://tests/test_portrait_exploration.gd"
 ## Portable Main/root-input regression. Optional ordinary-save replay is loaded
 ## normally from an isolated profile; source fixture values are not CUA evidence.
-## The native service-wall foot is y=236, so the exact center limit is246.3125.
+## The independent serving-window foot ends at source y=239.
 ## Test obstacles are injected into the active native geometry owner.
 const Metrics=preload("res://scripts/player_metrics.gd")
 const Tap=preload("res://scripts/canteen_floor_tap.gd")
@@ -10,7 +10,9 @@ const BOARD=Vector2(1200.888888888889,234.368055555556)
 const QUEUE_START=Vector2(867.555555555556,258.8125)
 # World request reconstructed from the original (79,321) root tap. The HUD
 # can reframe the map; replay the same source intent through its live camera.
-const NEAR_WALL=Vector2(609.777777777778,246.055555555556)
+const RECORDED_REQUEST=Vector2(609.777777777778,246.055555555556)
+const WINDOW_FOOT_BOTTOM=239.0
+const WINDOW_CLEAR_CENTER=WINDOW_FOOT_BOTTOM+Metrics.FOOT_SIZE.y/2
 var baseline: Dictionary={}
 var records: Array=[]
 var ordinary_save:=false
@@ -45,21 +47,21 @@ func reset_route() -> void:
 	check(is_equal_approx(shell.world.zoom,.45),"four recorded root wheel events derive minimum zoom .45")
 	var painted:Rect2=shell.world_view.get_global_rect()
 	check(shell.world.size==Vector2(960,540) and is_equal_approx(painted.size.x/painted.size.y,16.0/9.0) and Rect2(Vector2.ZERO,shell.size).encloses(painted),"rotated window retains the landscape map and inline controls")
-	shell.world._floor_planner=CountPlanner.new()
+	shell.world.floor_navigation.planner=CountPlanner.new()
 func arrive(at: Vector2,expected: Vector2,using_touch: bool=false) -> void:
 	var w=shell.world
 	var raw:=source_at(at);var before:=story();var action_count:=actions.size()
 	var raw_valid: bool=w.can_stand(raw-Metrics.FOOT_CENTER_OFFSET)
 	await snapshot(str(records.size())+"-before")
 	var geometry: Array=w.collisions.duplicate(true);var start: Vector2=w.player
-	var old_calls:int=w._floor_planner.calls;var tick:=Time.get_ticks_usec()
+	var old_calls:int=w.floor_navigation.planner.calls;var tick:=Time.get_ticks_usec()
 	root_tap(at,using_touch)
 	var planning_us:=Time.get_ticks_usec()-tick
 	# Print only after the measured dispatch has ended, including failing routes.
 	print("CANTEEN_QUEUE_ROUTE_TIMING "+JSON.stringify({"planningUs":planning_us,"candidates":w._canteen_floor_tap.candidate_count,"maxCandidates":Tap.MAX_CANDIDATES,"limitUs":200000,"input":"touch" if using_touch else "mouse","root":str(at),"start":str(start),"rawGoal":str(raw),"expectedGoal":str(expected),"resolvedGoal":str(w._floor_goal)}))
 	var waypoints: String=str(w._floor_route)
 	check(w._floor_status=="moving" and not w._floor_route.is_empty(),"root input starts an actual floor route")
-	check(w._floor_planner.calls==old_calls+1,"exactly one unchanged planner call per request")
+	check(w.floor_navigation.planner.calls==old_calls+1,"exactly one unchanged planner call per request")
 	check(w._floor_goal.distance_to(expected)<.002,"accepted marker is the resolved full-foot center")
 	if raw_valid:check(w._floor_goal.distance_to(raw)<.001,"valid raw floor intent remains exact within source transform precision")
 	await snapshot(str(records.size())+"-accepted")
@@ -77,7 +79,7 @@ func arrive(at: Vector2,expected: Vector2,using_touch: bool=false) -> void:
 	check(legal and continuous and transform_ok,"every frame preserves exact feet, native speed and camera ownership")
 	check(w.collisions==geometry and story()==before and actions.size()==action_count,"route changes no geometry, story, inventory, wallet or interaction")
 	await snapshot(str(records.size())+"-arrived")
-	records.append({"root":str(at),"input":"touch" if using_touch else "mouse","start":str(start),"raw":str(raw),"resolved":str(expected),"snapPixels":raw.distance_to(expected)*w.zoom,"waypoints":waypoints,"final":str(w.player),"frames":count,"planningUs":planning_us,"edges":w._floor_planner.edge_checks,"candidates":w._canteen_floor_tap.candidate_count})
+	records.append({"root":str(at),"input":"touch" if using_touch else "mouse","start":str(start),"raw":str(raw),"resolved":str(expected),"snapPixels":raw.distance_to(expected)*w.zoom,"waypoints":waypoints,"final":str(w.player),"frames":count,"planningUs":planning_us,"edges":w.floor_navigation.planner.edge_checks,"candidates":w._canteen_floor_tap.candidate_count})
 func replay_approach() -> void:
 	await reset_route()
 	await arrive(source_screen(BOARD+Metrics.FOOT_CENTER_OFFSET),BOARD+Metrics.FOOT_CENTER_OFFSET)
@@ -145,24 +147,25 @@ func run() -> void:
 	check(shell.world.native_canteen.navigation_obstacles(foot)==cached and shell.world._floor_obstacles().size()==obstacles.size()-1,"caller-owned obstacle mutation cannot escape into navigation cache")
 	for using_touch in [false,true]:
 		await replay_approach()
-		var request:=source_screen(NEAR_WALL)
+		var recorded:=source_screen(RECORDED_REQUEST)
+		check(source_at(recorded).distance_to(RECORDED_REQUEST)<.002,"live root projection retains original source request")
+		check(shell.world.can_stand(RECORDED_REQUEST-Metrics.FOOT_CENTER_OFFSET),"formerly blocked request is now clear of the rebuilt serving window")
+		await arrive(recorded,RECORDED_REQUEST,using_touch)
+		var request:=source_screen(Vector2(RECORDED_REQUEST.x-15,WINDOW_CLEAR_CENTER-.25))
 		var raw:=source_at(request);var goal:=raw-Metrics.FOOT_CENTER_OFFSET
-		check(raw.distance_to(NEAR_WALL)<.002,"live root projection retains original source request")
-		check(not shell.world.can_stand(goal),"recorded second tap's original full-foot position overlaps source wall")
-		var hits: Array=[]
-		for box: Dictionary in shell.world.collisions:
-			if Metrics.foot_rect(goal).intersects(shell.world._rect(box)):hits.append(box.id)
-		check(hits==["north_service_wall"],"exact endpoint rejection is the static service-wall foot overlap")
-		check(shell.world._pick_target(raw).is_empty() and shell.world._floor_empty_destination(raw),"recorded near miss is empty floor with no object/actor/HUD veto")
-		await arrive(request,Vector2(raw.x,246.3125),using_touch)
+		check(not shell.world.can_stand(goal),"near miss overlaps the independent counter's foot")
+		var counter: Node2D=shell.world.native_canteen.objects.serving_window_2
+		check(counter.blocks_feet(Metrics.foot_rect(goal)) and not shell.world.native_canteen.blocks_floor_point(raw),"the foot rectangle intersects the live counter while the actual tap is over floor")
+		check(shell.world._pick_target(raw).is_empty() and shell.world._floor_empty_destination(raw),"near miss is empty floor with no object/actor/HUD veto")
+		await arrive(request,Vector2(raw.x,WINDOW_CLEAR_CENTER),using_touch)
 	# Reuse current legal start for negative requests through the same root path.
 	var w=shell.world
 	await rejection(source_screen(Vector2(620,239)),"solid wall center")
 	var outside:=Vector2(w.camera.x,-1)
 	check(not w.exploration_safe_rect(true).has_point((outside-w.camera)*w.zoom+w.size/2),"outside-world replay is outside the current landscape input region")
-	var outside_calls:int=w._floor_planner.calls;var outside_position:Vector2=w.player;var outside_story:=story()
+	var outside_calls:int=w.floor_navigation.planner.calls;var outside_position:Vector2=w.player;var outside_story:=story()
 	root_tap(source_screen(outside));await frames(2)
-	check(w._floor_planner.calls==outside_calls and w._floor_route.is_empty() and w.player==outside_position and story()==outside_story,"offscreen source request cannot enter the planner or change gameplay")
+	check(w.floor_navigation.planner.calls==outside_calls and w._floor_route.is_empty() and w.player==outside_position and story()==outside_story,"offscreen source request cannot enter the planner or change gameplay")
 	# Actual opaque actor pixels and reserved HUD input retain their ownership.
 	w.set_process(false);await frames(2)
 	var actor:=Vector2.INF
@@ -173,18 +176,18 @@ func run() -> void:
 			if w._pick_target(point).is_empty() and w.object_picker.contains({"rect":Metrics.visual_rect(w.player,w.display_scale_at(w.player)),"texture":texture,"flip_h":w.player_flip and w.facing=="side"},point):actor=point;break
 		if actor.is_finite():break
 	check(actor.is_finite(),"fixture contains an opaque actor pixel away from nearby object picks")
-	var calls: int=w._floor_planner.calls
+	var calls: int=w.floor_navigation.planner.calls
 	root_tap(source_screen(actor))
-	check(w._floor_planner.calls==calls and w._floor_route.is_empty() and w._floor_goal==Vector2.INF,"actor input cannot become a corrected floor goal")
+	check(w.floor_navigation.planner.calls==calls and w._floor_route.is_empty() and w._floor_goal==Vector2.INF,"actor input cannot become a corrected floor goal")
 	root_tap(Vector2(shell.size.x/2,shell.size.y-20),true)
-	check(w._floor_planner.calls==calls and w._floor_route.is_empty(),"footer touch outside the map cannot enter floor planner")
-	w.zoom=1.2;w._update_camera();w.queue_redraw();await frames(2)
-	await rejection(source_screen(Vector2(680,241.1)),"empty-floor correction beyond six screen pixels")
+	check(w.floor_navigation.planner.calls==calls and w._floor_route.is_empty(),"footer touch outside the map cannot enter floor planner")
+	w.zoom=1.6;w._update_camera();w.queue_redraw();await frames(2)
+	await rejection(source_screen(Vector2(680,239.8)),"empty-floor correction beyond six screen pixels")
 	w.zoom=.45;w._update_camera();w.queue_redraw();await frames(2)
 	# The nearest corrected destination belongs to a painted object: no fallback.
-	var raw:=Vector2(620,246)
+	var raw:=Vector2(620,WINDOW_CLEAR_CENTER-.25)
 	w.set_process(false);await frames(2)
-	w.object_picker.add([],{"rect":Rect2(619,246.3125,2,1)},true)
+	w.object_picker.add([],{"rect":Rect2(619,WINDOW_CLEAR_CENTER,2,1)},true)
 	await rejection(source_screen(raw),"painted nearest destination")
 	w.queue_redraw();await frames(2)
 	# A legal endpoint behind a new full-height barrier stays exact and blocked.
@@ -194,7 +197,7 @@ func run() -> void:
 	w.native_canteen.navigation_signature=""
 	await rejection(source_screen(Vector2(690,299)),"legal unreachable goal")
 	# Other scenes and masks keep exact endpoints, even if invalid.
-	var anchor:=Vector2(620,246)-Metrics.FOOT_CENTER_OFFSET
+	var anchor:=raw-Metrics.FOOT_CENTER_OFFSET
 	w._floor_bounds=w._floor_anchor_bounds(w._floor_visible_rect())
 	w.scene_id="library_interior"
 	check(w._canteen_floor_goal(anchor,w._floor_obstacles())==anchor,"input correction does not expand to another scene")

@@ -5,10 +5,10 @@ const PIXEL_FONT=preload("res://ui_assets/fonts/MorningNote-Regular.ttf")
 static var paper_texture:ImageTexture
 const INK = Color("44332D")
 const MUTED = Color("70503B")
-const DURATION = 3.8
-const PRINT_DURATION = 1.8
-const FINISH_START = 1.82
-const FINISH_DURATION = .42
+const REDUCED_DURATION := 3.8
+const PRINT_DURATION := 1.8
+const GLITCH_DURATION := .48
+const FEED_OFFSET := 20.0
 const PAPER_SIZE = Vector2(304,420)
 const PAPER_ORIGIN = Vector2(63,180)
 var receipt: Control
@@ -21,24 +21,52 @@ var printer_slot: Panel
 var print_head: Panel
 var head_cursor: Panel
 var stamp_outline: Panel
-var ink_finish: Control
+var signal_loss: SignalLoss
 var sample_time = 0.0
 var reduced_motion = false
 var print_progress = 0.0
 var visible_paper_height = 0.0
 var print_complete = false
 var ink_progress = 0.0
+var visible_headline_fraction := 0.0
 
-class InkFinish extends Control:
-	var progress = 0.0
-	var active = false
+class SignalLoss extends Control:
+	var progress := 0.0
+
 	func _draw() -> void:
-		if not active: return
-		var alpha = sin(progress*PI)
-		# One restrained paper reflection across the printed lettering.
-		var x = 48+progress*204
-		for row:int in range(0,64,4):
-			draw_rect(Rect2(int(x)+int(row/8),280+row,2,3),Color("FFF0B2",alpha*.75))
+		var frame := int(progress * GLITCH_DURATION * 24.0)
+		var rng := RandomNumberGenerator.new()
+		rng.seed = 755 + frame
+		# Broad horizontal tears replace parts of the live receipt first.
+		# The final sweep compresses the remaining signal into one dim line.
+		var collapse := smoothstep(.55, 1.0, progress)
+		if collapse > 0.0:
+			var opening := size.y * (1.0 - collapse)
+			var cover := (size.y - opening) * .5
+			draw_rect(Rect2(0, 0, size.x, cover), Color("070B10"))
+			draw_rect(Rect2(0, size.y - cover, size.x, cover), Color("070B10"))
+			draw_bands(rng, Rect2(0, cover, size.x, opening))
+			return
+		var tracking_y := lerpf(size.y * .55, size.y * .13, progress)
+		var tracking_height := lerpf(48.0, 210.0, progress)
+		draw_bands(rng, Rect2(0, tracking_y, size.x, tracking_height))
+		for index in range(5):
+			var height := rng.randi_range(4, 17)
+			var y := rng.randi_range(0, int(size.y) - height)
+			draw_bands(rng, Rect2(0, y, size.x, height))
+
+	func draw_bands(rng: RandomNumberGenerator, band: Rect2) -> void:
+		if band.size.y <= 0: return
+		draw_rect(band, Color("111C26"))
+		for row in range(0, ceili(band.size.y), 4):
+			var y := band.position.y + row
+			var height := minf(2.0, band.end.y - y)
+			var x := float(rng.randi_range(0, 360))
+			var width := minf(float(rng.randi_range(18, 150)), band.size.x - x)
+			draw_rect(Rect2(x, y, width, height), Color("617B86"))
+			draw_rect(Rect2(0, y, minf(x + 14.0, band.size.x), height), Color("2C4656"))
+		var tear_y := band.position.y + band.size.y * .48
+		draw_rect(Rect2(0, tear_y, band.size.x, minf(2.0, band.end.y - tear_y)), Color("6A8391"))
 
 func _ready() -> void:
 	name = "CheckinSuccessPresentation"
@@ -75,8 +103,6 @@ func _ready() -> void:
 	_label(detail,"签到",Rect2(30,151,100,28),15,MUTED).horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_label(detail,"07:55",Rect2(174,151,100,28),18,INK).horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_panel(detail,Rect2(30,187,244,1),Color("D8C7A0"))
-	ink_finish = InkFinish.new(); ink_finish.name = "CheckinPrintedInkFinish"
-	ink_finish.size = PAPER_SIZE; ink_finish.mouse_filter = Control.MOUSE_FILTER_IGNORE; receipt.add_child(ink_finish)
 	# The machine is in front of the moving paper. Its dark opening is exactly
 	# above the mask, so nothing can appear to arrive from the surrounding air.
 	var machine = _panel(self,Rect2(34,130,362,50),Color("C5C1A9"),Color("7993A1"),12)
@@ -89,7 +115,13 @@ func _ready() -> void:
 	print_head.name = "CheckinPrintHead"; print_head.z_index = 12
 	head_cursor = _panel(print_head,Rect2(0,0,32,2),Color("F4CD77"))
 	head_cursor.name = "CheckinPrintHeadReflection"
-	pose(0.0,false,false)
+	signal_loss = SignalLoss.new()
+	signal_loss.name = "CheckinSignalLoss"
+	signal_loss.size = size
+	signal_loss.z_index = 20
+	signal_loss.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(signal_loss)
+	pose(0.0, false, false)
 
 static func parchment_texture()->ImageTexture:
 	if paper_texture==null:paper_texture=ImageTexture.create_from_image(paint_parchment())
@@ -136,14 +168,19 @@ func _label(parent: Control,text: String,rect: Rect2,font_size: int,color: Color
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE;label.add_theme_font_override("font",PIXEL_FONT); label.add_theme_font_size_override("font_size",font_size); label.add_theme_color_override("font_color",color)
 	parent.add_child(label); return label
 
-func pose(seconds: float,reduced: bool,is_frozen: bool) -> void:
+func interruption_time() -> float:
+	# Solve the paper feed for the vertical center of the live success stamp.
+	var headline_center := seal.position.y + headline.position.y + headline.size.y * .5
+	return (headline_center - FEED_OFFSET) / (PAPER_SIZE.y - FEED_OFFSET) * PRINT_DURATION
+
+func pose(seconds: float, reduced: bool, is_frozen: bool, glitch := -1.0) -> void:
 	if not is_instance_valid(receipt): return
 	sample_time = maxf(0,seconds); reduced_motion = reduced
 	print_progress = 1.0 if reduced else clampf(sample_time/PRINT_DURATION,0,1)
 	visible_paper_height = PAPER_SIZE.y*print_progress
 	print_complete = print_progress>=1.0
 	print_mask.size = Vector2(PAPER_SIZE.x,visible_paper_height)
-	receipt.position = Vector2(0,-20*(1.0-print_progress))
+	receipt.position = Vector2(0, -FEED_OFFSET * (1.0 - print_progress))
 	receipt.rotation = 0.0; receipt.scale = Vector2.ONE; receipt.modulate.a = 1.0
 	# Ink belongs to the paper from the first pixel. The mask alone reveals it;
 	# there is no hovering badge, falling stamp or second alpha-fade entrance.
@@ -152,8 +189,12 @@ func pose(seconds: float,reduced: bool,is_frozen: bool) -> void:
 	stamp_outline.modulate.a = 1.0; headline.modulate.a = 1.0; detail.modulate.a = 1.0
 	print_head.visible = not reduced and sample_time>0 and not print_complete
 	head_cursor.position.x = (print_head.size.x-head_cursor.size.x)*(.5-.5*cos(print_progress*TAU*5))
-	ink_finish.active = not reduced and sample_time>=FINISH_START and sample_time<FINISH_START+FINISH_DURATION
-	ink_finish.progress = clampf((sample_time-FINISH_START)/FINISH_DURATION,0,1); ink_finish.queue_redraw()
+	var headline_top := receipt.position.y + seal.position.y + headline.position.y
+	visible_headline_fraction = clampf((visible_paper_height - headline_top) / headline.size.y, 0, 1)
+	signal_loss.visible = glitch >= 0.0 and not reduced
+	if signal_loss.visible:
+		signal_loss.progress = clampf(glitch, 0, 1)
+		signal_loss.queue_redraw()
 	frozen = is_frozen # The owning activity supplies the single shared pause UI.
 	queue_redraw()
 
@@ -169,4 +210,4 @@ func _shadow_box() -> StyleBoxFlat:
 	return style
 
 func read_presentation() -> Dictionary:
-	return {"seconds":sample_time,"reduced_motion":reduced_motion,"receipt_position":receipt.position,"seal_scale":seal.scale,"paused":frozen,"print_progress":print_progress,"visible_paper_height":visible_paper_height,"leading_edge_y":PAPER_ORIGIN.y+visible_paper_height,"print_complete":print_complete,"ink_progress":ink_progress,"printer_slot":Rect2(printer_slot.position,printer_slot.size),"print_mask":Rect2(print_mask.position,print_mask.size),"paper_axis_aligned":receipt.rotation==0.0 and receipt.scale==Vector2.ONE}
+	return {"seconds":sample_time,"reduced_motion":reduced_motion,"receipt_position":receipt.position,"seal_scale":seal.scale,"paused":frozen,"print_progress":print_progress,"visible_paper_height":visible_paper_height,"leading_edge_y":PAPER_ORIGIN.y+visible_paper_height,"print_complete":print_complete,"ink_progress":ink_progress,"visible_headline_fraction":visible_headline_fraction,"signal_loss":signal_loss.visible,"printer_slot":Rect2(printer_slot.position,printer_slot.size),"print_mask":Rect2(print_mask.position,print_mask.size),"paper_axis_aligned":receipt.rotation==0.0 and receipt.scale==Vector2.ONE}

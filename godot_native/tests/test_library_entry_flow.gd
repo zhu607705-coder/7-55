@@ -72,7 +72,7 @@ func entry(dimensions: Vector2i) -> void:
 	check(shell.world.has_focus(),"world-focus-restored",{"root":focus_path(root),"world":focus_path(shell.world_viewport)})
 	var before: Vector2=shell.world.player
 	shell.world._process(0)
-	check(shell.world.facing=="up" and str(shell.world.nearby.get("id",""))=="entrance_record","arrives-facing-in-and-offers-card-reader",shell.world.nearby)
+	check(shell.world.facing=="up" and str(shell.world.nearby.get("id",""))=="library_exit","arrives-facing-in-with-an-available-return-from-the-outside-landing",shell.world.nearby)
 	await key(KEY_W)
 	for i in 14: shell.world._process(.05)
 	await key(KEY_W,false); shell.world._process(0)
