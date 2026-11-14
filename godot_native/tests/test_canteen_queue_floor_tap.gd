@@ -45,21 +45,21 @@ func reset_route() -> void:
 	check(is_equal_approx(shell.world.zoom,.45),"four recorded root wheel events derive minimum zoom .45")
 	var painted:Rect2=shell.world_view.get_global_rect()
 	check(shell.world.size==Vector2(960,540) and is_equal_approx(painted.size.x/painted.size.y,16.0/9.0) and Rect2(Vector2.ZERO,shell.size).encloses(painted),"rotated window retains the landscape map and inline controls")
-	shell.world._floor_planner=CountPlanner.new()
+	shell.world.floor_navigation.planner=CountPlanner.new()
 func arrive(at: Vector2,expected: Vector2,using_touch: bool=false) -> void:
 	var w=shell.world
 	var raw:=source_at(at);var before:=story();var action_count:=actions.size()
 	var raw_valid: bool=w.can_stand(raw-Metrics.FOOT_CENTER_OFFSET)
 	await snapshot(str(records.size())+"-before")
 	var geometry: Array=w.collisions.duplicate(true);var start: Vector2=w.player
-	var old_calls:int=w._floor_planner.calls;var tick:=Time.get_ticks_usec()
+	var old_calls:int=w.floor_navigation.planner.calls;var tick:=Time.get_ticks_usec()
 	root_tap(at,using_touch)
 	var planning_us:=Time.get_ticks_usec()-tick
 	# Print only after the measured dispatch has ended, including failing routes.
 	print("CANTEEN_QUEUE_ROUTE_TIMING "+JSON.stringify({"planningUs":planning_us,"candidates":w._canteen_floor_tap.candidate_count,"maxCandidates":Tap.MAX_CANDIDATES,"limitUs":200000,"input":"touch" if using_touch else "mouse","root":str(at),"start":str(start),"rawGoal":str(raw),"expectedGoal":str(expected),"resolvedGoal":str(w._floor_goal)}))
 	var waypoints: String=str(w._floor_route)
 	check(w._floor_status=="moving" and not w._floor_route.is_empty(),"root input starts an actual floor route")
-	check(w._floor_planner.calls==old_calls+1,"exactly one unchanged planner call per request")
+	check(w.floor_navigation.planner.calls==old_calls+1,"exactly one unchanged planner call per request")
 	check(w._floor_goal.distance_to(expected)<.002,"accepted marker is the resolved full-foot center")
 	if raw_valid:check(w._floor_goal.distance_to(raw)<.001,"valid raw floor intent remains exact within source transform precision")
 	await snapshot(str(records.size())+"-accepted")
@@ -77,7 +77,7 @@ func arrive(at: Vector2,expected: Vector2,using_touch: bool=false) -> void:
 	check(legal and continuous and transform_ok,"every frame preserves exact feet, native speed and camera ownership")
 	check(w.collisions==geometry and story()==before and actions.size()==action_count,"route changes no geometry, story, inventory, wallet or interaction")
 	await snapshot(str(records.size())+"-arrived")
-	records.append({"root":str(at),"input":"touch" if using_touch else "mouse","start":str(start),"raw":str(raw),"resolved":str(expected),"snapPixels":raw.distance_to(expected)*w.zoom,"waypoints":waypoints,"final":str(w.player),"frames":count,"planningUs":planning_us,"edges":w._floor_planner.edge_checks,"candidates":w._canteen_floor_tap.candidate_count})
+	records.append({"root":str(at),"input":"touch" if using_touch else "mouse","start":str(start),"raw":str(raw),"resolved":str(expected),"snapPixels":raw.distance_to(expected)*w.zoom,"waypoints":waypoints,"final":str(w.player),"frames":count,"planningUs":planning_us,"edges":w.floor_navigation.planner.edge_checks,"candidates":w._canteen_floor_tap.candidate_count})
 func replay_approach() -> void:
 	await reset_route()
 	await arrive(source_screen(BOARD+Metrics.FOOT_CENTER_OFFSET),BOARD+Metrics.FOOT_CENTER_OFFSET)
@@ -160,9 +160,9 @@ func run() -> void:
 	await rejection(source_screen(Vector2(620,239)),"solid wall center")
 	var outside:=Vector2(w.camera.x,-1)
 	check(not w.exploration_safe_rect(true).has_point((outside-w.camera)*w.zoom+w.size/2),"outside-world replay is outside the current landscape input region")
-	var outside_calls:int=w._floor_planner.calls;var outside_position:Vector2=w.player;var outside_story:=story()
+	var outside_calls:int=w.floor_navigation.planner.calls;var outside_position:Vector2=w.player;var outside_story:=story()
 	root_tap(source_screen(outside));await frames(2)
-	check(w._floor_planner.calls==outside_calls and w._floor_route.is_empty() and w.player==outside_position and story()==outside_story,"offscreen source request cannot enter the planner or change gameplay")
+	check(w.floor_navigation.planner.calls==outside_calls and w._floor_route.is_empty() and w.player==outside_position and story()==outside_story,"offscreen source request cannot enter the planner or change gameplay")
 	# Actual opaque actor pixels and reserved HUD input retain their ownership.
 	w.set_process(false);await frames(2)
 	var actor:=Vector2.INF
@@ -173,11 +173,11 @@ func run() -> void:
 			if w._pick_target(point).is_empty() and w.object_picker.contains({"rect":Metrics.visual_rect(w.player,w.display_scale_at(w.player)),"texture":texture,"flip_h":w.player_flip and w.facing=="side"},point):actor=point;break
 		if actor.is_finite():break
 	check(actor.is_finite(),"fixture contains an opaque actor pixel away from nearby object picks")
-	var calls: int=w._floor_planner.calls
+	var calls: int=w.floor_navigation.planner.calls
 	root_tap(source_screen(actor))
-	check(w._floor_planner.calls==calls and w._floor_route.is_empty() and w._floor_goal==Vector2.INF,"actor input cannot become a corrected floor goal")
+	check(w.floor_navigation.planner.calls==calls and w._floor_route.is_empty() and w._floor_goal==Vector2.INF,"actor input cannot become a corrected floor goal")
 	root_tap(Vector2(shell.size.x/2,shell.size.y-20),true)
-	check(w._floor_planner.calls==calls and w._floor_route.is_empty(),"footer touch outside the map cannot enter floor planner")
+	check(w.floor_navigation.planner.calls==calls and w._floor_route.is_empty(),"footer touch outside the map cannot enter floor planner")
 	w.zoom=1.2;w._update_camera();w.queue_redraw();await frames(2)
 	await rejection(source_screen(Vector2(680,241.1)),"empty-floor correction beyond six screen pixels")
 	w.zoom=.45;w._update_camera();w.queue_redraw();await frames(2)
