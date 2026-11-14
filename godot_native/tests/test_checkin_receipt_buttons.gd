@@ -74,11 +74,16 @@ func run()->void:
 		check(game.lock_help_open and game.lock_help_button.text=="收起键盘帮助","keyboard help opens through same flat button")
 		await click(game.lock_help_button)
 		check(not game.lock_help_open and game.lock_help_button.text=="键盘帮助","keyboard help closes without phase advance")
-		game.paused=false;game.done=false;game.reduced_motion=false;game._switch("success");game.elapsed=1.79;game._process(0)
-		check(not game.success_continue.visible,"original 1.8-second button reveal retained")
-		game.elapsed=1.8;game._process(0);check(game.success_continue.visible,"button appears at original reveal time")
-		game.elapsed=3.79;game._process(0);check(game.phase=="success","receipt retains original 3.8-second duration")
-		game._process(.02);check(game.phase=="error","original automatic transition preserved")
+		game.paused = false; game.done = false; game.reduced_motion = false
+		game._switch("success")
+		game.elapsed = game.success_view.interruption_time() - .02
+		game._process(0)
+		check(not game.success_continue.visible and game.phase == "success", "normal receipt has no dismiss control before interruption")
+		game._process(.04)
+		check(game.phase == "signal_loss" and not game.success_continue.visible, "normal receipt automatically enters signal loss")
+		game.elapsed = game.SuccessPresentation.GLITCH_DURATION
+		game._process(0)
+		check(game.phase == "error", "normal receipt preserves the automatic error handoff")
 		game.reduced_motion=true
 	check(state.d.flags==before_story.flags and state.d.digits==before_story.digits and state.d.native.chapter==before_story.native.chapter,"presentation controls grant no story progress")
 	await shell.shutdown();shell.queue_free();await frames()

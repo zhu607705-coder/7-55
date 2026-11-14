@@ -1,5 +1,6 @@
 extends "res://scripts/world.gd"
 ## Frozen pre-dedup cut loop; only footprint selection follows current scene metrics.
+const MobileFloorRoute = preload("res://scripts/mobile_floor_route.gd")
 var stand_calls := 0
 func can_stand(point: Vector2, kayak_heading: float=NAN) -> bool:
 	stand_calls += 1

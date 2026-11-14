@@ -41,6 +41,9 @@ try {
     resource(`assets/audio/act-one/music/${name}.mp3`, 'core');
   for (const name of ['assets/ui/dorm_room.png', 'assets/native/dorm_cabinet/web_atlas_source.png', 'assets/native/dorm_cabinet/cabinet_opening_frames.png', 'assets/ui/cc98/theater_755_student_play_poster_v01.png', 'assets/rpg/player/player_down_0.png', 'assets/rpg/player/player_side_idle.png'])
     resource(name, 'chapter2');
+  for (const name of ['player_walk_full', 'player_down_idle', 'player_up_idle', 'player_side_idle'])
+    resource(`assets/native/library_animation_20261105/${name}.png`, 'chapter2');
+  resource('assets/native/library_animation_20261105/library_book_sheet.png', 'chapter2_library');
   resource('assets/native/theater_chest_20261023/prop_chest_overhead_body_v2.png', 'chapter3');
   resource('scenes/objects/lake_assembly_parts.tscn', 'chapter35', true);
   records.set('scenes/theater/funhouse_stage_editable.scn', Buffer.from('retained source scene'));

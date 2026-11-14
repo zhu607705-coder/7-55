@@ -25,3 +25,15 @@ static func turn_pose(turn:Dictionary) -> Dictionary:
 		var flip:bool=turn.to_flip if turn.to_facing=="side" else turn.from_flip if turn.from_facing=="side" else false
 		return {"facing":"side","flip":flip,"angle":-6.0 if flip else 6.0}
 	return {"facing":turn.to_facing,"flip":turn.to_flip,"angle":0.0}
+
+static func advance_turn(turn: Dictionary, facing: String, flip: bool, next: Dictionary, delta: float) -> void:
+	if next.facing != facing or (facing == "side" and next.flip != flip):
+		turn.assign({
+			"from_facing": facing, "from_flip": facing == "side" and flip,
+			"to_facing": next.facing, "to_flip": next.facing == "side" and next.flip,
+			"elapsed_ms": 0.0, "duration_ms": turn_duration(facing, flip, next.facing, next.flip),
+		})
+	elif not turn.is_empty():
+		turn.elapsed_ms += maxf(0.0, delta) * 1000.0
+		if float(turn.elapsed_ms) >= float(turn.duration_ms):
+			turn.clear()

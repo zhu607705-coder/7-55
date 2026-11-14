@@ -126,7 +126,7 @@ func run():
  check(not game.paused and game.platform_suspended and visible_surfaces()==0,"new receipt stays lifecycle-only without global latch")
  platform._on_browser_visibility([false,true])
  check(not paused and not game.paused and not game.platform_suspended,"new receipt automatically returns after background creation")
- for phase:String in ["success","error","red","blackout","caught","burst","whiteout"]:
+ for phase:String in ["success","signal_loss","error","red","blackout","caught","burst","whiteout"]:
   game.start({});game._switch(phase);game._process(.1)
   var before:float=game.elapsed
   game._pause();check(not game.paused and visible_surfaces()==0,"static phase has no manual pause: "+phase)

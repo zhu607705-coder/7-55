@@ -117,7 +117,7 @@ func start(request:Dictionary)->void:
 
 func _continue_success()->void:
 	# This only advances a local visual beat, never the chapter or interception proof.
-	if phase!="success" or paused or platform_suspended or done:return
+	if phase!="success" or not reduced_motion or paused or platform_suspended or done:return
 	_switch("error");grab_focus()
 
 func _clear_input()->void:
@@ -210,7 +210,7 @@ func _switch(next:String)->void:
 	phase=next;elapsed=0
 	if not supports_player_pause():paused=false;pause_reason=""
 	_sync_playback_suspension();_sync_pause_surface()
-	if is_instance_valid(success_view):success_view.visible=phase=="success"
+	_sync_receipt_pose()
 	match phase:
 		"blackout":presentation_requested.emit("prologue_blackout_started",{"durationMs":7000})
 		"deploy":presentation_requested.emit("prologue_narrator_intro",{})
@@ -228,8 +228,7 @@ func _layout_controls()->void:
 	for button:Button in [success_continue,lock_help_button,retry_button]:
 		button.scale=Vector2.ONE*display_scale
 	success_view.position=field.position;success_view.scale=Vector2.ONE*display_scale
-	success_view.visible=phase=="success"
-	success_continue.visible=phase=="success" and (elapsed>=1.8 or reduced_motion) and not paused
+	success_continue.visible = phase == "success" and reduced_motion and not paused
 	lock_help_button.visible=phase=="lock" and not paused
 	retry_button.visible=session.phase=="hint" and phase=="intercept" and not paused
 	retry_button.disabled=retry_wait<.35
@@ -237,13 +236,21 @@ func _layout_controls()->void:
 	for item:Array in [[success_continue,Rect2(125,704,180,48)],[lock_help_button,Rect2(118,704,194,42)],[retry_button,Rect2(138,480,154,48)]]:
 		var rect:Rect2=item[1];item[0].position=field.position+rect.position*display_scale;item[0].size=rect.size
 
+func _sync_receipt_pose() -> void:
+	if not is_instance_valid(success_view): return
+	success_view.visible = phase in ["success", "signal_loss"]
+	if phase == "success":
+		success_view.pose(elapsed, reduced_motion, paused or platform_suspended)
+	elif phase == "signal_loss":
+		success_view.pose(success_view.interruption_time(), false, platform_suspended, elapsed / SuccessPresentation.GLITCH_DURATION)
+
 func _sync()->void:
 	blocks=session.completed_stages;misses=session.total_misses;paddle=session.board_x/430.0*100
 
 func _process(delta:float)->void:
 	_layout_controls()
 	if paused or platform_suspended or done:
-		if phase=="success":success_view.pose(elapsed,reduced_motion,paused or platform_suspended)
+		_sync_receipt_pose()
 		_update_terminal_field();queue_redraw();return
 	if _skip_resume_frame:_skip_resume_frame=false;return
 	var dt=clampf(delta,0,.25)
@@ -268,7 +275,12 @@ func _process(delta:float)->void:
 	else:
 		match phase:
 			"success":
-				if elapsed>=SuccessPresentation.DURATION:_switch("error")
+				if reduced_motion and elapsed >= SuccessPresentation.REDUCED_DURATION:
+					_switch("error")
+				elif not reduced_motion and elapsed >= success_view.interruption_time():
+					_switch("signal_loss")
+			"signal_loss":
+				if elapsed >= SuccessPresentation.GLITCH_DURATION: _switch("error")
 			"error":
 				if elapsed>=1.9:_switch("red")
 			"red":
@@ -290,7 +302,7 @@ func _process(delta:float)->void:
 				if elapsed>=.7:
 					done=true
 					finished.emit({"interceptedCount":blocks,"lockHeldMs":hold_ms,"failed":false,"dialogueCount":4,"whiteoutCompleted":true})
-	if phase=="success":success_view.pose(elapsed,reduced_motion,paused or platform_suspended)
+	_sync_receipt_pose()
 	_update_terminal_field();queue_redraw()
 
 func _logical(point:Vector2)->Vector2:return (point-field.position)/maxf(.0001,display_scale)
@@ -479,7 +491,7 @@ func _draw_board()->void:
 	_draw_terminal_window(Vector2(session.board_x,WordModel.BOARD_Y),WordModel.BOARD_SIZE,session.board_angle)
 
 func _draw()->void:
-	draw_rect(Rect2(Vector2.ZERO,size),Color("e8e1d0") if phase=="success" else CharacterFlow.BACKGROUND)
+	draw_rect(Rect2(Vector2.ZERO,size),Color("e8e1d0") if phase == "success" else CharacterFlow.BACKGROUND)
 	if phase=="blackout":draw_rect(Rect2(Vector2.ZERO,size),Color.BLACK);return
 	if phase=="red":
 		var shade=CharacterFlow.BACKGROUND.lerp(Color("371A25"),smoothstep(0.0,.35,elapsed))
@@ -488,7 +500,7 @@ func _draw()->void:
 		draw_rect(Rect2(Vector2.ZERO,size),Color.WHITE if phase=="whiteout" else CharacterFlow.BACKGROUND.lerp(Color.WHITE,CharacterFlow.burst_opacity(elapsed)))
 		return
 	draw_set_transform(field.position,0,Vector2.ONE*display_scale)
-	if phase=="success":pass # Independent child objects render the accepted receipt.
+	if phase in ["success", "signal_loss"]:pass # Child objects render the receipt and signal loss.
 	elif phase=="error":
 		_draw_terminal_window(Vector2(215,400),Vector2(310,86))
 	else:

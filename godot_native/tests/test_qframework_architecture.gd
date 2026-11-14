@@ -114,6 +114,19 @@ func run() -> void:
 	state.d.native.chapter = 3
 	state.toggle_mode()
 	check(state.d.native.mode == "dark" and state.d.qizhenLake.mode == "dark", "mode command synchronizes authored domains")
+	var surface_notifications := notifications
+	state.d.native.scene = "dorm_hub"
+	state.resume_world_surface()
+	check(state.d.runtimeMode == "rpg" and notifications == surface_notifications, "world return retains silent save-before-layout")
+	state.record_world_position("dorm_hub", "dorm_hub:", Vector2(500, 700), Vector2(510, 1400))
+	check(state.d.native.positions["dorm_hub:"] == {"x": 500.0, "y": 700.0}, "world anchor keeps its checkpoint key")
+	check(state.d.native.player == {"scene": "dorm_hub", "x": 510.0, "y": 1400.0, "world_x": 500.0, "world_y": 700.0}, "legacy player fields preserve authored and world coordinates")
+	var position_snapshot: Dictionary = state.read_snapshot()
+	state.record_world_position("library_interior", "library_interior:", Vector2.ONE, Vector2.ONE)
+	state.record_world_position("dorm_hub", "dorm_hub:", Vector2.INF, Vector2.ONE)
+	check(state.d == position_snapshot and notifications == surface_notifications, "stale or invalid position cannot touch the active checkpoint")
+	state.show_phone_home()
+	check(state.d.runtimeMode == "phone" and state.d.native.page == "phone_home" and notifications == surface_notifications + 1, "phone navigation commits the mode and home page together")
 	architecture.queue_free()
 	await process_frame
 	print("QFramework architecture: %d checks, %d checkpoint action comparisons, %d failures" % [checks, attempts, failures])

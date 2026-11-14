@@ -7,7 +7,7 @@ var session: RefCounted
 func _ready() -> void:
 	mouse_filter=Control.MOUSE_FILTER_IGNORE
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-func screen(p: Vector2) -> Vector2: return (p-world.camera)*world.zoom+world.size/2
+func screen(p: Vector2) -> Vector2: return world.world_to_view(p)
 func _draw() -> void:
 	if session==null or not is_instance_valid(world) or world.scene_id!=session.scene: return
 	if session.sequence_id=="theater_reversal": reversal.draw(self,session,world.size)

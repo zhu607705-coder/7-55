@@ -960,18 +960,28 @@ async function checkinPresentationCase() {
   check(controls(rejected).find(c=>c.name==='CheckinSlot_0')?.text==='',`${active.id}: wrong code clears only the form draft`);
   for(const digit of ['0','7','9','8'])await clickControl('CheckinKey_'+digit,'name');
   await clickControl('CheckinSubmit','name');
-  await poll(async()=>gameOf(await snapshot())?.phase==='success','real successful submission starts the receipt printer');
+  const printing = await poll(async () => {
+    const s = await snapshot();
+    return gameOf(s)?.phase === 'success' && gameOf(s)?.receipt ? s : null;
+  }, 'real successful submission starts the receipt printer');
+  check(state(printing).flags.checkinDone && state(printing).actOne.phase === 'prologue', `${active.id}: the real check-in is accepted before the cut`);
   active.screenshots.push(await screenshot(`${active.id}-pixel-receipt-printing`));
-  await press('Escape');
-  const paused=await poll(async()=>{const s=await snapshot();return gameOf(s)?.paused?s:null;},'real Escape pauses receipt printing');
-  const frozen=gameOf(paused).elapsed;await interval(450);
-  check(Math.abs(gameOf(await snapshot()).elapsed-frozen)<.01,`${active.id}: printer uses the paused game clock`);
-  await clickControl('PrologueResume','name');
-  const printed=await poll(async()=>{const s=await snapshot(),g=gameOf(s);return g?.phase==='success'&&g.elapsed>=1.9?s:null;},'real paper finishes feeding through its original top slot');
-  check(controls(printed).some(c=>c.name==='CheckinSuccessLabel'&&c.text==='签到成功')&&state(printed).flags.checkinDone&&state(printed).actOne.phase==='prologue',`${active.id}: live printed stamp confirms check-in without completing the word puzzle`);
-  active.screenshots.push(await screenshot(`${active.id}-pixel-parchment-receipt`));
-  await poll(async()=>gameOf(await snapshot())?.phase==='error','receipt preserves the authored coordinate-error handoff');
-  check(gameOf(await snapshot()).session?.completed_stages===0,`${active.id}: visual restoration grants no interception completion`);
+  const torn = await poll(async () => {
+    const s = await snapshot();
+    return gameOf(s)?.phase === 'signal_loss' ? s : null;
+  }, 'partially printed receipt loses its signal');
+  const receipt = gameOf(torn).receipt;
+  check(receipt.signal_loss && !receipt.print_complete && Math.abs(receipt.visible_headline_fraction - .5) < .01,
+    `${active.id}: CRT transition starts with half of the success stamp visible`, receipt);
+  check(!controls(torn).some(c => c.name === 'CheckinSuccessContinue' || c.name === 'PrologueResume'),
+    `${active.id}: the cut runs without a button or pause overlay`);
+  active.screenshots.push(await screenshot(`${active.id}-checkin-crt-signal-loss`));
+  const error = await poll(async () => {
+    const s = await snapshot();
+    return gameOf(s)?.phase === 'error' ? s : null;
+  }, 'signal loss cuts directly to the coordinate-error window');
+  check(gameOf(error).session?.completed_stages === 0 && state(error).flags.checkinDone, `${active.id}: the cut preserves accepted check-in and grants no interception completion`);
+  active.screenshots.push(await screenshot(`${active.id}-checkin-coordinate-error`));
   await assertLayout('pixel check-in and parchment receipt');
 }
 async function reopenLibraryRuleThroughApp() {

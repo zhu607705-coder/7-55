@@ -146,7 +146,7 @@
     return chunks;
   }
   function createResourceCache() {
-    let database, unavailable=false;
+    let database, unavailable=false, writesPaused=false;
     let activeDownloads=0;
     const waitingDownloads=[];
     const stats={storage:'opening',reusedBytes:0,networkBytes:0,writtenBytes:0,cacheReadMs:0,cacheWriteMs:0,readTransactions:0,writeTransactions:0,verifyMs:0,reassemblyMs:0};
@@ -204,17 +204,30 @@
       });
       return unavailable?Promise.resolve(null):database;
     }
-    async function operation(mode,run) {
-      const began=clockNow();
-      const connection=await db();if(!connection)return null;
+    async function operation(mode,run,{discard=false}={}) {
+      const read=mode==='readonly';
+      // A quota or write failure must not disable access to committed blocks.
+      // Reopen on the next page load to try writes again.
+      if(!read && writesPaused && !discard)return null;
+      const began=clockNow(), connection=await db();
+      if(!connection)return null;
       return new Promise(done=>{
-        const read=mode==='readonly';stats[read?'readTransactions':'writeTransactions']++;
-        const resolve=value=>{stats[read?'cacheReadMs':'cacheWriteMs']+=clockNow()-began;done(value);};
+        stats[read?'readTransactions':'writeTransactions']++;
+        const finish=value=>{stats[read?'cacheReadMs':'cacheWriteMs']+=clockNow()-began;done(value);};
+        const failed=()=>{
+          if(read){unavailable=true;stats.storage='unavailable';}
+          else if(!unavailable){writesPaused=true;stats.storage='indexeddb-readonly';}
+          finish(null);
+        };
         let transaction,result=null;
-        try{transaction=connection.transaction('chunks',mode);const request=run(transaction.objectStore('chunks'));if(Array.isArray(request))result=request;else if(request)request.onsuccess=()=>{result=request.result;};}
-        catch(_){unavailable=true;stats.storage='unavailable';resolve(null);return;}
-        transaction.oncomplete=()=>resolve(Array.isArray(result)?result.map(request=>request.result):result===undefined?null:result);
-        transaction.onerror=transaction.onabort=()=>{unavailable=true;stats.storage='unavailable';resolve(null);};
+        try {
+          transaction=connection.transaction('chunks',mode);
+          const request=run(transaction.objectStore('chunks'));
+          if(Array.isArray(request))result=request;
+          else if(request)request.onsuccess=()=>{result=request.result;};
+        } catch(_) { failed();return; }
+        transaction.oncomplete=()=>finish(Array.isArray(result)?result.map(request=>request.result):result===undefined?null:result);
+        transaction.onabort=failed;
       });
     }
     const key=(resource,index)=>resource.sha256+':'+index;
@@ -223,9 +236,8 @@
       // A pack-level failure invalidates only its quarantined legacy records.
       // Independently verified SHA-addressed chunks may serve another release;
       // loadChunks removes a canonical record only when that block is corrupt.
-      for(let index=first;index<Math.ceil(resource.bytes/BLOCK_BYTES);index++) {
-        await operation('readwrite',store=>store.delete(key(resource,index)));
-      }
+      const count=Math.ceil(resource.bytes/BLOCK_BYTES)-first;
+      if(count>0)await operation('readwrite',store=>Array.from({length:count},(_,offset)=>store.delete(key(resource,first+offset))),{discard:true});
     }
     function completed(resource,options,output,reused,network,persisted) {
       stats.reusedBytes+=reused;
@@ -278,7 +290,7 @@
           }
           persisted+=bytes.byteLength;reused+=bytes.byteLength;accept(index,bytes);
         }
-        else {if(saved)await operation('readwrite',store=>store.delete(legacy?key(resource,index):canonical));missing.push(index);}
+        else {if(saved)await operation('readwrite',store=>store.delete(legacy?key(resource,index):canonical),{discard:true});missing.push(index);}
       }
       // Independent complete small files avoid compressed HTTP Range offsets.
       // Three workers bound peak transient memory and connection pressure.

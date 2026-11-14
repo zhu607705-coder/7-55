@@ -79,7 +79,7 @@ func _input(event:InputEvent)->void:
 	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT and event.pressed:point=event.position
 	elif event is InputEventScreenTouch and event.pressed:point=event.position
 	if not point.is_finite():return
-	var source_point:Vector2=(point-world.size/2)/world.zoom+world.camera
+	var source_point:Vector2=world.view_to_world(point)
 	if not source_rect.has_point(source_point):return
 	var target:Dictionary=world._pick_target(source_point)
 	if not owns_target(str(target.get("id",""))) or world._distance(target)>float(target.get("radius",0)):return

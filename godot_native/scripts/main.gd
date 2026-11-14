@@ -499,8 +499,7 @@ func _show_phone_surface() -> void:
 	world_page_origin_scene = ""
 	mobile_world = false
 	# Keep the existing world-to-phone homepage route and its app lifecycle.
-	State.d.runtimeMode = "phone"
-	State.open_page("phone_home")
+	State.show_phone_home()
 	_layout()
 	phone_world_return.grab_focus()
 
@@ -514,8 +513,7 @@ func _library_reading_locked()->bool:
 func _return_from_phone() -> void:
 	if _library_reading_locked():return
 	if not _has_world_scene() or _surface_navigation_blocked(): return
-	State.d.runtimeMode = "rpg"
-	State.save_game()
+	State.resume_world_surface()
 	_show_world_mobile()
 
 func _back_from_phone() -> void:
@@ -2033,8 +2031,7 @@ func _show_journal() -> void:
 			# This is an explicit scene return, so persist the same destination as
 			# the phone's Return control before admitting the retained activity.
 			if str(State.d.get("runtimeMode","phone"))!="rpg":
-				State.d.runtimeMode="rpg"
-				State.save_game()
+				State.resume_world_surface()
 			_show_world_mobile()
 	)
 	box.add_child(journal)
@@ -2435,7 +2432,7 @@ func _open_game_now(config: Dictionary) -> void:
 			continued.native_exterior_presented=true
 			_open_game(continued)
 		)
-		world_effect.setup(_read_runtime_state,func(source: Vector2): return world.size/2+(source-world.camera)*world.zoom)
+		world_effect.setup(_read_runtime_state,world.world_to_view)
 		return
 	_cancel_world_effect()
 	_close_modal()
@@ -2968,7 +2965,7 @@ func _open_world_effect(config: Dictionary) -> void:
 	setup["read_state"] = _read_runtime_state
 	setup["read_owner"] = func() -> Dictionary: return State.d
 	setup["world"] = world
-	setup["project_position"] = func(source: Vector2): return world.size/2+(source-world.camera)*world.zoom
+	setup["project_position"] = world.world_to_view
 	world_effect.event.connect(func(action: String,value: Variant): State.act(action,value))
 	var effect_owner:Control=world_effect
 	world_effect.tree_exited.connect(func():

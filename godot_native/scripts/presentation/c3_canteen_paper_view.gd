@@ -107,7 +107,7 @@ func _route_ghost(at: float,frame: int) -> Dictionary:
 func ghost_pose(ghost: Dictionary) -> Dictionary:
 	var progress: float=clampf(ghost.age/ghost.duration,0,1)
 	return {"point":ghost.point,"angle":ghost.angle,"frame":ghost.frame,"scale":float(ghost.scale)*lerpf(1,0.82,progress),"alpha":0.24*(1-progress),"tint":Color("bdefff")}
-func _screen(p: Vector2) -> Vector2: return (p-world.camera)*world.zoom+world.size/2
+func _screen(p: Vector2) -> Vector2: return world.world_to_view(p)
 func _draw() -> void:
 	if not is_instance_valid(world) or world.scene_id!="canteen_interior": return
 	for ghost: Dictionary in ghosts:

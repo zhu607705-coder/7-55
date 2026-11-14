@@ -1,5 +1,6 @@
 extends Node2D
 const Body=preload("res://scripts/player_metrics.gd")
+const PlayerLocomotion = preload("res://scripts/player_locomotion.gd")
 const NpcPicker=preload("res://scripts/world_object_picker.gd")
 const Space=preload("res://scripts/space/spatial_rules.gd")
 const FloorSpace=preload("res://campuses/future_learning_center/scripts/floor_space.gd")
@@ -86,9 +87,7 @@ var camera:=Camera2D.new()
 var textures:Dictionary={}
 var player:=Vector2.ZERO
 var route:=PackedVector2Array()
-var facing:="down"
-var elapsed:=0.0
-var walking:=false
+var locomotion := PlayerLocomotion.new()
 var overview:=false
 var geometry_visible:=false
 var capture_only:=false
@@ -107,8 +106,7 @@ func _ready()->void:
 	texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
 	floor_tile=ImageTexture.create_from_image(_texture("res://campuses/future_learning_center/assets/rooms/pantry_ambient.png").get_image().get_region(Rect2i(1020,450,120,120)))
 	texture_repeat=CanvasItem.TEXTURE_REPEAT_ENABLED
-	for direction:String in ["down","up","side"]:
-		for i:int in 8:_texture("res://assets/rpg/player/player_%s_%d.png"%[direction,i])
+	locomotion.art.ensure_loaded()
 	add_child(camera);camera.enabled=true;camera.position_smoothing_enabled=false
 	_build_ui()
 	var bench_layer:=CanvasLayer.new();bench_layer.layer=5;add_child(bench_layer)
@@ -159,6 +157,7 @@ func load_floor(floor_number:int,arrival:Vector2=Vector2.INF)->bool:
 	locker_pending=false
 	_clear_npc_interaction()
 	data=next;space=next_space;route.clear();touch_vector=Vector2.ZERO;touched_buttons.clear()
+	locomotion.stop()
 	for item:Dictionary in data.modules:_texture(item.path)
 	for item:Dictionary in data.get("objects",[]):_texture(item.path)
 	for item:Dictionary in data.get("npcs",[]):_texture(item.path)
@@ -209,7 +208,6 @@ func _texture(path:String)->Texture2D:
 	return textures[path]
 
 func _process(dt:float)->void:
-	elapsed+=dt
 	_tick_npc_feedback(dt)
 	if capture_only:return
 	_checkpoint_elapsed+=dt
@@ -238,11 +236,10 @@ func _process(dt:float)->void:
 	if not route.is_empty() and motion.length()>player.distance_to(route[0]):motion=route[0]-player
 	var before:=player
 	player=space.move(player,motion)
-	walking=before.distance_to(player)>.01
-	if walking:
-		if absf(direction.x)>absf(direction.y):facing="side" if direction.x>0 else "left"
-		else:facing="down" if direction.y>0 else "up"
-	elif motion.length()>0:route.clear()
+	var moved := player - before
+	locomotion.advance(moved, direction, dt)
+	if moved.length() <= .01 and motion.length() > 0:
+		route.clear()
 	if not space.can_stand(player):invalid_frames+=1
 	framing.update(dt,player,space,false,overview);_apply_camera()
 	if not puzzle_pending.is_empty() and route.is_empty():
@@ -794,12 +791,13 @@ func _atrium(atrium:Dictionary)->void:
 	_tile(plate,Space.rect(crops.get("south",[420,950,195,42])),Rect2(b.position.x,b.end.y-126,b.size.x,126),3.0)
 
 func _draw_actor()->void:
-	var frame:=Body.frame_at(elapsed*1000.0) if walking else 0
-	var actor:Texture2D=textures["res://assets/rpg/player/player_%s_%d.png"%["side" if facing=="left" else facing,frame]]
+	var actor: Dictionary = locomotion.sample()
+	if actor.is_empty():
+		return
 	draw_circle(player+Body.DEPTH_CENTER_OFFSET,11,Color(0,0,0,.18))
-	if facing=="left":
-		draw_set_transform(player,0,Vector2(-1,1));draw_texture_rect(actor,Body.visual_rect(Vector2.ZERO),false);draw_set_transform(Vector2.ZERO)
-	else:draw_texture_rect(actor,Body.visual_rect(player),false)
+	if actor.flip_h:
+		draw_set_transform(player,0,Vector2(-1,1));draw_texture_rect(actor.texture,Body.visual_rect(Vector2.ZERO),false);draw_set_transform(Vector2.ZERO)
+	else:draw_texture_rect(actor.texture,Body.visual_rect(player),false)
 
 func _draw_covers()->void:
 	var body:Rect2=Body.visual_rect(player)
