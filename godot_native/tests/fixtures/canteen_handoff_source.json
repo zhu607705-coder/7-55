@@ -1,5 +1,5 @@
 {
-  "provenance": {"function":"src/core/QuestModel.ts:canteenInteriorTask","line":473,"functionSha256":"1a66cde6756c8a6b2f2265df08ffa13a6e0dbe6372f9ea63af767e138f8a6379","contentSha256":"842b6ac2b6a6cb800297e6f743e416011390e7e4a623e5858b7f632849a34e16"},
+  "provenance": {"function":"src/core/QuestModel.ts:canteenInteriorTask","line":474,"functionSha256":"1a66cde6756c8a6b2f2265df08ffa13a6e0dbe6372f9ea63af767e138f8a6379","contentSha256":"842b6ac2b6a6cb800297e6f743e416011390e7e4a623e5858b7f632849a34e16"},
   "cases": [
     {"hunt":{"active":true,"phase":"tray_search","entryPaperEscaped":true,"trayTaskStarted":true,"returnedTrayIds":["tray_blue_01","tray_blue_02","tray_blue_03"],"carriedTrayIds":[],"queueGapOpened":false,"queueChallengeSeen":false,"drinkShelfRead":false,"promoDrinkPlaced":false,"drinkMixSequence":[]},"items":{"dailySpecialSparklingWater":false},"id":"queue","title":"查看第三列队伍和新品宣传板"},
     {"hunt":{"active":true,"phase":"tray_search","entryPaperEscaped":true,"trayTaskStarted":true,"returnedTrayIds":["tray_blue_01","tray_blue_02","tray_blue_03"],"carriedTrayIds":[],"queueGapOpened":false,"queueChallengeSeen":false,"drinkShelfRead":false,"promoDrinkPlaced":false,"drinkMixSequence":["blackCoffee"]},"items":{"dailySpecialSparklingWater":false},"id":"queue","title":"查看第三列队伍和新品宣传板"},

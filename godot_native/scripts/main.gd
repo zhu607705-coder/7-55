@@ -448,7 +448,7 @@ func _button(text: String, call: Callable, minimum: Vector2 = Vector2(0,48)) -> 
 	button.text = text
 	button.custom_minimum_size = minimum
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	button.pressed.connect(call)
+	if call.is_valid():button.pressed.connect(call)
 	return button
 
 func _uses_split_layout() -> bool:
@@ -799,7 +799,7 @@ func _layout() -> void:
 	for control: Control in [mobile_back,world_tasks,world_mode,inventory_handle,inventory_dock]:
 		control.scale=Vector2.ONE*chrome_scale
 	var row_y:=play_rect.end.y-52*chrome_scale
-	mobile_back.position=Vector2(play_rect.end.x-52*chrome_scale,row_y)
+	mobile_back.position=play_rect.end-Vector2.ONE*(44*chrome_scale+8)
 	mobile_back.size=Vector2(44,44)
 	world_tasks.position=mobile_back.position-Vector2(104 if world_mode.visible else 52,0)*chrome_scale
 	world_tasks.size=Vector2(44,44)
@@ -1112,6 +1112,7 @@ func _layout_modal() -> void:
 	if is_instance_valid(modal) and modal.has_meta("journal_shared_shell"):
 		var shared: Dictionary=modal.get_meta("journal_shared_shell")
 		var content: VBoxContainer=shared.content
+		_size_journal_targets(modal,modal.get_global_transform().get_scale().y)
 		var height:=minf(854.0/(424.0/378.0),51.0+content.get_combined_minimum_size().y+14.0)
 		shared.panel.size=Vector2(378,maxf(90,height))
 		shared.scroll.size=Vector2(350,maxf(1,shared.panel.size.y-65))
@@ -1144,8 +1145,8 @@ func _layout_modal() -> void:
 	if phone.visible:unit=maxf(WorldOverlay.MIN_UI_SCALE,phone.scale.x)
 	modal_panel.scale=Vector2.ONE*unit
 	var available:=size/unit
-	var dialog_width := maxf(1,minf(580,available.x-24))
-	var dialog_limit := maxf(1,minf(700,available.y-24))
+	var dialog_width := maxf(1,minf(580,(size.x-24)/unit))
+	var dialog_limit := maxf(1,minf(700,(size.y-24)/unit))
 	var natural_height := dialog_limit
 	var content: VBoxContainer = modal_panel.get_meta("dialog_content",null)
 	var column: VBoxContainer = modal_panel.get_meta("dialog_column",null)
@@ -1161,6 +1162,7 @@ func _layout_modal() -> void:
 		natural_height = maxf(180,chrome_height+content.get_combined_minimum_size().y)
 	modal_panel.size = Vector2(dialog_width,minf(dialog_limit,natural_height))
 	if modal_panel.get_meta("selected_surface","")=="journal":
+		_size_journal_targets(modal,modal_panel.get_global_transform().get_scale().y)
 		# The phone branch is the shared 378px overlay handled above. Retained
 		# world journals keep their existing independent reading-layer geometry.
 		modal_panel.size.x=maxf(1,minf(580,available.x*(0.86 if available.x<600 else 0.70)))
@@ -1170,6 +1172,12 @@ func _layout_modal() -> void:
 	if modal_panel.get_meta("selected_surface","")=="dialogue":
 		modal_panel.position.x=size.x-modal_panel.size.x*unit-size.x*.06
 	_layout_toast()
+
+func _size_journal_targets(journal:Control,display_scale:float)->void:
+	var target:=ceilf(44.0/maxf(.01,display_scale))
+	for control_name:String in ["JournalResume","JournalHistoryToggle"]:
+		var button:=journal.find_child(control_name,true,false) as Button
+		if is_instance_valid(button):button.custom_minimum_size.y=maxf(44,target)
 
 func _schedule_refresh() -> void:
 	if not await _content_ready(): return
@@ -2050,42 +2058,56 @@ func _show_journal() -> void:
 		journal.resume_button.reparent(header)
 		journal.resume_button.size_flags_horizontal=Control.SIZE_SHRINK_END
 		journal.resume_button.size_flags_vertical=Control.SIZE_SHRINK_CENTER
+	_layout_modal()
 	if not modal.has_meta("journal_shared_shell"):
 		journal.call_deferred("focus_control","JournalResume")
 
-func _fit_choice_popup(choice: OptionButton) -> void:
-	# Native PopupMenu does not wrap option lines. Measure the actual bundled
-	# face instead of assuming the narrower pixel font used by the old shell.
-	var popup := choice.get_popup()
-	var face := Typography.body_font()
-	var longest := 1.0
-	for index in choice.item_count:
-		longest = maxf(longest,face.get_string_size(choice.get_item_text(index),HORIZONTAL_ALIGNMENT_LEFT,-1,16).x)
-	var font_size := clampi(floori(16.0*maxf(1,size.x-56)/longest),12,16)
-	popup.add_theme_font_override("font",face)
-	popup.add_theme_font_size_override("font_size",font_size)
+func _form_choice(box:VBoxContainer,options:Array)->Dictionary:
+	var labels:=PackedStringArray()
+	var values:Array=[]
+	var face:=Typography.body_font()
+	var needs_wrap:=false
+	for option in options:
+		var label:=str(option.get("label",option.get("id",""))) if option is Dictionary else str(option)
+		labels.append(label)
+		values.append(option.get("id",option.get("value")) if option is Dictionary else option)
+		needs_wrap=needs_wrap or face.get_string_size(label,HORIZONTAL_ALIGNMENT_LEFT,-1,14).x>300
+	if needs_wrap:
+		# Authored excerpts need multiline choices and an in-view scroll owner.
+		# PopupMenu renders only single lines; keep the values independent of labels.
+		var group:=ButtonGroup.new()
+		for index:int in labels.size():
+			var row:=_button(labels[index],Callable(),Vector2(0,46))
+			row.name="FormChoice%d"%index
+			row.alignment=HORIZONTAL_ALIGNMENT_LEFT
+			row.toggle_mode=true
+			row.button_group=group
+			row.set_meta("option_index",index)
+			box.add_child(row)
+			row.button_pressed=index==0
+		return {"node":group,"options":values}
+	var dropdown:=OptionButton.new()
+	dropdown.custom_minimum_size.y=46
+	dropdown.fit_to_longest_item=false
+	dropdown.clip_text=true
+	dropdown.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
+	dropdown.get_popup().add_theme_font_override("font",face)
+	dropdown.get_popup().add_theme_font_size_override("font_size",14)
+	for label:String in labels:dropdown.add_item(label)
+	box.add_child(dropdown)
+	return {"node":dropdown,"options":values}
 
 func _show_form(action: Dictionary) -> void:
 	var box := _modal_base(str(action.get("label","输入")))
 	var fields: Array = action.get("inputs",[{"id":"value","label":action.get("placeholder",""),"type":action.get("input","text"),"options":action.get("options",[])}])
 	var editors: Dictionary = {}
+	var scroll:=box.get_parent() as ScrollContainer
+	scroll.follow_focus=true
 	for field in fields:
 		var key := str(field.get("id","value"))
 		if not str(field.get("label","")).is_empty(): box.add_child(_label(str(field.label),17))
 		if field.get("type") == "choice":
-			var dropdown := OptionButton.new()
-			dropdown.custom_minimum_size.y = 46
-			dropdown.fit_to_longest_item = false
-			dropdown.clip_text = true
-			dropdown.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-			var values: Array = []
-			for option in field.get("options",[]):
-				dropdown.add_item(str(option.get("label",option.get("id",""))) if option is Dictionary else str(option))
-				values.append(option.get("id",option.get("value")) if option is Dictionary else option)
-			box.add_child(dropdown)
-			_fit_choice_popup(dropdown)
-			dropdown.get_popup().about_to_popup.connect(func(): _fit_choice_popup(dropdown))
-			editors[key] = {"node":dropdown,"options":values}
+			editors[key]=_form_choice(box,field.get("options",[]))
 		else:
 			var input := LineEdit.new()
 			input.custom_minimum_size.y = 46
@@ -2099,9 +2121,14 @@ func _show_form(action: Dictionary) -> void:
 		var result: Dictionary = {}
 		for key in editors:
 			var editor: Dictionary = editors[key]
-			if editor.node is OptionButton:
-				result[key] = editor.options[editor.node.selected] if editor.node.selected >= 0 and editor.node.selected < editor.options.size() else ""
-			else: result[key] = str(editor.node.text)
+			if editor.node is LineEdit:
+				result[key]=str(editor.node.text)
+				continue
+			var index:int=editor.node.selected if editor.node is OptionButton else -1
+			if editor.node is ButtonGroup:
+				var selected:Button=editor.node.get_pressed_button()
+				if is_instance_valid(selected):index=selected.get_meta("option_index",-1)
+			result[key]=editor.options[index] if index>=0 and index<editor.options.size() else ""
 		_close_modal()
 		State.act(str(action.id),result if action.has("inputs") else result.get("value",""))
 	))

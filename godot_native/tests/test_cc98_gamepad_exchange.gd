@@ -1,6 +1,5 @@
 extends SceneTree
 const UI = preload("res://scripts/ui/native_ui_theme.gd")
-const DisplayFixture = preload("res://tests/zh_text_fixture.gd")
 const PostSource = preload("res://scripts/data/cc98_store.gd")
 ## Source-phase fixtures exercise the real transaction surface and authority.
 ## This does not stand in for an earned manual campaign run.
@@ -75,7 +74,7 @@ func check_geometry(purchased: bool = false) -> void:
 func run() -> void:
 	state = root.get_node("State"); state.developer_mode = true; state.d = state.initial()
 	shell = load("res://scenes/main.tscn").instantiate(); root.add_child(shell); await frames(); shell.set_process(false)
-	var rejected_text: String = DisplayFixture.text_at(DisplayFixture.revisions(), "act-one-bootstrap.content.json", ["audioNarration", "act2_gamepad_purchase_rejected", "subtitleZh"], "你只有零点零六元。卖家拒绝了你分一百期付款的方案。")
+	var rejected_text: String = PostSource.source("act-one-bootstrap.content").audioNarration.act2_gamepad_purchase_rejected.subtitleZh
 	for viewport: Vector2i in [Vector2i(390,844), Vector2i(430,860), Vector2i(1440,900)]:
 		await fixture(viewport, 6, false); check_geometry()
 		check(named(shell.page_body, "Cc98GamepadBalance").text == "¥0.06", "original six-cent balance displayed")

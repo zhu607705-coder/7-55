@@ -3,7 +3,7 @@ extends "res://tests/test_portrait_exploration.gd"
 ## below use real root touch events and the existing Main/controller chain.
 const Metrics=preload("res://scripts/player_metrics.gd")
 const Gate=preload("res://scripts/presentation/library_turnstiles.gd")
-const RECORD_HINT="刚刷过卡。打开浙大钉里的图书馆，到座位预约的「我的」里查入馆记录。"
+const LIBRARY_CONTENT=preload("res://scripts/chapters/library022.gd")
 func source_screen(point:Vector2)->Vector2:return world_screen((point-shell.world.camera)*shell.world.zoom+shell.world.size/2)
 func tap(point:Vector2)->void:
 	motion(point);touch(point,true);touch(point,false);await frames(3)
@@ -26,6 +26,7 @@ func tap_control(node_name: String) -> void:
 		await create_timer(.025).timeout
 	check(false,"visible touch control "+node_name)
 func run()->void:
+	var record_hint:String=LIBRARY_CONTENT.new()._guide("currentObjectives","stage_01_check_gate")
 	check(load("res://tests/native_test_isolation.gd").is_isolated_save(),"isolated root event test")
 	state=root.get_node("State");state.action_completed.connect(func(id,_a,_b,_c):actions.append(id))
 	var feedback: Array[String]=[]
@@ -44,7 +45,7 @@ func run()->void:
 		var axis_y: float = w.library_gate.axis_y
 		check(w.library_gate.lanes[0].progress==1 and w.library_gate.lanes[1].progress==0 and w.can_stand(Metrics.anchor_from_foot_center(Vector2(715,axis_y))),"first swipe opens only the touched lane")
 		check(not is_instance_valid(shell.modal) and state.get_view("library_record").body=="暂无入馆记录" and state.get_actions("library_record").is_empty(),"opening the wing does not issue a record before passage")
-		check(not feedback.has(RECORD_HINT),"swipe alone does not prompt for the entry record")
+		check(not feedback.has(record_hint),"swipe alone does not prompt for the entry record")
 		await tap(source_screen(Vector2(715,755)))
 		check(not w._floor_route.is_empty() and w._floor_pending_interaction.is_empty(),"direct interior floor tap walks without a queued entity action")
 		step=0
@@ -52,7 +53,7 @@ func run()->void:
 			w._process(.016);step+=1;check(w.can_stand(w.player),"opened door traversal retains exact player body")
 		var feet:=Metrics.foot_rect(w.player,w.scene_id)
 		check(feet.size==Vector2(36,10) and feet.end.y<axis_y and actions.count("lib_register_arrival")==1 and state.d.native.get("lib_admission_recorded",false),"the body-width feet pass the gate and record one arrival")
-		check(feedback.count(RECORD_HINT)==1 and shell.notice_surface=="world" and w.subtitle==RECORD_HINT,"first physical entry shows its phone route in the map dialogue lane")
+		check(feedback.count(record_hint)==1 and shell.notice_surface=="world" and w.subtitle==record_hint,"first physical entry shows its authored record hint in the map dialogue lane")
 		check(not state.d.ui.libraryFinalsPuzzle.entranceRecordRead and not state.d.ui.libraryFinalsPuzzle.backpackInspected,"crossing the gate does not acknowledge the record")
 		var saved: Dictionary = state._read_native_save(state.SAVE_PATH).get("state",{})
 		check(saved.get("native",{}).get("lib_admission_recorded",false) and not saved.get("ui",{}).get("libraryFinalsPuzzle",{}).get("entranceRecordRead",true),"ordinary save stores the arrival with an unread record")
@@ -62,7 +63,7 @@ func run()->void:
 		for name in ["WorldPhoneButton","HomeApp_zjuding","ZjudingApp_library","LibraryApp_reserve","LibraryReservationMyTab","LibraryEntranceRecord"]:
 			await tap_control(name)
 		check(state.d.native.page=="library_record" and shell.phone.visible and not shell.world_frame.visible,"seat reservation opens the record on the phone")
-		check(not shell.toast.visible or shell.toast.text!=RECORD_HINT,"map arrival hint never overlays the phone")
+		check(not shell.toast.visible or shell.toast.text!=record_hint,"map arrival hint never overlays the phone")
 		var evidence := shell.page_body.find_child("LibraryRecordEvidence",true,false) as Label
 		check(is_instance_valid(evidence) and "07:55 从紫云五舍出发" in evidence.text and "08:02 刷卡进基础图书馆" in evidence.text and not state.d.ui.libraryFinalsPuzzle.entranceRecordRead,"the original record identifies both travel endpoints without acknowledging itself")
 		await tap_control("PhoneNav_back")
@@ -88,7 +89,7 @@ func run()->void:
 		while not w._floor_route.is_empty() and step<250:
 			w._process(.016);step+=1;check(w.scene_id=="library_interior" and w.can_stand(w.player),"return route retains library scene and exact source collision body")
 		check(w.scene_id=="library_interior" and w.library_gate.outside(w.player) and actions.count("lib_register_arrival")==1 and actions.count("lib_record")==1 and actions.count("lib_exit")==0,"real root touch returns through the wing without registering another arrival " + str([extent, w.player, w._floor_status, actions]))
-		check(feedback.count(RECORD_HINT)==1,"entry cue is issued once across arrival, phone and exit")
+		check(feedback.count(record_hint)==1,"entry cue is issued once across arrival, phone and exit")
 		await shell.shutdown();shell.free();await frames()
 	# F10 is an actual interruption of a pending approach, not a pause/resume
 	# promise. Closing the panel must never replay that old target intent.

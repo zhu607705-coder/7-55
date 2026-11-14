@@ -23,7 +23,7 @@ func run() -> void:
 	director.subtitle.connect(func(text: String, surface: String) -> void: texts.append([text,surface]))
 	director.cue_published.connect(func(id: String, _payload: Dictionary) -> void: published.append(id))
 	check(director.source.events.size()==237,"all237 timeline IDs exported")
-	check(director.source.storyLines.size()==152,"all152 exact story lines exported")
+	check(director.source.storyLines.size()==161,"all 161 current authored story lines exported")
 	for asset in director.source.assets:
 		check(director._stream(asset) is AudioStream,"exact source media loads: "+asset)
 	for id in director.source.events:

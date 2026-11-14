@@ -51,11 +51,15 @@ func run() -> void:
 	check(request.has("media"),"a genuine heard receipt permits the source excerpt")
 	if not request.has("media"):
 		await host.shutdown();host.queue_free();await process_frame;quit(1);return
-	check(absf(request.media.session.start_ms-440)<1 and absf(request.media.session.end_ms-2840)<1,"source event seek has180ms lead and220ms tail")
+	var recording: Dictionary=controller.interlude.voice_recording("lake")
+	var part: Dictionary=recording.soundEvents[2]
+	var start:=maxf(0.0,float(part.startMs)-180.0)
+	var end:=minf(float(request.media.session.duration_ms),float(part.endMs)+220.0)
+	check(absf(request.media.session.start_ms-start)<1 and absf(request.media.session.end_ms-end)<1,"source event seek has180ms lead and220ms tail")
 	check(not request.media.session.marks_heard,"event excerpt cannot mark full audition")
 	host.apply(request.media)
 	await create_timer(0.12).timeout
-	check(host.player.get_playback_position()>0.4,"real player seeks to excerpt offset")
+	check(host.player.get_playback_position()>start/1000.0-.04,"real player seeks to excerpt offset")
 	controller.dispatch(s,"c35_media_event",full)
 	check(controller.interlude.voice_session!=full,"replaced capability cannot become current")
 	# Missing-media route is visibly timed captions, never invented audio-heard.

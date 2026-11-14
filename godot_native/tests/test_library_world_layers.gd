@@ -188,7 +188,7 @@ func test_native_world_integration() -> void:
 	# Isolate the source cabinet footprint to demonstrate actual foot collision.
 	var original: Array=world.collisions.duplicate(true)
 	world.collisions=[{"id":"north_display_shelf","left":502,"top":108,"right":625,"bottom":234}]
-	var right_of_initial:=Vector2(635,170)-PlayerMetrics.FOOT_CENTER_OFFSET
+	var right_of_initial:=Vector2(625 + PlayerMetrics.foot_size("library_interior").x * .5 + 2, 170) - PlayerMetrics.FOOT_CENTER_OFFSET
 	check(world.can_stand(right_of_initial),"live collision initially permits point outside initial cabinet")
 	state.act("lib_shelf"); await process_frame; await process_frame
 	check(shell.world_frame.visible and not shell.phone.visible,"shelf keeps its source animation visible before opening the earned rule")

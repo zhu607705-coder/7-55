@@ -28,26 +28,45 @@ func _run() -> void:
 				for field in fields:
 					for option in field.get("options",[]):
 						var label=str(option.get("label",option.get("id",""))) if option is Dictionary else str(option)
-						if label.length()>longest.length:longest={"length":label.length(),"label":label,"checkpoint":checkpoint.id,"page":page,"action":action.duplicate(true)}
+						if label.length()>longest.length:longest={"length":label.length(),"label":label,"checkpoint":checkpoint.id,"page":page,"action":action.duplicate(true),"value":option.get("id",option.get("value")) if option is Dictionary else option}
 	state.begin_checkpoint(longest.checkpoint)
 	root.size=Vector2i(390,844)
 	var main=load("res://scenes/main.tscn").instantiate();root.add_child(main);await frame(5)
-	main._show_form(longest.action);await frame()
-	var panel=main.modal.get_child(0);var dropdowns=[];options(main.modal,dropdowns)
-	check(Rect2(Vector2.ZERO,Vector2(root.size)).encloses(panel.get_global_rect()),"longest-controller-choice-form-contained",{"label":longest.label,"length":longest.length,"checkpoint":longest.checkpoint,"page":longest.page,"action":longest.action.id,"panel":rect(panel),"actions_scanned":action_count})
-	for node in dropdowns:check(Rect2(Vector2.ZERO,Vector2(root.size)).encloses(node.get_global_rect()),"controller-dropdown-contained",rect(node))
-	if not dropdowns.is_empty():
-		dropdowns[0].grab_focus();await key(KEY_SPACE);await frame()
-		var popup: PopupMenu=dropdowns[0].get_popup()
-		check(popup.visible and Rect2(Vector2.ZERO,Vector2(root.size)).encloses(Rect2(Vector2(popup.position),Vector2(popup.size))),"controller-option-popup-contained",[popup.position.x,popup.position.y,popup.size.x,popup.size.y])
-		if popup.has_method("get_theme_font"):
-			var popup_font: Font=popup.get_theme_font("font")
-			var font_size: int=popup.get_theme_font_size("font_size")
-			var style: StyleBox=popup.get_theme_stylebox("panel")
-			var width: float=popup_font.get_string_size(longest.label,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x
-			var margins: float=style.get_content_margin(SIDE_LEFT)+style.get_content_margin(SIDE_RIGHT)+popup.get_theme_constant("h_separation")*2
-			check(width+margins<=popup.size.x,"controller-popup-longest-wording-fits",{"font":popup_font.resource_path,"font_size":font_size,"text_width":width,"horizontal_insets":margins,"popup_width":popup.size.x,"label":longest.label})
-		popup.hide();await frame()
+	var submitted:Array=[]
+	state.action_completed.connect(func(action_id,_before,_after,outcome):
+		if action_id==longest.action.id:submitted.append(outcome))
+	for extent:Vector2i in [Vector2i(390,844),Vector2i(667,320)]:
+		state.begin_checkpoint(longest.checkpoint)
+		root.size=extent;main.size=Vector2(extent)
+		main._show_form(longest.action);await frame()
+		var panel:Control=main.modal.get_child(0)
+		var bounds:=Rect2(Vector2.ZERO,Vector2(extent))
+		check(bounds.encloses(panel.get_global_rect()),"longest-controller-choice-form-contained",{"extent":str(extent),"label":longest.label,"checkpoint":longest.checkpoint,"page":longest.page,"action":longest.action.id,"panel":rect(panel),"actions_scanned":action_count})
+		var row:Button
+		for option:Button in main.modal.find_children("FormChoice*","Button",true,false):
+			if option.text==longest.label:row=option
+		check(is_instance_valid(row),"controller-choice-retains-entire-authored-wording",longest.label)
+		if not is_instance_valid(row):
+			main._close_modal();continue
+		var font:Font=row.get_theme_font("font")
+		var font_size:int=row.get_theme_font_size("font_size")
+		var inset:Vector2=row.get_theme_stylebox("normal").get_minimum_size()
+		var width:=maxf(1,row.size.x-inset.x)
+		var measured:=font.get_multiline_string_size(row.text,HORIZONTAL_ALIGNMENT_LEFT,width,font_size)
+		check(measured.x<=width+.5 and measured.y+inset.y<=row.size.y+.5,"controller-choice-wrap-fits-row",{"extent":str(extent),"measured":str(measured),"row":rect(row)})
+		var focus_hops:=0
+		while root.gui_get_focus_owner()!=row and focus_hops<16:
+			await key(KEY_TAB);focus_hops+=1
+		var scroll:ScrollContainer=row.get_parent().get_parent()
+		check(root.gui_get_focus_owner()==row and scroll.follow_focus and scroll.get_global_rect().intersects(row.get_global_rect()),"controller-choice-keyboard-focus-scrolls-into-view",str(extent))
+		await key(KEY_SPACE)
+		check(row.button_pressed and row.button_group.get_pressed_button()==row,"controller-choice-keyboard-selects-exact-row",str(extent))
+		var confirm:Button=row.get_parent().get_child(-1)
+		confirm.grab_focus();await key(KEY_ENTER);await frame()
+		check(not is_instance_valid(main.modal),"confirmed-controller-choice-closes-form",str(extent))
+	check(submitted.size()==2,"choice-submits-existing-controller-action-once",submitted.size())
+	var panel:Control
+	var dropdowns:Array=[]
 	main._show_developer();await frame();panel=main.modal.get_child(0);dropdowns.clear();options(main.modal,dropdowns)
 	check(Rect2(Vector2.ZERO,Vector2(root.size)).encloses(panel.get_global_rect()),"developer-modal-contained",rect(panel))
 	for node in dropdowns:check(Rect2(Vector2.ZERO,Vector2(root.size)).encloses(node.get_global_rect()),"developer-dropdown-contained",rect(node))

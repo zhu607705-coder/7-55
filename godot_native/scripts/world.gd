@@ -2445,8 +2445,11 @@ func _canteen_floor_goal(goal: Vector2,obstacles: Array) -> Vector2:
 	_canteen_floor_tap.candidate_count=0
 	if scene_id!="canteen_interior" or not mask.is_empty() or _floor_stand(goal): return goal
 	var point:=goal+PlayerMetrics.foot_center_offset(scene_id)
-	for obstacle: Dictionary in collisions:
-		if _rect(obstacle).has_point(point): return goal
+	if is_instance_valid(native_canteen) and native_canteen.is_active():
+		if native_canteen.blocks_floor_point(point):return goal
+	else:
+		for obstacle: Dictionary in collisions:
+			if _rect(obstacle).has_point(point):return goal
 	if not Rect2(Vector2.ZERO,world_size).encloses(PlayerMetrics.visual_rect(goal,display_scale_at(goal))): return goal
 	return _canteen_floor_tap.nearest(goal,CanteenFloorTap.PIXEL_RADIUS/zoom,obstacles,_floor_stand,func(anchor: Vector2): return _floor_empty_destination(anchor+PlayerMetrics.foot_center_offset(scene_id)))
 

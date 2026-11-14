@@ -5,6 +5,10 @@ import {createHash} from 'node:crypto';
 import {isFlcRuntimePath} from '../../../tools/web_story_content_policy.mjs';
 import {applyRoomLayout} from '../tools/apply_room_layout.mjs';
 const data=new URL('../data/',import.meta.url),baseline=JSON.parse(fs.readFileSync(new URL('room_layout_baseline.json',import.meta.url)));
+const playerMetrics=fs.readFileSync(new URL('../../../scripts/player_metrics.gd',import.meta.url),'utf8');
+const footSize=playerMetrics.match(/^const FOOT_SIZE := Vector2\(([\d.]+),\s*([\d.]+)\)$/m);
+assert.ok(footSize,'shared native foot size is available');
+const [,footWidth,footHeight]=footSize.map(Number);
 const hash=v=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
 const fields=['modules','ground','rooms','doors','links','waypoints','occluders','windows'];
 const overlap=(a,b)=>a[0]<b[0]+b[2]&&a[0]+a[2]>b[0]&&a[1]<b[1]+b[3]&&a[1]+a[3]>b[1];
@@ -20,7 +24,7 @@ for(const f of [2,3,4])test(`floor ${f} preserves legacy anchors and architectur
   if(o.mounted){const parent=p.objects.find(q=>q.id===o.parent);assert.ok(parent,`${o.id} keeps an explicit parent`);assert.ok(o.baseline>parent.baseline&&o.baseline<parent.baseline+1,`${o.id} sorts with its parent`);}
   if(!o.mounted)for(const other of p.objects.filter(q=>!q.mounted&&q.room===o.room&&q.id>o.id))assert.ok(!overlap(o.footprint,other.footprint),`${o.id} physical overlap ${other.id}`);
  }
- for(const npc of p.npcs||[]){const foot=[npc.foot[0]-9.75,npc.foot[1]-7.3125,19.5,14.625];for(const o of p.objects.filter(q=>!q.mounted))assert.ok(!overlap(foot,o.footprint),`${npc.id} foot clear of ${o.id}`);}
+ for(const npc of p.npcs||[]){const foot=[npc.foot[0]-footWidth/2,npc.foot[1]-footHeight/2,footWidth,footHeight];for(const o of p.objects.filter(q=>!q.mounted))assert.ok(!overlap(foot,o.footprint),`${npc.id} foot clear of ${o.id}`);}
 });
 test('new room rasters preserve downloaded bytes and expose no private URLs',()=>{
  const dir=new URL('../assets/room_props/',import.meta.url),raw=fs.readFileSync(new URL('manifest.json',dir),'utf8');
@@ -35,8 +39,7 @@ test('reused NPC sprites belong to the FLC optional pack without loading later c
 });
 
 test('wide low desks preserve human metrics, physical height and tabletop contact',()=>{
- const native=new URL('../../../',import.meta.url),body=fs.readFileSync(new URL('scripts/player_metrics.gd',native),'utf8');
- assert.match(body,/const DISPLAY_SCALE := 0\.65/);assert.match(body,/const FOOT_SIZE := Vector2\(19\.5,14\.625\)/);
+ assert.match(playerMetrics,/const DISPLAY_SCALE := 0\.65/);
  for(const f of [2,3]){
   const p=JSON.parse(fs.readFileSync(new URL(`floor_${f}.json`,data))),ids=f===2?[6,10,14,18,22,26].map(i=>`team_desk_${i}`):['recording_desk_234'];
   assert.equal(p.roomLayout.version,2);

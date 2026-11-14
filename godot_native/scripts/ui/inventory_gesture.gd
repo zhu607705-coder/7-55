@@ -77,3 +77,17 @@ static func release_position(data:Variant,viewport:Viewport)->Variant:
 	var point:Variant=release.get("point")
 	if not source is WeakRef or source.get_ref()!=viewport or not point is Vector2 or not point.is_finite():return null
 	return point
+
+static func drop_at_hover(viewport: Viewport,point: Vector2,data: Dictionary) -> bool:
+	var item := viewport.gui_get_hovered_control() as CanvasItem
+	while is_instance_valid(item):
+		if item is Control:
+			var target:=item as Control
+			var local:=target.get_global_transform_with_canvas().affine_inverse()*point
+			if target.has_method("_can_drop_data") and target._can_drop_data(local,data):
+				target._drop_data(local,data)
+				return true
+			if target.mouse_filter==Control.MOUSE_FILTER_STOP: break
+		if item.is_set_as_top_level(): break
+		item=item.get_parent() as CanvasItem
+	return false

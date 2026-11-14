@@ -24,7 +24,9 @@ func room_fixture(dimensions: Vector2i,source: Vector2,group_id: String,allow_st
 	for y in range(550,790,4):
 		for x in range(40,460,4):
 			var point:=Vector2(x,y)
-			if not w.can_stand(point) or Room.distance(Metrics.foot_rect(point).get_center(),bounds)>60: continue
+			# Chapter 4 evaluates reach from the source depth anchor. The
+			# collision foot center is used separately by can_stand().
+			if not w.can_stand(point) or Room.distance(point+Metrics.DEPTH_CENTER_OFFSET,bounds)>60: continue
 			w.player=point;w._update_camera()
 			var valid:=true
 			for goal in [source,drop]:
@@ -99,8 +101,12 @@ func run() -> void:
 			var payload: Dictionary=w.chapter4_layers.pick_drag(sample.source,state.d)
 			check(payload.get("groupId","")==sample.group,"source art resolves actual group "+case_name)
 			var overlap: Dictionary={}
+			var expected_placements: Array=[]
 			for group in Room.data().groups:
 				if group.id==sample.overlap: overlap=group
+				if group.id==sample.group:
+					for mapping: Dictionary in group.mappings:
+						expected_placements.append({"pieceId":mapping.pieceId,"slotId":mapping.slotId,"orientation":"up"})
 			check(Room.rect(overlap.targetBounds).has_point(sample.source),"source pixels overlap authored target bounds "+case_name)
 			var picked: Dictionary=w._pick_target(sample.source)
 			check(not picked.is_empty(),"real object picker resolves overlapping click target "+case_name)
@@ -130,7 +136,11 @@ func run() -> void:
 			check(state.d.chapter4.room204Placements.is_empty(),"held drag cannot commit before release "+case_name)
 			mouse(end,false);await frames(4)
 			check(not dragging(),"release ends native drag "+case_name)
-			check(state.d.chapter4.room204Placements.size()==3,"release commits exactly three authored pieces "+case_name)
+			var placements: Array=state.d.chapter4.room204Placements
+			var matched: bool=placements.size()==expected_placements.size()
+			for placement: Dictionary in expected_placements:
+				matched=matched and placements.has(placement)
+			check(matched and bool(state.last_result.get("accepted",false)),"release commits the correct authored pieces and slots "+case_name)
 			check(actions.slice(action_count).count("c4_group_"+sample.group)==1,"release dispatches actual group exactly once "+case_name)
 			check(w.player==position and w._floor_route.is_empty(),"drag leaves feet unchanged and never starts floor walk "+case_name)
 	await finish("MOBILE_FLOOR_ROOM204_DRAG")

@@ -165,7 +165,7 @@ export const THEATER_INTERACTION_TARGETS: readonly TheaterInteractionTarget[] = 
     label: "道具箱旁票据扫描器",
     x: 364,
     y: 170,
-    stand: { x: 420, y: 218 },
+    stand: { x: 420, y: 200 },
     width: 42,
     height: 78,
     proximity: 72,

@@ -27,11 +27,13 @@ func run()->void:
 				await process_frame;await process_frame
 				overlay.sync_view(extent,scale_value,"通往启真湖的路",goal,plaque_text,"浅色操作",Rect2(extent.x-100/scale_value,0,100/scale_value,44/scale_value),extent.y-70/scale_value,"07:55:23 不可信","查看已获得的记录，核对眼前物件。")
 				await process_frame
-				var bounds:=Rect2(Vector2.ZERO,physical)
-				check(bounds.encloses(Rect2(overlay.task.position,overlay.task.size)),id+" task contained "+str(physical))
-				check(bounds.encloses(Rect2(overlay.plaque.position,overlay.plaque.size)),id+" plaque contained "+str(physical))
-				check(is_equal_approx(overlay.plaque.position.y+overlay.plaque.get_combined_minimum_size().y,physical.y-78),id+" prompt stays eight pixels above the supplied lower safe edge")
-				check(not Rect2(overlay.task.position,overlay.task.size).intersects(Rect2(overlay.plaque.position,overlay.plaque.size)),id+" task and plaque separate")
+				var bounds:=Rect2(Vector2.ZERO,extent)
+				var task_rect:=Rect2(overlay.task.position*overlay.scale,overlay.task.size*overlay.scale)
+				var plaque_rect:=Rect2(overlay.plaque.position*overlay.scale,overlay.plaque.size*overlay.scale)
+				check(bounds.encloses(task_rect),id+" task contained "+str(physical))
+				check(bounds.encloses(plaque_rect),id+" plaque contained "+str(physical))
+				check(is_equal_approx(plaque_rect.end.y*scale_value,physical.y-78),id+" prompt stays eight pixels above the supplied lower safe edge")
+				check(not task_rect.intersects(plaque_rect),id+" task and plaque separate")
 				check(not overlay.task.visible and not overlay.mode.visible,"exploration has no persistent task column or top mode label")
 				check(overlay.objective.text==goal and overlay.object_heading.text==plaque_text,"authored content retained")
 				check(overlay.objective.get_theme_font_size("font_size")==13 and overlay.object_heading.get_theme_font_size("font_size")==18,"locked sizes not enlarged")

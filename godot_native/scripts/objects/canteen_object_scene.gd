@@ -375,6 +375,11 @@ func _register_floor_pixels(patch: Dictionary) -> void:
 	# plate and the walkable alpha edge come from this same composite.
 	floor_pixels.blit_rect(pixels, source, Vector2i(dst[0], dst[1]))
 
+func blocks_floor_point(point:Vector2)->bool:
+	# Sample the same floor and physical footprints as walking. The small
+	# positive area allows the polygon and floor checks to share one path.
+	return blocks_feet(Rect2(point-Vector2.ONE*.005,Vector2.ONE*.01))
+
 func blocks_feet(feet:Rect2)->bool:
 	if not _active:return false
 	# A foot touching the floor's outer edge still occupies the last interior pixel.

@@ -1,4 +1,5 @@
 extends "res://tests/test_native_surface_modes.gd"
+const Overlay:=preload("res://scripts/ui/world_overlay_layout.gd")
 func run()->void:
  state=root.get_node("State")
  for dimensions:Vector2i in [Vector2i(1440,900),Vector2i(390,844),Vector2i(667,375),Vector2i(568,320)]:
@@ -10,8 +11,8 @@ func run()->void:
   await frames()
   var overlay:Control=world.selected_overlay
   check(overlay.get_viewport()==root and overlay.get_parent()==shell,"selected text renders in native root viewport, never world texture")
-  check(overlay.scale==Vector2.ONE,"no inverse scale or downstream world resampling")
-  check(overlay.size.is_equal_approx(region.size),"native overlay uses actual displayed world size")
+  check(overlay.scale.is_equal_approx(Vector2.ONE*Overlay.ui_scale(region.size)),"native HUD uses the unified screen-space scale")
+  check(overlay.get_global_rect().is_equal_approx(region),"native overlay covers the actual displayed world region")
   check(not overlay.task.is_visible_in_tree() and not overlay.mode.is_visible_in_tree(),"actual world has no persistent top objective column or mode caption")
   check(overlay.objective.get_theme_font_size("font_size")==13 and overlay.object_heading.get_theme_font_size("font_size")==18,"locked native font sizes preserved")
   var world_rect_before:Rect2=shell.world_view.get_global_rect()

@@ -61,7 +61,7 @@
   "sources": [
     {
       "path": "src/scenes/rpg/LibraryInteriorScene.ts",
-      "sha256": "cd8a6d543a67c83051d0664e5e4d3c68a71e5a9a36a8ece83c07fbd6114597cb"
+      "sha256": "1fea69266bf2e7c4b5b19f3615b76d5f80771a43d182c0dfbd7b15a30187c028"
     },
     {
       "path": "src/scenes/rpg/LibraryInteriorModel.ts",

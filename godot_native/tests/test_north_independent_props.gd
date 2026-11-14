@@ -12,7 +12,7 @@ func check(ok:bool,label:String)->void:
 func frames(n:=2)->void:
 	for i in n:await process_frame
 func anchor_for_bottom(x:float,y:float)->Vector2:
-	return Vector2(x,y)-Metrics.FOOT_CENTER_OFFSET-Vector2(0,Metrics.FOOT_SIZE.y/2)
+	return Vector2(x, y - Metrics.GROUND_DEPTH_OFFSET)
 func run()->void:
 	if not preload("res://tests/native_test_isolation.gd").is_isolated_save():quit(2);return
 	OS.set_environment(Objects.PREVIEW_ENV,"1")

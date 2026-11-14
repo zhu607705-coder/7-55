@@ -1,7 +1,7 @@
 extends "res://tests/test_portrait_exploration.gd"
 ## Portable Main/root-input regression. Optional ordinary-save replay is loaded
 ## normally from an isolated profile; source fixture values are not CUA evidence.
-## The native service-wall foot is y=236, so the exact center limit is246.3125.
+## The independent serving-window foot ends at source y=239.
 ## Test obstacles are injected into the active native geometry owner.
 const Metrics=preload("res://scripts/player_metrics.gd")
 const Tap=preload("res://scripts/canteen_floor_tap.gd")
@@ -10,7 +10,9 @@ const BOARD=Vector2(1200.888888888889,234.368055555556)
 const QUEUE_START=Vector2(867.555555555556,258.8125)
 # World request reconstructed from the original (79,321) root tap. The HUD
 # can reframe the map; replay the same source intent through its live camera.
-const NEAR_WALL=Vector2(609.777777777778,246.055555555556)
+const RECORDED_REQUEST=Vector2(609.777777777778,246.055555555556)
+const WINDOW_FOOT_BOTTOM=239.0
+const WINDOW_CLEAR_CENTER=WINDOW_FOOT_BOTTOM+Metrics.FOOT_SIZE.y/2
 var baseline: Dictionary={}
 var records: Array=[]
 var ordinary_save:=false
@@ -145,16 +147,17 @@ func run() -> void:
 	check(shell.world.native_canteen.navigation_obstacles(foot)==cached and shell.world._floor_obstacles().size()==obstacles.size()-1,"caller-owned obstacle mutation cannot escape into navigation cache")
 	for using_touch in [false,true]:
 		await replay_approach()
-		var request:=source_screen(NEAR_WALL)
+		var recorded:=source_screen(RECORDED_REQUEST)
+		check(source_at(recorded).distance_to(RECORDED_REQUEST)<.002,"live root projection retains original source request")
+		check(shell.world.can_stand(RECORDED_REQUEST-Metrics.FOOT_CENTER_OFFSET),"formerly blocked request is now clear of the rebuilt serving window")
+		await arrive(recorded,RECORDED_REQUEST,using_touch)
+		var request:=source_screen(Vector2(RECORDED_REQUEST.x-15,WINDOW_CLEAR_CENTER-.25))
 		var raw:=source_at(request);var goal:=raw-Metrics.FOOT_CENTER_OFFSET
-		check(raw.distance_to(NEAR_WALL)<.002,"live root projection retains original source request")
-		check(not shell.world.can_stand(goal),"recorded second tap's original full-foot position overlaps source wall")
-		var hits: Array=[]
-		for box: Dictionary in shell.world.collisions:
-			if Metrics.foot_rect(goal).intersects(shell.world._rect(box)):hits.append(box.id)
-		check(hits==["north_service_wall"],"exact endpoint rejection is the static service-wall foot overlap")
-		check(shell.world._pick_target(raw).is_empty() and shell.world._floor_empty_destination(raw),"recorded near miss is empty floor with no object/actor/HUD veto")
-		await arrive(request,Vector2(raw.x,246.3125),using_touch)
+		check(not shell.world.can_stand(goal),"near miss overlaps the independent counter's foot")
+		var counter: Node2D=shell.world.native_canteen.objects.serving_window_2
+		check(counter.blocks_feet(Metrics.foot_rect(goal)) and not shell.world.native_canteen.blocks_floor_point(raw),"the foot rectangle intersects the live counter while the actual tap is over floor")
+		check(shell.world._pick_target(raw).is_empty() and shell.world._floor_empty_destination(raw),"near miss is empty floor with no object/actor/HUD veto")
+		await arrive(request,Vector2(raw.x,WINDOW_CLEAR_CENTER),using_touch)
 	# Reuse current legal start for negative requests through the same root path.
 	var w=shell.world
 	await rejection(source_screen(Vector2(620,239)),"solid wall center")
@@ -178,13 +181,13 @@ func run() -> void:
 	check(w.floor_navigation.planner.calls==calls and w._floor_route.is_empty() and w._floor_goal==Vector2.INF,"actor input cannot become a corrected floor goal")
 	root_tap(Vector2(shell.size.x/2,shell.size.y-20),true)
 	check(w.floor_navigation.planner.calls==calls and w._floor_route.is_empty(),"footer touch outside the map cannot enter floor planner")
-	w.zoom=1.2;w._update_camera();w.queue_redraw();await frames(2)
-	await rejection(source_screen(Vector2(680,241.1)),"empty-floor correction beyond six screen pixels")
+	w.zoom=1.6;w._update_camera();w.queue_redraw();await frames(2)
+	await rejection(source_screen(Vector2(680,239.8)),"empty-floor correction beyond six screen pixels")
 	w.zoom=.45;w._update_camera();w.queue_redraw();await frames(2)
 	# The nearest corrected destination belongs to a painted object: no fallback.
-	var raw:=Vector2(620,246)
+	var raw:=Vector2(620,WINDOW_CLEAR_CENTER-.25)
 	w.set_process(false);await frames(2)
-	w.object_picker.add([],{"rect":Rect2(619,246.3125,2,1)},true)
+	w.object_picker.add([],{"rect":Rect2(619,WINDOW_CLEAR_CENTER,2,1)},true)
 	await rejection(source_screen(raw),"painted nearest destination")
 	w.queue_redraw();await frames(2)
 	# A legal endpoint behind a new full-height barrier stays exact and blocked.
@@ -194,7 +197,7 @@ func run() -> void:
 	w.native_canteen.navigation_signature=""
 	await rejection(source_screen(Vector2(690,299)),"legal unreachable goal")
 	# Other scenes and masks keep exact endpoints, even if invalid.
-	var anchor:=Vector2(620,246)-Metrics.FOOT_CENTER_OFFSET
+	var anchor:=raw-Metrics.FOOT_CENTER_OFFSET
 	w._floor_bounds=w._floor_anchor_bounds(w._floor_visible_rect())
 	w.scene_id="library_interior"
 	check(w._canteen_floor_goal(anchor,w._floor_obstacles())==anchor,"input correction does not expand to another scene")
