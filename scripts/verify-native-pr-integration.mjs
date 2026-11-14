@@ -59,6 +59,7 @@ const namespaces=collectGodotProjectNamespaces(projectRoots.map(relative=>path.j
 // guarded load and the real side-art mirror; all other resources stay required.
 const optionalLeftIdle='res://assets/rpg/player/player_left_idle.png';
 function hasGuardedLeftIdleFallback(text,project){
+ const commonArt=fs.readFileSync(path.join(project,'scripts/player_walk_art.gd'),'utf8');
  const escaped=optionalLeftIdle.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
  const guard=new RegExp(`^([\\t ]*)if ResourceLoader\\.exists\\(["']${escaped}["']\\):\\r?\\n\\1[\\t ]+player_left_idle\\s*=\\s*load\\(["']${escaped}["']\\)\\s*$`,'m');
  return guard.test(text)
@@ -66,7 +67,10 @@ function hasGuardedLeftIdleFallback(text,project){
   &&fs.existsSync(path.join(project,'assets/rpg/player/player_side_idle.png'))
   &&/player_side_idle\s*=\s*load\("res:\/\/assets\/rpg\/player\/player_side_idle\.png"\)/.test(text)
   &&/var flip:\s*bool\s*=\s*pose\.flip and direction=="side"/.test(text)
-  &&/if flip and player_frames\.get\("left",\[\]\)\.size\(\)==8:\s*\n\s*direction="left";\s*flip=false/.test(text)
+  &&/var authored_left:\s*bool\s*=\s*pose\.facing == "side" and pose\.flip and player_frames\.get\("left", \[\]\)\.size\(\) == PlayerWalkArt\.WALK_FRAMES/.test(text)
+  &&/if authored_left:\s*\n\s*direction="left";\s*flip=false/.test(text)
+  &&/if player_walk_art\.ready and not authored_left:\s*\n\s*return locomotion\.sample\(\)/.test(text)
+  &&/"flip_h": direction == "left" or \(key == "side" and flip\)/.test(commonArt)
   &&/if direction=="side" and player_side_idle!=null:\s*texture=player_side_idle/.test(text)
   &&/return \{[^\n]*"flip_h":flip/.test(text);
 }
