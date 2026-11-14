@@ -73,7 +73,11 @@ func check_subtitle(label: String) -> void:
 	check(measured.y<=body.size.y+.5,"entire source line fits without clipping: "+label)
 	var body_size:=maxi(Overlay.BODY_PX,SelectedTheme.size("dialogue","body"))
 	var expected_size:=ceili(body_size*state.d.native.settings.text_scale*Overlay.ui_scale(host.view.size))
-	check(host.view.get_viewport()==root and body.get_theme_font_size("font_size")==expected_size,"subtitle uses selected screen-space typography: "+label)
+	var font_size:=body.get_theme_font_size("font_size")
+	# The chapter caption retains the selected font and scales up to a 14px
+	# floor. Rounding the minimum source size can add one screen pixel.
+	var readable_size:bool=font_size==expected_size if expected_size>=14 else font_size in [14,15]
+	check(host.view.get_viewport()==root and body.get_theme_font("font")==SelectedTheme.font("dialogue","body") and readable_size,"subtitle uses legible selected screen-space typography: "+label)
 	var caption:Rect2=host.view.panel.get_global_rect()
 	var film:Rect2=shell.world_view.get_global_rect()
 	if host.view.get_parent()==shell.world:caption=Rect2(film.position+caption.position*host.view.display_scale,caption.size*host.view.display_scale)

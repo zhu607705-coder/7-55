@@ -29,7 +29,7 @@ static func metrics(region:Rect2,display_scale:float,speaker:String,text:String,
 	var inner:float=maxf(1,width-side_padding*2)
 	var heading_px:int=maxi(1,ceili(Selected.size("dialogue","heading")*text_scale*unit))
 	var body_size:=maxi(min_body_px,Selected.size("dialogue","body"))
-	var body_px:int=ceili(maxf(14.0/scale,body_size*text_scale*unit))
+	var body_px:int=maxi(1,ceili(body_size*text_scale*unit))
 	var tip_px:int=maxi(1,ceili(Selected.size("dialogue","tip")*text_scale*unit))
 	var heading_height:float=_height(speaker,inner,"heading",heading_px)
 	var tip_height:float=_height(prompt,inner,"tip",tip_px)

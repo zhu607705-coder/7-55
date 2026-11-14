@@ -1112,7 +1112,6 @@ func _layout_modal() -> void:
 	if is_instance_valid(modal) and modal.has_meta("journal_shared_shell"):
 		var shared: Dictionary=modal.get_meta("journal_shared_shell")
 		var content: VBoxContainer=shared.content
-		_size_journal_targets(modal,modal.get_global_transform().get_scale().y)
 		var height:=minf(854.0/(424.0/378.0),51.0+content.get_combined_minimum_size().y+14.0)
 		shared.panel.size=Vector2(378,maxf(90,height))
 		shared.scroll.size=Vector2(350,maxf(1,shared.panel.size.y-65))
