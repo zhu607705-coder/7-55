@@ -100,24 +100,28 @@ func _configure_manifest(value: Dictionary, host: Variant, supports_window: bool
 	_enabled = true
 	_fatal_error = "游戏资源目录无法读取，请重新打开页面。"
 	if value.get("schema") != "755-web-content-v1" or not value.get("core") is Dictionary or not _valid_file(value.core) or not value.get("packs") is Array or not value.get("backgroundOrder") is Array: return false
+	var chapter_limit: Variant = value.get("publicChapterLimit", ReleaseContent.FULL_CHAPTER_LIMIT)
+	if typeof(chapter_limit) not in [TYPE_INT, TYPE_FLOAT]: return false
+	if float(chapter_limit) != 2.0 and float(chapter_limit) != float(ReleaseContent.FULL_CHAPTER_LIMIT): return false
 	var packs: Dictionary = {}
 	var families: Dictionary = {}
 	var files: Dictionary = {str(value.core.file): true}
 	for item: Variant in value.packs:
-		if not item is Dictionary or not _valid_id(item.get("id")) or item.id == "core" or not ReleaseContent.family_available(item.get("family")) or not _valid_file(item) or packs.has(item.id) or files.has(item.file): return false
+		if not item is Dictionary or not _valid_id(item.get("id")) or item.id == "core" or not ReleaseContent.family_available(item.get("family"), int(chapter_limit)) or not _valid_file(item) or packs.has(item.id) or files.has(item.file): return false
 		packs[item.id] = {"id": item.id, "family": item.family, "file": item.file, "bytes": int(item.bytes), "sha256": item.sha256, "status": "missing", "error": "", "stageTimings": {"sha256Ms": null, "mountMs": null, "receiveMs": null}}
 		if not families.has(item.family): families[item.family] = []
 		families[item.family].append(item.id)
 		files[item.file] = true
 	var seen: Dictionary = {}
 	for family: Variant in value.backgroundOrder:
-		if not ReleaseContent.family_available(family) or seen.has(family): return false
+		if not ReleaseContent.family_available(family, int(chapter_limit)) or seen.has(family): return false
 		seen[family] = true
 	_packs = packs
 	_families = families
 	_host = host
 	_prefetch_window_supported = supports_window or (host != null and not host is JavaScriptObject and host.has_method("setPrefetchFamilies"))
 	_snapshot_supported = supports_snapshot or (host != null and not host is JavaScriptObject and host.has_method("snapshot"))
+	ReleaseContent.chapter_limit = int(chapter_limit)
 	_fatal_error = ""
 	return true
 
@@ -166,9 +170,11 @@ func _ids_ready(ids: Array) -> bool:
 	return true
 
 func ready_for_state(snapshot: Dictionary) -> bool:
+	if not ReleaseContent.permits_snapshot(snapshot): return false
 	return not _enabled or (_fatal_error.is_empty() and _ids_ready(_required_ids(required_families(snapshot))))
 
 func ensure_state(snapshot: Dictionary) -> bool:
+	if not ReleaseContent.permits_snapshot(snapshot): return false
 	var required := required_families(snapshot)
 	var ready := await ensure_families(required)
 	if ready and _enabled and _host != null:
@@ -187,7 +193,7 @@ func _set_prefetch_window(snapshot: Dictionary) -> void:
 	# Old cached HTML/JS may accompany a newer core. Optional warming needs the
 	# bounded-window capability; ordinary request/retry remains compatible.
 	if not _prefetch_window_supported: return
-	var next := next_prefetch_families(snapshot)
+	var next := next_prefetch_families(snapshot).filter(func(family): return ReleaseContent.family_available(family))
 	if _prefetch_window_set and next == _prefetch_families: return
 	_prefetch_window_set = true
 	_prefetch_families = next

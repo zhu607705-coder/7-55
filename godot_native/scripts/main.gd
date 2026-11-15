@@ -189,6 +189,7 @@ func _ready() -> void:
 		web_platform.name = "WebPlatform"
 		add_child(web_platform)
 		web_platform.import_finished.connect(_feedback)
+		web_platform.chapter_import_blocked.connect(_show_chapter_import_blocked)
 		web_platform.save_feedback.connect(_on_web_save_feedback)
 		web_platform.setup(self, State)
 		WebContent.blocking_changed.connect(_on_content_blocking)
@@ -2181,7 +2182,10 @@ func _show_settings() -> void:
 	box.add_child(_button("导出存档",func(): _show_file_dialog(true)))
 	box.add_child(_button("导入存档",func(): _show_file_dialog(false)))
 	if is_instance_valid(web_platform) and web_platform.legacy_save_available():
-		box.add_child(_button("导入原网页存档",func(): _feedback(str(web_platform.import_legacy_save().message))))
+		box.add_child(_button("导入原网页存档",func():
+			var result: Dictionary = web_platform.import_legacy_save()
+			if result.get("chapterLocked", false): _show_chapter_import_blocked.call_deferred(str(result.message))
+			else: _feedback(str(result.message))))
 	box.add_child(_button("重新开始",func():
 		var confirm := _modal_base("确认重新开始？")
 		modal.find_child("NativeModalClose",true,false).text="取消"
@@ -2685,6 +2689,13 @@ func _open_narrative(config: Dictionary) -> void:
 func _on_file_selected(path: String) -> void:
 	if export_mode: _feedback("已导出存档" if State.export_save(path) == OK else "导出失败，进度仍保留。")
 	else: _feedback(str(State.import_save(path).message))
+
+func _show_chapter_import_blocked(message: String) -> void:
+	var box := _modal_base("此存档暂不能载入")
+	var label := _label(message + "\n当前进度与原存档已保留。")
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	box.add_child(label)
+	box.add_child(_button("返回游戏",func(): _close_modal()))
 
 func _feedback_world_active() -> bool:
 	return is_instance_valid(world) and is_instance_valid(world_frame) and world_frame.is_visible_in_tree() and not str(State.d.native.scene).is_empty() and not is_instance_valid(active_game)

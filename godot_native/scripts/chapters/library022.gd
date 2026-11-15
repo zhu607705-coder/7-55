@@ -1,6 +1,8 @@
 extends RefCounted
 const GeometryNotebook=preload("res://scripts/objects/library_geometry_notebook.gd")
 const TiyiAccess=preload("res://scripts/chapters/tiyi_access.gd")
+const ReleaseContent = preload("res://scripts/release_content_policy.gd")
+const PREVIEW_END := "已恢复 022 座位。第二章完成。"
 ## Current LibraryFinalsController + puzzle JSON, excluding retired archaeology route.
 const EVIDENCE = {"archived_leave_rule":"archivedLeaveRule", "bag_non_person_proof":"bagNonPersonProof", "seat_022_receipt":"seat022Receipt", "library_presence_proof":"libraryPresenceProof"}
 const RECOVERY = ["bag_non_person_proof", "seat_022_receipt", "library_presence_proof"]
@@ -78,7 +80,7 @@ func _finish_story(s: Dictionary,value: Variant) -> Dictionary:
 	return _ok("",{"story_finished":value.sequence_id})
 
 func scene_session(s: Dictionary) -> RefCounted:
-	if not SceneSession.pending_opening(s):
+	if not _opening_pending(s):
 		if opening_session != null: opening_session.cancel()
 		opening_session = null
 		return null
@@ -86,6 +88,9 @@ func scene_session(s: Dictionary) -> RefCounted:
 		if opening_session != null: opening_session.cancel()
 		opening_session = SceneSession.new(s,"opening",bool(s.native.get("settings",{}).get("reduced_motion",false)))
 	return opening_session
+
+func _opening_pending(s: Dictionary) -> bool:
+	return ReleaseContent.chapter_available(3) and SceneSession.pending_opening(s)
 
 
 func _data() -> Dictionary:
@@ -202,6 +207,7 @@ func view(page: String, s: Dictionary) -> Dictionary:
 		"library_recovery":
 			return {"title":"022 座位恢复申请", "body":"申请材料\n本人来过证明　书包非本人证明　022 座位小票\n已提交 %s / 3 项\n旧版规则通过 CC98 公开记录核验。" % p.recoverySubmittedEvidenceIds.size()}
 		"library_022_dialogue":
+			if not ReleaseContent.chapter_available(3): return {"title": "第二章完成", "body": ReleaseContent.CHAPTER_LIMIT_NOTICE}
 			var lines: Array = d.get("library",{}).get("dialogue022",[])
 			var i = int(s.native.get("lib_dialogue_index",0))
 			if i < lines.size(): return {"title":"022", "body":str(lines[i].speaker) + "：" + str(lines[i].text)}
@@ -252,13 +258,13 @@ func actions(page: String, s: Dictionary) -> Array:
 				for e in _data().get("cc98",{}).get("evidenceSlots",[]):
 					if RECOVERY.has(e.id) and s.items[EVIDENCE[e.id]]: opts.append({"id":e.id,"label":e.label})
 				return [_a("lib_recovery_upload", "提交申请材料", "choice", opts), _a("lib_generate_pass", "申请解除占座凭证")]
-		"library_022_dialogue": return [_a("lib_dialogue_next", "继续对话")] if p.playerSeated and p.nextQuestId == null else []
+		"library_022_dialogue": return [_a("lib_dialogue_next", "继续对话")] if ReleaseContent.chapter_available(3) and p.playerSeated and p.nextQuestId == null else []
 	return []
 
 func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionary:
 	if not action.begins_with("lib_"): return {}
 	if action=="lib_geometry_study":
-		if s.native.scene!="library_interior" or s.get("runtimeMode","")!="rpg" or SceneSession.pending_opening(s) or (_active(s) and story_session(s)!=null):return _ok("")
+		if s.native.scene!="library_interior" or s.get("runtimeMode","")!="rpg" or _opening_pending(s) or (_active(s) and story_session(s)!=null):return _ok("")
 		return _ok("",{"game":{"script":"res://scripts/games/library_geometry/view.gd","viewport":[960,540],"reduced_motion":bool(s.native.settings.get("reduced_motion",false))}})
 	if not _active(s): return _ok("图书馆调查尚未开放。")
 	if action=="lib_story_complete": return _finish_story(s,value)
@@ -266,7 +272,7 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 	var p = _p(s)
 	var phase = _phase(s)
 	var items: Dictionary = s.items
-	if SceneSession.pending_opening(s) and action not in ["lib_dialogue_open","lib_dialogue_next","lib_opening_complete"]: return _ok("请先完成 022 转场。")
+	if _opening_pending(s) and action not in ["lib_dialogue_open","lib_dialogue_next","lib_opening_complete"]: return _ok("请先完成 022 转场。")
 	if action in ["lib_note","lib_shelf","lib_photo","lib_scan","lib_receipt","lib_apply_pass","lib_sit"] and s.native.get("mode","light") != "light": return _ok("切到浅色模式再试。")
 	if action in ["lib_investigate", "lib_upload", "lib_bd_briefing", "lib_bd_select", "lib_bd_undo", "lib_bd_submit"] and (s.networkMode != "campus_wifi" or not s.actOne.cc98Login.authenticated): return _ok("请在校园网完成 CC98 统一身份认证。")
 	match action:
@@ -553,17 +559,20 @@ func dispatch(s: Dictionary, action: String, value: Variant = null) -> Dictionar
 			s.ui.librarySeatReserved = true
 			s.ui.libraryFinalsPhase = "seat_recovered"
 			s.native.lib_dialogue_index = 0
+			if not ReleaseContent.chapter_available(3): return _ok(PREVIEW_END + ReleaseContent.CHAPTER_LIMIT_NOTICE)
 			return _go(s,"library_022_dialogue")
 		"lib_dialogue_open":
 			if not p.playerSeated: return _ok("先坐到 022。")
+			if not ReleaseContent.chapter_available(3): return _ok(PREVIEW_END + ReleaseContent.CHAPTER_LIMIT_NOTICE)
 			return _go(s,"library_022_dialogue")
 		"lib_dialogue_next":
 			# The opening host owns advance/skip; legacy phone intents cannot grant
 			# the chapter or omit the authored transition beats.
-			if not SceneSession.pending_opening(s): return _ok("没有新的 022 会话。")
+			if not _opening_pending(s): return _ok("没有新的 022 会话。")
 			scene_session(s)
 			return _ok("")
 		"lib_opening_complete":
+			if not ReleaseContent.chapter_available(3): return _ok(ReleaseContent.CHAPTER_LIMIT_NOTICE)
 			if not value is SceneSession or value != opening_session or value.kind != "opening" or not value.consume(s): return _ok("022 转场尚未完成。")
 			p.nextQuestId = "chapter_three_canteen_hunt"
 			_unique(p.clueIds,"borrowed_attendance_record")
@@ -614,12 +623,12 @@ func objective(s: Dictionary) -> String:
 		"top_ten_reached", "recovery_application": return _guide("currentObjectives","stage_11_apply_seat_recovery")
 		"pass_ready": return _guide("currentObjectives","stage_12_use_pass_on_bag")
 		"backpack_removed": return "坐到恢复的 022 座位"
-		"seat_recovered": return "与 022 交谈"
+		"seat_recovered": return "与 022 交谈" if ReleaseContent.chapter_available(3) else "第二章已完成 · 后续章节暂未开放"
 	return ""
 
 func targets(scene: String, s: Dictionary) -> Array:
 	if not _active(s):
-		return [GeometryNotebook.target()] if scene=="library_interior" and s.get("runtimeMode","")=="rpg" and not SceneSession.pending_opening(s) else []
+		return [GeometryNotebook.target()] if scene=="library_interior" and s.get("runtimeMode","")=="rpg" and not _opening_pending(s) else []
 	if story_session(s)!=null: return []
 	if scene == "campus_bootstrap":
 		var path = "res://data/source/maps/zijingang-campus-runtime.json"
@@ -627,7 +636,7 @@ func targets(scene: String, s: Dictionary) -> Array:
 		var gate: Dictionary = map.get("libraryGate",{"x":2600,"y":2100,"radius":160})
 		return [{"id":"library_gate","label":"进入基础图书馆","position":[gate.x,gate.y],"radius":gate.radius,"action":"lib_enter"}]
 	if scene != "library_interior": return []
-	if SceneSession.pending_opening(s): return []
+	if _opening_pending(s): return []
 	var p = _p(s)
 	var out: Array = [{"id":"library_exit","label":"离开图书馆","position":[715,842],"radius":72.0,"action":"lib_exit"}]
 	out.append(_target("entrance_record","刷卡入馆",[750,727],[673,693,154,68],64,"lib_swipe_gate"))
@@ -642,7 +651,10 @@ func targets(scene: String, s: Dictionary) -> Array:
 	if p.investigationOpened and not p.photoCaptured: out.append(_target("bag_photo","拍摄书包标签",[1255,407],[1237,375,36,64],120,"lib_photo"))
 	if not p.seatReceiptCollected: out.append(_target("seat_022_gap","桌面夹缝",[1368,445],[1335,422,66,46],56,"lib_receipt","rightArrow"))
 	if _phase(s) == "pass_ready": out.append(_target("backpack_pass","对书包使用解除占座 PASS",[1255,407],[1237,375,36,64],100,"lib_apply_pass","seatReleasePass"))
-	if p.backpackEvicted: out.append(_target("seat_022_chair","与 022 交谈" if p.playerSeated else "坐到 022",[1302,500],[1262,468,80,64],56,"lib_dialogue_open" if p.playerSeated else "lib_sit"))
+	if p.backpackEvicted:
+		var seat_label := "坐到 022"
+		if p.playerSeated: seat_label = "与 022 交谈" if ReleaseContent.chapter_available(3) else "查看第二章结语"
+		out.append(_target("seat_022_chair", seat_label,[1302,500],[1262,468,80,64],56,"lib_dialogue_open" if p.playerSeated else "lib_sit"))
 	return out
 
 func _target(id: String, label: String, position: Array, bounds: Array, radius: float, action: String, item: String = "") -> Dictionary:

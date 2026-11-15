@@ -2,6 +2,7 @@ extends AbstractSystem
 ## Domain controllers keep their authored dispatch order and proof validation.
 ## No dependency on State, Main, world nodes, UI or persistence callbacks.
 signal navigation_changed(persist: bool)
+const ReleaseContent = preload("res://scripts/release_content_policy.gd")
 var modules: Array = []
 var d: Dictionary:
 	get: return get_model("Progression").snapshot
@@ -15,6 +16,8 @@ func init() -> void:
 
 func dispatch(action: String, value: Variant = null) -> Dictionary:
 	var data: Dictionary = get_model("Progression").snapshot
+	if not ReleaseContent.chapter_available(3) and (action.begins_with("c3_") or action.begins_with("c35_") or action.begins_with("c4_")):
+		return {"status": "unhandled", "result": {"handled": true, "message": ReleaseContent.CHAPTER_LIMIT_NOTICE}}
 	if action != "lib_story_complete" and library_session() != null:
 		return {"status": "locked", "result": {"handled": true, "message": ""}}
 	if action not in ["c3_story_complete", "c3_promo_visual_complete", "c3_reversal_visual_complete", "c3_reversal_inspect_closed"] and narrative_session() != null:
@@ -103,7 +106,7 @@ func invalidate_progressive_activities() -> void:
 		lake.invalidate_fishing_session()
 
 func open_page(page: String, return_to_phone := false) -> void:
-	if input_locked(): return
+	if not ReleaseContent.route_available(page, "") or input_locked(): return
 	if d.actOne.phase == "prologue" and d.flags.checkinDone and page != "ending": return
 	invalidate_progressive_activities()
 	if return_to_phone: d.runtimeMode = "phone"
@@ -116,7 +119,7 @@ func open_page(page: String, return_to_phone := false) -> void:
 	navigation_changed.emit(true)
 
 func open_scene(scene: String) -> void:
-	if input_locked(): return
+	if not ReleaseContent.route_available("", scene) or input_locked(): return
 	invalidate_progressive_activities()
 	d.native.scene = scene
 	d.rpgScene = scene

@@ -158,6 +158,9 @@ jobs:
         # build_web joins both recorders before returning; never regenerate here.
         run: node godot_native/tests/test_phone_recovery_inputs.mjs --fixtures godot_native/exports/verification/controller-earned
 
+      - name: Prepare verified public Chapters 1 and 2 artifact
+        run: node godot_native/tools/prepare_public_pages.mjs --input=godot_native/exports/web-release --output=godot_native/exports/web-pages
+
       - name: Seal exact-source browser acceptance inputs
         id: acceptance_bundle
         run: |
@@ -191,6 +194,8 @@ jobs:
             godot_native/exports/web-release/pack-inventory.json
             godot_native/exports/web-release/content-manifest.json
             godot_native/exports/web-release/content-inventory.json
+            godot_native/exports/web-pages/build-manifest.json
+            godot_native/exports/web-pages/content-manifest.json
             godot_native/exports/verification/ci-source.json
             godot_native/exports/verification/bundle-receipt.json
             godot_native/exports/verification/godot-web-build/*.log
@@ -217,7 +222,7 @@ jobs:
         if: ${{ success() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/codex/godot-complete-20261019') }}
         uses: actions/upload-pages-artifact@v3
         with:
-          path: godot_native/exports/web-release
+          path: godot_native/exports/web-pages
 
   browser_contracts:
     name: Verify browser validation source contracts

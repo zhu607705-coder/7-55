@@ -6,6 +6,7 @@ const Storage=preload("res://scripts/platform/profile_storage.gd")
 const NativeUi=preload("res://scripts/ui/native_ui_theme.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
 const CampusMaterial=preload("res://scripts/ui/campus_ui_material.gd")
+const ReleaseContent=preload("res://scripts/release_content_policy.gd")
 class Request extends RefCounted:
 	signal finished(result: Dictionary)
 	var callback: JavaScriptObject
@@ -16,6 +17,7 @@ class Request extends RefCounted:
 var member_id := ""
 var ready_for_play := false
 var has_save := false
+var chapter_locked := false
 var status_text := "正在读取账号和存档…"
 var head: Dictionary={}
 var _transport: JavaScriptObject
@@ -100,7 +102,15 @@ func _resume() -> void:
 	status_changed.emit()
 
 func can_enter() -> bool:
-	return not OS.has_feature("web") or ready_for_play
+	return not OS.has_feature("web") or (ready_for_play and not chapter_locked)
+
+func _mark_chapter_locked() -> void:
+	chapter_locked = true
+	has_save = true
+	_dirty = false
+	_set_transport_pending(false)
+	_set_status("当前存档已进入尚未开放的章节。")
+	_resume()
 
 func _request(operation: String,args: Dictionary) -> Dictionary:
 	if _transport==null: return {"ok":false,"error":"此游戏尚未连接账号存档服务。"}
@@ -157,6 +167,7 @@ func _to_entry() -> void:
 
 func _boot() -> void:
 	_epoch+=1;_busy=true;_checking=false;_pending={};has_save=false;_show("正在读取账号和存档…")
+	chapter_locked = false
 	var generation:=_epoch
 	if not State.persistence_ready:
 		var initial: Dictionary=State.activate_profile("guest")
@@ -189,6 +200,10 @@ func _boot() -> void:
 	if remote.get("stale",false): return
 	if not remote.get("ok",false): _busy=false;_failure(remote);return
 	head=remote.data
+	if activated.get("chapterLocked",false):
+		_busy=false
+		_mark_chapter_locked()
+		return
 	var local: Dictionary=State.capture_cloud_bundle() if activated.get("hasSave",false) else {}
 	var acknowledged:=_read_record("cloud-sync.json")
 	var pending_local: bool=local.get("ok",false) and _digest(local.bundle)!=str(acknowledged.get("localDigest",""))
@@ -213,6 +228,7 @@ func _boot() -> void:
 		_show("这个账号还没有云存档。",[["开始新的校园故事",_start_fresh]])
 
 func card_text() -> String:
+	if chapter_locked: return status_text
 	if not has_save: return status_text
 	if State.at_unstarted_opening(): return status_text+"\n第 1 章 · 尚未离开开场"
 	if head.get("current") is Dictionary: return status_text+"\n第 %s 章 · %s" % [str(int(head.current.chapter)),str(head.current.task)]
@@ -244,17 +260,26 @@ func _use_guest() -> void:
 	_applying=false
 	if not result.get("ok",false) or result.get("corrupt",false): _failure({"error":"本机游客存档无法读取，原文件已保留。请导出备份后检查。"},true);return
 	has_save=bool(result.get("hasSave",false));_dirty=false
+	chapter_locked = false
+	if result.get("chapterLocked",false):
+		_mark_chapter_locked()
+		return
 	if _transport!=null: _set_transport_pending(false)
 	_set_status("游客试玩 · 进度仅保存在本机");_resume()
 
 func _download(snapshot: Dictionary) -> Dictionary:
 	var generation:=_epoch
+	var chapter: Variant = snapshot.get("chapter")
+	if not ReleaseContent.chapter_available(3) and (chapter is int or chapter is float) and not ReleaseContent.chapter_available(int(chapter)):
+		return {"ok":false,"error":ReleaseContent.CHAPTER_LIMIT_NOTICE,"chapterLocked":true}
 	var result: Dictionary=await _request("snapshot",{"owner":member_id,"id":snapshot.id})
 	if not result.get("ok",false): return result
 	if not result.get("data") is Dictionary or not result.data.get("bundle") is Dictionary: return {"ok":false,"error":"云存档封装无效。"}
 	var bundle: Dictionary=result.data.bundle
 	var envelope: Variant=JSON.parse_string(str(bundle.get("stateText","")))
 	if not envelope is Dictionary or bundle.get("bundleVersion")!=1 or int(envelope.get("sourceVersion",0))>State.SOURCE_VERSION: return {"ok":false,"error":"此存档需要更新游戏版本；原云存档已保留。"}
+	if envelope.get("state") is Dictionary and not ReleaseContent.permits_snapshot(envelope.state):
+		return {"ok":false,"error":ReleaseContent.CHAPTER_LIMIT_NOTICE,"chapterLocked":true}
 	if not bundle.get("assets") is Array or bundle.assets.size()>4: return {"ok":false,"error":"存档照片清单无效。"}
 	if str(result.data.get("digest",""))!=str(snapshot.get("digest","")): return {"ok":false,"error":"云存档已变化，请重新读取。"}
 	var images: Dictionary={}
@@ -275,6 +300,10 @@ func _load_current() -> void:
 	_busy=true;_show("正在读取并校验完整云存档和照片…")
 	var result: Dictionary=await _download(head.current)
 	if result.get("stale",false): return
+	if result.get("chapterLocked",false):
+		_busy=false
+		_mark_chapter_locked()
+		return
 	if not result.get("ok",false): _busy=false;_failure(result);return
 	await _install(result.prepared)
 	if generation!=_epoch: return
@@ -285,12 +314,15 @@ func _persist(captured: Dictionary) -> bool:
 	var result: Dictionary=await _request("persist",{"profile":Storage.profile,"files":captured.get("files",[])})
 	return bool(result.get("ok",false))
 
-func _install(prepared: Dictionary) -> void:
+func _install(prepared: Dictionary, explicit_restart: bool=false) -> void:
 	var generation:=_epoch
-	_applying=true;var result: Dictionary=State.install_cloud_bundle(prepared);_applying=false
+	_applying=true;var result: Dictionary=State.install_cloud_bundle(prepared,explicit_restart);_applying=false
 	if not result.get("ok",false): _failure(result);return
 	var local: Dictionary=State.capture_cloud_bundle()
 	if not local.get("ok",false): _failure(local);return
+	if explicit_restart:
+		for backup: String in State.chapter_backup_files():
+			local.files.append({"path":ProjectSettings.globalize_path(backup),"digest":FileAccess.get_sha256(backup)})
 	_last_local_digest=_digest(local.bundle)
 	if not _record("cloud-sync.json",{"revision":head.revision,"cloudDigest":head.current.digest,"localDigest":_last_local_digest}) or not _mark_guest_choice():
 		_failure({"error":"本机同步记录写入失败，云存档仍保留。"})
@@ -302,7 +334,7 @@ func _install(prepared: Dictionary) -> void:
 	var persisted: bool=await _persist(local)
 	if generation!=_epoch: return
 	if not persisted: _failure({"error":"云存档仍在，但本机备份尚未确认，请重试；暂时不要刷新。"});return
-	_pending={};_dirty=false;has_save=true
+	_pending={};_dirty=false;has_save=true;chapter_locked=false
 	_set_transport_pending(false);_set_status("云端已保存 · "+_saved_time(str(head.current.savedAt)));_resume()
 
 func _upload(captured: Dictionary,kind: String="save") -> Dictionary:
@@ -341,6 +373,10 @@ func _start_fresh() -> void:
 	if _busy: return
 	var generation:=_epoch
 	_busy=true;_show("正在建立新进度并保留旧档…")
+	if not State.preserve_chapter_locked_save():
+		_busy=false
+		_failure({"error":"未能保留旧存档，请先导出备份。"})
+		return
 	var captured: Dictionary=State.capture_cloud_bundle(true)
 	if not captured.get("ok",false): _busy=false;_failure(captured);return
 	_pending={}
@@ -349,7 +385,7 @@ func _start_fresh() -> void:
 	if result.get("ok",false):
 		head=result.data
 		var prepared: Dictionary=State.prepare_cloud_bundle(captured.bundle,captured.images)
-		await _install(prepared)
+		await _install(prepared,true)
 	else: _failure(result)
 	if generation!=_epoch: return
 	_busy=false
@@ -360,7 +396,15 @@ func request_restart() -> void:
 func _restart_confirmed() -> void:
 	var generation:=_epoch
 	if member_id.is_empty():
-		State.new_game();has_save=true;_set_status("游客新进度 · 仅本机");_resume();_enter_if_entry();return
+		if chapter_locked:
+			if not State.restart_chapter_limited_save():
+				_failure({"error":"未能保留旧存档或建立新进度，请先导出备份。"})
+				return
+			chapter_locked = false
+			JavaScriptBridge.force_fs_sync()
+		else:
+			State.new_game()
+		has_save=true;_set_status("游客新进度 · 仅本机");_resume();_enter_if_entry();return
 	if _dirty:
 		await flush()
 		if generation!=_epoch or _dirty: return
@@ -381,7 +425,7 @@ func _set_transport_pending(value: bool) -> void:
 	if _transport!=null: _transport.pending(value)
 
 func _mark_dirty() -> void:
-	if _applying or State.developer_mode: return
+	if _applying or State.developer_mode or chapter_locked: return
 	if member_id.is_empty():
 		has_save=true
 		JavaScriptBridge.force_fs_sync()
@@ -392,7 +436,7 @@ func _mark_dirty() -> void:
 	_set_status("已写入本机 · 云端同步中…")
 
 func flush() -> void:
-	if _busy or member_id.is_empty() or not State.persistence_ready: return
+	if _busy or member_id.is_empty() or not State.persistence_ready or chapter_locked: return
 	var generation:=_epoch
 	_busy=true
 	var captured: Dictionary=State.capture_cloud_bundle()
@@ -457,6 +501,13 @@ func save_now() -> void:
 func show_manager() -> void:
 	if _busy: return
 	var choices: Array=[]
+	if chapter_locked:
+		choices.append(["重新开始",request_restart])
+		_append_chapter_backup_exports(choices)
+		if not member_id.is_empty(): choices.append(["返回游客入口",_use_guest])
+		choices.append(["返回",_resume])
+		_show(ReleaseContent.CHAPTER_LIMIT_NOTICE + "\n当前存档已保留。",choices)
+		return
 	if has_save: choices.append(["继续游戏",_continue_current])
 	elif ready_for_play: choices.append(["返回",_resume])
 	choices.append(["立即保存",save_now])
@@ -465,12 +516,14 @@ func show_manager() -> void:
 			if head.get(key)!=null: choices.append(["恢复上一份有效存档" if key=="previous" else "恢复重新开始前的存档",_confirm_restore.bind(head[key])])
 	choices.append(["重新开始",request_restart])
 	choices.append(["导出个人备份",_export])
+	_append_chapter_backup_exports(choices)
 	choices.append(["重新连接 / 检查账号",_boot])
 	var current_status:=status_text
 	_show(_summary(head.get("current"),"账号云存档"),choices)
 	_set_status(current_status)
 
 func _continue_current() -> void:
+	if chapter_locked: return
 	if member_id.is_empty(): _resume();return
 	var generation:=_epoch
 	var session: Dictionary=await _request("session",{})
@@ -518,6 +571,19 @@ func _export() -> void:
 	else:
 		var path:=Storage.file("portable-export.json")
 		if State.export_save(path)==OK: JavaScriptBridge.download_buffer(FileAccess.get_file_as_bytes(path),"7-55-save.json","application/json")
+
+func _append_chapter_backup_exports(choices: Array) -> void:
+	var files := State.chapter_backup_files()
+	for index: int in files.size():
+		var suffix := " %s" % (index + 1) if files.size() > 1 else ""
+		choices.append(["导出未开放章节备份" + suffix, _export_chapter_backup.bind(files[index])])
+
+func _export_chapter_backup(source: String) -> void:
+	var path := Storage.file("portable-chapter-export.json")
+	if State.export_save(path,source) == OK:
+		JavaScriptBridge.download_buffer(FileAccess.get_file_as_bytes(path),"7-55-chapter-backup.json","application/json")
+	else:
+		_set_status("暂时无法导出该备份，请重试。")
 
 func _failure(result: Dictionary,allow_guest: bool=false) -> void:
 	if result.get("stale",false): return

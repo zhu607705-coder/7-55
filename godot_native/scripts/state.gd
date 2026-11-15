@@ -15,10 +15,12 @@ signal snapshot_saved
 signal battery_reserve_used(percent: int)
 signal action_completed(action: String,previous: Dictionary,next: Dictionary,result: Dictionary)
 const ProfileStorage = preload("res://scripts/platform/profile_storage.gd")
+const ReleaseContent = preload("res://scripts/release_content_policy.gd")
 var SAVE_PATH := "user://save.json"
 var BACKUP_PATH := "user://save.previous.json"
 var persistence_ready := true
 var save_compatibility_error := ""
+var chapter_locked_save_path := ""
 const SOURCE_VERSION := 36
 const FLCRoomSave = preload("res://scripts/flc_room_save.gd")
 const SaveDomainGuard = preload("res://scripts/save_domain_guard.gd")
@@ -354,10 +356,16 @@ func activate_profile(key: String, read_existing: bool=true) -> Dictionary:
 	if not ProfileStorage.valid_key(key) or key=="legacy": return {"ok":false,"message":"存档账号标识无效。"}
 	var stores=load("res://scripts/data/cc98_store.gd")
 	var legacy: Dictionary={}
+	var locked_legacy := ""
 	var destination: String="user://profiles/"+key+"/"
 	if key=="guest" and read_existing and not FileAccess.file_exists(destination+"save.json"):
-		var old: Dictionary=_read_native_save("user://save.json")
-		if old.is_empty(): old=_read_native_save("user://save.previous.json")
+		var old: Dictionary={}
+		for old_path: String in ["user://save.json", "user://save.previous.json"]:
+			if _chapter_locked_file(old_path):
+				locked_legacy = old_path
+				break
+			old = _read_native_save(old_path)
+			if not old.is_empty(): break
 		if not old.is_empty():
 			ProfileStorage.profile="legacy";SAVE_PATH="user://save.json";BACKUP_PATH="user://save.previous.json"
 			stores.posts_path="user://cc98-posts.json";stores.quest_path="user://cc98-quest-post-overrides.json"
@@ -369,10 +377,13 @@ func activate_profile(key: String, read_existing: bool=true) -> Dictionary:
 	if DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(ProfileStorage.folder()))!=OK: return {"ok":false,"message":"无法准备本机存档目录。"}
 	d=initial();developer_mode=false;formal_snapshot={};persistence_ready=true
 	save_compatibility_error=""
+	chapter_locked_save_path = ""
 	_invalidate_save_receipt()
 	var had_file:=FileAccess.file_exists(SAVE_PATH)
 	var loaded: bool=load_game() if read_existing else false
 	if not save_compatibility_error.is_empty(): return {"ok":false,"message":save_compatibility_error}
+	if not loaded and chapter_locked_save_path.is_empty(): chapter_locked_save_path = locked_legacy
+	if not chapter_locked_save_path.is_empty(): return {"ok":true,"hasSave":false,"chapterLocked":true}
 	if not loaded and legacy.get("ok",false):
 		var prepared:=prepare_cloud_bundle(legacy.bundle,legacy.images)
 		if not prepared.get("ok",false): return prepared
@@ -383,10 +394,11 @@ func activate_profile(key: String, read_existing: bool=true) -> Dictionary:
 
 func capture_cloud_bundle(fresh: bool=false) -> Dictionary:
 	if developer_mode: return {"ok":false,"message":"开发预览不能覆盖正式存档。"}
+	if not fresh and (not chapter_locked_save_path.is_empty() or not ReleaseContent.permits_snapshot(d)): return _chapter_lock_result()
 	return _capture_portable_bundle(fresh)
 
-func _capture_portable_bundle(fresh: bool=false) -> Dictionary:
-	var clean: Dictionary=initial() if fresh else d.duplicate(true)
+func _capture_portable_bundle(fresh: bool=false, exported_snapshot: Dictionary={}) -> Dictionary:
+	var clean: Dictionary=initial() if fresh else (d if exported_snapshot.is_empty() else exported_snapshot).duplicate(true)
 	if fresh and d.get("cc98") is Dictionary: clean.cc98=d.cc98.duplicate(true)
 	_clear_transient_save_fields(clean)
 	if not validate_snapshot(clean): return {"ok":false,"message":"当前进度尚未通过存档校验。"}
@@ -420,6 +432,7 @@ func prepare_cloud_bundle(bundle: Variant, images: Dictionary) -> Dictionary:
 	if raw.to_utf8_buffer().size()>8*1024*1024 or not load("res://scripts/save_json_guard.gd").new().accepts(raw): return {"ok":false,"message":"核心存档格式无效。"}
 	var envelope: Variant=JSON.parse_string(raw)
 	if not envelope is Dictionary or envelope.get("format")!="7-55-godot-native" or envelope.get("version")!=1 or int(envelope.get("sourceVersion",0))<1 or int(envelope.sourceVersion)>SOURCE_VERSION: return {"ok":false,"message":"此存档需要兼容的游戏版本，请保留原档并更新游戏。"}
+	if envelope.get("state") is Dictionary and not ReleaseContent.permits_snapshot(envelope.state): return _chapter_lock_result()
 	if not validate_snapshot(envelope.get("state"),envelope.get("sourceVersion")==35) or not _valid_native_v36_fields(envelope): return {"ok":false,"message":"剧情或道具存档无效，当前进度未改变。"}
 	var documents: Dictionary={}
 	for key: String in ["posts","questPostOverrides"]:
@@ -436,8 +449,11 @@ func prepare_cloud_bundle(bundle: Variant, images: Dictionary) -> Dictionary:
 	if not archive.ok: return {"ok":false,"message":"照片未下载完整或校验失败，当前进度未改变。"}
 	return {"ok":true,"state":candidate,"images":archive.images,"stores":documents}
 
-func install_cloud_bundle(prepared: Dictionary) -> Dictionary:
-	if not prepared.get("ok",false) or not validate_snapshot(prepared.get("state")): return {"ok":false,"message":"不能载入未经校验的存档。"}
+func install_cloud_bundle(prepared: Dictionary, explicit_restart: bool=false) -> Dictionary:
+	if not prepared.get("ok",false) or not prepared.get("state") is Dictionary: return {"ok":false,"message":"不能载入未经校验的存档。"}
+	if not ReleaseContent.permits_snapshot(prepared.state) or (not chapter_locked_save_path.is_empty() and not explicit_restart): return _chapter_lock_result()
+	if not validate_snapshot(prepared.state): return {"ok":false,"message":"不能载入未经校验的存档。"}
+	if explicit_restart and not preserve_chapter_locked_save(): return {"ok":false,"message":"未能保留旧存档，请先导出备份。"}
 	var candidate: Dictionary=prepared.state.duplicate(true)
 	var installed: Dictionary=JOURNAL_ARCHIVE.install(candidate,prepared.images)
 	if not installed.ok: return {"ok":false,"message":"照片写入失败，当前进度未改变。"}
@@ -450,7 +466,8 @@ func install_cloud_bundle(prepared: Dictionary) -> Dictionary:
 	var document_error: Error=service.import_bundle(prepared.stores)
 	if document_error==OK:
 		d=candidate
-		if save_game():
+		if save_game(explicit_restart):
+			chapter_locked_save_path = ""
 			story_reset.emit();changed.emit()
 			return {"ok":true}
 	d=previous
@@ -624,8 +641,9 @@ func current_save_digest() -> String:
 		_save_receipt_digest = FileAccess.get_sha256(SAVE_PATH) if FileAccess.file_exists(SAVE_PATH) else ""
 	return _save_receipt_digest
 
-func save_game() -> bool:
-	if not persistence_ready or developer_mode or _saving or not validate_snapshot(d): return false
+func save_game(explicit_restart: bool=false) -> bool:
+	if not persistence_ready or developer_mode or _saving or not ReleaseContent.permits_snapshot(d) or not validate_snapshot(d): return false
+	if not chapter_locked_save_path.is_empty() and not explicit_restart: return false
 	var clean := d.duplicate(true)
 	_upgrade_legacy_phone_state(clean)
 	_clear_transient_save_fields(clean)
@@ -643,7 +661,7 @@ func save_game() -> bool:
 	if bytes.size() > 8*1024*1024 or not load("res://scripts/save_json_guard.gd").new().accepts(payload): return false
 	_saving = true
 	var error := _write_save_file(SAVE_PATH + ".tmp", bytes)
-	if error == OK and not prior_bytes.is_empty():
+	if error == OK and not prior_bytes.is_empty() and not _chapter_locked_file(BACKUP_PATH) and not (explicit_restart and _chapter_locked_file(SAVE_PATH)):
 		var known_primary := _save_receipt_path == SAVE_PATH and not _committed_state_digest.is_empty() and prior_digest == _save_receipt_digest
 		if known_primary or not _decode_native_save(prior_bytes.get_string_from_utf8()).is_empty():
 			error = _write_save_file(BACKUP_PATH + ".tmp", prior_bytes)
@@ -713,6 +731,44 @@ func _read_save_bytes(path: String) -> PackedByteArray:
 
 func _read_native_save(path: String) -> Dictionary:
 	return _decode_native_save(_read_save_bytes(path).get_string_from_utf8())
+
+func _chapter_locked_file(path: String) -> bool:
+	if ReleaseContent.chapter_available(3) or not FileAccess.file_exists(path): return false
+	var raw := _read_save_bytes(path).get_string_from_utf8()
+	if raw.is_empty() or not load("res://scripts/save_json_guard.gd").new().accepts(raw): return false
+	var envelope: Variant = JSON.parse_string(raw)
+	return envelope is Dictionary and envelope.get("format") == "7-55-godot-native" and envelope.get("state") is Dictionary and not ReleaseContent.permits_snapshot(envelope.state)
+
+func _chapter_lock_result() -> Dictionary:
+	return {"ok":false,"message":ReleaseContent.CHAPTER_LIMIT_NOTICE,"chapterLocked":true}
+
+func preserve_chapter_locked_save() -> bool:
+	# An explicit restart can resume the available chapters without rotating
+	# either of the completed checkpoints out of the usual save slots.
+	for path: String in [SAVE_PATH, BACKUP_PATH, chapter_locked_save_path]:
+		if not _chapter_locked_file(path): continue
+		var bytes := _read_save_bytes(path)
+		var name := path.get_file().get_basename() + ".before-online-chapter-limit-" + _digest_save_bytes(bytes).left(16) + ".json"
+		var archive := SAVE_PATH.get_base_dir().path_join(name)
+		if FileAccess.file_exists(archive):
+			if _read_save_bytes(archive) != bytes: return false
+		else:
+			var error := _write_save_file(archive + ".tmp", bytes)
+			if error == OK: error = _replace_save_file(archive)
+			if error != OK:
+				_remove_save_temp(archive)
+				return false
+	return true
+
+func chapter_backup_files() -> PackedStringArray:
+	var paths := PackedStringArray()
+	if not chapter_locked_save_path.is_empty(): paths.append(chapter_locked_save_path)
+	if BACKUP_PATH not in paths and _chapter_locked_file(BACKUP_PATH): paths.append(BACKUP_PATH)
+	var folder := SAVE_PATH.get_base_dir()
+	for name: String in DirAccess.get_files_at(folder):
+		if name.begins_with("save.") and name.contains(".before-online-chapter-limit-") and name.ends_with(".json"):
+			paths.append(folder.path_join(name))
+	return paths
 
 func _decode_native_save(raw: String) -> Dictionary:
 	var envelope := _parse_native_save(raw)
@@ -795,8 +851,12 @@ func at_unstarted_opening() -> bool:
 
 func load_game() -> bool:
 	_invalidate_save_receipt()
+	chapter_locked_save_path = ""
 	if not _protect_future_saves(): return false
 	for path: String in [SAVE_PATH, BACKUP_PATH]:
+		if _chapter_locked_file(path):
+			chapter_locked_save_path = path
+			return false
 		var bytes := _read_save_bytes(path)
 		var envelope := _parse_native_save(bytes.get_string_from_utf8())
 		if envelope.is_empty(): continue
@@ -813,14 +873,19 @@ func load_game() -> bool:
 		return true
 	return false
 
-func export_save(path: String) -> Error:
+func export_save(path: String, chapter_backup: String="") -> Error:
 	# Portable exports must never bypass the ordinary save/backup writer.
 	var destination:=ProjectSettings.globalize_path(path).simplify_path()
 	for reserved: String in [SAVE_PATH,BACKUP_PATH]:
 		if destination==ProjectSettings.globalize_path(reserved).simplify_path(): return ERR_UNAUTHORIZED
-	if not validate_snapshot(d): return ERR_INVALID_DATA
-	var captured:=_capture_portable_bundle()
-	if not captured.get("ok",false): return ERR_INVALID_DATA
+	var backup := chapter_backup if not chapter_backup.is_empty() else chapter_locked_save_path
+	if not backup.is_empty() and backup not in chapter_backup_files(): return ERR_UNAUTHORIZED
+	var snapshot: Dictionary = d if backup.is_empty() else _read_native_save(backup).get("state", {})
+	var captured := _capture_portable_bundle(false, snapshot) if not snapshot.is_empty() else {}
+	if not captured.get("ok",false):
+		if backup.is_empty(): return ERR_INVALID_DATA
+		var original := _read_save_bytes(backup)
+		return ERR_INVALID_DATA if original.is_empty() else _write_save_file(path, original)
 	var envelope: Dictionary=JSON.parse_string(captured.bundle.stateText)
 	envelope.journalImages=captured.images
 	envelope.cc98Stores={"posts":JSON.parse_string(captured.bundle.stores.posts),"questPostOverrides":JSON.parse_string(captured.bundle.stores.questPostOverrides)}
@@ -856,6 +921,7 @@ func import_save(path: String) -> Dictionary:
 	var store_service: Script
 	if envelope.get("format") == "7-55-godot-native":
 		if _future_native_save(envelope): return {"ok":false,"message":"存档来自较新游戏版本，请更新游戏；当前进度未改变。"}
+		if envelope.get("state") is Dictionary and not ReleaseContent.permits_snapshot(envelope.state): return _chapter_lock_result()
 		if not (envelope.get("version") is int or envelope.get("version") is float) or envelope.version != 1 or not validate_snapshot(envelope.get("state"),envelope.get("sourceVersion")==35): return {"ok":false,"message":"原生存档结构或剧情凭据无效，当前进度未改变。"}
 		if not _valid_native_v36_fields(envelope): return {"ok":false,"message":"新增存档字段无效，当前进度未改变。"}
 		_upgrade_legacy_net_receipt(envelope.state)
@@ -876,6 +942,7 @@ func import_save(path: String) -> Dictionary:
 		var decoded: Dictionary = migration.decode(raw,initial())
 		if not decoded.get("ok",false): return decoded
 		candidate = decoded.state
+		if not ReleaseContent.permits_snapshot(candidate): return _chapter_lock_result()
 		if not validate_snapshot(candidate): return {"ok":false,"message":"迁移后的存档未通过原生完整性校验，当前进度未改变。"}
 		message = str(decoded.get("message","浏览器存档已迁移。"))
 		warnings = decoded.get("warnings",[])
@@ -886,6 +953,7 @@ func import_save(path: String) -> Dictionary:
 			if not store_service.validate_bundle(pending_stores):
 				warnings.append("CC98 编辑内容未通过校验，已保留本机内容。")
 				pending_stores = {}
+	if not chapter_locked_save_path.is_empty(): return _chapter_lock_result()
 	_sanitize_runtime_resume(candidate)
 	var installed_images: Dictionary={"ok":true,"created":[]}
 	if portable_media:
@@ -918,6 +986,18 @@ func new_game() -> void:
 	story_reset.emit()
 	save_game()
 	changed.emit()
+
+func restart_chapter_limited_save() -> bool:
+	if chapter_locked_save_path.is_empty() or not preserve_chapter_locked_save(): return false
+	var previous := d
+	d = initial()
+	if not save_game(true):
+		d = previous
+		return false
+	chapter_locked_save_path = ""
+	story_reset.emit()
+	changed.emit()
+	return true
 
 func begin_preview(chapter: int, scene: String = "") -> void:
 	if not developer_tools_available(): return
