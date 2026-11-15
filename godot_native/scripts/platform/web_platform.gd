@@ -1,6 +1,7 @@
 extends Node
 ## Browser capabilities only. State remains the sole save/progression authority.
 signal import_finished(message: String)
+signal chapter_import_blocked(message: String)
 signal save_feedback(message: String)
 const TreePauseLease=preload("res://scripts/platform/tree_pause_lease.gd")
 const PauseOverlay=preload("res://scripts/ui/native_pause_overlay.gd")
@@ -482,6 +483,7 @@ func import_legacy_save() -> Dictionary:
 		var raw := str(_browser.readLegacySave(index))
 		if raw.is_empty(): continue
 		var result := import_text(raw)
+		if result.get("chapterLocked", false): return result
 		if result.get("ok", false):
 			if index == 1: result.message = "已从原网页版备份恢复。\n" + str(result.message)
 			return result
@@ -506,7 +508,14 @@ func _on_browser_file(args: Array) -> void:
 		return
 	# The same bounded importer validates both native and legacy browser saves.
 	# No browser callback can supply an action, checkpoint, or progression flag.
-	import_finished.emit(str(import_text(str(args[0])).message))
+	var result := import_text(str(args[0]))
+	if result.get("chapterLocked", false):
+		_notify_chapter_import_blocked.call_deferred(str(result.message))
+		return
+	import_finished.emit(str(result.message))
+
+func _notify_chapter_import_blocked(message: String) -> void:
+	chapter_import_blocked.emit(message)
 
 func import_text(text: String) -> Dictionary:
 	if text.to_utf8_buffer().size() > MAX_SAVE_BYTES:

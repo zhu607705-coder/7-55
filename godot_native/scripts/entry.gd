@@ -101,13 +101,17 @@ func _ready() -> void:
 	NativeUi.apply_button(story_button,UiMaterial.NAVY,UiMaterial.PAPER,UiMaterial.NAVY,0,1,20)
 	_paper_focus(story_button)
 	detail=Label.new();detail.text="" if ReleaseContent.story_only() else "不影响主线进度"
+	if not ReleaseContent.chapter_available(3):
+		detail.text=ReleaseContent.CHAPTER_LIMIT_NOTICE
+		detail.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	detail.name="ChapterAvailabilityNotice"
 	detail.add_theme_font_size_override("font_size",17);detail.add_theme_color_override("font_color",Color("665e52"));content.add_child(detail)
-	detail.visible=not ReleaseContent.story_only()
+	detail.visible=not detail.text.is_empty()
 	if OS.has_feature("web"):
 		save_label=Label.new();save_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;save_label.add_theme_font_size_override("font_size",14);content.add_child(save_label)
 		var save_row:=HBoxContainer.new();save_row.add_theme_constant_override("separation",8);content.add_child(save_row)
-		restart_button=_button("重新开始",CloudSaves.request_restart);restart_button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;save_row.add_child(restart_button)
-		manage_button=_button("存档管理",CloudSaves.show_manager);manage_button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;save_row.add_child(manage_button)
+		restart_button=_button("重新开始",CloudSaves.request_restart);restart_button.name="RestartStory";restart_button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;save_row.add_child(restart_button)
+		manage_button=_button("存档管理",CloudSaves.show_manager);manage_button.name="ManageStorySaves";manage_button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;save_row.add_child(manage_button)
 		CloudSaves.status_changed.connect(_sync_cloud_controls);_sync_cloud_controls()
 	if CommunityPortal.available():
 		var community_row:=HBoxContainer.new();community_row.add_theme_constant_override("separation",8);content.add_child(community_row)
@@ -117,6 +121,7 @@ func _ready() -> void:
 		community_note=Label.new();community_note.text="分享经历 · 反馈卡点 · 看制作进展"
 		community_note.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;community_note.add_theme_color_override("font_color",UiMaterial.WOOD);content.add_child(community_note)
 	flc_button=_button("未来学习中心 · 自由探索",open_flc);flc_button.name="OpenFutureLearningCenter";flc_button.set_meta("tactile_paper_ink",true);content.add_child(flc_button)
+	if OS.has_feature("web"): flc_button.disabled=CloudSaves.chapter_locked
 	if not State.save_compatibility_error.is_empty():
 		story_button.disabled=true;flc_button.disabled=true
 		detail.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
@@ -174,10 +179,15 @@ func _sync_content_cover(blocking: bool) -> void:
 
 func entry_snapshot()->Dictionary:
 	var controls:Array=[]
-	for button:Button in [story_button,flc_button,campus_button,haidian_button,changping_button,preview_button]:
+	var entry_buttons: Array[Button] = [story_button,flc_button,campus_button,haidian_button,changping_button,preview_button]
+	if not ReleaseContent.chapter_available(3): entry_buttons.append_array([restart_button,manage_button])
+	for button:Button in entry_buttons:
 		if not is_instance_valid(button) or not button.is_visible_in_tree():continue
 		var rect:=button.get_global_rect()
 		controls.append({"name":str(button.name),"text":button.text,"type":"Button","disabled":button.disabled or opening,"rect":{"x":rect.position.x,"y":rect.position.y,"width":rect.size.x,"height":rect.size.y}})
+	if not ReleaseContent.chapter_available(3) and detail.is_visible_in_tree():
+		var rect := detail.get_global_rect()
+		controls.append({"name":str(detail.name),"text":detail.text,"type":"Label","disabled":false,"rect":{"x":rect.position.x,"y":rect.position.y,"width":rect.size.x,"height":rect.size.y}})
 	var bounds:=get_viewport_rect()
 	return {"entry":true,"savePersistence":get_tree().root.get_meta("flc_exit_receipt",{}),"saveDigest":FileAccess.get_sha256(State.SAVE_PATH) if FileAccess.file_exists(State.SAVE_PATH) else "","engine":"Godot","sampleFrame":Engine.get_process_frames(),"visibleControls":controls,"viewport":{"x":bounds.position.x,"y":bounds.position.y,"width":bounds.size.x,"height":bounds.size.y},"content":WebContent.read_snapshot()}
 func _process(dt:float)->void:
@@ -348,13 +358,16 @@ func _sync_cloud_controls() -> void:
 	if not is_instance_valid(save_label): return
 	save_label.text=CloudSaves.card_text()
 	story_button.disabled=not CloudSaves.can_enter()
-	if story_button.disabled:
+	if CloudSaves.chapter_locked:
+		story_button.text = "当前存档暂不可继续"
+	elif story_button.disabled:
 		story_button.text = "正在读取存档…"
 	elif not CloudSaves.has_save or State.at_unstarted_opening():
 		story_button.text = "开始游戏"
 	else:
 		story_button.text = "继续游客游戏" if CloudSaves.member_id.is_empty() else "继续游戏"
 	restart_button.disabled=not CloudSaves.ready_for_play;manage_button.disabled=not CloudSaves.ready_for_play
+	if is_instance_valid(flc_button):flc_button.disabled=CloudSaves.chapter_locked
 
 func open_flc() -> void:
 	if not State.save_compatibility_error.is_empty(): return

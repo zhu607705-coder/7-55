@@ -428,6 +428,7 @@
   }
   function bootResources(build,manifest,executable) {
     if(!build || !Array.isArray(build.files) || typeof executable!=='string')throw new Error('Invalid boot manifest');
+    if (((build.releasePolicy || {}).publicChapterLimit ?? null) !== (manifest.publicChapterLimit ?? null)) throw new Error('Release chapter policy differs between manifests');
     const file=executable+'.wasm', matches=build.files.filter(item=>item.path===file), cores=build.files.filter(item=>item.path===manifest.core.file);
     if(matches.length!==1 || cores.length!==1 || cores[0].bytes!==manifest.core.bytes || cores[0].sha256!==manifest.core.sha256)throw new Error('Release manifests differ');
     const wasm={file,bytes:matches[0].bytes,sha256:matches[0].sha256};identity(wasm);
@@ -459,6 +460,8 @@
   const families = new Set(['phone_bonsai', 'phone_tiyi', 'phone_zjuding', 'chapter2', 'chapter2_campus', 'chapter2_library', 'chapter3', 'chapter35', 'chapter4', 'flc_activity', 'campus_shared', 'campus_chaoyang', 'campus_haidian', 'campus_changping']);
   function validate(manifest) {
     if (!manifest || manifest.schema !== '755-web-content-v1' || !Array.isArray(manifest.packs) || manifest.packs.length > 100) throw new Error('Invalid content manifest');
+    if (manifest.publicChapterLimit !== undefined && manifest.publicChapterLimit !== 2) throw new Error('Invalid public chapter limit');
+    const lockedFamilies = manifest.publicChapterLimit === 2 ? ['chapter3', 'chapter35', 'chapter4'] : [];
     const ids = new Set();
     const paths = new Set();
     const base = new URL('.', document.baseURI);
@@ -468,7 +471,7 @@
       if (url.origin !== base.origin || !url.pathname.startsWith(base.pathname) || /[?#]/.test(pack.file) || pack.file.startsWith('/') || pack.file.split('/').includes('..') || paths.has(pack.file)) throw new Error('Invalid content path');
       paths.add(pack.file);
       if (pack !== manifest.core) {
-        if (!/^[a-z0-9_]+$/.test(pack.id) || ids.has(pack.id) || !families.has(pack.family) || pack.bytes > 24000000) throw new Error('Invalid content group');
+        if (!/^[a-z0-9_]+$/.test(pack.id) || ids.has(pack.id) || !families.has(pack.family) || lockedFamilies.includes(pack.family) || pack.bytes > 24000000) throw new Error('Invalid content group');
         ids.add(pack.id);
         if(pack.transportChunks!==undefined)for(const chunk of chunkTable(pack)) {
           if(paths.has(chunk.file))throw new Error('Duplicate content chunk path');
@@ -476,7 +479,7 @@
         }
       }
     }
-    if (!Array.isArray(manifest.backgroundOrder) || manifest.backgroundOrder.some(id => !families.has(id))) throw new Error('Invalid background order');
+    if (!Array.isArray(manifest.backgroundOrder) || manifest.backgroundOrder.some(id => !families.has(id) || lockedFamilies.includes(id))) throw new Error('Invalid background order');
     return manifest;
   }
   function create(options) {
