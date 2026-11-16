@@ -99,6 +99,9 @@ function classify(name) {
   if (/^assets\/ui\/zjuding_(?:home|loading)\.png$/.test(name)) return 'phone_zjuding';
   if (/^assets\/ui\/tiyi_(?:main|loading)\.png$/.test(name)) return 'phone_tiyi';
   if (name.startsWith('assets/native/bonsai/') || /^assets\/ui\/bonsai_(?:bloom|bud)\.png$/.test(name)) return 'phone_bonsai';
+  // Chapter 2 draws the active layers and the library's separate exact crop.
+  // Only the later chapter's full-map phone view needs the flat source plate.
+  if (name === 'assets/rpg/campus/zijingang_campus_plate.png') return 'chapter3';
   if (/^assets\/rpg\/(campus|landmarks)\//.test(name)) return /loop_panorama/.test(name) ? 'chapter35' : 'chapter2_campus';
   if (/^assets\/rpg\/(portraits|chapter4-stair)\//.test(name)) return 'chapter4';
   if (/^assets\/rpg\/(qizhen_fishing|qizhen)\//.test(name)) return 'chapter35';

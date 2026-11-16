@@ -1,7 +1,7 @@
 extends RefCounted
 ## Public building identity only. Coordinates use the north-up source plate.
 ## This presentation cannot change routes, reservations, inventory, or story facts.
-const PLATE = "res://assets/rpg/campus/zijingang_campus_plate.png"
+const LOCATION_ATLAS := "res://assets/native/library_geometry/campus_location_atlas.webp"
 const LIBRARY_NAME = "基础图书馆"
 const LIBRARY_CENTER = Vector2(3718,1568)
 const LIBRARY_GATE = Vector2(3706,1696)
@@ -9,6 +9,7 @@ const LIBRARY_LABEL = Vector2(3718,1660)
 const REVEAL_RADIUS = 225.0
 const MAP_REGION = Rect2(2240,360,1850,1500)
 const TOWER_REGION = Rect2(3560,1430,330,280)
+const ATLAS_ORIGIN := Vector2(2239, 359)
 
 static func label_layout(context: Dictionary, font: Font, display_scale: float, visible_rect: Rect2) -> Dictionary:
 	if str(context.get("scene_id","")) != "campus_bootstrap": return {}
@@ -36,8 +37,8 @@ static func draw_label(canvas: CanvasItem, context: Dictionary, font: Font, disp
 
 static func plate_crop(parent: Control, region: Rect2, rect: Rect2, node_name: String) -> TextureRect:
 	var atlas := AtlasTexture.new()
-	atlas.atlas = load(PLATE)
-	atlas.region = region
+	atlas.atlas = load(LOCATION_ATLAS)
+	atlas.region = Rect2(region.position - ATLAS_ORIGIN, region.size)
 	var image := TextureRect.new()
 	image.name = node_name; image.position = rect.position; image.size = rect.size
 	image.texture = atlas; image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
