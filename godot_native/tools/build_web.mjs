@@ -61,19 +61,13 @@ const librarySourceCoverGlob = `${librarySourceCoverPrefix}three_minute_*.png`;
 function webReferenceArt(name) {
   return webReferencePrefixes.some(prefix => name.startsWith(prefix)) || /^assets\/phone\/library-search\/three_minute_[a-z_]+\.png(?:\.import)?$/.test(name);
 }
-// Godot names .ctex payloads from the hash of the original logical path.
-// Match that identity because active layered objects can share old basenames.
-const sourceDirectory = path.join(root, 'src');
-const webReferencePaths = walk(path.join(sourceDirectory, 'assets')).map(file => path.relative(sourceDirectory, file).split(path.sep).join('/')).filter(webReferenceArt);
-const webReferenceDigests = new Set(webReferencePaths.map(name => crypto.createHash('md5').update(`res://${name}`).digest('hex')));
 const excludedSuffixes = ['.mp4', '.md', '.log', '.blend', '.blend1', '.py', '.ts', '.mjs'];
 // Historical UI-laboratory faces remain editable source references. Active
 // phone, world and theater text now use the same project pixel family.
 const retiredUiFonts = ['CampusUISans-Regular.otf', 'SelectedSans-Bold.otf', 'SelectedCoverage-Bold.otf', 'SelectedBoutique-Regular.ttf'];
 function excluded(name) {
   name = name.replace(/^res:\/\//, '');
-  const importedDigest = name.match(/^\.godot\/imported\/.*-([0-9a-f]{32})\./)?.[1];
-  return webReferenceArt(name) || webReferenceDigests.has(importedDigest) || (name.startsWith('campuses/') && !isFlcRuntimePath(name)) || excludedPrefixes.some(prefix => name.startsWith(prefix)) || excludedSuffixes.some(suffix => name.endsWith(suffix)) || name === 'scenes/library_stamp_review.tscn' || retiredUiFonts.some(file => name === `ui_assets/fonts/${file}` || name === `ui_assets/fonts/${file}.import` || name.startsWith(`.godot/imported/${file}-`));
+  return webReferenceArt(name) || (name.startsWith('campuses/') && !isFlcRuntimePath(name)) || excludedPrefixes.some(prefix => name.startsWith(prefix)) || excludedSuffixes.some(suffix => name.endsWith(suffix)) || name === 'scenes/library_stamp_review.tscn' || retiredUiFonts.some(file => name === `ui_assets/fonts/${file}` || name === `ui_assets/fonts/${file}.import` || name.startsWith(`.godot/imported/${file}-`));
 }
 function run(command, commandArgs, capture = false, environment = process.env) {
   const result = spawnSync(command, commandArgs, { cwd: root, env: environment, encoding: 'utf8', stdio: capture ? 'pipe' : 'inherit', maxBuffer: 16 * 1024 * 1024 });
@@ -167,6 +161,10 @@ function sourceInventory() {
     .map(file => ({ path: relative(file), bytes: fs.statSync(file).size }));
   return { inventory, excludedFiles, digest: sha256(JSON.stringify(inventory)) };
 }
+function webReferencePaths() {
+  const source = path.join(root, 'src');
+  return walk(path.join(source, 'assets')).map(file => path.relative(source, file).split(path.sep).join('/')).filter(webReferenceArt);
+}
 function validatePreset() {
   const text = fs.readFileSync(path.join(project, 'export_presets.cfg'), 'utf8');
   const web = text.split('[preset.2]')[1];
@@ -183,12 +181,14 @@ function validatePreset() {
   const projectSettings = fs.readFileSync(path.join(project, 'project.godot'), 'utf8');
   if (!projectSettings.includes('renderer/rendering_method="gl_compatibility"')) throw new Error('Web requires the Compatibility renderer');
   if (!/^general\/default_playback_type\.web=0\s*$/m.test(projectSettings)) throw new Error('The pinned HTTP audio compatibility path requires Stream playback');
-  const librarySourceCovers = webReferencePaths.filter(file => file.startsWith(librarySourceCoverPrefix));
-  const runtimeDirs = ['scripts', 'scenes', 'campuses', 'data'];
+  const librarySourceCovers = webReferencePaths().filter(file => file.startsWith(librarySourceCoverPrefix));
+  const runtimeDirs = ['scripts', 'scenes', 'campuses', 'data/native'];
+  const codeOnlyReferencePrefixes = ['assets/rpg/campus/source/', 'assets/rpg/interiors/source/', 'assets/rpg/optimized/'];
   for (const file of runtimeDirs.flatMap(name => walk(path.join(project, name)))) {
-    if (excluded(relative(file)) || relative(file) === 'data/asset_manifest.json' || !/\.(gd|tscn|tres|json)$/.test(file)) continue;
+    if (excluded(relative(file)) || !/\.(gd|tscn|tres|json)$/.test(file)) continue;
     const text = fs.readFileSync(file, 'utf8');
-    for (const prefix of ['assets/rpg/campus/source/', 'assets/rpg/interiors/source/', 'assets/rpg/optimized/', ...webReferencePrefixes]) {
+    const prefixes = file.endsWith('.json') ? webReferencePrefixes : [...codeOnlyReferencePrefixes, ...webReferencePrefixes];
+    for (const prefix of prefixes) {
       if (text.includes(prefix)) throw new Error(`Excluded source art acquired a runtime consumer: ${relative(file)} → ${prefix}`);
     }
     const oldCover = librarySourceCovers.find(cover => text.includes(cover) || text.includes(cover.slice('assets/'.length)));
@@ -199,7 +199,13 @@ function validatePackEntries(entries, full = false) {
   assertStoryOnlyPackEntries(entries, campusPayloadIdentity(project));
   if (entries.some(entry => /(?:^|\/)morning_room\.webp(?:\.import)?$/.test(entry.path) || entry.path.startsWith('.godot/imported/morning_room.webp-'))) throw new Error('Browser-only morning boot art leaked into a Godot resource pack');
   if (entries.some(entry => entry.path === oversizedPanorama || entry.path === `${oversizedPanorama}.import` || entry.path.startsWith('.godot/imported/zijingang_campus_loop_panorama.png-'))) throw new Error('Oversized original panorama leaked into production instead of its lossless tiles');
-  for (const entry of entries) if (excluded(entry.path)) throw new Error(`Non-production resource leaked into PCK: ${entry.path}`);
+  // Godot hashes the source resource path into the import name. Active layered
+  // objects can share the basename of an excluded image.
+  const webReferenceDigests = new Set(webReferencePaths().map(name => crypto.createHash('md5').update(`res://${name}`).digest('hex')));
+  for (const entry of entries) {
+    const importedDigest = entry.path.match(/^\.godot\/imported\/.*-([0-9a-f]{32})\./)?.[1];
+    if (excluded(entry.path) || webReferenceDigests.has(importedDigest)) throw new Error(`Non-production resource leaked into PCK: ${entry.path}`);
+  }
   const required = ['project.binary', 'scripts/entry.gd', 'scripts/main.gd', 'scripts/state.gd', 'scripts/developer_tools_policy.gd', 'scripts/release_content_policy.gd', 'scenes/entry.tscn', 'scenes/main.tscn', 'data/initial_state.json', 'data/native/prologue-interception.content.json', 'assets/rpg/fonts/fusion_pixel_12px_proportional_zh_hans.ttf.import', 'ui_assets/fonts/MorningNote-Regular.ttf.import', 'ui_assets/fonts/MorningNote-Medium.ttf.import', 'ui_assets/fonts/OFL.txt', 'ui_assets/fonts/MORNING_NOTE_OFL.txt', 'assets/rpg/fonts/licenses/FUSION_PIXEL_FONT_OFL.txt'];
   for (const name of required) if (!entries.some(entry => entry.path === name || entry.path === `${name}.remap`)) throw new Error(`Formal ${full ? 'full-export' : 'boot-core'} dependency absent from PCK: ${name}`);
 }
