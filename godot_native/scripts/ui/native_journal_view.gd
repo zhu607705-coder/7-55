@@ -1,7 +1,8 @@
 extends VBoxContainer
-## Read-only task presentation. Authored objectives, earned logs and all return
+## Read-only task presentation. Authored objectives and all return
 ## actions stay controller-owned; opening or folding this view grants nothing.
 signal resume_requested
+signal chapter_map_requested
 const PhoneOverlay=preload("res://scripts/ui/phone_overlay_shell.gd")
 var phone_builder: RefCounted
 const Ui=preload("res://scripts/ui/native_ui_theme.gd")
@@ -15,20 +16,17 @@ const ACCENT:=INK
 var context_texture: Texture2D
 var objective: String
 var detail: String
-var entries: Array=[]
 var digit_slots: Array[String]=[]
 var return_label: String="返回游戏"
 var resume_button: Button
-var history: VBoxContainer
-var history_toggle: Button
 
 func _init() -> void:
 	# This is shared phone/task chrome even when opened over the world. The
 	# presentation registry must not reapply its retired raised key material.
 	set_meta("phone_ui_scope",true)
 
-func configure(title: String, next_step: String, log: Array, in_world: bool) -> void:
-	objective=title;detail=next_step;entries=log.duplicate(true)
+func configure(title: String, next_step: String, _log: Array, in_world: bool) -> void:
+	objective=title;detail=next_step
 	return_label="返回现场" if in_world else "返回游戏"
 
 func configure_digits(snapshot: Dictionary) -> void:
@@ -130,12 +128,8 @@ func _ready() -> void:
 			add_child(slots)
 	resume_button=_button(return_label,"JournalResume",func(): resume_requested.emit(),true)
 	add_child(resume_button)
-	add_child(_rule("JournalHistoryRule"))
-	history_toggle=_button("展开历史记录（%d）"%entries.size(),"JournalHistoryToggle",_toggle_history)
-	history_toggle.toggle_mode=true
-	add_child(history_toggle)
-	history=VBoxContainer.new();history.name="JournalHistory";history.add_theme_constant_override("separation",0)
-	add_child(history);history.hide()
+	add_child(_rule("JournalChapterMapRule"))
+	add_child(_chapter_map_button())
 
 func _build_phone_sections() -> void:
 	add_theme_constant_override("separation",10)
@@ -159,11 +153,11 @@ func _build_phone_sections() -> void:
 			slots.add_child(digit)
 		body.add_child(slots)
 	var records: Dictionary=PhoneOverlay.card(phone_builder)
-	records.panel.name="JournalHistoryCard";add_child(records.panel)
-	history_toggle=_button("展开历史记录（%d）"%entries.size(),"JournalHistoryToggle",_toggle_history)
-	history_toggle.toggle_mode=true;records.content.add_child(history_toggle)
-	history=VBoxContainer.new();history.name="JournalHistory";history.add_theme_constant_override("separation",0)
-	records.content.add_child(history);history.hide()
+	records.panel.name="JournalChapterMapCard";add_child(records.panel)
+	records.content.add_child(_chapter_map_button())
+
+func _chapter_map_button() -> Button:
+	return _button("章节地图","JournalChapterMap",func(): chapter_map_requested.emit())
 
 func _label(text: String, id: String, role: String="body") -> Label:
 	if phone_builder!=null:
@@ -196,19 +190,6 @@ func _button(text: String, id: String, action: Callable, primary:=false) -> Butt
 	button.alignment=HORIZONTAL_ALIGNMENT_LEFT
 	button.pressed.connect(action)
 	return button
-
-func _toggle_history() -> void:
-	history.visible=history_toggle.button_pressed
-	history_toggle.text=("收起历史记录（%d）" if history.visible else "展开历史记录（%d）")%entries.size()
-	if history.visible and history.get_child_count()==0:
-		if entries.is_empty(): history.add_child(_label("还没有历史记录。","JournalHistoryEmpty"))
-		for index in range(entries.size()-1,-1,-1):
-			var row:=_label(str(entries[index].get("text","")),"JournalHistoryRow"+str(index))
-			var row_style:=paper_box(Color.TRANSPARENT,LINE,0,Vector2(0,12))
-			row_style.border_width_bottom=1 if index>0 else 0
-			row.add_theme_stylebox_override("normal",row_style)
-			history.add_child(row)
-	if not history.visible: focus_control.call_deferred("JournalHistoryToggle")
 
 func focus_control(id: String) -> void:
 	var target: Control=resume_button if id=="JournalResume" else find_child(id,true,false)

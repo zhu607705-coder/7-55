@@ -39,16 +39,12 @@ func run() -> void:
 			var shared: Dictionary=shell.modal.get_meta("journal_shared_shell")
 			check(shared.panel.position.is_equal_approx(Vector2.ZERO) and is_equal_approx(shared.panel.size.x,378),"same top anchor and authoring width")
 			var journal: Control=shell.modal.find_child("NativeJournal",true,false)
-			var toggle: Button=journal.find_child("JournalHistoryToggle",true,false)
-			toggle.button_pressed=true; toggle.pressed.emit(); await frames()
+			var toggle: Button=journal.find_child("JournalChapterMap",true,false)
+			check(toggle != null and toggle.text == "章节地图","every journal exposes the chapter map")
 			check(journal.find_child("JournalObjective",true,false).text==state.objective(),"current objective remains controller-owned")
 			check(not shared.scroll.is_ancestor_of(shared.close),"close stays outside scroll body")
 			check(shared.scroll.follow_focus,"keyboard focus scrolls into view")
 			check(shell.phone.get_global_rect().grow(.5).encloses(shell.modal_panel.get_global_rect()),"phone panel stays in bounds")
-			var rail: VScrollBar=shared.scroll.get_v_scroll_bar()
-			check(rail.max_value>rail.page,"long earned history has a scrollable range")
-			shared.scroll.scroll_vertical=10000; await frames()
-			check(shared.scroll.scroll_vertical>0,"history actually scrolls")
 			if OS.get_cmdline_user_args().has("--capture") and DisplayServer.get_name()!="headless":
 				await RenderingServer.frame_post_draw
 				DirAccess.make_dir_recursive_absolute("res://.screenshots/journal-chapters")

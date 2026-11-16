@@ -44,14 +44,12 @@ func run() -> void:
 	actual_progress(3);await frames(8);shell._clear_notice_presentations()
 	root.size=Vector2i(390,844);shell._layout();shell._show_journal();await frames(6)
 	var before: Dictionary=state.d.duplicate(true)
-	await click(await reveal_control("JournalHistoryToggle"));await frames(5)
-	var mounted: Control=find("NativeJournal")
+	await click(await reveal_control("JournalChapterMap"));await frames(5)
+	var mounted: Control=find("ChapterMap")
 	for dimensions: Vector2i in [Vector2i(844,390),Vector2i(320,568),Vector2i(1440,900),Vector2i(390,844)]:
 		root.size=dimensions;shell._layout();await frames(6);verify_dropdown()
-		check(find("NativeJournal")==mounted and find("JournalHistory").visible,"resize preserves current task and expanded history")
-	await click(await reveal_control("JournalHistoryToggle"));await frames(5)
-	check(find("JournalCluesCard")==null and find("JournalObservationCompare")==null,"earned task has no comparison card or entry")
-	check(state.d==before,"history browsing preserves earned progress")
+		check(find("ChapterMap")==mounted,"resize preserves the chapter map instance")
+	check(state.d==before,"map browsing preserves earned progress")
 	shell._close_modal();await frames(4)
 	Input.call("set_emulate_mouse_from_touch",true)
 	for cycle in 4:
