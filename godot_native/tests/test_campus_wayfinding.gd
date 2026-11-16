@@ -78,7 +78,10 @@ func run() -> void:
 		check(node("LibraryLocationIdentity").text=="基础馆 · 基础图书馆","Reservation and facade names are explicitly joined")
 		check(node("LibraryCampusMap").texture is AtlasTexture and node("LibraryTowerReference").texture is AtlasTexture,"Map and close view share exact original source artwork")
 		var map_view:TextureRect=node("LibraryCampusMap");var tower:TextureRect=node("LibraryTowerReference")
-		check(map_view.texture.region==Wayfinding.MAP_REGION and tower.texture.region==Wayfinding.TOWER_REGION,"Crops retain fixed source-pixel regions")
+		var map_region: Rect2 = map_view.texture.region
+		var tower_region: Rect2 = tower.texture.region
+		check(map_view.texture.atlas == tower.texture.atlas and map_view.texture.atlas.get_size() == Vector2(1852,1502),"Both crops use one bounded atlas with a source pixel around the map edges")
+		check(Rect2(map_region.position + Wayfinding.ATLAS_ORIGIN, map_region.size) == Wayfinding.MAP_REGION and Rect2(tower_region.position + Wayfinding.ATLAS_ORIGIN, tower_region.size) == Wayfinding.TOWER_REGION,"Atlas windows retain fixed source-pixel regions")
 		check(map_view.stretch_mode==TextureRect.STRETCH_KEEP_ASPECT_CENTERED and tower.stretch_mode==TextureRect.STRETCH_KEEP_ASPECT_CENTERED,"Neither projection nor tower is stretched")
 		check(node("LibraryLocationScroll").get_h_scroll_bar().max_value<=node("LibraryLocationScroll").size.x,"Location content has no horizontal overflow")
 		await click(node("PhoneNav_back"));await show()

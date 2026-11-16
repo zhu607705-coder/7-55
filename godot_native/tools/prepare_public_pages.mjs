@@ -11,6 +11,7 @@ const allowed = new Set(['phone_bonsai', 'phone_tiyi', 'phone_zjuding', 'chapter
 const withheld = new Set(['chapter3', 'chapter35', 'chapter4']);
 const changed = new Set(['content-manifest.json', 'content-inventory.json']);
 const provenanceFiles = ['.nojekyll', 'source-inputs.json', 'pack-inventory.json'];
+const mobileStartupBudgetBytes = 30_000_000;
 const sum = (items, key) => items.reduce((total, item) => total + item[key], 0);
 const option = name => process.argv.slice(2).find(arg => arg.startsWith(`--${name}=`))?.slice(name.length + 3);
 const input = fs.realpathSync(option('input') || 'godot_native/exports/web-release');
@@ -142,6 +143,9 @@ try {
   const initialFiles = files.filter(file => !file.path.startsWith('liangzhu-trailer/') && !file.path.endsWith('.gz')
     && !file.path.startsWith('content/') && !['content-inventory.json', 'index.pck', 'index.wasm'].includes(file.path));
   const gzipBySource = new Map(compressionFiles.map(record => [record.source, record]));
+  const initialGzipPayloadBytes = initialFiles.reduce((bytes, file) => bytes + (gzipBySource.get(file.path)?.bytes ?? file.bytes), 0);
+  assert(initialGzipPayloadBytes <= mobileStartupBudgetBytes,
+    `Pages startup payload ${initialGzipPayloadBytes} bytes exceeds the ${mobileStartupBudgetBytes}-byte mobile transfer budget`);
   const totalPayloadBytes = sum(files, 'bytes');
   const releasePolicy = {
     publicChapterLimit: 2,
@@ -152,7 +156,7 @@ try {
     ...build, releasePolicy, files, totalPayloadBytes, transportCompression,
     logicalPayloadBytes: totalPayloadBytes - transportCompression.bytes - boot.bytes - transportChunks.bytes,
     initialPayloadBytes: sum(initialFiles, 'bytes'),
-    initialGzipPayloadBytes: initialFiles.reduce((bytes, file) => bytes + (gzipBySource.get(file.path)?.bytes ?? file.bytes), 0),
+    initialGzipPayloadBytes,
     fullPack: { ...build.fullPack, role: 'source-full-export' },
     content: { ...build.content, packs: packs.length, deferredBytes: sum(packs, 'bytes'),
       exactCoverage: false, exactPublishedCoverage: true, entryCount: entries.length, transportChunks,

@@ -37,6 +37,8 @@ const bootArtPlaceholder = '__755_BOOT_ART_MORNING_ROOM__';
 const stagePreviewDirectory = 'liangzhu-trailer';
 const stagePreviewFiles = ['index.html', 'poster.jpg', 'voiced.mp4', 'score.mp4'];
 const browserSources = [...stagePreviewFiles.map(file => `web/${stagePreviewDirectory}/${file}`), buttonMaterialSource, 'web/index.html', 'web/player-account.js', 'web/cloud-saves.js', 'web/content_loader.js', 'web/scene_orientation.js', 'web/boot_intro.js', 'web/boot_art/.gdignore', bootArtSource, ...bootTypographySources];
+const campusLocationAtlasTool = 'tools/build_campus_location_atlas.mjs';
+deliveryTools.push(campusLocationAtlasTool);
 // Exports are hosting artifacts, not editor resources. Git ignores do not stop
 // Godot's resource scanner from creating sidecars inside immutable site output.
 // Establish the parent boundary before the editor/import/export process runs.
@@ -51,13 +53,27 @@ if (!verifyOnly) {
 // without uploading a 13668-wide texture or shipping the same pixels twice.
 const oversizedPanorama = 'assets/rpg/campus/zijingang_campus_loop_panorama.png';
 const excludedPrefixes = ['addons/RodinBridge/', 'docs/', 'tests/', 'tools/', 'verification/', 'exports/', 'web/', '.screenshots/', 'examples/', 'samples/', 'assets/rpg/campus/source/', 'assets/rpg/interiors/source/', 'assets/rpg/optimized/'];
+// The layered campus and the runtime WebP library covers already own these
+// views. These paths remain editable source assets and native references.
+const webReferencePrefixes = ['assets/rpg/landmarks/', 'assets/rpg/campus/weather/', 'assets/rpg/campus/sectors/', 'assets/rpg/campus/water/'];
+const librarySourceCoverPrefix = 'assets/phone/library-search/';
+const librarySourceCoverGlob = `${librarySourceCoverPrefix}three_minute_*.png`;
+function webReferenceArt(name) {
+  return webReferencePrefixes.some(prefix => name.startsWith(prefix)) || /^assets\/phone\/library-search\/three_minute_[a-z_]+\.png(?:\.import)?$/.test(name);
+}
+// Godot names .ctex payloads from the hash of the original logical path.
+// Match that identity because active layered objects can share old basenames.
+const sourceDirectory = path.join(root, 'src');
+const webReferencePaths = walk(path.join(sourceDirectory, 'assets')).map(file => path.relative(sourceDirectory, file).split(path.sep).join('/')).filter(webReferenceArt);
+const webReferenceDigests = new Set(webReferencePaths.map(name => crypto.createHash('md5').update(`res://${name}`).digest('hex')));
 const excludedSuffixes = ['.mp4', '.md', '.log', '.blend', '.blend1', '.py', '.ts', '.mjs'];
 // Historical UI-laboratory faces remain editable source references. Active
 // phone, world and theater text now use the same project pixel family.
 const retiredUiFonts = ['CampusUISans-Regular.otf', 'SelectedSans-Bold.otf', 'SelectedCoverage-Bold.otf', 'SelectedBoutique-Regular.ttf'];
 function excluded(name) {
   name = name.replace(/^res:\/\//, '');
-  return (name.startsWith('campuses/') && !isFlcRuntimePath(name)) || excludedPrefixes.some(prefix => name.startsWith(prefix)) || excludedSuffixes.some(suffix => name.endsWith(suffix)) || name === 'scenes/library_stamp_review.tscn' || retiredUiFonts.some(file => name === `ui_assets/fonts/${file}` || name === `ui_assets/fonts/${file}.import` || name.startsWith(`.godot/imported/${file}-`));
+  const importedDigest = name.match(/^\.godot\/imported\/.*-([0-9a-f]{32})\./)?.[1];
+  return webReferenceArt(name) || webReferenceDigests.has(importedDigest) || (name.startsWith('campuses/') && !isFlcRuntimePath(name)) || excludedPrefixes.some(prefix => name.startsWith(prefix)) || excludedSuffixes.some(suffix => name.endsWith(suffix)) || name === 'scenes/library_stamp_review.tscn' || retiredUiFonts.some(file => name === `ui_assets/fonts/${file}` || name === `ui_assets/fonts/${file}.import` || name.startsWith(`.godot/imported/${file}-`));
 }
 function run(command, commandArgs, capture = false, environment = process.env) {
   const result = spawnSync(command, commandArgs, { cwd: root, env: environment, encoding: 'utf8', stdio: capture ? 'pipe' : 'inherit', maxBuffer: 16 * 1024 * 1024 });
@@ -160,15 +176,23 @@ function validatePreset() {
   if (!web.split('\n').find(line => line.startsWith('exclude_filter='))?.includes('campuses/buct*')) throw new Error('Story-only Web preset must exclude research BUCT campuses');
   if (web.split('\n').find(line => line.startsWith('exclude_filter='))?.includes('campuses/*,')) throw new Error('Approved FLC activity must not be stripped by the old blanket campus filter');
   if (!web.split('\n').find(line => line.startsWith('exclude_filter='))?.includes(oversizedPanorama)) throw new Error('Web preset must exclude the oversized source panorama in favor of its lossless tiles');
+  const excludeFilter = web.match(/^exclude_filter="([^"]*)"/m)?.[1]?.split(',') ?? [];
+  for (const pattern of [...webReferencePrefixes.map(prefix => `${prefix}*`), librarySourceCoverGlob]) {
+    if (!excludeFilter.includes(pattern)) throw new Error(`Web preset must exclude reference-only art: ${pattern}`);
+  }
   const projectSettings = fs.readFileSync(path.join(project, 'project.godot'), 'utf8');
   if (!projectSettings.includes('renderer/rendering_method="gl_compatibility"')) throw new Error('Web requires the Compatibility renderer');
   if (!/^general\/default_playback_type\.web=0\s*$/m.test(projectSettings)) throw new Error('The pinned HTTP audio compatibility path requires Stream playback');
-  for (const file of walk(path.join(project, 'scripts')).concat(walk(path.join(project, 'scenes')), walk(path.join(project, 'campuses')))) {
-    if (excluded(relative(file)) || !/\.(gd|tscn|tres)$/.test(file)) continue;
+  const librarySourceCovers = webReferencePaths.filter(file => file.startsWith(librarySourceCoverPrefix));
+  const runtimeDirs = ['scripts', 'scenes', 'campuses', 'data'];
+  for (const file of runtimeDirs.flatMap(name => walk(path.join(project, name)))) {
+    if (excluded(relative(file)) || relative(file) === 'data/asset_manifest.json' || !/\.(gd|tscn|tres|json)$/.test(file)) continue;
     const text = fs.readFileSync(file, 'utf8');
-    for (const prefix of ['assets/rpg/campus/source/', 'assets/rpg/interiors/source/', 'assets/rpg/optimized/']) {
+    for (const prefix of ['assets/rpg/campus/source/', 'assets/rpg/interiors/source/', 'assets/rpg/optimized/', ...webReferencePrefixes]) {
       if (text.includes(prefix)) throw new Error(`Excluded source art acquired a runtime consumer: ${relative(file)} → ${prefix}`);
     }
+    const oldCover = librarySourceCovers.find(cover => text.includes(cover) || text.includes(cover.slice('assets/'.length)));
+    if (oldCover) throw new Error(`Excluded library cover acquired a runtime consumer: ${relative(file)} → ${oldCover}`);
   }
 }
 function validatePackEntries(entries, full = false) {
@@ -206,6 +230,7 @@ if (!verifyOnly) {
   }
 }
 console.log('Panorama source tiles: ' + run(process.execPath, [path.join(project, 'tools/build_panorama_tiles.mjs'), '--check'], true));
+console.log(run(process.execPath, [path.join(project, campusLocationAtlasTool), '--check'], true));
 let sourceBeforeExport;
 let bootChunks;
 let audioCompatibility;

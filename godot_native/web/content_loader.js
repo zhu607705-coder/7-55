@@ -497,6 +497,7 @@
     let disposed = false;
     let cachePromise;
     const budget=createBackgroundBudget();
+    const touchFirst = typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches;
     const saveData=()=>!!(navigator.connection && navigator.connection.saveData);
     const optionalAllowed=()=>!document.hidden && navigator.onLine!==false && !saveData();
     const cacheKey = pack => new URL('/.755-content-cache/' + pack.sha256 + '.pck', location.origin).href;
@@ -661,6 +662,9 @@
         record.buffer = null;if(active===run){active = null;pump();}
       },
       startPrefetch: () => {
+        // Phones fetch only what the current interaction needs. Safari does
+        // not expose Save-Data, so use the primary pointer capability here.
+        if (touchFirst) return;
         // Two frames leave the first chapter's first paint and input ahead of
         // optional work. One paced background body; foreground keeps its three
         // boot/chunk workers. Whole-PCK copy/mount remains indivisible; native

@@ -65,7 +65,8 @@ function fixture(options = {}) {
     async delete(key) { cacheEvents.push(['delete', key]); return stored.delete(key); },
   };
   const context = {
-    window: {}, document: { baseURI: documentBase, hidden: false,
+    window: { matchMedia: query => ({ matches: query === '(pointer: coarse)' && Boolean(options.coarsePointer) }) },
+    document: { baseURI: documentBase, hidden: false,
       addEventListener: (name, fn) => { if (name === 'visibilitychange') visibilityListeners.add(fn); },
       removeEventListener: (name, fn) => { if (name === 'visibilitychange') visibilityListeners.delete(fn); } }, location: { origin },
     navigator: { connection: { saveData: Boolean(options.saveData) } },
@@ -314,6 +315,25 @@ for (const kind of ['truncated', 'overflow']) {
   check('saveData still permits an explicitly required foreground chapter at high priority', f.requests.length === 1 && f.requests[0].init.priority === 'high' && f.requests[0].url === new URL(packs[2].file, baseURI).href);
   await f.host.acknowledge(packs[2].id, true, ''); await quiet();
   check('Completing explicit foreground work does not restart saveData background traffic', f.requests.length === 1 && snapshot(f.host).active === '');
+  f.host.dispose();
+}
+
+{
+  const f = fixture({ coarsePointer: true });
+  f.host.startPrefetch();
+  await quiet();
+  check('Coarse primary pointers skip speculative downloads without Save-Data', f.raf.length === 0 && f.requests.length === 0);
+  request(f.host, packs[0].id, packs[1].id);
+  await until(() => f.events.length === 1, 'first mobile foreground pack');
+  await f.host.acknowledge(packs[0].id, true, '');
+  await until(() => f.events.length === 2, 'second mobile foreground pack');
+  await f.host.acknowledge(packs[1].id, true, '');
+  f.host.setPrefetchFamilies(JSON.stringify(['chapter3']));
+  await quiet();
+  check('Mobile loads and mounts every requested pack without starting later chapters', f.requests.length === 2
+    && f.requests.every(item => item.init.priority === 'high')
+    && packs.slice(0, 2).every(pack => record(f.host, pack.id).status === 'mounted')
+    && record(f.host, packs[2].id).status === 'idle');
   f.host.dispose();
 }
 

@@ -89,7 +89,9 @@ function verifyDeferredWorldAssets(folder, delivery) {
   for (const component of Object.values(components)) asset(component.path, 'chapter3');
   for (const name of ['drink_machine_press_4f.png', 'drink_fountain_body.png', 'drink_fountain_paddle.png']) asset('assets/native/canteen_animation/' + name, 'chapter3');
   for (const name of ['assets/rpg/interiors/library_interior.png', 'assets/rpg/npcs/library/front_desk_staff_2frame.png', 'assets/rpg/props/library_front_desk_stamp_v01.png']) asset(name, 'chapter2_library');
-  for (const name of ['data/native/campus_layered_map.json', 'assets/rpg/campus/zijingang_campus_plate.png']) asset(name, 'chapter2_campus');
+  asset('assets/native/library_geometry/campus_location_atlas.webp', 'chapter2_library');
+  asset('data/native/campus_layered_map.json', 'chapter2_campus');
+  asset('assets/rpg/campus/zijingang_campus_plate.png', 'chapter3');
   for (const art of ['home', 'loading']) asset(`assets/ui/zjuding_${art}.png`, 'phone_zjuding');
   for (const name of ['manual_control', 'movement_puzzle', 'search']) asset(`assets/audio/act-one/music/music_act2_${name}.mp3`, 'chapter2');
   for (const name of ['campus_crescent_after_rain', 'campus_qizhen_dock_morning', 'campus_zijingang_gate_cloudy', 'life_bike_basket_raincoat', 'life_canteen_queue', 'life_study_room_late_snack']) asset(`assets/ui/photo-evidence/campus-life/${name}.webp`, 'chapter2');
