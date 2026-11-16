@@ -12,11 +12,40 @@ export const FLC_FONT_DEPENDENCIES = Object.freeze([
   "ui_assets/fonts/SelectedCoverage-Regular.otf",
 ]);
 
+// Replaced room plates and retired bench originals remain authoring inputs.
+// The active floors reference ambient plates, while apparatus views use their
+// objectized sprites. Keep this explicit so new assets are admitted normally.
+export const FLC_REFERENCE_ART = Object.freeze([
+  'rooms/xlab_south.png',
+  'rooms/xlab_north.png',
+  'rooms/team_studio.png',
+  'rooms/recording_studio.png',
+  'rooms/pantry.png',
+  'rooms/north_seminar.png',
+  'floors/floor_2_overview_v1.png',
+  'puzzles/sources/object_worktable.png',
+  'puzzles/sources/vehicles_oblique45_20261030.png',
+  'puzzles/sources/physical_controls_atlas.png',
+  'puzzles/sources/controls_oblique45_20261030.png',
+  'puzzles/object_worktable.png',
+  'puzzles/physical_controls_atlas.png',
+  'puzzles/solar_chassis_atlas.png',
+  'puzzles/controls_oblique45_20261030.png',
+  'puzzles/delivery_robot_atlas.png',
+].map(file => `campuses/future_learning_center/assets/${file}`));
+
+// Godot keeps .gd.remap aliases for the runtime's res:// references.
+export function assertTokenizedWebScripts(entries) {
+  const source = entries.find(entry => /\.gd$/i.test(entry.path));
+  if (source) throw new Error(`Plaintext GDScript in Web export: ${source.path}`);
+  if (!entries.some(entry => /\.gdc$/i.test(entry.path))) throw new Error('Web export contains no binary GDScript tokens');
+}
+
 export function isFlcRuntimePath(name) {
   name = name.replace(/^res:\/\//, '').replace(/\.(?:import|remap)$/, '');
   if (FLC_FONT_DEPENDENCIES.includes(name)) return true;
   return /^campuses\/future_learning_center\/(?:scripts\/.+\.(?:gd|gdc)|scenes\/.+\.(?:tscn|scn|tres|res)|data\/.+\.json|assets\/.+\.(?:png|webp|jpg|jpeg|svg|json|ogg|wav|mp3|ttf|tres|res))$/.test(name)
-    && !name.split('/').some(part => part === '..' || part === '.');
+    && !FLC_REFERENCE_ART.includes(name) && !name.split('/').some(part => part === '..' || part === '.');
 }
 
 export function campusPayloadIdentity(project) {
@@ -64,6 +93,7 @@ export function campusPayloadIdentity(project) {
 export function assertStoryOnlyPackEntries(entries, identity) {
   for (const entry of entries) {
     const owner = identity.owner(entry.path);
+    if (owner && FLC_REFERENCE_ART.includes(owner)) throw new Error(`FLC reference art leaked into story-only PCK: ${entry.path} ← ${owner}`);
     if (owner && !isFlcRuntimePath(owner)) throw new Error(`Research campus resource leaked into story-only PCK: ${entry.path} ← ${owner}`);
   }
 }

@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { readPack } from './partition_web_pack.mjs';
 import { createContentDelivery, verifyContentDelivery, fileSha256, CONTENT_PACK_LIMIT } from './web_content_delivery.mjs';
-import { campusPayloadIdentity, assertStoryOnlyPackEntries, isFlcRuntimePath } from './web_story_content_policy.mjs';
+import { campusPayloadIdentity, assertStoryOnlyPackEntries, assertTokenizedWebScripts, isFlcRuntimePath, FLC_REFERENCE_ART } from './web_story_content_policy.mjs';
 import { createBootChunks, verifyBootChunks } from './web_boot_chunks.mjs';
 import { applyWebAudioCompatibility, verifyWebAudioCompatibility } from './web_audio_compat.mjs';
 import { prepareWebCompression, verifyWebCompression } from './web_precompress.mjs';
@@ -174,8 +174,9 @@ function validatePreset() {
   if (!web.split('\n').find(line => line.startsWith('exclude_filter='))?.includes('campuses/buct*')) throw new Error('Story-only Web preset must exclude research BUCT campuses');
   if (web.split('\n').find(line => line.startsWith('exclude_filter='))?.includes('campuses/*,')) throw new Error('Approved FLC activity must not be stripped by the old blanket campus filter');
   if (!web.split('\n').find(line => line.startsWith('exclude_filter='))?.includes(oversizedPanorama)) throw new Error('Web preset must exclude the oversized source panorama in favor of its lossless tiles');
+  if (!/^script_export_mode=[12]\s*$/m.test(web)) throw new Error('Web preset must export binary GDScript tokens');
   const excludeFilter = web.match(/^exclude_filter="([^"]*)"/m)?.[1]?.split(',') ?? [];
-  for (const pattern of [...webReferencePrefixes.map(prefix => `${prefix}*`), librarySourceCoverGlob]) {
+  for (const pattern of [...webReferencePrefixes.map(prefix => `${prefix}*`), librarySourceCoverGlob, ...FLC_REFERENCE_ART]) {
     if (!excludeFilter.includes(pattern)) throw new Error(`Web preset must exclude reference-only art: ${pattern}`);
   }
   const projectSettings = fs.readFileSync(path.join(project, 'project.godot'), 'utf8');
@@ -193,9 +194,12 @@ function validatePreset() {
     }
     const oldCover = librarySourceCovers.find(cover => text.includes(cover) || text.includes(cover.slice('assets/'.length)));
     if (oldCover) throw new Error(`Excluded library cover acquired a runtime consumer: ${relative(file)} → ${oldCover}`);
+    const oldFlcArt = FLC_REFERENCE_ART.find(art => text.includes(art));
+    if (oldFlcArt) throw new Error(`Excluded FLC reference art acquired a runtime consumer: ${relative(file)} → ${oldFlcArt}`);
   }
 }
 function validatePackEntries(entries, full = false) {
+  assertTokenizedWebScripts(entries);
   assertStoryOnlyPackEntries(entries, campusPayloadIdentity(project));
   if (entries.some(entry => /(?:^|\/)morning_room\.webp(?:\.import)?$/.test(entry.path) || entry.path.startsWith('.godot/imported/morning_room.webp-'))) throw new Error('Browser-only morning boot art leaked into a Godot resource pack');
   if (entries.some(entry => entry.path === oversizedPanorama || entry.path === `${oversizedPanorama}.import` || entry.path.startsWith('.godot/imported/zijingang_campus_loop_panorama.png-'))) throw new Error('Oversized original panorama leaked into production instead of its lossless tiles');
