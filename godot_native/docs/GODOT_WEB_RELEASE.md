@@ -41,6 +41,8 @@ node godot_native/tools/build_web.mjs --verify-only
 - `content-manifest.json`：启动包及后续章节包的路径、字节数、SHA-256 和后台加载顺序。
 - `content-inventory.json`：完整导出中每个资源的唯一所属包及原始内容摘要，证明拆包没有遗漏。
 
+Web 生产预设使用 Godot 压缩二进制词元导出 GDScript。构建验证实际 PCK，发现独立明文 `.gd` 即失败。公开 Pages 产物只保留运行用清单，`source-inputs.json`、`pack-inventory.json` 和 `content-inventory.json` 留在完整构建的验收输入中。浏览器仍须取得可运行的词元和素材，词元及缓存校验均不提供保密性。
+
 首包与 WASM 另生成 `boot/` 下至多 1 MiB 的独立静态文件，`build-manifest.json.bootChunks` 记录每块原始偏移、字节数、SHA-256 以及整份资源摘要。浏览器完整下载各块并逐块校验后才缓存，最多三块并发；退出后可复用已完成的块。新版缓存按每块 SHA-256 与长度寻址，后续构建中身份相同的块可跨整包版本复用；旧格式缓存仅能在整包身份仍相同时迁移，首次改变 core 的升级不承诺复用全部旧块。逐块和整份摘要均保留；可用 WebCrypto 时异步校验，普通 HTTP 回退按有界块让出主线程。此路径不依赖 HTTP Range，避免原网站为大文件返回 gzip 字节范围时无法独立解压的问题。导出后的原 `index.pck`、`index.wasm` 原样保留，供引擎独立验证与回滚。构建及 `--verify-only` 重新比较每块与原文件，校验首尾边界、连续覆盖、无重复遗漏和重组后的完整摘要，不改写冻结产物。
 
 若分块的完整响应长度或 SHA-256 不符，加载器仅对该块绕过 HTTP 缓存重取一次。新响应仍需通过原长度与摘要校验，才能写入 IndexedDB 并继续整包校验。这样可修复浏览器保留的错误静态响应；清理 IndexedDB 本身无法清理 HTTP 缓存。第二次仍不符、HTTP/网络错误或取消均停止本次尝试，保留原有失败提示与玩家重试入口。正常分块仍优先复用缓存，已验证的其他分块不失效。
