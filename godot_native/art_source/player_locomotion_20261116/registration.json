@@ -65,7 +65,7 @@
         "visible_rect": [
           37,
           25,
-          91,
+          89,
           158
         ],
         "source_cel": 6
@@ -85,7 +85,7 @@
         "visible_rect": [
           37,
           25,
-          91,
+          89,
           158
         ],
         "source_cel": 7
@@ -145,7 +145,7 @@
         "visible_rect": [
           34,
           26,
-          92,
+          91,
           158
         ],
         "source_cel": 10
@@ -165,7 +165,7 @@
         "visible_rect": [
           36,
           26,
-          91,
+          89,
           158
         ],
         "source_cel": 11
@@ -185,7 +185,7 @@
         "visible_rect": [
           37,
           26,
-          91,
+          89,
           158
         ],
         "source_cel": 12
@@ -205,7 +205,7 @@
         "visible_rect": [
           37,
           26,
-          90,
+          89,
           159
         ],
         "source_cel": 13
@@ -225,7 +225,7 @@
         "visible_rect": [
           37,
           26,
-          91,
+          89,
           159
         ],
         "source_cel": 14
@@ -245,7 +245,7 @@
         "visible_rect": [
           37,
           26,
-          91,
+          89,
           158
         ],
         "source_cel": 15
@@ -325,7 +325,7 @@
         "visible_rect": [
           35,
           25,
-          91,
+          89,
           159
         ],
         "source_cel": 3
@@ -365,7 +365,7 @@
         "visible_rect": [
           37,
           26,
-          92,
+          90,
           159
         ],
         "source_cel": 5
@@ -1108,5 +1108,5 @@
       }
     ]
   },
-  "atlas_sha256": "075fe3ca082a8557e229481fc663ca03e14a0b4110095d93b3ceb22ecaebba23"
+  "atlas_sha256": "4b7352885ccb979bf2298eda0775487cc167767d2ddfe53f960e52b2ca291364"
 }

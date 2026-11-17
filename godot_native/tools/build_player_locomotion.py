@@ -180,6 +180,11 @@ def prepare_side(path):
         tile = place_pose(image, x, y)
         grade_side_walk(tile)
         tile = fit_side_head(tile)
+        # A few isolated translucent pixels extend past the shoulder profile.
+        # Keep the edge of real artwork and clear pixels separated from it.
+        solid = tile.getchannel('A').point(lambda alpha: 255 if alpha >= 32 else 0)
+        fringe = solid.filter(ImageFilter.MaxFilter(3)).point(lambda value: 255 - value)
+        tile.paste((0, 0, 0, 0), (0, 0, *CEL), fringe)
         output.append(tile)
         records.append(pose_record(tile, rows[i]['crop'], scale, x, y,
                                    (SIDE_START + i) % SIDE_FRAMES + 1))
