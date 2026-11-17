@@ -3,6 +3,7 @@ extends Control
 signal event(action: String,value: Variant)
 const Layers=preload("res://scripts/ui/chapter4_world_layers.gd")
 const Metrics=preload("res://scripts/player_metrics.gd")
+const WalkArt=preload("res://scripts/player_walk_art.gd")
 const Room=preload("res://scripts/games/chapter4_room204_model.gd")
 var source_font: Font=load("res://scripts/ui/native_typography.gd").body_font()
 var layer: RefCounted=Layers.new()
@@ -122,7 +123,8 @@ func _elevator() -> void:
 		var scale_value: float=minf(aperture.size.x/72,aperture.size.y/96); var center: Vector2=Room.point(e.doorCenter)
 		draw_texture_rect_region(door,Rect2(origin+(center-Vector2(36,48)*scale_value)*zoom,Vector2(72,96)*scale_value*zoom),Rect2(roundi(progress*5)*72,0,72,96))
 	if visible:
-		var sprite: Texture2D=layer.texture("res://assets/rpg/player/player_"+("down" if down else "up")+"_"+str(int(elapsed_ms/110)%8)+".png")
+		var walk_ms: float = elapsed_ms - (switch_at + 440 if down else 440)
+		var sprite := WalkArt.texture("down" if down else "up", walk_ms, walk_ms >= 0 and walk_ms < 420)
 		if sprite:
 			var visual: Rect2=Metrics.visual_rect(p); draw_texture_rect(sprite,Rect2(origin+visual.position*zoom,visual.size*zoom),false)
 	draw_set_transform(origin,0,Vector2.ONE*zoom)

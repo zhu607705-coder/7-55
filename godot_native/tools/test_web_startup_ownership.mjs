@@ -43,6 +43,7 @@ try {
     resource(name, 'chapter2');
   for (const name of ['player_walk_full', 'player_down_idle', 'player_up_idle', 'player_side_idle'])
     resource(`assets/native/library_animation_20261105/${name}.png`, 'chapter2');
+  resource('assets/native/player_locomotion/player_walk_and_idle.png', 'chapter2');
   resource('assets/native/library_animation_20261105/library_book_sheet.png', 'chapter2_library');
   resource('assets/native/theater_chest_20261023/prop_chest_overhead_body_v2.png', 'chapter3');
   resource('scenes/objects/lake_assembly_parts.tscn', 'chapter35', true);

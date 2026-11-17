@@ -66,7 +66,7 @@ func restore(state:Dictionary)->void:
 	var p:Dictionary=state.get("native",{}).get("player",{})
 	var point:=Vector2(p.get("x",0),p.get("y",0))
 	if scene_id=="canteen_interior":
-		sensor_open=str(p.get("scene",scene_id))==scene_id and _canteen_can_open(state) and _canteen_threshold().intersects(Metrics.foot_rect(point))
+		sensor_open=str(p.get("scene",scene_id))==scene_id and _canteen_can_open(state) and _canteen_threshold().intersects(Metrics.foot_rect(point,scene_id))
 	else:
 		sensor_open=absf(point.x-836)<124 and point.y>776 or _occupied(point)
 	progress=1.0 if sensor_open else 0.0;visual_progress=progress
@@ -141,7 +141,7 @@ func tick(delta: float,state: Dictionary,story_session: RefCounted=null) -> void
 			if not lines.is_empty():
 				var last: Dictionary=lines.back()
 				desired=story_session.elapsed_ms<float(story_session.spec.delayMs) or story_session.elapsed_ms>=float(last.get("atMs",0))+float(last.get("durationMs",0))+120
-		if allowed and passable() and _canteen_threshold().intersects(Metrics.foot_rect(point)):
+		if allowed and passable() and _canteen_threshold().intersects(Metrics.foot_rect(point,scene_id)):
 			desired=true
 	else:
 		var dx: float=absf(point.x-836)

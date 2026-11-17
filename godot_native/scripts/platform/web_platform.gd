@@ -677,7 +677,7 @@ func read_snapshot() -> Dictionary:
 			world["librarySeat"] = {"id":layers.local_chair, "settled":layers.chair_age >= layers.SIT_SECONDS}
 		var actor:Dictionary=shell.world.player_visual()
 		if actor.has("frame_count"):
-			world["actorAnimation"]={"family":actor.animation,"frame":actor.motion_frame,"direction":actor.direction,"mirrored":actor.flip_h,"cycleMs":880,"frames":actor.frame_count}
+			world["actorAnimation"]={"family":actor.animation,"frame":actor.motion_frame,"direction":actor.direction,"mirrored":actor.flip_h,"cycleMs":actor.cycle_ms,"frames":actor.frame_count}
 		if is_instance_valid(shell.world.selected_overlay):
 			var overlay:Control=shell.world.selected_overlay
 			world["chrome"]={"taskColumnVisible":overlay.task.is_visible_in_tree(),"modeLabelVisible":overlay.mode.is_visible_in_tree(),"interactionRect":_rect(overlay.plaque.get_global_rect())}

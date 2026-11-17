@@ -15,6 +15,7 @@ const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
 const LakePalette = preload("res://scripts/ui/chapter35_palette.gd")
 const Capture=preload("res://scripts/presentation/chapter4_guard_capture.gd")
 const PlayerMetrics=preload("res://scripts/player_metrics.gd")
+const WalkArt=preload("res://scripts/player_walk_art.gd")
 var config: Dictionary={}
 var source: Dictionary={}
 var kind: String=""
@@ -175,7 +176,7 @@ func _build() -> void:
 			var file: String="res://assets/rpg/interiors/finale/finale_stairwell.png"
 			if ResourceLoader.exists(file): plate=load(file)
 			body.text="WASD / 方向键移动；按住地面可指向移动。不要让保安追上。"
-			if ResourceLoader.exists("res://assets/rpg/player/player_up_0.png"): player_art=load("res://assets/rpg/player/player_up_0.png")
+			player_art=WalkArt.texture("up")
 			if ResourceLoader.exists("res://assets/rpg/npcs/finale/guard_walk_up_8frame.png"): guard_art=load("res://assets/rpg/npcs/finale/guard_walk_up_8frame.png")
 			chase_touch_enabled=DisplayServer.is_touchscreen_available()
 			chase_view=ChaseView.new();add_child(chase_view)

@@ -4,7 +4,7 @@ const BOOK_CELL:=Vector2(192,160)
 const BOOK_PIVOT:=Vector2(80,154)
 const BOOK_HEIGHT:=110.0
 const SEATED_HIP_Y := 93.0
-const SEATED_VISIBLE_ROWS := 98.0
+const SEATED_VISIBLE_ROWS := SEATED_HIP_Y
 var seated:Texture2D
 var book:Texture2D
 
@@ -20,7 +20,7 @@ func ensure_loaded() -> bool:
 	walks = shared.walks
 	idles = shared.idles
 	if ResourceLoader.exists(ROOT + "player_seated.png"):
-		seated = ActorTexture.prepare_player(load(ROOT + "player_seated.png"), 62, 98)
+		seated = load(ROOT + "player_seated.png")
 	book = original
 	ready = true
 	return true

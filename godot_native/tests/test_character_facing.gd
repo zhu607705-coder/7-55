@@ -2,6 +2,7 @@ extends SceneTree
 const Facing=preload("res://scripts/character_facing.gd")
 const Metrics=preload("res://scripts/player_metrics.gd")
 const Locomotion = preload("res://scripts/player_locomotion.gd")
+const WalkArt=preload("res://scripts/player_walk_art.gd")
 const Phases=preload("res://scripts/ui/chapter4_phase_layers.gd")
 const Layers=preload("res://scripts/ui/chapter4_world_layers.gd")
 var checks:=0
@@ -10,6 +11,13 @@ func _initialize() -> void:run.call_deferred()
 func check(ok:bool,label:String)->void:
 	checks+=1
 	if not ok:failures+=1;push_error("CHARACTER_FACING: "+label)
+func keyboard(code: Key, pressed: bool) -> void:
+	var event := InputEventKey.new()
+	event.keycode = code
+	event.physical_keycode = code
+	event.pressed = pressed
+	Input.parse_input_event(event)
+	Input.flush_buffered_events()
 func run()->void:
 	var state:Node=root.get_node("State")
 	state.developer_mode=true;state.d=state.initial()
@@ -18,6 +26,21 @@ func run()->void:
 	var chapter3_layers:RefCounted=world.chapter3_layers
 	world.chapter3_layers=null;world.library_layers=null;world.chapter4_layers=null
 	world.collisions=[];world.mask=PackedByteArray();world.targets=[];world.player=Vector2(500,500)
+	world.facing="side"
+	keyboard(KEY_D,true);keyboard(KEY_SHIFT,true)
+	world._process(.03)
+	check(is_equal_approx(world.player.x,500.0+228.0*.03),"Shift accelerates keyboard movement in the library")
+	check(world.player_visual().texture==WalkArt.texture("side",41.45,true),"sprint advances the shared walk frames at the same rate")
+	keyboard(KEY_SHIFT,false)
+	var running_x: float=world.player.x
+	world._process(.03)
+	check(is_equal_approx(world.player.x-running_x,165.0*.03),"releasing Shift restores ordinary walking immediately")
+	keyboard(KEY_D,false);keyboard(KEY_SHIFT,true)
+	running_x=world.player.x
+	world.touch_axis=Vector2.RIGHT;world._process(.03)
+	check(is_equal_approx(world.player.x-running_x,165.0*.03),"held Shift does not accelerate touch input")
+	keyboard(KEY_SHIFT,false);world.touch_axis=Vector2.ZERO
+	world._process(.01)
 	var rows:Array=[{"axis":Vector2.LEFT,"facing":"side","flip":true,"path":"player_side"},{"axis":Vector2.RIGHT,"facing":"side","flip":false,"path":"player_side"},{"axis":Vector2.UP,"facing":"up","flip":false,"path":"player_up"},{"axis":Vector2.DOWN,"facing":"down","flip":false,"path":"player_down"}]
 	for row:Dictionary in rows:
 		var old:Vector2=world.player
@@ -43,9 +66,9 @@ func run()->void:
 	world.mobile_exploration=true
 	world.pan_offset=Vector2.ZERO;world.zoom=.85
 	for row:Dictionary in rows:
-		for phase in 8:
+		for phase in WalkArt.WALK_FRAMES:
 			world.player=Vector2(500,500);world.facing=row.facing;world.player_flip=row.flip
-			world.player_turn.clear();world.walk_clock=(phase+.25)*.11
+			world.player_turn.clear();world.walk_clock=(phase+.25)*WalkArt.CYCLE_MS/WalkArt.WALK_FRAMES/1000.0
 			var goal:Vector2=world.player+Vector2(row.axis)*.5
 			world._floor_route.assign([goal]);world._floor_goal=goal+Metrics.FOOT_CENTER_OFFSET
 			world._floor_bounds=Rect2(Vector2.ZERO,world.world_size)
@@ -95,10 +118,10 @@ func run()->void:
 	check(Facing.turn_pose(reversal).facing=="down","side reversal has original front transition")
 	world.player_turn.clear();world.facing="up";world.player_flip=false
 	world._apply_player_motion(Vector2.LEFT,Vector2.LEFT,.01);world._apply_player_motion(Vector2.ZERO,Vector2.ZERO,.06)
-	check(world.facing=="side" and world.player_visual().direction=="side" and world.player_visual().angle==0,"release during turn keeps the intermediate whole-body cel aligned to the pixel grid")
+	check(world.facing=="side" and world.player_visual().direction=="side" and world.player_visual().angle==-6,"release during turn keeps the shared intermediate tilt")
 	var original_foot:Rect2=Metrics.foot_rect(world.player)
 	var geometry:Dictionary=world.player_geometry()
-	check(geometry.transform*world.player==world.player and Metrics.foot_rect(world.player)==original_foot,"visual tilt pivots around anchor without moving foot collision")
+	check((geometry.transform*world.player).is_equal_approx(world.player) and Metrics.foot_rect(world.player)==original_foot,"visual tilt pivots around anchor without moving foot collision")
 	world._apply_player_motion(Vector2.ZERO,Vector2.ZERO,.1)
 	check(world.player_turn.is_empty() and world.player_visual().flip_h and world.player_visual().angle==0,"released turn finishes on target left idle")
 	# Auto-exercise uses the same real displacement and never changes manual gates.
@@ -112,7 +135,7 @@ func run()->void:
 	world.player_turn.clear();world.facing="side";world.player_flip=true;world.walk_clock=.12
 	world.player_frames.left=[world.player_frames.up[0]]
 	check(world.player_visual().direction=="side" and world.player_visual().flip_h,"incomplete left assets retain complete side fallback")
-	world.player_frames.left=world.player_frames.up.duplicate();world.player_left_idle=world.player_frames.up[0]
+	world.player_frames.left=world.player_walk_art.walks.up.duplicate();world.player_left_idle=world.player_frames.up[0]
 	check(world.player_visual().direction=="left" and not world.player_visual().flip_h,"complete authored left cycle is selected without mirroring")
 	world.walk_clock=0;check(world.player_visual().texture==world.player_left_idle,"authored left idle shares renderer selection")
 	world.player_frames.left=[];world.player_left_idle=null
