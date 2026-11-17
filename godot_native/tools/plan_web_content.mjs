@@ -85,6 +85,7 @@ function classify(name) {
   // Layered campus is loaded with campus_bootstrap, never the opening phone.
   if (name.startsWith('assets/native/campus_layered/')) return 'chapter2_campus';
   if (name.startsWith('assets/native/weather/')) return 'chapter2';
+  if (name === 'assets/native/player_locomotion/player_walk_and_idle.png') return 'chapter2';
   if (/^assets\/native\/north_objects_20261025\//.test(name)) return 'chapter4';
   if (/^assets\/native\/library_animation_20261105\/player_(?:walk_full|(?:down|up|side)_idle)\.png$/.test(name)) return 'chapter2';
   if (/^assets\/native\/(library_rebuild_20261020|library_object_depth_20261104|library_animation_20261105|library_interactions_20261105|library_geometry)\//.test(name)) return 'chapter2_library';

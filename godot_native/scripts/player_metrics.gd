@@ -4,6 +4,8 @@ const FRAME := Vector2(96,128)
 const DISPLAY_SCALE := 0.65
 const GROUND_OFFSET := 41.6
 const FOOT_SIZE := Vector2(16,10)
+# Match the corrected canteen renderer's 80% horizontal scale.
+const CANTEEN_FOOT_WIDTH := FOOT_SIZE.x * .8
 const FOOT_CENTER_OFFSET := Vector2(0,36.5625)
 # Hair, shoulders and arms stay within 27 frame pixels of the center
 # in the walking poses. This width is used at solid furniture sides.
@@ -21,6 +23,7 @@ static func visual_rect(anchor: Vector2,display_scale: float=DISPLAY_SCALE) -> R
 	var dimensions := FRAME*maxf(.01,display_scale)
 	return Rect2(anchor-Vector2(dimensions.x/2,dimensions.y-GROUND_OFFSET),dimensions)
 static func foot_size(scene: String="") -> Vector2:
+	if scene=="canteen_interior": return Vector2(CANTEEN_FOOT_WIDTH,FOOT_SIZE.y)
 	return Vector2(UPPER_BODY_HALF_WIDTH*2,FOOT_SIZE.y) if scene=="library_interior" else FOOT_SIZE
 static func foot_center_offset(_scene: String="") -> Vector2:
 	return FOOT_CENTER_OFFSET

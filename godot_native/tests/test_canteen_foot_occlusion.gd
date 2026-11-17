@@ -56,6 +56,11 @@ func run()->void:
 	world=load("res://scripts/world.gd").new();root.size=Vector2i(1280,800);world.size=root.size;root.add_child(world);await process_frame;world.set_process(false)
 	var scene:Node2D=world.native_canteen
 	var original:Dictionary=state.d.duplicate(true)
+	pose(Vector2(616,325))
+	var art: Sprite2D=scene.player_sprite
+	var expected: Rect2=Metrics.visual_rect(world.player,world.display_scale_at(world.player))
+	var sprite_rect:=Rect2(art.position + art.get_rect().position * art.scale, art.get_rect().size * art.scale)
+	check(sprite_rect.is_equal_approx(expected),"120×160 player art fits the same gameplay rectangle as the canvas renderer")
 	for row:int in range(1,4):
 		for column:int in range(1,8):
 			var prefix:="dining_%d_%d_"%[row,column]

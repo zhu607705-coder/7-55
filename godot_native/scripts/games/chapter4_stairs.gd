@@ -1,4 +1,5 @@
 extends Control
+const WalkArt=preload("res://scripts/player_walk_art.gd")
 signal completed(result: Dictionary)
 signal cancelled
 const Model = preload("res://scripts/games/chapter4_stair_model.gd")
@@ -24,7 +25,6 @@ var busy: bool = false
 var built: bool = false
 var materials: Dictionary={}
 var surface_textures: Dictionary={}
-var frames: Dictionary={}
 var walking: bool=false
 var walk_ms: float=0
 var facing: String="down"
@@ -47,7 +47,6 @@ func _build() -> void:
 	built=true
 	source=Model.data()
 	_load_materials()
-	_load_player()
 	set_anchors_preset(Control.PRESET_TOP_LEFT)
 	size=Vector2(960,540)
 	var bg: ColorRect=ColorRect.new(); bg.color=PANEL_BACKGROUND; bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); add_child(bg)
@@ -107,7 +106,7 @@ func _load_level() -> void:
 	for n in level.nodes:
 		var marker: MeshInstance3D=MeshInstance3D.new(); var sphere: SphereMesh=SphereMesh.new(); sphere.radius=0.10; sphere.height=0.2; marker.mesh=sphere; marker.position=Model.v3(n.position)+Vector3(0,0.08,0); marker.material_override=_mat(Color("d2b766")); _owner(n.ownerId).add_child(marker)
 	for decoration in level.geometry.decorations: _decoration(decoration)
-	actor=Sprite3D.new(); actor.billboard=BaseMaterial3D.BILLBOARD_ENABLED; actor.pixel_size=1.75/128.0; actor.texture_filter=BaseMaterial3D.TEXTURE_FILTER_NEAREST; actor.no_depth_test=false; actor.shaded=false; actor.texture=frames.get("down_0"); root3d.add_child(actor)
+	actor=Sprite3D.new(); actor.billboard=BaseMaterial3D.BILLBOARD_ENABLED; actor.pixel_size=1.75/WalkArt.WALK_CELL.y; actor.texture_filter=BaseMaterial3D.TEXTURE_FILTER_NEAREST; actor.no_depth_test=false; actor.shaded=false; actor.texture=WalkArt.texture("down"); root3d.add_child(actor)
 	_update()
 	_reveal_level.call_deferred()
 func _mat(color: Color) -> StandardMaterial3D:
@@ -181,19 +180,11 @@ func _load_materials() -> void:
 		var material: StandardMaterial3D=_mat(Color(palette[key])); var family: String={"wall_lit":"plaster","wall_side":"plaster","stone_lit":"concrete","stone_back":"concrete","structure":"metal"}.get(key,"")
 		if surface_textures.has(family): material.albedo_texture=surface_textures[family]; material.texture_filter=BaseMaterial3D.TEXTURE_FILTER_NEAREST_WITH_MIPMAPS
 		materials[key]=material
-func _load_player() -> void:
-	for direction in ["up","down","side"]:
-		for index in range(8):
-			var path: String="res://assets/rpg/player/player_%s_%d.png"%[direction,index]
-			if ResourceLoader.exists(path): frames[direction+"_"+str(index)]=load(path)
-	var path: String="res://assets/rpg/player/player_side_idle.png"
-	if ResourceLoader.exists(path): frames.side_idle=load(path)
 func _process(delta: float) -> void:
 	if not actor: return
 	_sync_actor_facing()
 	if walking: walk_ms+=delta*1000
-	var key: String=facing+"_"+str(int(fmod(walk_ms,880)/110)) if walking else ("side_idle" if facing=="side" else facing+"_0")
-	actor.texture=frames.get(key,frames.get("down_0")); actor.flip_h=facing=="side" and facing_left
+	actor.texture=WalkArt.texture(facing,walk_ms,walking); actor.flip_h=facing=="side" and facing_left
 	if seam_overlay: seam_overlay.queue_redraw()
 
 static func facing_for_heading(heading: Vector3,view_basis: Basis) -> Dictionary:

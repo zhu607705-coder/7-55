@@ -20,6 +20,8 @@ var world_space:RefCounted=WorldSpace.new()
 var north_space:RefCounted=world_space.north
 const CharacterFacing = preload("res://scripts/character_facing.gd")
 const PlayerWalkArt = preload("res://scripts/player_walk_art.gd")
+const GROUND_WALK_SPEED := 165.0
+const GROUND_SPRINT_RATE := 228.0 / GROUND_WALK_SPEED
 const PlayerLocomotion = preload("res://scripts/player_locomotion.gd")
 const InventoryGesture = preload("res://scripts/ui/inventory_gesture.gd")
 const ObjectPicker = preload("res://scripts/world_object_picker.gd")
@@ -984,6 +986,7 @@ func _process(delta: float) -> void:
 	var axis := Vector2.ZERO
 	var campus_route := scene_id == "campus_bootstrap"
 	var face_keyboard := false
+	var sprint_requested := false
 	var route_can_advance: bool = not campus_route or (_window_focused and not direct_gestures.has_active())
 	if focus is LineEdit or focus is TextEdit: _cancel_floor_route()
 	elif not campus_route or _window_focused:
@@ -997,6 +1000,7 @@ func _process(delta: float) -> void:
 		_cancel_floor_route()
 		_input_kind = "keyboard"
 		face_keyboard = campus_route
+		sprint_requested = Input.is_key_pressed(KEY_SHIFT)
 		move_target = Vector2.INF
 	elif not floor_route.waypoints.is_empty():
 		if route_can_advance:
@@ -1033,6 +1037,7 @@ func _process(delta: float) -> void:
 	# Measure actual foot travel after automatic and manual movement.
 	var walk_start := player
 	var floor_route_finished := false
+	var stride_rate := 1.0
 	if scene_id == "dorm_hub" and not State.d.actOne.get("controlsInstalled",false):
 		move_target = Vector2.INF
 		axis = Vector2.ZERO
@@ -1044,8 +1049,11 @@ func _process(delta: float) -> void:
 	if axis.length_squared() > 0 or (route_can_advance and not floor_route.waypoints.is_empty()):
 		if mobile_exploration and floor_route.waypoints.is_empty(): pan_offset=Vector2.ZERO
 		axis = axis.limit_length(1.0) if mobile_stick_id>=0 and touch_axis.length_squared()>0 else axis.normalized()
-		var speed := 208.0 if scene_id == "duan_yongping_temporal_maze" and State.d.chapter4.phase == "final_chase" else 176.0 if scene_id == "duan_yongping_temporal_maze" else 160.0 if scene_id == "dorm_hub" else 165.0
-		if scene_id in ["canteen_interior","theater_interior","qizhen_lake"] and Input.is_key_pressed(KEY_SHIFT): speed = 228.0
+		var final_chase: bool = scene_id == "duan_yongping_temporal_maze" and State.d.chapter4.phase == "final_chase"
+		var walk_speed := 208.0 if final_chase else 176.0 if scene_id == "duan_yongping_temporal_maze" else 160.0 if scene_id == "dorm_hub" else GROUND_WALK_SPEED
+		if sprint_requested and not final_chase:
+			stride_rate = GROUND_SPRINT_RATE
+		var speed := walk_speed * stride_rate
 		var displacement := axis*speed*delta
 		var old := player
 		var following_floor_route:=not floor_route.waypoints.is_empty()
@@ -1072,7 +1080,7 @@ func _process(delta: float) -> void:
 				State.act("c2_manual_input",{"moved":true,"distance":old.distance_to(player)*2,"input":_input_kind})
 	var walked := player-walk_start
 	# Campus edge slides can move the feet sideways under a held direction.
-	_apply_player_motion(walked,axis,delta,face_keyboard)
+	_apply_player_motion(walked,axis,delta,face_keyboard,stride_rate)
 	if scene_id == "canteen_interior" and axis.y > 0.0 and _cross_canteen_exit(): return
 	if scene_id == "theater_interior" and axis.y > 0.0 and _cross_theater_exit(): return
 	# Arrival has no remaining movement input. Retire its walk frame now,
@@ -1118,8 +1126,8 @@ func _cross_theater_exit() -> bool:
 	# Use outward input so an older save against the vestibule boundary can leave.
 	return chapter3_layers.doors.theater_exit_reached(player) and host_node._begin_theater_departure()
 
-func _apply_player_motion(motion:Vector2,intent:Vector2,delta:float,face_intent := false) -> void:
-	locomotion.advance(motion, intent, delta, face_intent)
+func _apply_player_motion(motion:Vector2,intent:Vector2,delta:float,face_intent := false,stride_rate := 1.0) -> void:
+	locomotion.advance(motion, intent, delta, face_intent, stride_rate)
 
 func player_visual() -> Dictionary:
 	# One selection path for CanvasItem, native canteen Sprite2D and alpha picking.
@@ -1136,7 +1144,8 @@ func player_visual() -> Dictionary:
 	var frames:Array=player_frames.get(direction,[])
 	var texture:Texture2D=null
 	if not frames.is_empty():
-		texture=frames[PlayerMetrics.frame_at((walk_clock if player_turn.is_empty() else 0.0)*1000)%frames.size()]
+		var elapsed_ms := (walk_clock if turn.is_empty() else 0.0) * 1000.0
+		texture=frames[PlayerWalkArt.frame_at(elapsed_ms) if authored_left else PlayerMetrics.frame_at(elapsed_ms)%frames.size()]
 		if walk_clock<=0 and player_turn.is_empty():
 			if direction=="side" and player_side_idle!=null:texture=player_side_idle
 			elif direction=="left" and player_left_idle!=null:texture=player_left_idle

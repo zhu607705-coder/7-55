@@ -1,6 +1,7 @@
 extends SceneTree
 const Activity=preload("res://scripts/games/chapter4_activity.gd")
 const Metrics=preload("res://scripts/player_metrics.gd")
+const WalkArt=preload("res://scripts/player_walk_art.gd")
 var checks:=0
 var failures:=0
 func _initialize():run.call_deferred()
@@ -31,7 +32,7 @@ func run():
 		for button:Button in game.controls.get_children():check(button.size.y>=44,"Physical44px action target")
 		var view:Control=game.chase_view
 		check(is_equal_approx(view.field.size.x/view.field.size.y,960.0/540),"Source follow viewport aspect")
-		check(view.player_sprite.texture.resource_path.contains("assets/rpg/player/player_"),"Original player frame")
+		check(view.player_sprite.texture==WalkArt.texture(view.player_facing),"Shared stationary player drawing")
 		check(view.guard_sprite.texture.resource_path.contains("assets/rpg/npcs/finale/guard_walk"),"Original guard frame")
 		check(view.player_sprite.position.is_equal_approx(game.player-Metrics.FOOT_CENTER_OFFSET),"Source foot-to-sprite registration")
 		var center:Vector2=view.position+view.field.get_center()
@@ -58,6 +59,9 @@ func run():
 	game.running=false;var camera:Vector2=game.chase_view.camera
 	game._present_chase();check(camera==game.chase_view.camera,"Stopped activity freezes camera")
 	game.running=true;game.player+=Vector2(10,0);game._present_chase();check(game.chase_view.player_facing=="side","Source directional player animation restored")
+	game.chase_animation_ms+=60.0;game.player+=Vector2(10,0);game._present_chase()
+	check(is_equal_approx(game.chase_view.player_sprite.rotation_degrees,6.0)
+		and game.chase_view.player_sprite.texture==WalkArt.texture("side"),"Chase uses the shared intermediate turn pose")
 	game.guard+=Vector2(0,10);game._present_chase();check(game.chase_view.guard_facing=="down","Source directional guard animation restored")
 	game.chase_view.present(game.player,game.guard,2110,false,game.landing)
 	check(game.chase_view.guard_sprite.frame==2,"Original manifest guard cadence is9fps, independent of player110ms frames")
