@@ -207,7 +207,7 @@ func tap_leg(group: String, context: Dictionary, start: Vector2, goal: Vector2, 
 	for next: Vector2 in world._floor_route:
 		check(world._floor_segment_clear(previous,next),group,"tap_planned_whole_foot_segment",context)
 		route_length+=previous.distance_to(next);previous=next
-	var max_frames:=mini(7200,ceili(route_length/165.0*60.0)+120)
+	var max_frames:=mini(7200,ceili(route_length/world.GROUND_WALK_SPEED*60.0)+120)
 	var frames:=0
 	while not world._floor_route.is_empty() and frames<max_frames:
 		world._process(1.0/60.0);frames+=1

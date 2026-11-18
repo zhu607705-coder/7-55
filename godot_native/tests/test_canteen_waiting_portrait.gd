@@ -26,8 +26,11 @@ func waiting_fixture(dimensions: Vector2i) -> void:
 	check(controls.scheme=="direct_world" and controls.mode.size.x>=44 and controls.mode.size.y>=44 and controls.gestureArea.size.x>=200 and controls.gestureArea.size.y>=100,"waiting exposes useful direct map area and a practical visible mode target")
 	check(not state.d.canteenHunt.entryPaperEscaped and shell.world.targets.is_empty(),"waiting grants neither receipt nor device targets")
 	print("WAITING_MEASURE ",dimensions," world=",shell.world.size," scale=",shell.world_frame.scale," player=",shell.world.player)
-func hold_direction(direction: Vector2,steps: int,probe:=true) -> void:
-	var point:=floor_touch_point(direction,maxf(64.0,steps*8.25+16),false)
+func hold_direction(direction: Vector2,distance: float,probe:=true) -> void:
+	var seconds:float=distance/shell.world.GROUND_WALK_SPEED
+	var steps:=ceili(seconds/.05)
+	var step_distance:=distance/steps
+	var point:=floor_touch_point(direction,maxf(64.0,distance+16),false)
 	await tap_floor(point)
 	check(not shell.world._floor_route.is_empty(),"projected floor release starts the actual collision-planned approach")
 	for i in steps:
@@ -35,10 +38,10 @@ func hold_direction(direction: Vector2,steps: int,probe:=true) -> void:
 		# route arrives, tap farther along the newly revealed aisle rather than
 		# fabricating a held axis or a destination outside the visible scene.
 		if shell.world._floor_route.is_empty() and shell.world._floor_status=="arrived":
-			point=floor_touch_point(direction,maxf(64.0,(steps-i)*8.25+16),false)
+			point=floor_touch_point(direction,maxf(64.0,(steps-i)*step_distance+16),false)
 			await tap_floor(point)
 			check(not shell.world._floor_route.is_empty(),"next visible source-aisle tap continues after the prior route arrives")
-		shell.world._process(.05)
+		shell.world._process(seconds/steps)
 		if probe:shell.c3_scene_host.tick(0,true)
 		if shell.c3_scene_host.blocks_world_input():break
 	await cancel_floor_touch(point)
@@ -89,13 +92,13 @@ func run() -> void:
 		root.size=Vector2i(844,390);shell.size=Vector2(844,390);shell._layout();await frames()
 		# Traverse the source aisle using real floor taps and collision routes. No
 		# teleport, direct status mutation, proximity change, or completion injection.
-		await hold_direction(Vector2.RIGHT,5)
+		await hold_direction(Vector2.RIGHT,41.25)
 		check(shell.world.player.x>before.x and session.status=="waiting","real touch moves around the original entrance wall")
-		await hold_direction(Vector2.UP,22)
+		await hold_direction(Vector2.UP,181.5)
 		check(shell.world.player.y<before.y and session.status=="waiting","real touch approach stays pending outside source radius")
 		check(shell.world.player.distance_to(session.idle_pose().point)>session.TRIGGER_RADIUS,"pre-trigger source distance stays outside360")
 		check(receipts==receipt_before and not state.d.canteenHunt.entryPaperEscaped,"movement cannot issue premature receipt")
-		await hold_direction(Vector2.UP,12)
+		await hold_direction(Vector2.UP,99.0)
 		check(session.status=="playing" and shell.c3_scene_host.current==session and handoffs==handoff_before+1,"real post-collision proximity starts original session exactly once")
 		check(session.trigger_player==shell.world.player and session.trigger_player.distance_to(session.trigger_paper)<=session.TRIGGER_RADIUS,"trigger proof contains actual collision-validated source position")
 		# The real trigger tick changed Main's displayed size. Validate before a
@@ -129,7 +132,7 @@ func run() -> void:
 		root.size=dimensions;shell.size=Vector2(dimensions);shell._layout();await frames()
 		check(shell.world.size==Vector2(960,540),"post-cinematic exploration retains landscape viewport")
 		before=shell.world.player
-		await hold_direction(Vector2.DOWN,2,false)
+		await hold_direction(Vector2.DOWN,16.5,false)
 		check(shell.world.player.y>before.y and receipts==receipt_before+1,"restored projected touch moves without duplicate receipt")
 	await shell.shutdown();shell.queue_free();await frames()
 	print("CANTEEN_WAITING_PORTRAIT: %d checks; %d failures"%[checks,failures]);quit(1 if failures else 0)

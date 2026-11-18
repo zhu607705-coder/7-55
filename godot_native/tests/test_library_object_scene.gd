@@ -52,11 +52,12 @@ func counter_contact()->void:
 		check(world.can_stand(world.player) and world.player.distance_to(sample[0])>10 and aligned,"the full-width foot stops at the cabinet side "+sample[2])
 		if sample[2] in ["west","east"]:
 			var at:Vector2=world.player
+			var step_seconds:float=2.64/world.GROUND_WALK_SPEED
 			world.touch_axis=Vector2.DOWN
-			for frame:int in 36:world._process(.016)
+			for frame:int in 36:world._process(step_seconds)
 			check(world.can_stand(world.player) and absf(world.player.y-at.y-95.04)<.01,"walking along the cabinet clears the front corner "+sample[2])
 			world.touch_axis=sample[1]
-			for frame:int in 10:world._process(.016)
+			for frame:int in 10:world._process(step_seconds)
 			world.touch_axis=Vector2.ZERO
 			check(world.can_stand(world.player) and absf(world.player.x-at.x-26.4*sample[1].x)<.01,"can turn along the front aisle after clearing the corner "+sample[2])
 	check(not stand(Vector2(area.position.x+3,590)) and not stand(Vector2(area.end.x-3,590)),"both former side gaps are solid")

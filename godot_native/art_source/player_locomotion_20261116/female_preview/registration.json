@@ -1,0 +1,38 @@
+{
+  "status": "native-preview",
+  "source": "red_jacket_aligned_source.png",
+  "variant": "aligned",
+  "method": "Built-in ImageGen, original red-jacket design with male-player proportion reference",
+  "reference": "godot_native/assets/native/player_locomotion/player_walk_and_idle.png",
+  "reference_pose_columns": [
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14
+  ],
+  "reference_character_height": 132,
+  "direction_rows": [
+    "side",
+    "down",
+    "up"
+  ],
+  "walking_frames_per_direction": 8,
+  "idle_source_columns": [
+    0,
+    2,
+    2
+  ],
+  "cycle_ms": 800,
+  "frame_size": [
+    120,
+    160
+  ],
+  "visual_foot_baseline": 157,
+  "keyframes_sha256": "d1fefb046c2c4b769bbf63a1b99557cf10a31718968b0ae41ed0378bf931ffc7",
+  "source_sha256": "a1490ee50d1ded25a7c81ab27d59f76c0e7b4802bd6c218cd5e77973097ce14b",
+  "atlas_sha256": "d1fefb046c2c4b769bbf63a1b99557cf10a31718968b0ae41ed0378bf931ffc7"
+}

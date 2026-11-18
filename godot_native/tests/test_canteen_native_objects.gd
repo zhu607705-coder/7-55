@@ -64,8 +64,9 @@ func run()->void:
 	world._floor_bounds=Rect2(Vector2.ZERO,world.world_size)
 	check(world._floor_segment_clear(shelf_west,shelf_east),"the removed rear shelf bar leaves a clear walking route for the full foot box")
 	pose(world,shelf_west)
-	check(walk(world,Vector2.RIGHT,20) and world.player.x>1540,"directional movement passes through the restored rear shelf aisle")
-	check(walk(world,Vector2.LEFT,20) and world.player.is_equal_approx(shelf_west),"player can return along the rear shelf aisle")
+	var shelf_ticks:=ceili(150.0/(world.GROUND_WALK_SPEED*.05))
+	check(walk(world,Vector2.RIGHT,shelf_ticks) and world.player.x>1540,"directional movement passes through the restored rear shelf aisle")
+	check(walk(world,Vector2.LEFT,shelf_ticks) and world.player.is_equal_approx(shelf_west),"player can return along the rear shelf aisle")
 	pose(world,Vector2(1194,834))
 	var prop:Node2D=scene.objects.dining_1_1_table
 	check(prop.blocks_feet(Rect2(prop.base_position+Vector2(-4,-22),Vector2(8,8))),"table's real base blocks feet")

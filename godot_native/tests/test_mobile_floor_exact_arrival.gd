@@ -3,12 +3,13 @@ extends "res://tests/test_mobile_floor_route.gd"
 func run() -> void:
 	await setup_main();await route_fixture(Vector2i(390,844));await tap_ground(goal)
 	var w=shell.world
+	var capped_step: float=w.GROUND_WALK_SPEED*.05
 	var before:=story();var action_count:=actions.size();var geometry: Array=w.collisions.duplicate(true)
 	var planned: Array[Vector2]=w._floor_route.duplicate()
 	check(planned.size()>1,"real root tap retains its authored dogleg route")
 	for waypoint: Vector2 in planned:
 		var ticks:=0
-		while w.player.distance_to(waypoint)>8.25 and ticks<800:
+		while w.player.distance_to(waypoint)>capped_step and ticks<800:
 			w._process(.05);ticks+=1
 		check(ticks<800 and not w._floor_route.is_empty(),"bounded frames approach each waypoint")
 		var remaining: float=w.player.distance_to(waypoint)
@@ -16,12 +17,12 @@ func run() -> void:
 		var previous: Vector2=w.player
 		# Legal frame delta deliberately leaves a sub-pixel distance which the
 		# old coordinate-relative is_equal_approx mistook for arrival.
-		w._process((remaining-.004)/165.0)
+		w._process((remaining-.004)/w.GROUND_WALK_SPEED)
 		check(w.player!=waypoint and w.player.distance_to(waypoint)>.002,"partial frame remains short of the exact waypoint")
 		check(w._floor_status=="moving" and w._floor_route==route_before,"partial frame cannot retire an approximate waypoint")
 		check(w.can_stand(w.player) and previous.distance_to(w.player)<=remaining-.004+.001,"partial frame respects collision and native speed")
 		previous=w.player
-		w._process(.008/165.0)
+		w._process(.008/w.GROUND_WALK_SPEED)
 		check(w.player==waypoint,"next legal frame reaches the exact endpoint")
 		check(w._floor_route.size()==route_before.size()-1,"exact endpoint retires exactly one waypoint")
 		check(w.can_stand(w.player) and previous.distance_to(w.player)<=.008+.001,"final sub-pixel step remains legal and bounded")
@@ -44,14 +45,14 @@ func run() -> void:
 		var previous: Vector2=w.player
 		w._process(2.0)
 		check(w.player==expected and w._floor_route.size()==count-1,"large delta retires waypoints in order, including a zero-length prefix")
-		check(w.can_stand(w.player) and previous.distance_to(w.player)<=165*.05+.001,"large delta remains collision-safe and speed-capped")
+		check(w.can_stand(w.player) and previous.distance_to(w.player)<=w.GROUND_WALK_SPEED*.05+.001,"large delta remains collision-safe and speed-capped")
 	check(w._floor_status=="arrived" and w._floor_route.is_empty(),"large-delta route completes only at its exact final endpoint")
 	start=w.player
 	w._floor_route.assign([start+Vector2(20,0)])
 	w._floor_goal=start+Vector2(20,0)+Metrics.FOOT_CENTER_OFFSET;w._floor_status="moving"
 	w._process(2.0)
-	check(w.player==start+Vector2(8.25,0) and w._floor_status=="moving" and w._floor_route.size()==1,"two-second frame advances only the capped 50 ms distance")
-	w._process(2.0);w._process(2.0)
+	check(w.player==start+Vector2(capped_step,0) and w._floor_status=="moving" and w._floor_route.size()==1,"two-second frame advances only the capped 50 ms distance")
+	for tick in ceili(20.0/capped_step)-1:w._process(2.0)
 	check(w.player==start+Vector2(20,0) and w._floor_status=="arrived" and w._floor_route.is_empty(),"later capped frames reach the long segment exactly")
 	check(w.collisions==geometry and story()==before and actions.size()==action_count,"degenerate and large-delta routes emit no action or story change")
 	await finish("MOBILE_FLOOR_EXACT_ARRIVAL")

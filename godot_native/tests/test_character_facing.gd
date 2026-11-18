@@ -29,23 +29,23 @@ func run()->void:
 	world.facing="side"
 	keyboard(KEY_D,true);keyboard(KEY_SHIFT,true)
 	world._process(.03)
-	check(is_equal_approx(world.player.x,500.0+228.0*.03),"Shift accelerates keyboard movement in the library")
+	check(is_equal_approx(world.player.x,500.0+171.0*.03),"Shift accelerates keyboard movement in the library")
 	check(world.player_visual().texture==WalkArt.texture("side",41.45,true),"sprint advances the shared walk frames at the same rate")
 	keyboard(KEY_SHIFT,false)
 	var running_x: float=world.player.x
 	world._process(.03)
-	check(is_equal_approx(world.player.x-running_x,165.0*.03),"releasing Shift restores ordinary walking immediately")
+	check(is_equal_approx(world.player.x-running_x,123.75*.03),"releasing Shift restores ordinary walking immediately")
 	keyboard(KEY_D,false);keyboard(KEY_SHIFT,true)
 	running_x=world.player.x
 	world.touch_axis=Vector2.RIGHT;world._process(.03)
-	check(is_equal_approx(world.player.x-running_x,165.0*.03),"held Shift does not accelerate touch input")
+	check(is_equal_approx(world.player.x-running_x,123.75*.03),"held Shift does not accelerate touch input")
 	keyboard(KEY_SHIFT,false);world.touch_axis=Vector2.ZERO
 	world._process(.01)
 	var rows:Array=[{"axis":Vector2.LEFT,"facing":"side","flip":true,"path":"player_side"},{"axis":Vector2.RIGHT,"facing":"side","flip":false,"path":"player_side"},{"axis":Vector2.UP,"facing":"up","flip":false,"path":"player_up"},{"axis":Vector2.DOWN,"facing":"down","flip":false,"path":"player_down"}]
 	for row:Dictionary in rows:
 		var old:Vector2=world.player
 		world.touch_axis=row.axis;world._process(.05)
-		check(world.player.distance_to(old+row.axis*165*.05)<.001,"actual movement follows "+str(row.axis))
+		check(world.player.distance_to(old+row.axis*123.75*.05)<.001,"actual movement follows "+str(row.axis))
 		check(world.facing==row.facing,"actual movement selects "+row.facing)
 		for tick in 4:world._process(.05)
 		var visual:Dictionary=world.player_visual()
@@ -216,6 +216,24 @@ func run()->void:
 		world.native_canteen.configure_view(Vector2.ZERO,.85,world.player)
 		var pose:Dictionary=world.player_visual()
 		check(world.native_canteen.player_sprite.texture==pose.texture and world.native_canteen.player_sprite.flip_h==pose.flip_h,"native canteen matches shared direction "+str(row.axis))
+	var preview := WalkArt.female_preview()
+	check(preview != null, "red-jacket walk preview atlas loads")
+	if preview != null:
+		check(WalkArt.shared() != preview and WalkArt.shared().frame_count == 16, "preview keeps the 16-frame default art")
+		world.locomotion.art = preview
+		world.player = Vector2(500, 500)
+		var foot_before := Metrics.foot_rect(world.player, world.scene_id)
+		for row: Dictionary in rows:
+			world.facing = row.facing
+			world.player_flip = row.flip
+			world.locomotion.stop()
+			var idle: Dictionary = world.player_visual()
+			check(idle.texture == preview.idles[row.facing] and idle.flip_h == row.flip, "red-jacket stop and heading " + str(row.axis))
+			world._apply_player_motion(row.axis, row.axis, .2)
+			var walking: Dictionary = world.player_visual()
+			check(walking.motion_frame == 2 and walking.frame_count == 8 and walking.texture == preview.walks[row.facing][2], "preview shares the 800ms stride at eight samples")
+			check(walking.flip_h == row.flip, "red-jacket side is mirrored without falling back to default art")
+		check(Metrics.foot_rect(world.player, world.scene_id) == foot_before, "changing visual art leaves the foot collision unchanged")
 	world.queue_free();await process_frame
 	print("Character facing: ",checks," checks, ",failures," failures")
 	quit(1 if failures else 0)

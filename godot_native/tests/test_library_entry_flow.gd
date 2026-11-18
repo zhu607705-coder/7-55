@@ -148,10 +148,12 @@ func walk_to_bag() -> bool:
 	var route: Array[Vector2i]=[]
 	while reached!=Vector2i.ZERO:
 		route.push_front(reached-visited[reached]); reached=visited[reached]
+	var travel_seconds:float=step/shell.world.GROUND_WALK_SPEED
+	var ticks:=ceili(travel_seconds/.05)
 	for direction: Vector2i in route:
 		var code: int=KEY_W if direction==Vector2i.UP else KEY_D if direction==Vector2i.RIGHT else KEY_S if direction==Vector2i.DOWN else KEY_A
 		await key(code)
-		for i in 2: shell.world._process(.05)
+		for i in ticks: shell.world._process(travel_seconds/ticks)
 		await key(code,false)
 	shell.world._process(0)
 	return true

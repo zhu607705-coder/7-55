@@ -59,11 +59,12 @@ func run()->void:
 	for i in 10:world._process(.05)
 	check(world.chapter3_layers.admission_pose(state.d)==paused and world.chapter3_layers.ticket_gate.pose()==paused_gate,"pause freezes arm and reader with narrative clock")
 	world.touch_axis=Vector2.UP
-	for i in 14:
+	var crossing_ticks:=ceili((world.player.y-620.0)/(world.GROUND_WALK_SPEED*.05))
+	for i in crossing_ticks:
 		host.tick(50,true);world._process(.05)
 		check(world.can_stand(world.player),"normal movement stays collision safe while crossing gate")
 	world.touch_axis=Vector2.ZERO
-	check(world.player.y<630 and world.player.y>610,"player visibly crosses bar line before authored handoff")
+	check(host.current==session and world.player.y<630 and world.player.y>610,"player visibly crosses bar line before authored handoff")
 	check(not world.chapter3_layers.doors.sensor_open,"northward path never opens exterior entrance")
 	var teleports:Array=[]
 	var listener:Callable=func(p:Array):teleports.append(p)
