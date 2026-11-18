@@ -1138,7 +1138,8 @@ func player_visual() -> Dictionary:
 	# A complete authored left cycle can replace the genuine side-view mirror.
 	var turn := locomotion.active_turn()
 	var pose := CharacterFacing.turn_pose(turn) if not turn.is_empty() else {"facing": facing, "flip": player_flip, "angle": 0.0}
-	var authored_left: bool = player_walk_art == PlayerWalkArt.shared() and pose.facing == "side" and pose.flip and player_frames.get("left", []).size() == PlayerWalkArt.WALK_FRAMES
+	var authored_left: bool = pose.facing == "side" and pose.flip and player_frames.get("left", []).size() == PlayerWalkArt.WALK_FRAMES \
+		and player_walk_art == PlayerWalkArt.shared()
 	if player_walk_art.ready and not authored_left:
 		return locomotion.sample()
 	var direction:String=pose.facing
