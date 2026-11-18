@@ -62,8 +62,10 @@ func finish_case(label:String,start:Vector2,before:Dictionary)->void:
 	check(world.can_stand(world.player),label+" final actor is collision-safe")
 	var previous:Vector2=world.player
 	var away:=Vector2.UP if start.x<548 else Vector2.RIGHT
-	world.touch_axis=away;world._process(.016);world.touch_axis=Vector2.ZERO
-	check(world.can_stand(world.player) and world.player.distance_to(previous+away*2.64)<.001,label+" ordinary small movement exits after the full reveal")
+	var step_distance:=2.64
+	var step_seconds:float=step_distance/world.GROUND_WALK_SPEED
+	world.touch_axis=away;world._process(step_seconds);world.touch_axis=Vector2.ZERO
+	check(world.can_stand(world.player) and world.player.distance_to(previous+away*step_distance)<.001,label+" ordinary small movement exits after the full reveal")
 	var boxes:Array=world._floor_obstacles()
 	var route:Array=world._floor_planner.plan(world.player,Vector2(625,355),boxes,Rect2(0,0,1500,900),world.can_stand,func(a:Vector2,b:Vector2):return world._floor_segment_clear(a,b,boxes,true))
 	check(not route.is_empty(),label+" resulting foot position remains connected to the normal shelf aisle")
@@ -71,13 +73,13 @@ func finish_case(label:String,start:Vector2,before:Dictionary)->void:
 	records.append({"case":label,"start":str(start),"final":str(previous),"escaped":str(world.player),"shelfMs":layer.shelf_ms})
 	if label=="east side":
 		world.touch_axis=Vector2.UP
-		for frame:int in 65:world._process(.016)
+		for frame:int in 65:world._process(step_seconds)
 		check(absf(world.player.y-(start.y-171.6))<.01,"walk the full narrow aisle after the shelf moves")
 		world.touch_axis=Vector2.LEFT
-		for frame:int in 19:world._process(.016)
-		check(absf(world.player.x-(previous.x+2.64-19*2.64))<.01,"turn behind the stack on clear ground")
+		for frame:int in 19:world._process(step_seconds)
+		check(absf(world.player.x-(previous.x-18*step_distance))<.01,"turn behind the stack on clear ground")
 		world.touch_axis=Vector2.DOWN
-		for frame:int in 60:world._process(.016)
+		for frame:int in 60:world._process(step_seconds)
 		world.touch_axis=Vector2.ZERO
 		var rear:float=shelf_base().position.y
 		check(world.can_stand(world.player) and absf(Metrics.foot_rect(world.player,world.scene_id).end.y-rear)<2.65,"ordinary walking stops at the measured rear support")
