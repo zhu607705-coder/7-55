@@ -49,8 +49,8 @@ func run() -> void:
 	if not assets.ready:
 		quit(1)
 		return
-	check(Locomotion.frame_at(37.49) == 0 and Locomotion.frame_at(37.5) == 1
-		and Locomotion.frame_at(599.99) == 15 and Locomotion.frame_at(600) == 0, "side gait advances every 37.5 ms and loops in 600 ms")
+	check(Locomotion.frame_at(49.99) == 0 and Locomotion.frame_at(50) == 1
+		and Locomotion.frame_at(799.99) == 15 and Locomotion.frame_at(800) == 0, "side gait advances every 50 ms and loops in 800 ms")
 	var original_sheet := Image.load_from_file(Locomotion.WALK_PATH)
 	for row in Locomotion.WALK_DIRECTIONS.size():
 		var direction: String = Locomotion.WALK_DIRECTIONS[row]

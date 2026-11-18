@@ -20,8 +20,8 @@ var world_space:RefCounted=WorldSpace.new()
 var north_space:RefCounted=world_space.north
 const CharacterFacing = preload("res://scripts/character_facing.gd")
 const PlayerWalkArt = preload("res://scripts/player_walk_art.gd")
-const GROUND_WALK_SPEED := 165.0
-const GROUND_SPRINT_RATE := 228.0 / GROUND_WALK_SPEED
+const GROUND_WALK_SPEED := 123.75
+const GROUND_SPRINT_RATE := 228.0 / 165.0
 const PlayerLocomotion = preload("res://scripts/player_locomotion.gd")
 const InventoryGesture = preload("res://scripts/ui/inventory_gesture.gd")
 const ObjectPicker = preload("res://scripts/world_object_picker.gd")
@@ -198,6 +198,10 @@ var _kayak_boundary_hint_at: int=-KAYAK_BOUNDARY_HINT_COOLDOWN_MS
 var object_picker: RefCounted=ObjectPicker.new()
 
 func _ready() -> void:
+	if OS.has_feature("editor") and "--player-look=female" in OS.get_cmdline_user_args():
+		var preview := PlayerWalkArt.female_preview()
+		if preview != null:
+			locomotion.art = preview
 	clip_contents = true
 	# Use the same pixel-art sampler for every scene, including standalone
 	# views that do not mount the shell's world SubViewport.
@@ -1050,7 +1054,7 @@ func _process(delta: float) -> void:
 		if mobile_exploration and floor_route.waypoints.is_empty(): pan_offset=Vector2.ZERO
 		axis = axis.limit_length(1.0) if mobile_stick_id>=0 and touch_axis.length_squared()>0 else axis.normalized()
 		var final_chase: bool = scene_id == "duan_yongping_temporal_maze" and State.d.chapter4.phase == "final_chase"
-		var walk_speed := 208.0 if final_chase else 176.0 if scene_id == "duan_yongping_temporal_maze" else 160.0 if scene_id == "dorm_hub" else GROUND_WALK_SPEED
+		var walk_speed := 208.0 if final_chase else 132.0 if scene_id == "duan_yongping_temporal_maze" else 120.0 if scene_id == "dorm_hub" else GROUND_WALK_SPEED
 		if sprint_requested and not final_chase:
 			stride_rate = GROUND_SPRINT_RATE
 		var speed := walk_speed * stride_rate
@@ -1134,7 +1138,7 @@ func player_visual() -> Dictionary:
 	# A complete authored left cycle can replace the genuine side-view mirror.
 	var turn := locomotion.active_turn()
 	var pose := CharacterFacing.turn_pose(turn) if not turn.is_empty() else {"facing": facing, "flip": player_flip, "angle": 0.0}
-	var authored_left: bool = pose.facing == "side" and pose.flip and player_frames.get("left", []).size() == PlayerWalkArt.WALK_FRAMES
+	var authored_left: bool = player_walk_art == PlayerWalkArt.shared() and pose.facing == "side" and pose.flip and player_frames.get("left", []).size() == PlayerWalkArt.WALK_FRAMES
 	if player_walk_art.ready and not authored_left:
 		return locomotion.sample()
 	var direction:String=pose.facing

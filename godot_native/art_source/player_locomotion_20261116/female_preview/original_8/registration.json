@@ -1,0 +1,33 @@
+{
+  "status": "native-preview",
+  "source": "red_jacket_source.png",
+  "variant": "original",
+  "method": "Built-in ImageGen, red-jacket original",
+  "reference": "godot_native/assets/native/library_animation_20261105/player_walk_full.png",
+  "reference_pose_columns": [
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14
+  ],
+  "reference_character_height": 132,
+  "direction_rows": [
+    "side",
+    "down",
+    "up"
+  ],
+  "walking_frames_per_direction": 8,
+  "cycle_ms": 600,
+  "frame_size": [
+    120,
+    160
+  ],
+  "visual_foot_baseline": 157,
+  "keyframes_sha256": "63eb18c58244f4c2137a418b01eb62b0123cf437f4b3bd24321034bad29219f1",
+  "source_sha256": "1154e5256f56ef24a6038e34153ec151a3ad933f99d1027b3b51b72412e5fc80",
+  "atlas_sha256": "63eb18c58244f4c2137a418b01eb62b0123cf437f4b3bd24321034bad29219f1"
+}
