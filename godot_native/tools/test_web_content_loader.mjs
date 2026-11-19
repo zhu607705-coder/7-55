@@ -137,12 +137,15 @@ function check(name, value) { assert.ok(value, name); checks.push(name); }
   const f = fixture({ fetch: info => info.sequence === 1 ? held.promise : response(packs.find(item => info.url.endsWith(item.file)).id) });
   f.host.startPrefetch(); await f.frame(); await f.frame();
   await until(() => f.requests.length === 1, 'held background request');
+  check('Optional bytes stay out of the chapter progress bar', Object.keys(JSON.parse(f.host.progress())).length === 0);
   request(f.host, packs[3].id, packs[3].id);
   await until(() => f.events.length === 1, 'foreground after cancellation');
   check('Foreground demand aborts optional in-flight work and starts required content at high priority', f.requests[0].init.signal.aborted && f.events[0].id === packs[3].id && f.requests[1].init.priority === 'high');
   check('Optional cancellation returns its record to idle without a visible transport error', record(f.host, packs[0].id).status === 'idle' && record(f.host, packs[0].id).error === '' && f.events.length === 1);
   held.resolve(response(packs[0].id)); await quiet();
   check('A late response from cancelled optional work never copies stale bytes or emits a callback', f.copies.length === 1 && f.copies[0].bytes.equals(Buffer.from(body(packs[3].id))) && f.events.length === 1);
+  const progress = JSON.parse(f.host.progress());
+  check('Foreground progress reports the required pack and its received bytes', progress.id === packs[3].id && progress.received === packs[3].bytes);
   f.host.setPrefetchFamilies('[]');
   await f.host.acknowledge(packs[3].id, true, '');
   check('Foreground mounting completes normally after preemption', record(f.host, packs[3].id).status === 'mounted' && snapshot(f.host).active === '');

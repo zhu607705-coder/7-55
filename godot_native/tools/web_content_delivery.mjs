@@ -15,10 +15,20 @@ export { CONTENT_PACK_TARGET, CONTENT_PACK_LIMIT };
 const chapter2SceneFamilies = ['chapter2_campus', 'chapter2_library'];
 const laterChapters = ['chapter3', 'chapter35', 'chapter4'];
 const backgroundOrder = ['chapter2', ...chapter2SceneFamilies, ...laterChapters];
+const prefetchStages = ['opening', 'dorm_hub', 'campus_bootstrap', ...backgroundOrder.filter(name => !chapter2SceneFamilies.includes(name))];
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const json = filename => JSON.parse(fs.readFileSync(filename, 'utf8'));
 const writeJson = (filename, value) => fs.writeFileSync(filename, JSON.stringify(value, null, 2) + '\n');
 const family = id => id.replace(/_\d+$/, '');
+export function verifyPrefetchPlan(plan, order) {
+  if (!plan || typeof plan !== 'object' || Array.isArray(plan)) throw new Error('Invalid story prefetch plan');
+  for (const [stage, target] of Object.entries(plan)) {
+    if (!prefetchStages.includes(stage) || (target !== '' && !order.includes(target))) {
+      throw new Error(`Invalid prefetch target for ${stage}: ${target}`);
+    }
+  }
+}
+
 export function fileSha256(filename) {
   const hash = crypto.createHash('sha256');
   const fd = fs.openSync(filename, 'r');
@@ -87,7 +97,12 @@ export function createContentDelivery({ exportDirectory, intermediateDirectory }
   });
   const packs = createContentChunks(exportDirectory, packRecords);
   const order = packs.some(pack => chapter2SceneFamilies.includes(pack.family)) ? backgroundOrder : ['chapter2', ...laterChapters];
-  const manifest = { schema: CONTENT_SCHEMA, engine: '4.7.1', core, packs, backgroundOrder: order, packPolicy: packing.merges.length ? CONTENT_PRESSURE_PACK_POLICY : CONTENT_PACK_POLICY };
+  const sourcePlan = json(fileURLToPath(new URL('./web_prefetch_plan.json', import.meta.url)));
+  verifyPrefetchPlan(sourcePlan, backgroundOrder);
+  const prefetchPlan = Object.fromEntries(Object.entries(sourcePlan).map(([stage, target]) => [
+    stage, order.includes(target) ? target : '',
+  ]));
+  const manifest = { schema: CONTENT_SCHEMA, engine: '4.7.1', core, packs, backgroundOrder: order, prefetchPlan, packPolicy: packing.merges.length ? CONTENT_PRESSURE_PACK_POLICY : CONTENT_PACK_POLICY };
   writeJson(path.join(exportDirectory, 'content-manifest.json'), manifest);
   const owned = new Map();
   const groupInventories = result.groups.map(group => {
@@ -122,6 +137,7 @@ export function verifyContentDelivery(exportDirectory, { verifiedCompressedFiles
   const expectedOrder = manifest.packs.some(pack => chapter2SceneFamilies.includes(pack.family))
     ? backgroundOrder : ['chapter2', ...laterChapters];
   if (JSON.stringify(manifest.backgroundOrder) !== JSON.stringify(expectedOrder)) throw new Error('Content background order differs from the story chapter order');
+  if (manifest.prefetchPlan !== undefined) verifyPrefetchPlan(manifest.prefetchPlan, manifest.backgroundOrder);
   if (inventory.full?.engine !== '4.7.1' || inventory.full.count !== inventory.entries.length || contentMapDigest(inventory.entries) !== inventory.full.contentMapSha256) throw new Error('Complete-export inventory lost or changed a resource');
   const original = inventory.entries.map(({ group, ...entry }) => entry);
   if (digest(JSON.stringify(original)) !== inventory.full.inventorySha256) throw new Error('Complete-export inventory does not match its original SHA-256');
