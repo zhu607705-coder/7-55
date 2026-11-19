@@ -1202,7 +1202,7 @@ jobs:
   deploy_oss:
     name: Publish public game to Alibaba OSS
     needs: deploy
-    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.OSS_DEPLOY_ENABLED == 'true' }}
+    if: ${{ needs.deploy.result == 'success' && github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.OSS_DEPLOY_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -1217,6 +1217,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
           sparse-checkout-cone-mode: false
           sparse-checkout: /godot_native/tools/publish_oss.mjs

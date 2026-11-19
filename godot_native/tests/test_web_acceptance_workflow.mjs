@@ -39,7 +39,7 @@ const consumerNames = ['browser_baseline', 'browser_streaming', 'browser_profile
 const gateNames = ['build', 'browser_contracts', ...consumerNames, 'browser_coverage'];
 
 await test('one immutable producer fans out to eleven bounded jobs including optional FLC', () => {
-  assert.deepEqual(Object.keys(jobs), [...gateNames, 'deploy']);
+  assert.deepEqual(Object.keys(jobs), [...gateNames, 'deploy', 'deploy_oss']);
   assert.doesNotMatch(build, /^    needs:/m);
   for (const name of consumerNames) {
     const job = jobs[name];
@@ -289,6 +289,26 @@ await test('PRs cannot upload Pages and publication requires every consumer plus
   assert.equal((coverageJob.match(/merge-multiple: false/g)||[]).length,5);
   assert.match(deploy, /permissions:\n      pages: write\n      id-token: write/);
   assert.doesNotMatch(workflow, /continue-on-error|pull_request_target/);
+});
+
+await test('OSS publishes the current Pages artifact only on an enabled main release', () => {
+  const job = jobs.deploy_oss;
+  const expression = job.match(/^    if: \$\{\{ (.*?) \}\}$/m)?.[1];
+  assert.match(job, /^    needs: deploy$/m);
+  assert.match(job, /actions\/download-artifact@v4\n        with:\n          name: github-pages\n/);
+  assert.doesNotMatch(job, /run-id:|repository:|github-token:/);
+  const publish = new Function('needs', 'github', 'vars', `return (${expression});`);
+  for (const event_name of ['pull_request', 'push', 'workflow_dispatch']) {
+    for (const ref of ['refs/heads/main', 'refs/heads/codex/godot-complete-20261019']) {
+      for (const result of ['success', 'failure', 'skipped', 'cancelled']) {
+        for (const OSS_DEPLOY_ENABLED of [undefined, 'true', 'false']) {
+          const allowed = event_name !== 'pull_request' && ref === 'refs/heads/main'
+            && result === 'success' && OSS_DEPLOY_ENABLED === 'true';
+          assert.equal(publish({ deploy: { result } }, { event_name, ref }, { OSS_DEPLOY_ENABLED }), allowed);
+        }
+      }
+    }
+  }
 });
 
 await test('only superseded PR acceptance can be cancelled', () => {
