@@ -1696,6 +1696,9 @@ func _modal_base(title: String,surface: String="paper",preserve_departure: bool=
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	if surface == "loose_sheet":
+		# Keep item text at a stable wrap width while the dialog measures its height.
+		scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_RESERVE
 	box.add_child(scroll)
 	if surface=="selected_journal": NativeJournalView.style_modal(panel,label,close_button,scroll)
 	var content := VBoxContainer.new()
