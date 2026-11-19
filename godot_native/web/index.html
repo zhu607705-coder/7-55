@@ -159,7 +159,7 @@
           <div class="boot-status">
             <p id="loading-message" role="status" aria-live="polite">正在准备这一天…</p>
             <progress id="loading-progress" aria-label="游戏加载进度"></progress>
-            <p id="loading-detail">先准备开场，后续内容会在游玩时后台加载。</p>
+            <p id="loading-detail"></p>
             <div class="boot-actions">
               <button class="tactile-button" data-skin="paper-ink" data-variant="primary" data-size="lg" id="start-game" type="button" hidden>进入游戏</button>
               <button class="tactile-button" data-skin="paper-ink" data-variant="secondary" data-size="lg" id="retry-game" type="button" hidden>重新加载</button>
@@ -231,10 +231,10 @@
         if (total > 0) {
           progress.max = total;
           progress.value = current;
-          detail.textContent = Math.floor(current / total * 100) + '% · ' + (current / 1048576).toFixed(1) + ' / ' + (total / 1048576).toFixed(1) + ' MB';
+          detail.textContent = '约 ' + Math.min(99, Math.floor(progress.position * 100)) + '%';
         } else {
           progress.removeAttribute('value');
-          detail.textContent = '已接收 ' + (current / 1048576).toFixed(1) + ' MB';
+          detail.textContent = '';
         }
       };
       config.onExit = function (code) {

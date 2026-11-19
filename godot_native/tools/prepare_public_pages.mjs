@@ -79,6 +79,11 @@ assert(packs.length < content.packs.length && packs.some(pack => pack.family ===
 const backgroundOrder = content.backgroundOrder.filter(family => !withheld.has(family));
 assert(backgroundOrder.every(family => packs.some(pack => pack.family === family)), 'Pages background order references missing content');
 const publicContent = { ...content, packs, backgroundOrder, publicChapterLimit: 2 };
+if (content.prefetchPlan !== undefined) {
+  publicContent.prefetchPlan = Object.fromEntries(Object.entries(content.prefetchPlan).map(([stage, target]) => [
+    stage, backgroundOrder.includes(target) ? target : '',
+  ]));
+}
 const publishedPaths = new Set(packs.flatMap(pack => [pack.file, ...(pack.transportChunks ?? []).map(chunk => chunk.file)]));
 const groupIDs = new Set([inventory.coreId, ...packs.map(pack => pack.id)]);
 const groups = inventory.groups.filter(group => groupIDs.has(group.id));

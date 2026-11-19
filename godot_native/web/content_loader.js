@@ -661,6 +661,11 @@
         if (!accepted) await resourceCache.discard(record.pack);
         record.buffer = null;if(active===run){active = null;pump();}
       },
+      progress: () => {
+        const record = active?.record;
+        return JSON.stringify(record && foreground.has(record.pack.id)
+          ? { id: record.pack.id, received: record.received } : {});
+      },
       startPrefetch: () => {
         // Phones fetch only what the current interaction needs. Safari does
         // not expose Save-Data, so use the primary pointer capability here.

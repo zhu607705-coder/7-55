@@ -191,6 +191,8 @@ func run() -> void:
 	DirAccess.make_dir_recursive_absolute(fixture_directory)
 	var state: Node = root.get_node("State")
 	check(Coordinator.next_prefetch_families({"native":{"chapter":1}}) == ["chapter2"], "fresh chapter warms only chapter two")
+	check(Coordinator.next_prefetch_families({"native":{"chapter":1}}, {"opening":"chapter2_library"}) == ["chapter2_library"], "manifest reorder changes only the optional target")
+	check(Coordinator.next_prefetch_families({"native":{"chapter":2,"scene":"campus_bootstrap"}}, {"campus_bootstrap":""}).is_empty(), "manifest can disable prefetch at a checkpoint")
 	var bonsai_state := {"native": {"chapter": 1, "page": "bonsai"}}
 	check(Coordinator.required_families(bonsai_state) == ["phone_bonsai"], "direct bonsai restore requests its object art")
 	check(Coordinator.next_prefetch_families(bonsai_state) == ["chapter2"], "object admission does not skip chapter prefetch")

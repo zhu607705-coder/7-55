@@ -3,6 +3,7 @@ extends Node
 signal blocking_changed(blocking: bool)
 signal content_changed
 const STORY_FAMILIES := ["chapter2", "chapter3", "chapter35", "chapter4"]
+const PREFETCH_STAGES := ["opening", "dorm_hub", "campus_bootstrap", "chapter2", "chapter3", "chapter35", "chapter4"]
 const ReleaseContent = preload("res://scripts/release_content_policy.gd")
 const PhoneEntry = preload("res://scripts/chapters/phone_entry_session.gd")
 const Investigation = preload("res://scripts/chapters/c35_investigation.gd")
@@ -34,6 +35,9 @@ var _prefetch_families: Array = []
 var _prefetch_window_set := false
 var _prefetch_window_supported := false
 var _snapshot_supported := false
+var _prefetch_plan: Dictionary = {}
+var _progress_supported := false
+var _progress_timer: Timer
 var _overlay: CanvasLayer
 var _cover: Control
 var _card: PanelContainer
@@ -49,6 +53,7 @@ func _ready() -> void:
 	if not _require_web_host(_host): return
 	var supports_window: bool = bool(JavaScriptBridge.eval("typeof window.__GODOT_755_CONTENT_HOST__.setPrefetchFamilies === 'function'", true))
 	var supports_snapshot: bool = bool(JavaScriptBridge.eval("typeof window.__GODOT_755_CONTENT_HOST__.snapshot === 'function'", true))
+	_progress_supported = bool(JavaScriptBridge.eval("typeof window.__GODOT_755_CONTENT_HOST__.progress === 'function'", true))
 	JavaScriptBridge.eval("delete window.__GODOT_755_CONTENT_HOST__", true)
 	var raw: Variant = JSON.parse_string(str(_host.manifest()))
 	if not raw is Dictionary or not _configure_manifest(raw, _host, supports_window, supports_snapshot):
@@ -116,6 +121,12 @@ func _configure_manifest(value: Dictionary, host: Variant, supports_window: bool
 	for family: Variant in value.backgroundOrder:
 		if not ReleaseContent.family_available(family, int(chapter_limit)) or seen.has(family): return false
 		seen[family] = true
+	var plan: Variant = value.get("prefetchPlan", {})
+	if not plan is Dictionary: return false
+	for stage: Variant in plan:
+		var target: Variant = plan[stage]
+		if stage not in PREFETCH_STAGES or not target is String or (not target.is_empty() and not seen.has(target)): return false
+	_prefetch_plan = plan.duplicate()
 	_packs = packs
 	_families = families
 	_host = host
@@ -181,19 +192,28 @@ func ensure_state(snapshot: Dictionary) -> bool:
 		_set_prefetch_window(snapshot)
 	return ready
 
-static func next_prefetch_families(snapshot: Dictionary) -> Array:
+static func next_prefetch_families(snapshot: Dictionary, plan: Dictionary = {}) -> Array:
 	var required := required_families(snapshot).filter(func(family): return family in STORY_FAMILIES)
-	if required.size() == 1:
+	var stage := "opening" if required.is_empty() else str(required.back())
+	var next: Array = [STORY_FAMILIES[required.size()]] if required.size() < STORY_FAMILIES.size() else []
+	if stage == "chapter2":
 		var scene := str(snapshot.get("native", {}).get("scene", ""))
-		if scene == "dorm_hub": return ["chapter2_campus"]
-		if scene == "campus_bootstrap": return ["chapter2_library"]
-	return [STORY_FAMILIES[required.size()]] if required.size() < STORY_FAMILIES.size() else []
+		if scene == "dorm_hub":
+			stage = scene
+			next = ["chapter2_campus"]
+		elif scene == "campus_bootstrap":
+			stage = scene
+			next = ["chapter2_library"]
+	if plan.has(stage):
+		var target: String = plan[stage]
+		return [] if target.is_empty() else [target]
+	return next
 
 func _set_prefetch_window(snapshot: Dictionary) -> void:
 	# Old cached HTML/JS may accompany a newer core. Optional warming needs the
 	# bounded-window capability; ordinary request/retry remains compatible.
 	if not _prefetch_window_supported: return
-	var next := next_prefetch_families(snapshot).filter(func(family): return ReleaseContent.family_available(family))
+	var next := next_prefetch_families(snapshot, _prefetch_plan).filter(func(family): return ReleaseContent.family_available(family))
 	if _prefetch_window_set and next == _prefetch_families: return
 	_prefetch_window_set = true
 	_prefetch_families = next
@@ -416,6 +436,9 @@ func _waiting_ids() -> Array:
 func _set_blocking(value: bool) -> void:
 	if _blocking == value: return
 	_blocking = value
+	if is_instance_valid(_progress_timer):
+		if value: _progress_timer.start()
+		else: _progress_timer.stop()
 	blocking_changed.emit(value)
 
 func _build_overlay() -> void:
@@ -437,6 +460,11 @@ func _build_overlay() -> void:
 	_retry = Button.new(); _retry.text = "重试"; _retry.custom_minimum_size.y = 48; Ui.apply_button(_retry); _retry.pressed.connect(_retry_required); column.add_child(_retry)
 	_cancel_optional_button=Button.new();_cancel_optional_button.text="返回入口";_cancel_optional_button.custom_minimum_size.y=48
 	Ui.apply_button(_cancel_optional_button);_cancel_optional_button.pressed.connect(cancel_optional_flc);column.add_child(_cancel_optional_button);_cancel_optional_button.hide()
+	if _progress_supported:
+		_progress_timer = Timer.new()
+		_progress_timer.wait_time = 0.125
+		_progress_timer.timeout.connect(_update_overlay)
+		add_child(_progress_timer)
 	_cover.resized.connect(_layout_overlay); _layout_overlay()
 
 func _layout_overlay() -> void:
@@ -474,8 +502,16 @@ func _update_overlay() -> void:
 		total += int(_packs[id].bytes)
 		if _packs[id].status == "ready": loaded += int(_packs[id].bytes)
 		if _packs[id].status == "error": failed = true
-	_detail.text = ("网络或资源校验暂未完成，重试后将继续当前进度。\n" if failed else "稍等片刻，已准备的内容不会重复下载。\n") + "%.1f / %.1f MB" % [float(loaded) / 1000000.0, float(total) / 1000000.0]
-	_progress.max_value = maxf(1, float(total)); _progress.value = float(loaded)
+	if _progress_supported and not failed:
+		var active: Variant = JSON.parse_string(str(_host.progress()))
+		if active is Dictionary:
+			var id := str(active.get("id", ""))
+			if id in needed and _packs[id].status != "ready":
+				loaded += clampi(int(active.get("received", 0)), 0, int(_packs[id].bytes))
+	var percent := mini(99, floori(100.0 * loaded / maxi(1, total)))
+	_progress.max_value = 100
+	_progress.value = percent
+	_detail.text = ("暂时无法继续加载，请重试。\n" if failed else "") + ("约 %d%%" % percent)
 	_retry.visible = failed
 
 func _retry_required() -> void:

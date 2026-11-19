@@ -52,6 +52,14 @@ opens. The Chapter 1 entry leaves both world packs deferred. The dorm warms
 the campus pack, and the campus warms the library pack. Chapters 3, 3.5 and
 4 retain their shared chapter dependencies for earlier inventory and clues.
 
+Edit `tools/web_prefetch_plan.json` to set the optional family warmed at each
+story checkpoint. Each checkpoint takes one family, or an empty string to turn
+off warming at that checkpoint. An omitted key uses the built-in order. The
+public projection filters locked chapters from the plan. Current-scene packs
+still follow the normal foreground queue, and touch-first browsers still load
+only on demand. The browser and scene loading screens display approximate
+percentages while Godot verifies and mounts required packs.
+
 The browser warms one eligible family at a time. Verified packs with a complete
 IndexedDB receipt stay in browser storage until a view requests them. At that
 point the loader reads and revalidates the cached bytes before Godot mounts the
