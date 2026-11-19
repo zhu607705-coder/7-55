@@ -69,7 +69,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
       { label: "学号", value: "未识别" },
       { label: "识别结果", value: "未检测到可签到主体" }
     ],
-    body: ["识别到双肩带、拉链与课本，未识别到姓名或学号。", "书包身份待馆内前台核验。图像识别不代替盖章。"],
+    body: ["识别到双肩带、拉链与课本，未识别到姓名或学号。"],
     footer: "报告状态：待盖章。"
   }, [{ target: "library-front-desk-staff", result: "transform" }]),
   bagNonPersonProof: paper({
@@ -80,7 +80,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
       { label: "姓名 / 学号", value: "无 / 无" },
       { label: "盖章来源", value: "基础馆物品身份盖章机" }
     ],
-    body: ["经核验，该书包无姓名、无学号，不具备独立占用座位的身份条件。", "本证明仅证明书包。持有人仍需另交到馆材料。"],
+    body: ["经核验，该书包无姓名、无学号，不具备独立占用座位的身份条件。"],
     footer: "电子章：基础馆失物身份登记。"
   }, [
     { target: "cc98-upload:bag_non_person_proof", result: "retain" },
@@ -94,7 +94,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
       { label: "时间", value: "07:55" },
       { label: "凭据状态", value: "离座中 · 待公示" }
     ],
-    body: ["当前占用物：书包。", "恢复处理需提交论坛公示。"],
+    body: ["当前占用物：书包。"],
     footer: "凭据来源：022 桌面夹缝。"
   }, [
     { target: "cc98-upload:seat_022_receipt", result: "retain" },
@@ -167,8 +167,7 @@ export const ITEM_CATALOG: Record<ItemId, ItemCatalogEntry> = {
     ],
     body: [
       "纸条飞走以后，地上的水迹断了。",
-      "潮湿痕迹只能说明它经过了有水的地方。",
-      "还得找目击记录和别的地点信息。"
+      "背面沾着一截馆藏夹页的条码水印。"
     ],
     footer: "纸角滴水，文字还能辨认。"
   }, [

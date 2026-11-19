@@ -3,7 +3,7 @@ extends "res://tests/test_task_shared_ui.gd"
 func run() -> void:
 	if not load("res://tests/native_test_isolation.gd").is_isolated_save():quit(2);return
 	create_timer(180).timeout.connect(func():push_error("Shared lifecycle deadline");quit(2))
-	state=root.get_node("State");actual_progress(0)
+	state=root.get_node("State");actual_progress(1)
 	shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell)
 	await frames(10);shell.set_process(false);shell._clear_notice_presentations()
 	for dimensions: Vector2i in [Vector2i(390,844),Vector2i(1440,900),Vector2i(320,568),Vector2i(844,390)]:

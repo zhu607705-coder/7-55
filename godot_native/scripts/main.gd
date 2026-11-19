@@ -540,6 +540,12 @@ func _focus_world_surface() -> void:
 	world.grab_focus()
 
 func _on_controller_page_intent(_action: String,_previous: Dictionary,current: Dictionary,result: Dictionary) -> void:
+	if _action == "c1_scatter_complete" and not _previous.flags.codeScattered and current.flags.codeScattered and is_instance_valid(phone_chrome):
+		var burst := page_body.find_child("FriendAttackBurst", true, false) as PanelContainer
+		if burst != null:
+			phone_chrome.reveal_first_task(burst, current)
+	elif _action == "c1_friend_cancel" and is_instance_valid(phone_chrome):
+		phone_chrome.finish_task_intro()
 	# The source recovery action explicitly opens the restored world inventory.
 	if _action=="c2_recover_card" and not _previous.actOne.inventoryRecovered and current.actOne.inventoryRecovered:
 		compact_inventory_open=true
@@ -1690,6 +1696,9 @@ func _modal_base(title: String,surface: String="paper",preserve_departure: bool=
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	if surface == "loose_sheet":
+		# Keep item text at a stable wrap width while the dialog measures its height.
+		scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_RESERVE
 	box.add_child(scroll)
 	if surface=="selected_journal": NativeJournalView.style_modal(panel,label,close_button,scroll)
 	var content := VBoxContainer.new()
@@ -3102,6 +3111,7 @@ func _capture_world(config: Dictionary) -> void:
 	State.act(str(config.get("on_success","c3_journal_capture_result")),session)
 
 func _reset_runtime_presentations() -> void:
+	if is_instance_valid(phone_chrome): phone_chrome.finish_task_intro()
 	if is_instance_valid(battery_prank): battery_prank.reset()
 	_clear_notice_presentations()
 	if is_instance_valid(phone_object_pickup): phone_object_pickup.reset("story-reset")

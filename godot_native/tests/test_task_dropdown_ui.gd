@@ -65,16 +65,20 @@ func run() -> void:
 			shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell)
 			await frames(12);shell.set_process(false);shell._layout();shell._clear_notice_presentations();await frames(4)
 			if stage==0:
+				check(not shell.phone_chrome.task_button.is_visible_in_tree(),"new game waits for the first task")
+				await capture_state("01-real-new-game",dimensions)
 				shell._on_phone_page("control_center");await frames(8)
 				await capture_state("00-existing-control-center",dimensions)
 				shell._on_phone_action("native_control_center_close",null);await frames(6)
+				await shell.shutdown();shell.queue_free();await frames(5)
+				continue
 			var before: Dictionary=state.d.duplicate(true)
 			await click(shell.phone_chrome.task_button);await settle()
 			check(is_instance_valid(shell.modal),"actual task trigger opens candidate")
 			if not is_instance_valid(shell.modal):quit(2);return
 			verify_dropdown()
-			var label: String=["01-real-new-game","02-real-code-scattered","03-real-first-clue","04-real-two-clues"][stage]
-			if stage==0:check(shell.modal_panel.size.y<300,"daily first task stays compact without filler")
+			var label: String=["02-real-code-scattered","03-real-first-clue","04-real-two-clues"][stage-1]
+			if stage==1:check(shell.modal_panel.get_global_rect().end.y<shell.phone_chrome.get_global_rect().end.y,"first earned task leaves the phone backdrop reachable")
 			await capture_state(label,dimensions)
 			if stage==3:
 				await click(await reveal_control("JournalChapterMap"));await settle();verify_dropdown()
@@ -83,7 +87,7 @@ func run() -> void:
 			check(state.d==before,"task and history preserve earned progress")
 			await press_key(KEY_ESCAPE);await frames(4)
 			check(not is_instance_valid(shell.modal),"Escape dismisses candidate exactly once")
-			if stage==0:
+			if stage==1:
 				# Same phone-only backdrop behavior as existing Control Center.
 				await click(shell.phone_chrome.task_button);await settle()
 				var shade: Button=find("JournalDropdownBackdrop")

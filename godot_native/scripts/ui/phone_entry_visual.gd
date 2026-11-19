@@ -94,6 +94,9 @@ static func crash_sample(milliseconds: float) -> Dictionary:
 func _process(_delta: float) -> void:
 	for i in range(dots.size()): dots[i].position.y=float(dots[i].get_meta("rest_y"))+dot_offset(session.elapsed_ms,i)/art_scale
 	if kind=="friend":
+		if session.friend_phase == 4:
+			set_process(false)
+			return
 		var elapsed: float=session.friend_elapsed_ms
 		message.visible=session.friend_phase>=1; burst.visible=session.friend_phase>=2; laugh.visible=session.friend_phase>=3
 		skip.mouse_filter=Control.MOUSE_FILTER_STOP if session.friend_phase==2 and elapsed>=4000 else Control.MOUSE_FILTER_IGNORE

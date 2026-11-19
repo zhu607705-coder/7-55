@@ -18,7 +18,7 @@ var _origin := Vector2.ZERO
 
 func _ready() -> void:
 	focus_mode = Control.FOCUS_ALL
-	mouse_default_cursor_shape = Control.CURSOR_DRAG
+	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	focus_entered.connect(queue_redraw)
 	focus_exited.connect(queue_redraw)
 
@@ -117,5 +117,5 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 
 
 func _draw() -> void:
-	if has_focus():
+	if has_focus(true):
 		draw_rect(Rect2(Vector2.ZERO, size).grow(-1.0), Color("174d9d"), false, 1.0)

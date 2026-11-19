@@ -33,7 +33,7 @@ func prepare_phone(dimensions: Vector2i, page: String="phone_home") -> void:
 	shell._close_modal()
 	if capture_enabled:DisplayServer.window_set_size(dimensions)
 	root.size=dimensions;shell.size=Vector2(dimensions)
-	check(seed_c1_fixture("c1-home"),"authored first-chapter fixture loads")
+	check(seed_c1_fixture("c1-code-hunt"),"authored first-chapter fixture has accepted the task")
 	state.d.native.page=page;state.d.native.scene="";state.d.native.settings.volume=0
 	state.d.native.settings.music=false;state.d.native.settings.effects=false;state.d.native.settings.reduced_motion=true
 	state.d.ui.inventoryOpen=false;state.d.ui.controlCenterOpen=false

@@ -13,7 +13,6 @@ type ItemInspectVariant = "phone" | "rpg";
 interface ItemInspectEntry {
   category: string;
   source: string;
-  useHint?: string;
 }
 
 const THEATER_PROGRAM_FLUORESCENT_ORDER: Partial<Record<ItemId, 1 | 2 | 3>> = {
@@ -36,7 +35,7 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
     source: "主屏早八雨滴",
   },
   headphone: {
-    category: "容器素材",
+    category: "随身物品",
     source: "控制中心音乐模块",
   },
   wateredHeadphone: {
@@ -138,12 +137,10 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
   badDrink: {
     category: "失败饮品",
     source: "食堂混合台",
-    useHint: "可以自己喝掉。试饮杯位不收这一杯。"
   },
   dailySpecialSparklingWater: {
     category: "今日新品",
     source: "食堂混合台",
-    useHint: "宣传板下空着一个杯位。洒出的泡沫有些黏。"
   },
   pickupTicket0755: {
     category: "0755 取餐号",
@@ -188,7 +185,6 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
   decoyPaper: {
     category: "假纸条",
     source: "剧院追光灯下",
-    useHint: "纸角能穿过鱼钩，泡过水后仍能保持形状。"
   },
   wetProgram: {
     category: "湿掉的节目单",
@@ -213,87 +209,70 @@ export const ITEM_INSPECT_META: Record<ItemId, ItemInspectEntry> = {
   hairDryer: {
     category: "寝室电器",
     source: "个人书桌",
-    useHint: "天气页面的云带会随风偏移。风向可以试着控制。"
   },
   fishingRod: {
     category: "湖面工具",
     source: "启真湖浮排边",
-    useHint: "竿梢和鱼钩都在，钓线末端还能系东西。"
   },
   rustedLockerKey: {
     category: "解锁工具",
     source: "启真湖开放水域钓点",
-    useHint: "钥匙齿口较粗，适合码头那种旧锁。"
   },
   nylonCord: {
     category: "修复材料",
     source: "启真湖码头储物柜",
-    useHint: "耐水，能穿过金属框边缘的小孔。"
   },
   brokenNetFrame: {
     category: "修复材料",
     source: "启真湖开放水域钓点",
-    useHint: "框架没散，边缘还留着穿线孔。"
   },
   improvisedDipNet: {
     category: "打捞工具",
     source: "尼龙绳 + 断裂网框",
-    useHint: "网口比罐子宽，网兜能承重。"
   },
   sealedFeedTin: {
     category: "密封容器",
     source: "启真湖水下打捞点",
-    useHint: "罐盖边缘有缝，徒手打不开。"
   },
   fishFeedPellets: {
     category: "投喂材料",
     source: "密封饲料罐",
-    useHint: "少量颗粒落水后，附近的鱼会游过来。"
   },
   smallCarp: {
     category: "渔获",
     source: "启真湖鱼群钓点",
-    useHint: "黑天鹅一直盯着这条鱼。"
   },
   swanMagnet: {
     category: "磁吸附件",
     source: "启真湖黑天鹅",
-    useHint: "磁扣后面留有穿线孔。"
   },
   magneticFishingRod: {
     category: "组合工具",
     source: "钓竿 + 天鹅磁铁",
-    useHint: "线末端能吸住小金属件，纸本身不导磁。"
   },
   attendanceRecordPaper: {
     category: "签到材料",
     source: "教学楼公告栏前",
-    useHint: "纸幅与签到槽相同，空栏还留着。"
   },
   oldClockHourHand: {
     category: "钟表部件",
     source: "面包店传送带边缘",
-    useHint: "尾部方孔与大厅旧钟的轴头一致。"
   },
   clockPositioningPlate: {
     category: "钟表部件",
     source: "204 讲台抽屉",
-    useHint: "盘边的缺口与旧钟轴座对应。"
   },
   shortPryBar: {
     category: "维修工具",
     source: "面包店后场",
-    useHint: "扁头能插入薄金属盖板的缝。"
   },
   universalLubricatingOil: {
     category: "维修材料",
     source: "清洁车内侧",
-    useHint: "适用于卡涩的轮轴和齿轮。"
   },
   finalMinute: {
     category: "钟表部件",
     source: "202 阶梯教室座椅间",
-    useHint: "分针底部的接口仍完整。大厅旧钟缺的就是这一件。"
   }
 };
 
@@ -436,12 +415,6 @@ function ItemInspectDialogBody({
                 ) : null}
               </dd>
             </div>
-            {entry.useHint ? (
-              <div className="item-inspect-row">
-                <dt>用途提示</dt>
-                <dd>{entry.useHint}</dd>
-              </div>
-            ) : null}
           </dl>
         </div>
         {itemDocument ? (

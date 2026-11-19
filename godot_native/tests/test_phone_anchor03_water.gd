@@ -78,6 +78,7 @@ func check_container_route(touch: bool) -> void:
 	shell._refresh(); await frames(4)
 	var rain := rect(named("HomeLiveWaterDrop"))
 	await click(named("HomeLiveWaterDrop"),touch)
+	check_hint()
 	check(not state.d.flags.waterDropTaken and not state.d.items.waterDrop,"tapping only inspects the rain source")
 	await drag_between(rain.get_center(),rain.get_center()+Vector2(rain.size.x*1.3,0),touch)
 	check(not state.d.flags.waterDropTaken,"a sideways drag does not collect the rain")
@@ -96,6 +97,16 @@ func check_container_route(touch: bool) -> void:
 	check(not state.d.items.headphone and not state.d.items.waterDrop,"direct catch produces exactly one filled item")
 	check(named("HomeLiveWaterDrop")==null and actions.count("c1_rain_fill")==2,"accepted catch removes the source after the earlier wrong attempt")
 	check(cues.count(WATER_SOUND)==1,"catch uses the existing rain sound once")
+
+func check_hint() -> void:
+	var drop := named("HomeLiveWaterDrop") as Control
+	var hint := named("HomeWaterDropHint") as Label
+	var card := hint.get_parent() as Panel
+	check(drop.mouse_default_cursor_shape == Control.CURSOR_POINTING_HAND and not drop.has_focus(true),
+		"pointer inspection uses a hand cursor and leaves no visible focus rectangle")
+	check(hint.is_visible_in_tree() and rect(card).encloses(rect(hint)) and rect(hint).end.y < rect(card).end.y,
+		"the inspected clue fits above the weather card's bottom border")
+	check(rect(card).end.y <= rect(named("HomeApp_wechat")).position.y, "the expanded card clears the app row")
 
 func verify_poses(dimensions: Vector2i) -> void:
 	if host.current.is_empty(): return
@@ -131,7 +142,8 @@ func run() -> void:
 	state.action_completed.connect(func(id: String,_before: Dictionary,_after: Dictionary,_result: Dictionary): actions.append(id))
 	var touch_before: bool=Input.emulate_mouse_from_touch; Input.emulate_mouse_from_touch=true
 	for dimensions: Vector2i in [Vector2i(390,844),Vector2i(430,860),Vector2i(1180,812)]:
-		await fixture(dimensions); await collect(); check(not host.current.nearby_slot,"default closed backpack uses bounded local feedback"); verify_poses(dimensions)
+		await fixture(dimensions); await click(named("HomeLiveWaterDrop")); check_hint()
+		await collect(); check(not host.current.nearby_slot,"default closed backpack uses bounded local feedback"); verify_poses(dimensions)
 		var starts: int=host.started_count
 		shell._on_phone_action("c1_rain_drop",null); await frames()
 		check(host.current.is_empty() and host.started_count==starts and cues.count(WATER_SOUND)==1,"repeat cannot create a second pickup or sound")
