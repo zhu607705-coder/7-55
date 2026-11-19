@@ -51,7 +51,7 @@ func _ready() -> void:
 	_chapter("第一章 · 早八签到", "alarm-clock", ["morning","code","voice"], _selected in ["morning","code","voice"])
 	_chapter("第二章 · 基础馆", "map", ["campus","gate","junction","notice","seat"], _selected not in ["morning","code","voice"])
 	for title: String in ["第三章","第四章"]:
-		var locked := _row(title + " · 暂未开放", "lock")
+		var locked := _chapter_heading(title + " · 暂未开放", "lock")
 		locked.disabled = true
 		add_child(locked)
 	add_child(HSeparator.new())
@@ -123,13 +123,20 @@ func _ink_button(button: Button, selected: bool, filled := false) -> void:
 	button.add_theme_color_override("font_hover_color",PAPER if filled else INK)
 	button.texture_filter = Control.TEXTURE_FILTER_NEAREST
 
+func _chapter_heading(title: String, glyph: String) -> Button:
+	var button := _row(title, glyph)
+	Journal.style_label(button, 17, INK, true)
+	return button
+
 func _chapter(title: String, glyph: String, ids: Array, open: bool) -> void:
-	var toggle := _row(title,glyph)
+	var toggle := _chapter_heading(title,glyph)
 	toggle.theme_type_variation = &"FlatButton"
 	add_child(toggle)
 	var body := VBoxContainer.new()
 	body.add_theme_constant_override("separation",0)
 	var panel := _foldable(body)
+	body.offset_left = 18
+	body.offset_right = -10
 	for id: String in ids:
 		if body.get_child_count() > 0: body.add_child(_stem())
 		if id == "junction":

@@ -78,15 +78,15 @@ func run() -> void:
 	var inventory_anchor:Vector2=chrome.inventory.position
 	chrome.time_box.show();chrome.refresh(current)
 	check(chrome.time_box.visible and chrome.time_box.get_rect()==clock_anchor and chrome.inventory.position==inventory_anchor,"refresh keeps the system clock and its anchor stable")
-	check(chrome.status_right.is_visible_in_tree() and chrome.task_button.is_visible_in_tree(),"clock removal retains network/control-center and task controls")
+	check(chrome.status_right.is_visible_in_tree() and not chrome.task_button.is_visible_in_tree(),"task trigger is hidden before the first friend task")
 	check(chrome.status_icons.network=="campus_wifi" and chrome.network_label.text=="ZJUWLAN","native wifi arcs and source network name")
 	check(chrome.status_icons.percent==100 and chrome.status_icons.size.x>22,"native battery has dynamic percentage and explicit drawing area")
 	check(chrome.status_right.position.x+chrome.status_right.size.x==410,"network battery box exact 14px right padding")
 	check(is_zero_approx(chrome.brightness_veil.color.a) and is_equal_approx(chrome.brightness_grade.strength,5.0/35),"brightness70 uses progressive lift above neutral65")
 	check(chrome.brightness_veil.z_index>120 and chrome.brightness_veil.mouse_filter==Control.MOUSE_FILTER_IGNORE,"phone brightness covers Control Center and documents while preserving input")
 	check(chrome.acquisition.visible==false,"restored inventory does not play a false acquisition")
-	chrome.status_right.pressed.emit(); chrome.task_button.pressed.emit()
-	check(pages==["control_center"] and tasks==1,"status and task emit real navigation contracts")
+	chrome.status_right.pressed.emit()
+	check(pages==["control_center"] and tasks==0,"status opens control center before the first task")
 	chrome.inventory_handle.pressed.emit()
 	await process_frame
 	check(chrome.inventory_open and chrome.inventory_body.visible and utilities==["inventory_toggle"],"handle toggles expanded vertical items and emits state intent")
@@ -129,6 +129,9 @@ func run() -> void:
 	current.flags.codeScattered=true
 	current.digits.d1="0"; current.digits.d2=null; current.digits.d3="9"; current.digits.d4="8"
 	chrome.refresh(current)
+	check(chrome.task_button.visible,"accepted first task reveals the header")
+	chrome.task_button.pressed.emit()
+	check(tasks==1,"earned task opens the journal")
 	check(chrome.task_button.position==Vector2(144,5) and chrome.task_button.size==Vector2(136,30),"digits expand centered task trigger to exact136px")
 	check(chrome.digit_hint.visible and chrome.digit_hint.text=="签到码 0 ? 9 8","source digit hint preserves the earned zero and unknown slots")
 	current.phoneBattery.percent=4; current.phoneBattery.lowPowerMode=true; current.networkMode="cellular"; current.ui.brightness=0
@@ -151,9 +154,9 @@ func run() -> void:
 	current.actOne.inventoryRecovered=true; chrome.refresh(current)
 	check(chrome.inventory.visible,"recovered inventory restored")
 	current.actOne.phase="friend_message_required"; current.chapterThreeInterlude.completed=false; chrome.refresh(current)
-	check(not chrome.task_button.visible,"source chapter2 friend-message task suppression")
+	check(chrome.task_button.visible,"earned task remains available in the second chapter friend exchange")
 	current.actOne.phase="system_required"; chrome.refresh(current)
-	check(not chrome.task_button.visible,"source chapter2 system task suppression")
+	check(chrome.task_button.visible,"earned task remains available in the second chapter system exchange")
 	current.actOne.phase="complete"; chrome.refresh(current)
 	check(chrome.task_button.visible and not chrome.digit_hint.visible,"later chapter task returns without chapter1 digits")
 	for bare in ["alarm","desktop","ending"]:

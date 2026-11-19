@@ -423,7 +423,7 @@ func _home() -> Control:
 	for mode in ["normal","hover","pressed"]: bonsai.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 	# Exact source widget geometry. Whole-card click has no extra visible button.
 	var rain=not s.qizhenLake.rainSafetyCleared
-	_panel(root,_home_rect(15,56,212,182),Color("fff8e2",.85),INK,0,2)
+	var weather_card := _panel(root,_home_rect(15,56,212,182),Color("fff8e2",.85),INK,0,2)
 	if rain:
 		var cloud=Polygon2D.new(); cloud.color=Color("bfd1db")
 		var cloud_points=PackedVector2Array()
@@ -442,8 +442,8 @@ func _home() -> Control:
 	_label(root,"18°C" if rain else "19°C",_home_rect(119,108,94,41),34)
 	_label(root,"最高 20°C / 最低 15°C",_home_rect(37,160,177,21),12)
 	_panel(root,_home_rect(37,190,168,2),Color("decfb4"))
-	_label(root,"空气湿度 "+("88%" if rain else "76%"),_home_rect(37,201,105,22),11,Color("c85454"))
-	_label(root,"西南风 2级",_home_rect(140,201,70,22),11,Color("c85454"),HORIZONTAL_ALIGNMENT_RIGHT)
+	var humidity := _label(root,"空气湿度 "+("88%" if rain else "76%"),_home_rect(37,201,105,22),11,Color("c85454"))
+	var wind := _label(root,"西南风 2级",_home_rect(140,201,70,22),11,Color("c85454"),HORIZONTAL_ALIGNMENT_RIGHT)
 	if s.actOne.phase!="prologue":
 		var weather_target=_button(root,"",_home_rect(15,56,212,182),func(): page_requested.emit("weather"),Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
 		weather_target.name="HomeWeatherOpen"; weather_target.tooltip_text="打开天气"
@@ -456,11 +456,27 @@ func _home() -> Control:
 		drop.size = target.size
 		drop.accessibility_name = "雨滴"
 		var hint_text := "光靠手心可兜不住水。" if s.items.headphone else "雨滴挂在边缘，似乎再借一点向下的力就会落下来。"
-		drop.tooltip_text = hint_text
+		drop.accessibility_description = hint_text
 		_panel(drop,Rect2(10,4,8,14),Color("7db6ec")).name = "HomeCollectibleDropGlyph"
 		root.add_child(drop)
-		var hint := _label(root,"",_home_rect(37,221,168,30),12,BLUE)
-		drop.inspected.connect(func(): hint.text = hint_text)
+		var hint := _label(weather_card,hint_text,Rect2(Vector2(22,140)/PHONE_SCALE,Vector2(168,0)/PHONE_SCALE),12,BLUE)
+		hint.name = "HomeWaterDropHint"
+		hint.hide()
+		var base_height := weather_card.size.y
+		var hint_timer := Timer.new()
+		hint_timer.one_shot = true
+		weather_card.add_child(hint_timer)
+		hint_timer.timeout.connect(func():
+			hint.hide()
+			humidity.show()
+			wind.show()
+			weather_card.size.y = base_height)
+		drop.inspected.connect(func():
+			humidity.hide()
+			wind.hide()
+			hint.show()
+			weather_card.size.y = maxf(base_height, hint.get_rect().end.y + 6.0/PHONE_SCALE)
+			hint_timer.start(3.5))
 		drop.pulled.connect(func(): action_requested.emit("c1_rain_drop", "pull"))
 		drop.item_dropped.connect(func(item: String): action_requested.emit("c1_rain_fill", item))
 		handled.append("c1_rain_drop")
