@@ -19,6 +19,7 @@ const WorldSpace=preload("res://scripts/space/world_space.gd")
 var world_space:RefCounted=WorldSpace.new()
 var north_space:RefCounted=world_space.north
 const CharacterFacing = preload("res://scripts/character_facing.gd")
+const Protagonist := preload("res://scripts/protagonist_profile.gd")
 const PlayerWalkArt = preload("res://scripts/player_walk_art.gd")
 const GROUND_WALK_SPEED := 123.75
 const GROUND_SPRINT_RATE := 228.0 / 165.0
@@ -67,6 +68,7 @@ var world_key := ""
 var background: Texture2D
 var player_frames: Dictionary = {}
 var locomotion := PlayerLocomotion.new()
+var _editor_walk_preview := false
 var player_walk_art: RefCounted:
 	get: return locomotion.art
 var player_side_idle: Texture2D
@@ -202,6 +204,7 @@ func _ready() -> void:
 		var preview := PlayerWalkArt.female_preview()
 		if preview != null:
 			locomotion.art = preview
+			_editor_walk_preview = true
 	clip_contents = true
 	# Use the same pixel-art sampler for every scene, including standalone
 	# views that do not mount the shell's world SubViewport.
@@ -254,6 +257,8 @@ func _ensure_scene_visuals(incoming: String) -> void:
 	elif campus_layers.ready:
 		campus_layers.release()
 		floor_navigation.roads.clear()
+	if not _editor_walk_preview:
+		locomotion.art = PlayerWalkArt.shared(Protagonist.variant(State.d))
 	player_walk_art.ensure_loaded()
 	if player_frames.is_empty():
 		for direction in ["down","up","side","left"]:
@@ -1439,8 +1444,9 @@ func _draw_actor_pass(canvas: CanvasItem,layer_context: Dictionary,defer_foregro
 		drawn_player = chair_pose.point
 		seated_fraction = chair_pose.settle
 		var idle: Texture2D = player_walk_art.idles.get("up", player_frames.get("up", [null])[0])
-		seated_art = seated_fraction >= 0.5 and library_layers.animations.seated != null
-		actor = {"texture":library_layers.animations.seated if seated_art else idle, "flip_h":false, "angle":0.0}
+		var seated: Texture2D = library_layers.animations.seated_for(Protagonist.variant(State.d))
+		seated_art = seated_fraction >= 0.5 and seated != null
+		actor = {"texture":seated if seated_art else idle, "flip_h":false, "angle":0.0}
 	elif scene_id=="library_interior" and library_layers!=null and library_layers.objects.ready and library_layers.motion.sit_ms>=0:
 		drawn_player=library_layers.motion.actor_pose(player).point
 		if player_walk_art.ready: actor = player_walk_art.actor("up", false, 0.0, false)

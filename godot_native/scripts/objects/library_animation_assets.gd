@@ -7,6 +7,7 @@ const SEATED_HIP_Y := 93.0
 const SEATED_VISIBLE_ROWS := SEATED_HIP_Y
 var seated:Texture2D
 var book:Texture2D
+var _female_seated: Texture2D
 
 func ensure_loaded() -> bool:
 	if ready:
@@ -19,11 +20,20 @@ func ensure_loaded() -> bool:
 		return false
 	walks = shared.walks
 	idles = shared.idles
-	if ResourceLoader.exists(ROOT + "player_seated.png"):
-		seated = load(ROOT + "player_seated.png")
+	seated_for(Protagonist.MALE)
 	book = original
 	ready = true
 	return true
+
+func seated_for(variant: String) -> Texture2D:
+	if variant == Protagonist.FEMALE:
+		var path := Protagonist.FEMALE_ROOT + "player_seated.png"
+		if _female_seated == null and ResourceLoader.exists(path):
+			_female_seated = load(path)
+		return _female_seated
+	if seated == null and ResourceLoader.exists(ROOT + "player_seated.png"):
+		seated = load(ROOT + "player_seated.png")
+	return seated
 
 func book_source(index:int)->Rect2:
 	return Rect2(Vector2(index%4,index/4)*BOOK_CELL,BOOK_CELL)

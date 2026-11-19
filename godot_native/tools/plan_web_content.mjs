@@ -52,6 +52,8 @@ const links = [];
 const unresolved = [];
 function assign(name, group, reason) { ownership.set(name, { group, reason }); }
 function classify(name) {
+  if (/^assets\/native\/(?:protagonist_female|library_animation_20261105)\/player_down_idle\.png$/.test(name)) return 'core';
+  if (name.startsWith('assets/native/protagonist_female/')) return name.endsWith('/portrait.png') ? 'core' : 'chapter2';
   if (isFlcRuntimePath(name)) return 'flc_activity';
   if (name.startsWith('campuses/buct_shared/')) return 'campus_shared';
   if (name.startsWith('campuses/buct_changping/')) return 'campus_changping';

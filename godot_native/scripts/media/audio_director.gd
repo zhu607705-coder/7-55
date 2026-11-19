@@ -1,4 +1,5 @@
 extends Node
+const Protagonist := preload("res://scripts/protagonist_profile.gd")
 const NativePrologueEffects = preload("res://scripts/media/native_prologue_effects.gd")
 ## Read-only presentation consumer. No autoload, controller, save or progression writes.
 ## The JSON is generated from the unchanged TypeScript catalogs at build time.
@@ -42,6 +43,7 @@ var _effects_allowed: bool = true
 var _master_volume: float = 1.0
 var _ready_to_play: bool = false
 var _observed_page: String = ""
+var _observed_protagonist := Protagonist.MALE
 var _observed_runtime: Dictionary = {}
 var _paused_prefixes: Dictionary = {}
 var _retiring_playbacks: Array = []
@@ -106,6 +108,7 @@ func _refresh_settings() -> void:
 	if read_state.is_valid():
 		var value: Variant = read_state.call()
 		if value is Dictionary: state = value
+	_observed_protagonist = Protagonist.variant(state)
 	var page: String = str(state.get("native", {}).get("page", ""))
 	if _observed_page == "wechat" and page != "wechat":
 		cancel_scheduled("xy_")
@@ -283,11 +286,12 @@ func cue(id: String, payload: Dictionary = {}, feedback_text: String = "") -> vo
 		if id in ["chapter4_prologue_finished","chapter4_prologue_closed"] and original.get("channel")=="music" and original.get("action")=="stop": continue
 		var item: Dictionary = original.duplicate(true)
 		if payload.get("subtitleKey") is String: item.subtitleKey = payload.subtitleKey
-		var line: Dictionary = source.get("storyLines", {}).get(str(item.get("subtitleKey", "")), {})
+		var subtitle_key := str(item.get("subtitleKey", ""))
+		var line: Dictionary = source.get("storyLines", {}).get(subtitle_key, {})
 		# The originating action already supplied this line to its feedback
 		# surface. Keep the classification even if playback starts after a new
 		# action, a page change or the original receipt's expiry.
-		if not presented.is_empty() and not line.is_empty() and _normalize_subtitle(str(line.get("subtitleZh","")))==presented:
+		if not presented.is_empty() and not line.is_empty() and _normalize_subtitle(Protagonist.subtitle(_observed_protagonist, subtitle_key, str(line.get("subtitleZh",""))))==presented:
 			item["repeatsFeedback"] = true
 		if not item.has("asset") and item.get("channel") == "voice" and line.has("voiceAsset"): item.asset = line.voiceAsset
 		if id.begins_with("chapter35_voice_audition_") and payload.get("previewKind") == "event":
@@ -364,9 +368,10 @@ func _authored_direct_voice(item: Dictionary,id: String) -> bool:
 	return false
 
 func _play_text(item: Dictionary, duration_override: float = -1) -> void:
-	var line: Dictionary = source.get("storyLines", {}).get(str(item.get("subtitleKey", "")), {})
+	var key := str(item.get("subtitleKey", ""))
+	var line: Dictionary = source.get("storyLines", {}).get(key, {})
 	if line.is_empty() or item.get("subtitleSurface", "toast") == "scene": return
-	var text: String = str(line.get("subtitleZh", ""))
+	var text := Protagonist.subtitle(_observed_protagonist, key, str(line.get("subtitleZh", "")))
 	var duration: float = duration_override if duration_override >= 0 else float(source.get("textDurationMsByKey", {}).get(str(item.get("subtitleKey", "")), 3600))
 	var tone: String = "task" if line.get("kind") == "task" else "system" if line.get("speaker") == "narrator" else "xiaoying"
 	var role:String="dialogue" if line.get("kind","") in ["dialogue","taunt"] else "notification"
