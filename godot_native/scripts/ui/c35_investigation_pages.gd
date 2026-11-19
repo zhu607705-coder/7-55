@@ -1,4 +1,5 @@
 extends RefCounted
+const Protagonist := preload("res://scripts/protagonist_profile.gd")
 const Frame = preload("res://scripts/ui/phone_app_frame.gd")
 const Palette = preload("res://scripts/ui/chapter35_palette.gd")
 const Investigation = preload("res://scripts/chapters/c35_investigation.gd")
@@ -349,7 +350,7 @@ func show_fragment(pages,frame: Control) -> void:
 	frame.scroll.ensure_control_visible.call_deferred(cached)
 
 func build_entrance(pages,frame: Control) -> void:
-	var card := section(pages,frame,"北教学区","位置卡断开时，林星宇还在东门外。沿着院落中间的绿地，他接下来绕向哪一侧？")
+	var card := section(pages,frame,"北教学区",Protagonist.character_line(pages.state,"位置卡断开时，林星宇还在东门外。沿着院落中间的绿地，他接下来绕向哪一侧？"))
 	card.add_child(fragment_preview(224))
 	link_action(pages,card,"跟着保安走东门","entrance","east").name="C35EastEntrance"
 	link_action(pages,card,"绕过绿地走西侧","entrance","west").name="C35WestEntrance"

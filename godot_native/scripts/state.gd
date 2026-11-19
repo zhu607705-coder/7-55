@@ -1,4 +1,5 @@
 extends Node
+const Protagonist := preload("res://scripts/protagonist_profile.gd")
 const PhoneBrightness = preload("res://scripts/ui/phone_brightness_policy.gd")
 ## Single owner of native progression, persistence, and presentation requests.
 signal changed
@@ -516,6 +517,7 @@ func validate_snapshot(value: Variant, allow_legacy_v35_fields: bool=false) -> b
 	if not PhoneBrightness.valid_preference(value.ui): return false
 	if not _domain_guard.validate(value): return false
 	if value.native.has("chapter_map") and not ChapterMap.valid(value.native.chapter_map): return false
+	if value.native.has(Protagonist.SAVE_KEY) and value.native[Protagonist.SAVE_KEY] not in Protagonist.VARIANTS: return false
 	if not allow_legacy_v35_fields and not value.actOne.has("tiyiUpdateStage"): return false
 	if value.actOne.has("tiyiUpdateStage") and value.actOne.tiyiUpdateStage not in preload("res://scripts/chapters/tiyi_access.gd").STAGES: return false
 	if value.ui.has("homeDeskReturnScene") and value.ui.homeDeskReturnScene not in [null,"phone_home","bonsai"]: return false
@@ -863,6 +865,18 @@ func _sanitize_runtime_resume(snapshot: Dictionary) -> void:
 func at_unstarted_opening() -> bool:
 	return int(d.native.chapter) == 1 and d.native.page == "alarm" and d.native.scene == "" and not d.native.get("alarm_ringing", false)
 
+func choose_opening_protagonist(variant: String) -> bool:
+	if variant not in Protagonist.VARIANTS or not at_unstarted_opening(): return false
+	var old: Variant = d.native.get(Protagonist.SAVE_KEY)
+	if variant == Protagonist.variant(d): return true
+	d.native[Protagonist.SAVE_KEY] = variant
+	if not save_game():
+		if old == null: d.native.erase(Protagonist.SAVE_KEY)
+		else: d.native[Protagonist.SAVE_KEY] = old
+		return false
+	changed.emit()
+	return true
+
 func load_game() -> bool:
 	_clear_chapter_replay()
 	_invalidate_save_receipt()
@@ -997,7 +1011,9 @@ func import_save(path: String) -> Dictionary:
 func new_game() -> void:
 	_clear_chapter_replay()
 	var posts = d.get("cc98",{}).duplicate(true)
+	var variant := Protagonist.variant(d)
 	d = initial()
+	if variant == Protagonist.FEMALE: d.native[Protagonist.SAVE_KEY] = variant
 	if not posts.is_empty(): d["cc98"] = posts
 	developer_mode = false
 	story_reset.emit()

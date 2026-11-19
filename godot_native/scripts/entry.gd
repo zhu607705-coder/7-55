@@ -1,5 +1,5 @@
 extends Control
-## Independent scene chooser. Never resets, advances, or saves story state.
+## Independent scene chooser. An opening identity choice commits through State.
 const STORY_SCENE := "res://scenes/main.tscn"
 const DeveloperTools = preload("res://scripts/developer_tools_policy.gd")
 const ReleaseContent = preload("res://scripts/release_content_policy.gd")
@@ -10,6 +10,7 @@ const PaperPanel = preload("res://scripts/ui/campus_paper_panel.gd")
 const PaperInk = preload("res://scripts/ui/paper_ink_material.gd")
 const CommunityPortal = preload("res://scripts/platform/community_portal.gd")
 const DisplayGrade = preload("res://scripts/ui/phone_display_grade.gd")
+const Protagonist := preload("res://scripts/protagonist_profile.gd")
 const BUCT_SCENE := "res://campuses/buct/scenes/playable.tscn"
 const HAIDIAN_SCENE := "res://campuses/buct_haidian/scenes/playable.tscn"
 const CHANGPING_SCENE := "res://campuses/buct_changping/scenes/playable.tscn"
@@ -33,6 +34,10 @@ var preview_button: Button
 var subtitle: Label
 var card: PanelContainer
 var story_button: Button
+var protagonist_picker: HBoxContainer
+var protagonist_buttons: Array[Button] = []
+var _protagonist_pending := ""
+var _protagonist_save_path := ""
 var community_button: Button
 var account_button: Button
 var community_note: Label
@@ -97,6 +102,7 @@ func _ready() -> void:
 	title_rule.mouse_filter=Control.MOUSE_FILTER_IGNORE;content.add_child(title_rule)
 	subtitle=Label.new();subtitle.text="选择入口";subtitle.add_theme_color_override("font_color",UiMaterial.WOOD);content.add_child(subtitle)
 	story_heading=_section_title("主线故事");content.add_child(story_heading)
+	_build_protagonist_picker()
 	story_button=_button("进入主线故事",open_story);story_button.name="ContinueStory";story_button.set_meta("tactile_paper_ink",true);content.add_child(story_button)
 	NativeUi.apply_button(story_button,UiMaterial.NAVY,UiMaterial.PAPER,UiMaterial.NAVY,0,1,20)
 	_paper_focus(story_button)
@@ -113,6 +119,8 @@ func _ready() -> void:
 		restart_button=_button("重新开始",CloudSaves.request_restart);restart_button.name="RestartStory";restart_button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;save_row.add_child(restart_button)
 		manage_button=_button("存档管理",CloudSaves.show_manager);manage_button.name="ManageStorySaves";manage_button.size_flags_horizontal=Control.SIZE_EXPAND_FILL;save_row.add_child(manage_button)
 		CloudSaves.status_changed.connect(_sync_cloud_controls);_sync_cloud_controls()
+	else:
+		_sync_protagonist_picker()
 	if CommunityPortal.available():
 		var community_row:=HBoxContainer.new();community_row.add_theme_constant_override("separation",8);content.add_child(community_row)
 		community_button=_button("共创平台 ↗",CommunityPortal.open_community);community_button.name="OpenCommunity"
@@ -180,11 +188,12 @@ func _sync_content_cover(blocking: bool) -> void:
 func entry_snapshot()->Dictionary:
 	var controls:Array=[]
 	var entry_buttons: Array[Button] = [story_button,flc_button,campus_button,haidian_button,changping_button,preview_button]
+	entry_buttons.append_array(protagonist_buttons)
 	if not ReleaseContent.chapter_available(3): entry_buttons.append_array([restart_button,manage_button])
 	for button:Button in entry_buttons:
 		if not is_instance_valid(button) or not button.is_visible_in_tree():continue
 		var rect:=button.get_global_rect()
-		controls.append({"name":str(button.name),"text":button.text,"type":"Button","disabled":button.disabled or opening,"rect":{"x":rect.position.x,"y":rect.position.y,"width":rect.size.x,"height":rect.size.y}})
+		controls.append({"name":str(button.name),"text":button.text,"type":"Button","disabled":button.disabled or opening,"pressed":button.button_pressed,"rect":{"x":rect.position.x,"y":rect.position.y,"width":rect.size.x,"height":rect.size.y}})
 	if not ReleaseContent.chapter_available(3) and detail.is_visible_in_tree():
 		var rect := detail.get_global_rect()
 		controls.append({"name":str(detail.name),"text":detail.text,"type":"Label","disabled":false,"rect":{"x":rect.position.x,"y":rect.position.y,"width":rect.size.x,"height":rect.size.y}})
@@ -220,6 +229,63 @@ func _section_title(text: String) -> Label:
 	label.add_theme_font_size_override("font_size",20);label.add_theme_color_override("font_color",UiMaterial.NAVY)
 	return label
 
+func _build_protagonist_picker() -> void:
+	protagonist_picker = HBoxContainer.new()
+	protagonist_picker.name = "OpeningProtagonistPicker"
+	protagonist_picker.add_theme_constant_override("separation", 8)
+	content.add_child(protagonist_picker)
+	var group := ButtonGroup.new()
+	for entry in [
+		[Protagonist.MALE, "男主角", "ChooseMaleProtagonist", "res://assets/native/library_animation_20261105/player_down_idle.png"],
+		[Protagonist.FEMALE, "女主角", "ChooseFemaleProtagonist", Protagonist.FEMALE_ROOT + "player_down_idle.png"],
+	]:
+		var option := _button(entry[1], _choose_protagonist.bind(entry[0]))
+		option.name = entry[2]
+		option.toggle_mode = true
+		option.button_group = group
+		option.set_meta("tactile_exempt", true)
+		option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var selected_style := NativeUi.box(Color("e0e8ed"), UiMaterial.NAVY, 2, 2, Vector2(8, 5))
+		option.add_theme_stylebox_override("normal", NativeUi.box(UiMaterial.PAPER, UiMaterial.PAPER_EDGE, 1, 2, Vector2(8, 5)))
+		option.add_theme_stylebox_override("hover", NativeUi.box(Color("ece9db"), UiMaterial.NAVY, 1, 2, Vector2(8, 5)))
+		option.add_theme_stylebox_override("pressed", selected_style)
+		option.add_theme_stylebox_override("hover_pressed", selected_style)
+		option.icon = load(entry[3]) if ResourceLoader.exists(entry[3]) else null
+		option.expand_icon = true
+		for color_key in ["icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_hover_pressed_color", "icon_focus_color"]:
+			option.add_theme_color_override(color_key, Color.WHITE)
+		option.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		_paper_focus(option)
+		protagonist_picker.add_child(option)
+		protagonist_buttons.append(option)
+	var male := protagonist_buttons[0]
+	var female := protagonist_buttons[1]
+	male.focus_neighbor_right = male.get_path_to(female)
+	female.focus_neighbor_left = female.get_path_to(male)
+
+func _choose_protagonist(variant: String) -> void:
+	_protagonist_pending = variant
+	_sync_protagonist_picker()
+
+func _sync_protagonist_picker() -> void:
+	if _protagonist_save_path != State.SAVE_PATH:
+		_protagonist_save_path = State.SAVE_PATH
+		_protagonist_pending = ""
+	var can_choose := State.save_compatibility_error.is_empty() and State.at_unstarted_opening() and (not OS.has_feature("web") or CloudSaves.can_enter())
+	protagonist_picker.visible = can_choose
+	story_heading.text = "选择主角" if can_choose else "主线故事"
+	story_button.focus_neighbor_top = story_button.get_path_to(protagonist_buttons[0]) if can_choose else NodePath()
+	var selected := _protagonist_pending if not _protagonist_pending.is_empty() else Protagonist.variant(State.d)
+	for index in protagonist_buttons.size():
+		var variant: String = Protagonist.VARIANTS[index]
+		var option := protagonist_buttons[index]
+		var active := variant == selected
+		var caption := "女主角" if variant == Protagonist.FEMALE else "男主角"
+		option.focus_neighbor_bottom = option.get_path_to(story_button)
+		option.set_pressed_no_signal(active)
+		option.text = caption + " · 已选" if active else caption
+	_layout.call_deferred()
+
 func _paper_focus(button: Button) -> void:
 	var focus:=StyleBoxFlat.new();focus.bg_color=Color.TRANSPARENT
 	focus.border_color=PaperInk.FOCUS;focus.set_border_width_all(2);focus.set_corner_radius_all(2)
@@ -240,9 +306,19 @@ func _layout() -> void:
 	story_heading.add_theme_font_size_override("font_size",14 if short_window else 17 if compact else 20)
 	if is_instance_valid(campus_heading):campus_heading.add_theme_font_size_override("font_size",14 if short_window else 17 if compact else 20)
 	detail.add_theme_font_size_override("font_size",13 if short_window else 15 if compact else 17)
-	if is_instance_valid(community_note):community_note.add_theme_font_size_override("font_size",13 if compact else 15)
-	subtitle.visible=available.y>=420
+	if is_instance_valid(community_note):
+		community_note.visible = not short_window
+		community_note.add_theme_font_size_override("font_size",13 if compact else 15)
+	if is_instance_valid(save_label):
+		save_label.visible = not short_window or not CloudSaves.ready_for_play
+	subtitle.visible=available.y>=420 and not protagonist_picker.visible
 	title_rule.visible=not short_window
+	for option in protagonist_buttons:
+		option.custom_minimum_size.y = 44 if short_window else 104 if compact else 132
+		option.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT if short_window else HORIZONTAL_ALIGNMENT_CENTER
+		option.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER if short_window else VERTICAL_ALIGNMENT_TOP
+		option.add_theme_constant_override("icon_max_width", 22 if short_window else 52 if compact else 72)
+		option.add_theme_font_size_override("font_size", 16 if compact else 18)
 	for button: Button in [story_button,flc_button,restart_button,manage_button,community_button,account_button,campus_button,haidian_button,changping_button,preview_button]:
 		if is_instance_valid(button):
 			button.custom_minimum_size.y=44 if compact else 58
@@ -257,7 +333,7 @@ func _layout() -> void:
 	# centered, bounded card. No artwork or button uses non-uniform scaling.
 	var x:float=(available.x-width)/2
 	if available.x>=1100 and not previews_open:x=available.x-width-available.x*0.08
-	card.position=Vector2(x,maxf(12,(available.y-card.get_combined_minimum_size().y)/2))
+	card.position=Vector2(x,maxf(4 if short_window else 12,(available.y-card.get_combined_minimum_size().y)/2))
 
 func _build_preview_menu() -> void:
 	if not DeveloperTools.available(): return
@@ -350,12 +426,17 @@ func _unhandled_input(event: InputEvent) -> void:
 		close_previews();get_viewport().set_input_as_handled()
 
 func open_story() -> void:
-	if not State.save_compatibility_error.is_empty(): return
+	if opening or not State.save_compatibility_error.is_empty(): return
 	if OS.has_feature("web") and not CloudSaves.can_enter(): CloudSaves.show_manager();return
+	if State.at_unstarted_opening() and not _protagonist_pending.is_empty() and not State.choose_opening_protagonist(_protagonist_pending):
+		detail.text = "角色选择暂未保存，请重试。"
+		detail.show()
+		return
 	_open(STORY_SCENE)
 
 func _sync_cloud_controls() -> void:
 	if not is_instance_valid(save_label): return
+	_sync_protagonist_picker()
 	save_label.text=CloudSaves.card_text()
 	story_button.disabled=not CloudSaves.can_enter()
 	if CloudSaves.chapter_locked:

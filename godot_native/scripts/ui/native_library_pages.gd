@@ -1,4 +1,5 @@
 extends RefCounted
+const Protagonist := preload("res://scripts/protagonist_profile.gd")
 const Typography = preload("res://scripts/ui/native_typography.gd")
 const CampusWayfinding = preload("res://scripts/ui/campus_wayfinding.gd")
 const ShelfBook=preload("res://scripts/objects/library_shelf_book.gd")
@@ -153,7 +154,7 @@ func home(b) -> Control:
 	b._panel(inner,Rect2(-27,80,240,90),Color("357b56"),Color.TRANSPARENT,65)
 	b._panel(inner,Rect2(151,80,285,90),Color("2c6b4e"),Color.TRANSPARENT,65)
 	for flower in [[110,"ffd95d"],[135,"ef7f7f"],[164,"74d3f1"],[194,"f7e6be"],[232,"ef7f7f"]]: b._panel(inner,Rect2(flower[0],115,9,9),Color(flower[1]))
-	var portrait: TextureRect=b._image(inner,"ui/library_avatar.png",Rect2(14,16,71,71)); portrait.name="LibraryReaderPortrait"
+	var portrait: TextureRect=b._image(inner,Protagonist.portrait_path(b.s,"res://assets/ui/library_avatar.png"),Rect2(14,16,71,71)); portrait.name="LibraryReaderPortrait"
 	var identity=b.s.actOne.inventoryRecovered and b.s.items.campusCard
 	b._label(inner,"林星宇" if identity else "▓▓▓",Rect2(97,22,194,28),19,Color.WHITE)
 	b._label(inner,"3250100755 ▱" if identity else "▓▓▓▓▓▓▓▓",Rect2(97,58,194,24),14,Color.WHITE)

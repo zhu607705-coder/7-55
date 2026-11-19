@@ -1,4 +1,5 @@
 extends RefCounted
+const Protagonist := preload("res://scripts/protagonist_profile.gd")
 const PixelEdges = preload("res://scripts/ui/pixel_edges.gd")
 const PhoneOverlay = preload("res://scripts/ui/phone_overlay_shell.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
@@ -283,7 +284,7 @@ func _image(root: Control, path: String, rect: Rect2) -> TextureRect:
 	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	image.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var resource = "res://assets/" + path
+	var resource = path if path.begins_with("res://") else "res://assets/" + path
 	if ResourceLoader.exists(resource): image.texture = load(resource)
 	root.add_child(image)
 	return image
@@ -1095,7 +1096,7 @@ func _campus_card() -> Control:
 	_label(root,"ZHEJIANG UNIVERSITY",_home_rect(188,189,205,16),8,Color("c7d5ee"))
 	_panel(root,_home_rect(30,218,364,2),Color(1,1,1,.25))
 	_panel(root,_home_rect(30,232,96,118),Color("7ea4e0"),Color("cfdcf5"),0,3)
-	var portrait := _image(root,"native/campus_card/lin_xingyu_portrait.png",_home_rect(33,235,90,112))
+	var portrait := _image(root,Protagonist.portrait_path(s,"res://assets/native/campus_card/lin_xingyu_portrait.png"),_home_rect(33,235,90,112))
 	portrait.name = "CampusCardPortrait"
 	portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	var identity=s.actOne.inventoryRecovered and s.items.campusCard
@@ -1644,7 +1645,10 @@ func _zju_identity_header(root: Control, in_messages: bool = false) -> void:
 	var profile=ZjudingChrome.round_button(_button(root,"",Rect2(45,12,42,42),func(): zjuding_overlay="profile"; action_requested.emit("phone_refresh",{}),Color("e2ecff"),ZjudingChrome.BLUE,0,Color.TRANSPARENT),10)
 	profile.name="ZjudingProfileMenu"
 	profile.accessibility_name="个人菜单"
-	_label(profile,"星宇" if identity else "用户",Rect2(0,0,42,42),14,ZjudingChrome.BLUE,HORIZONTAL_ALIGNMENT_CENTER)
+	if identity and Protagonist.variant(s) == Protagonist.FEMALE:
+		_image(profile,Protagonist.portrait_path(s,""),Rect2(3,3,36,36)).texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	else:
+		_label(profile,"星宇" if identity else "用户",Rect2(0,0,42,42),14,ZjudingChrome.BLUE,HORIZONTAL_ALIGNMENT_CENTER)
 	_label(root,"林星宇" if identity else "身份未读取",Rect2(97,10,143,28),19,ZjudingChrome.INK)
 	_label(root,"浙江大学",Rect2(97,38,143,19),12,ZjudingChrome.MUTED)
 	_zju_search_trigger(root,Rect2(247,13,117,39),"搜索","ZjudingSearchOpen",ZjudingChrome.PILL)

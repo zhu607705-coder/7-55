@@ -1,11 +1,13 @@
 extends RefCounted
 ## Shared full-body art for ordinary walking. Scene-specific action poses live
 ## with their own presenters.
+const Protagonist := preload("res://scripts/protagonist_profile.gd")
 const Facing := preload("res://scripts/character_facing.gd")
 const ROOT := "res://assets/native/library_animation_20261105/"
 const WALK_PATH := "res://assets/native/player_locomotion/player_walk_and_idle.png"
 const FEMALE_PREVIEW_PATH := "res://art_source/player_locomotion_20261116/female_preview/walk_and_idle.png"
-const FEMALE_PREVIEW_FRAMES := 8
+const FEMALE_WALK_FRAMES := 8
+const FEMALE_PREVIEW_FRAMES := FEMALE_WALK_FRAMES
 const WALK_DIRECTIONS := ["side", "down", "up"]
 const WALK_FRAMES := 16
 const CYCLE_MS := 800.0
@@ -15,12 +17,15 @@ var ready := false
 var frame_count := WALK_FRAMES
 var walks: Dictionary = {}
 var idles: Dictionary = {}
-static var _shared: RefCounted
+var _variant := Protagonist.MALE
+static var _shared: Dictionary = {}
 
-static func shared() -> RefCounted:
-	if _shared == null:
-		_shared = load("res://scripts/player_walk_art.gd").new()
-	return _shared
+static func shared(variant: String = Protagonist.MALE) -> RefCounted:
+	if not _shared.has(variant):
+		var art: RefCounted = load("res://scripts/player_walk_art.gd").new()
+		art._variant = variant
+		_shared[variant] = art
+	return _shared[variant]
 
 static func female_preview() -> RefCounted:
 	var sheet := Image.load_from_file(FEMALE_PREVIEW_PATH)
@@ -36,6 +41,10 @@ static func atlas_size() -> Vector2i:
 func ensure_loaded() -> bool:
 	if ready:
 		return true
+	if _variant == Protagonist.FEMALE:
+		var path := Protagonist.FEMALE_ROOT + "player_walk_full.png"
+		var female: Texture2D = load(path) if ResourceLoader.exists(path) else null
+		return female != null and _read_sheet(female.get_image(), FEMALE_WALK_FRAMES, Protagonist.FEMALE_ROOT)
 	if not ResourceLoader.exists(WALK_PATH):
 		return false
 	var atlas: Texture2D = load(WALK_PATH)
@@ -43,15 +52,23 @@ func ensure_loaded() -> bool:
 		return false
 	return _read_sheet(atlas.get_image(), WALK_FRAMES)
 
-func _read_sheet(sheet: Image, count: int) -> bool:
-	var dimensions := WALK_CELL * Vector2i(count + 1, WALK_DIRECTIONS.size())
+func _read_sheet(sheet: Image, count: int, idle_root: String = "") -> bool:
+	var columns := count + 1 if idle_root.is_empty() else count
+	var dimensions := WALK_CELL * Vector2i(columns, WALK_DIRECTIONS.size())
 	if sheet == null or sheet.is_empty() or sheet.is_compressed() or sheet.get_size() != dimensions:
 		return false
 	var pending_walks := {}
 	var pending_idles := {}
 	for row in WALK_DIRECTIONS.size():
 		var direction: String = WALK_DIRECTIONS[row]
-		pending_idles[direction] = ImageTexture.create_from_image(sheet.get_region(walk_region(row, count)))
+		if idle_root.is_empty():
+			pending_idles[direction] = ImageTexture.create_from_image(sheet.get_region(walk_region(row, count)))
+		else:
+			var path := idle_root + "player_" + direction + "_idle.png"
+			var idle: Texture2D = load(path) if ResourceLoader.exists(path) else null
+			if idle == null or idle.get_size() != Vector2(96, 128):
+				return false
+			pending_idles[direction] = idle
 		var frames: Array[Texture2D] = []
 		for index in count:
 			frames.append(ImageTexture.create_from_image(sheet.get_region(walk_region(row, index))))
