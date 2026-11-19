@@ -55,6 +55,9 @@ jobs:
           node-version: 22.23.3
           cache: npm
 
+      - name: Test OSS release promotion
+        run: node --test godot_native/tests/publish_oss.test.mjs
+
       - name: Record exact acceptance source
         env:
           ACCEPTANCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -1195,3 +1198,56 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  deploy_oss:
+    name: Publish public game to Alibaba OSS
+    needs: deploy
+    if: ${{ needs.deploy.result == 'success' && github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.OSS_DEPLOY_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    env:
+      OSS_AUTH_METHOD: ${{ vars.OSS_AUTH_METHOD || 'oidc' }}
+      OSS_BUCKET: proj-flc-gaming
+      OSS_REGION: cn-hangzhou
+      OSS_GAME_DOMAIN: 755.zjuxlab.com
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: /godot_native/tools/publish_oss.mjs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.3
+      - uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: ${{ runner.temp }}/oss-artifact
+      - name: Prepare public site and SDK
+        run: |
+          case "$OSS_AUTH_METHOD" in
+            oidc|access-key) ;;
+            *) echo "::error::Set OSS_AUTH_METHOD to oidc or access-key"; exit 1 ;;
+          esac
+          mkdir -p "$RUNNER_TEMP/oss-site"
+          tar -xf "$RUNNER_TEMP/oss-artifact/artifact.tar" -C "$RUNNER_TEMP/oss-site"
+          npm install --prefix "$RUNNER_TEMP/oss-sdk" --no-audit --no-fund --ignore-scripts ali-oss@6.23.0
+      - id: ram
+        if: env.OSS_AUTH_METHOD == 'oidc'
+        uses: aliyun/configure-aliyun-credentials-action@1e5248c8d5d93a8781ac344a68e19a43341e79e6
+        with:
+          oidc-provider-arn: ${{ vars.ALIYUN_OIDC_PROVIDER_ARN }}
+          role-to-assume: ${{ vars.ALIYUN_OSS_ROLE_ARN }}
+      - name: Verify and publish OSS release
+        env:
+          OSS_ACCESS_KEY_ID: ${{ env.OSS_AUTH_METHOD == 'oidc' && steps.ram.outputs.aliyun-access-key-id || env.OSS_AUTH_METHOD == 'access-key' && secrets.ALIYUN_OSS_ACCESS_KEY_ID }}
+          OSS_ACCESS_KEY_SECRET: ${{ env.OSS_AUTH_METHOD == 'oidc' && steps.ram.outputs.aliyun-access-key-secret || env.OSS_AUTH_METHOD == 'access-key' && secrets.ALIYUN_OSS_ACCESS_KEY_SECRET }}
+          OSS_SESSION_TOKEN: ${{ steps.ram.outputs.aliyun-security-token }}
+        run: |
+          export NODE_PATH="$RUNNER_TEMP/oss-sdk/node_modules"
+          node godot_native/tools/publish_oss.mjs "$RUNNER_TEMP/oss-site" "$GITHUB_SHA"
