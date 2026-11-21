@@ -5,6 +5,8 @@
   // works on a plain-IP HTTP origin, where CacheStorage/WebCrypto do not.
   const BLOCK_BYTES = 1024 * 1024;
   const BACKGROUND_SLICE_BYTES = 64 * 1024;
+  const NETWORK_IDLE_TIMEOUT_MS = 30000;
+  const STORAGE_TIMEOUT_MS = 5000;
   const clockNow = () => globalThis.performance ? performance.now() : Date.now();
   function sha256() {
     const state = new Uint32Array([0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19]);
@@ -55,6 +57,50 @@
       signal.addEventListener('abort',abort,{once:true});
       Promise.resolve(promise).then(value=>{signal.removeEventListener('abort',abort);resolve(value);},error=>{signal.removeEventListener('abort',abort);reject(error);});
     });
+  }
+  function bounded(promise,signal,milliseconds,message,onTimeout) {
+    checkSignal(signal);
+    return new Promise((resolve,reject)=>{
+      let timer, settled=false;
+      const finish=(error,value)=>{
+        if(settled)return;settled=true;clearTimeout(timer);
+        if(signal)signal.removeEventListener('abort',cancel);
+        if(error)reject(error);else resolve(value);
+      };
+      const cancel=()=>finish(abortError());
+      if(signal)signal.addEventListener('abort',cancel,{once:true});
+      timer=setTimeout(()=>{
+        const error=new Error(message);error.name='TimeoutError';
+        finish(error);if(onTimeout)onTimeout();
+      },milliseconds);
+      Promise.resolve(promise).then(value=>finish(null,value),error=>finish(error));
+    });
+  }
+  function transfer(parentSignal) {
+    checkSignal(parentSignal);
+    const controller=new AbortController(), cancel=()=>controller.abort();
+    if(parentSignal)parentSignal.addEventListener('abort',cancel,{once:true});
+    return {
+      signal:controller.signal,
+      // Only waiting for headers or the next body fragment consumes this
+      // deadline. Deliberate background pacing and hashing happen outside it.
+      wait:promise=>bounded(promise,controller.signal,NETWORK_IDLE_TIMEOUT_MS,'Content transfer timed out',cancel),
+      close:()=>{
+        if(parentSignal)parentSignal.removeEventListener('abort',cancel);
+        // A rejected HTTP response may still own an unread body. Stop it
+        // before detaching from the run; consumed successful bodies are inert.
+        controller.abort();
+      }
+    };
+  }
+  async function optionalStorage(promise,signal) {
+    try{return await bounded(promise,signal,STORAGE_TIMEOUT_MS,'Content cache timed out');}
+    catch(error){checkSignal(signal);return null;}
+  }
+  function cancelBody(body) {
+    // Cancellation itself may be waiting on a broken underlying stream. Do
+    // not let cleanup retain the download slot or hide the original failure.
+    try{Promise.resolve(body.cancel()).catch(()=>{});}catch(_){}
   }
   async function digestParts(parts,signal,sliceBytes=BLOCK_BYTES) {
     // Keep the WASM chunks separate: concatenating a second whole engine buffer
@@ -170,74 +216,88 @@
     }
     async function fetchChunk(chunk,priority,signal,pace,cacheMode) {
       const release=await acquire(signal);
+      let network;
       try {
+        network=transfer(signal);
         checkSignal(signal);
         if(pace)await pace(0,signal);
-        const response=await abortable(fetch(identity(chunk),{cache:cacheMode,priority:priority||'high',signal}),signal);
+        const response=await network.wait(fetch(identity(chunk),{cache:cacheMode,priority:priority||'high',signal:network.signal}));
         if(!response.ok || response.status!==200)throw new Error('Chunk HTTP '+response.status);
-        if(!pace)return new Uint8Array(await abortable(response.arrayBuffer(),signal));
         const bytes=new Uint8Array(chunk.bytes);let received=0;
         async function append(part) {
           if(received+part.byteLength>bytes.byteLength)throw chunkIntegrityError();
           for(let offset=0;offset<part.byteLength;offset+=BACKGROUND_SLICE_BYTES) {
             const slice=part.subarray(offset,offset+BACKGROUND_SLICE_BYTES);
-            await pace(slice.byteLength,signal);checkSignal(signal);
+            if(pace)await pace(slice.byteLength,signal);checkSignal(signal);
             bytes.set(slice,received);received+=slice.byteLength;
           }
         }
         if(response.body && response.body.getReader) {
           const reader=response.body.getReader();
-          try {while(true){const item=await abortable(reader.read(),signal);if(item.done)break;await append(item.value);}}
-          catch(error){await reader.cancel().catch(()=>{});throw error;}
-        } else await append(new Uint8Array(await abortable(response.arrayBuffer(),signal)));
+          try {while(true){const item=await network.wait(reader.read());if(item.done)break;await append(item.value);}}
+          catch(error){cancelBody(reader);throw error;}
+        } else await append(new Uint8Array(await network.wait(response.arrayBuffer())));
         if(received!==chunk.bytes)throw chunkIntegrityError();return bytes;
-      } finally {release();}
+      } finally {if(network)network.close();release();}
     }
     function db() {
       if(!database)database=new Promise(resolve=>{
         if(typeof indexedDB==='undefined'){unavailable=true;stats.storage='unavailable';resolve(null);return;}
         let request;
         try{request=indexedDB.open('755-godot-resources-v1',1);}catch(_){unavailable=true;stats.storage='unavailable';resolve(null);return;}
+        const failed=()=>{clearTimeout(timer);unavailable=true;stats.storage='unavailable';resolve(null);};
+        const timer=setTimeout(failed,STORAGE_TIMEOUT_MS);
         request.onupgradeneeded=()=>{if(!request.result.objectStoreNames.contains('chunks'))request.result.createObjectStore('chunks');};
-        request.onsuccess=()=>{if(unavailable){request.result.close();return;}stats.storage='indexeddb';request.result.onversionchange=()=>request.result.close();resolve(request.result);};
-        request.onerror=request.onblocked=()=>{unavailable=true;stats.storage='unavailable';resolve(null);};
+        request.onsuccess=()=>{clearTimeout(timer);if(unavailable){request.result.close();return;}stats.storage='indexeddb';request.result.onversionchange=()=>request.result.close();resolve(request.result);};
+        request.onerror=request.onblocked=failed;
       });
       return unavailable?Promise.resolve(null):database;
     }
-    async function operation(mode,run,{discard=false}={}) {
+    async function operation(mode,run,{discard=false,signal}={}) {
+      checkSignal(signal);
       const read=mode==='readonly';
       // A quota or write failure must not disable access to committed blocks.
       // Reopen on the next page load to try writes again.
       if(!read && writesPaused && !discard)return null;
-      const began=clockNow(), connection=await db();
+      const began=clockNow(), connection=await abortable(db(),signal);
+      checkSignal(signal);
       if(!connection)return null;
-      return new Promise(done=>{
+      return new Promise((done,reject)=>{
         stats[read?'readTransactions':'writeTransactions']++;
-        const finish=value=>{stats[read?'cacheReadMs':'cacheWriteMs']+=clockNow()-began;done(value);};
-        const failed=()=>{
-          if(read){unavailable=true;stats.storage='unavailable';}
+        let timer,settled=false,transaction,result=null;
+        const finish=(value,error)=>{
+          if(settled)return;settled=true;clearTimeout(timer);
+          if(signal)signal.removeEventListener('abort',cancel);
+          stats[read?'cacheReadMs':'cacheWriteMs']+=clockNow()-began;
+          if(error)reject(error);else done(value);
+        };
+        const cancel=()=>{finish(null,abortError());try{transaction.abort();}catch(_){}};
+        const failed=(timedOut=false)=>{
+          if(settled)return;
+          if(read || timedOut){unavailable=true;stats.storage='unavailable';}
           else if(!unavailable){writesPaused=true;stats.storage='indexeddb-readonly';}
           finish(null);
         };
-        let transaction,result=null;
         try {
           transaction=connection.transaction('chunks',mode);
           const request=run(transaction.objectStore('chunks'));
           if(Array.isArray(request))result=request;
           else if(request)request.onsuccess=()=>{result=request.result;};
         } catch(_) { failed();return; }
+        if(signal)signal.addEventListener('abort',cancel,{once:true});
+        timer=setTimeout(()=>{failed(true);try{transaction.abort();}catch(_){}},STORAGE_TIMEOUT_MS);
         transaction.oncomplete=()=>finish(Array.isArray(result)?result.map(request=>request.result):result===undefined?null:result);
-        transaction.onabort=failed;
+        transaction.onabort=()=>failed();
       });
     }
     const key=(resource,index)=>resource.sha256+':'+index;
     const chunkKey=chunk=>'chunk:'+chunk.sha256;
-    async function discard(resource,first=0) {
+    async function discard(resource,first=0,signal) {
       // A pack-level failure invalidates only its quarantined legacy records.
       // Independently verified SHA-addressed chunks may serve another release;
       // loadChunks removes a canonical record only when that block is corrupt.
       const count=Math.ceil(resource.bytes/BLOCK_BYTES)-first;
-      if(count>0)await operation('readwrite',store=>Array.from({length:count},(_,offset)=>store.delete(key(resource,first+offset))),{discard:true});
+      if(count>0)await operation('readwrite',store=>Array.from({length:count},(_,offset)=>store.delete(key(resource,first+offset))),{discard:true,signal});
     }
     function completed(resource,options,output,reused,network,persisted) {
       stats.reusedBytes+=reused;
@@ -268,11 +328,11 @@
         checkSignal(signal);
         if(index%8===0) {
           const batch=chunks.slice(index,index+8);
-          cached=await operation('readonly',store=>batch.map(chunk=>store.get(chunkKey(chunk))))||[];
+          cached=await operation('readonly',store=>batch.map(chunk=>store.get(chunkKey(chunk))),{signal})||[];
           const misses=batch.map((_,offset)=>offset).filter(offset=>!cached[offset]);
           legacyRows=[];
           if(misses.length) {
-            const rows=await operation('readonly',store=>misses.map(offset=>store.get(key(resource,index+offset))))||[];
+            const rows=await operation('readonly',store=>misses.map(offset=>store.get(key(resource,index+offset))),{signal})||[];
             misses.forEach((offset,position)=>{legacyRows[offset]=rows[position];});
           }
         }
@@ -285,12 +345,12 @@
         if(bytes && options.pace)await options.pace(0,signal);
         if(bytes && bytes.byteLength===chunk.bytes && await verifyBytes(bytes,signal,!!options.pace)===chunk.sha256) {
           if(legacy) {
-            const migrated=await operation('readwrite',store=>store.put({bytes:bytes.buffer,digest:chunk.sha256},canonical));
-            if(migrated!==null)await operation('readwrite',store=>store.delete(key(resource,index)));
+            const migrated=await operation('readwrite',store=>store.put({bytes:bytes.buffer,digest:chunk.sha256},canonical),{signal});
+            if(migrated!==null)await operation('readwrite',store=>store.delete(key(resource,index)),{signal});
           }
           persisted+=bytes.byteLength;reused+=bytes.byteLength;accept(index,bytes);
         }
-        else {if(saved)await operation('readwrite',store=>store.delete(legacy?key(resource,index):canonical),{discard:true});missing.push(index);}
+        else {if(saved)await operation('readwrite',store=>store.delete(legacy?key(resource,index):canonical),{discard:true,signal});missing.push(index);}
       }
       // Independent complete small files avoid compressed HTTP Range offsets.
       // Three workers bound peak transient memory and connection pressure.
@@ -313,7 +373,7 @@
               checkSignal(signal);
             }
           }
-          const saved=await operation('readwrite',store=>store.put({bytes:bytes.buffer,digest:chunk.sha256},chunkKey(chunk)));
+          const saved=await operation('readwrite',store=>store.put({bytes:bytes.buffer,digest:chunk.sha256},chunkKey(chunk)),{signal});
           if(saved!==null){stats.writtenBytes+=bytes.byteLength;persisted+=bytes.byteLength;}
           accept(index,bytes);
         }
@@ -322,7 +382,7 @@
       try { await Promise.all(workers); }
       catch(error){controller.abort();await Promise.allSettled(workers);throw error;}
       const digest=options.response?await digestParts(output,signal):await verifyBytes(output,signal,!!options.pace);
-      if(digest!==resource.sha256){await discard(resource);throw new Error('Content digest differs');}
+      if(digest!==resource.sha256){await discard(resource,0,signal);throw new Error('Content digest differs');}
       return completed(resource,options,output,reused,network,persisted);
       } finally {if(options.signal)options.signal.removeEventListener('abort',cancel);}
     }
@@ -342,16 +402,18 @@
       for(let index=0;received<resource.bytes;index++) {
         checkSignal(signal);
         if(options.pace)await options.pace(0,signal);
-        if(index%8===0)cached=await operation('readonly',store=>Array.from({length:Math.min(8,Math.ceil(resource.bytes/BLOCK_BYTES)-index)},(_,offset)=>store.get(key(resource,index+offset))))||[];
+        if(index%8===0)cached=await operation('readonly',store=>Array.from({length:Math.min(8,Math.ceil(resource.bytes/BLOCK_BYTES)-index)},(_,offset)=>store.get(key(resource,index+offset))),{signal})||[];
         const saved=cached[index%8];cached[index%8]=null;
         if(!saved)break;
         const bytes=saved.bytes instanceof ArrayBuffer?new Uint8Array(saved.bytes):null;
-        if(!bytes || bytes.byteLength!==Math.min(BLOCK_BYTES,resource.bytes-received) || await verifyBytes(bytes,signal,!!options.pace)!==saved.digest) {await discard(resource,index);break;}
+        if(!bytes || bytes.byteLength!==Math.min(BLOCK_BYTES,resource.bytes-received) || await verifyBytes(bytes,signal,!!options.pace)!==saved.digest) {await discard(resource,index,signal);break;}
         persisted+=bytes.byteLength;reused+=bytes.byteLength;accept(bytes);
       }
       if(received<resource.bytes) {
         const release=await acquire(signal);
+        let networkTransfer;
         try {
+        networkTransfer=transfer(signal);
         checkSignal(signal);
         // The core/WASM names are mutable on GitHub Pages. Never force reuse of
         // a stale HTTP response after its manifest has changed. Deferred URLs
@@ -359,19 +421,19 @@
         if(options.pace)await options.pace(0,signal);
         const priority=options.priority||'high';
         async function fullGet() {
-          const response=await abortable(fetch(url,{cache:'reload',priority,headers:{},signal}),signal);
+          const response=await networkTransfer.wait(fetch(url,{cache:'reload',priority,headers:{},signal:networkTransfer.signal}));
           if(!response.ok)throw new Error('HTTP '+response.status);
-          if(response.status!==200){if(response.body)await response.body.cancel().catch(()=>{});throw new Error('Content range differs');}
+          if(response.status!==200){if(response.body)cancelBody(response.body);throw new Error('Content range differs');}
           return response;
         }
         let response;
-        try {response=await abortable(fetch(url,{cache:resource.file.startsWith('content/')?'force-cache':'no-cache',priority,headers:received?{Range:'bytes='+received+'-'}:{},signal}),signal);}
+        try {response=await networkTransfer.wait(fetch(url,{cache:resource.file.startsWith('content/')?'force-cache':'no-cache',priority,headers:received?{Range:'bytes='+received+'-'}:{},signal:networkTransfer.signal}));}
         catch(error) {
           checkSignal(signal);
           // Chromium can reject a gzip byte-range before exposing any Response
           // or encoding headers. Only a real resume attempt gets this single
           // complete retry. Errors from that complete GET remain visible.
-          if(!received)throw error;
+          if(!received || error.name==='TimeoutError')throw error;
           response=await fullGet();
         }
         if(!response.ok)throw new Error('HTTP '+response.status);
@@ -379,7 +441,7 @@
           const range=response.headers && response.headers.get('Content-Range');
           const encoding=response.headers && response.headers.get('Content-Encoding');
           if(range!=='bytes '+received+'-'+(resource.bytes-1)+'/'+resource.bytes || (encoding && encoding!=='identity')) {
-            if(response.body)await response.body.cancel().catch(()=>{});
+            if(response.body)cancelBody(response.body);
             // Some proxies range over a compressed representation rather than
             // decoded manifest bytes. Try one complete identity-independent
             // GET instead of repeating that same unusable Range on every load.
@@ -397,14 +459,14 @@
           let at=0;
           while(at<bytes.byteLength) {
             checkSignal(signal);
-            if(!block.byteLength){await discard(resource);throw new Error('Content size differs');}
+            if(!block.byteLength){await discard(resource,0,signal);throw new Error('Content size differs');}
             const take=Math.min(block.byteLength-filled,bytes.byteLength-at,options.pace?BACKGROUND_SLICE_BYTES:BLOCK_BYTES);
             if(options.pace)await options.pace(take,signal);
             checkSignal(signal);block.set(bytes.subarray(at,at+take),filled);filled+=take;at+=take;
             if(filled===block.byteLength) {
               const index=received/BLOCK_BYTES;
               const digest=await verifyBytes(block,signal,!!options.pace);
-              const saved=await operation('readwrite',store=>store.put({bytes:block.buffer,digest},key(resource,index)));
+              const saved=await operation('readwrite',store=>store.put({bytes:block.buffer,digest},key(resource,index)),{signal});
               if(saved!==null){stats.writtenBytes+=block.byteLength;persisted+=block.byteLength;}
               accept(block);block=new Uint8Array(Math.min(BLOCK_BYTES,resource.bytes-received));filled=0;
             }
@@ -412,14 +474,14 @@
         }
         if(response.body && response.body.getReader) {
           const reader=response.body.getReader();
-          try{while(true){const item=await abortable(reader.read(),signal);if(item.done)break;await append(item.value);}}
-          catch(error){await reader.cancel().catch(()=>{});throw error;}
-        } else await append(new Uint8Array(await abortable(response.arrayBuffer(),signal)));
+          try{while(true){const item=await networkTransfer.wait(reader.read());if(item.done)break;await append(item.value);}}
+          catch(error){cancelBody(reader);throw error;}
+        } else await append(new Uint8Array(await networkTransfer.wait(response.arrayBuffer())));
         if(received!==resource.bytes || filled)throw new Error('Incomplete content');
-        } finally {release();}
+        } finally {if(networkTransfer)networkTransfer.close();release();}
       }
       const digest=options.response?await digestParts(output,signal):await verifyBytes(output,signal,!!options.pace);
-      if(digest!==resource.sha256){await discard(resource);throw new Error('Content digest differs');}
+      if(digest!==resource.sha256){await discard(resource,0,signal);throw new Error('Content digest differs');}
       // WASM is streamed to Godot's official fetch-based preloader. No second
       // whole-file concatenation or persistent override of browser fetch.
       return completed(resource,options,output,reused,network,persisted);
@@ -502,7 +564,7 @@
     const optionalAllowed=()=>!document.hidden && navigator.onLine!==false && !saveData();
     const cacheKey = pack => new URL('/.755-content-cache/' + pack.sha256 + '.pck', location.origin).href;
     function cache() {
-      if (!cachePromise) cachePromise = Promise.resolve().then(() => typeof caches === 'undefined' ? null : caches.open('755-godot-content-v1')).catch(() => null);
+      if (!cachePromise) cachePromise = optionalStorage(Promise.resolve().then(() => typeof caches === 'undefined' ? null : caches.open('755-godot-content-v1')));
       return cachePromise;
     }
     function selectIds(raw) {
@@ -536,10 +598,10 @@
     async function download(run) {
       const record=run.record, signal=run.controller.signal;
       const pace=run.optional ? (bytes,signal)=>budget.pace(bytes,signal,()=>foreground.has(record.pack.id)) : null;
-      const store = await cache();
+      const store = await abortable(cache(),signal);
       current(run);
       const lookupBegan=clockNow();
-      let response = record.attempts === 1 && store ? await abortable(store.match(cacheKey(record.pack)).catch(() => null),signal) : null;
+      let response = record.attempts === 1 && store ? await optionalStorage(store.match(cacheKey(record.pack)),signal) : null;
       current(run);
       run.cacheLookupMs=clockNow()-lookupBegan;
       record.source = response ? 'verified-cache' : 'network';
@@ -573,7 +635,7 @@
         let count = 0;
         try {
           while (true) {
-            const began=clockNow();const chunk = await abortable(reader.read(),signal);
+            const began=clockNow();const chunk = await bounded(reader.read(),signal,STORAGE_TIMEOUT_MS,'Content cache read timed out');
             run.cacheStorageReadMs=(run.cacheStorageReadMs||0)+clockNow()-began;
             current(run);
             if (chunk.done) break;
@@ -584,10 +646,10 @@
               bytes.set(slice,count);count+=slice.byteLength;record.received=count;
             }
           }
-        } catch (error) { await reader.cancel().catch(() => {}); throw error; }
+        } catch (error) { cancelBody(reader); throw error; }
         if (count !== record.pack.bytes) throw new Error('Incomplete content');
       } else {
-        const began=clockNow();bytes = new Uint8Array(await abortable(response.arrayBuffer(),signal));
+        const began=clockNow();bytes = new Uint8Array(await bounded(response.arrayBuffer(),signal,STORAGE_TIMEOUT_MS,'Content cache read timed out'));
         run.cacheStorageReadMs=clockNow()-began;current(run);record.received = bytes.byteLength;
         if (bytes.byteLength !== record.pack.bytes) throw new Error('Content size differs');
       }
@@ -610,7 +672,7 @@
         const cancelled=disposed||run.controller.signal.aborted||error.name==='AbortError';
         run.controller.abort(); // Stop sibling chunk workers after any failure.
         record.status = cancelled?'idle':'error'; record.error = cancelled?'':String(error.message || error); record.buffer = null;
-        if(!cancelled){const store = await cache(); if (store) await store.delete(cacheKey(record.pack)).catch(() => {});}
+        if(!cancelled){const store = await cache(); if (store) await optionalStorage(store.delete(cacheKey(record.pack)));}
         if(active!==run)return;
         active = null;if(!cancelled)notify(record, '', record.error);pump();
       }
@@ -656,8 +718,8 @@
         const store = await cache();
         if(disposed||active!==run)return;
         if (accepted && store && !record.indexedDBComplete && record.source !== 'verified-cache') {
-          await store.put(cacheKey(record.pack), new Response(record.buffer, { headers: { 'Content-Type': 'application/octet-stream' } })).catch(() => {});
-        } else if (!accepted && store) await store.delete(cacheKey(record.pack)).catch(() => {});
+          await optionalStorage(store.put(cacheKey(record.pack), new Response(record.buffer, { headers: { 'Content-Type': 'application/octet-stream' } })));
+        } else if (!accepted && store) await optionalStorage(store.delete(cacheKey(record.pack)));
         if (!accepted) await resourceCache.discard(record.pack);
         record.buffer = null;if(active===run){active = null;pump();}
       },

@@ -18,4 +18,8 @@ GitHub Pages 发布成功后，main 的工作流使用同一次运行生成的�
 
 最后在 Variables 中设置 `OSS_DEPLOY_ENABLED=true`，再手动从 main 运行一次 **Deploy Godot Web to GitHub Pages**。之后 main 的公开版通过验收时自动上传。同一个版本的文件保留在独立目录中。回退时，取旧版本的 `index.html`，在 `<head>` 内插入指向该版本目录的 `<base href="/releases/旧版本目录/">`，再上传为根目录的 `index.html`，保留 `Cache-Control: no-store`。如需暂停自动发布，把 `OSS_DEPLOY_ENABLED` 改为 `false`。
 
-本地可运行 `node --test godot_native/tests/publish_oss.test.mjs` 检查包校验、压缩传输和发布入口的切换顺序。
+上传、入口 HEAD 和外网读取遇到暂时性超时、连接重置或 HTTP 408/429/500/502/503/504 时，最多尝试三次，重试前分别等待 1 秒、2 秒。对象 PUT 每次最多等待 180 秒，始终使用同一个版本路径和相同内容。OSS 已收到文件但响应丢失时，重复 PUT 不会引入另一套资源身份。
+
+HTTP 400/403、文件摘要不符或入口内容不符会立即终止。资源上传或验证未完成时不切换根入口；所有版本资源上传及既有外网校验通过后才发布首页。重试根入口 PUT 只重复同一份已验证页面。旧版本目录继续保留，供已打开的页面加载后续章节。
+
+本地可运行 `node --test godot_native/tests/publish_oss.test.mjs` 检查包校验、压缩传输、瞬时故障重试和发布入口的切换顺序。
