@@ -66,7 +66,7 @@ export async function verifyRelease(directory, commit) {
 }
 
 async function publicBytes(url) {
-  const response = await fetch(url, { redirect: 'error', signal: AbortSignal.timeout(30000) });
+  const response = await fetch(url, { redirect: 'error', signal: AbortSignal.timeout(120000) });
   assert(response.ok, `Public OSS check returned ${response.status}: ${url}`);
   return Buffer.from(await response.arrayBuffer());
 }
@@ -84,15 +84,21 @@ export async function publish(client, release, origin, version, runNumber, readP
     if (error.status !== 404) throw error;
   }
 
+  const html = await readFile(resolve(release.directory, 'index.html'), 'utf8');
+  const head = /<head(?:\s[^>]*)?>/i;
+  assert(head.test(html) && !/<base\b/i.test(html), 'Invalid public HTML entry for OSS');
+  const entry = Buffer.from(html.replace(head, (tag) => `${tag}\n  <base href="/${prefix}">`));
+
   const paths = [...release.files.keys(), 'build-manifest.json'];
-  for (let start = 0; start < paths.length; start += 6) {
-    await Promise.all(paths.slice(start, start + 6).map(async (path) => {
+  const uploadConcurrency = 4;
+  for (let start = 0; start < paths.length; start += uploadConcurrency) {
+    await Promise.all(paths.slice(start, start + uploadConcurrency).map(async (path) => {
       const transport = release.compressed.get(path);
       const mime = contentTypes[extname(path)];
       const headers = { 'Cache-Control': 'public, max-age=31536000, immutable' };
       if (mime) headers['Content-Type'] = mime;
       if (transport) headers['Content-Encoding'] = 'gzip';
-      await client.put(prefix + path, resolve(release.directory, transport || path), { mime, headers });
+      await client.put(prefix + path, resolve(release.directory, transport || path), { mime, headers, timeout: 180000 });
     }));
   }
   const sample = ['index.html', 'content-manifest.json', 'index.wasm'];
@@ -101,10 +107,6 @@ export async function publish(client, release, origin, version, runNumber, readP
     assert.equal(digest(bytes), release.files.get(path).sha256, `Public OSS bytes differ: ${path}`);
   }
 
-  const destination = '/' + prefix + 'index.html';
-  const entry = Buffer.from(`<!doctype html><meta charset="utf-8"><title>7:55</title>
-<script>location.replace("${destination}" + location.search + location.hash)</script>
-<a href="${destination}">进入《7:55》</a>\n`);
   await client.put('index.html', entry, {
     mime: contentTypes['.html'],
     headers: { 'Content-Type': contentTypes['.html'], 'Cache-Control': 'no-store',

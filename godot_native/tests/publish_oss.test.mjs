@@ -14,7 +14,7 @@ async function fixture(t, family = 'chapter2') {
   const directory = await mkdtemp(join(tmpdir(), '755-oss-'));
   t.after(() => rm(directory, { recursive: true, force: true }));
   const files = {
-    'index.html': Buffer.from('<title>7:55</title>'),
+    'index.html': Buffer.from('<!doctype html><html><head><title>7:55</title></head><body><script src="index.js"></script></body></html>'),
     'index.js': Buffer.from('console.log(755)'),
     'index.wasm': Buffer.from('web assembly'),
     'index.pck': Buffer.from('main pack'),
@@ -42,8 +42,8 @@ function bucket() {
       if (!objects.has(path)) throw Object.assign(new Error('Missing object'), { status: 404 });
       return { res: { headers: objects.get(path).headers } };
     },
-    async put(path, source, { headers }) {
-      objects.set(path, { bytes: Buffer.isBuffer(source) ? source : await readFile(source), headers });
+    async put(path, source, { headers, timeout }) {
+      objects.set(path, { bytes: Buffer.isBuffer(source) ? source : await readFile(source), headers, timeout });
     },
     async read(url) {
       const path = new URL(url).pathname.slice(1) || 'index.html';
@@ -74,7 +74,15 @@ test('serves gzip with the original MIME type and promotes only after assets mat
   assert.equal(wasm.headers['Content-Encoding'], 'gzip');
   assert.equal(wasm.headers['Content-Type'], 'application/wasm');
   const home = oss.objects.get('index.html').bytes;
-  assert.match(home.toString(), new RegExp(`/releases/${version}/index.html`));
+  assert.equal(wasm.timeout, 180000);
+  assert.equal(oss.objects.get('index.html').headers['Cache-Control'], 'no-store');
+  const publicEntry = home.toString();
+  const versionEntry = oss.objects.get(result.prefix + 'index.html').bytes.toString();
+  assert.equal(publicEntry, versionEntry.replace('<head>', `<head>\n  <base href="/${result.prefix}">`));
+  assert.doesNotMatch(publicEntry, /location\.replace|http-equiv=["']refresh/);
+  const pageUrl = new URL('/?playtest=1#start', origin);
+  const base = new URL(publicEntry.match(/<base href="([^"]+)">/)[1], pageUrl);
+  assert.equal(new URL('index.js', base).href, origin + '/' + result.prefix + 'index.js');
   assert((await publish(oss, release, origin, commit + '-7-2', 7, oss.read)).skipped);
   await assert.rejects(publish(oss, release, origin, commit + '-9-1', 9, async () => Buffer.from('bad')),
     /Public OSS bytes differ/);
