@@ -1583,7 +1583,29 @@ async function stickStep(value, vector, ms = 150) {
   return mobileSample(value);
 }
 async function assertStickHeld(value, label) {
-  const held = await mobileSample(value);
+  // CDP dispatch acknowledges enqueueing, not Godot consuming both events.
+  // The touchStart can own a neutral stick one frame before touchMove arrives.
+  // Observe that same gesture completing; never resend or synthesize input.
+  const startFrame = value.sampleFrame, began = Date.now();
+  const observation = { label, startFrame, startedAt: began, samples: [] };
+  (active.mobileWorld.stickAcquisitions ||= []).push(observation);
+  const held = await poll(async () => {
+    const next = await snapshot();
+    if (!next?.world?.input || !Number.isSafeInteger(next.sampleFrame) || next.sampleFrame <= startFrame) return null;
+    const sameContext = state(next)?.native?.chapter === state(value).native.chapter
+      && state(next)?.native?.scene === state(value).native.scene
+      && state(next)?.native?.mode === state(value).native.mode
+      && state(next)?.runtimeMode === state(value).runtimeMode
+      && next.world.scene_id === value.world.scene_id && next.world.visible === value.world.visible
+      && next.world.input.scheme === value.world.input.scheme
+      && next.viewport?.width === value.viewport?.width && next.viewport?.height === value.viewport?.height;
+    if (!sameContext) return null;
+    const input = next.world.input;
+    if (observation.samples.at(-1)?.frame !== next.sampleFrame) observation.samples.push({ frame: next.sampleFrame, elapsedMs: Date.now() - began, owners: input.owners, axis: next.world.touch_axis });
+    return input.owners.filter(owner => owner.role === 'stick').length === 1 && mobileDistance(next.world.touch_axis, { x: 0, y: 0 }) > .1 ? next : null;
+  }, `${active.id}: ${label} reaches owned nonzero stick input in the current world`, 5000);
+  observation.finishedAt = Date.now(); observation.endFrame = held.sampleFrame;
+  active.mobileWorld.samples.push({ at: Date.now(), sampleFrame: held.sampleFrame, world: held.world, facts: mobileFacts(held) });
   check(held.world.input.owners.filter(owner => owner.role === 'stick').length === 1 && mobileDistance(held.world.touch_axis, { x: 0, y: 0 }) > .1, `${active.id}: ${label} begins with an actually owned, nonzero joystick`, held.world);
   return held;
 }

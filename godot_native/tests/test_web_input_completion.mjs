@@ -17,6 +17,7 @@ function between(source, begin, end) {
 const pollSource = between(runner, 'async function poll(', 'async function shaFile(');
 const checkSource = between(runner, 'function check(', 'async function persist(');
 const sampleSource = between(runner, 'async function mobileSample(', 'async function worldTouches(');
+const heldSource = between(runner, 'async function assertStickHeld(', 'async function assertWorldStopped(');
 const stoppedSource = between(runner, 'async function assertWorldStopped(', 'async function assertBottomPlaque(');
 const rotateSource = between(runner, 'async function rotateMobileWorld(', 'async function directWorldCase(');
 const factsSource = runner.split('\n').find(line => line.startsWith('const mobileFacts ='));
@@ -112,13 +113,66 @@ function fixture(sequence) {
     click: async name => { clicks.push(name); },
     read: async label => { if (label) labels.push(label); return next(); },
   };
-  const helpers = vm.runInNewContext(`${pollSource}\n${checkSource}\nconst mobileDistance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);\n${factsSource}\n${sampleSource}\n${stoppedSource}\nconst h={poll,check,id:active.id};\nasync function weatherClaim(){let value;\n${claimSource}\nreturn value;}\n({assertWorldStopped,weatherClaim})`, context);
-  return { ...helpers, checks, samples, clicks, labels, delays, get clock() { return clock; }, get reads() { return reads; }, get inputCalls() { return inputCalls; } };
+  const helpers = vm.runInNewContext(`${pollSource}\n${checkSource}\nconst mobileDistance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);\n${factsSource}\n${sampleSource}\n${heldSource}\n${stoppedSource}\nconst h={poll,check,id:active.id};\nasync function weatherClaim(){let value;\n${claimSource}\nreturn value;}\n({assertStickHeld,assertWorldStopped,weatherClaim})`, context);
+  return { ...helpers, checks, samples, clicks, labels, delays, evidence: context.active.mobileWorld, get clock() { return clock; }, get reads() { return reads; }, get inputCalls() { return inputCalls; } };
 }
 const before = () => worldSample(10, value => { value.world.input.inventoryOwned = true; });
 
 test('active Godot Web workflow runs these completion regressions', () => {
   assert.match(workflow, /^\s+node godot_native\/tests\/test_web_input_completion\.mjs\s*$/m);
+});
+
+const heldSample = (frame, edit = () => {}) => worldSample(frame, s => {
+  s.world.input.owners = [{ index: 1, role: 'stick' }];
+  s.world.touch_axis = { x: 0, y: -1 };
+  edit(s);
+});
+test('stick: observed ownership can precede queued drag; wait for actual nonzero input without replaying it', async () => {
+  // Hosted retina case: frame 374 has acquired the stick at its center, and
+  // frame 376 has processed the already-dispatched upward touchMove.
+  const neutral = heldSample(374, s => { s.world.touch_axis.y = 0; });
+  const f = fixture([worldSample(366), neutral, neutral, heldSample(376)]);
+  const result = await f.assertStickHeld(worldSample(366), 'direct stick cancellation');
+  assert.equal(result.sampleFrame, 376);
+  assert.deepEqual(f.samples.map(s => s.sampleFrame), [376]);
+  assert.equal(f.checks.length, 1); assert.equal(f.checks[0].ok, true);
+  assert.equal(f.inputCalls, 0); assert.deepEqual(f.delays, [100, 100, 100]);
+  const observed = f.evidence.stickAcquisitions[0];
+  assert.deepEqual(Array.from(observed.samples, s => s.frame), [374, 376]);
+  assert.equal(observed.endFrame, 376); assert.equal(observed.finishedAt, 300);
+});
+
+for (const [name, edit] of [
+  ['no owner', s => { s.world.input.owners = []; }],
+  ['camera owner', s => { s.world.input.owners = [{ index: 1, role: 'camera' }]; }],
+  ['two stick owners', s => { s.world.input.owners.push({ index: 2, role: 'stick' }); }],
+  ['neutral axis', s => { s.world.touch_axis.y = 0; }],
+  ['axis at original threshold', s => { s.world.touch_axis.y = -.1; }],
+  ['old held snapshot', s => { s.sampleFrame = 10; }],
+  ['missing frame', s => { delete s.sampleFrame; }],
+  ['non-numeric frame', s => { s.sampleFrame = 'new'; }],
+  ['non-finite frame', s => { s.sampleFrame = Infinity; }],
+  ['fractional frame', s => { s.sampleFrame = 11.5; }],
+  ['wrong chapter', s => { s.state.native.chapter = 3; }],
+  ['wrong native scene', s => { s.state.native.scene = 'campus_bootstrap'; }],
+  ['wrong world scene', s => { s.world.scene_id = 'campus_bootstrap'; }],
+  ['changed world visibility', s => { s.world.visible = false; }],
+  ['changed input scheme', s => { s.world.input.scheme = 'another_scheme'; }],
+  ['changed runtime', s => { s.state.runtimeMode = 'phone'; }],
+  ['changed reality mode', s => { s.state.native.mode = 'dark'; }],
+  ['changed viewport', s => { s.viewport = { width: 390, height: 844 }; }],
+]) test(`stick: ${name} cannot satisfy acquisition and fails within 5 seconds`, async () => {
+  const f = fixture([heldSample(11, edit)]);
+  await assert.rejects(f.assertStickHeld(worldSample(10), 'direct stick cancellation'), /Timeout:.*owned nonzero stick input in the current world/);
+  assert.equal(f.clock, 5000); assert.equal(f.reads, 50);
+  assert.equal(f.samples.length, 0); assert.equal(f.checks.length, 0);
+  assert.equal(f.inputCalls, 0); assert.equal(f.evidence.stickAcquisitions[0].endFrame, undefined);
+});
+test('stick: malformed and wrong-context frames cannot win over a later genuine hold', async () => {
+  const f = fixture([null, {}, heldSample(11, s => { s.world.scene_id = 'campus_bootstrap'; }), heldSample(12)]);
+  const result = await f.assertStickHeld(worldSample(10), 'direct stick cancellation');
+  assert.equal(result.sampleFrame, 12); assert.equal(f.inputCalls, 0);
+  assert.deepEqual(Array.from(f.evidence.stickAcquisitions[0].samples, s => s.frame), [12]);
 });
 
 test('world: cached and newer-but-unsettled frames do not acknowledge cancellation', async () => {
