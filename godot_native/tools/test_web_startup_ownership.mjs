@@ -41,8 +41,14 @@ try {
     resource(`assets/audio/act-one/music/${name}.mp3`, 'core');
   for (const name of ['assets/ui/dorm_room.png', 'assets/native/dorm_cabinet/web_atlas_source.png', 'assets/native/dorm_cabinet/cabinet_opening_frames.png', 'assets/ui/cc98/theater_755_student_play_poster_v01.png', 'assets/rpg/player/player_down_0.png', 'assets/rpg/player/player_side_idle.png'])
     resource(name, 'chapter2');
-  for (const name of ['player_walk_full', 'player_down_idle', 'player_up_idle', 'player_side_idle'])
-    resource(`assets/native/library_animation_20261105/${name}.png`, 'chapter2');
+  // The ordinary entry chooser renders both protagonists before any chapter
+  // admission. Keep their two preview poses in core while movement art waits
+  // for the actual Chapter 2 world; the planner already enforces this split.
+  for (const folder of ['library_animation_20261105', 'protagonist_female']) {
+    resource(`assets/native/${folder}/player_down_idle.png`, 'core');
+    for (const name of ['player_walk_full', 'player_up_idle', 'player_side_idle'])
+      resource(`assets/native/${folder}/${name}.png`, 'chapter2');
+  }
   resource('assets/native/player_locomotion/player_walk_and_idle.png', 'chapter2');
   resource('assets/native/library_animation_20261105/library_book_sheet.png', 'chapter2_library');
   resource('assets/native/theater_chest_20261023/prop_chest_overhead_body_v2.png', 'chapter3');
@@ -97,5 +103,5 @@ try {
   assert.ok(report.unresolved.some(entry => entry.path === 'assets/unknown_owner.bin'), 'Unknown resource is reported and retained');
   for (const late of ['scripts/ui/chapter3_phone_pages.gd', 'scripts/presentation/library_story_host.gd', 'scripts/presentation/c3_scene_host.gd', 'scripts/presentation/c3_narrative_host.gd'])
     assert.ok(!report.startupParsedScripts.includes(late), `Deferred host pulled back into boot: ${late}`);
-  console.log(JSON.stringify({ success: true, checkedOwnershipEntries: expected.size, inputEntries: entries.length, checks: ['Chapter 2/3/3.5/4 import units delayed together', 'Scene remap and exported payload delayed together', 'First-chapter audio and real hard preloads stay core', 'Runtime-loaded power art stays Chapter 4', 'Later presentation hosts stay outside boot parsing', 'Unknown entries and all original byte counts retained'] }, null, 2));
+  console.log(JSON.stringify({ success: true, checkedOwnershipEntries: expected.size, inputEntries: entries.length, checks: ['Chapter 2/3/3.5/4 import units delayed together', 'Scene remap and exported payload delayed together', 'Both entry preview poses stay core while movement art stays Chapter 2', 'First-chapter audio and real hard preloads stay core', 'Runtime-loaded power art stays Chapter 4', 'Later presentation hosts stay outside boot parsing', 'Unknown entries and all original byte counts retained'] }, null, 2));
 } finally { fs.rmSync(temporary, { recursive: true, force: true }); }

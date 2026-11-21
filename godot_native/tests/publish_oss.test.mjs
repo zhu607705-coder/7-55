@@ -88,3 +88,123 @@ test('serves gzip with the original MIME type and promotes only after assets mat
     /Public OSS bytes differ/);
   assert.deepEqual(oss.objects.get('index.html').bytes, home);
 });
+
+test('retries a timed-out PUT with identical bytes and verifies public assets before promotion', async (t) => {
+  const release = await verifyRelease(await fixture(t), commit);
+  const oss = bucket();
+  const originalPut = oss.put;
+  const version = commit + '-10-1';
+  const wasmKey = `releases/${version}/index.wasm`;
+  const attempts = [], waits = [];
+  oss.put = async (path, source, options) => {
+    // The object reached OSS, but the response was lost. Repeating this exact
+    // object is safe; restarting publication or promoting early is not.
+    await originalPut(path, source, options);
+    if (path === wasmKey) {
+      attempts.push({ source, options, bytes: Buffer.from(oss.objects.get(path).bytes) });
+      if (attempts.length < 3) throw Object.assign(new Error('Response timeout for 180000ms'), {
+        name: 'ResponseTimeoutError', status: -1,
+      });
+    }
+  };
+  let manifestReads = 0;
+  const read = async (url) => {
+    if (url.endsWith('/content-manifest.json') && ++manifestReads === 1) {
+      throw Object.assign(new Error('Service unavailable'), { status: 503 });
+    }
+    return oss.read(url);
+  };
+  const result = await publish(oss, release, origin, version, 10, read, { wait: async (delay) => {
+    assert(!oss.objects.has('index.html'), 'The public entry must not move while assets are being retried');
+    waits.push(delay);
+  } });
+  assert.equal(result.skipped, false);
+  assert.equal(attempts.length, 3);
+  assert.deepEqual(attempts[0], attempts[1]);
+  assert.deepEqual(attempts[1], attempts[2]);
+  assert.deepEqual(waits, [1000, 2000, 1000]);
+  assert.equal(manifestReads, 2);
+  assert.equal(oss.objects.get('index.html').headers['x-oss-meta-release-run'], '10');
+});
+
+test('exhausted network retries preserve the previous public entry', async (t) => {
+  const release = await verifyRelease(await fixture(t), commit);
+  const oss = bucket();
+  const home = Buffer.from('previous accepted entry');
+  oss.objects.set('index.html', { bytes: home, headers: { 'x-oss-meta-release-run': '11' } });
+  const originalPut = oss.put;
+  let attempts = 0;
+  const waits = [];
+  oss.put = async (path, source, options) => {
+    if (path.endsWith('/index.pck')) {
+      attempts++;
+      throw Object.assign(new Error('Connection reset'), { code: 'ECONNRESET' });
+    }
+    return originalPut(path, source, options);
+  };
+  await assert.rejects(publish(oss, release, origin, commit + '-12-1', 12, oss.read,
+    { wait: async (delay) => waits.push(delay) }), /Connection reset/);
+  assert.equal(attempts, 3);
+  assert.deepEqual(waits, [1000, 2000]);
+  assert.deepEqual(oss.objects.get('index.html').bytes, home);
+});
+
+test('authorization, malformed requests and integrity mismatches fail without retries', async (t) => {
+  const release = await verifyRelease(await fixture(t), commit);
+  for (const status of [400, 403]) {
+    const oss = bucket();
+    const originalPut = oss.put;
+    let attempts = 0;
+    oss.put = async (path, source, options) => {
+      if (path.endsWith('/index.pck')) {
+        attempts++;
+        throw Object.assign(new Error(`Permanent HTTP ${status}`), { status });
+      }
+      return originalPut(path, source, options);
+    };
+    await assert.rejects(publish(oss, release, origin, commit + '-13-1', 13, oss.read,
+      { wait: async () => assert.fail('Permanent errors must not be retried') }), /Permanent HTTP/);
+    assert.equal(attempts, 1);
+    assert(!oss.objects.has('index.html'));
+  }
+  const oss = bucket();
+  let reads = 0;
+  await assert.rejects(publish(oss, release, origin, commit + '-14-1', 14,
+    async () => { reads++; return Buffer.from('different release bytes'); },
+    { wait: async () => assert.fail('Integrity failures must not be retried') }), /Public OSS bytes differ/);
+  assert.equal(reads, 1);
+  assert(!oss.objects.has('index.html'));
+});
+
+test('retries fetch transport failures and a lost promotion response without changing the release', async (t) => {
+  const release = await verifyRelease(await fixture(t), commit);
+  const oss = bucket();
+  const originalPut = oss.put;
+  let promotions = 0, assetReads = 0;
+  const entries = [], waits = [];
+  oss.put = async (path, source, options) => {
+    await originalPut(path, source, options);
+    if (path === 'index.html') {
+      entries.push(Buffer.from(oss.objects.get(path).bytes));
+      if (++promotions === 1) throw Object.assign(new Error('Response lost after PUT'), {
+        name: 'ResponseTimeoutError', status: -1,
+      });
+    }
+  };
+  t.mock.method(globalThis, 'fetch', async (url) => {
+    if (url.endsWith('/content-manifest.json')) {
+      assetReads++;
+      if (assetReads === 1) throw new TypeError('fetch failed', { cause: Object.assign(new Error('reset'), { code: 'ECONNRESET' }) });
+      if (assetReads === 2) return new Response('Try later', { status: 503 });
+    }
+    return new Response(await oss.read(url), { status: 200 });
+  });
+  const result = await publish(oss, release, origin, commit + '-15-1', 15, undefined,
+    { wait: async (delay) => waits.push(delay) });
+  assert.equal(result.skipped, false);
+  assert.equal(assetReads, 3);
+  assert.equal(promotions, 2);
+  assert.deepEqual(entries[0], entries[1]);
+  assert.deepEqual(waits, [1000, 2000, 1000]);
+  assert.equal(oss.objects.get('index.html').timeout, 180000);
+});

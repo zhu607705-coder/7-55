@@ -43,10 +43,10 @@ function response(id, overrides = {}) { return new Response(body(id), { status: 
 function deferred() { let resolve, reject; const promise = new Promise((yes, no) => { resolve = yes; reject = no; }); return { promise, resolve, reject }; }
 function idb(storage, options = {}) {
   let writes = 0;
-  return {open(){if(options.idbDenied)throw new Error('IDB denied fixture');const request={};setImmediate(()=>{
+  return {open(){if(options.idbDenied)throw new Error('IDB denied fixture');const request={};if(options.idbOpenStalls)return request;setImmediate(()=>{
     request.result={objectStoreNames:{contains:()=>true},close(){},transaction(){const transaction={objectStore(){return {
       get:key=>run(()=>storage.get(key)),put:(value,key)=>run(()=>{storage.set(key,structuredClone(value));return key;}, true),delete:key=>run(()=>storage.delete(key))
-    };}};function run(action, write=false){const result={};setImmediate(()=>{const aborted=write && ++writes > (options.idbAbortAfterWrites ?? Infinity);result.result=aborted?'uncommitted':action();result.onsuccess?.();setImmediate(()=>aborted?transaction.onabort?.():transaction.oncomplete?.());});return result;}return transaction;}};request.onsuccess?.();});return request;}};
+    };},abort(){options.onIDBAbort?.();transaction.onabort?.();}};function run(action, write=false){const result={};options.onIDBOperation?.();if(options.idbTransactionStalls)return result;setImmediate(()=>{const aborted=write && ++writes > (options.idbAbortAfterWrites ?? Infinity);result.result=aborted?'uncommitted':action();result.onsuccess?.();setImmediate(()=>aborted?transaction.onabort?.():transaction.oncomplete?.());});return result;}return transaction;}};request.onsuccess?.();});return request;}};
 }
 function chunkedPack(bytes,id='chapter2_large',family='chapter2') {
   const sha256=digest(bytes),transportChunks=[];
@@ -60,7 +60,7 @@ function fixture(options = {}) {
   const chunks = options.chunks || new Map();
   const cacheEvents = [];
   const store = {
-    async match(key) { cacheEvents.push(['match', key]); return stored.get(key)?.clone() || null; },
+    async match(key) { cacheEvents.push(['match', key]); if(options.cacheMatchStalls)return new Promise(()=>{});return stored.get(key)?.clone() || null; },
     async put(key, value) { cacheEvents.push(['put', key]); if (options.cachePutFails) throw new Error('Quota fixture'); stored.set(key, value.clone()); },
     async delete(key) { cacheEvents.push(['delete', key]); return stored.delete(key); },
   };
@@ -70,7 +70,9 @@ function fixture(options = {}) {
       addEventListener: (name, fn) => { if (name === 'visibilitychange') visibilityListeners.add(fn); },
       removeEventListener: (name, fn) => { if (name === 'visibilitychange') visibilityListeners.delete(fn); } }, location: { origin },
     navigator: { connection: { saveData: Boolean(options.saveData) } },
-    URL, Response, TextEncoder, TextDecoder, setTimeout, clearTimeout, AbortController, ArrayBuffer, Uint8Array, Uint32Array, DataView, ReadableStream,
+    URL, Response, TextEncoder, TextDecoder,
+    setTimeout: options.shortenDeadlines ? (fn, ms) => setTimeout(fn, ms >= 5000 ? 40 : ms) : setTimeout,
+    clearTimeout, AbortController, ArrayBuffer, Uint8Array, Uint32Array, DataView, ReadableStream,
     crypto: options.crypto || (options.noCrypto ? {} : crypto.webcrypto),
     ...(options.idb?{indexedDB:idb(chunks, options)}:{}),
     requestAnimationFrame: callback => { raf.push(callback); return raf.length; },
@@ -82,7 +84,7 @@ function fixture(options = {}) {
       assert.ok(found, `Unexpected network URL: ${url}`);
       return response(found.id);
     },
-    ...(options.noCache ? {} : { caches: { open: async name => { assert.equal(name, '755-godot-content-v1'); return store; } } }),
+    ...(options.noCache ? {} : { caches: { open: async name => { assert.equal(name, '755-godot-content-v1');if(options.cacheOpenStalls)return new Promise(()=>{}); return store; } } }),
   };
   vm.runInNewContext(options.source||source, context, { filename, timeout: 1000 });
   const api = context.window.Godot755Content;
@@ -97,6 +99,105 @@ function fixture(options = {}) {
     async frame() { assert.ok(raf.length, 'A frame must have been scheduled'); const callbacks = raf.splice(0); for (const callback of callbacks) callback(); await quiet(); } };
 }
 function check(name, value) { assert.ok(value, name); checks.push(name); }
+
+// A CDN can leave the connection pending without rejecting Fetch. A required
+// pack must reach the existing retry state, not keep the loading cover forever.
+{
+  const held = deferred();
+  const f = fixture({shortenDeadlines: true, fetch: info => info.sequence === 1 ? held.promise : response(packs[0].id)});
+  request(f.host, packs[0].id);
+  await until(() => f.events.length === 1, 'stalled response headers become retryable');
+  check('Stalled response headers abort the request and report a retryable error',
+    /timed out/.test(f.events[0].error) && record(f.host, packs[0].id).status === 'error' && f.requests[0].init.signal.aborted);
+  held.resolve(response(packs[0].id)); await quiet();
+  check('A timed-out response that arrives late cannot copy or mount stale bytes', f.copies.length === 0 && f.events.length === 1);
+  retry(f.host, packs[0].id); await until(() => f.events.length === 2, 'retry after response timeout');
+  check('Explicit retry after a header timeout reaches one verified native mount', f.requests.length === 2 && f.copies.length === 1 && f.events[1].error === '');
+  await f.host.acknowledge(packs[0].id, true, ''); f.host.dispose();
+}
+
+// Rejected headers can still own a streaming response body. Closing a failed
+// request must release it without hiding the original HTTP status or retry.
+for(const chunked of [false,true]) {
+  const p=chunked?chunkedPack(body(packs[0].id),packs[0].id):packs[0];
+  let cancelled=0;
+  const f=fixture({noCache:true,manifest:{...manifest,packs:[p,packs[3]]},fetch:info=>{
+    if(info.sequence!==1)return new Response(info.url.endsWith(packs[3].file)?body(packs[3].id):body(p.id));
+    const rejected=new Response(new ReadableStream({cancel(){cancelled++;return new Promise(()=>{});}}),{status:503});
+    // The fixture models Fetch forwarding abort to an unread HTTP body.
+    info.init.signal.addEventListener('abort',()=>{rejected.body.cancel().catch(()=>{});},{once:true});
+    return rejected;
+  }});
+  request(f.host,p.id,packs[3].id);
+  await until(()=>f.events.length===2,'HTTP rejection releases transport and next required pack');
+  check(`${chunked?'Chunked':'Whole'} HTTP failure aborts its unread body and retains the HTTP error`,cancelled===1&&f.requests[0].init.signal.aborted&&/HTTP 503/.test(f.events[0].error)&&record(f.host,p.id).status==='error');
+  check(`${chunked?'Chunked':'Whole'} HTTP cleanup cannot hold the next required pack behind a stalled cancel promise`,f.requests.length===2&&f.events[1].id===packs[3].id&&f.events[1].error==='');
+  await f.host.acknowledge(packs[3].id,true,'');
+  retry(f.host,p.id);await until(()=>f.events.length===3,'retry after HTTP body cleanup');
+  check(`${chunked?'Chunked':'Whole'} HTTP failure remains explicitly retryable after transport cleanup`,f.requests.length===3&&f.events[2].id===p.id&&f.events[2].error===''&&f.copies.length===2);
+  await f.host.acknowledge(p.id,true,'');f.host.dispose();
+}
+
+// A body stall preserves only fully committed blocks. Even a broken stream's
+// cancel promise cannot delay the error or the player's next explicit retry.
+{
+  const bytes=Buffer.alloc(1048576+53,17),sha256=digest(bytes);
+  const p={id:'chapter2_stalled',family:'chapter2',file:`content/chapter2_stalled-${sha256.slice(0,16)}.pck`,bytes:bytes.length,sha256};
+  let cancelCount=0;
+  const f=fixture({shortenDeadlines:true,idb:true,manifest:{...manifest,packs:[p]},fetch:info=>{
+    if(info.sequence===1)return new Response(new ReadableStream({
+      start(controller){controller.enqueue(bytes.subarray(0,1048576));},
+      cancel(){cancelCount++;return new Promise(()=>{});}
+    }));
+    assert.equal(info.init.headers.Range,'bytes=1048576-');
+    return new Response(bytes.subarray(1048576),{status:206,headers:{'Content-Range':`bytes 1048576-${bytes.length-1}/${bytes.length}`}});
+  }});
+  request(f.host,p.id);await until(()=>f.events.length===1,'stalled response body becomes retryable');
+  check('A body stall preserves the complete verified prefix and releases the failed request',
+    /timed out/.test(f.events[0].error)&&cancelCount===1&&f.copies.length===0&&f.chunks.has(p.sha256+':0')&&f.requests[0].init.signal.aborted);
+  retry(f.host,p.id);await until(()=>f.events.length===2,'resume after body timeout');
+  check('Retry after a body stall requests only the missing suffix and verifies the full pack',f.requests.length===2&&f.copies.length===1&&f.copies[0].bytes.equals(bytes)&&record(f.host,p.id).source==='resumed-network');
+  await f.host.acknowledge(p.id,true,'');f.host.dispose();
+}
+
+// Boot and deferred static chunks use the same bounded network admission.
+// Pacing is local work, so a slow optional consumer is not a stalled network.
+{
+  const bytes=body('chunk timeout'),p=chunkedPack(bytes);
+  const stalled=fixture({shortenDeadlines:true,manifest:{...manifest,packs:[p]},fetch:()=>new Promise(()=>{})});
+  await assert.rejects(stalled.api.createResourceCache().load(p,{response:true}),/Content transfer timed out/);
+  check('A stalled chunked boot load fails visibly and aborts its request',stalled.requests.length===1&&stalled.requests[0].init.signal.aborted&&stalled.copies.length===0);
+  stalled.host.dispose();
+  const paced=fixture({shortenDeadlines:true,manifest:{...manifest,packs:[p]},fetch:()=>new Response(bytes)});
+  const began=performance.now();
+  const loaded=await paced.api.createResourceCache().load(p,{pace:()=>new Promise(resolve=>setTimeout(resolve,60))});
+  check('Optional pacing can exceed the network deadline without a false timeout',performance.now()-began>=100&&digest(new Uint8Array(loaded.buffer))===p.sha256);
+  paced.host.dispose();
+}
+
+for(const stall of ['cacheOpenStalls','cacheMatchStalls','idbOpenStalls','idbTransactionStalls']) {
+  let aborted=0;
+  const f=fixture({shortenDeadlines:true,idb:stall.startsWith('idb'),[stall]:true,onIDBAbort:()=>aborted++});
+  request(f.host,packs[0].id);await until(()=>f.events.length===1,stall+' falls back to network');
+  check(`${stall}: unavailable optional storage cannot block verified foreground loading`,f.requests.length===1&&f.copies.length===1&&f.events[0].error==='');
+  if(stall==='idbTransactionStalls')check('A timed-out IndexedDB transaction is aborted before uncached fallback',aborted===1&&snapshot(f.host).resourceCache.storage==='unavailable');
+  await f.host.acknowledge(packs[0].id,true,'');f.host.dispose();
+}
+
+// Foreground demand aborts the optional transaction immediately. This is a
+// lifecycle cancellation, not a storage fault; healthy later reads stay usable.
+{
+  let operations=0,aborted=0;
+  const options={idb:true,noCache:true,idbTransactionStalls:true,onIDBOperation:()=>operations++,onIDBAbort:()=>aborted++};
+  const f=fixture(options);
+  f.host.startPrefetch();await f.frame();await f.frame();
+  await until(()=>operations>0,'optional cache transaction begins');
+  options.idbTransactionStalls=false;
+  request(f.host,packs[3].id);await until(()=>f.events.length===1,'foreground preempts cache transaction');
+  check('Foreground demand aborts stalled optional IDB work without disabling healthy storage',aborted===1&&snapshot(f.host).resourceCache.storage==='indexeddb'&&record(f.host,packs[0].id).status==='idle');
+  check('A preempted optional cache read cannot produce a stale mount or network request',f.requests.length===1&&f.events[0].id===packs[3].id&&f.copies.length===1);
+  f.host.setPrefetchFamilies('[]');await f.host.acknowledge(packs[3].id,true,'');f.host.dispose();
+}
 
 // Creation, installation, first-chapter input and the first optional frame never
 // request a deferred resource. This is a transport test, not a paint benchmark.
@@ -203,7 +304,7 @@ for (const kind of ['hidden', 'window', 'same-required']) {
   f.host.startPrefetch();await f.frame();await f.frame();
   await until(()=>f.chunks.has('chunk:'+large.transportChunks[0].sha256),'durable optional chunk');
   request(f.host,packs[3].id);await until(()=>f.events.length===1,'foreground after chunk cancellation');
-  check('Chunked optional transfer cancels sibling requests while preserving the verified complete chunk', f.events[0].id===packs[3].id && f.requests.filter(item=>item.url.includes('/chunks/')).every(item=>item.init.signal.aborted) && f.chunks.has('chunk:'+large.transportChunks[0].sha256));
+  check('Chunked optional transfer cancels unfinished sibling requests while preserving the verified complete chunk', f.events[0].id===packs[3].id && f.requests.filter(item=>item.url.includes('/chunks/')&&!item.url.endsWith(large.transportChunks[0].file)).every(item=>item.init.signal.aborted) && f.chunks.has('chunk:'+large.transportChunks[0].sha256));
   f.host.dispose();
   const reopened=fixture({manifest:smallManifest,idb:true,chunks:f.chunks,noCache:true,fetch:info=>{
     const chunk=large.transportChunks.find(item=>info.url.endsWith(item.file));

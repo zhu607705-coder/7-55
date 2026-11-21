@@ -22,10 +22,23 @@ func frames(count := 3) -> void:
 
 func click(control: Control) -> void:
 	var position := control.get_global_transform_with_canvas() * (control.size / 2)
+	var motion := InputEventMouseMotion.new();motion.position = position;root.push_input(motion)
 	for pressed in [true, false]:
 		var event := InputEventMouseButton.new()
-		event.position = position;event.button_index = MOUSE_BUTTON_LEFT;event.pressed = pressed
+		event.position = position;event.global_position = position;event.button_index = MOUSE_BUTTON_LEFT;event.pressed = pressed
 		root.push_input(event)
+	await frames()
+
+func wheel_down(control: Control) -> void:
+	var position := control.get_global_transform_with_canvas() * (control.size / 2)
+	for index in range(8):
+		var event := InputEventMouseButton.new()
+		event.position = position;event.global_position = position;event.button_index = MOUSE_BUTTON_WHEEL_DOWN;event.pressed = true
+		root.push_input(event)
+		# Headless input needs the wheel release too; a held synthetic wheel can
+		# capture the following ordinary click (as in the phone scroll harness).
+		var release := event.duplicate();release.pressed = false;root.push_input(release)
+		await frames(1)
 	await frames()
 
 func input_snapshot() -> Dictionary:
@@ -49,18 +62,61 @@ func run() -> void:
 	root.set_meta("entry_arguments_consumed",true)
 	check(change_scene_to_file("res://scenes/entry.tscn") == OK,"entry loads")
 	await frames(5)
-	for size in [Vector2i(1440,900),Vector2i(390,844),Vector2i(667,375),Vector2i(844,390)]:
+	for size in [Vector2i(1440,900),Vector2i(390,844),Vector2i(667,375),Vector2i(844,390),Vector2i(960,540),Vector2i(390,844)]:
 		root.size = size;await frames(4)
 		var entry = current_scene
 		var bounds := Rect2(Vector2.ZERO,Vector2(size))
 		check(bounds.encloses(entry.card.get_global_rect()),"main chooser fits " + str(size))
-		for button in [entry.story_button,entry.campus_button,entry.haidian_button,entry.changping_button,entry.preview_button]:
+		var layout_changes := [0]
+		var count_layout_change := func():layout_changes[0] += 1
+		entry.content.minimum_size_changed.connect(count_layout_change)
+		await frames(6)
+		entry.content.minimum_size_changed.disconnect(count_layout_change)
+		check(layout_changes[0] == 0,"chooser layout settles after resize " + str(size))
+		for button in [entry.story_button,entry.flc_button,entry.campus_button,entry.haidian_button,entry.changping_button,entry.preview_button]:
 			check(bounds.encloses(button.get_global_rect()) and button.size.y >= 44,"entry target fits " + str(button.name))
+		for button in entry.protagonist_buttons:
+			if button.is_visible_in_tree():
+				check(bounds.encloses(button.get_global_rect()) and button.size.y >= 44,"opening protagonist target fits " + str(button.name))
+				await click(button)
+				check(button.button_pressed,"real pointer selects " + str(button.name))
+		preserved()
 		await click(entry.preview_button)
 		check(entry.previews_open and entry.preview_menu.visible,"real menu click opens preview choices")
 		check(bounds.encloses(entry.card.get_global_rect()),"scrollable preview menu fits " + str(size))
 		await click(entry.preview_back)
 		check(not entry.previews_open and entry.content.visible,"real back click restores modern chooser")
+	# A genuinely shorter window must scroll instead of shrinking touch targets
+	# or putting the last entry outside the viewport.
+	root.size = Vector2i(390,240);await frames(5)
+	var short_entry = current_scene
+	var short_bounds := Rect2(Vector2.ZERO,Vector2(root.size))
+	check(short_bounds.encloses(short_entry.card.get_global_rect()),"short chooser keeps its paper panel within the viewport")
+	check(short_entry.content_scroll.get_v_scroll_bar().visible,"short chooser exposes native overflow scrolling")
+	await wheel_down(short_entry.content_scroll)
+	check(short_bounds.encloses(short_entry.preview_button.get_global_rect()) and short_entry.preview_button.size.y >= 44,"ordinary wheel reaches the full-sized last entry")
+	await click(short_entry.preview_button)
+	check(short_entry.previews_open,"scrolled preview entry opens through real pointer input")
+	await click(short_entry.preview_back)
+	check(not short_entry.previews_open and short_bounds.encloses(short_entry.preview_button.get_global_rect()),"return restores focus on the visible scrolled entry")
+	# Save/recovery copy can grow independently of the viewport. Its full text
+	# stays available while keyboard focus brings the next control into view.
+	root.size = Vector2i(390,844);await frames(5)
+	var detail_text: String = short_entry.detail.text
+	var detail_wrap: int = short_entry.detail.autowrap_mode
+	short_entry.detail.text = "当前存档暂不可继续，请打开存档管理查看恢复选项。".repeat(30)
+	short_entry.detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	short_entry.detail.show();await frames(8)
+	check(Rect2(Vector2.ZERO,Vector2(root.size)).encloses(short_entry.card.get_global_rect()),"long recovery copy cannot grow the chooser beyond the viewport")
+	short_entry.story_button.grab_focus();await frames(3)
+	for index in range(20):
+		if root.gui_get_focus_owner() == short_entry.preview_button:break
+		for pressed in [true,false]:
+			var key := InputEventKey.new();key.keycode = KEY_TAB;key.pressed = pressed;root.push_input(key)
+		await frames(2)
+	check(root.gui_get_focus_owner() == short_entry.preview_button and short_entry.content_scroll.get_global_rect().encloses(short_entry.preview_button.get_global_rect()),"ordinary Tab navigation scrolls the focused entry into view")
+	short_entry.detail.text = detail_text;short_entry.detail.autowrap_mode = detail_wrap
+	await frames(5);preserved()
 	root.size = Vector2i(1280,720);await frames(4)
 	for index in range(3):
 		for use_local_exit in [false,true]:
