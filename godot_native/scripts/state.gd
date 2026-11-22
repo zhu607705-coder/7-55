@@ -383,6 +383,11 @@ func activate_profile(key: String, read_existing: bool=true) -> Dictionary:
 	SAVE_PATH=ProfileStorage.file("save.json");BACKUP_PATH=ProfileStorage.file("save.previous.json")
 	stores.posts_path=ProfileStorage.file("cc98-posts.json");stores.quest_path=ProfileStorage.file("cc98-quest-post-overrides.json")
 	if DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(ProfileStorage.folder()))!=OK: return {"ok":false,"message":"无法准备本机存档目录。"}
+	if key == "guest" and read_existing and (not locked_legacy.is_empty() or _chapter_locked_file("user://save.json") or _chapter_locked_file("user://save.previous.json")):
+		var migrated_documents := _migrate_locked_guest_documents()
+		if not migrated_documents.ok:
+			persistence_ready = false
+			return migrated_documents
 	d=initial();developer_mode=false;formal_snapshot={};persistence_ready=true
 	save_compatibility_error=""
 	chapter_locked_save_path = ""
@@ -399,6 +404,28 @@ func activate_profile(key: String, read_existing: bool=true) -> Dictionary:
 		if not installed.get("ok",false): return installed
 		loaded=true
 	return {"ok":true,"hasSave":loaded,"corrupt":read_existing and had_file and not loaded}
+
+func _migrate_locked_guest_documents() -> Dictionary:
+	# Personal documents do not depend on whether this edition can load the story.
+	# Never replace edits already written in the guest profile.
+	var stores = load("res://scripts/data/cc98_store.gd")
+	var documents: Dictionary = {}
+	for entry: Array in [["posts", "user://cc98-posts.json", stores.posts_path], ["questPostOverrides", "user://cc98-quest-post-overrides.json", stores.quest_path]]:
+		if FileAccess.file_exists(entry[2]) or not FileAccess.file_exists(entry[1]): continue
+		var file := FileAccess.open(entry[1], FileAccess.READ)
+		if file == null: return {"ok":false,"message":"无法读取旧版个人编辑文档，原文件已保留。"}
+		if file.get_length() > 8*1024*1024:
+			file.close()
+			return {"ok":false,"message":"旧版个人编辑文档过大，原文件已保留。"}
+		var raw := file.get_as_text()
+		file.close()
+		var parsed := JSON.new()
+		if parsed.parse(raw) != OK: return {"ok":false,"message":"旧版个人编辑文档无效，原文件已保留。"}
+		documents[entry[0]] = parsed.data
+	if documents.is_empty(): return {"ok":true}
+	if not stores.validate_bundle(documents): return {"ok":false,"message":"旧版个人编辑文档无效，原文件已保留。"}
+	if stores.import_bundle(documents) != OK: return {"ok":false,"message":"个人编辑文档迁移失败，原文件已保留，请重试。"}
+	return {"ok":true}
 
 func capture_cloud_bundle(fresh: bool=false) -> Dictionary:
 	if developer_mode: return {"ok":false,"message":"开发预览不能覆盖正式存档。"}
@@ -677,7 +704,8 @@ func save_game(explicit_restart: bool=false) -> bool:
 	if bytes.size() > 8*1024*1024 or not load("res://scripts/save_json_guard.gd").new().accepts(payload): return false
 	_saving = true
 	var error := _write_save_file(SAVE_PATH + ".tmp", bytes)
-	if error == OK and not prior_bytes.is_empty() and not _chapter_locked_file(BACKUP_PATH) and not (explicit_restart and _chapter_locked_file(SAVE_PATH)):
+	var protected_backup := _chapter_locked_file(BACKUP_PATH) and not _chapter_locked_save_archived(BACKUP_PATH)
+	if error == OK and not prior_bytes.is_empty() and not protected_backup and not (explicit_restart and _chapter_locked_file(SAVE_PATH)):
 		var known_primary := _save_receipt_path == SAVE_PATH and not _committed_state_digest.is_empty() and prior_digest == _save_receipt_digest
 		if known_primary or not _decode_native_save(prior_bytes.get_string_from_utf8()).is_empty():
 			error = _write_save_file(BACKUP_PATH + ".tmp", prior_bytes)
@@ -760,12 +788,11 @@ func _chapter_lock_result() -> Dictionary:
 
 func preserve_chapter_locked_save() -> bool:
 	# An explicit restart can resume the available chapters without rotating
-	# either of the completed checkpoints out of the usual save slots.
+	# either old checkpoint out before its exact bytes have been archived.
 	for path: String in [SAVE_PATH, BACKUP_PATH, chapter_locked_save_path]:
 		if not _chapter_locked_file(path): continue
 		var bytes := _read_save_bytes(path)
-		var name := path.get_file().get_basename() + ".before-online-chapter-limit-" + _digest_save_bytes(bytes).left(16) + ".json"
-		var archive := SAVE_PATH.get_base_dir().path_join(name)
+		var archive := _chapter_locked_archive_path(path, bytes)
 		if FileAccess.file_exists(archive):
 			if _read_save_bytes(archive) != bytes: return false
 		else:
@@ -775,6 +802,14 @@ func preserve_chapter_locked_save() -> bool:
 				_remove_save_temp(archive)
 				return false
 	return true
+
+func _chapter_locked_archive_path(path: String, bytes: PackedByteArray) -> String:
+	var name := path.get_file().get_basename() + ".before-online-chapter-limit-" + _digest_save_bytes(bytes).left(16) + ".json"
+	return SAVE_PATH.get_base_dir().path_join(name)
+
+func _chapter_locked_save_archived(path: String) -> bool:
+	var bytes := _read_save_bytes(path)
+	return not bytes.is_empty() and _read_save_bytes(_chapter_locked_archive_path(path, bytes)) == bytes
 
 func chapter_backup_files() -> PackedStringArray:
 	var paths := PackedStringArray()
