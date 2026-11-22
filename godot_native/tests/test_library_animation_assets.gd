@@ -1,7 +1,7 @@
 extends SceneTree
 const Assets = preload("res://scripts/objects/library_animation_assets.gd")
 const ActorTexture = preload("res://scripts/objects/library_actor_texture.gd")
-const Builder = preload("res://tools/build_library_walk_sheet.gd")
+const Locomotion = preload("res://scripts/player_walk_art.gd")
 const Metrics = preload("res://scripts/player_metrics.gd")
 var checks := 0
 var failures := 0
@@ -30,6 +30,17 @@ func connected_neck(image: Image, bounds: Rect2i) -> bool:
 		previous = occupied
 	return true
 
+func side_crown_width(image: Image) -> int:
+	var left := image.get_width()
+	var right := -1
+	# Crown and hair of the registered 120x160 side poses.
+	for y in range(25, 58):
+		for x in image.get_width():
+			if image.get_pixel(x, y).a >= 0.5:
+				left = mini(left, x)
+				right = maxi(right, x)
+	return right - left + 1
+
 func run() -> void:
 	var state: Node = root.get_node("State")
 	var before := JSON.stringify(state.d)
@@ -38,16 +49,14 @@ func run() -> void:
 	if not assets.ready:
 		quit(1)
 		return
-	var frame_count := Assets.WALK_FRAMES
-	var frame_duration := 880.0 / frame_count
-	for row in Assets.WALK_DIRECTIONS.size():
-		var direction: String = Assets.WALK_DIRECTIONS[row]
-		var original_sheet := Image.load_from_file(Builder.source_path(direction))
-		var source_frames := Builder.build_direction(original_sheet, direction)
-		check(source_frames.size() == frame_count, "the generated sheet contains the complete cycle " + direction)
-		if source_frames.size() != frame_count:
-			quit(1)
-			return
+	check(Locomotion.frame_at(49.99) == 0 and Locomotion.frame_at(50) == 1
+		and Locomotion.frame_at(799.99) == 15 and Locomotion.frame_at(800) == 0, "side gait advances every 50 ms and loops in 800 ms")
+	var original_sheet := Image.load_from_file(Locomotion.WALK_PATH)
+	for row in Locomotion.WALK_DIRECTIONS.size():
+		var direction: String = Locomotion.WALK_DIRECTIONS[row]
+		var frame_count := Locomotion.WALK_FRAMES
+		var frame_ms := Locomotion.CYCLE_MS / frame_count
+		var idle_image: Image = assets.idles[direction].get_image()
 		var hashes := {}
 		var head_tops: Array[int] = []
 		check(assets.walks[direction].size() == frame_count, "complete frame count " + direction)
@@ -56,10 +65,12 @@ func run() -> void:
 			var image := texture.get_image()
 			var bounds := image.get_used_rect()
 			head_tops.append(bounds.position.y)
-			check(image.get_size() == Assets.WALK_CELL, "walk uses the registered player frame")
-			check(bounds.end.y >= Assets.WALK_CELL.y - 13 and bounds.end.y <= Assets.WALK_CELL.y, "soles stay in the registered floor band")
-			check(bounds.position.x > 0 and bounds.end.x < Assets.WALK_CELL.x and bounds.position.y > 4, "complete silhouette has transparent margin")
+			check(image.get_size() == Locomotion.WALK_CELL, "walk uses the registered player frame")
+			check(bounds.end.y >= Locomotion.WALK_CELL.y - 13 and bounds.end.y <= Locomotion.WALK_CELL.y, "soles stay in the registered floor band")
+			check(bounds.position.x > 0 and bounds.end.x < Locomotion.WALK_CELL.x and bounds.position.y > 4, "complete silhouette has transparent margin")
 			check(connected_neck(image, bounds), "connected head and shoulders in each complete pose")
+			if direction == "side":
+				check(side_crown_width(image) <= side_crown_width(idle_image), "side crown stays within the standing width")
 			var colors := {}
 			for y in range(bounds.position.y, bounds.end.y):
 				for x in range(bounds.position.x, bounds.end.x):
@@ -68,16 +79,20 @@ func run() -> void:
 						continue
 					colors[pixel.to_rgba32() >> 8] = true
 			check(not image.is_compressed() and image.get_format() == Image.FORMAT_RGBA8
-				and image.get_data() == source_frames[index].get_data() and colors.size() > 32,
-				"the walk frame retains uncompressed RGBA8 pixels from the source")
+				and image.get_data() == original_sheet.get_region(Locomotion.walk_region(row, index)).get_data() and colors.size() > 32,
+				"the walk frame retains the exact RGBA8 pixels of the approved atlas")
 			hashes[image.get_data().hex_encode().sha256_text()] = true
-			check(assets.actor(direction, false, (index + 0.5) * frame_duration, true).texture == texture, "clock selects consecutive full drawings")
+			check(assets.actor(direction, false, (index + .5) * frame_ms, true).texture == texture, "clock selects consecutive full drawings")
 		check(hashes.size() == frame_count, "all walking frames are distinct " + direction)
 		check(head_tops.max() - head_tops.min() <= 12, "head height stays stable through both steps " + direction)
-		check(assets.actor(direction, false, 880, true).texture == assets.walks[direction][0], "cycle preserves the original 880 milliseconds")
+		check(assets.actor(direction, false, Locomotion.CYCLE_MS, true).texture == assets.walks[direction][0], "cycle wraps after both steps at the in-game cadence")
 		check(assets.actor(direction, false, 473, false).texture == assets.idles[direction], "stopping selects the standing pose")
-	var left := assets.actor("left", false, frame_duration * 1.5, true)
+		check(idle_image.get_data() == original_sheet.get_region(Locomotion.walk_region(row, Locomotion.WALK_FRAMES)).get_data(), "idle uses its own approved unaltered artwork")
+		check(not hashes.has(idle_image.get_data().hex_encode().sha256_text()), "idle uses a separate static image from the walk")
+	var left := assets.actor("left", false, Locomotion.CYCLE_MS / Locomotion.WALK_FRAMES * 1.5, true)
 	check(left.flip_h and left.texture == assets.walks.side[1], "left mirrors the same complete side drawing")
+	var left_idle := assets.actor("left", false, 0, false)
+	check(left_idle.flip_h and left_idle.texture == assets.idles.side, "left mirrors the corresponding stationary drawing")
 	check(assets.book.get_size()==Vector2(768,640),"book atlas has sixteen complete cells")
 	check(assets.book_source(15)==Rect2(576,480,192,160),"last page-turn frame has an exact atlas boundary")
 	var canvas := Node2D.new()

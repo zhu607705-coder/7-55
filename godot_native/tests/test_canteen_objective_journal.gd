@@ -15,7 +15,7 @@ func restore(value: Dictionary, dimensions: Vector2i) -> void:
 	shell.world.set_process(false);shell.c3_scene_host.set_process(false);shell.c3_narrative_host.set_process(false);shell.world.grab_focus()
 func check_layout() -> void:
 	check(Rect2(Vector2.ZERO,Vector2(root.size)).encloses(shell.modal_panel.get_global_rect()),"journal panel fits physical viewport")
-	for id in ["JournalObjective","JournalNextStep","JournalResume","JournalHistoryToggle"]:
+	for id in ["JournalObjective","JournalNextStep","JournalResume","JournalChapterMap"]:
 		var item:=node(id)
 		if item==null:continue
 		check(Rect2(Vector2.ZERO,Vector2(root.size)).encloses(item.get_global_rect()),"default journal content stays onscreen: "+id)
@@ -28,16 +28,14 @@ func journal_cases(dimensions: Vector2i) -> void:
 	shell._show_journal();await frames()
 	check(node("JournalObjective").text=="与收餐口阿姨交谈","earned snapshot names reachable staff step")
 	check(node("JournalNextStep").text=="到右侧收餐口，与阿姨交谈。","earned shelf does not replace auntie step")
-	check(not node("JournalHistory").visible and node("JournalHistory").get_child_count()==0,"history begins collapsed and unbuilt")
+	check(node("ChapterMap")==null,"map is closed on task entry")
 	check(node("JournalCluesCard")==null,"map task has no clue comparison section")
 	check(root.gui_get_focus_owner()==node("JournalResume"),"journal focuses return control")
 	check_layout()
-	await click(node("JournalHistoryToggle"))
-	check(node("JournalHistory").visible and node("JournalHistory").get_child_count()==earned.native.log.size(),"pointer expands every retained log row")
-	check(node("JournalHistoryRow0").text==earned.native.log[0].text,"oldest retained row remains readable")
-	check(node("JournalHistoryRow"+str(earned.native.log.size()-1)).text==earned.native.log[-1].text,"newest retained row remains readable")
-	await press(KEY_SPACE)
-	check(not node("JournalHistory").visible and root.gui_get_focus_owner()==node("JournalHistoryToggle"),"Space folds history and preserves toggle focus")
+	await click(node("JournalChapterMap"))
+	check(node("ChapterMap")!=null,"task opens the native chapter map")
+	shell._show_journal();await frames()
+	check(node("JournalChapterMap")!=null and node("ChapterMap")==null,"return restores the task")
 	await press(KEY_TAB)
 	check(shell.modal.is_ancestor_of(root.gui_get_focus_owner()),"Tab remains within actual modal")
 	var rotated:=Vector2i(1440,900) if dimensions.x<1100 else Vector2i(390,844)
@@ -138,7 +136,7 @@ func comparison_case(dimensions: Vector2i) -> void:
 	var before:=JSON.stringify(state.d)
 	await click(node("TaskTrigger"))
 	check(node("JournalObservationCompare")==null and node("JournalCluesCard")==null,"phone task omits the comparison even after earning clues")
-	check(node("JournalResume")!=null and not node("JournalHistory").visible,"phone task retains current progress and collapsed history")
+	check(node("JournalResume")!=null and node("ChapterMap")==null,"phone task retains current progress and collapsed history")
 	check(JSON.stringify(state.d)==before,"opening the phone task preserves the complete save")
 	await press(KEY_ESCAPE)
 func run() -> void:

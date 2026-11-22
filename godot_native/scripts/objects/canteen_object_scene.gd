@@ -97,7 +97,9 @@ func setup(owner_world:Control)->void:
 	for i in range(24):shadow_points.append(Vector2(cos(i*TAU/24)*19,sin(i*TAU/24)*6))
 	player_shadow.polygon=shadow_points
 	source_space.add_child(player_shadow)
-	player_sprite=Sprite2D.new();player_sprite.name="OriginalPlayer";player_sprite.centered=false;source_space.add_child(player_sprite)
+	player_sprite=Sprite2D.new();player_sprite.name="OriginalPlayer";player_sprite.centered=false
+	player_sprite.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
+	source_space.add_child(player_sprite)
 	for role:String in ["pickup_slots","mixer","drink_screens","return_contact","promo_glow","door_opening"]:
 		var feature:=Feature.new();feature.name=role;feature.role=role;feature.owner_scene=self;var depth:float={"pickup_slots":244,"mixer":818,"drink_screens":230,"return_contact":615,"promo_glow":1699,"door_opening":layout.side_exit.frame.baseY}[role];feature.set_meta("source_depth",depth);feature.z_index=Prop.draw_layer(depth);source_space.add_child(feature);features.append(feature)
 		if role=="return_contact":feature.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
@@ -216,7 +218,16 @@ func configure_view(origin:Vector2,zoom:float,player:Vector2)->void:
 	var actor:Dictionary=world.player_visual()
 	player_sprite.texture=actor.texture
 	var depth:=Metrics.ground_depth_y(player)
-	var visual:=Metrics.visual_rect(player,world.display_scale_at(player));player_sprite.position=player;player_sprite.scale=visual.size/Metrics.FRAME;player_sprite.offset=(visual.position-player)/player_sprite.scale;player_sprite.rotation=deg_to_rad(float(actor.angle));player_sprite.flip_h=actor.flip_h;player_sprite.set_meta("source_depth",depth);player_sprite.z_index=Prop.draw_layer(depth);player_sprite.visible=not world.presentation_actor_hidden
+	var visual:=Metrics.visual_rect(player,world.display_scale_at(player))
+	player_sprite.position=player
+	if player_sprite.texture != null:
+		player_sprite.scale=visual.size/player_sprite.texture.get_size()
+		player_sprite.offset=(visual.position-player)/player_sprite.scale
+	player_sprite.rotation=deg_to_rad(float(actor.angle))
+	player_sprite.flip_h=actor.flip_h
+	player_sprite.set_meta("source_depth",depth)
+	player_sprite.z_index=Prop.draw_layer(depth)
+	player_sprite.visible=player_sprite.texture!=null and not world.presentation_actor_hidden
 	player_shadow.position=Vector2(player.x,depth);player_shadow.z_index=Prop.draw_layer(depth-1);player_shadow.visible=player_sprite.visible
 	_update_entities()
 	var actors:Array=[]

@@ -199,8 +199,9 @@ var _acquisition_started := -1.0
 var _acquisition_icon: PixelIcon
 var _flight_particles: Array = []
 var _last_critical_phase := false
-var _last_objective := ""
-var _task_update_started := -1.0
+var _task_intro: Tween
+var _task_intro_frame: PanelContainer
+var _task_home := Vector2.ZERO
 
 func setup(reader: Callable) -> void:
 	read_state=reader
@@ -275,8 +276,10 @@ func _build() -> void:
 	five_g.add_theme_stylebox_override("normal",_style(Color.TRANSPARENT,INK,2))
 	status_icons=StatusIcons.new(); status_icons.name="NativeStatusIcons"; status_right.add_child(status_icons)
 	task_button=Button.new(); task_button.name="TaskTrigger"; task_button.z_index=76
-	_set_button_style(task_button,_style(Color.TRANSPARENT),_style(Color(0.2,0.3,0.35,0.06)))
-	task_button.add_theme_stylebox_override("disabled",_style(Color.TRANSPARENT))
+	task_button.hide()
+	var task_face := _style(Color("fff4dc"), Color("91483f"), 2)
+	_set_button_style(task_button, task_face, _style(Color("f5dfc9"), Color("91483f"), 2))
+	task_button.add_theme_stylebox_override("disabled", task_face)
 	task_button.tooltip_text="点击查看当前任务和提示"; task_button.pressed.connect(func(): task_requested.emit()); add_child(task_button)
 	task_copy=_label(task_button,"任务",10,Palette.INK); task_copy.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	digit_hint=_label(task_button,"",9,Palette.ACCENT); digit_hint.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
@@ -324,6 +327,7 @@ func set_display_brightness(value: float) -> void:
 
 func _notification(what: int) -> void:
 	if what==NOTIFICATION_WM_WINDOW_FOCUS_OUT or (what==NOTIFICATION_VISIBILITY_CHANGED and not is_visible_in_tree()):
+		finish_task_intro()
 		if _bar_pointer!=-2:
 			_bar_pointer=-2
 			_suppress_handle_click=true
@@ -335,6 +339,8 @@ func refresh(next_state: Dictionary) -> void:
 	var ui: Dictionary=state.get("ui",{})
 	var page:=str(state.get("native",{}).get("page",state.get("currentScene","phone_home")))
 	var bare:=page in ["alarm","desktop","ending"]
+	if page != "wechat" or not _task_visible() or bool(state.get("native", {}).get("settings", {}).get("reduced_motion", false)):
+		finish_task_intro()
 	# Material texture belongs behind content, never over text or artwork.
 	# Retain the noninteractive node for lifecycle/stacking compatibility.
 	pixel_grid.visible=false
@@ -344,7 +350,7 @@ func refresh(next_state: Dictionary) -> void:
 	if page=="c35_recovery" and not state.get("chapterThreeInterlude",{}).get("recoveryOpened",false):status_background.color=Palette.SURFACE
 	task_button.visible=not bare and show_task_bar and _task_visible()
 	_refresh_status()
-	_refresh_task()
+	_refresh_task(state)
 	set_display_brightness(float(ui.get("brightness",100)))
 	var next_owned: Array=[]
 	for id in ITEM_ORDER:
@@ -369,13 +375,8 @@ func refresh(next_state: Dictionary) -> void:
 	set_input_blocked(input_blocked)
 
 func _task_visible() -> bool:
-	var ui: Dictionary=state.get("ui",{})
-	var phase:=str(state.get("actOne",{}).get("phase","prologue"))
-	var chapter4: Dictionary=state.get("chapterThreeInterlude",{})
-	var later:=bool(chapter4.get("completed",false) and chapter4.get("replayUnlocked",false))
-	later=later or ui.get("libraryFinalsPuzzle",{}).get("nextQuestId","")=="chapter_three_canteen_hunt" or ui.get("libraryFinalsPhase","")=="friend_contacted"
-	for key in ["canteenHunt","theaterHunt","qizhenLake"]: later=later or bool(state.get(key,{}).get("active",false))
-	return later or not phase in ["friend_message_required","system_required"]
+	var later_chapter := int(state.get("native", {}).get("chapter", 1)) > 1 or str(state.get("actOne", {}).get("phase", "prologue")) != "prologue"
+	return later_chapter or bool(state.get("flags", {}).get("codeScattered", false))
 
 func _text_width(text: String, font_size: int) -> float:
 	return ceilf(UI_FONT.get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,font_size).x)
@@ -410,8 +411,8 @@ func _refresh_status() -> void:
 	status_icons.size=status_right.size;status_icons.queue_redraw()
 	status_right.tooltip_text="打开控制中心，当前电量 %d%%" % int(percent)
 
-func _refresh_task() -> void:
-	var digits: Dictionary=state.get("digits",{})
+func _refresh_task(snapshot: Dictionary) -> void:
+	var digits: Dictionary=snapshot.get("digits",{})
 	var known: Array=[]
 	var any_digit:=false
 	for key in ["d1","d2","d3","d4"]:
@@ -419,18 +420,101 @@ func _refresh_task() -> void:
 		var acquired:=digit!=null and str(digit)!=""
 		known.append(str(digit) if acquired else "?")
 		any_digit=any_digit or acquired
-	var show_digits: bool=state.get("actOne",{}).get("phase","prologue")=="prologue" and (state.get("flags",{}).get("codeScattered",false) or any_digit)
+	var show_digits: bool=snapshot.get("actOne",{}).get("phase","prologue")=="prologue" and (snapshot.get("flags",{}).get("codeScattered",false) or any_digit)
 	var width:=136.0 if show_digits else 76.0
-	task_button.position=Vector2((424-width)/2,5); task_button.size=Vector2(width,30)
-	var page := str(state.get("native",{}).get("page",""))
-	if page=="c35_recovery" and not state.get("chapterThreeInterlude",{}).get("recoveryOpened",false):
+	_task_home = Vector2((424-width)/2,5)
+	if not _task_intro: task_button.position = _task_home
+	task_button.size=Vector2(width,30)
+	var page := str(snapshot.get("native",{}).get("page",""))
+	if page=="c35_recovery" and not snapshot.get("chapterThreeInterlude",{}).get("recoveryOpened",false):
 		task_button.hide()
 	task_copy.add_theme_font_size_override("font_size",10 if show_digits else 14)
 	task_copy.position=Vector2(2,3 if show_digits else 2); task_copy.size=Vector2(width-4,12 if show_digits else task_button.size.y-4)
 	digit_hint.visible=show_digits; digit_hint.text="签到码 "+" ".join(known); digit_hint.position=Vector2(2,15); digit_hint.size=Vector2(width-4,11)
-	var objective:=str(state.get("native",{}).get("objective",state.get("objective","")))
-	if not objective.is_empty() and not _last_objective.is_empty() and objective!=_last_objective: _task_update_started=Time.get_ticks_msec()/1000.0
-	_last_objective=objective
+
+func reveal_first_task(burst: PanelContainer, accepted: Dictionary) -> void:
+	if not show_task_bar or input_blocked or not is_visible_in_tree() or not burst.is_visible_in_tree():
+		return
+	if bool(accepted.native.settings.get("reduced_motion", false)):
+		return
+	# Take ownership of the outgoing red dialogue panel before the chat rebuild.
+	var to_chrome := get_global_transform_with_canvas().affine_inverse() * burst.get_global_transform_with_canvas()
+	var origin := to_chrome * Rect2(Vector2.ZERO, burst.size)
+	finish_task_intro()
+	_refresh_task(accepted)
+	task_button.position = origin.get_center() - task_button.size * .5
+	task_button.disabled = true
+	task_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	task_button.show()
+	task_copy.modulate.a = 0.0
+	digit_hint.modulate.a = 0.0
+	_task_intro_frame = burst
+	var content := burst.get_child(0) as VBoxContainer
+	var content_size := content.size
+	var source_scale := to_chrome.get_scale()
+	burst.reparent(task_button, false)
+	task_button.move_child(burst, 0)
+	burst.mouse_behavior_recursive = Control.MOUSE_BEHAVIOR_DISABLED
+	burst.pivot_offset = Vector2.ZERO
+	burst.scale = source_scale
+	# Keep the type proportional while the original panel folds into a wider,
+	# shallower button. Its old text must not impose a minimum on the frame.
+	var clip := Control.new()
+	clip.clip_contents = true
+	burst.add_child(clip)
+	content.reparent(clip, false)
+	content.position = Vector2.ZERO
+	content.size = content_size
+	var skin := burst.get_theme_stylebox("panel") as StyleBoxFlat
+	var destination := task_button.get_theme_stylebox("normal") as StyleBoxFlat
+	var source_fill := skin.bg_color
+	var source_edge := skin.border_color
+	task_button.self_modulate.a = 0.0
+	var sample := func(t: float) -> void:
+		var travel := smoothstep(0.0, 1.0, t)
+		var fold := smoothstep(0.0, .97, t)
+		# Interpolate dimensions as ratios so the largest frame loses area
+		# progressively, with a gentle approach to the final border.
+		var extent := Vector2(
+			origin.size.x * pow(task_button.size.x / origin.size.x, fold),
+			origin.size.y * pow(task_button.size.y / origin.size.y, fold))
+		task_button.position = origin.get_center().lerp(_task_home + task_button.size * .5, travel) - task_button.size * .5
+		burst.size = extent / source_scale
+		burst.position = (task_button.size - extent) * .5
+		var ratio := extent / origin.size
+		content.scale = Vector2.ONE * minf(ratio.x, ratio.y)
+		content.modulate.a = 1.0 - smoothstep(.16, .63, t)
+		var wash := smoothstep(.20, .85, t)
+		skin.bg_color = source_fill.lerp(destination.bg_color, wash)
+		skin.border_color = source_edge.lerp(destination.border_color, wash)
+		task_copy.modulate.a = smoothstep(.34, .78, t)
+		digit_hint.modulate.a = smoothstep(.41, .83, t)
+		task_button.self_modulate.a = smoothstep(.79, .97, t)
+		burst.modulate.a = 1.0 - smoothstep(.88, 1.0, t)
+	sample.call(0.0)
+	var rest := task_button.position
+	var shake := func(t: float) -> void:
+		var envelope := pow(sin(PI * t), 2)
+		var offset := Vector2(5.5 * sin(TAU * 3.0 * t), 2.2 * sin(TAU * 2.35 * t))
+		task_button.position = rest + offset * envelope
+	_task_intro = create_tween()
+	_task_intro.tween_method(shake, 0.0, 1.0, .36)
+	_task_intro.tween_method(sample, 0.0, 1.0, .84)
+	_task_intro.tween_callback(finish_task_intro)
+
+func finish_task_intro() -> void:
+	if not _task_intro: return
+	_task_intro.kill()
+	_task_intro = null
+	_task_intro_frame.hide()
+	_task_intro_frame.queue_free()
+	_task_intro_frame = null
+	task_copy.modulate.a = 1.0
+	digit_hint.modulate.a = 1.0
+	task_button.self_modulate.a = 1.0
+	task_button.position = _task_home
+	task_button.disabled = input_blocked
+	task_button.mouse_filter = Control.MOUSE_FILTER_STOP
 
 func digit_clue_geometry(slot: String) -> Dictionary:
 	# Return the currently rendered acquired digit, never a guessed screen point.
@@ -656,7 +740,8 @@ func _set_inventory_painted_rect(rect:Rect2) -> void:
 func set_input_blocked(blocked: bool) -> void:
 	input_blocked=blocked
 	if not _built: return
-	status_right.disabled=blocked; task_button.disabled=blocked; inventory_handle.disabled=blocked
+	if blocked: finish_task_intro()
+	status_right.disabled=blocked; task_button.disabled=blocked or _task_intro != null; inventory_handle.disabled=blocked
 	for child in inventory_slots.get_children(): child.disabled=blocked
 	if blocked:
 		_bar_pointer=-2; inventory_gestures.reset()
@@ -692,4 +777,3 @@ func _process(_delta: float) -> void:
 			_flight_particles[i].modulate.a=sin(t*PI)
 		if elapsed>=1.15:
 			_acquisition_started=-1; recent_item=""; acquisition.visible=false
-	if _task_update_started>=0 and now-_task_update_started>1.05: _task_update_started=-1

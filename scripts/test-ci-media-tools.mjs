@@ -313,6 +313,12 @@ for (const [name, source] of Object.entries({
   assert(r.error);
   assert.equal(r.calls.filter(c => c.command === 'sudo').length, 0);
 });
+test('GitHub AWS runner mirror list preserves the two signed HTTPS fallbacks', () => {
+  const original = MIRRORS.replace('azure.archive.ubuntu.com', 'us-east-2.ec2.archive.ubuntu.com');
+  const prepared = prepareFallback(SOURCE, original, TEMP_MIRROR);
+  assert.equal(prepared.mirrors, original.slice(original.indexOf('https:')));
+});
+
 for (const [name, mirrors] of Object.entries({
   'new host': MIRRORS + 'https://example.com/ubuntu/\tpriority:2\n',
   'new protocol': MIRRORS.replace('https://archive.', 'http://archive.'),

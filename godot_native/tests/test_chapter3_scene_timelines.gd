@@ -250,10 +250,12 @@ func test_real_shell() -> void:
 	check(real_world.scene_id=="canteen_interior" and entry!=null and entry.status=="waiting","campus gate enters the canteen with its paper scene waiting")
 	check(footprints.marks.is_empty() and not footprints.visible(real_world.scene_id,state.d),"entering the canteen retires the outdoor footprint trail")
 	if entry==null or entry.status!="waiting": return
-	for segment: Array in [[Vector2.RIGHT,5],[Vector2.UP,34]]:
+	for segment: Array in [[Vector2.RIGHT,41.25],[Vector2.UP,280.5]]:
 		real_world.touch_axis=segment[0]
-		for step in int(segment[1]):
-			real_world._process(.05)
+		var seconds:float=segment[1]/real_world.GROUND_WALK_SPEED
+		var ticks:=ceili(seconds/.05)
+		for step in ticks:
+			real_world._process(seconds/ticks)
 			scene_host.tick(0,true)
 			if entry.status!="waiting": break
 	check(scene_host.blocks_world_input() and real_world._scene_presentation_blocks(),"ordinary movement from the canteen entrance discovers the paper and locks during the cinematic")

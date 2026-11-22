@@ -43,7 +43,7 @@ func verify_dropdown() -> void:
 	check(shell.modal_panel.get_global_rect().position.distance_to(shell.phone_chrome.get_global_rect().position)<.5,"shared overlay starts on the actual phone origin")
 	check(Rect2(Vector2.ZERO,Vector2(root.size)).encloses(shell.modal_panel.get_global_rect()),"all scaled task content stays within viewport")
 	if find("NativeJournal")!=null:
-		check(find("JournalCurrentCard")!=null and find("JournalHistoryCard")!=null,"real task and history have existing phone-panel grouping")
+		check(find("JournalCurrentCard")!=null and find("JournalChapterMapCard")!=null,"real task and history have existing phone-panel grouping")
 		check(find("JournalResume")==shared.close,"single exit is the actual shared close control")
 
 func capture_state(label: String, dimensions: Vector2i, stress:=false) -> void:
@@ -65,26 +65,29 @@ func run() -> void:
 			shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell)
 			await frames(12);shell.set_process(false);shell._layout();shell._clear_notice_presentations();await frames(4)
 			if stage==0:
+				check(not shell.phone_chrome.task_button.is_visible_in_tree(),"new game waits for the first task")
+				await capture_state("01-real-new-game",dimensions)
 				shell._on_phone_page("control_center");await frames(8)
 				await capture_state("00-existing-control-center",dimensions)
 				shell._on_phone_action("native_control_center_close",null);await frames(6)
+				await shell.shutdown();shell.queue_free();await frames(5)
+				continue
 			var before: Dictionary=state.d.duplicate(true)
 			await click(shell.phone_chrome.task_button);await settle()
 			check(is_instance_valid(shell.modal),"actual task trigger opens candidate")
 			if not is_instance_valid(shell.modal):quit(2);return
 			verify_dropdown()
-			var label: String=["01-real-new-game","02-real-code-scattered","03-real-first-clue","04-real-two-clues"][stage]
-			if stage==0:check(shell.modal_panel.size.y<300,"daily first task stays compact without filler")
+			var label: String=["02-real-code-scattered","03-real-first-clue","04-real-two-clues"][stage-1]
+			if stage==1:check(shell.modal_panel.get_global_rect().end.y<shell.phone_chrome.get_global_rect().end.y,"first earned task leaves the phone backdrop reachable")
 			await capture_state(label,dimensions)
 			if stage==3:
-				await click(await reveal_control("JournalHistoryToggle"));await settle();verify_dropdown()
-				await capture_state("05-real-history-expanded",dimensions)
-				await click(await reveal_control("JournalHistoryToggle"));await settle()
-				check(find("JournalCluesCard")==null and find("JournalObservationCompare")==null,"no extra task section or focus target after earning clues")
+				await click(await reveal_control("JournalChapterMap"));await settle();verify_dropdown()
+				check(find("ChapterMap")!=null,"actual chapter map opens in the shared shell")
+				await capture_state("05-chapter-map",dimensions)
 			check(state.d==before,"task and history preserve earned progress")
 			await press_key(KEY_ESCAPE);await frames(4)
 			check(not is_instance_valid(shell.modal),"Escape dismisses candidate exactly once")
-			if stage==0:
+			if stage==1:
 				# Same phone-only backdrop behavior as existing Control Center.
 				await click(shell.phone_chrome.task_button);await settle()
 				var shade: Button=find("JournalDropdownBackdrop")
@@ -92,21 +95,6 @@ func run() -> void:
 				motion(bottom);mouse(bottom,true);mouse(bottom,false);await frames(5)
 				check(not is_instance_valid(shell.modal),"tapping exposed backdrop retracts short task")
 			await shell.shutdown();shell.queue_free();await frames(5)
-		# This pressure case is deliberately not used as the daily-state design.
-		actual_progress(3)
-		state.d.native.log=[]
-		for index in 90:state.d.native.log.append({"text":"压力测试历史 %d：仅用于验证滚动，不代表日常任务内容。"%index,"time":"stress"})
-		shell=load("res://scenes/main.tscn").instantiate();root.add_child(shell)
-		await frames(10);shell.set_process(false);shell._layout();shell._clear_notice_presentations()
-		await click(shell.phone_chrome.task_button);await settle()
-		await click(await reveal_control("JournalHistoryToggle"));await settle()
-		var scroll:=find("JournalScroll") as ScrollContainer
-		scroll.scroll_vertical=int(scroll.get_v_scroll_bar().max_value);await settle();verify_dropdown()
-		check(scroll.scroll_vertical>0,"separately labeled long-history stress really scrolls")
-		await capture_state("08-STRESS-only-long-history",dimensions,true)
-		await click(find("JournalResume"));await settle()
-		check(not is_instance_valid(shell.modal),"fixed return works at the end of long history")
-		await shell.shutdown();shell.queue_free();await frames(5)
 	if not output.is_empty():
 		var file:=FileAccess.open(output.path_join("task-dropdown-report.json"),FileAccess.WRITE)
 		file.store_string(JSON.stringify({"checks":checks,"failures":failures,"realGraphics":capture_enabled,"states":states,"shots":shots,"scope":"Real new-game/controller states; stress history separately labeled. Source shared-overlay regression."},"\t"));file.close()

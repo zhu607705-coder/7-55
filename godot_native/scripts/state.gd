@@ -1,4 +1,5 @@
 extends Node
+const Protagonist := preload("res://scripts/protagonist_profile.gd")
 const PhoneBrightness = preload("res://scripts/ui/phone_brightness_policy.gd")
 ## Single owner of native progression, persistence, and presentation requests.
 signal changed
@@ -33,6 +34,7 @@ const NavigationCommand = preload("res://scripts/architecture/commands/navigatio
 const StoryActionCommand = preload("res://scripts/architecture/commands/story_action_command.gd")
 const ChapterQuery = preload("res://scripts/architecture/queries/chapter_query.gd")
 const ChapterSystem = preload("res://scripts/architecture/systems/chapter_system.gd")
+const ChapterMap = preload("res://scripts/chapters/chapter_map.gd")
 var _architecture: GameArchitecture
 # Legacy callers retain one shared dictionary; there is no parallel model/save.
 var d: Dictionary:
@@ -52,6 +54,10 @@ var _committed_state_digest := ""
 var _journal_validator: RefCounted
 var _migration: RefCounted
 var _import_proof_cache: Dictionary = {}
+var _replay_formal: Dictionary = {}
+var _replay_save_path := ""
+var _replay_base_digest := ""
+var _replay_formal_objective := ""
 
 func game_architecture() -> GameArchitecture:
 	if _architecture == null:
@@ -205,6 +211,7 @@ func _accept_result(action: String,previous_state: Dictionary,result: Dictionary
 		feedback.emit(str(result.message))
 	if result.has("page"): _consume_scene_open(previous_page,str(d.native.page))
 	if not ephemeral:
+		if not developer_mode: ChapterMap.record(d,previous_state,action,result)
 		save_game(); changed.emit()
 	if result.get("teleport") is Array: world_teleport.emit(result.teleport)
 	if result.get("media") is Dictionary: media_requested.emit(result.media)
@@ -354,6 +361,7 @@ func _matches_shape(template: Variant, value: Variant, depth: int = 0, location:
 
 func activate_profile(key: String, read_existing: bool=true) -> Dictionary:
 	if not ProfileStorage.valid_key(key) or key=="legacy": return {"ok":false,"message":"存档账号标识无效。"}
+	if is_chapter_replaying(): return {"ok":false,"message":"请先返回原进度，再切换存档账号。"}
 	var stores=load("res://scripts/data/cc98_store.gd")
 	var legacy: Dictionary={}
 	var locked_legacy := ""
@@ -421,11 +429,15 @@ func _migrate_locked_guest_documents() -> Dictionary:
 
 func capture_cloud_bundle(fresh: bool=false) -> Dictionary:
 	if developer_mode: return {"ok":false,"message":"开发预览不能覆盖正式存档。"}
-	if not fresh and (not chapter_locked_save_path.is_empty() or not ReleaseContent.permits_snapshot(d)): return _chapter_lock_result()
+	var formal := _replay_formal if is_chapter_replaying() else d
+	if not fresh and (not chapter_locked_save_path.is_empty() or not ReleaseContent.permits_snapshot(formal)): return _chapter_lock_result()
 	return _capture_portable_bundle(fresh)
 
 func _capture_portable_bundle(fresh: bool=false, exported_snapshot: Dictionary={}) -> Dictionary:
-	var clean: Dictionary=initial() if fresh else (d if exported_snapshot.is_empty() else exported_snapshot).duplicate(true)
+	var source := exported_snapshot if not exported_snapshot.is_empty() else (_replay_formal if is_chapter_replaying() else d)
+	var clean: Dictionary = initial() if fresh else source.duplicate(true)
+	# Undo can refer to files on the previous route in this local profile.
+	if clean.native.has("chapter_map"): clean.native.chapter_map.previous = ""
 	if fresh and d.get("cc98") is Dictionary: clean.cc98=d.cc98.duplicate(true)
 	_clear_transient_save_fields(clean)
 	if not validate_snapshot(clean): return {"ok":false,"message":"当前进度尚未通过存档校验。"}
@@ -451,7 +463,7 @@ func _capture_portable_bundle(fresh: bool=false, exported_snapshot: Dictionary={
 	var core:=JSON.stringify({"format":"7-55-godot-native","version":1,"sourceVersion":SOURCE_VERSION,"state":clean})
 	if core.to_utf8_buffer().size()>8*1024*1024: return {"ok":false,"message":"核心存档过大。"}
 	return {"ok":true,"bundle":{"bundleVersion":1,"stateText":core,"stores":{"posts":posts,"questPostOverrides":overrides},"assets":assets,
-		"summary":{"chapter":int(clean.native.chapter),"task":("新的校园故事" if fresh else objective()).left(200)}},"images":archive.images,"files":files}
+		"summary":{"chapter":int(clean.native.chapter),"task":("新的校园故事" if fresh else _replay_formal_objective if is_chapter_replaying() else objective()).left(200)}},"images":archive.images,"files":files}
 
 func prepare_cloud_bundle(bundle: Variant, images: Dictionary) -> Dictionary:
 	if not bundle is Dictionary or bundle.get("bundleVersion")!=1 or not bundle.get("stateText") is String or not bundle.get("stores") is Dictionary: return {"ok":false,"message":"存档封装不兼容。"}
@@ -477,6 +489,7 @@ func prepare_cloud_bundle(bundle: Variant, images: Dictionary) -> Dictionary:
 	return {"ok":true,"state":candidate,"images":archive.images,"stores":documents}
 
 func install_cloud_bundle(prepared: Dictionary, explicit_restart: bool=false) -> Dictionary:
+	if is_chapter_replaying(): return {"ok":false,"message":"请先返回原进度，再切换云存档。"}
 	if not prepared.get("ok",false) or not prepared.get("state") is Dictionary: return {"ok":false,"message":"不能载入未经校验的存档。"}
 	if not ReleaseContent.permits_snapshot(prepared.state) or (not chapter_locked_save_path.is_empty() and not explicit_restart): return _chapter_lock_result()
 	if not validate_snapshot(prepared.state): return {"ok":false,"message":"不能载入未经校验的存档。"}
@@ -530,6 +543,8 @@ func validate_snapshot(value: Variant, allow_legacy_v35_fields: bool=false) -> b
 	if not _matches_shape(initial(),value): return false
 	if not PhoneBrightness.valid_preference(value.ui): return false
 	if not _domain_guard.validate(value): return false
+	if value.native.has("chapter_map") and not ChapterMap.valid(value.native.chapter_map): return false
+	if value.native.has(Protagonist.SAVE_KEY) and value.native[Protagonist.SAVE_KEY] not in Protagonist.VARIANTS: return false
 	if not allow_legacy_v35_fields and not value.actOne.has("tiyiUpdateStage"): return false
 	if value.actOne.has("tiyiUpdateStage") and value.actOne.tiyiUpdateStage not in preload("res://scripts/chapters/tiyi_access.gd").STAGES: return false
 	if value.ui.has("homeDeskReturnScene") and value.ui.homeDeskReturnScene not in [null,"phone_home","bonsai"]: return false
@@ -671,6 +686,7 @@ func current_save_digest() -> String:
 func save_game(explicit_restart: bool=false) -> bool:
 	if not persistence_ready or developer_mode or _saving or not ReleaseContent.permits_snapshot(d) or not validate_snapshot(d): return false
 	if not chapter_locked_save_path.is_empty() and not explicit_restart: return false
+	if is_chapter_replaying(): return true # Replays never write the formal slot.
 	var clean := d.duplicate(true)
 	_upgrade_legacy_phone_state(clean)
 	_clear_transient_save_fields(clean)
@@ -884,7 +900,20 @@ func _sanitize_runtime_resume(snapshot: Dictionary) -> void:
 func at_unstarted_opening() -> bool:
 	return int(d.native.chapter) == 1 and d.native.page == "alarm" and d.native.scene == "" and not d.native.get("alarm_ringing", false)
 
+func choose_opening_protagonist(variant: String) -> bool:
+	if variant not in Protagonist.VARIANTS or not at_unstarted_opening(): return false
+	var old: Variant = d.native.get(Protagonist.SAVE_KEY)
+	if variant == Protagonist.variant(d): return true
+	d.native[Protagonist.SAVE_KEY] = variant
+	if not save_game():
+		if old == null: d.native.erase(Protagonist.SAVE_KEY)
+		else: d.native[Protagonist.SAVE_KEY] = old
+		return false
+	changed.emit()
+	return true
+
 func load_game() -> bool:
+	_clear_chapter_replay()
 	_invalidate_save_receipt()
 	chapter_locked_save_path = ""
 	if not _protect_future_saves(): return false
@@ -915,7 +944,7 @@ func export_save(path: String, chapter_backup: String="") -> Error:
 		if destination==ProjectSettings.globalize_path(reserved).simplify_path(): return ERR_UNAUTHORIZED
 	var backup := chapter_backup if not chapter_backup.is_empty() else chapter_locked_save_path
 	if not backup.is_empty() and backup not in chapter_backup_files(): return ERR_UNAUTHORIZED
-	var snapshot: Dictionary = d if backup.is_empty() else _read_native_save(backup).get("state", {})
+	var snapshot: Dictionary = (_replay_formal if is_chapter_replaying() else d) if backup.is_empty() else _read_native_save(backup).get("state", {})
 	var captured := _capture_portable_bundle(false, snapshot) if not snapshot.is_empty() else {}
 	if not captured.get("ok",false):
 		if backup.is_empty(): return ERR_INVALID_DATA
@@ -935,6 +964,7 @@ func export_save(path: String, chapter_backup: String="") -> Error:
 	return error
 
 func import_save(path: String) -> Dictionary:
+	if is_chapter_replaying(): return {"ok":false,"message":"请先返回原进度，再导入存档。"}
 	if not FileAccess.file_exists(path): return {"ok":false,"message":"找不到存档文件。"}
 	var file := FileAccess.open(path,FileAccess.READ)
 	if not file: return {"ok":false,"message":"无法读取存档文件，当前进度未改变。"}
@@ -1014,8 +1044,11 @@ func import_save(path: String) -> Dictionary:
 	return {"ok":true,"message":message+("\n"+"\n".join(warnings) if not warnings.is_empty() else ""),"warnings":warnings}
 
 func new_game() -> void:
+	_clear_chapter_replay()
 	var posts = d.get("cc98",{}).duplicate(true)
+	var variant := Protagonist.variant(d)
 	d = initial()
+	if variant == Protagonist.FEMALE: d.native[Protagonist.SAVE_KEY] = variant
 	if not posts.is_empty(): d["cc98"] = posts
 	developer_mode = false
 	story_reset.emit()
@@ -1034,8 +1067,121 @@ func restart_chapter_limited_save() -> bool:
 	changed.emit()
 	return true
 
+func is_chapter_replaying() -> bool:
+	return not _replay_formal.is_empty()
+
+func _clear_chapter_replay() -> void:
+	_replay_formal = {}
+	_replay_save_path = ""
+	_replay_base_digest = ""
+	_replay_formal_objective = ""
+
+func chapter_map_view() -> Dictionary:
+	return {
+		"nodes": ChapterMap.statuses(d),
+		"current": ChapterMap.current_stop(_replay_formal if is_chapter_replaying() else d),
+		"replay": ChapterMap.current_stop(d) if is_chapter_replaying() else "",
+		"replaying": is_chapter_replaying(),
+		"restore": not ChapterMap.data(d).previous.is_empty(),
+		"can_apply": _chapter_replay_can_apply(),
+		"reduced_motion": d.native.settings.get("reduced_motion",false),
+	}
+
+func chapter_map_destination(id: String) -> Dictionary:
+	if developer_mode or not persistence_ready: return {}
+	var map := ChapterMap.data(d)
+	if id != "prior" and ChapterMap.statuses(d).get(id) != "ready": return {}
+	var snapshot := ChapterMap.decode(str(map.previous if id == "prior" else map.records.get(id,"")))
+	if snapshot.is_empty() or not ReleaseContent.permits_snapshot(snapshot) or not validate_snapshot(snapshot): return {}
+	if id != "prior" and (snapshot.native.has("chapter_map") or int(snapshot.native.chapter) != ChapterMap.CHECKPOINTS[id][1] or ChapterMap.current_stop(snapshot) != id): return {}
+	_clear_transient_save_fields(snapshot)
+	_sanitize_runtime_resume(snapshot)
+	return snapshot
+
+func begin_chapter_replay(id: String) -> bool:
+	if is_chapter_replaying() or id == "prior" or story_input_locked(): return false
+	var destination := chapter_map_destination(id)
+	if destination.is_empty() or not save_game(): return false
+	_replay_formal = d
+	_replay_formal_objective = objective()
+	_replay_save_path = SAVE_PATH
+	_replay_base_digest = _digest_save_bytes(_read_save_bytes(SAVE_PATH))
+	if _replay_base_digest.is_empty():
+		_clear_chapter_replay()
+		return false
+	destination.native.settings = d.native.settings.duplicate(true)
+	var records: Dictionary = ChapterMap.data(d).records
+	var earned := ChapterMap.statuses(destination)
+	destination.native.chapter_map = {"records": {}, "previous": ""}
+	for key: String in records:
+		if earned.get(key) == "seen": destination.native.chapter_map.records[key] = records[key]
+	_set_chapter_map_state(destination)
+	return true
+
+func return_from_chapter_replay() -> bool:
+	if not is_chapter_replaying(): return false
+	var original := _replay_formal
+	_clear_chapter_replay()
+	_set_chapter_map_state(original)
+	return true
+
+func _chapter_replay_can_apply() -> bool:
+	return is_chapter_replaying() and int(d.native.chapter) <= 2 and not story_input_locked()
+
+func chapter_map_rewrite_preview() -> Dictionary:
+	if not _chapter_replay_can_apply(): return {}
+	var before := ChapterMap.statuses(_replay_formal)
+	var after := ChapterMap.statuses(d)
+	var lost := PackedStringArray()
+	for id: String in ChapterMap.CHECKPOINTS:
+		if before.get(id) in ["ready","seen"] and after.get(id) == "future":
+			lost.append(ChapterMap.CHECKPOINTS[id][0])
+	var stop := ChapterMap.current_stop(d)
+	return {"destination": ChapterMap.CHECKPOINTS[stop][0], "lost": lost}
+
+func adopt_chapter_replay() -> bool:
+	if not _chapter_replay_can_apply() or SAVE_PATH != _replay_save_path or _digest_save_bytes(_read_save_bytes(SAVE_PATH)) != _replay_base_digest: return false
+	var old := _replay_formal.duplicate(true)
+	if old.native.has("chapter_map"): old.native.chapter_map.previous = ""
+	_clear_transient_save_fields(old)
+	var receipt := ChapterMap.encode(old)
+	if receipt.is_empty(): return false
+	var candidate := d.duplicate(true)
+	candidate.native.chapter_map = ChapterMap.data(candidate)
+	candidate.native.chapter_map.previous = receipt
+	var replay := d
+	var original := _replay_formal
+	_replay_formal = {}
+	d = candidate
+	if not save_game():
+		d = replay
+		_replay_formal = original
+		return false
+	_clear_chapter_replay()
+	_set_chapter_map_state(candidate)
+	return true
+
+func restore_chapter_map_prior() -> bool:
+	if is_chapter_replaying() or story_input_locked(): return false
+	var candidate := chapter_map_destination("prior")
+	if candidate.is_empty(): return false
+	candidate.native.settings = d.native.settings.duplicate(true)
+	var previous := d
+	d = candidate
+	if not save_game():
+		d = previous
+		return false
+	_set_chapter_map_state(candidate)
+	return true
+
+func _set_chapter_map_state(snapshot: Dictionary) -> void:
+	d = snapshot
+	_invalidate_progressive_activities()
+	story_reset.emit()
+	changed.emit()
+
 func begin_preview(chapter: int, scene: String = "") -> void:
-	if not developer_tools_available(): return
+	if not developer_tools_available() or is_chapter_replaying(): return
 	if not developer_mode: formal_snapshot = d.duplicate(true)
 	developer_mode = true
 	d = initial()
@@ -1058,7 +1204,7 @@ func developer_checkpoints() -> Array:
 	return game_architecture().get_utility("Content").developer_checkpoints()
 
 func begin_checkpoint(id: String) -> bool:
-	if not developer_tools_available(): return false
+	if not developer_tools_available() or is_chapter_replaying(): return false
 	for checkpoint in developer_checkpoints():
 		if str(checkpoint.id) != id: continue
 		if not developer_mode: formal_snapshot = d.duplicate(true)

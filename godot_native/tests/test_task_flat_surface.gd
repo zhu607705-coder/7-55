@@ -65,7 +65,7 @@ func run() -> void:
 		var journal:=find("NativeJournal")
 		var resume:=find("JournalResume") as Button
 		check(find("JournalObjective").text==state.objective(),"only actual current objective is displayed")
-		check(not find("JournalHistory").visible,"history is collapsed on task entry")
+		check(find("ChapterMap")==null,"map is separate from the task")
 		check(resume.text=="×" and resume.tooltip_text=="返回游戏","phone task uses shared close with authored return destination")
 		check(find("NativeModalClose")==null,"task has no duplicate generic close")
 		check(not find("JournalScroll").is_ancestor_of(resume),"single return stays in the fixed header")
@@ -80,38 +80,11 @@ func run() -> void:
 		check(resume.get_theme_stylebox("focus") is StyleBoxFlat,"return has visible keyboard focus outline")
 		motion(Vector2(1,1));await take("%dx%d-task-current"%[dimensions.x,dimensions.y])
 		await reveal_control("JournalResume");motion(resume.get_global_rect().get_center());await take("%dx%d-task-return-hover"%[dimensions.x,dimensions.y])
-		await click(await reveal_control("JournalHistoryToggle"));await frames(8)
-		check(find("JournalHistory").visible,"pointer opens actual history toggle")
-		check(find("JournalHistory").get_child_count()==state.d.native.log.size() if not state.d.native.log.is_empty() else 1,"all earned records remain available")
-		await take("%dx%d-task-history"%[dimensions.x,dimensions.y])
-		await press_key(KEY_SPACE)
-		check(not find("JournalHistory").visible,"Space closes the same history toggle")
-		check(root.gui_get_focus_owner()==find("JournalHistoryToggle"),"collapse retains focus")
-		check(JSON.stringify(state.d)==original,"pointer/keyboard/hover/history are read-only")
+		await click(await reveal_control("JournalChapterMap"));await frames(8)
+		check(find("ChapterMap")!=null,"task opens the chapter map")
+		check(JSON.stringify(state.d)==original,"looking at the map preserves progression")
 		await press_key(KEY_ESCAPE)
-		check(not is_instance_valid(shell.modal),"Escape closes task without reopening it")
-		# Empty and long logs are isolated presentation fixtures, never formal saves.
-		for count: int in [0,1,129]:
-			state.d.native.log=[]
-			for i in count:state.d.native.log.append({"text":"测试记录 %d：保留已获得的记录，不显示未来任务。"%i,"time":"fixture"})
-			original=JSON.stringify(state.d)
-			shell._show_journal();await create_timer(.20).timeout;await frames(8)
-			await click(await reveal_control("JournalHistoryToggle"));await frames(8)
-			check(find("JournalHistory").get_child_count()==maxi(count,1),"record size retained: %d"%count)
-			if count==0:check(find("JournalHistoryEmpty").text=="还没有历史记录。","empty state retains original wording")
-			else:check(find("JournalHistoryRow0").text==state.d.native.log[0].text,"oldest record text retained")
-			var scroll:=find("JournalScroll") as ScrollContainer
-			if count==129:
-				check(scroll.get_v_scroll_bar().max_value>scroll.size.y,"long records have genuine scroll extent")
-				scroll.scroll_vertical=int(scroll.get_v_scroll_bar().max_value);await frames(8)
-				check(scroll.scroll_vertical>0,"long record history scrolls to oldest entry")
-				check(find("JournalResume").get_global_rect().end.y<=find("JournalScroll").get_global_rect().position.y,"single return remains above scrolling history")
-				await take("%dx%d-task-long-history-bottom"%[dimensions.x,dimensions.y])
-				journal=find("NativeJournal");journal.focus_control("JournalHistoryToggle");await frames(8)
-				check(scroll.get_global_rect().grow(0.01).encloses(find("JournalHistoryToggle").get_global_rect()),"history toggle is visible within 0.01px transform tolerance")
-			check(JSON.stringify(state.d)==original,"empty/partial/long records do not mutate quest state")
-			await click(find("JournalResume"));await frames(8)
-			check(not is_instance_valid(shell.modal),"single header return remains reachable for every record length")
+		check(not is_instance_valid(shell.modal),"Escape closes chapter map")
 		for checkpoint_id: String in ["c1-home","c1-dorm-card","c1-checkin"]:
 			check(seed_c1_fixture(checkpoint_id),"authored digit-progress fixture loads: "+checkpoint_id)
 			state.d.native.page="phone_home";state.d.native.scene="";state.d.native.settings.volume=0

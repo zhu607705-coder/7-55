@@ -1,4 +1,5 @@
 extends RefCounted
+const Protagonist := preload("res://scripts/protagonist_profile.gd")
 const PixelEdges = preload("res://scripts/ui/pixel_edges.gd")
 const PhoneOverlay = preload("res://scripts/ui/phone_overlay_shell.gd")
 const Typography=preload("res://scripts/ui/native_typography.gd")
@@ -283,7 +284,7 @@ func _image(root: Control, path: String, rect: Rect2) -> TextureRect:
 	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	image.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var resource = "res://assets/" + path
+	var resource = path if path.begins_with("res://") else "res://assets/" + path
 	if ResourceLoader.exists(resource): image.texture = load(resource)
 	root.add_child(image)
 	return image
@@ -422,7 +423,7 @@ func _home() -> Control:
 	for mode in ["normal","hover","pressed"]: bonsai.add_theme_stylebox_override(mode,_style(Color.TRANSPARENT))
 	# Exact source widget geometry. Whole-card click has no extra visible button.
 	var rain=not s.qizhenLake.rainSafetyCleared
-	_panel(root,_home_rect(15,56,212,182),Color("fff8e2",.85),INK,0,2)
+	var weather_card := _panel(root,_home_rect(15,56,212,182),Color("fff8e2",.85),INK,0,2)
 	if rain:
 		var cloud=Polygon2D.new(); cloud.color=Color("bfd1db")
 		var cloud_points=PackedVector2Array()
@@ -441,8 +442,8 @@ func _home() -> Control:
 	_label(root,"18°C" if rain else "19°C",_home_rect(119,108,94,41),34)
 	_label(root,"最高 20°C / 最低 15°C",_home_rect(37,160,177,21),12)
 	_panel(root,_home_rect(37,190,168,2),Color("decfb4"))
-	_label(root,"空气湿度 "+("88%" if rain else "76%"),_home_rect(37,201,105,22),11,Color("c85454"))
-	_label(root,"西南风 2级",_home_rect(140,201,70,22),11,Color("c85454"),HORIZONTAL_ALIGNMENT_RIGHT)
+	var humidity := _label(root,"空气湿度 "+("88%" if rain else "76%"),_home_rect(37,201,105,22),11,Color("c85454"))
+	var wind := _label(root,"西南风 2级",_home_rect(140,201,70,22),11,Color("c85454"),HORIZONTAL_ALIGNMENT_RIGHT)
 	if s.actOne.phase!="prologue":
 		var weather_target=_button(root,"",_home_rect(15,56,212,182),func(): page_requested.emit("weather"),Color.TRANSPARENT,INK,0,Color.TRANSPARENT)
 		weather_target.name="HomeWeatherOpen"; weather_target.tooltip_text="打开天气"
@@ -455,11 +456,27 @@ func _home() -> Control:
 		drop.size = target.size
 		drop.accessibility_name = "雨滴"
 		var hint_text := "光靠手心可兜不住水。" if s.items.headphone else "雨滴挂在边缘，似乎再借一点向下的力就会落下来。"
-		drop.tooltip_text = hint_text
+		drop.accessibility_description = hint_text
 		_panel(drop,Rect2(10,4,8,14),Color("7db6ec")).name = "HomeCollectibleDropGlyph"
 		root.add_child(drop)
-		var hint := _label(root,"",_home_rect(37,221,168,30),12,BLUE)
-		drop.inspected.connect(func(): hint.text = hint_text)
+		var hint := _label(weather_card,hint_text,Rect2(Vector2(22,140)/PHONE_SCALE,Vector2(168,0)/PHONE_SCALE),12,BLUE)
+		hint.name = "HomeWaterDropHint"
+		hint.hide()
+		var base_height := weather_card.size.y
+		var hint_timer := Timer.new()
+		hint_timer.one_shot = true
+		weather_card.add_child(hint_timer)
+		hint_timer.timeout.connect(func():
+			hint.hide()
+			humidity.show()
+			wind.show()
+			weather_card.size.y = base_height)
+		drop.inspected.connect(func():
+			humidity.hide()
+			wind.hide()
+			hint.show()
+			weather_card.size.y = maxf(base_height, hint.get_rect().end.y + 6.0/PHONE_SCALE)
+			hint_timer.start(3.5))
 		drop.pulled.connect(func(): action_requested.emit("c1_rain_drop", "pull"))
 		drop.item_dropped.connect(func(item: String): action_requested.emit("c1_rain_fill", item))
 		handled.append("c1_rain_drop")
@@ -1095,7 +1112,7 @@ func _campus_card() -> Control:
 	_label(root,"ZHEJIANG UNIVERSITY",_home_rect(188,189,205,16),8,Color("c7d5ee"))
 	_panel(root,_home_rect(30,218,364,2),Color(1,1,1,.25))
 	_panel(root,_home_rect(30,232,96,118),Color("7ea4e0"),Color("cfdcf5"),0,3)
-	var portrait := _image(root,"native/campus_card/lin_xingyu_portrait.png",_home_rect(33,235,90,112))
+	var portrait := _image(root,Protagonist.portrait_path(s,"res://assets/native/campus_card/lin_xingyu_portrait.png"),_home_rect(33,235,90,112))
 	portrait.name = "CampusCardPortrait"
 	portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	var identity=s.actOne.inventoryRecovered and s.items.campusCard
@@ -1644,7 +1661,10 @@ func _zju_identity_header(root: Control, in_messages: bool = false) -> void:
 	var profile=ZjudingChrome.round_button(_button(root,"",Rect2(45,12,42,42),func(): zjuding_overlay="profile"; action_requested.emit("phone_refresh",{}),Color("e2ecff"),ZjudingChrome.BLUE,0,Color.TRANSPARENT),10)
 	profile.name="ZjudingProfileMenu"
 	profile.accessibility_name="个人菜单"
-	_label(profile,"星宇" if identity else "用户",Rect2(0,0,42,42),14,ZjudingChrome.BLUE,HORIZONTAL_ALIGNMENT_CENTER)
+	if identity and Protagonist.variant(s) == Protagonist.FEMALE:
+		_image(profile,Protagonist.portrait_path(s,""),Rect2(3,3,36,36)).texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	else:
+		_label(profile,"星宇" if identity else "用户",Rect2(0,0,42,42),14,ZjudingChrome.BLUE,HORIZONTAL_ALIGNMENT_CENTER)
 	_label(root,"林星宇" if identity else "身份未读取",Rect2(97,10,143,28),19,ZjudingChrome.INK)
 	_label(root,"浙江大学",Rect2(97,38,143,19),12,ZjudingChrome.MUTED)
 	_zju_search_trigger(root,Rect2(247,13,117,39),"搜索","ZjudingSearchOpen",ZjudingChrome.PILL)

@@ -3,14 +3,16 @@ import path from 'node:path';
 import { fileSha256 } from './web_content_delivery.mjs';
 import { verifyBootChunks } from './web_boot_chunks.mjs';
 import { verifyContentChunks } from './web_content_chunks.mjs';
+import { assertTokenizedWebScripts } from './web_story_content_policy.mjs';
 import { prepareWebCompression, verifyWebCompression } from './web_precompress.mjs';
 
 // Derive a second artifact instead of taking content away from campaign QA.
 // Unknown content families require an explicit release decision.
 const allowed = new Set(['phone_bonsai', 'phone_tiyi', 'phone_zjuding', 'chapter2', 'chapter2_campus', 'chapter2_library', 'flc_activity']);
 const withheld = new Set(['chapter3', 'chapter35', 'chapter4']);
-const changed = new Set(['content-manifest.json', 'content-inventory.json']);
-const provenanceFiles = ['.nojekyll', 'source-inputs.json', 'pack-inventory.json'];
+const manifestFile = 'content-manifest.json';
+const internalFiles = new Set(['source-inputs.json', 'pack-inventory.json', 'content-inventory.json']);
+const mobileStartupBudgetBytes = 30_000_000;
 const sum = (items, key) => items.reduce((total, item) => total + item[key], 0);
 const option = name => process.argv.slice(2).find(arg => arg.startsWith(`--${name}=`))?.slice(name.length + 3);
 const input = fs.realpathSync(option('input') || 'godot_native/exports/web-release');
@@ -62,7 +64,7 @@ assert(inventory.schema === '755-web-content-inventory-v1'
 
 const originals = new Map(build.files.map(item => [item.path, item]));
 assert(originals.size === build.files.length, 'Duplicate source build file records');
-for (const file of changed) verifyIdentity(originals, file, identity(input, file));
+for (const file of [manifestFile, 'content-inventory.json']) verifyIdentity(originals, file, identity(input, file));
 const sourceContentPaths = new Set();
 for (const pack of content.packs) {
   assert(allowed.has(pack.family) || withheld.has(pack.family), `Unclassified Pages content family: ${pack.family}`);
@@ -77,15 +79,23 @@ assert(packs.length < content.packs.length && packs.some(pack => pack.family ===
 const backgroundOrder = content.backgroundOrder.filter(family => !withheld.has(family));
 assert(backgroundOrder.every(family => packs.some(pack => pack.family === family)), 'Pages background order references missing content');
 const publicContent = { ...content, packs, backgroundOrder, publicChapterLimit: 2 };
+if (content.prefetchPlan !== undefined) {
+  publicContent.prefetchPlan = Object.fromEntries(Object.entries(content.prefetchPlan).map(([stage, target]) => [
+    stage, backgroundOrder.includes(target) ? target : '',
+  ]));
+}
 const publishedPaths = new Set(packs.flatMap(pack => [pack.file, ...(pack.transportChunks ?? []).map(chunk => chunk.file)]));
 const groupIDs = new Set([inventory.coreId, ...packs.map(pack => pack.id)]);
 const groups = inventory.groups.filter(group => groupIDs.has(group.id));
 const entries = inventory.entries.filter(entry => groupIDs.has(entry.group));
 assert(groups.length === groupIDs.size && sum(groups, 'entries') === entries.length, 'Pages story inventory does not account for every retained pack');
 
+assertTokenizedWebScripts(entries);
+
 function keep(file) {
   const original = file.endsWith('.gz') ? file.slice(0, -3) : file;
-  if (changed.has(original)) return false;
+  if (original === manifestFile || internalFiles.has(original)) return false;
+  assert(!/\.(?:gd|map|blend1?|psd|kra)$/i.test(original), `Authoring or diagnostic file in Pages artifact: ${original}`);
   if (!original.startsWith('content/')) return true;
   assert(sourceContentPaths.has(original), `Unclassified content artifact file: ${original}`);
   return publishedPaths.has(original);
@@ -111,18 +121,12 @@ try {
     copy(file.path, site);
     verifyIdentity(originals, file.path, identity(site, file.path));
   }
-  for (const file of provenanceFiles) copy(file, site);
-  write(site, 'content-manifest.json', publicContent);
-  write(site, 'content-inventory.json', {
-    schema: '755-public-web-content-inventory-v1',
-    coreId: inventory.coreId, publicChapterLimit: 2, groups, entries,
-    sourceInventorySha256: build.content.inventorySha256,
-    publishedEntries: entries.length, publishedEntryBytes: sum(entries, 'bytes'),
-  });
+  copy('.nojekyll', site);
+  write(site, manifestFile, publicContent);
 
   const json = path.join(temp, 'json');
   fs.mkdirSync(json);
-  for (const file of changed) copy(file, json, site);
+  copy(manifestFile, json, site);
   const compressedJson = prepareWebCompression(json);
   for (const file of compressedJson.files) copy(file.file, site, json);
   const compressionFiles = [...(build.transportCompression?.files ?? []).filter(record => keep(record.file)), ...compressedJson.files]
@@ -135,28 +139,36 @@ try {
   const compressedPaths = verifyWebCompression(site, transportCompression).files.map(record => record.file);
   const boot = verifyBootChunks(site, build.bootChunks, { verifiedCompressedFiles: compressedPaths });
   const transportChunks = verifyContentChunks(site, packs, { verifiedCompressedFiles: compressedPaths });
-  const files = [...copied, ...[...changed, ...compressedJson.files.map(record => record.file)].map(file => identity(site, file))]
+  const files = [...copied, ...[manifestFile, ...compressedJson.files.map(record => record.file)].map(file => identity(site, file))]
     .sort((a, b) => a.path.localeCompare(b.path));
   const actualFiles = new Map(files.map(file => [file.path, file]));
   for (const pack of [content.core, ...packs]) verifyIdentity(actualFiles, pack.file, pack);
   const initialFiles = files.filter(file => !file.path.startsWith('liangzhu-trailer/') && !file.path.endsWith('.gz')
-    && !file.path.startsWith('content/') && !['content-inventory.json', 'index.pck', 'index.wasm'].includes(file.path));
+    && !file.path.startsWith('content/') && !['index.pck', 'index.wasm'].includes(file.path));
   const gzipBySource = new Map(compressionFiles.map(record => [record.source, record]));
+  const initialGzipPayloadBytes = initialFiles.reduce((bytes, file) => bytes + (gzipBySource.get(file.path)?.bytes ?? file.bytes), 0);
+  // Count one transfer representation per game resource, including activities.
+  // The standalone trailer pages and build-time audit files are separate.
+  const gameGzipPayloadBytes = packs.reduce((bytes, pack) => bytes + (pack.transportChunks ?? [pack])
+    .reduce((packed, resource) => packed + (gzipBySource.get(resource.file)?.bytes ?? resource.bytes), 0), initialGzipPayloadBytes);
+  assert(initialGzipPayloadBytes <= mobileStartupBudgetBytes,
+    `Pages startup payload ${initialGzipPayloadBytes} bytes exceeds the ${mobileStartupBudgetBytes}-byte mobile transfer budget`);
   const totalPayloadBytes = sum(files, 'bytes');
   const releasePolicy = {
     publicChapterLimit: 2,
     sourceBuildSha256: fileSha256(checkedFile(input, 'build-manifest.json')),
     withheldFamilies: [...withheld],
   };
+  const { sourceChanges, content: { inventorySha256, ...contentBuild }, ...publicBuild } = build;
   const publishedBuild = {
-    ...build, releasePolicy, files, totalPayloadBytes, transportCompression,
+    ...publicBuild, releasePolicy, files, totalPayloadBytes, transportCompression,
     logicalPayloadBytes: totalPayloadBytes - transportCompression.bytes - boot.bytes - transportChunks.bytes,
     initialPayloadBytes: sum(initialFiles, 'bytes'),
-    initialGzipPayloadBytes: initialFiles.reduce((bytes, file) => bytes + (gzipBySource.get(file.path)?.bytes ?? file.bytes), 0),
+    initialGzipPayloadBytes,
+    gameGzipPayloadBytes,
     fullPack: { ...build.fullPack, role: 'source-full-export' },
-    content: { ...build.content, packs: packs.length, deferredBytes: sum(packs, 'bytes'),
+    content: { ...contentBuild, packs: packs.length, deferredBytes: sum(packs, 'bytes'),
       exactCoverage: false, exactPublishedCoverage: true, entryCount: entries.length, transportChunks,
-      inventorySha256: fileSha256(checkedFile(site, 'content-inventory.json')),
     },
     acceptance: 'Verified Pages projection of the full campaign artifact. Later story families are omitted.',
   };
@@ -170,7 +182,7 @@ try {
   }
   if (previous) fs.rmSync(rollback, { recursive: true });
   console.log(JSON.stringify({ output: destination, sourceCommit: build.sourceCommit, ...releasePolicy,
-    publishedPacks: packs.length, withdrawnPacks: content.packs.length - packs.length, totalPayloadBytes }, null, 2));
+    publishedPacks: packs.length, withdrawnPacks: content.packs.length - packs.length, initialGzipPayloadBytes, gameGzipPayloadBytes, totalPayloadBytes }, null, 2));
 } finally {
   if (!fs.existsSync(rollback)) fs.rmSync(temp, { recursive: true, force: true });
 }

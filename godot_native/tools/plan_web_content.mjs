@@ -52,6 +52,8 @@ const links = [];
 const unresolved = [];
 function assign(name, group, reason) { ownership.set(name, { group, reason }); }
 function classify(name) {
+  if (/^assets\/native\/(?:protagonist_female|library_animation_20261105)\/player_down_idle\.png$/.test(name)) return 'core';
+  if (name.startsWith('assets/native/protagonist_female/')) return name.endsWith('/portrait.png') ? 'core' : 'chapter2';
   if (isFlcRuntimePath(name)) return 'flc_activity';
   if (name.startsWith('campuses/buct_shared/')) return 'campus_shared';
   if (name.startsWith('campuses/buct_changping/')) return 'campus_changping';
@@ -85,6 +87,7 @@ function classify(name) {
   // Layered campus is loaded with campus_bootstrap, never the opening phone.
   if (name.startsWith('assets/native/campus_layered/')) return 'chapter2_campus';
   if (name.startsWith('assets/native/weather/')) return 'chapter2';
+  if (name === 'assets/native/player_locomotion/player_walk_and_idle.png') return 'chapter2';
   if (/^assets\/native\/north_objects_20261025\//.test(name)) return 'chapter4';
   if (/^assets\/native\/library_animation_20261105\/player_(?:walk_full|(?:down|up|side)_idle)\.png$/.test(name)) return 'chapter2';
   if (/^assets\/native\/(library_rebuild_20261020|library_object_depth_20261104|library_animation_20261105|library_interactions_20261105|library_geometry)\//.test(name)) return 'chapter2_library';
@@ -99,6 +102,9 @@ function classify(name) {
   if (/^assets\/ui\/zjuding_(?:home|loading)\.png$/.test(name)) return 'phone_zjuding';
   if (/^assets\/ui\/tiyi_(?:main|loading)\.png$/.test(name)) return 'phone_tiyi';
   if (name.startsWith('assets/native/bonsai/') || /^assets\/ui\/bonsai_(?:bloom|bud)\.png$/.test(name)) return 'phone_bonsai';
+  // Chapter 2 draws the active layers and the library's separate exact crop.
+  // Only the later chapter's full-map phone view needs the flat source plate.
+  if (name === 'assets/rpg/campus/zijingang_campus_plate.png') return 'chapter3';
   if (/^assets\/rpg\/(campus|landmarks)\//.test(name)) return /loop_panorama/.test(name) ? 'chapter35' : 'chapter2_campus';
   if (/^assets\/rpg\/(portraits|chapter4-stair)\//.test(name)) return 'chapter4';
   if (/^assets\/rpg\/(qizhen_fishing|qizhen)\//.test(name)) return 'chapter35';

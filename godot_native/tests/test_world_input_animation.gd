@@ -133,7 +133,7 @@ func test_manual_and_collision() -> void:
 	var start:Vector2=world.player
 	world.touch_axis=Vector2.RIGHT
 	world._process(.05)
-	check(is_equal_approx(world.player.x-start.x,8.0) and is_equal_approx(world.player.y,start.y),"authorized manual speed remains 160 source units per second")
+	check(is_equal_approx(world.player.x-start.x,120.0*.05) and is_equal_approx(world.player.y,start.y),"authorized dorm walk uses 120 source units per second")
 	check(is_equal_approx(world.walk_clock,.05) and world.facing=="side" and not world.player_flip,"manual right walk advances clock once")
 	check(state.d.actOne.manualControlTested and actions.count("c2_manual_input")==1,"real controller still accepts first manual displacement once")
 	world.touch_axis=Vector2.LEFT

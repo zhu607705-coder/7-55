@@ -19,7 +19,10 @@ const WorldSpace=preload("res://scripts/space/world_space.gd")
 var world_space:RefCounted=WorldSpace.new()
 var north_space:RefCounted=world_space.north
 const CharacterFacing = preload("res://scripts/character_facing.gd")
+const Protagonist := preload("res://scripts/protagonist_profile.gd")
 const PlayerWalkArt = preload("res://scripts/player_walk_art.gd")
+const GROUND_WALK_SPEED := 123.75
+const GROUND_SPRINT_RATE := 228.0 / 165.0
 const PlayerLocomotion = preload("res://scripts/player_locomotion.gd")
 const InventoryGesture = preload("res://scripts/ui/inventory_gesture.gd")
 const ObjectPicker = preload("res://scripts/world_object_picker.gd")
@@ -65,6 +68,7 @@ var world_key := ""
 var background: Texture2D
 var player_frames: Dictionary = {}
 var locomotion := PlayerLocomotion.new()
+var _editor_walk_preview := false
 var player_walk_art: RefCounted:
 	get: return locomotion.art
 var player_side_idle: Texture2D
@@ -196,6 +200,11 @@ var _kayak_boundary_hint_at: int=-KAYAK_BOUNDARY_HINT_COOLDOWN_MS
 var object_picker: RefCounted=ObjectPicker.new()
 
 func _ready() -> void:
+	if OS.has_feature("editor") and "--player-look=female" in OS.get_cmdline_user_args():
+		var preview := PlayerWalkArt.female_preview()
+		if preview != null:
+			locomotion.art = preview
+			_editor_walk_preview = true
 	clip_contents = true
 	# Use the same pixel-art sampler for every scene, including standalone
 	# views that do not mount the shell's world SubViewport.
@@ -248,6 +257,8 @@ func _ensure_scene_visuals(incoming: String) -> void:
 	elif campus_layers.ready:
 		campus_layers.release()
 		floor_navigation.roads.clear()
+	if not _editor_walk_preview:
+		locomotion.art = PlayerWalkArt.shared(Protagonist.variant(State.d))
 	player_walk_art.ensure_loaded()
 	if player_frames.is_empty():
 		for direction in ["down","up","side","left"]:
@@ -984,6 +995,7 @@ func _process(delta: float) -> void:
 	var axis := Vector2.ZERO
 	var campus_route := scene_id == "campus_bootstrap"
 	var face_keyboard := false
+	var sprint_requested := false
 	var route_can_advance: bool = not campus_route or (_window_focused and not direct_gestures.has_active())
 	if focus is LineEdit or focus is TextEdit: _cancel_floor_route()
 	elif not campus_route or _window_focused:
@@ -997,6 +1009,7 @@ func _process(delta: float) -> void:
 		_cancel_floor_route()
 		_input_kind = "keyboard"
 		face_keyboard = campus_route
+		sprint_requested = Input.is_key_pressed(KEY_SHIFT)
 		move_target = Vector2.INF
 	elif not floor_route.waypoints.is_empty():
 		if route_can_advance:
@@ -1033,6 +1046,7 @@ func _process(delta: float) -> void:
 	# Measure actual foot travel after automatic and manual movement.
 	var walk_start := player
 	var floor_route_finished := false
+	var stride_rate := 1.0
 	if scene_id == "dorm_hub" and not State.d.actOne.get("controlsInstalled",false):
 		move_target = Vector2.INF
 		axis = Vector2.ZERO
@@ -1044,8 +1058,11 @@ func _process(delta: float) -> void:
 	if axis.length_squared() > 0 or (route_can_advance and not floor_route.waypoints.is_empty()):
 		if mobile_exploration and floor_route.waypoints.is_empty(): pan_offset=Vector2.ZERO
 		axis = axis.limit_length(1.0) if mobile_stick_id>=0 and touch_axis.length_squared()>0 else axis.normalized()
-		var speed := 208.0 if scene_id == "duan_yongping_temporal_maze" and State.d.chapter4.phase == "final_chase" else 176.0 if scene_id == "duan_yongping_temporal_maze" else 160.0 if scene_id == "dorm_hub" else 165.0
-		if scene_id in ["canteen_interior","theater_interior","qizhen_lake"] and Input.is_key_pressed(KEY_SHIFT): speed = 228.0
+		var final_chase: bool = scene_id == "duan_yongping_temporal_maze" and State.d.chapter4.phase == "final_chase"
+		var walk_speed := 208.0 if final_chase else 132.0 if scene_id == "duan_yongping_temporal_maze" else 120.0 if scene_id == "dorm_hub" else GROUND_WALK_SPEED
+		if sprint_requested and not final_chase:
+			stride_rate = GROUND_SPRINT_RATE
+		var speed := walk_speed * stride_rate
 		var displacement := axis*speed*delta
 		var old := player
 		var following_floor_route:=not floor_route.waypoints.is_empty()
@@ -1072,7 +1089,7 @@ func _process(delta: float) -> void:
 				State.act("c2_manual_input",{"moved":true,"distance":old.distance_to(player)*2,"input":_input_kind})
 	var walked := player-walk_start
 	# Campus edge slides can move the feet sideways under a held direction.
-	_apply_player_motion(walked,axis,delta,face_keyboard)
+	_apply_player_motion(walked,axis,delta,face_keyboard,stride_rate)
 	if scene_id == "canteen_interior" and axis.y > 0.0 and _cross_canteen_exit(): return
 	if scene_id == "theater_interior" and axis.y > 0.0 and _cross_theater_exit(): return
 	# Arrival has no remaining movement input. Retire its walk frame now,
@@ -1118,15 +1135,16 @@ func _cross_theater_exit() -> bool:
 	# Use outward input so an older save against the vestibule boundary can leave.
 	return chapter3_layers.doors.theater_exit_reached(player) and host_node._begin_theater_departure()
 
-func _apply_player_motion(motion:Vector2,intent:Vector2,delta:float,face_intent := false) -> void:
-	locomotion.advance(motion, intent, delta, face_intent)
+func _apply_player_motion(motion:Vector2,intent:Vector2,delta:float,face_intent := false,stride_rate := 1.0) -> void:
+	locomotion.advance(motion, intent, delta, face_intent, stride_rate)
 
 func player_visual() -> Dictionary:
 	# One selection path for CanvasItem, native canteen Sprite2D and alpha picking.
 	# A complete authored left cycle can replace the genuine side-view mirror.
 	var turn := locomotion.active_turn()
 	var pose := CharacterFacing.turn_pose(turn) if not turn.is_empty() else {"facing": facing, "flip": player_flip, "angle": 0.0}
-	var authored_left: bool = pose.facing == "side" and pose.flip and player_frames.get("left", []).size() == PlayerWalkArt.WALK_FRAMES
+	var authored_left: bool = pose.facing == "side" and pose.flip and player_frames.get("left", []).size() == PlayerWalkArt.WALK_FRAMES \
+		and player_walk_art == PlayerWalkArt.shared()
 	if player_walk_art.ready and not authored_left:
 		return locomotion.sample()
 	var direction:String=pose.facing
@@ -1136,7 +1154,8 @@ func player_visual() -> Dictionary:
 	var frames:Array=player_frames.get(direction,[])
 	var texture:Texture2D=null
 	if not frames.is_empty():
-		texture=frames[PlayerMetrics.frame_at((walk_clock if player_turn.is_empty() else 0.0)*1000)%frames.size()]
+		var elapsed_ms := (walk_clock if turn.is_empty() else 0.0) * 1000.0
+		texture=frames[PlayerWalkArt.frame_at(elapsed_ms) if authored_left else PlayerMetrics.frame_at(elapsed_ms)%frames.size()]
 		if walk_clock<=0 and player_turn.is_empty():
 			if direction=="side" and player_side_idle!=null:texture=player_side_idle
 			elif direction=="left" and player_left_idle!=null:texture=player_left_idle
@@ -1425,8 +1444,9 @@ func _draw_actor_pass(canvas: CanvasItem,layer_context: Dictionary,defer_foregro
 		drawn_player = chair_pose.point
 		seated_fraction = chair_pose.settle
 		var idle: Texture2D = player_walk_art.idles.get("up", player_frames.get("up", [null])[0])
-		seated_art = seated_fraction >= 0.5 and library_layers.animations.seated != null
-		actor = {"texture":library_layers.animations.seated if seated_art else idle, "flip_h":false, "angle":0.0}
+		var seated: Texture2D = library_layers.animations.seated_for(Protagonist.variant(State.d))
+		seated_art = seated_fraction >= 0.5 and seated != null
+		actor = {"texture":seated if seated_art else idle, "flip_h":false, "angle":0.0}
 	elif scene_id=="library_interior" and library_layers!=null and library_layers.objects.ready and library_layers.motion.sit_ms>=0:
 		drawn_player=library_layers.motion.actor_pose(player).point
 		if player_walk_art.ready: actor = player_walk_art.actor("up", false, 0.0, false)

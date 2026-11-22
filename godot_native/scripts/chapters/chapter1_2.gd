@@ -1,4 +1,5 @@
 extends RefCounted
+const Protagonist := preload("res://scripts/protagonist_profile.gd")
 ## Native chapter-one and movement-prelude authority. Presentation never grants facts.
 const Utilities = preload("res://scripts/chapters/phone_utilities.gd")
 const TiyiAccess = preload("res://scripts/chapters/tiyi_access.gd")
@@ -484,7 +485,7 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 		"c2_inspect_character":
 			if not _movement(s): return _ok("小人站在寝室里。")
 			a.characterPromptSeen = true
-			return _ok("别戳他了，他听不见。连自己叫什么、学号多少都还不清楚，他只是个没加载完的默认建模。" if not a.characterNamed else "他好像没什么动力走。" if not a.exerciseStarted else "他走起来了，但他不知道该往哪里走。")
+			return _ok(Protagonist.character_line(s,"别戳他了，他听不见。连自己叫什么、学号多少都还不清楚，他只是个没加载完的默认建模。" if not a.characterNamed else "他好像没什么动力走。" if not a.exerciseStarted else "他走起来了，但他不知道该往哪里走。"))
 		"c2_card_identity":
 			if not a.inventoryRecovered or not items.campusCard: return _ok("需要随身校园卡。")
 			a.cc98Login.studentIdDiscovered = true
@@ -495,7 +496,7 @@ func _movement_dispatch(s: Dictionary, action: String, value: Variant) -> Dictio
 			if parts.size() != 2 or _normal_text(str(parts[0])).replace(" ","") != "林星宇" or _student_id(str(parts[1])) != "3250100755": return _ok("姓名和学号不匹配。请核对校园卡。")
 			a.characterNamed = true
 			a.identityVerified = true
-			return _ok("姓名和学号一致。很好，他现在知道自己是谁了。")
+			return _ok(Protagonist.character_line(s,"姓名和学号一致。很好，他现在知道自己是谁了。"))
 		"c2_tiyi_discover", "c2_tiyi_acquire", "c2_tiyi_install", "c2_tiyi_download_finished":
 			if not TiyiAccess.update_required(s): return _ok("当前无需重新安装体艺客户端。")
 			var stage: String=str(a.get("tiyiUpdateStage","not_started"))

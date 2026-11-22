@@ -42,6 +42,7 @@ func run() -> void:
 	for viewport: Vector2i in [Vector2i(390,844),Vector2i(430,860),Vector2i(1440,900)]:
 		root.size=viewport; shell.size=Vector2(viewport); await frames()
 		await fixture("wechat")
+		check(not shell.phone_chrome.task_button.visible, "new game waits for the first task")
 		await click(find_named(shell.page_body,"WechatFriendAvatar"))
 		check(session().friend_open and state.d.native.friend_scatter_pending,"avatar opens friend before slash puzzle")
 		check(not find_named(shell.page_body,"FriendCodeMessage").visible,"message not shown before900ms")
@@ -67,7 +68,44 @@ func run() -> void:
 		await tick(1); await click(find_named(shell.page_body,"FriendAttackSkip")); await tick(0)
 		check(session().friend_skipped and session().friend_phase==3,"real eligible skip starts scatter/laugh")
 		await tick(5379); check(not state.d.flags.codeScattered,"controller does not grant completion early")
-		await tick(1); check(state.d.flags.codeScattered,"controller receives complete9380ms skipped proof")
+		var chrome = shell.phone_chrome
+		var bubble: PanelContainer = find_named(shell.page_body, "FriendAttackBurst")
+		var origin: Vector2 = chrome.get_global_transform_with_canvas().affine_inverse() * (bubble.get_global_transform_with_canvas() * (bubble.size * .5))
+		check(not chrome.task_button.visible, "no task hit target before scatter completes")
+		state.d.native.settings.reduced_motion = viewport.x == 430
+		shell._process(.001)
+		check(state.d.flags.codeScattered,"controller receives complete9380ms skipped proof")
+		var intro: Tween = chrome._task_intro
+		if viewport.x == 430:
+			check(intro == null, "reduced motion goes directly to the earned task button")
+		else:
+			check(intro != null and bubble.get_parent() == chrome.task_button, "the original attack frame becomes the task button")
+			if intro != null:
+				intro.pause()
+				check(chrome.task_button.get_rect().get_center().distance_to(origin)<1 and chrome.task_button.disabled,
+					"flight starts at the visible message and cannot intercept clicks")
+				shell._refresh()
+				var full_size := bubble.size
+				intro.custom_step(.15)
+				check(chrome.task_button.get_rect().get_center().x > origin.x + 3 and bubble.size == full_size,
+					"full-size red frame shakes before the fold")
+				intro.custom_step(.06)
+				check(chrome.task_button.get_rect().get_center().x < origin.x - 3, "frame shakes back across its starting point")
+				intro.custom_step(.15)
+				check(chrome.task_button.get_rect().get_center().distance_to(origin)<.1, "shake settles at the launch point")
+				intro.custom_step(.31)
+				var at: Vector2 = chrome.task_button.position
+				check(at.y > 5 and at.y < origin.y, "live task button travels toward the status bar across refresh")
+				intro.custom_step(.65)
+		await frames()
+		check(chrome._task_intro == null and chrome.task_button.visible and not chrome.task_button.disabled
+			and chrome.task_button.position == Vector2(144,5), "earned task settles at its interactive header position")
+		check(chrome.task_button.get_theme_stylebox("normal").border_width_left > 0, "landed task button retains its border")
+		await click(chrome.task_button)
+		check(is_instance_valid(shell.modal) and find_named(shell.modal,"NativeJournal") != null, "landed button opens the journal")
+		shell._close_modal()
+		shell._refresh()
+		check(chrome._task_intro == null and chrome.task_button.visible, "same-state refresh does not replay unlock")
 		check(cues.count("native_wechat_message_arrived")==2 and cues.count("xy_laugh")==1,"reopened sequence has one arrival and one laugh")
 		await fixture("tiyi","cellular")
 		old_session=session(); await tick(1399)

@@ -116,6 +116,26 @@ func book(base:String,output:String)->void:
 	sheet.save_png(output.path_join("library_book_sheet.png"));sheet.save_png(base.path_join("preview_book.png"))
 	report.book={"frames":16,"cell":[192,160],"pivot":[80,154],"height":110,"sharedScale":factor,"rows":rows}
 
+func match_seated_palette(frame: Image) -> void:
+	for y in frame.get_height():
+		for x in frame.get_width():
+			var c := frame.get_pixel(x, y)
+			if c.a == 0.0 or (c.r > c.b + .12 and c.r > .35) or maxf(c.r, maxf(c.g, c.b)) > .65:
+				continue
+			var light := c.get_luminance()
+			if y >= 82 and y < 99 and (y >= 90 or x < 36 or x >= 60):
+				# The source carries a bright crescent around the seat. Fold it into
+				# the pants' charcoal ramp while preserving the outer silhouette.
+				var shade := lerpf(.058, .19, smoothstep(.06, .34, light))
+				c = Color(shade, shade + .005, shade + .016, c.a)
+			elif y >= 60 and y < 91 and c.b - c.r > .17:
+				c = Color(maxf(0, c.r - .035), maxf(0, c.g - .055), maxf(0, c.b - .024), c.a)
+			else:
+				# Hair and backpack use the neutral inks of the standing drawing.
+				var shade := light * (.86 if y >= 60 else .94)
+				c = Color(shade + .006, shade, shade + (.016 if y >= 60 else .002), c.a)
+			frame.set_pixel(x, y, c)
+
 func seated_actor(base: String, output: String) -> void:
 	var path := base.path_join("originals/player_seated.png")
 	var generated := Image.load_from_file(path)
@@ -133,9 +153,9 @@ func seated_actor(base: String, output: String) -> void:
 		failed = true
 		return
 	cropped.resize(width, 88, Image.INTERPOLATE_NEAREST)
-	quantize(cropped)
 	var frame := Image.create_empty(96, 128, false, Image.FORMAT_RGBA8)
 	frame.blit_rect(cropped, Rect2i(0, 0, width, 88), Vector2i((96 - width) / 2, 24))
+	match_seated_palette(frame)
 	failed = frame.save_png(output.path_join("player_seated.png")) != OK
 	report["seated"] = {"size":[96,128], "bounds":var_to_str(frame.get_used_rect())}
 

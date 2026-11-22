@@ -1,4 +1,5 @@
 extends RefCounted
+const Protagonist := preload("res://scripts/protagonist_profile.gd")
 ## Views for the interlude's simulated DingTalk conversations.
 const NativeUi = preload("res://scripts/ui/native_ui_theme.gd")
 const Typography = preload("res://scripts/ui/native_typography.gd")
@@ -33,6 +34,13 @@ static func avatar(pages, parent: Control, who: String, action: Callable=Callabl
 	face.accessibility_name=name_text
 	Typography.apply_body(face)
 	NativeUi.apply_button(face,AVATAR,LINK,Color.TRANSPARENT,10,0,14,Vector2(4,4))
+	if who == "player" and Protagonist.variant(pages.state) == Protagonist.FEMALE:
+		var path := Protagonist.portrait_path(pages.state, "")
+		if ResourceLoader.exists(path):
+			face.text = ""
+			face.icon = load(path)
+			face.expand_icon = true
+			face.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	if action.is_valid(): face.pressed.connect(action)
 	else:
 		face.mouse_filter=Control.MOUSE_FILTER_IGNORE

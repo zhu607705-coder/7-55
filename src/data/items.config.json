@@ -2,448 +2,448 @@
   {
     "id": "waterDrop",
     "name": "水滴",
-    "desc": "窗外早八暴雨溅进手机屏幕的一滴雨水。光靠手指拢不住它，得去下拉控制中心找个带凹槽的小物件盛着，才能拿去浇透桌面那盆干瘪的盆栽。",
+    "desc": "窗外早八暴雨溅进手机屏幕的一滴雨水。在指尖停了一下，又往下滑了。",
     "sourceScene": "phone_home",
     "target": "bonsai_water"
   },
   {
     "id": "headphone",
     "name": "耳机",
-    "desc": "从手机控制中心摘下来的半入耳式耳机。翻过来一看，耳壳背面的导音腔凹槽还挺深——虽然听歌没电了，拿来当个迷你水瓢盛滴雨水倒是刚刚好。",
+    "desc": "从手机控制中心摘下来的半入耳式耳机。已经没电了。翻过来，耳壳背面的凹槽还挺深。",
     "sourceScene": "phone_home",
     "target": "bonsai_water"
   },
   {
     "id": "wateredHeadphone",
     "name": "盛水的耳机",
-    "desc": "耳壳背面的凹槽里晃荡着一汪刚接来的雨水。趁水还没顺着出音孔漏光，赶紧淋到手机桌面的小盆栽根部去。",
+    "desc": "耳壳背面的凹槽里晃荡着一汪刚接来的雨水。出音孔已经开始滴水了，得赶紧用掉。",
     "sourceScene": "phone_home",
     "target": "bonsai_water"
   },
   {
     "id": "reverseGear",
     "name": "反转齿轮",
-    "desc": "从系统「设置」图标上硬抠下来的生锈齿轮。翻到背面能摸到一道深深刻进去的数字「9」，齿轮内圈还留着一道斜向卡口，接上一根长柄就能当钥匙拧。",
+    "desc": "从系统「设置」图标上硬抠下来的生锈齿轮。翻到背面能摸到一道深深刻进去的数字「9」，齿轮内圈还留着一道斜向卡口。",
     "sourceScene": "phone_home",
     "target": "combine_slash"
   },
   {
     "id": "slashLine",
     "name": "斜线",
-    "desc": "从朋友微信头像上顺手拆下来的一道斜杠。长短和粗细正好能卡进那枚设置齿轮的斜槽里，拼成一把能插进壁纸钟楼锁孔的简易钥匙。",
+    "desc": "从朋友微信头像上顺手拆下来的一道斜杠。",
     "sourceScene": "wechat",
     "target": "combine_gear"
   },
   {
     "id": "towerKey",
     "name": "钥匙",
-    "desc": "用微信头像斜杠做柄、设置齿轮做齿拼出来的土法钥匙。齿形跟手机桌面壁纸上那座求是钟楼的检修锁孔严丝合缝。",
+    "desc": "斜杠做柄，齿轮做齿。拼起来还真像一把钥匙。",
     "sourceScene": "phone_home",
     "target": "tower_slot"
   },
   {
     "id": "fertilizer",
     "name": "一袋肥料",
-    "desc": "藏在壁纸钟楼夹层里的一小包催花营养肥。给桌面盆栽浇过水、开手电筒补足光照之后撒上一把，花苞里藏着的最后一位签到码就该露出来了。",
+    "desc": "藏在壁纸钟楼夹层里的一小包催花肥，隔着袋子能捏到细碎的颗粒。",
     "sourceScene": "phone_home",
     "target": "bonsai_fertilize"
   },
   {
     "id": "campusCard",
     "name": "电子校园卡",
-    "desc": "从浙大钉里调出来的电子校园卡。卡面印着你的姓名与学号，可用于激活身体控制权和教务考勤刷卡；至于底下那行「余额 0.06 元」，看着实在让人心酸。",
+    "desc": "卡面印着你的姓名与学号。底下那行「余额 0.06 元」，看着实在让人心酸。",
     "sourceScene": "zjuding",
     "target": "system_circle"
   },
   {
     "id": "pushTriangle",
     "name": "三角形",
-    "desc": "从公众号推送头像上抠下来的播放键三角。底边平直带卡槽，只要再找一根笔直的线条接在后头，就能拼出一支朝右指的箭头。",
+    "desc": "从公众号推送头像上抠下来的播放键三角。底边平平的，中间有一道卡槽。",
     "sourceScene": "phone_home",
     "target": "combine_mentor_line"
   },
   {
     "id": "weatherWater",
     "name": "天气水滴",
-    "desc": "从天气页面云层底下接来的一滴雨水。指尖捻着潮乎乎的，拿去浸湿微信里导师头像旁那根焊死的排版竖线，应该能把粘胶泡软。",
+    "desc": "从天气页面云层底下接来的一滴雨水，指尖捻着潮乎乎的。",
     "sourceScene": "weather",
     "target": "mentor_avatar"
   },
   {
     "id": "mentorLine",
     "name": "竖线",
-    "desc": "用雨水泡软后，从导师微信头像旁边揭下来的排版分割线。把它横过来跟那枚播放键三角拼在一起，就是一支现成的「右移箭头」。",
+    "desc": "从导师微信头像旁边揭下来的一根排版分割线。背面的胶泡软了，还有点黏手。",
     "sourceScene": "wechat",
     "target": "combine_push_triangle"
   },
   {
     "id": "rightArrow",
     "name": "右移箭头",
-    "desc": "播放键三角与分割线拼成的右向箭头。在手机里能把校园卡余额「0.06」的小数点往右顶两位变成「6.00」；到了图书馆 022，这截扁平尖硬的箭头还能伸进桌面夹缝，把卡在深处的小票拨出来。",
+    "desc": "播放键三角与分割线拼成的右向箭头。扁扁的，尖端很硬。",
     "sourceScene": "wechat",
     "target": "campus_card_balance|seat_022_gap"
   },
   {
     "id": "gamepad",
     "name": "游戏手柄",
-    "desc": "趁校园卡余额变成 6.00 元，在 CC98 二手市场巨资秒杀的旧手柄。把它连到寝室床上的自己身上，就能正式接管双腿、下床出门赶早八了。",
+    "desc": "花了整整 6 块钱从 CC98 二手市场淘来的旧手柄。",
     "sourceScene": "cc98",
     "target": "dorm_character"
   },
   {
     "id": "occupancyNote",
     "name": "占座纸条",
-    "desc": "压在基础馆一层 022 占座书包旁的纸条，落款停在 08:02，写着「主人马上回来（临时离座规则详见 CC98）」。打开手机把它拖进 CC98 搜索页，看看论坛上有没有人扒过这个老赖书包。",
+    "desc": "基础馆一层 022 的占座纸条，落款是 08:02。纸上写着「主人马上回来」，也没说从什么时候开始算。",
     "sourceScene": "phone_home",
     "target": "cc98_search"
   },
   {
     "id": "callNumber755",
     "name": "索书号 755",
-    "desc": "从馆藏检索终端查出的馆藏定位条：《三分钟离座法及其例外》，存放于「基础馆一层 · 06 架南端上层」，馆藏编号为「索书号 755」。先找 06 架的架号牌，再去南端上层抽出 755 号书册。",
+    "desc": "馆藏定位条上印着《三分钟离座法及其例外》。索书号 755，基础馆一层，06 架南端上层。",
     "sourceScene": "zjuding",
     "target": "library_shelf_755"
   },
   {
     "id": "archivedLeaveRule",
     "name": "旧版离座规则",
-    "desc": "从 06 架南端上层抽出的《三分钟离座法及其例外》。正文写明：恢复座位须备齐「3 类申请证明」，且须先将本册规则与三份证明（共 4 项公开材料）传至 CC98 调查帖完成十大公示。",
+    "desc": "从 06 架南端上层抽出的《三分钟离座法及其例外》。书里还夹着期末周用过的那版离座规定。",
     "sourceScene": "phone_home",
     "target": "cc98_evidence_upload"
   },
   {
     "id": "itemRecognitionReport",
     "name": "物品识别报告",
-    "desc": "把相机显示亮度调到 20 以下拍清 022 书包标签，并与相册旧照核对后生成的报告：姓名、学号、人格三项核验通过数为「0」。拿去图书馆前台盖章，就能开出正式的《书包非本人证明》。",
+    "desc": "022 的识别报告。照片里两根肩带清清楚楚，姓名和学号两栏都是空的。报告还没盖章。",
     "sourceScene": "photos",
     "target": "library_front_desk_staff"
   },
   {
     "id": "bagNonPersonProof",
     "name": "书包非本人证明",
-    "desc": "经图书馆前台盖章认证的荒诞证明，确认书包在姓名、学号、人格三项核验中有效项为「0」。既是 CC98 四项公开公示材料之一，也是稍后在「图书馆服务 → 022 恢复申请」中需提交的三份原件之一。",
+    "desc": "前台刚刚盖过章的证明。认证对象是 022 上的书包，结论栏端端正正印着「非本人」。",
     "sourceScene": "phone_home",
     "target": "library_recovery_upload"
   },
   {
     "id": "seat022Receipt",
     "name": "022 座位小票",
-    "desc": "用细长物件从一层书库 022 桌面夹缝里拨出来的原始座位小票，座位号末位印着醒目的「2」。备齐三份证明后，先回 CC98 调查帖上传公示，再交去图书馆服务申领 PASS。",
+    "desc": "从一层书库的桌面夹缝里拨出来的小票。座位号是 022，最后那个「2」印得格外重。",
     "sourceScene": "phone_home",
     "target": "library_recovery_upload"
   },
   {
     "id": "libraryPresenceProof",
     "name": "本人来过证明",
-    "desc": "在浙大体艺填对「到馆时长 7 分钟、关联公示号 47、证明类别 3 项」后补录成功的到馆证明。连同另外两份证明和旧版规则一起回 CC98 公示，就能解锁 022 恢复申请。",
+    "desc": "补录成功的到馆证明。记录上写着到馆时长 7 分钟、公示编号 47、证明类别 3 项。",
     "sourceScene": "tiyi",
     "target": "library_recovery_upload"
   },
   {
     "id": "seatReleasePass",
     "name": "解除占座 PASS",
-    "desc": "完成 CC98 十大第一公示并在「图书馆服务 → 022 恢复申请」提交三份证明后领到的清退凭证。回一层书库 022 把它拍在那只占座三天的书包上，就能名正言顺地入座了。",
+    "desc": "图书馆签发的清退凭证。座位编号 022，登记的占用物是一只书包，单次有效。",
     "sourceScene": "zjuding",
     "target": "seat_022_backpack"
   },
   {
     "id": "cafeteriaWages",
     "name": "餐盘回收费 2.00 元",
-    "desc": "帮食堂阿姨麻利收完三只脏餐盘换来的两块钱劳务费。虽然不够加个鸡腿，但刚好够扫开食堂外头那辆共享单车，骑车去追夺路而逃的签到纸。",
+    "desc": "帮食堂阿姨收完三只脏餐盘换来的两块钱。还不够加个鸡腿。",
     "sourceScene": "canteen_interior",
     "target": "canteen_bike"
   },
   {
     "id": "greaseTissue",
     "name": "油渍纸巾",
-    "desc": "收餐盘时阿姨塞给你的餐巾纸，一角蹭了点红油，另一半还干干净净。留着别扔——既能擦净食堂外共享单车车锁上的泥水，到了剧场外还能擦亮那块蒙灰的海报玻璃橱窗。",
+    "desc": "收餐盘时阿姨塞给你的餐巾纸，一角蹭了点红油，另一半还干干净净。",
     "sourceScene": "canteen_interior",
     "target": "canteen_bike_lock|theater_poster_glass"
   },
   {
     "id": "sparklingWater",
     "name": "气泡水",
-    "desc": "泛着幽幽蓝光的原味气泡水，水吧调配台的三种基酒之一。往杯里倒的时候千万别凭感觉，先抬头看一眼原料货架从左到右的摆放顺序。",
+    "desc": "泛着蓝光的原味气泡水。小气泡一串接一串往上冒。",
     "sourceScene": "canteen_interior",
     "target": "canteen_mixer"
   },
   {
     "id": "lemonTea",
     "name": "柠檬茶",
-    "desc": "澄澈得近乎透明的冰镇柠檬茶，水吧调配台的三种原料之一。至于为什么柠檬茶是白色的，食堂水吧自有它的道理，严格照着货架顺序往里兑就对了。",
+    "desc": "冰镇柠檬茶，澄澈得近乎透明。至于为什么柠檬茶是白色的，食堂水吧自有它的道理。",
     "sourceScene": "canteen_interior",
     "target": "canteen_mixer"
   },
   {
     "id": "blackCoffee",
     "name": "黑咖啡",
-    "desc": "早八人续命专用的浓缩黑咖啡，苦得发亮。和蓝气泡水、白柠檬茶一起按货架顺序倒入调配台，就能调出三号窗口急需的今日新品。",
+    "desc": "早八人续命用的浓缩黑咖啡，黑得发亮，闻着就苦。",
     "sourceScene": "canteen_interior",
     "target": "canteen_mixer"
   },
   {
     "id": "badDrink",
     "name": "难喝饮料",
-    "desc": "没按货架顺序乱倒一气调出来的暗黑特饮，闻着像把板蓝根冲进了隔夜冰美式。三号窗口的宣传板肯定不收，只能自己一口闷掉腾出空杯重调了。",
+    "desc": "闻着像把板蓝根冲进了隔夜冰美式。",
     "sourceScene": "canteen_interior",
     "target": "rpg_player"
   },
   {
     "id": "dailySpecialSparklingWater",
     "name": "今日新品气泡水",
-    "desc": "严格按货架顺序调出的三色分层气泡水。既能放进三号窗口宣传板的空杯位换取取餐号，也能在拦截硬闯取餐口的签到纸时泼在地上，凝成两秒钟的黏脚泡沫阵。",
+    "desc": "水吧的今日新品，三层颜色分得清清楚楚。溢出来的泡沫黏住了手指。",
     "sourceScene": "canteen_interior",
     "target": "canteen_promo_board|canteen_defense_floor"
   },
   {
     "id": "pickupTicket0755",
     "name": "0755 取餐号",
-    "desc": "印着大号数字「0755」的食堂叫号单——记住，这串 0755 只是三号窗口的取餐编号，可不是什么时间戳。先切深色观察核对哪个窗口端出过「纸包鸡」，再切浅色操作递票取餐。",
+    "desc": "三号窗口的叫号单，正中的「0755」印得最大。",
     "sourceScene": "canteen_interior",
     "target": "canteen_pickup_window_3"
   },
   {
     "id": "canteenRealBun",
     "name": "窗口包子",
-    "desc": "皮薄馅足的大肉包，掰开全是滚烫的肉汁，半张纸片都没藏。看来那张逃跑的签到纸并没混进面点窗口。",
+    "desc": "皮薄馅足的大肉包，掰开全是滚烫的肉汁，半张纸片都没藏。",
     "sourceScene": "canteen_interior",
     "target": ""
   },
   {
     "id": "canteenCluelessSoyMilk",
     "name": "窗口豆浆",
-    "desc": "塑封膜压得严严实实的现磨热豆浆。对着光看了一圈，杯底除了豆渣什么也没有，换个跟「纸」沾边的窗口再找找吧。",
+    "desc": "塑封膜压得严严实实的现磨热豆浆。对着光看了一圈，杯底只有一点豆渣。",
     "sourceScene": "canteen_interior",
     "target": ""
   },
   {
     "id": "canteenEdgeEgg",
     "name": "水煮蛋",
-    "desc": "一颗剥壳都费劲的茶叶水煮蛋。签到纸就算再能折腾，也钻不进完整的蛋壳里去。",
+    "desc": "一颗剥壳都费劲的茶叶蛋，蛋壳还是完整的。",
     "sourceScene": "canteen_interior",
     "target": ""
   },
   {
     "id": "canteenUselessCongee",
     "name": "烫手的白粥",
-    "desc": "一碗熬得米油发亮、直烫手指头的白粥。粥是好粥，但你要追的那张签到纸显然不在碗里。",
+    "desc": "一碗熬得米油发亮的白粥。碗沿烫得只好换只手端。",
     "sourceScene": "canteen_interior",
     "target": ""
   },
   {
     "id": "theaterTicketHalfA",
     "name": "半张剧院票根 A",
-    "desc": "用纸巾擦净剧场海报橱窗后，从玻璃缝里抽出的左半截票根。票面印着早间出票时间「08:32」与座位号，但右侧条形码验票区被撕掉了，得去 CC98 转票帖或取票机找回右半截。",
+    "desc": "从剧场橱窗的玻璃缝里抽出的半截票根。座位号和「08:32」还在，右边的验票区被撕掉了。",
     "sourceScene": "phone_home",
     "target": "combine_theater_ticket_b"
   },
   {
     "id": "theaterTicketHalfB",
     "name": "半张剧院票根 B",
-    "desc": "根据「08:32」的那笔早间抢票记录，从剧场自助取票机补打出来的右半截票根。场次、票号和锯齿断口都跟橱窗里那半张完全咬合，拼起来就能扫开检票闸机了。",
+    "desc": "自助取票机补打的右半截票根。出票记录是 08:32，左边沿参差不齐。",
     "sourceScene": "phone_home",
     "target": "combine_theater_ticket_a"
   },
   {
     "id": "temporaryTheaterTicket",
     "name": "临时观演票",
-    "desc": "左右两半严丝合缝拼好的临时观演票，票角留着早间「08:32」的独立出票记录。既能刷开剧场前厅的检票闸机，进场后还能在后台道具扫描仪上核验通行。",
+    "desc": "两截票根合在了一起，断开的条形码也连上了。票角还印着「08:32」。",
     "sourceScene": "phone_home",
     "target": "theater_ticket_gate|theater_prop_scanner"
   },
   {
     "id": "theaterProgramOpening",
     "name": "节目单残页·开场",
-    "desc": "印着「开场」章节的节目单残页。彩排时临时改过走位，留意简介段落里那几笔颜色偏淡的笔画，集齐三页放到灯控台上对照现场痕迹，就能排准舞台灯序。",
+    "desc": "节目单上写着「开场」。彩排时改过走位，简介里有几笔比旁边的字淡。",
     "sourceScene": "phone_home",
     "target": "theater_light_console"
   },
   {
     "id": "theaterProgramSpotlight",
     "name": "节目单残页·追光",
-    "desc": "印着「追光」章节的节目单残页。文字间同样藏着几道浅色笔画，需要与「开场」「谢幕」两页残单一起铺上灯控台核对。",
+    "desc": "节目单的「追光」一页。纸面上有几道很浅的笔画。",
     "sourceScene": "phone_home",
     "target": "theater_light_console"
   },
   {
     "id": "theaterProgramFinale",
     "name": "节目单残页·谢幕",
-    "desc": "印着「谢幕」章节的节目单残页。把三张残页一并交到剧场灯控台，顺着浅色笔画修正彩排变动后的灯位顺序。",
+    "desc": "节目单的「谢幕」一页。印好的字里夹着几笔浅色的手写痕迹。",
     "sourceScene": "phone_home",
     "target": "theater_light_console"
   },
   {
     "id": "spotlightRemote",
     "name": "追光灯遥控器",
-    "desc": "剧场灯光师落下的无线追光遥控器。把它装回舞台侧方的追光控制台底座，就能手动操纵主光束，把在台上乱窜的纸条死死钉在光圈中央。",
+    "desc": "剧场灯光师落下的无线遥控器，按键上印着一圈光束。",
     "sourceScene": "phone_home",
     "target": "theater_spotlight_console"
   },
   {
     "id": "fluorescentBrush",
     "name": "荧光粉刷",
-    "desc": "刷毛上蘸满了夜光荧光粉的化妆刷。把它伸进后台换气扇的风口里抖一抖，吹散的荧光粉粘在纸条表面，哪怕它溜进暗处也能看清轨迹。",
+    "desc": "刷毛上蘸满了荧光粉，手一抖，袖口就多了几个亮点。",
     "sourceScene": "phone_home",
     "target": "theater_backstage_vent"
   },
   {
     "id": "decoyPaper",
     "name": "假纸条",
-    "desc": "在剧场追光灯下抓到的替身纸条，背面印着话剧社的道具编号。别急着扔，等到了启真湖把它挂在普通钓鱼竿上当诱饵，水底下那个占座三天的正主绝对忍不了冒牌货。",
+    "desc": "在追光灯下抓到的假纸条。翻到背面，话剧社的道具编号都没擦。",
     "sourceScene": "phone_home",
     "target": "fishing_rod_bait"
   },
   {
     "id": "wetProgram",
     "name": "湿掉的节目单",
-    "desc": "在剧场东门外捡到的节目单，背面还粘着签到纸蹭上去的馆藏夹页条码水印。把它拖进 CC98 目击搜索和图书馆馆藏检索，再去微信看消息。把三条线索带到浙大钉校园地图核对。",
+    "desc": "在剧场东门外捡到的节目单，边角湿透了。背面沾着一截馆藏夹页的条码水印。",
     "sourceScene": "phone_home",
     "target": "cc98_search|library_catalog_search"
   },
   {
     "id": "bridgeKeyword",
     "name": "桥边",
-    "desc": "从 CC98 剧场目击帖（8楼）提取出的第一条地点线索：滴水的纸条顺着东面风向，一路飘去了「靠近桥的水域」。带去浙大钉校园地图的交叉检索台接入核对。",
+    "desc": "CC98 目击帖的 8 楼写道，滴水的纸条顺着风往东飘，最后一次看见它是在桥边。",
     "sourceScene": "cc98",
     "target": "qizhen_map_search"
   },
   {
     "id": "reflectionKeyword",
     "name": "倒影",
-    "desc": "从图书馆馆藏异常记录提取出的第二条特征线索：签到夹页湿度偏高，且「当前页码只出现在水面倒影中」。带去浙大钉校园地图接入核对。",
+    "desc": "馆藏异常记录里有一行备注：「当前页码只出现在水面倒影中。」",
     "sourceScene": "zjuding",
     "target": "qizhen_map_search"
   },
   {
     "id": "lakeKeyword",
     "name": "湖",
-    "desc": "从微信好友消息里提取出的第三条地点线索：有人在校园湖面拍到了一圈「逆风扩散的水纹」。与「桥边」「倒影」一起导入浙大钉地图，三条线索的交点直指启真湖。",
+    "desc": "朋友拍到的湖面上，有一圈逆着风扩散的水纹。",
     "sourceScene": "wechat",
     "target": "qizhen_map_search"
   },
   {
     "id": "reflectionCoordinate",
     "name": "倒影坐标",
-    "desc": "在启真湖切到「深色观察」记录下的水下倒影位置。切回「浅色操作」后，把皮划艇划到对应金色水纹的外圈附近，就能对准水纹抛竿。",
+    "desc": "从启真湖指示牌上抄下的一处位置。桥的倒影和路灯杆都标在上面。",
     "sourceScene": "phone_home",
     "target": ""
   },
   {
     "id": "hairDryer",
     "name": "寝室吹风机",
-    "desc": "雨天强行下水翻船被救回宿舍后，从书桌上拿来的大功率吹风机。打开手机「天气」页把它拖进云图校准接口，逆着二级西南风把高、中、低三层云带吹进稳定区，小码头就能放晴下水了。",
+    "desc": "雨天从寝室书桌上拿来的大功率吹风机。刚拨开开关，桌上的纸就翻了个面。",
     "sourceScene": "dorm_hub",
     "target": "qizhen-weather-clouds"
   },
   {
     "id": "fishingRod",
     "name": "钓竿",
-    "desc": "在大湖面浮排边捞起的普通钓鱼竿。光靠尖头的普通铁钩挂不牢湿滑的签到纸，先挂上剧场那张「假纸条」当诱饵钓齐水下配件，再去围栏外组装成磁性钓鱼竿。",
+    "desc": "浮排边捞起的一根普通钓竿。钓线还在，线头垂着一枚空钩。",
     "sourceScene": "qizhen_lake",
     "target": "fishing_rod_bait|qizhen_net_frame|swan_magnet"
   },
   {
     "id": "rustedLockerKey",
     "name": "锈蚀柜钥匙",
-    "desc": "挂上假纸条作饵后，从大湖面水纹里按均匀慢拍钓起的生锈钥匙。齿形跟小码头岸边那只紧锁的器材储物柜正好配对，划回小码头就能打开柜门。",
+    "desc": "从湖底钓起来的一把旧钥匙。齿口很粗，手上一搓就沾了点锈。",
     "sourceScene": "qizhen_lake",
     "target": "qizhen_dock_locker"
   },
   {
     "id": "nylonCord",
     "name": "尼龙绳",
-    "desc": "用生锈钥匙打开小码头储物柜后拿到的一卷耐水尼龙绳。既能绑在破损网框上编出临时抄网，也是最终把断裂网框和磁性扣扎紧在钓竿顶端的必备材料。",
+    "desc": "器材储物柜里盘着的一卷耐水尼龙绳，泡湿了也结实。",
     "sourceScene": "qizhen_lake",
     "target": "broken_net_frame"
   },
   {
     "id": "brokenNetFrame",
     "name": "断裂网框",
-    "desc": "从大湖北侧浮排直河道水下钓起来的旧铝制网框。虽然网面掉了，但框沿完好，穿上耐水尼龙绳就能重新兜住水下物品或套上竿头。",
+    "desc": "从浮排直河道里捞上来的旧铝框。网面已经掉光，框沿还留着一圈穿线孔。",
     "sourceScene": "qizhen_lake",
     "target": "nylon_cord"
   },
   {
     "id": "improvisedDipNet",
     "name": "临时抄网",
-    "desc": "用尼龙绳在断裂网框上重新编好的临时抄网。划进大湖北侧的浮排直河道，就能用它伸到浮排下方，把卡在暗处的密封饲料罐捞上来。",
+    "desc": "旧铝框上绷着新结的尼龙网，提起来，网兜沉甸甸地往下垂。",
     "sourceScene": "qizhen_lake",
     "target": "qizhen_feed_tin"
   },
   {
     "id": "sealedFeedTin",
     "name": "密封饲料罐",
-    "desc": "从浮排底下捞出来的金属饲料罐，摇起来哗啦作响。铁盖子泡水后咬得很紧，徒手拧不开，把它拖到浮排边缘的硬角上撬开吧。",
+    "desc": "从浮排底下捞出来的饲料罐。一摇就哗啦响，盖子泡得发紧，边上还有一道缝。",
     "sourceScene": "qizhen_lake",
     "target": "qizhen_feed_tin_lid"
   },
   {
     "id": "fishFeedPellets",
     "name": "鱼食颗粒",
-    "desc": "借浮排硬边撬开密封罐后倒出的鱼饲料颗粒。划到金色鱼群水纹外圈把鱼食撒下去，就能引来大湖里的小鲤鱼。",
+    "desc": "打开罐子倒出的鱼食。颗粒圆滚滚的，带着一股腥味。",
     "sourceScene": "qizhen_lake",
     "target": "qizhen_fish_school"
   },
   {
     "id": "smallCarp",
     "name": "小鲤鱼",
-    "desc": "用鱼食颗粒引来并按变拍节奏钓起的鲜活小鲤鱼。黑天鹅围栏里那位启真湖校霸正伸长脖子直勾勾盯着它——划去围栏边把鱼喂给黑天鹅，换它脚边那枚金属扣。",
+    "desc": "一条活蹦乱跳的小鲤鱼，尾巴一甩，溅了你一脸湖水。",
     "sourceScene": "qizhen_lake",
     "target": "qizhen_black_swan"
   },
   {
     "id": "swanMagnet",
     "name": "天鹅磁铁",
-    "desc": "处理围栏边的旧饲料盒后，黑天鹅把一枚磁性扣推到船边。拿上原钓竿、断裂网框和尼龙绳，就能把它一起装上去。",
+    "desc": "黑天鹅推到船边的磁扣，背后留着穿线孔。",
     "sourceScene": "qizhen_lake",
     "target": "fishing_rod"
   },
   {
     "id": "magneticFishingRod",
     "name": "磁性钓鱼竿",
-    "desc": "将断裂网框套上竿端、绕紧尼龙绳并贴合黑天鹅磁性扣组装而成的捕纸钓具。划到黑天鹅围栏的纸条本体水纹旁抛竿，即可吸住签到纸上的金属夹——小心惊动围栏里的黑天鹅！",
+    "desc": "竿梢绑着铝框和磁扣。提起来时，旁边的铁钩啪地贴了上去。",
     "sourceScene": "qizhen_lake",
     "target": "qizhen_clipped_paper|qizhen_chase_finish"
   },
   {
     "id": "attendanceRecordPaper",
     "name": "签到记录纸",
-    "desc": "从图书馆 022 一路追到北教大厅的早八签到条。边角还沾着启真湖的水气，纸上写着“本人马上回来”。等旧钟走到 07:55，把它交到一楼签到台右侧纸槽。",
+    "desc": "从图书馆 022 一路追到北教大厅的早八签到条。边角还有些潮，纸上写着「本人马上回来」。",
     "sourceScene": "duan_yongping_temporal_maze",
     "target": "a1_attendance_paper_slot"
   },
   {
     "id": "oldClockHourHand",
     "name": "旧时针",
-    "desc": "从一楼面包坊传送带缝里取出的金属短针，轴孔正好匹配大厅旧钟。背面有一枚「书页刻印」，旁边刻着一行小字：晚课 18:30 开始。",
+    "desc": "从面包坊传送带缝里取出的金属短针，尾端有个方孔。背面的书页刻印旁写着「晚课 18:30 开始」。",
     "sourceScene": "duan_yongping_temporal_maze",
     "target": "a1_hall_clock_hour_hand_socket"
   },
   {
     "id": "clockPositioningPlate",
     "name": "钟面定位片",
-    "desc": "从 204 讲台抽屉取出的透明定位片。带到 201 对齐旧压痕后，可以用它消除旧钟指针的晃动。背面的「扳手刻印」注明：夜间检修从 22:00 开始。",
+    "desc": "204 讲台抽屉里的透明定位片，盘边有个缺口。背面的扳手刻印旁写着「夜间检修 22:00 开始」。",
     "sourceScene": "duan_yongping_temporal_maze",
     "target": "a1_hall_clock_positioning_plate_slot"
   },
   {
     "id": "shortPryBar",
     "name": "短撬棍",
-    "desc": "一把扁头短撬棍，撬头刚好能插进大厅保洁车的金属轮罩窄缝。",
+    "desc": "一把扁头短撬棍，撬头薄，握在手里很有分量。",
     "sourceScene": "duan_yongping_temporal_maze",
     "target": "a1_cleaning_cart_wheel_cover"
   },
   {
     "id": "universalLubricatingOil",
     "name": "通用润滑油",
-    "desc": "半瓶机械润滑油。撬开保洁车轮罩后滴在干涩的轮轴上，轮轴恢复转动时，旧钟的传动齿轮也会重新咬合。",
+    "desc": "半瓶机械润滑油，瓶口一圈油怎么擦都滑。",
     "sourceScene": "duan_yongping_temporal_maze",
     "target": "a1_cleaning_cart_wheel|a1_hall_clock_gear"
   },
   {
     "id": "finalMinute",
     "name": "黄铜分针组件",
-    "desc": "从二楼 202 阶梯座椅间找回的黄铜分针与卡簧。纸条用它带走了 07:54 到 07:55 的最后一分钟。带回一楼大厅装上旧钟，早八就真正到了。",
+    "desc": "从 202 阶梯座椅间找回的黄铜分针，卡簧还扣在底部。纸条带走的最后一分钟就在你手里了。",
     "sourceScene": "duan_yongping_temporal_maze",
     "target": "a1_hall_clock_minute_endpoint"
   }

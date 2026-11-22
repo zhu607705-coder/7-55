@@ -1,0 +1,1112 @@
+{
+  "source": {
+    "side": "b20ca30d08b82dce6598d239b09b881984d3ce10a4d0b85d936945a8d4b901b4",
+    "standing": "afa6ed644843828bfcd67065ea4511362e932aee9324cc85a985d9d10a20e3e1",
+    "vertical": {
+      "walk_down_thin_rim_16.png": "c521f6bf5b2a1f90b08064a7d66d151fbcf7526dc039c99f7902bce9866ecfc3",
+      "walk_up_approved_16.png": "ab9fb5ee68e6993217440519a88b9307a2d6a459c01a3a413c506ae2b86a7b44"
+    }
+  },
+  "pillow": "12.3.0",
+  "cell": [
+    120,
+    160
+  ],
+  "directions": [
+    "side",
+    "down",
+    "up"
+  ],
+  "walk_frames": {
+    "side": 16,
+    "down": 16,
+    "up": 16
+  },
+  "idle_column": 16,
+  "idle_sole_y": 157,
+  "nominal_actor_height": 132,
+  "walk_color_grade": {
+    "coat_rgb": {
+      "side": [
+        -14,
+        -7,
+        0
+      ]
+    },
+    "warm_rgb": {
+      "side": [
+        0.76,
+        11,
+        0
+      ]
+    },
+    "neutral_tones": {
+      "side": [
+        -11,
+        -7
+      ]
+    },
+    "down": "front idle material match"
+  },
+  "frames": {
+    "side": [
+      {
+        "source_crop": [
+          104,
+          20,
+          221,
+          308
+        ],
+        "offset": [
+          37,
+          25
+        ],
+        "scale": 0.46270463,
+        "visible_rect": [
+          37,
+          25,
+          89,
+          158
+        ],
+        "source_cel": 6
+      },
+      {
+        "source_crop": [
+          97,
+          20,
+          213,
+          308
+        ],
+        "offset": [
+          37,
+          25
+        ],
+        "scale": 0.46270463,
+        "visible_rect": [
+          37,
+          25,
+          89,
+          158
+        ],
+        "source_cel": 7
+      },
+      {
+        "source_crop": [
+          89,
+          20,
+          226,
+          308
+        ],
+        "offset": [
+          37,
+          25
+        ],
+        "scale": 0.46270463,
+        "visible_rect": [
+          37,
+          25,
+          100,
+          158
+        ],
+        "source_cel": 8
+      },
+      {
+        "source_crop": [
+          106,
+          22,
+          253,
+          308
+        ],
+        "offset": [
+          35,
+          26
+        ],
+        "scale": 0.46270463,
+        "visible_rect": [
+          35,
+          26,
+          103,
+          158
+        ],
+        "source_cel": 9
+      },
+      {
+        "source_crop": [
+          96,
+          22,
+          221,
+          308
+        ],
+        "offset": [
+          34,
+          26
+        ],
+        "scale": 0.46270463,
+        "visible_rect": [
+          34,
+          26,
+          91,
+          158
+        ],
+        "source_cel": 10
+      },
+      {
+        "source_crop": [
+          95,
+          22,
+          214,
+          308
+        ],
+        "offset": [
+          36,
+          26
+        ],
+        "scale": 0.46270463,
+        "visible_rect": [
+          36,
+          26,
+          89,
+          158
+        ],
+        "source_cel": 11
+      },
+      {
+        "source_crop": [
+          90,
+          22,
+          206,
+          308
+        ],
+        "offset": [
+          37,
+          26
+        ],
+        "scale": 0.46270463,
+        "visible_rect": [
+          37,
+          26,
+          89,
+          158
+        ],
+        "source_cel": 12
+      },
+      {
+        "source_crop": [
+          111,
+          21,
+          228,
+          308
+        ],
+        "offset": [
+          37,
+          26
+        ],
+        "scale": 0.46270463,
+        "visible_rect": [
+          37,
+          26,
+          89,
+          159
+        ],
+        "source_cel": 13
+      },
+      {
+        "source_crop": [
+          105,
+          21,
+          222,
+          308
+        ],
+        "offset": [
+          37,
+          26
+        ],
+        "scale": 0.46270463,
+        "visible_rect": [
+          37,
+          26,
+          89,
+          159
+        ],
+        "source_cel": 14
+      },
+      {
+        "source_crop": [
+          97,
+          22,
+          214,
+          308
+        ],
+        "offset": [
+          37,
+          26
+        ],
+        "scale": 0.46270463,
+        "visible_rect": [
+          37,
+          26,
+          89,
+          158
+        ],
+        "source_cel": 15
+      },
+      {
+        "source_crop": [
+          90,
+          22,
+          228,
+          308
+        ],
+        "offset": [
+          37,
+          26
+        ],
+        "scale": 0.46270463,
+        "visible_rect": [
+          37,
+          26,
+          101,
+          158
+        ],
+        "source_cel": 16
+      },
+      {
+        "source_crop": [
+          101,
+          20,
+          247,
+          309
+        ],
+        "offset": [
+          32,
+          25
+        ],
+        "scale": 0.46270463,
+        "visible_rect": [
+          32,
+          25,
+          100,
+          159
+        ],
+        "source_cel": 1
+      },
+      {
+        "source_crop": [
+          94,
+          20,
+          224,
+          309
+        ],
+        "offset": [
+          33,
+          25
+        ],
+        "scale": 0.46270463,
+        "visible_rect": [
+          33,
+          25,
+          93,
+          159
+        ],
+        "source_cel": 2
+      },
+      {
+        "source_crop": [
+          91,
+          20,
+          213,
+          309
+        ],
+        "offset": [
+          35,
+          25
+        ],
+        "scale": 0.46270463,
+        "visible_rect": [
+          35,
+          25,
+          89,
+          159
+        ],
+        "source_cel": 3
+      },
+      {
+        "source_crop": [
+          88,
+          20,
+          206,
+          309
+        ],
+        "offset": [
+          37,
+          25
+        ],
+        "scale": 0.46270463,
+        "visible_rect": [
+          37,
+          25,
+          90,
+          159
+        ],
+        "source_cel": 4
+      },
+      {
+        "source_crop": [
+          111,
+          20,
+          229,
+          307
+        ],
+        "offset": [
+          37,
+          26
+        ],
+        "scale": 0.46270463,
+        "visible_rect": [
+          37,
+          26,
+          90,
+          159
+        ],
+        "source_cel": 5
+      },
+      {
+        "source_crop": [
+          80,
+          46,
+          421,
+          993
+        ],
+        "offset": [
+          41,
+          25
+        ],
+        "scale": 0.1402763,
+        "visible_rect": [
+          41,
+          25,
+          89,
+          158
+        ],
+        "source_cel": 2
+      }
+    ],
+    "down": [
+      {
+        "source_crop": [
+          0,
+          0,
+          313,
+          313
+        ],
+        "offset": [
+          -22,
+          8
+        ],
+        "scale": 0.52076677,
+        "visible_rect": [
+          33,
+          24,
+          87,
+          158
+        ],
+        "source_cel": 1,
+        "scale_y": 0.52076677
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          314,
+          313
+        ],
+        "offset": [
+          -22,
+          8
+        ],
+        "scale": 0.51910828,
+        "visible_rect": [
+          33,
+          24,
+          86,
+          159
+        ],
+        "source_cel": 2,
+        "scale_y": 0.52076677
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          313,
+          313
+        ],
+        "offset": [
+          -22,
+          8
+        ],
+        "scale": 0.52076677,
+        "visible_rect": [
+          32,
+          24,
+          87,
+          159
+        ],
+        "source_cel": 3,
+        "scale_y": 0.52076677
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          314,
+          313
+        ],
+        "offset": [
+          -22,
+          8
+        ],
+        "scale": 0.51910828,
+        "visible_rect": [
+          32,
+          24,
+          87,
+          159
+        ],
+        "source_cel": 4,
+        "scale_y": 0.52076677
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          313,
+          314
+        ],
+        "offset": [
+          -22,
+          8
+        ],
+        "scale": 0.52076677,
+        "visible_rect": [
+          32,
+          24,
+          87,
+          156
+        ],
+        "source_cel": 5,
+        "scale_y": 0.51910828
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          314,
+          314
+        ],
+        "offset": [
+          -22,
+          8
+        ],
+        "scale": 0.51910828,
+        "visible_rect": [
+          32,
+          24,
+          87,
+          158
+        ],
+        "source_cel": 6,
+        "scale_y": 0.51910828
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          313,
+          314
+        ],
+        "offset": [
+          -22,
+          8
+        ],
+        "scale": 0.52076677,
+        "visible_rect": [
+          33,
+          24,
+          87,
+          158
+        ],
+        "source_cel": 7,
+        "scale_y": 0.51910828
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          314,
+          314
+        ],
+        "offset": [
+          -22,
+          8
+        ],
+        "scale": 0.51910828,
+        "visible_rect": [
+          33,
+          24,
+          87,
+          158
+        ],
+        "source_cel": 8,
+        "scale_y": 0.51910828
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          313,
+          313
+        ],
+        "offset": [
+          -22,
+          8
+        ],
+        "scale": 0.52076677,
+        "visible_rect": [
+          33,
+          24,
+          87,
+          158
+        ],
+        "source_cel": 9,
+        "scale_y": 0.52076677
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          314,
+          313
+        ],
+        "offset": [
+          -22,
+          8
+        ],
+        "scale": 0.51910828,
+        "visible_rect": [
+          33,
+          24,
+          88,
+          158
+        ],
+        "source_cel": 10,
+        "scale_y": 0.52076677
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          313,
+          313
+        ],
+        "offset": [
+          -22,
+          8
+        ],
+        "scale": 0.52076677,
+        "visible_rect": [
+          32,
+          24,
+          88,
+          158
+        ],
+        "source_cel": 11,
+        "scale_y": 0.52076677
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          314,
+          313
+        ],
+        "offset": [
+          -22,
+          8
+        ],
+        "scale": 0.51910828,
+        "visible_rect": [
+          33,
+          24,
+          88,
+          158
+        ],
+        "source_cel": 12,
+        "scale_y": 0.52076677
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          313,
+          314
+        ],
+        "offset": [
+          -22,
+          8
+        ],
+        "scale": 0.52076677,
+        "visible_rect": [
+          32,
+          24,
+          88,
+          157
+        ],
+        "source_cel": 13,
+        "scale_y": 0.51910828
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          314,
+          314
+        ],
+        "offset": [
+          -22,
+          8
+        ],
+        "scale": 0.51910828,
+        "visible_rect": [
+          32,
+          24,
+          88,
+          158
+        ],
+        "source_cel": 14,
+        "scale_y": 0.51910828
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          313,
+          314
+        ],
+        "offset": [
+          -22,
+          8
+        ],
+        "scale": 0.52076677,
+        "visible_rect": [
+          32,
+          24,
+          88,
+          158
+        ],
+        "source_cel": 15,
+        "scale_y": 0.51910828
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          314,
+          314
+        ],
+        "offset": [
+          -22,
+          8
+        ],
+        "scale": 0.51910828,
+        "visible_rect": [
+          33,
+          24,
+          88,
+          158
+        ],
+        "source_cel": 16,
+        "scale_y": 0.51910828
+      },
+      {
+        "source_crop": [
+          117,
+          44,
+          487,
+          993
+        ],
+        "offset": [
+          34,
+          25
+        ],
+        "scale": 0.13997879,
+        "visible_rect": [
+          34,
+          25,
+          86,
+          158
+        ],
+        "source_cel": 1
+      }
+    ],
+    "up": [
+      {
+        "source_crop": [
+          0,
+          0,
+          384,
+          512
+        ],
+        "offset": [
+          4,
+          19
+        ],
+        "scale": 0.28645833,
+        "visible_rect": [
+          34,
+          23,
+          88,
+          158
+        ],
+        "source_cel": 1,
+        "scale_y": 0.28710938
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          384,
+          512
+        ],
+        "offset": [
+          4,
+          19
+        ],
+        "scale": 0.28645833,
+        "visible_rect": [
+          34,
+          23,
+          88,
+          157
+        ],
+        "source_cel": 2,
+        "scale_y": 0.28710938
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          384,
+          512
+        ],
+        "offset": [
+          4,
+          19
+        ],
+        "scale": 0.28645833,
+        "visible_rect": [
+          35,
+          23,
+          88,
+          156
+        ],
+        "source_cel": 3,
+        "scale_y": 0.28710938
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          384,
+          512
+        ],
+        "offset": [
+          4,
+          19
+        ],
+        "scale": 0.28645833,
+        "visible_rect": [
+          33,
+          24,
+          87,
+          156
+        ],
+        "source_cel": 4,
+        "scale_y": 0.28710938
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          384,
+          512
+        ],
+        "offset": [
+          4,
+          19
+        ],
+        "scale": 0.28645833,
+        "visible_rect": [
+          33,
+          23,
+          86,
+          156
+        ],
+        "source_cel": 5,
+        "scale_y": 0.28710938
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          384,
+          512
+        ],
+        "offset": [
+          4,
+          19
+        ],
+        "scale": 0.28645833,
+        "visible_rect": [
+          32,
+          24,
+          86,
+          156
+        ],
+        "source_cel": 6,
+        "scale_y": 0.28710938
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          384,
+          512
+        ],
+        "offset": [
+          4,
+          19
+        ],
+        "scale": 0.28645833,
+        "visible_rect": [
+          31,
+          24,
+          86,
+          157
+        ],
+        "source_cel": 7,
+        "scale_y": 0.28710938
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          384,
+          512
+        ],
+        "offset": [
+          4,
+          19
+        ],
+        "scale": 0.28645833,
+        "visible_rect": [
+          31,
+          23,
+          85,
+          158
+        ],
+        "source_cel": 8,
+        "scale_y": 0.28710938
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          384,
+          512
+        ],
+        "offset": [
+          4,
+          19
+        ],
+        "scale": 0.28645833,
+        "visible_rect": [
+          30,
+          23,
+          85,
+          158
+        ],
+        "source_cel": 9,
+        "scale_y": 0.28710938
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          384,
+          512
+        ],
+        "offset": [
+          4,
+          19
+        ],
+        "scale": 0.28645833,
+        "visible_rect": [
+          31,
+          23,
+          85,
+          157
+        ],
+        "source_cel": 10,
+        "scale_y": 0.28710938
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          384,
+          512
+        ],
+        "offset": [
+          4,
+          19
+        ],
+        "scale": 0.28645833,
+        "visible_rect": [
+          31,
+          23,
+          85,
+          156
+        ],
+        "source_cel": 11,
+        "scale_y": 0.28710938
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          384,
+          512
+        ],
+        "offset": [
+          4,
+          19
+        ],
+        "scale": 0.28645833,
+        "visible_rect": [
+          32,
+          24,
+          86,
+          157
+        ],
+        "source_cel": 12,
+        "scale_y": 0.28710938
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          384,
+          512
+        ],
+        "offset": [
+          4,
+          19
+        ],
+        "scale": 0.28645833,
+        "visible_rect": [
+          32,
+          24,
+          86,
+          157
+        ],
+        "source_cel": 13,
+        "scale_y": 0.28710938
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          384,
+          512
+        ],
+        "offset": [
+          4,
+          19
+        ],
+        "scale": 0.28645833,
+        "visible_rect": [
+          33,
+          24,
+          87,
+          157
+        ],
+        "source_cel": 14,
+        "scale_y": 0.28710938
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          384,
+          512
+        ],
+        "offset": [
+          4,
+          19
+        ],
+        "scale": 0.28645833,
+        "visible_rect": [
+          33,
+          24,
+          87,
+          158
+        ],
+        "source_cel": 15,
+        "scale_y": 0.28710938
+      },
+      {
+        "source_crop": [
+          0,
+          0,
+          384,
+          512
+        ],
+        "offset": [
+          4,
+          19
+        ],
+        "scale": 0.28645833,
+        "visible_rect": [
+          34,
+          24,
+          87,
+          158
+        ],
+        "source_cel": 16,
+        "scale_y": 0.28710938
+      },
+      {
+        "source_crop": [
+          22,
+          44,
+          395,
+          993
+        ],
+        "offset": [
+          34,
+          25
+        ],
+        "scale": 0.13997879,
+        "visible_rect": [
+          34,
+          25,
+          86,
+          158
+        ],
+        "source_cel": 3
+      }
+    ]
+  },
+  "atlas_sha256": "4b7352885ccb979bf2298eda0775487cc167767d2ddfe53f960e52b2ca291364"
+}

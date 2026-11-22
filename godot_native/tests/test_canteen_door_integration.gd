@@ -1,6 +1,7 @@
 extends SceneTree
 ## The native wall opening, collider and ordinary target share one registration.
 const Fixture=preload("res://tests/canteen_native_fixture.gd")
+const Metrics=preload("res://scripts/player_metrics.gd")
 const CanteenLayout=preload("res://scripts/space/canteen_layout.gd")
 var checks:=0
 var failures:=0
@@ -88,6 +89,12 @@ func run()->void:
 	check(world._floor_segment_clear(stand,threshold),"open south doorway admits the whole foot box along its center line")
 	motion.advance(285)
 	check(world.can_stand(threshold),"fully open doorway retains continuous floor support")
+	var left_leaf: Rect2 = motion.collision_rects().front()
+	var near_leaf := Vector2(left_leaf.end.x + 6.65, threshold.y)
+	check(Metrics.foot_size("canteen_interior").is_equal_approx(Vector2(12.8,10)), "canteen foot width follows the corrected horizontal scale")
+	check(scene.blocks_feet(Metrics.foot_rect(near_leaf)) and world.can_stand(near_leaf),
+		"the narrower actor fits beside the open jamb where the former width was blocked")
+	check(not world.can_stand(near_leaf - Vector2(.5,0)), "the real player still stops at the door leaf")
 	check(JSON.stringify(state.d.canteenHunt)==story_before and JSON.stringify(state.d.items)==items_before,"door motion grants no progress or items")
 	motion.configure("canteen_interior",true)
 	check(motion.duration_ms==120,"reduced-motion duration stays intact")

@@ -100,21 +100,23 @@ check(shell.indexOf('src="boot-intro.js"') < shell.indexOf('src="$GODOT_URL"'), 
 check(shell.includes("bootIntro.progress(current, total)") && shell.includes("bootIntro.update({ phase: 'verifying' })"), 'The unchanged boot transport supplies real progress and verification phase');
 check(!/\b(?:fetch|Engine|Audio|localStorage|indexedDB|setTimeout|setInterval|requestAnimationFrame)\s*\(/.test(source), 'Presenter does not download, play audio, access saves, run a clock or start the engine');
 
-async function runningShell() {
+async function bootShell({ fetchManifest, bootResources } = {}) {
   const f = fixture({ shellMode: true });
   Object.defineProperty(f.doc, 'fonts', { get() { throw new Error('Font readiness must not gate engine readiness or ordinary Start'); } });
-  const calls = { start: 0, reload: 0, errors: [] };
+  const calls = { engine: 0, start: 0, reload: 0, errors: [], requests: [] };
+  const timers = new Map();
+  let timerId = 0;
   const manifest = { core: { file: 'index.pck', bytes: 5 } };
   let config;
   class FakeEngine {
     static isWebGLAvailable(version) { return version === 2; }
-    constructor(value) { config = value; }
+    constructor(value) { config = value; calls.engine++; }
     preloadFile() { return Promise.resolve(); }
     start() { calls.start++; return Promise.resolve(); }
   }
   const transport = {
     validate: () => manifest,
-    bootResources: () => ({ wasm: { bytes: 5 }, core: { bytes: 5 } }),
+    bootResources: bootResources || (() => ({ wasm: { bytes: 5 }, core: { bytes: 5 } })),
     createResourceCache: () => ({
       load(resource, options) { options.onProgress(resource.bytes); return Promise.resolve({ buffer: new ArrayBuffer(5), response: {} }); },
       snapshot: () => ({ reusedBytes: 0, storage: 'indexeddb' })
@@ -126,15 +128,29 @@ async function runningShell() {
   const inline = shell.match(/<script>\s*('use strict';[\s\S]*?)<\/script>/)[1]
     .replace('$GODOT_CONFIG', '{ executable: "index" }');
   vm.runInNewContext(inline, { window: f.window, document: f.doc, Engine: FakeEngine, WebAssembly: {}, Godot755Content: transport,
-    fetch: () => Promise.resolve({ ok: true, json: () => Promise.resolve({}) }),
+    AbortController,
+    setTimeout(callback, delay) { timers.set(++timerId, { callback, delay }); return timerId; },
+    clearTimeout(id) { timers.delete(id); },
+    fetch: (file, options) => {
+      calls.requests.push({ file, options });
+      return fetchManifest ? fetchManifest(file, options) : Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+    },
     console: { error: (...args) => calls.errors.push(args) }
   });
   await new Promise(setImmediate);
+  return { ...f, config, calls, timers, timerStarts: () => timerId,
+    expireManifest() { for (const { callback } of [...timers.values()]) callback(); }
+  };
+}
+async function runningShell() {
+  const f = await bootShell();
+  const { calls } = f;
   check(f.doc.documentElement.dataset.bootState === 'ready' && f.api.snapshot().stage === 'ready' && calls.start === 0, 'Original HTML promise chain alone sets ready, without automatic engine start');
+  check(f.timers.size === 0, 'Successful metadata loading clears its deadline');
   f.nodes.get('start-game').listeners.get('click')();
   await new Promise(setImmediate);
   check(calls.start === 1 && f.layer.hidden && f.api.snapshot().stage === 'running', 'Original HTML Start gesture alone hands off to the stub engine');
-  return { ...f, config, calls };
+  return f;
 }
 let running = await runningShell();
 let prevented = false;
@@ -147,6 +163,69 @@ check(running.calls.reload === 1, 'Original Retry listener retains ordinary page
 running = await runningShell();
 running.config.onExit(2);
 check(running.doc.documentElement.dataset.bootState === 'error' && running.api.snapshot().stage === 'error' && !running.nodes.get('retry-game').hidden, 'Nonzero engine exit after running follows the same original Retry path');
+
+for (const phase of ['headers', 'body']) {
+  const pending = [];
+  const blocked = await bootShell({ fetchManifest: () => {
+    const response = { ok: true, json: () => new Promise(resolve => pending.push(resolve)) };
+    return phase === 'headers' ? new Promise(resolve => pending.push(() => resolve({ ok: true, json: () => Promise.resolve({}) }))) : Promise.resolve(response);
+  } });
+  check(blocked.calls.requests.length === 2 && blocked.doc.documentElement.dataset.bootState === 'loading' && blocked.calls.engine === 0,
+    `A stalled manifest ${phase} cannot construct or start the engine`);
+  check(blocked.timers.size === 1 && [...blocked.timers.values()][0].delay === 30000,
+    `Both manifests share one bounded 30-second deadline while waiting for ${phase}`);
+  blocked.expireManifest();
+  await new Promise(setImmediate);
+  check(blocked.doc.documentElement.dataset.bootState === 'error' && !blocked.nodes.get('retry-game').hidden && blocked.nodes.get('start-game').hidden,
+    `A stalled manifest ${phase} reaches the ordinary visible Retry path`);
+  check(blocked.timers.size === 0 && blocked.calls.requests.every(request => request.options.signal.aborted),
+    `A manifest ${phase} timeout releases its timer and aborts both transfers`);
+  for (const resolve of pending) resolve({});
+  await new Promise(setImmediate);
+  check(blocked.calls.engine === 0 && blocked.calls.start === 0 && blocked.calls.requests.length === 2 && blocked.doc.documentElement.dataset.bootState === 'error',
+    `Late manifest ${phase} completions cannot create a stale engine or restart metadata reads`);
+  blocked.nodes.get('retry-game').listeners.get('click')();
+  check(blocked.calls.reload === 1, `Manifest ${phase} timeout keeps ordinary reload recovery`);
+}
+
+for (const failure of ['http', 'json']) {
+  let sibling;
+  const rejected = await bootShell({ fetchManifest: file => file === 'content-manifest.json'
+    ? Promise.resolve({ ok: failure !== 'http', status: 503, json: () => Promise.reject(new SyntaxError('Invalid manifest JSON')) })
+    : new Promise(resolve => { sibling = resolve; }) });
+  check(rejected.doc.documentElement.dataset.bootState === 'error' && rejected.timers.size === 0
+    && rejected.calls.requests.every(request => request.options.signal.aborted),
+  `Manifest ${failure} rejection clears the deadline and cancels its sibling immediately`);
+  sibling({ ok: true, json: () => Promise.resolve({}) });
+  await new Promise(setImmediate);
+  check(rejected.calls.engine === 0 && rejected.calls.errors.length === 1 && !rejected.nodes.get('retry-game').hidden,
+    `A late sibling after ${failure} rejection cannot revive boot or hide Retry`);
+}
+
+let metadataReads = 0;
+const mismatch = await bootShell({
+  bootResources: () => { throw new Error('Release manifests differ'); },
+  fetchManifest: () => ++metadataReads <= 2
+    ? Promise.resolve({ ok: true, json: () => Promise.resolve({}) }) : new Promise(() => {})
+});
+check(mismatch.calls.requests.length === 4 && mismatch.timerStarts() === 1 && mismatch.timers.size === 1,
+  'The existing manifest mismatch reread stays inside the original deadline');
+mismatch.expireManifest();
+await new Promise(setImmediate);
+check(mismatch.doc.documentElement.dataset.bootState === 'error' && mismatch.calls.engine === 0 && mismatch.timers.size === 0
+  && mismatch.calls.requests.every(request => request.options.signal.aborted),
+  'A stalled manifest mismatch reread is cancelled without extending boot indefinitely');
+
+const settleAfterContextLoss = [];
+const interrupted = await bootShell({ fetchManifest: () => new Promise(resolve => { settleAfterContextLoss.push(resolve); }) });
+interrupted.nodes.get('canvas').listeners.get('webglcontextlost')({ preventDefault() {} });
+await new Promise(setImmediate);
+check(interrupted.timers.size === 0 && interrupted.calls.requests.every(request => request.options.signal.aborted),
+  'An independent boot failure immediately cancels pending manifest reads');
+for (const resolve of settleAfterContextLoss) resolve({ ok: true, json: () => Promise.resolve({}) });
+await new Promise(setImmediate);
+check(interrupted.calls.engine === 0 && interrupted.doc.documentElement.dataset.bootState === 'error',
+  'Context loss while reading metadata remains terminal against a late response');
 check(!/\bLoaderUI\b|loader-enter|loader-retry/.test(shell), 'Reference prototype state machine is absent from production');
 check(!/transition\s*:\s*width/.test(shell) && shell.includes('100vh') && /env\(safe-area-inset-top, 0px\)/.test(shell), 'Real progress has no animated width and viewport/safe-area fallbacks remain');
-console.log(JSON.stringify({ success: true, checks, scope: 'Presentation-only fake-DOM ownership, progress and accessibility states. Visual design, real browser timing and actual Godot boot acceptance remain separate.' }));
+console.log(JSON.stringify({ success: true, checks, scope: 'Fake-DOM presentation ownership, progress, accessibility and actual shell manifest failure/deadline lifecycle. Visual design, real browser timing and actual Godot boot acceptance remain separate.' }));

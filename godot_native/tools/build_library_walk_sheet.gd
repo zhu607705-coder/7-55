@@ -2,6 +2,8 @@ extends SceneTree
 ## Registers whole drawings from the reviewed walk previews, with one transform per row.
 const Assets = preload("res://scripts/objects/library_animation_assets.gd")
 const Metrics = preload("res://scripts/player_metrics.gd")
+const LEGACY_FRAMES := 8
+const LEGACY_WALK_PATH := Assets.ROOT + "player_walk_full.png"
 const SOURCE_ROOT := "res://art_source/library_animation_20261105/originals/"
 const SIDE_SOURCE := SOURCE_ROOT + "walk_8_side_20261111.png"
 const VERTICAL_SOURCE := SOURCE_ROOT + "walk_8_vertical_20261111.png"
@@ -26,9 +28,9 @@ static func median(samples: Array[float]) -> float:
 
 static func read_row(source: Image, row: int, rows: int) -> Array[Dictionary]:
 	var poses: Array[Dictionary] = []
-	for phase in Assets.WALK_FRAMES:
+	for phase in LEGACY_FRAMES:
 		var cell := Vector2i(phase, row)
-		var grid := Vector2i(Assets.WALK_FRAMES, rows)
+		var grid := Vector2i(LEGACY_FRAMES, rows)
 		var start := cell * source.get_size() / grid
 		var end := (cell + Vector2i.ONE) * source.get_size() / grid
 		var region := source.get_region(Rect2i(start, end - start))
@@ -56,7 +58,7 @@ static func build_direction(source: Image, direction: String) -> Array[Image]:
 	source.convert(Image.FORMAT_RGBA8)
 	var rows := 3 if direction == "side" else 2
 	var poses := read_row(source, 1 if direction == "up" else 0, rows)
-	if poses.size() != Assets.WALK_FRAMES:
+	if poses.size() != LEGACY_FRAMES:
 		return []
 	var scale_poses := poses.duplicate()
 	if direction != "side":
@@ -69,7 +71,7 @@ static func build_direction(source: Image, direction: String) -> Array[Image]:
 	var head_sum := 0.0
 	var head_trend := 0.0
 	var phase_variance := 0.0
-	var middle_phase := (Assets.WALK_FRAMES - 1) * 0.5
+	var middle_phase := (LEGACY_FRAMES - 1) * 0.5
 	for phase in poses.size():
 		var pose := poses[phase]
 		var centered_phase := phase - middle_phase
@@ -126,21 +128,21 @@ static func build_direction(source: Image, direction: String) -> Array[Image]:
 	return frames
 
 func _initialize() -> void:
-	var size := Assets.atlas_size()
+	var size := Assets.WALK_CELL * Vector2i(LEGACY_FRAMES, Assets.WALK_DIRECTIONS.size())
 	var atlas := Image.create_empty(size.x, size.y, false, Image.FORMAT_RGBA8)
 	var frame_rect := Rect2i(Vector2i.ZERO, Assets.WALK_CELL)
 	for row in Assets.WALK_DIRECTIONS.size():
 		var direction: String = Assets.WALK_DIRECTIONS[row]
 		var frames := build_direction(Image.load_from_file(source_path(direction)), direction)
-		if frames.size() != Assets.WALK_FRAMES:
+		if frames.size() != LEGACY_FRAMES:
 			push_error("Incomplete full-body walk cycle: " + direction)
 			quit(1)
 			return
 		for index in frames.size():
 			atlas.blit_rect(frames[index], frame_rect, Assets.walk_region(row, index).position)
-	var result := atlas.save_png(Assets.WALK_PATH)
+	var result := atlas.save_png(LEGACY_WALK_PATH)
 	if result != OK:
 		push_error("Could not write the full-body walk sheet")
 	else:
-		print("Registered ", Assets.WALK_FRAMES * Assets.WALK_DIRECTIONS.size(), " complete poses")
+		print("Registered ", LEGACY_FRAMES * Assets.WALK_DIRECTIONS.size(), " complete poses")
 	quit(result)

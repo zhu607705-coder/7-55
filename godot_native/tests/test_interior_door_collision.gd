@@ -239,7 +239,8 @@ func run()->void:
 		var solid := Metrics.anchor_from_foot_center(Vector2(solid_x, 916))
 		check(not world.can_stand(solid), "fully open south door retains the visible leaf or post footprint at x=%s" % solid_x)
 	check(world.can_stand(Metrics.anchor_from_foot_center(Vector2(836, 916))), "the visible central gap remains walkable")
-	move_input(Vector2.DOWN,12,false)
+	var door_ticks:=ceili((899.0-world.player.y)/(world.GROUND_WALK_SPEED*.05))
+	move_input(Vector2.DOWN,door_ticks,false)
 	check(world.player.y>890 and world.can_stand(world.player),"real keyboard motion crosses opened theater door")
 	check(state.d.native.scene=="theater_interior" and state.d.theaterHunt.phase!="complete","opening a door cannot finish chapter or exit")
 	motion.cancel_departure();state.d.native.player={"scene":"theater_interior","x":1100.0,"y":800.0}

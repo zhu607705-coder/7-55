@@ -46,6 +46,7 @@ func run() -> void:
 	check(Metrics.foot_rect(sample)==approved,"default walking geometry is the approved 16 x 10 box")
 	for scene: String in [CAMPUS,"dorm_hub","library_interior","canteen_interior","theater_interior","qizhen_lake","campus_qizhen_loop","duan_yongping_temporal_maze",""]:
 		var expected:=Rect2(sample+Vector2(-18,31.5625),Vector2(36,10)) if scene=="library_interior" else approved
+		if scene=="canteen_interior": expected=Rect2(sample+Vector2(-6.4,31.5625),Vector2(12.8,10))
 		check(Metrics.foot_rect(sample,scene)==expected and Metrics.foot_size(scene)==expected.size,"shared depth and scene walking width: "+scene)
 		check(Metrics.anchor_from_foot_center(Metrics.foot_center(sample,scene),scene)==sample,"exact tap/anchor inverse: "+scene)
 	check(Metrics.depth_y(sample)==sample.y+31.6875,"legacy depth offset retains its calibration")

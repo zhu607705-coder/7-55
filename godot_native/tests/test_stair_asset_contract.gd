@@ -1,4 +1,5 @@
 extends SceneTree
+const WalkArt = preload("res://scripts/player_walk_art.gd")
 ## Runs the candidate renderer, not a parallel implementation of its animation.
 ## Requires imported resources in --path. Source files are never modified.
 var checks := 0
@@ -78,8 +79,13 @@ func run() -> void:
 	if not await settle(): quit(1); return
 	check(game.level.id == "stair_b", "real renderer enters original stair_b")
 	check(game.actor is Sprite3D and not game.actor.no_depth_test, "original billboard actor keeps real depth occlusion")
-	check(is_equal_approx(game.actor.pixel_size,1.75/128.0), "source actor world size preserved")
-	check(game.frames.size() == 25, "all 24 walking frames plus source side idle are present")
+	check(game.actor.texture != null and is_equal_approx(game.actor.pixel_size*game.actor.texture.get_height(),1.75),
+		"source actor world size preserved with the shared atlas")
+	var walk_art := WalkArt.shared()
+	check(walk_art.ensure_loaded(), "shared walking and standing atlas is available")
+	for direction: String in WalkArt.WALK_DIRECTIONS:
+		check(walk_art.walks.get(direction, []).size() == 16 and walk_art.idles.get(direction) != null,
+			"complete shared walking and standing drawings for " + direction)
 	var collider_count := 0
 	for node in descendants(game.root3d):
 		if node is CollisionObject3D: collider_count += 1
@@ -200,7 +206,9 @@ func run() -> void:
 		var deadline: int = Time.get_ticks_msec()+30000
 		while game.busy and Time.get_ticks_msec()<deadline:
 			await process_frame
-			if game.walking and game.actor.texture != null: textures_seen[game.actor.texture.resource_path]=true
+			if game.walking and game.actor.texture != null:
+				var frame: int = walk_art.walks[game.facing].find(game.actor.texture)
+				if frame >= 0: textures_seen["%s:%d" % [game.facing, frame]]=true
 			if game.level.id=="stair_b" and game.state.node=="B_EXIT" and game.campaign.is_empty() and is_instance_valid(game.door_hinge):
 				var leaf:MeshInstance3D=game.door_hinge.find_child("b_deco_fire_door_leaf",true,false)
 				if leaf!=null:

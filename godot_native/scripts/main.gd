@@ -540,6 +540,12 @@ func _focus_world_surface() -> void:
 	world.grab_focus()
 
 func _on_controller_page_intent(_action: String,_previous: Dictionary,current: Dictionary,result: Dictionary) -> void:
+	if _action == "c1_scatter_complete" and not _previous.flags.codeScattered and current.flags.codeScattered and is_instance_valid(phone_chrome):
+		var burst := page_body.find_child("FriendAttackBurst", true, false) as PanelContainer
+		if burst != null:
+			phone_chrome.reveal_first_task(burst, current)
+	elif _action == "c1_friend_cancel" and is_instance_valid(phone_chrome):
+		phone_chrome.finish_task_intro()
 	# The source recovery action explicitly opens the restored world inventory.
 	if _action=="c2_recover_card" and not _previous.actOne.inventoryRecovered and current.actOne.inventoryRecovered:
 		compact_inventory_open=true
@@ -1175,7 +1181,7 @@ func _layout_modal() -> void:
 
 func _size_journal_targets(journal:Control,display_scale:float)->void:
 	var target:=ceilf(44.0/maxf(.01,display_scale))
-	for control_name:String in ["JournalResume","JournalHistoryToggle"]:
+	for control_name:String in ["JournalResume","JournalChapterMap"]:
 		var button:=journal.find_child(control_name,true,false) as Button
 		if is_instance_valid(button):button.custom_minimum_size.y=maxf(44,target)
 
@@ -1690,6 +1696,9 @@ func _modal_base(title: String,surface: String="paper",preserve_departure: bool=
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	if surface == "loose_sheet":
+		# Keep item text at a stable wrap width while the dialog measures its height.
+		scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_RESERVE
 	box.add_child(scroll)
 	if surface=="selected_journal": NativeJournalView.style_modal(panel,label,close_button,scroll)
 	var content := VBoxContainer.new()
@@ -2033,6 +2042,7 @@ func _show_journal() -> void:
 	if return_to_world: journal.context_texture=world.background
 	journal.configure(State.objective(),str(current.get("detail","")),State.d.native.log,return_to_world)
 	journal.configure_digits(State.d)
+	journal.chapter_map_requested.connect(_show_chapter_map)
 	journal.resume_requested.connect(func():
 		_close_modal()
 		if return_to_world or _is_canteen_defense_entry() or _is_bike_chase_entry():
@@ -2061,6 +2071,56 @@ func _show_journal() -> void:
 	_layout_modal()
 	if not modal.has_meta("journal_shared_shell"):
 		journal.call_deferred("focus_control","JournalResume")
+
+func _show_chapter_map() -> void:
+	if State.story_input_locked() or is_instance_valid(active_game): return
+	var box := _modal_base("章节地图","selected_journal")
+	var map := preload("res://scripts/ui/chapter_map_view.gd").new()
+	map.setup(State.chapter_map_view())
+	map.replay_requested.connect(_start_chapter_map_replay)
+	map.return_requested.connect(func(): State.return_from_chapter_replay())
+	map.rewrite_requested.connect(_confirm_chapter_map.bind(false))
+	map.restore_requested.connect(_confirm_chapter_map.bind(true))
+	box.add_child(map)
+	box.add_child(_button("返回调查记录",_show_journal))
+	_layout_modal()
+
+func _start_chapter_map_replay(id: String) -> void:
+	var owner: WeakRef = weakref(modal)
+	var destination: Dictionary = State.chapter_map_destination(id)
+	if destination.is_empty():
+		_feedback("这个节点的回溯存档无法读取。")
+		return
+	if not await WebContent.ensure_state(destination): return
+	if owner.get_ref() == null or owner.get_ref() != modal: return
+	if not State.begin_chapter_replay(id): _feedback("无法开启这次回溯，主线进度保留。")
+
+func _confirm_chapter_map(restore: bool) -> void:
+	var change: Dictionary = {} if restore else State.chapter_map_rewrite_preview()
+	if not restore and change.is_empty(): return
+	var box := _modal_base("恢复旧主线？" if restore else "设为主线？","paper")
+	if restore:
+		box.add_child(_label("将读取改写前的主线，并从那里的进度继续。"))
+	else:
+		box.add_child(_label("主线将回到「%s」。" % change.destination))
+		if not change.lost.is_empty():
+			box.add_child(_label("这些节点将回退：" + "、".join(change.lost)))
+		box.add_child(_label("改写前的进度仍可恢复。"))
+	var cancel := _button("取消" if restore else "继续回溯",_show_chapter_map,Vector2(0,44))
+	box.add_child(cancel)
+	box.add_child(_button("恢复旧主线" if restore else "设为主线",_apply_chapter_map.bind(restore),Vector2(0,44)))
+	cancel.grab_focus.call_deferred()
+
+func _apply_chapter_map(restore: bool) -> void:
+	if restore:
+		var owner: WeakRef = weakref(modal)
+		var destination: Dictionary = State.chapter_map_destination("prior")
+		if destination.is_empty() or not await WebContent.ensure_state(destination): return
+		if owner.get_ref() == null or owner.get_ref() != modal: return
+		if State.restore_chapter_map_prior(): return
+	elif State.adopt_chapter_replay():
+		return
+	_feedback("存档没有改写，请返回章节地图后重试。")
 
 func _form_choice(box:VBoxContainer,options:Array)->Dictionary:
 	var labels:=PackedStringArray()
@@ -3051,6 +3111,7 @@ func _capture_world(config: Dictionary) -> void:
 	State.act(str(config.get("on_success","c3_journal_capture_result")),session)
 
 func _reset_runtime_presentations() -> void:
+	if is_instance_valid(phone_chrome): phone_chrome.finish_task_intro()
 	if is_instance_valid(battery_prank): battery_prank.reset()
 	_clear_notice_presentations()
 	if is_instance_valid(phone_object_pickup): phone_object_pickup.reset("story-reset")

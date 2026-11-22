@@ -159,7 +159,7 @@
           <div class="boot-status">
             <p id="loading-message" role="status" aria-live="polite">正在准备这一天…</p>
             <progress id="loading-progress" aria-label="游戏加载进度"></progress>
-            <p id="loading-detail">先准备开场，后续内容会在游玩时后台加载。</p>
+            <p id="loading-detail"></p>
             <div class="boot-actions">
               <button class="tactile-button" data-skin="paper-ink" data-variant="primary" data-size="lg" id="start-game" type="button" hidden>进入游戏</button>
               <button class="tactile-button" data-skin="paper-ink" data-variant="secondary" data-size="lg" id="retry-game" type="button" hidden>重新加载</button>
@@ -190,9 +190,11 @@
       const retry = document.getElementById('retry-game');
       const bootIntro = typeof window.install755BootIntro === 'function' ? window.install755BootIntro() : null;
       let failed = false;
+      let cancelManifestRead = null;
       function fail(error) {
         if (failed) return;
         failed = true;
+        if (cancelManifestRead) cancelManifestRead();
         document.documentElement.dataset.bootState = 'error';
         if (bootIntro) bootIntro.update({ stage: 'error' });
         loading.hidden = false;
@@ -231,10 +233,10 @@
         if (total > 0) {
           progress.max = total;
           progress.value = current;
-          detail.textContent = Math.floor(current / total * 100) + '% · ' + (current / 1048576).toFixed(1) + ' / ' + (total / 1048576).toFixed(1) + ' MB';
+          detail.textContent = '约 ' + Math.min(99, Math.floor(progress.position * 100)) + '%';
         } else {
           progress.removeAttribute('value');
-          detail.textContent = '已接收 ' + (current / 1048576).toFixed(1) + ' MB';
+          detail.textContent = '';
         }
       };
       config.onExit = function (code) {
@@ -245,21 +247,41 @@
       message.textContent = '正在准备这一天…';
       // Only the engine and the complete first-chapter dependency closure are
       // blocking. Later chapters retain their original res:// paths in packs.
-      function readManifest(file) {
-        return fetch(file, { cache: 'no-cache' }).then(function (response) {
+      function readManifest(file, signal) {
+        return fetch(file, { cache: 'no-cache', signal: signal }).then(function (response) {
           if (!response.ok) throw new Error('Release manifest HTTP ' + response.status);
           return response.json();
         });
       }
-      function releaseManifests(attempt) {
-        return Promise.all([readManifest('content-manifest.json'), readManifest('build-manifest.json')]).then(function (values) {
+      function releaseManifests(attempt, signal) {
+        return Promise.all([readManifest('content-manifest.json', signal), readManifest('build-manifest.json', signal)]).then(function (values) {
+          if (signal.aborted) throw new Error('Release manifest request cancelled');
           if (typeof Godot755Content === 'undefined') throw new Error('Content loader unavailable');
           const manifest = Godot755Content.validate(values[0]);
           try { return { manifest: manifest, boot: Godot755Content.bootResources(values[1], manifest, config.executable) }; }
-          catch (error) { if (attempt === 0) return releaseManifests(1); throw error; }
+          catch (error) { if (attempt === 0) return releaseManifests(1, signal); throw error; }
         });
       }
-      releaseManifests(0).then(function (release) {
+      function boundedReleaseManifests() {
+        const controller = new AbortController();
+        let timer;
+        // One metadata deadline includes both responses, JSON bodies and the
+        // existing mismatch reread. Abort alone cannot settle a stalled body
+        // on every host, so the deadline also rejects the awaited promise.
+        const deadline = new Promise(function (_resolve, reject) {
+          cancelManifestRead = function () { reject(new Error('Release manifest request cancelled')); };
+          timer = setTimeout(function () { reject(new Error('Release manifest request timed out')); }, 30000);
+        });
+        return Promise.race([
+          Promise.resolve().then(function () { return releaseManifests(0, controller.signal); }), deadline
+        ]).finally(function () {
+          clearTimeout(timer);
+          controller.abort();
+          cancelManifestRead = null;
+        });
+      }
+      boundedReleaseManifests().then(function (release) {
+        if (failed) return;
         if (typeof Godot755Content === 'undefined') throw new Error('Content loader unavailable');
         const api = Godot755Content;
         const manifest = release.manifest;

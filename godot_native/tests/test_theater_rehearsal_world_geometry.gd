@@ -84,7 +84,10 @@ func run()->void:
 	for direction:Vector2i in path:
 		var code:int=KEY_W if direction==Vector2i.UP else KEY_A if direction==Vector2i.LEFT else KEY_S if direction==Vector2i.DOWN else KEY_D
 		var prior:Vector2=world.player
-		key(code,true);world._process(8.0/165.0);key(code,false)
+		key(code,true)
+		# Each half stays below the world's 50 ms frame cap at the current pace.
+		world._process(4.0/world.GROUND_WALK_SPEED);world._process(4.0/world.GROUND_WALK_SPEED)
+		key(code,false)
 		check(world.can_stand(world.player) and world.player.distance_to(prior+Vector2(direction)*8)<.05,"ordinary keyboard follows safe source route")
 	check(world.player.distance_to(Vector2(560,206))<5,"actual body reaches source operator stand")
 	world.queue_redraw();await process_frame
