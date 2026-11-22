@@ -47,6 +47,7 @@ var manage_button: Button
 var campus_button: Button
 var haidian_button: Button
 var changping_button: Button
+var content_scroll: ScrollContainer
 var content: VBoxContainer
 var title: Label
 var detail: Label
@@ -58,6 +59,9 @@ var _content_cover_active := false
 var _visible_before_content_cover := true
 var _focus_before_content_cover: WeakRef
 var _focus_behavior_before_content_cover: int
+var _layout_key: Array = []
+var _layout_density := 0
+var _applied_layout_density := -1
 
 func _ready() -> void:
 	set_meta("paper_ink_scope",true)
@@ -94,7 +98,11 @@ func _ready() -> void:
 	style.set_corner_radius_all(2);style.anti_aliasing=true
 	style.shadow_color=Color(PaperInk.INK,0.48);style.shadow_size=1;style.shadow_offset=Vector2(3,4)
 	card.add_theme_stylebox_override("panel",style)
-	content=VBoxContainer.new();content.add_theme_constant_override("separation",18);card.add_child(content)
+	content_scroll=ScrollContainer.new();content_scroll.name="EntryContentScroll"
+	content_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	content_scroll.follow_focus=true;card.add_child(content_scroll)
+	content=VBoxContainer.new();content.add_theme_constant_override("separation",18)
+	content.size_flags_horizontal=Control.SIZE_EXPAND_FILL;content_scroll.add_child(content)
 	title=Label.new();title.text="7:55";Typography.apply_display(title)
 	title.add_theme_font_size_override("font_size",64);title.add_theme_color_override("font_color",UiMaterial.NAVY);content.add_child(title)
 	title_rule=ColorRect.new();title_rule.color=UiMaterial.CORAL
@@ -148,6 +156,7 @@ func _ready() -> void:
 	if is_instance_valid(preview_menu): Typography.apply_body_text_tree(preview_menu)
 	Typography.apply_display(title)
 	resized.connect(_layout);card.minimum_size_changed.connect(_layout.call_deferred)
+	content.minimum_size_changed.connect(_layout.call_deferred)
 	_layout.call_deferred();story_button.grab_focus()
 	# The independent entrance uses the same neutral anchor as a fresh phone:
 	# authored composition unchanged, rather than an always-on maximum lift.
@@ -295,9 +304,46 @@ func _layout() -> void:
 	if not is_inside_tree() or not is_instance_valid(card) or not card.visible:return
 	var available:=get_viewport_rect().size
 	var width:=minf(640 if previews_open else 460,available.x-32)
-	var compact:=available.y<740
-	var short_window:=available.y<420
-	content.add_theme_constant_override("separation",3 if short_window else 6 if compact else 14)
+	var layout_key:=[available,previews_open,protagonist_picker.visible,detail.text,
+		save_label.text if is_instance_valid(save_label) else "",content.get_child_count()]
+	var layout_changed:=layout_key!=_layout_key
+	if layout_changed:
+		_layout_key=layout_key
+		_layout_density=2 if available.y<420 else 1 if available.y<740 else 0
+	var content_height:=0.0
+	var edge:=12.0
+	# Opening identity, account and save notices change the actual content height.
+	# Use the existing smaller layouts before resorting to scrolling; viewport
+	# height alone no longer predicts whether the last entry remains reachable.
+	# Keep the chosen density during Container minimum-size notifications. Trying
+	# the larger density again would schedule another shrink notification forever.
+	for candidate in range(_layout_density,3):
+		_layout_density=candidate
+		if layout_changed or candidate!=_applied_layout_density:
+			_apply_layout_density(candidate)
+			_applied_layout_density=candidate
+			layout_changed=false
+			protagonist_picker.update_minimum_size()
+			content.update_minimum_size()
+		edge=4.0 if candidate==2 else 12.0
+		content_height=content.get_combined_minimum_size().y
+		var margins:=card.get_theme_stylebox("panel").get_minimum_size().y
+		if previews_open or content_height+margins<=available.y-edge*2:break
+	var panel_margins:=card.get_theme_stylebox("panel").get_minimum_size().y
+	content_scroll.custom_minimum_size.y=maxf(0,minf(content_height,available.y-edge*2-panel_margins))
+	if previews_open:
+		preview_scroll.custom_minimum_size=Vector2(0,maxf(90,minf(540,available.y-210)))
+	card.size=Vector2(width,0)
+	# Large windows reveal the source room at left; narrow screens retain a
+	# centered, bounded card. No artwork or button uses non-uniform scaling.
+	var x:float=(available.x-width)/2
+	if available.x>=1100 and not previews_open:x=available.x-width-available.x*0.08
+	card.position=Vector2(x,maxf(edge,(available.y-card.get_combined_minimum_size().y)/2))
+
+func _apply_layout_density(density:int) -> void:
+	var compact:=density>=1
+	var short_window:=density>=2
+	content.add_theme_constant_override("separation",2 if short_window else 6 if compact else 14)
 	title.add_theme_font_size_override("font_size",24 if short_window else 40 if compact else 64)
 	# Short landscape windows keep every 44px entry, not redundant group copy.
 	story_heading.visible=not short_window
@@ -311,7 +357,7 @@ func _layout() -> void:
 		community_note.add_theme_font_size_override("font_size",13 if compact else 15)
 	if is_instance_valid(save_label):
 		save_label.visible = not short_window or not CloudSaves.ready_for_play
-	subtitle.visible=available.y>=420 and not protagonist_picker.visible
+	subtitle.visible=not short_window and not protagonist_picker.visible
 	title_rule.visible=not short_window
 	for option in protagonist_buttons:
 		option.custom_minimum_size.y = 44 if short_window else 104 if compact else 132
@@ -326,14 +372,6 @@ func _layout() -> void:
 	var panel_style: StyleBoxFlat=card.get_theme_stylebox("panel")
 	panel_style.content_margin_top=8 if short_window else 12 if compact else 28
 	panel_style.content_margin_bottom=8 if short_window else 12 if compact else 28
-	if previews_open:
-		preview_scroll.custom_minimum_size=Vector2(0,maxf(90,minf(540,available.y-210)))
-	card.size=Vector2(width,0)
-	# Large windows reveal the source room at left; narrow screens retain a
-	# centered, bounded card. No artwork or button uses non-uniform scaling.
-	var x:float=(available.x-width)/2
-	if available.x>=1100 and not previews_open:x=available.x-width-available.x*0.08
-	card.position=Vector2(x,maxf(4 if short_window else 12,(available.y-card.get_combined_minimum_size().y)/2))
 
 func _build_preview_menu() -> void:
 	if not DeveloperTools.available(): return
@@ -366,11 +404,20 @@ func _add_preview(text: String, description: String, action: Callable) -> void:
 
 func open_previews() -> void:
 	if not DeveloperTools.available() or opening:return
-	previews_open=true;content.hide();preview_menu.show();_layout.call_deferred();preview_back.grab_focus()
+	previews_open=true;content.hide();content_scroll.hide();preview_menu.show();_layout.call_deferred();preview_back.grab_focus()
 
 func close_previews() -> void:
 	if not DeveloperTools.available(): return
-	previews_open=false;preview_menu.hide();content.show();_layout.call_deferred();preview_button.grab_focus()
+	previews_open=false;preview_menu.hide();content.show();content_scroll.show();_layout.call_deferred()
+	_restore_chooser_focus.call_deferred()
+
+func _restore_chooser_focus() -> void:
+	# The hidden chooser was last sized before the preview panel replaced it.
+	# Restore focus after its Containers have applied the bounded height again.
+	await get_tree().process_frame
+	if not is_inside_tree() or previews_open or opening or not card.is_visible_in_tree():return
+	preview_button.grab_focus()
+	content_scroll.ensure_control_visible(preview_button)
 
 func _open_preview(path: String) -> void:
 	if not DeveloperTools.available() or not ReleaseContent.scene_available(path) or opening or is_instance_valid(preview_instance):return

@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFile, readdir } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { extname, resolve } from 'node:path';
+import { setTimeout as waitForRetry } from 'node:timers/promises';
 import { pathToFileURL } from 'node:url';
 import { gunzipSync } from 'node:zlib';
 
@@ -65,18 +66,50 @@ export async function verifyRelease(directory, commit) {
   return { directory, files, compressed };
 }
 
+const transientStatuses = new Set([408, 429, 500, 502, 503, 504]);
+const transientErrors = new Set([
+  'ResponseTimeoutError', 'ConnectionTimeoutError', 'RequestTimeoutError', 'TimeoutError',
+  'RequestTimeout', 'SlowDown', 'ServiceUnavailable', 'InternalError',
+  'ECONNRESET', 'ETIMEDOUT', 'EAI_AGAIN', 'EPIPE',
+  'UND_ERR_CONNECT_TIMEOUT', 'UND_ERR_HEADERS_TIMEOUT', 'UND_ERR_BODY_TIMEOUT', 'UND_ERR_SOCKET',
+]);
+function isTransient(error) {
+  // The SDK reports response timeouts with status -1. Node fetch wraps socket
+  // errors in cause; permanent HTTP failures must still fail immediately.
+  const seen = new Set();
+  for (let cause = error; cause && !seen.has(cause); cause = cause.cause) {
+    seen.add(cause);
+    const status = Number(cause.status ?? cause.statusCode);
+    if (status >= 400) return transientStatuses.has(status);
+    if (transientErrors.has(cause.code) || transientErrors.has(cause.name)) return true;
+  }
+  return false;
+}
+
 async function publicBytes(url) {
   const response = await fetch(url, { redirect: 'error', signal: AbortSignal.timeout(120000) });
-  assert(response.ok, `Public OSS check returned ${response.status}: ${url}`);
+  if (!response.ok) {
+    await response.body?.cancel();
+    throw Object.assign(new Error(`Public OSS check returned ${response.status}: ${url}`), { status: response.status });
+  }
   return Buffer.from(await response.arrayBuffer());
 }
 
-export async function publish(client, release, origin, version, runNumber, readPublic = publicBytes) {
+export async function publish(client, release, origin, version, runNumber, readPublic = publicBytes, { wait = waitForRetry } = {}) {
   assert.match(version, /^[a-f0-9]{40}-\d+-\d+$/);
   const prefix = `releases/${version}/`;
+  async function retry(operation) {
+    for (let attempt = 0; ; attempt++) {
+      try { return await operation(); }
+      catch (error) {
+        if (attempt === 2 || !isTransient(error)) throw error;
+        await wait(1000 * 2 ** attempt);
+      }
+    }
+  }
   // A rerun of an older workflow may finish after a newer version is live.
   try {
-    const previous = await client.head('index.html');
+    const previous = await retry(() => client.head('index.html'));
     if (Number(previous.res.headers['x-oss-meta-release-run'] || 0) > runNumber) {
       return { skipped: true };
     }
@@ -98,22 +131,25 @@ export async function publish(client, release, origin, version, runNumber, readP
       const headers = { 'Cache-Control': 'public, max-age=31536000, immutable' };
       if (mime) headers['Content-Type'] = mime;
       if (transport) headers['Content-Encoding'] = 'gzip';
-      await client.put(prefix + path, resolve(release.directory, transport || path), { mime, headers, timeout: 180000 });
+      // A response may be lost after OSS accepted the object. Retry the same
+      // immutable key/body instead of restarting or advancing the live entry.
+      await retry(() => client.put(prefix + path, resolve(release.directory, transport || path), { mime, headers, timeout: 180000 }));
     }));
   }
   const sample = ['index.html', 'content-manifest.json', 'index.wasm'];
   for (const path of sample) {
-    const bytes = await readPublic(origin + '/' + prefix + path);
+    const bytes = await retry(() => readPublic(origin + '/' + prefix + path));
     assert.equal(digest(bytes), release.files.get(path).sha256, `Public OSS bytes differ: ${path}`);
   }
 
-  await client.put('index.html', entry, {
+  await retry(() => client.put('index.html', entry, {
     mime: contentTypes['.html'],
     headers: { 'Content-Type': contentTypes['.html'], 'Cache-Control': 'no-store',
       'x-oss-meta-release-run': String(runNumber) },
-  });
-  assert.deepEqual(await readPublic(origin + '/index.html'), entry, 'OSS root object did not update');
-  assert.deepEqual(await readPublic(origin + '/'), entry, 'Set the OSS static website homepage to index.html');
+    timeout: 180000,
+  }));
+  assert.deepEqual(await retry(() => readPublic(origin + '/index.html')), entry, 'OSS root object did not update');
+  assert.deepEqual(await retry(() => readPublic(origin + '/')), entry, 'Set the OSS static website homepage to index.html');
   return { skipped: false, prefix, count: paths.length };
 }
 

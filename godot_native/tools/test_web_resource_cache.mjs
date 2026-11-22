@@ -48,7 +48,7 @@ function idb(storage,failWrites=false,options={}) {
 }
 function fixture({stored=new Map(),fetcher,noIDB=false,failWrites=false,nativeCrypto=false,cryptoDenied=false,idbOptions={}}={}) {
   const requests=[];
-  const context={window:{},document:{baseURI:'http://755-cache.test/7-55/releases/new/'},location:{origin:'http://755-cache.test'},navigator:{},URL,Response,ReadableStream,ArrayBuffer,Uint8Array,Uint32Array,DataView,TextEncoder,setTimeout,AbortController,
+  const context={window:{},document:{baseURI:'http://755-cache.test/7-55/releases/new/'},location:{origin:'http://755-cache.test'},navigator:{},URL,Response,ReadableStream,ArrayBuffer,Uint8Array,Uint32Array,DataView,TextEncoder,setTimeout,clearTimeout,AbortController,
     ...(nativeCrypto?{crypto:cryptoDenied?{subtle:{digest:async()=>{throw new Error('Crypto denied fixture');}}}:crypto.webcrypto}:{}),
     fetch:async(url,init)=>{requests.push({url,init});return fetcher?fetcher(url,init,requests.length):new Response(payload);},
     ...(noIDB?{}:{indexedDB:idb(stored,failWrites,idbOptions)})};
