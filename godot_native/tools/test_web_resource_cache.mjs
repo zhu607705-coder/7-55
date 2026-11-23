@@ -37,8 +37,12 @@ function idb(storage,failWrites=false,options={}) {
           result.result=action();result.onsuccess?.();
           if(--pending===0)setTimeout(()=>{
             if(mode==='readonly'&&options.abortReads){aborted=true;transaction.onabort?.();return;}
-            if(mode==='readonly')options.beforeReadCommit?.();
-            transaction.oncomplete?.();
+            const commit=()=>{transaction.oncomplete?.();};
+            if(mode==='readonly') {
+              options.beforeReadCommit?.();
+              if(options.holdReadCommit?.(commit))return;
+            }
+            commit();
           },mode==='readonly'?(options.readDelay||0):0);
         });return result;}
         return transaction;
@@ -287,6 +291,48 @@ for(const when of ['before-fresh','during-fresh']) {
   }});
   const loaded=await Promise.all([f.cache.load(table),f.cache.load(second)]);
   check(maximum===3&&Buffer.from(loaded[0].buffer).equals(payload),'WASM and core share one three-request concurrency limit across both boot resources');
+}
+// Hold a later cache read open to prove downloads can start without a
+// wall-clock speed threshold. A paced preload must keep cache-first behavior.
+for (const scenario of ['foreground','background','cancel','network-error']) {
+  const bytes=Buffer.alloc(block*8+319);
+  for(let index=0;index<9;index++)bytes.fill(index,block*index,Math.min(block*(index+1),bytes.length));
+  const table=chunked(bytes),controller=new AbortController();
+  let reads=0,releaseRead,releaseFetch;
+  const progress=[];
+  let heldRead, firstFetch;
+  const holdReached=new Promise(resolve=>{heldRead=resolve;});
+  const fetchReached=new Promise(resolve=>{firstFetch=resolve;});
+  const fetchGate=new Promise(resolve=>{releaseFetch=resolve;});
+  const f=fixture({nativeCrypto:true,idbOptions:{holdReadCommit(commit){
+    if(++reads!==3)return false;
+    releaseRead=commit;heldRead();return true;
+  }},fetcher:async url=>{
+    firstFetch();
+    await fetchGate;
+    if(scenario==='network-error')throw new Error('Pipelined network failure');
+    const part=table.chunks.find(item=>url.endsWith(item.file));
+    return new Response(bytes.subarray(part.offset,part.offset+part.bytes));
+  }});
+  const result=f.cache.load(table,{signal:controller.signal,onProgress:value=>progress.push(value),...(scenario==='background'?{pace:async()=>{}}:{})});
+  await holdReached;
+  check(f.requests.length===(scenario==='background'?0:3),scenario+': the later batch is held while only foreground starts, within the shared request limit');
+  if(scenario==='cancel'||scenario==='network-error') {
+    const rejected=assert.rejects(result,scenario==='cancel'?{name:'AbortError'}:/Pipelined network failure/);
+    if(scenario==='cancel')controller.abort();
+    releaseFetch();
+    await rejected;
+    releaseRead(); // A stale IDB event must not revive a cancelled load.
+    check(progress.length===0&&f.stored.size===0&&f.requests.length===3,scenario+': outstanding scan and downloads retire without accepting late bytes');
+  } else {
+    if(scenario==='foreground') {
+      await fetchReached;
+      assert.equal(f.requests.some(({url})=>url.endsWith(table.chunks[8].file)),false);
+    }
+    releaseRead();releaseFetch();
+    const loaded=await result;
+    check(Buffer.from(loaded.buffer).equals(bytes)&&loaded.indexedDBComplete&&f.requests.length===9&&progress.at(-1)===bytes.length&&progress.every((value,index)=>index===0||value>progress[index-1]),scenario+': verified output, durable cache and monotonic progress are preserved');
+  }
 }
 // The same static-chunk transport applies to deferred PCKs, but each chunk
 // must belong to exactly its hash-named pack and contiguous declared position.

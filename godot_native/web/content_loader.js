@@ -323,40 +323,59 @@
         received+=bytes.byteLength;
         if(options.onProgress)options.onProgress(received,resource.bytes,{reusedBytes:reused,networkBytes:network,storage:stats.storage});
       }
-      let cached=[], legacyRows=[];
-      for(let index=0;index<chunks.length;index++) {
-        checkSignal(signal);
-        if(index%8===0) {
-          const batch=chunks.slice(index,index+8);
-          cached=await operation('readonly',store=>batch.map(chunk=>store.get(chunkKey(chunk))),{signal})||[];
-          const misses=batch.map((_,offset)=>offset).filter(offset=>!cached[offset]);
-          legacyRows=[];
-          if(misses.length) {
-            const rows=await operation('readonly',store=>misses.map(offset=>store.get(key(resource,index+offset))),{signal})||[];
-            misses.forEach((offset,position)=>{legacyRows[offset]=rows[position];});
-          }
-        }
-        const chunk=chunks[index], canonical=chunkKey(chunk), slot=index%8;
-        const saved=cached[slot]||legacyRows[slot], legacy=!!legacyRows[slot];
-        cached[slot]=null;legacyRows[slot]=null;
-        const bytes=saved && saved.bytes instanceof ArrayBuffer?new Uint8Array(saved.bytes):null;
-        // Missing cache entries do not consume content bytes. Deferring each
-        // miss would delay the first network request by the whole chunk count.
-        if(bytes && options.pace)await options.pace(0,signal);
-        if(bytes && bytes.byteLength===chunk.bytes && await verifyBytes(bytes,signal,!!options.pace)===chunk.sha256) {
-          if(legacy) {
-            const migrated=await operation('readwrite',store=>store.put({bytes:bytes.buffer,digest:chunk.sha256},canonical),{signal});
-            if(migrated!==null)await operation('readwrite',store=>store.delete(key(resource,index)),{signal});
-          }
-          persisted+=bytes.byteLength;reused+=bytes.byteLength;accept(index,bytes);
-        }
-        else {if(saved)await operation('readwrite',store=>store.delete(legacy?key(resource,index):canonical),{discard:true,signal});missing.push(index);}
+      let scanComplete=false, available, notify;
+      function wakeWorkers() {
+        if(!notify)return;
+        const wake=notify;
+        available=notify=null;
+        wake();
       }
-      // Independent complete small files avoid compressed HTTP Range offsets.
-      // Three workers bound peak transient memory and connection pressure.
-      async function worker() {
-        while(next<missing.length) {
+      async function scanCache() {
+        let cached=[], legacyRows=[];
+        for(let index=0;index<chunks.length;index++) {
           checkSignal(signal);
+          if(index%8===0) {
+            const batch=chunks.slice(index,index+8);
+            cached=await operation('readonly',store=>batch.map(chunk=>store.get(chunkKey(chunk))),{signal})||[];
+            const misses=batch.map((_,offset)=>offset).filter(offset=>!cached[offset]);
+            legacyRows=[];
+            if(misses.length) {
+              const rows=await operation('readonly',store=>misses.map(offset=>store.get(key(resource,index+offset))),{signal})||[];
+              misses.forEach((offset,position)=>{legacyRows[offset]=rows[position];});
+            }
+          }
+          const chunk=chunks[index], canonical=chunkKey(chunk), slot=index%8;
+          const saved=cached[slot]||legacyRows[slot], legacy=!!legacyRows[slot];
+          cached[slot]=null;legacyRows[slot]=null;
+          const bytes=saved && saved.bytes instanceof ArrayBuffer?new Uint8Array(saved.bytes):null;
+          // Missing cache entries do not consume content bytes. Deferring each
+          // miss would delay the first network request by the whole chunk count.
+          if(bytes && options.pace)await options.pace(0,signal);
+          if(bytes && bytes.byteLength===chunk.bytes && await verifyBytes(bytes,signal,!!options.pace)===chunk.sha256) {
+            if(legacy) {
+              const migrated=await operation('readwrite',store=>store.put({bytes:bytes.buffer,digest:chunk.sha256},canonical),{signal});
+              if(migrated!==null)await operation('readwrite',store=>store.delete(key(resource,index)),{signal});
+            }
+            persisted+=bytes.byteLength;reused+=bytes.byteLength;accept(index,bytes);
+          }
+          else {if(saved)await operation('readwrite',store=>store.delete(legacy?key(resource,index):canonical),{discard:true,signal});missing.push(index);if(!options.pace)wakeWorkers();}
+        }
+        scanComplete=true;
+        wakeWorkers();
+      }
+      // Start downloads as soon as a foreground miss is known. The remaining
+      // IDB lookups and verification can overlap the network, with only chunk
+      // indexes queued. Paced background transfers keep cache-first ordering.
+      // The shared acquire() limit still bounds all requests across resources.
+      async function worker() {
+        while(true) {
+          checkSignal(signal);
+          if(next===missing.length) {
+            if(scanComplete)return;
+            if(!available)available=new Promise(resolve=>{notify=resolve;});
+            await abortable(available,signal);
+            continue;
+          }
           const index=missing[next++], chunk=chunks[index];
           let bytes;
           for(const cacheMode of ['force-cache','reload']) {
@@ -378,9 +397,12 @@
           accept(index,bytes);
         }
       }
-      const workers=Array.from({length:Math.min(options.pace?1:3,missing.length)},worker);
-      try { await Promise.all(workers); }
-      catch(error){controller.abort();await Promise.allSettled(workers);throw error;}
+      const scan=scanCache();
+      const tasks=[scan];
+      if(options.pace)tasks.push(scan.then(worker));
+      else tasks.push(...Array.from({length:Math.min(3,chunks.length)},worker));
+      try { await Promise.all(tasks); }
+      catch(error){controller.abort();await Promise.allSettled(tasks);throw error;}
       const digest=options.response?await digestParts(output,signal):await verifyBytes(output,signal,!!options.pace);
       if(digest!==resource.sha256){await discard(resource,0,signal);throw new Error('Content digest differs');}
       return completed(resource,options,output,reused,network,persisted);
