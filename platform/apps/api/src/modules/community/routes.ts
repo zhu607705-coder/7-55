@@ -12,6 +12,9 @@ import {
   ideaListSchema,
   ideaResponseSchema,
   statsSchema,
+  commentsSchema,
+  createCommentSchema,
+  commentResponseSchema,
   type User,
 } from "@755/contracts";
 import { CommunityError, type CommunityStore } from "@755/database";
@@ -122,7 +125,8 @@ export function registerCommunity(
     await limit(`write-user:${user.id}`, 60, 60, reply);
     return user;
   }
-  if (options.gameSaves) registerGameSaves(app,options.gameSaves,{member,protect,writeMember});
+  if (options.gameSaves)
+    registerGameSaves(app, options.gameSaves, { member, protect, writeMember });
   const authCookieName = secureCookies ? "__Host-755_auth" : "755_auth";
   function cookie(
     reply: FastifyReply,
@@ -296,6 +300,7 @@ export function registerCommunity(
       const user = await writeMember(request, reply);
       const input = parse(profileSchema, request.body);
       await store.profile(user.id, input.nickname, input.chapterId);
+      viewers.delete(request);
       return sessionSchema.parse({ user: await viewer(request) });
     },
   );
@@ -386,6 +391,54 @@ export function registerCommunity(
   });
   app.get("/api/v1/stats", async (request) =>
     statsSchema.parse(await store.stats((await viewer(request))?.id)),
+  );
+  app.get("/api/v1/ideas/:id/comments", async (request) => {
+    const { id } = parse(idSchema, request.params);
+    const { reveal, page } = parse(
+      z
+        .object({
+          reveal: z.enum(["true", "false"]).default("false"),
+          page: z.coerce.number().int().min(1).max(10000).default(1),
+        })
+        .strict(),
+      request.query,
+    );
+    const user = await viewer(request);
+    return commentsSchema.parse(
+      await store.comments(
+        id,
+        user?.id ?? null,
+        user?.isOperator,
+        reveal === "true",
+        page,
+      ),
+    );
+  });
+  app.post(
+    "/api/v1/ideas/:id/comments",
+    { preHandler: protect },
+    async (request, reply) => {
+      const user = await writeMember(request, reply);
+      await limit(`comment-user:${user.id}`, 30, 600, reply);
+      const { id } = parse(idSchema, request.params);
+      const { body } = parse(createCommentSchema, request.body);
+      const comment = await store.addComment(id, user.id, body);
+      reply.code(201);
+      return commentResponseSchema.parse({ comment });
+    },
+  );
+  app.delete(
+    "/api/v1/ideas/:id/comments/:commentId",
+    { preHandler: protect },
+    async (request, reply) => {
+      const user = await writeMember(request, reply);
+      const { id, commentId } = parse(
+        z.object({ id: z.uuid(), commentId: z.uuid() }).strict(),
+        request.params,
+      );
+      await store.removeComment(id, commentId, user.id, user.isOperator);
+      return { ok: true };
+    },
   );
   app.get("/api/v1/ideas", async (request) => {
     const query = parse(ideaListQuerySchema, request.query);

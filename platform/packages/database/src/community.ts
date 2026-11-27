@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import type pg from "pg";
 import {
   ideaSchema,
+  commentSchema,
   type User,
   type CreateIdea,
   type IdeaListQuery,
@@ -40,6 +41,7 @@ const selection = `SELECT i.id, i.title, i.body, i.chapter_id AS "chapterId", i.
   json_build_object('mode',i.credit_mode,'name',i.credit_name) AS credit,
   json_build_object('id',m.id,'nickname',m.nickname) AS author,
   i.created_at AS "createdAt", COALESCE(l.n,0)::int AS "likeCount",
+  (SELECT count(*)::int FROM idea_comments cm WHERE cm.idea_id=i.id AND cm.deleted_at IS NULL) AS "commentCount",
   r.average AS "ratingAverage", COALESCE(r.n,0)::int AS "ratingCount",
   (i.hidden_at IS NOT NULL) AS moderated,
   EXISTS (SELECT 1 FROM idea_likes mine WHERE mine.idea_id=i.id AND mine.member_id=$1::uuid) AS "myLiked",
@@ -139,9 +141,10 @@ export function createCommunityStore(pool: pg.Pool) {
       try {
         await client.query("BEGIN");
         // Serialize logins for one member so concurrent callbacks keep the session cap.
-        await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [
-          "session:" + memberId,
-        ]);
+        await client.query(
+          "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
+          ["session:" + memberId],
+        );
         await client.query(
           "DELETE FROM sessions WHERE member_id=$1 AND (expires_at <= now() OR token_hash IN (SELECT token_hash FROM sessions WHERE member_id=$1 ORDER BY created_at DESC, token_hash DESC OFFSET 9))",
           [memberId],
@@ -150,7 +153,8 @@ export function createCommunityStore(pool: pg.Pool) {
           "INSERT INTO sessions(token_hash,member_id,identity_id,expires_at) SELECT $1,$2,id,$4 FROM external_identities WHERE id=$3 AND member_id=$2",
           [tokenHash, memberId, identityId, expiresAt],
         );
-        if (inserted.rowCount !== 1) throw new Error("Session identity mismatch");
+        if (inserted.rowCount !== 1)
+          throw new Error("Session identity mismatch");
         await client.query("COMMIT");
       } catch (error) {
         await client.query("ROLLBACK");
@@ -210,9 +214,14 @@ export function createCommunityStore(pool: pg.Pool) {
     async profile(
       memberId: string,
       nickname: string,
-      chapterId: string | null,
+      chapterId?: string | null,
     ) {
-      if (chapterId === null)
+      if (chapterId === undefined)
+        await pool.query("UPDATE members SET nickname=$2 WHERE id=$1", [
+          memberId,
+          nickname,
+        ]);
+      else if (chapterId === null)
         await pool.query(
           "UPDATE members SET nickname=$2,progress_order=0 WHERE id=$1",
           [memberId, nickname],
@@ -238,7 +247,9 @@ export function createCommunityStore(pool: pg.Pool) {
       // Avoid a global expiry DELETE for every write in a traffic burst.
       if (Date.now() >= nextLimitCleanup) {
         nextLimitCleanup = Date.now() + 60_000;
-        await pool.query("DELETE FROM request_limits WHERE key IN (SELECT key FROM request_limits WHERE expires_at <= now() LIMIT 1000)");
+        await pool.query(
+          "DELETE FROM request_limits WHERE key IN (SELECT key FROM request_limits WHERE expires_at <= now() LIMIT 1000)",
+        );
       }
       const result = await pool.query(
         `INSERT INTO request_limits (key, hits, expires_at) VALUES ($1,1,now() + $3 * interval '1 second')
@@ -255,6 +266,10 @@ export function createCommunityStore(pool: pg.Pool) {
     ) {
       const values: unknown[] = [viewerId, operator];
       const filters = [visible];
+      if (query.section === "suggestions")
+        filters.push("i.channel='suggestion'");
+      if (query.section === "community")
+        filters.push("i.channel<>'suggestion'");
       for (const field of ["channel", "status"] as const) {
         if (query[field]) {
           values.push(query[field]);
@@ -278,7 +293,7 @@ export function createCommunityStore(pool: pg.Pool) {
       // Count and rows use one statement snapshot so pagination metadata cannot race new posts.
       const order =
         query.sort === "likes"
-          ? '"likeCount" DESC, "ratingCount" DESC, "createdAt" DESC, id DESC'
+          ? '"likeCount" DESC, "createdAt" DESC, id DESC'
           : query.sort === "rating"
             ? '"ratingAverage" DESC NULLS LAST, "ratingCount" DESC, "likeCount" DESC, "createdAt" DESC, id DESC'
             : '"createdAt" DESC, id DESC';
@@ -432,6 +447,107 @@ export function createCommunityStore(pool: pg.Pool) {
           createdAt: row.createdAt.toISOString(),
         })),
       };
+    },
+    async comments(
+      id: string,
+      viewerId: string | null,
+      operator = false,
+      reveal = false,
+      page = 1,
+    ) {
+      const idea = await this.get(id, viewerId, operator, reveal);
+      if (idea.contentHidden)
+        return { items: [], total: 0, page, pageSize: 30 as const };
+      const result = await pool.query(
+        `WITH matching AS (
+          SELECT cm.id, cm.body, cm.created_at AS "createdAt",
+          json_build_object('id', CASE WHEN i.anonymous AND cm.author_id=i.author_id THEN NULL ELSE m.id END,
+            'nickname', CASE WHEN i.anonymous AND cm.author_id=i.author_id THEN '匿名作者' ELSE m.nickname END) AS author,
+          COALESCE(cm.author_id=$1::uuid OR $2::boolean, false) AS "canDelete"
+          FROM idea_comments cm JOIN ideas i ON i.id=cm.idea_id JOIN chapters c ON c.id=i.chapter_id
+          JOIN members m ON m.id=cm.author_id
+          WHERE ${visible} AND i.id=$3 AND cm.deleted_at IS NULL
+          AND (NOT i.spoiler OR i.author_id=$1 OR $2::boolean OR $4::boolean)
+        ), paged AS (SELECT * FROM matching ORDER BY "createdAt", id LIMIT 30 OFFSET $5)
+        SELECT (SELECT count(*)::int FROM matching) AS total,
+          COALESCE((SELECT json_agg(paged) FROM paged), '[]'::json) AS items`,
+        [viewerId, operator, id, reveal, (page - 1) * 30],
+      );
+      const row = result.rows[0];
+      return {
+        items: row.items.map((item: Record<string, unknown>) =>
+          commentSchema.parse({
+            ...item,
+            createdAt: new Date(item.createdAt as string).toISOString(),
+          }),
+        ),
+        total: row.total as number,
+        page,
+        pageSize: 30 as const,
+      };
+    },
+    async addComment(id: string, memberId: string, body: string) {
+      const client = await pool.connect();
+      try {
+        await client.query("BEGIN");
+        const parent = await client.query(
+          `SELECT i.id,i.anonymous,i.author_id FROM ideas i JOIN chapters c ON c.id=i.chapter_id
+          WHERE ${visible} AND i.hidden_at IS NULL AND i.id=$3 FOR UPDATE OF i`,
+          [memberId, false, id],
+        );
+        if (!parent.rowCount)
+          throw new CommunityError(
+            404,
+            "NOT_FOUND",
+            "帖子不存在或已停止公开。",
+          );
+        const result = await client.query(
+          `INSERT INTO idea_comments(id,idea_id,author_id,body) VALUES($1,$2,$3,$4)
+          RETURNING id,body,created_at AS "createdAt"`,
+          [randomUUID(), id, memberId, body],
+        );
+        const member = await client.query(
+          "SELECT nickname FROM members WHERE id=$1",
+          [memberId],
+        );
+        const anonymous =
+          parent.rows[0].anonymous && parent.rows[0].author_id === memberId;
+        const row = result.rows[0];
+        await client.query("COMMIT");
+        return commentSchema.parse({
+          ...row,
+          createdAt: row.createdAt.toISOString(),
+          canDelete: true,
+          author: {
+            id: anonymous ? null : memberId,
+            nickname: anonymous ? "匿名作者" : member.rows[0].nickname,
+          },
+        });
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
+      }
+    },
+    async removeComment(
+      id: string,
+      commentId: string,
+      memberId: string,
+      operator = false,
+    ) {
+      await this.get(id, memberId, operator);
+      const result = await pool.query(
+        `UPDATE idea_comments SET deleted_at=now() WHERE id=$1 AND idea_id=$2
+          AND deleted_at IS NULL AND (author_id=$3 OR $4::boolean) RETURNING id`,
+        [commentId, id, memberId, operator],
+      );
+      if (!result.rowCount)
+        throw new CommunityError(
+          404,
+          "NOT_FOUND",
+          "评论不存在，或你没有删除权限。",
+        );
     },
     async permissions(id: string, authorId: string, input: Permission) {
       const client = await pool.connect();

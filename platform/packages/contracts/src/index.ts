@@ -70,10 +70,17 @@ export const logoutSchema = z
 export const profileSchema = z
   .object({
     nickname: z.string().trim().min(1).max(24),
-    chapterId: chapterSchema.shape.id.nullable(),
+    chapterId: chapterSchema.shape.id.nullable().optional(),
   })
   .strict();
-export const channelSchema = z.enum(["chapter", "feedback", "story"]);
+// Legacy channels remain readable; new contributions use the two public entrances.
+export const channelSchema = z.enum([
+  "chapter",
+  "feedback",
+  "story",
+  "post",
+  "suggestion",
+]);
 export const statusSchema = z.enum([
   "received",
   "discussion",
@@ -112,7 +119,18 @@ export const createIdeaSchema = z
     adaptationConsent: z.boolean(),
     credit: creditSchema,
   })
-  .strict();
+  .strict()
+  .superRefine((value, ctx) => {
+    if (
+      value.channel === "suggestion" &&
+      (value.title.length < 4 || value.body.length < 10)
+    )
+      ctx.addIssue({
+        code: "custom",
+        path: ["body"],
+        message: "建议标题至少 4 字，详情至少 10 字。",
+      });
+  });
 export type CreateIdea = z.infer<typeof createIdeaSchema>;
 export const ideaSchema = z
   .object({
@@ -138,6 +156,7 @@ export const ideaSchema = z
     credit: creditSchema.nullable(),
     createdAt: z.iso.datetime(),
     likeCount: z.number().int().nonnegative(),
+    commentCount: z.number().int().nonnegative(),
     ratingAverage: z.number().min(1).max(5).nullable(),
     ratingCount: z.number().int().nonnegative(),
     myLiked: z.boolean(),
@@ -192,6 +211,7 @@ export const ideaListQuerySchema = z
     sort: z.enum(["likes", "rating", "new"]).default("likes"),
     chapterId: chapterSchema.shape.id.optional(),
     channel: channelSchema.optional(),
+    section: z.enum(["community", "suggestions"]).optional(),
     status: statusSchema.optional(),
     q: z.string().trim().max(100).optional(),
     mine: z
@@ -202,6 +222,32 @@ export const ideaListQuerySchema = z
   })
   .strict();
 export type IdeaListQuery = z.infer<typeof ideaListQuerySchema>;
+export const commentSchema = z
+  .object({
+    id: z.uuid(),
+    body: z.string(),
+    author: z
+      .object({ id: z.uuid().nullable(), nickname: z.string() })
+      .strict(),
+    createdAt: z.iso.datetime(),
+    canDelete: z.boolean(),
+  })
+  .strict();
+export type Comment = z.infer<typeof commentSchema>;
+export const createCommentSchema = z
+  .object({ body: z.string().trim().min(1).max(2000) })
+  .strict();
+export const commentResponseSchema = z
+  .object({ comment: commentSchema })
+  .strict();
+export const commentsSchema = z
+  .object({
+    items: z.array(commentSchema),
+    total: z.number().int().nonnegative(),
+    page: z.number().int().positive(),
+    pageSize: z.literal(30),
+  })
+  .strict();
 export const statsSchema = z
   .object({
     ideaCount: z.number().int().nonnegative(),

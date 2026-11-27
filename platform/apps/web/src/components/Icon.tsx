@@ -13,11 +13,15 @@ export function Icon({
     | "flag"
     | "note"
     | "spark"
-    | "share";
+    | "share"
+    | "chat"
+    | "up";
   size?: number;
   className?: string;
 }) {
   const shapes: Record<string, string> = {
+    chat: "M1 1h10v8H6l-3 3V9H1zm2 2v4h2v1l1-1h3V3z",
+    up: "M5 1h2v2h2v2h2v2H8v5H4V7H1V5h2V3h2z",
     heart: "M2 3h3v1h2V3h3v1h1v4h-1v1H9v1H8v1H7v1H5v-1H4v-1H3V9H2V8H1V4h1z",
     star: "M5 1h2v3h4v2H9v2h1v3H8V9H7V8H5v1H4v2H2V8h1V6H1V4h4z",
     plus: "M5 1h2v4h4v2H7v4H5V7H1V5h4z",

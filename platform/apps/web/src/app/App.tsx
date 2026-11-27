@@ -1,43 +1,29 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  type Chapter,
-  type Idea,
-  type User,
-  type updateSchema,
-} from "@755/contracts";
+import { type Idea, type User } from "@755/contracts";
 import { Dialog } from "../components/Dialog";
 import { Icon } from "../components/Icon";
-import { useChapters } from "../features/chapters/useChapters";
-import {
-  api,
-  ApiError,
-  messageOf,
-  type IdeaList,
-  type Stats,
-} from "../lib/api";
+import { api, ApiError, messageOf, type IdeaList } from "../lib/api";
 import {
   ComposeForm,
   ProfileForm,
-  PermissionForm,
-  OperatorForm,
+  ModerationForm,
 } from "../features/community/Forms";
 import {
-  CHANNELS,
-  STATUSES,
   CATEGORIES,
   date,
   emptyDraft,
   entryDraft,
+  readDraft,
   saveDraft,
   clearDraft,
   saveIntent,
   takeIntent,
   errorMessages,
-  type Channel,
-  type Status,
   type Intent,
   type Draft,
 } from "../features/community/model";
+
+import { Comments, clearCommentDrafts } from "../features/community/Comments";
 
 type Modal = "auth" | "compose" | "profile" | "detail" | null;
 type AuthConfig = {
@@ -45,15 +31,18 @@ type AuthConfig = {
   configured: boolean;
   gameUrl: string | null;
 };
-type Update = ReturnType<typeof updateSchema.parse>;
+type Section = "community" | "suggestions";
+const currentSection = (): Section => {
+  const params = new URLSearchParams(location.search);
+  return params.get("view") === "suggestions" ||
+    params.get("entry") === "suggestion"
+    ? "suggestions"
+    : "community";
+};
 const currentIdea = () => new URLSearchParams(location.search).get("idea");
 const count = (value: number) => new Intl.NumberFormat("zh-CN").format(value);
 
 export function App() {
-  const { state: chapters, retry: retryChapters } = useChapters();
-  const chapterItems = chapters.status === "ready" ? chapters.items : [];
-  const chapterName = (id: string) =>
-    chapterItems.find((chapter) => chapter.id === id)?.title ?? "章节讨论";
   const [user, setUser] = useState<User | null>(null),
     [sessionState, setSessionState] = useState<"loading" | "ready" | "error">(
       "loading",
@@ -72,19 +61,17 @@ export function App() {
   const [draft, setDraft] = useState<Draft>(entryDraft),
     [intent, setIntent] = useState<Intent>({ kind: "none" });
   const [mode, setMode] = useState<"public" | "mine" | "operator">("public");
-  const [channel, setChannel] = useState<Channel | "">(""),
-    [chapterId, setChapterId] = useState(""),
-    [status, setStatus] = useState<Status | "">("");
-  const [sort, setSort] = useState<"new" | "likes" | "rating">("new"),
+  const [section, setSection] = useState<Section>(currentSection);
+  const [sort, setSort] = useState<"new" | "likes">(
+      currentSection() === "suggestions" ? "likes" : "new",
+    ),
     [search, setSearch] = useState(""),
     [query, setQuery] = useState(""),
     [page, setPage] = useState(1);
   const [feed, setFeed] = useState<IdeaList | null>(null),
     [feedLoading, setFeedLoading] = useState(true),
     [feedError, setFeedError] = useState("");
-  const [stats, setStats] = useState<Stats | null>(null),
-    [rankings, setRankings] = useState<Idea[] | null>(null),
-    [rankSort, setRankSort] = useState<"likes" | "rating">("likes");
+  const [rankings, setRankings] = useState<Idea[] | null>(null);
   const [rankState, setRankState] = useState<"loading" | "ready" | "error">(
     "loading",
   );
@@ -93,8 +80,6 @@ export function App() {
     [detailError, setDetailError] = useState(""),
     [detailLoading, setDetailLoading] = useState(false),
     [revealed, setRevealed] = useState(false);
-  const [updates, setUpdates] = useState<Update[] | null>(null),
-    [updatesError, setUpdatesError] = useState("");
   const [revision, setRevision] = useState(0),
     [pending, setPending] = useState<string | null>(null),
     [accountOpen, setAccountOpen] = useState(false),
@@ -131,9 +116,10 @@ export function App() {
         setAccountOpen(false);
         setFeed(null);
         setDetail(null);
-        setUpdates(null);
         setRevealed(false);
-        setModal((current) => current === "profile" || current === "auth" ? null : current);
+        setModal((current) =>
+          current === "profile" || current === "auth" ? null : current,
+        );
       }
       setUser(session.value.user);
       setSessionState("ready");
@@ -149,7 +135,8 @@ export function App() {
   useEffect(() => {
     let timer: number | undefined;
     const resume = () => {
-      if (document.hidden || pending || mutating.current || timer !== undefined) return;
+      if (document.hidden || pending || mutating.current || timer !== undefined)
+        return;
       timer = window.setTimeout(() => {
         timer = undefined;
         if (!document.hidden && !mutating.current) void loadSession();
@@ -165,10 +152,13 @@ export function App() {
         channel = new BroadcastChannel("755-player-session");
         sessionChannel.current = channel;
         channel.onmessage = (event) => {
-          if (event.data === "changed" && !pending && !mutating.current) void loadSession();
+          if (event.data === "changed" && !pending && !mutating.current)
+            void loadSession();
         };
       }
-    } catch { /* Some private browser policies disable cross-tab channels. */ }
+    } catch {
+      /* Some private browser policies disable cross-tab channels. */
+    }
     return () => {
       if (timer !== undefined) window.clearTimeout(timer);
       window.removeEventListener("focus", resume);
@@ -195,7 +185,11 @@ export function App() {
     const requestedLogin = params.get("account") === "login";
     if (requestedLogin) {
       params.delete("account");
-      history.replaceState({}, "", `/${params.size ? "?" + params : ""}${location.hash}`);
+      history.replaceState(
+        {},
+        "",
+        `/${params.size ? "?" + params : ""}${location.hash}`,
+      );
     }
     const next = takeIntent();
     if (error) {
@@ -215,6 +209,8 @@ export function App() {
       else if (next.kind === "mine") {
         setMode("mine");
         setPage(1);
+      } else if (next.kind === "comment") {
+        openIdea(next.id);
       } else if (next.kind === "like" || next.kind === "rating") {
         void reactTo(next);
       }
@@ -223,9 +219,7 @@ export function App() {
   useEffect(() => {
     let active = true;
     const key = JSON.stringify([
-      channel,
-      chapterId,
-      status,
+      section,
       query,
       page,
       sort,
@@ -238,9 +232,7 @@ export function App() {
     feedLoadKey.current = key;
     setFeedError("");
     const params = new URLSearchParams({ sort, page: String(page) });
-    if (channel) params.set("channel", channel);
-    if (chapterId) params.set("chapterId", chapterId);
-    if (status) params.set("status", status);
+    params.set("section", section);
     if (query) params.set("q", query);
     if (mode === "mine" && user) params.set("mine", "true");
     const path =
@@ -264,22 +256,15 @@ export function App() {
     return () => {
       active = false;
     };
-  }, [channel, chapterId, status, query, page, sort, mode, user, revision]);
+  }, [section, query, page, sort, mode, user, revision]);
   useEffect(() => {
+    if (section !== "suggestions") return;
     let active = true;
-    void api<Stats>("/stats")
-      .then((result) => {
-        if (active) setStats(result);
-      })
-      .catch(() => {
-        if (active) setStats(null);
-      });
-    setRankings(null);
     setRankState("loading");
-    void api<IdeaList>(`/ideas?sort=${rankSort}&channel=story`)
+    void api<IdeaList>("/ideas?section=suggestions&sort=likes")
       .then((result) => {
         if (active) {
-          setRankings(result.items.slice(0, 3));
+          setRankings(result.items.slice(0, 5));
           setRankState("ready");
         }
       })
@@ -292,7 +277,7 @@ export function App() {
     return () => {
       active = false;
     };
-  }, [revision, user, rankSort]);
+  }, [revision, user, section]);
   useEffect(() => {
     if (!detailId) {
       detailLoadKey.current = "";
@@ -308,11 +293,9 @@ export function App() {
     ]);
     if (detailLoadKey.current !== key) {
       setDetailLoading(true);
-      setUpdates(null);
     }
     detailLoadKey.current = key;
     setDetailError("");
-    setUpdatesError("");
     const suffix = revealed ? "?reveal=true" : "";
     void api<{ idea: Idea }>(`/ideas/${detailId}${suffix}`)
       .then((result) => {
@@ -327,16 +310,6 @@ export function App() {
       .finally(() => {
         if (active) setDetailLoading(false);
       });
-    void api<{ items: Update[] }>(`/ideas/${detailId}/updates${suffix}`)
-      .then((result) => {
-        if (active) setUpdates(result.items);
-      })
-      .catch((error) => {
-        if (active) {
-          setUpdates(null);
-          setUpdatesError(messageOf(error));
-        }
-      });
     return () => {
       active = false;
     };
@@ -346,6 +319,8 @@ export function App() {
       setDetailId(currentIdea());
       setModal(currentIdea() ? "detail" : null);
       setRevealed(false);
+      setSection(currentSection());
+      setSort(currentSection() === "suggestions" ? "likes" : "new");
     };
     window.addEventListener("popstate", pop);
     return () => window.removeEventListener("popstate", pop);
@@ -365,17 +340,17 @@ export function App() {
     return () => document.removeEventListener("click", close);
   }, [accountOpen]);
 
-  function openIdea(id: string) {
+  function openIdea(id: string, nextSection = section) {
     setDetailId(id);
     setDetail(null);
     setDetailLoading(true);
-    setUpdates(null);
     setRevealed(false);
     setConfirmWithdraw(false);
     setShareUrl("");
     setModal("detail");
     const url = new URL(location.href);
     url.searchParams.delete("entry");
+    url.searchParams.set("view", nextSection);
     url.searchParams.set("idea", id);
     history.pushState({}, "", url);
   }
@@ -402,7 +377,9 @@ export function App() {
       const result = await api<{ url: string }>("/auth/start", {
         method: "POST",
         body: JSON.stringify({
-          returnTo: detailId ? `/?idea=${detailId}` : "/",
+          returnTo: detailId
+            ? `/?idea=${detailId}&view=${section}`
+            : `/?view=${section}`,
         }),
       });
       location.assign(result.url);
@@ -411,16 +388,16 @@ export function App() {
       setPending(null);
     }
   }
-  function compose(nextChannel: Channel = channel || "story") {
+  function compose() {
+    const nextChannel = section === "suggestions" ? "suggestion" : "post";
     setDraft((value) => ({
-      ...value,
+      ...(value.channel === nextChannel ? value : readDraft(nextChannel)),
       channel: nextChannel,
-      category: nextChannel === "feedback" ? "experience" : value.category,
-      chapterId: chapterId || value.chapterId,
+      chapterId: "general",
     }));
     setModal("compose");
   }
-  async function reactTo(action: Extract<Intent, { id: string }>) {
+  async function reactTo(action: Extract<Intent, { kind: "like" | "rating" }>) {
     if (mutating.current) return;
     if (!user) {
       authenticate(action);
@@ -438,11 +415,20 @@ export function App() {
         ),
       });
       refresh();
+      const votedIdea =
+        detail?.id === action.id
+          ? detail
+          : feed?.items.find((item) => item.id === action.id);
+      const suggestion = votedIdea?.channel === "suggestion";
       notify(
         action.kind === "like"
           ? action.value
-            ? "已记下你的支持。"
-            : "已取消支持。"
+            ? suggestion
+              ? "投票已计入排行。"
+              : "已点赞。"
+            : suggestion
+              ? "已取消投票。"
+              : "已取消点赞。"
           : action.value === null
             ? "评分已撤回。"
             : `已记下你的 ${action.value} 星评分。`,
@@ -459,13 +445,16 @@ export function App() {
   }
   async function publish() {
     if (!draft.accepted) throw new Error("请先确认投稿的公开范围。");
-    if (!draft.body.trim()) throw new Error("先写投稿吧。");
+    if (!draft.body.trim()) throw new Error("先写下内容吧。");
+    if (
+      draft.channel === "suggestion" &&
+      (draft.title.trim().length < 4 || draft.body.trim().length < 10)
+    )
+      throw new Error("建议标题至少 4 字，详情至少 10 字。");
     if (!user) {
       authenticate({ kind: "compose" });
       return;
     }
-    if (!chapterItems.some((chapter) => chapter.id === draft.chapterId))
-      throw new Error("请选择关联章节。");
     const { accepted, ...input } = draft;
     setPending("publish");
     try {
@@ -478,19 +467,26 @@ export function App() {
             Array.from(input.body.trim()).slice(0, 40).join(""),
         }),
       });
-      clearDraft();
-      setDraft({ ...emptyDraft });
+      clearDraft(input.channel);
+      setDraft({ ...emptyDraft, channel: input.channel });
       setMode("mine");
-      setChannel("");
-      setChapterId("");
-      setStatus("");
+      setSection(
+        result.idea.channel === "suggestion" ? "suggestions" : "community",
+      );
       setSearch("");
       setQuery("");
       setSort("new");
       setPage(1);
       refresh();
-      openIdea(result.idea.id);
-      notify("投稿已收录。后续进展会更新在这张卡片下方。");
+      openIdea(
+        result.idea.id,
+        result.idea.channel === "suggestion" ? "suggestions" : "community",
+      );
+      notify(
+        result.idea.channel === "suggestion"
+          ? "建议已发布，大家可以来投票了。"
+          : "帖子已发布。",
+      );
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
         setUser(null);
@@ -517,6 +513,7 @@ export function App() {
       setModal(null);
       takeIntent();
       clearDraft();
+      clearCommentDrafts();
       setDraft({ ...emptyDraft });
       refresh();
       if (result.redirectUrl) location.assign(result.redirectUrl);
@@ -551,7 +548,7 @@ export function App() {
   }
   async function share() {
     if (!detail) return;
-    const url = `${location.origin}/?idea=${detail.id}`;
+    const url = `${location.origin}/?idea=${detail.id}&view=${detail.channel === "suggestion" ? "suggestions" : "community"}`;
     setShareUrl(url);
     try {
       await navigator.clipboard.writeText(url);
@@ -562,13 +559,20 @@ export function App() {
   }
   function clearFilters() {
     setMode("public");
-    setChannel("");
-    setChapterId("");
-    setStatus("");
     setSearch("");
     setQuery("");
     setPage(1);
   }
+  function switchSection(next: Section) {
+    setSection(next);
+    clearFilters();
+    setSort(next === "suggestions" ? "likes" : "new");
+    const url = new URL(location.href);
+    url.searchParams.set("view", next);
+    url.searchParams.delete("entry");
+    history.pushState({}, "", url);
+  }
+  const isSuggestions = section === "suggestions";
   const inlineNotice = notice && (
     <div
       className={`inline-notice ${notice.error ? "error" : ""}`}
@@ -577,11 +581,10 @@ export function App() {
       {notice.text}
     </div>
   );
-
   return (
     <>
       <a className="skip-link" href="#board">
-        跳到共创广场
+        跳到帖子列表
       </a>
       <header className="site-header">
         <div className="header-inner">
@@ -590,26 +593,10 @@ export function App() {
               7<span>:</span>55
             </span>
             <span className="brand-divider" />
-            <span className="brand-title">
-              共创平台<small>7:55 COMMUNITY</small>
-            </span>
+            <span className="brand-title">共创平台</span>
           </a>
           <nav className="main-nav" aria-label="主导航">
-            <a className="active" href="#board">
-              <Icon name="note" size={14} /> 共创广场
-            </a>
-            <a href="#ranking">
-              <Icon name="flag" size={14} /> 人气榜
-            </a>
-            {config?.gameUrl && (
-              <a
-                href={config.gameUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                试玩游戏 ↗
-              </a>
-            )}
+            {config?.gameUrl && <a href={config.gameUrl}>试玩游戏 ↗</a>}
           </nav>
           <div className="header-account">
             {sessionState === "loading" ? (
@@ -637,17 +624,15 @@ export function App() {
                 {accountOpen && (
                   <div className="account-menu pixel-panel" id="account-menu">
                     <strong>{user.nickname}</strong>
-                    <small>我的账号</small>
                     <button
                       onClick={() => {
                         clearFilters();
                         setMode("mine");
-                        setPage(1);
                         setAccountOpen(false);
                         document.getElementById("board")?.scrollIntoView();
                       }}
                     >
-                      我的投稿
+                      我发布的内容
                     </button>
                     <button
                       onClick={() => {
@@ -655,7 +640,7 @@ export function App() {
                         setAccountOpen(false);
                       }}
                     >
-                      昵称与阅读进度
+                      修改昵称
                     </button>
                     {user.isOperator && (
                       <button
@@ -666,7 +651,7 @@ export function App() {
                           document.getElementById("board")?.scrollIntoView();
                         }}
                       >
-                        运营工作台
+                        内容管理
                       </button>
                     )}
                     <button
@@ -683,14 +668,15 @@ export function App() {
                 className="button button-yellow login-button"
                 onClick={() => authenticate()}
               >
-                <Icon name="user" size={14} /> 登录 / 注册
+                <Icon name="user" size={14} />
+                登录 / 注册
               </button>
             )}
           </div>
         </div>
       </header>
       <main>
-        <section className="hero" aria-labelledby="hero-title">
+        <section className="hero hero-compact" aria-labelledby="hero-title">
           <img
             className="hero-landscape"
             src="/art/campus-night.png"
@@ -699,227 +685,88 @@ export function App() {
           <div className="hero-shade" />
           <div className="hero-content">
             <h1 id="hero-title">
-              把校园小事，
-              <br />
-              <span>做进游戏。</span>
+              玩完了，<span>来聊聊。</span>
             </h1>
-            <p>
-              分享经历，反馈卡点。
-              <br />
-              在原帖查看回复和制作进度。
-            </p>
-            <button
-              className="button button-yellow hero-cta"
-              onClick={() => compose("story")}
-            >
-              <Icon name="plus" size={16} /> 写投稿{" "}
-              <Icon name="arrow" size={16} />
-            </button>
-            {config?.gameUrl && (
-              <a className="hero-game-link" href={config.gameUrl}>试玩游戏 ↗</a>
-            )}
-          </div>
-          <div className="scene-caption">
-            <span>
-              <span className="scene-dot" /> 浙大校园 · 7:55
-            </span>
-            <span>19:55</span>
+            <p>聊游戏感受，也把你想玩的新模式、新剧情告诉我们。</p>
           </div>
         </section>
-        <div className="world-status">
-          <div className="world-status-inner">
-            <span className="world-intro">
-              <Icon name="spark" size={16} />{" "}
-              校园公告栏
-            </span>
-            <div className="stats">
-              <span>
-                <strong>{stats ? count(stats.ideaCount) : "—"}</strong>{" "}
-                篇投稿
-              </span>
-              <span>
-                <strong>{stats ? count(stats.memberCount) : "—"}</strong>{" "}
-                位玩家
-              </span>
-              <span>
-                <strong>{stats ? count(stats.likeCount) : "—"}</strong> 个赞
-              </span>
-            </div>
-          </div>
-        </div>
-        <section className="entry-strip" aria-label="参与方式">
-          {(
-            [
-              ["chapter", "本章说", "聊剧情，注意剧透"],
-              ["feedback", "反馈卡点", "描述问题和设备"],
-              ["story", "分享经历", "经历或玩法点子"],
-            ] as const
-          ).map(([key, title, copy]) => (
+        <section className="community-shell" id="board" aria-label="共创平台">
+          <div className="primary-entrances" role="group" aria-label="选择板块">
             <button
-              key={key}
-              className={`entry-card entry-${key}`}
-              onClick={() => compose(key)}
+              className={`entrance ${!isSuggestions ? "selected" : ""}`}
+              aria-pressed={!isSuggestions}
+              onClick={() => switchSection("community")}
             >
+              <Icon name="chat" size={30} />
               <span>
-                <strong>{title}</strong>
-                <small>{copy}</small>
+                <strong>玩家社区</strong>
+                <small>发帖、评论、点赞</small>
               </span>
-              <span aria-hidden="true">↗</span>
+              <Icon name="arrow" size={18} />
             </button>
-          ))}
-        </section>
-        <section
-          className="board-shell"
-          id="board"
-          aria-labelledby="board-title"
-        >
-          <div className="section-heading">
+            <button
+              className={`entrance ${isSuggestions ? "selected" : ""}`}
+              aria-pressed={isSuggestions}
+              onClick={() => switchSection("suggestions")}
+            >
+              <Icon name="note" size={30} />
+              <span>
+                <strong>建议投递</strong>
+                <small>提建议，投票看排行</small>
+              </span>
+              <Icon name="arrow" size={18} />
+            </button>
+          </div>
+          <div className="board-heading">
             <div>
-              <h2 id="board-title">
-                {mode === "operator"
-                  ? "运营工作台"
-                  : mode === "mine"
-                    ? "我的投稿"
-                    : "投稿广场"}
-                <span className="heading-square" />
+              <h2>
+                {mode === "mine"
+                  ? isSuggestions
+                    ? "我的建议"
+                    : "我的帖子"
+                  : mode === "operator"
+                    ? "内容管理"
+                    : isSuggestions
+                      ? "你想让游戏多点什么？"
+                      : "大家都在聊"}
               </h2>
+              <p>
+                {isSuggestions
+                  ? "主创团队会参考票数排行，与同学进一步讨论。"
+                  : "喜欢的片段、通关的感受，或者一句吐槽。"}
+              </p>
             </div>
-            <p className="section-subtitle">
-              查看回复与制作进度。
-            </p>
-            <button
-              className="button button-green board-compose"
-              onClick={() => compose()}
-            >
-              <Icon name="plus" size={14} /> 写投稿
+            <button className="button button-green" onClick={compose}>
+              <Icon name="plus" size={16} />
+              {isSuggestions ? "投递建议" : "发个帖子"}
             </button>
           </div>
-          <div className="board-layout">
-            <aside className="chapter-sidebar">
-              <div className="sidebar-heading">
-                <Icon name="note" size={16} />
-                <h3>讨论范围</h3>
-              </div>
-              <button
-                className={`chapter-choice ${!chapterId ? "selected" : ""}`}
-                onClick={() => {
-                  setChapterId("");
-                  setPage(1);
-                }}
-              >
-                <span className="chapter-glyph">∞</span>
-                <span>全部章节</span>
-              </button>
-              {chapters.status === "loading" ? (
-                <p className="sidebar-note">章节加载中…</p>
-              ) : chapters.status === "error" ? (
-                <button className="text-button" onClick={retryChapters}>
-                  重新加载章节
-                </button>
-              ) : (
-                chapterItems.map((chapter, index) => (
-                  <button
-                    key={chapter.id}
-                    className={`chapter-choice ${chapterId === chapter.id ? "selected" : ""}`}
-                    aria-pressed={chapterId === chapter.id}
-                    onClick={() => {
-                      setChapterId(chapter.id);
-                      setPage(1);
-                    }}
-                  >
-                    <span className="chapter-glyph">
-                      {chapter.kind === "future"
-                        ? "?"
-                        : chapter.kind === "general"
-                          ? "∞"
-                          : String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span>{chapter.title}</span>
-                    <span className="choice-arrow">›</span>
-                  </button>
-                ))
-              )}
-              <div className="sidebar-separator" />
-              <button
-                className={`chapter-choice ${mode === "mine" ? "selected" : ""}`}
-                onClick={() => {
-                  if (!user) authenticate({ kind: "mine" });
-                  else {
-                    clearFilters();
-                    setMode("mine");
-                  }
-                }}
-              >
-                <Icon name="user" size={16} /> 我的投稿
-              </button>
-              {user?.isOperator && (
-                <button
-                  className={`chapter-choice ${mode === "operator" ? "selected" : ""}`}
-                  onClick={() => {
-                    clearFilters();
-                    setMode("operator");
-                  }}
-                >
-                  <Icon name="flag" size={16} /> 运营工作台
-                </button>
-              )}
-              <div className="sidebar-note chapter-tip">
-                <span className="tiny-label">防剧透偏好</span>
-                <p>
-                  {user?.progressOrder
-                    ? "已按你设置的阅读进度加载本章说。"
-                    : "尚未设置阅读进度，本章说暂不加载。"}
-                  <br />
-                  卡点反馈不要求通关。
-                </p>
-                <button
-                  className="text-button"
-                  onClick={() =>
-                    user
-                      ? setModal("profile")
-                      : authenticate({ kind: "profile" })
-                  }
-                >
-                  设置阅读进度 →
-                </button>
-              </div>
-            </aside>
+          <div
+            className={`content-layout ${isSuggestions ? "with-ranking" : ""}`}
+          >
             <div className="feed-column">
-              <div
-                className="channel-tabs"
-                role="group"
-                aria-label="投稿入口筛选"
-              >
-                {[["", "全部"], ...Object.entries(CHANNELS)].map(
-                  ([key, label]) => (
-                    <button
-                      key={key}
-                      aria-pressed={channel === key}
-                      className={channel === key ? "selected" : ""}
-                      onClick={() => {
-                        setChannel(key as Channel | "");
-                        setPage(1);
-                      }}
-                    >
-                      {label}
-                    </button>
-                  ),
-                )}
-              </div>
               <div className="feed-tools">
-                <div className="sort-tabs" role="group" aria-label="投稿排序">
-                  {(
-                    [
-                      ["new", "最新投稿"],
-                      ["likes", "最多支持"],
-                      ["rating", "最高评分"],
-                    ] as const
+                <div
+                  className="sort-tabs"
+                  role="group"
+                  aria-label={isSuggestions ? "建议排序" : "帖子排序"}
+                >
+                  {(isSuggestions
+                    ? [
+                        ["likes", "投票排行"],
+                        ["new", "最新建议"],
+                      ]
+                    : [
+                        ["new", "最新帖子"],
+                        ["likes", "热门帖子"],
+                      ]
                   ).map(([key, label]) => (
                     <button
                       key={key}
                       className={sort === key ? "selected" : ""}
+                      aria-pressed={sort === key}
                       onClick={() => {
-                        setSort(key);
+                        setSort(key as "likes" | "new");
                         setPage(1);
                       }}
                     >
@@ -929,83 +776,54 @@ export function App() {
                 </div>
                 <label className="search-box">
                   <Icon name="search" size={14} />
-                  <span className="sr-only">搜索投稿</span>
+                  <span className="sr-only">
+                    {isSuggestions ? "搜索建议" : "搜索帖子"}
+                  </span>
                   <input
                     type="search"
                     maxLength={100}
                     value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                    placeholder="搜索投稿"
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder={isSuggestions ? "搜索建议" : "搜索帖子"}
                   />
                 </label>
               </div>
-              <div className="queue-filter">
-                <label>
-                  处理进度{" "}
-                  <select
-                    aria-label="处理进度筛选"
-                    value={status}
-                    onChange={(event) => {
-                      setStatus(event.target.value as Status | "");
-                      setPage(1);
-                    }}
-                  >
-                    <option value="">全部状态</option>
-                    {Object.entries(STATUSES).map(([key, label]) => (
-                      <option key={key} value={key}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                {(chapterId ||
-                  channel ||
-                  query ||
-                  status ||
-                  mode !== "public") && (
+              {mode !== "public" && (
+                <div className="feed-scope">
+                  <span>
+                    {mode === "mine"
+                      ? "只看自己发布的内容"
+                      : "管理视图包含被隐藏的内容"}
+                  </span>
                   <button className="text-button" onClick={clearFilters}>
-                    清除筛选 ×
+                    返回全部
                   </button>
-                )}
-              </div>
-              {channel === "chapter" && (
-                <div className="inline-notice">
-                  本章说只加载你已设置进度内的章节。
-                  {!user && "请登录并设置阅读进度。"}
                 </div>
               )}
-              <div className="feed-meta">
-                <span>
-                  {chapterId ? chapterName(chapterId) : "全部讨论范围"} ·{" "}
-                  {mode === "operator"
-                    ? "含已隐藏投稿"
-                    : "公开内容与自己的投稿"}
-                </span>
-                <span>
-                  {feedLoading ? "读取中…" : feed ? `${feed.total} 份投稿` : ""}
-                </span>
-              </div>
-              <div className="feed">
-                {feedLoading ? (
-                  <div className="loading-panel" role="status">
-                    <span className="pixel-loader" />
-                    <p>正在翻开大家的便签…</p>
-                  </div>
-                ) : feedError ? (
-                  <div className="empty-panel pixel-panel" role="alert">
-                    <h3>投稿暂时没连上</h3>
-                    <p>{feedError}</p>
-                    <button className="button button-green" onClick={refresh}>
-                      重新加载
-                    </button>
-                  </div>
-                ) : feed?.items.length ? (
-                  feed.items.map((idea, index) => (
+              {feedLoading ? (
+                <div className="loading-panel" role="status">
+                  <span className="pixel-loader" />
+                  <p>正在加载{isSuggestions ? "建议" : "帖子"}…</p>
+                </div>
+              ) : feedError ? (
+                <div className="empty-panel" role="alert">
+                  <h3>暂时没有加载出来</h3>
+                  <p>{feedError}</p>
+                  <button className="button button-outline" onClick={refresh}>
+                    重新加载
+                  </button>
+                </div>
+              ) : feed?.items.length ? (
+                <div className="feed">
+                  {feed.items.map((idea, index) => (
                     <IdeaCard
                       key={idea.id}
                       idea={idea}
-                      chapter={chapterName(idea.chapterId)}
-                      rank={sort === "new" ? null : (page - 1) * 12 + index + 1}
+                      rank={
+                        isSuggestions && sort === "likes"
+                          ? (page - 1) * 12 + index + 1
+                          : null
+                      }
                       pending={pending === idea.id}
                       onOpen={() => openIdea(idea.id)}
                       onLike={() =>
@@ -1016,41 +834,48 @@ export function App() {
                         })
                       }
                     />
-                  ))
-                ) : (
-                  <div className="empty-panel pixel-panel">
-                    <div className="empty-envelope">
-                      <Icon name="note" size={38} />
-                      <span>+</span>
-                    </div>
-
-                    <h3>
-                      {channel === "chapter" && !user?.progressOrder
-                        ? "先设置阅读进度，再看本章说"
-                        : "这里还没有投稿。"}
-                    </h3>
-                    <p>
-                      {query
-                        ? "换个关键词，或看看其他章节。"
-                        : "分享一段经历，或反馈一个问题。"}
-                    </p>
+                  ))}
+                </div>
+              ) : (
+                <div className="empty-panel clean-empty">
+                  <Icon name={isSuggestions ? "note" : "chat"} size={40} />
+                  <h3>
+                    {query
+                      ? "没有找到匹配的内容"
+                      : mode === "mine"
+                        ? "你还没有在这里发布内容"
+                        : isSuggestions
+                          ? "第一份建议，从你开始"
+                          : "还没有帖子，来开个话题吧"}
+                  </h3>
+                  <p>
+                    {query
+                      ? "换个关键词试试。"
+                      : isSuggestions
+                        ? "一个新模式、一段新剧情，都值得认真写下来。"
+                        : "聊聊《7:55》里让你印象最深的地方。"}
+                  </p>
+                  {query && (
                     <button
-                      className="button button-green"
-                      onClick={() => compose()}
+                      className="text-button"
+                      onClick={() => {
+                        setSearch("");
+                        setQuery("");
+                      }}
                     >
-                      写投稿
+                      清除搜索
                     </button>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
               {feed && feed.total > 12 && !feedLoading && !feedError && (
-                <nav className="pagination" aria-label="投稿分页">
+                <nav className="pagination" aria-label="内容分页">
                   <button
                     className="button button-outline"
                     disabled={page === 1}
                     onClick={() => setPage(page - 1)}
                   >
-                    ← 上一页
+                    上一页
                   </button>
                   <span>
                     {page} / {Math.ceil(feed.total / 12)}
@@ -1060,90 +885,72 @@ export function App() {
                     disabled={page * 12 >= feed.total}
                     onClick={() => setPage(page + 1)}
                   >
-                    下一页 →
+                    下一页
                   </button>
                 </nav>
               )}
             </div>
-            <aside className="right-sidebar">
-              <section className="rank-panel pixel-panel" id="ranking">
-                <div className="panel-title">
-                  <Icon name="flag" size={16} />
-                  <h3>灵感风向标</h3>
-                  <span className="tiny-label">TOP 3</span>
-                </div>
-                <div className="rank-tabs">
-                  <button
-                    className={rankSort === "likes" ? "selected" : ""}
-                    onClick={() => setRankSort("likes")}
-                  >
-                    最多支持
-                  </button>
-                  <button
-                    className={rankSort === "rating" ? "selected" : ""}
-                    onClick={() => setRankSort("rating")}
-                  >
-                    最高评分
-                  </button>
-                </div>
+            {isSuggestions && (
+              <aside
+                className="suggestion-ranking"
+                aria-labelledby="ranking-title"
+              >
+                <h3 id="ranking-title">
+                  <Icon name="flag" size={18} /> 建议排行榜
+                </h3>
+                <p className="ranking-subtitle">按票数排序 · 前 5 名</p>
                 {rankState === "loading" ? (
-                  <div className="rank-empty" role="status">
-                    正在更新榜单…
+                  <p className="rank-empty" role="status">
+                    正在更新排行…
+                  </p>
+                ) : rankState === "error" ? (
+                  <div className="rank-empty">
+                    <p>排行暂时没加载出来。</p>
+                    <button className="text-button" onClick={refresh}>
+                      重新加载
+                    </button>
                   </div>
                 ) : rankings?.length ? (
                   <ol className="rank-list">
                     {rankings.map((idea, index) => (
                       <li key={idea.id}>
-                        <span className="rank-number">0{index + 1}</span>
+                        <span className="rank-number">{index + 1}</span>
                         <button onClick={() => openIdea(idea.id)}>
                           <strong>{idea.title}</strong>
-                          <small>
-                            {rankSort === "likes"
-                              ? `${idea.likeCount} 个赞`
-                              : `${idea.ratingAverage?.toFixed(1) ?? "—"} 分 · ${idea.ratingCount} 人评分`}
-                          </small>
+                          <small>{idea.likeCount} 票</small>
                         </button>
                       </li>
                     ))}
                   </ol>
                 ) : (
-                  <div className="rank-empty">
-                    <Icon name="star" size={24} />
-                    <p>
-                      {rankings
-                        ? "还没有故事投稿。"
-                        : "榜单暂时无法读取。"}
-                    </p>
-                    {!rankings && (
-                      <button className="text-button" onClick={refresh}>
-                        重新加载
-                      </button>
-                    )}
-                  </div>
+                  <p className="rank-empty">
+                    还没有建议，投递后就会出现在这里。
+                  </p>
                 )}
                 <p className="rank-footnote">
-                  点赞供选题参考，不代表一定采用。
+                  每个账号每份建议可投 1 票，也可以取消。
                 </p>
-              </section>
-
-            </aside>
+              </aside>
+            )}
           </div>
         </section>
-
       </main>
       <footer className="site-footer">
         <span>
-          <strong>7:55</strong> 校园共创平台
+          <strong>7:55</strong> 共创平台
         </span>
-        <p>游客可浏览 · 投稿与互动时登录 · 不要求手机号或学号</p>
-        <a href="#board">回到广场 ↑</a>
+        <p>游客可浏览，登录后发帖、评论和投票。</p>
+        {config?.gameUrl && (
+          <a className="footer-game-link" href={config.gameUrl}>
+            返回游戏 ↗
+          </a>
+        )}
       </footer>
       {notice && !modal && (
         <div
           className={`toast ${notice.error ? "error" : ""}`}
           role={notice.error ? "alert" : "status"}
         >
-          <span>{notice.error ? "!" : "✓"}</span>
           {notice.text}
           <button aria-label="关闭提示" onClick={() => setNotice(null)}>
             ×
@@ -1154,13 +961,8 @@ export function App() {
         <Dialog title="玩家账号" onClose={closeModal}>
           {inlineNotice}
           <div className="auth-heading">
-            <span className="auth-pixel-avatar">
-              <Icon name="user" size={30} />
-            </span>
             <h2>登录 / 注册</h2>
-            <p>
-              与游戏共用一个账号，登录后自动返回。
-            </p>
+            <p>与游戏共用一个账号，登录后自动返回。</p>
           </div>
           {authState === "ready" && config?.configured ? (
             <button
@@ -1172,13 +974,11 @@ export function App() {
             </button>
           ) : (
             <div className="inline-notice">
-              {authState === "loading"
-                ? "正在读取登录服务配置…"
-                : authState === "error"
-                  ? "登录服务信息未能加载，请重新检查。"
-                  : config
-                    ? "登录服务尚未配置。现在可以先浏览，写好的内容会留在当前标签页。"
-                    : "登录服务信息未能加载，请重新检查。"}
+              <p>
+                {authState === "loading"
+                  ? "正在读取登录配置…"
+                  : "登录服务暂时无法使用，可以先浏览，草稿会保留在当前标签页。"}
+              </p>
               <button
                 className="text-button"
                 onClick={() => void loadSession()}
@@ -1187,67 +987,56 @@ export function App() {
               </button>
             </div>
           )}
-          <p className="form-note">
-            无需手机号或学号。登录由 Authing 提供，投稿草稿仅留在当前标签页。
-          </p>
         </Dialog>
       )}
       {modal === "compose" && (
-        <Dialog title="写投稿" wide onClose={closeModal}>
+        <Dialog
+          title={draft.channel === "suggestion" ? "建议投递" : "发布帖子"}
+          wide
+          onClose={closeModal}
+        >
           {inlineNotice}
           <ComposeForm
             draft={draft}
             onChange={setDraft}
-            chapters={chapterItems}
             user={user}
             busy={pending === "publish"}
             onSubmit={publish}
-            onProfile={() =>
-              user ? setModal("profile") : authenticate({ kind: "profile" })
-            }
           />
         </Dialog>
       )}
       {modal === "profile" && user && (
-        <Dialog title="昵称与阅读进度" onClose={closeModal}>
+        <Dialog title="修改昵称" onClose={closeModal}>
           {inlineNotice}
-          {!chapterItems.length ? (
-            <p>
-              章节目录暂未就绪。
-              <button className="text-button" onClick={retryChapters}>
-                重新加载
-              </button>
-            </p>
-          ) : (
-            <ProfileForm
-              key={user.id + String(user.progressOrder)}
-              user={user}
-              chapters={chapterItems}
-              onSaved={(next) => {
-                setUser(next);
-                setModal(null);
-                refresh();
-                notify("名片已保存。本章说已按你的阅读进度更新。");
-              }}
-            />
-          )}
+          <ProfileForm
+            key={user.id}
+            user={user}
+            onSaved={(next) => {
+              setUser(next);
+              setModal(null);
+              refresh();
+              notify("昵称已保存。");
+            }}
+          />
         </Dialog>
       )}
       {modal === "detail" && (
-        <Dialog title="投稿详情" wide onClose={closeModal}>
+        <Dialog
+          title={detail?.channel === "suggestion" ? "建议详情" : "帖子详情"}
+          wide
+          onClose={closeModal}
+        >
           {inlineNotice}
           {detailLoading ? (
             <div className="loading-panel" role="status">
-              <span className="pixel-loader" />
-              正在翻开这份投稿…
+              正在加载内容…
             </div>
           ) : detailError ? (
             <div className="empty-panel" role="alert">
               <h3>暂时无法查看</h3>
               <p>{detailError}</p>
-              <p>本章说需要在阅读进度内；已撤回或被隐藏的内容也不会公开。</p>
               <button className="button button-outline" onClick={closeModal}>
-                返回广场
+                返回列表
               </button>
             </div>
           ) : (
@@ -1255,17 +1044,15 @@ export function App() {
               <article className="idea-detail">
                 <div className="idea-tags">
                   <span className="tag tag-green">
-                    {chapterName(detail.chapterId)}
+                    {detail.channel === "suggestion"
+                      ? CATEGORIES[detail.category]
+                      : "玩家社区"}
                   </span>
-                  <span className="tag">{CHANNELS[detail.channel]}</span>
-                  <span className={`tag status-${detail.status}`}>
-                    {STATUSES[detail.status]}
-                  </span>
-                  {detail.moderated && (
-                    <span className="tag tag-spoiler">已隐藏</span>
-                  )}
                   {detail.spoiler && (
                     <span className="tag tag-spoiler">含剧透</span>
+                  )}
+                  {detail.moderated && (
+                    <span className="tag tag-spoiler">已隐藏</span>
                   )}
                 </div>
                 <h2>{detail.title}</h2>
@@ -1275,135 +1062,24 @@ export function App() {
                   </span>
                   <strong>{detail.author.nickname}</strong>
                   <span>
-                    · {date(detail.createdAt)}
-                    {detail.isOwner ? " · 我的投稿" : ""}
+                    {date(detail.createdAt)}
+                    {detail.isOwner ? " · 我发布的" : ""}
                   </span>
                 </div>
                 {detail.contentHidden ? (
                   <div className="spoiler-curtain">
-                    <span>!</span>
-                    <h3>这张便签含有剧情细节</h3>
-                    <p>内容与处理回复尚未加载，确定想看再展开。</p>
+                    <h3>内容包含剧情细节</h3>
+                    <p>展开后会显示正文和评论。</p>
                     <button
                       className="button button-outline"
                       onClick={() => setRevealed(true)}
                     >
-                      我已了解，加载内容
+                      展开剧透内容
                     </button>
                   </div>
                 ) : (
-                  <>
-                    <div className="idea-body">{detail.body}</div>
-                    <section
-                      className="progress-timeline"
-                      aria-label="投稿处理进展"
-                    >
-                      <h3>处理进度</h3>
-                      <ol>
-                        <li>
-                          <span className="timeline-dot" />
-                          <time>{date(detail.createdAt)}</time>
-                          <strong>已收录</strong>
-                          <p>等待团队查看，尚未采用。</p>
-                        </li>
-                        {updates?.map((update) => (
-                          <li key={update.id}>
-                            <span className="timeline-dot" />
-                            <time>{date(update.createdAt)}</time>
-                            <strong>
-                              {STATUSES[update.status]} · 项目团队回复
-                            </strong>
-                            <p>{update.note}</p>
-                            {update.version && (
-                              <span className="tag">{update.version}</span>
-                            )}
-                            {update.playUrl && (
-                              <a
-                                className="button button-green timeline-link"
-                                href={update.playUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                {update.status === "published"
-                                  ? "查看发布版本"
-                                  : "打开试玩"}{" "}
-                                ↗
-                              </a>
-                            )}
-                            {update.credit && (
-                              <small>作者确认署名：{update.credit}</small>
-                            )}
-                          </li>
-                        ))}
-                      </ol>
-                      {updatesError && (
-                        <p className="form-error">
-                          处理记录暂时没连上：{updatesError}
-                          <button className="text-button" onClick={refresh}>
-                            重试
-                          </button>
-                        </p>
-                      )}
-                    </section>
-                  </>
+                  <div className="idea-body">{detail.body}</div>
                 )}
-                <section className="rating-area" aria-labelledby="rating-title">
-                  <div>
-                    <h3 id="rating-title">
-                      {detail.channel === "feedback"
-                        ? "这条反馈对你有帮助吗？"
-                        : "你有多期待这个想法？"}
-                    </h3>
-                    <p>
-                      {detail.ratingCount
-                        ? `${detail.ratingAverage?.toFixed(1)} 分 · ${detail.ratingCount} 人评分`
-                        : "还没有评分。每人可评分一次，之后也能修改。"}
-                    </p>
-                  </div>
-                  <div className="rating-controls">
-                    <div
-                      className="stars"
-                      role="group"
-                      aria-label="为投稿评分，1 到 5 星"
-                    >
-                      {[1, 2, 3, 4, 5].map((score) => (
-                        <button
-                          key={score}
-                          className={
-                            (detail.myRating ?? 0) >= score ? "filled" : ""
-                          }
-                          aria-label={`${score} 星`}
-                          aria-pressed={detail.myRating === score}
-                          disabled={Boolean(pending) || detail.moderated}
-                          onClick={() =>
-                            void reactTo({
-                              kind: "rating",
-                              id: detail.id,
-                              value: score,
-                            })
-                          }
-                        >
-                          <Icon name="star" size={26} />
-                        </button>
-                      ))}
-                    </div>
-                    {detail.myRating !== null && (
-                      <button
-                        className="text-button"
-                        disabled={Boolean(pending)}
-                        onClick={() =>
-                          void reactTo({
-                            kind: "rating",
-                            id: detail.id,
-                            value: null,
-                          })
-                        }
-                      >
-                        已评 {detail.myRating} 星 · 撤回
-                      </button>
-                    )}
-                  </div>
-                </section>
                 <div className="detail-actions">
                   <button
                     className={`button ${detail.myLiked ? "button-liked" : "button-green"}`}
@@ -1417,83 +1093,90 @@ export function App() {
                       })
                     }
                   >
-                    <Icon name="heart" size={16} />
-                    {detail.myLiked ? "已支持" : "支持这份投稿"}{" "}
-                    <span>{detail.likeCount}</span>
+                    <Icon
+                      name={detail.channel === "suggestion" ? "up" : "heart"}
+                      size={16}
+                    />
+                    {detail.channel === "suggestion"
+                      ? detail.myLiked
+                        ? "已投票"
+                        : "投一票"
+                      : detail.myLiked
+                        ? "已点赞"
+                        : "点赞"}{" "}
+                    · {detail.likeCount}
+                    {detail.channel === "suggestion" ? " 票" : ""}
                   </button>
                   <button
                     className="button button-outline"
                     onClick={() => void share()}
                   >
-                    <Icon name="share" size={14} /> 分享
+                    <Icon name="share" size={14} />
+                    分享
                   </button>
                   {detail.canWithdraw && (
                     <button
                       className="text-button danger"
                       onClick={() => setConfirmWithdraw(!confirmWithdraw)}
                     >
-                      撤回投稿
+                      撤回
                     </button>
                   )}
                 </div>
+                {detail.channel === "suggestion" && (
+                  <p className="form-note">
+                    主创团队会参考票数排行，与作者进一步讨论。
+                  </p>
+                )}
                 {shareUrl && (
                   <label className="share-fallback">
                     分享链接
                     <input
                       readOnly
                       value={shareUrl}
-                      onFocus={(event) => event.target.select()}
+                      onFocus={(e) => e.target.select()}
                     />
                   </label>
                 )}
                 {confirmWithdraw && (
                   <div className="delete-confirm" role="alert">
-                    <p>
-                      确定撤回？投稿将停止公开，点赞与评分也不再计入榜单。平台保留内部处理记录。
-                    </p>
+                    <p>撤回后，这条内容及评论将停止公开，并退出排行。</p>
                     <div>
                       <button
                         className="button button-danger"
                         disabled={Boolean(pending)}
                         onClick={() => void withdraw()}
                       >
-                        {pending === "withdraw" ? "正在撤回…" : "确认撤稿"}
+                        {pending === "withdraw" ? "正在撤回…" : "确认撤回"}
                       </button>
                       <button
                         className="button button-outline"
                         onClick={() => setConfirmWithdraw(false)}
                       >
-                        保留投稿
+                        取消
                       </button>
                     </div>
                   </div>
                 )}
-                {detail.isOwner && (
-                  <PermissionForm
-                    key={detail.id + String(detail.revision)}
+                {!detail.contentHidden && (
+                  <Comments
+                    key={detail.id + (user?.id ?? "guest")}
                     idea={detail}
-                    onSaved={() => {
-                      refresh();
-                      notify("授权与署名选择已保存。");
-                    }}
+                    user={user}
+                    revealed={revealed}
+                    onLogin={() =>
+                      authenticate({ kind: "comment", id: detail.id })
+                    }
+                    onChanged={refresh}
                   />
                 )}
-                {detail.isOwner && !detail.canWithdraw && (
-                  <p className="form-note">
-                    投稿已进入制作或发布阶段，如需撤稿或调整授权，请在项目团队的沟通渠道联系运营同学协商。
-                  </p>
-                )}
                 {user?.isOperator && (
-                  <OperatorForm
+                  <ModerationForm
                     key={detail.id + String(detail.revision)}
                     idea={detail}
                     onSaved={() => {
                       refresh();
-                      notify("处理进展已更新到原投稿。");
-                    }}
-                    onModerated={() => {
-                      refresh();
-                      notify("投稿可见范围已更新。");
+                      notify("公开状态已更新。");
                     }}
                   />
                 )}
@@ -1508,35 +1191,45 @@ export function App() {
 
 function IdeaCard({
   idea,
-  chapter,
   rank,
   pending,
   onOpen,
   onLike,
 }: {
   idea: Idea;
-  chapter: string;
   rank: number | null;
   pending: boolean;
   onOpen: () => void;
   onLike: () => void;
 }) {
+  const suggestion = idea.channel === "suggestion";
   return (
-    <article className="idea-card pixel-panel">
+    <article
+      className={`idea-card ${suggestion ? "suggestion-card" : "post-card"}`}
+    >
+      {suggestion && (
+        <button
+          className={`vote-button ${idea.myLiked ? "liked" : ""}`}
+          disabled={pending || idea.moderated}
+          aria-label={`${idea.myLiked ? "取消投票" : "投票"}：${idea.title}`}
+          aria-pressed={idea.myLiked}
+          onClick={onLike}
+        >
+          <Icon name="up" size={20} />
+          <strong>{count(idea.likeCount)}</strong>
+          <small>
+            {pending ? "保存中" : idea.myLiked ? "已投票" : "投一票"}
+          </small>
+        </button>
+      )}
       <div className="card-main">
         <div className="idea-tags">
-          <span className="tag tag-green">{chapter}</span>
-          <span className="category-label">{CHANNELS[idea.channel]}</span>
-          <span className={`tag status-${idea.status}`}>
-            {STATUSES[idea.status]}
-          </span>
+          {suggestion && (
+            <span className="category-label">{CATEGORIES[idea.category]}</span>
+          )}
+          {rank !== null && <span className="card-rank">第 {rank} 名</span>}
           {idea.spoiler && <span className="tag tag-spoiler">含剧透</span>}
           {idea.moderated && <span className="tag tag-spoiler">已隐藏</span>}
-          {rank !== null && (
-            <span className={`card-rank ${rank <= 3 ? "top" : ""}`}>
-              #{String(rank).padStart(2, "0")}
-            </span>
-          )}
         </div>
         <button className="idea-title" onClick={onOpen}>
           {idea.title}
@@ -1544,9 +1237,7 @@ function IdeaCard({
         <p
           className={`idea-excerpt ${idea.contentHidden ? "spoiler-preview" : ""}`}
         >
-          {idea.contentHidden
-            ? "含剧情细节，打开后可自行选择加载。"
-            : idea.body}
+          {idea.contentHidden ? "包含剧情细节，打开后可选择展开。" : idea.body}
         </p>
         <div className="card-footer">
           <span className="author-line">
@@ -1557,30 +1248,28 @@ function IdeaCard({
               {idea.author.nickname}
               {idea.isOwner ? " · 我" : ""}
             </span>
-            <span className="card-date">· {date(idea.createdAt)}</span>
+            <time className="card-date">{date(idea.createdAt)}</time>
           </span>
-          <button
-            className="rating-summary"
-            onClick={onOpen}
-            aria-label={`评分 ${idea.ratingAverage?.toFixed(1) ?? "暂无"}，打开详情`}
-          >
-            <Icon name="star" size={13} />
-            <strong>{idea.ratingAverage?.toFixed(1) ?? "—"}</strong>
-            <span>{idea.ratingCount ? `(${idea.ratingCount})` : "待评分"}</span>
-          </button>
+          <div className="post-actions">
+            <button className="comment-link" onClick={onOpen}>
+              <Icon name="chat" size={15} />
+              {idea.commentCount} 条评论
+            </button>
+            {!suggestion && (
+              <button
+                className={`post-like ${idea.myLiked ? "liked" : ""}`}
+                aria-label={`${idea.myLiked ? "取消点赞" : "点赞"}：${idea.title}`}
+                aria-pressed={idea.myLiked}
+                disabled={pending || idea.moderated}
+                onClick={onLike}
+              >
+                <Icon name="heart" size={15} />
+                {idea.likeCount}
+              </button>
+            )}
+          </div>
         </div>
       </div>
-      <button
-        className={`vote-button ${idea.myLiked ? "liked" : ""}`}
-        disabled={pending || idea.moderated}
-        aria-label={`${idea.myLiked ? "取消支持" : "支持"}：${idea.title}`}
-        aria-pressed={idea.myLiked}
-        onClick={onLike}
-      >
-        <Icon name="heart" size={18} />
-        <strong>{count(idea.likeCount)}</strong>
-        <small>{pending ? "保存中" : idea.myLiked ? "已支持" : "支持"}</small>
-      </button>
     </article>
   );
 }

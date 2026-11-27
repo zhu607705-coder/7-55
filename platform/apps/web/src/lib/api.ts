@@ -9,6 +9,8 @@ import {
   okSchema,
   sessionSchema,
   statsSchema,
+  commentsSchema,
+  commentResponseSchema,
 } from "@755/contracts";
 export type { User, Idea } from "@755/contracts";
 export type IdeaList = ReturnType<typeof ideaListSchema.parse>;
@@ -57,8 +59,11 @@ export async function api<T>(
       );
     }
     const route = path.split("?")[0];
-    const schema =
-      route === "/auth/config"
+    const schema = route?.endsWith("/comments")
+      ? options.method === "POST"
+        ? commentResponseSchema
+        : commentsSchema
+      : route === "/auth/config"
         ? authConfigSchema
         : route === "/auth/start"
           ? authStartResponseSchema

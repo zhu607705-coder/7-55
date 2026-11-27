@@ -1,8 +1,13 @@
-# 7:55 · 校园共创平台
+# 《7:55》共创平台源码与运行指南
 
-与游戏并列的独立平台。普通同学可以分享校园经历、反馈卡点、聊本章；项目团队在原投稿下记录讨论、制作与试玩进展。延续《7:55》的像素校园画面与中文像素字体，手机优先。
+这是《7:55》的玩家社区和建议投递网站。当前版本有两个入口：
 
-2026-11-03 已接入同账号云存档、完整独立游戏导出和本机同域预览，详见 [云存档实现与验收](docs/game-cloud-save.md)。此前已在代码中完成 Authing 托管认证、三类入口、一句话投稿、匿名、改编授权与署名、进度记录、运营工作台、点赞评分及榜单。真实 Authing 本机应用已配置，正式域名和服务器仍待部署，不能把本地协议测试说成真实 Authing 已上线。
+- **玩家社区**：发布帖子、评论、点赞，交流游戏体验。标题选填，支持匿名和剧透折叠。
+- **建议投递**：填写标题、类型和具体建议；每个账号每份建议一票，可取消，按票数排行。主创团队后续与同学沟通，不设置自动采纳门槛，也不展示采纳/制作流程。
+
+首屏移除章节侧栏、三类投稿入口、统计条、星级评分及处理状态。账号菜单保留自己的内容和昵称设置；运营账号仍能隐藏/恢复内容、删除不当评论。原有帖子、权限记录、评分和处理接口保留兼容，旧内容在社区中按原有可见范围显示，不自动改写为正式建议。
+
+游戏与平台沿用同一个 Authing 玩家账号和云存档服务。本次更新在本机预览；公网域名、服务器和真实登录服务的上线状态需另行确认。
 
 ## 本地启动
 
@@ -19,7 +24,7 @@ npm run dev
 
 `db:up` 用 Docker Compose 启动开发库；已有 PostgreSQL 时修改 DATABASE_URL 并跳过此步。打开 http://127.0.0.1:5174 ，浏览器地址必须精确匹配 PUBLIC_ORIGIN。用 localhost、换端口或换域名时同步更新配置与 Authing 回调地址。
 
-Authing 三项配置留空时可以浏览与写草稿，登录入口明确显示尚未配置，没有本地注册后备。创建账号、配置登录方式与回调的步骤见 [Authing 配置指南](docs/authing-setup.md)。平台首次登录生成内部身份，昵称可在“昵称与阅读进度”设置；不读取 Authing 邮箱、手机号或学号。
+Authing 三项配置留空时可以浏览和写草稿。配置登录方式与回调的步骤见 [Authing 配置指南](docs/authing-setup.md)。首次登录后，可从账号菜单修改公开昵称。平台不读取 Authing 的邮箱、手机号或学号。
 
 生产预览：
 
@@ -36,8 +41,7 @@ NODE_ENV=production SERVE_WEB=true PUBLIC_ORIGIN=http://127.0.0.1:3001 npm start
 | 目录 | 负责内容 |
 |---|---|
 | `apps/web/src/app` | 页面组合、账号状态、筛选与详情导航 |
-| `apps/web/src/features/community` | 三类入口、投稿表单、授权署名、运营处理、当前标签页草稿 |
-| `apps/web/src/features/chapters` | 公开章节讨论目录 |
+| `apps/web/src/features/community` | 发帖和建议表单、评论、草稿及内容管理 |
 | `apps/api/src/modules/auth` | Authing 标准协议、验证回调与身份 |
 | `apps/api/src/modules/community` | 会话、权限、请求来源检查、限流、投稿与运营接口 |
 | `apps/api/src/modules/game-saves` | 本人云存档与附件 HTTP 接口 |
@@ -48,7 +52,10 @@ NODE_ENV=production SERVE_WEB=true PUBLIC_ORIGIN=http://127.0.0.1:3001 npm start
 
 平台云存档模块保存原生存档封装与附件，只做存储格式与归属校验；不导入游戏运行代码或剧情源码，不控制游戏进度。展示素材是独立复制的公开图片和字体，带来源和许可。根目录游戏工程、依赖和发布管线不属于平台运行时。
 
-## 当前产品规则
+## 当前交互与旧版兼容
+
+以下涉及“本章说”、改编授权、星级评分、制作状态的条款用于既有数据和接口兼容，不再作为当前玩家界面的入口。新建议不因投票自动改变状态。评论存于独立数据库表，每页 30 条；游客可读，登录后可评论，作者或运营可删除。剧透帖子未展开时不下发评论，隐藏和撤回会同步阻止公开访问。
+
 
 - 三类投稿分别筛选；卡点反馈不要求通关。一句话即可，标题选填，由正文开头生成。
 - 游客可浏览非剧透内容、在当前标签页写草稿；投稿、点赞和评分时登录。草稿保留 2 小时，登录前的操作续接保留 10 分钟；不保存密码或第三方令牌，主动退出会清除草稿。
@@ -72,7 +79,9 @@ NODE_ENV=production SERVE_WEB=true PUBLIC_ORIGIN=http://127.0.0.1:3001 npm start
 | `GET /auth/config` / `/session` | 登录是否配置、游戏链接 / 当前身份 |
 | `POST /auth/start` / `GET /auth/callback` / `POST /auth/logout` | Authing 登录发起 / 验证回调 / 退出 |
 | `PUT /profile` | 公开昵称和自设阅读进度 |
-| `GET /ideas` | channel、status、chapterId、q、mine、sort、page 筛选；每页 12 条 |
+| `GET /ideas` | section=community/suggestions、q、mine、sort、page；兼容旧 channel/status/chapterId；每页 12 条 |
+| `GET/POST /ideas/:id/comments` | 分页读取评论 / 登录后发表评论（1–2000 字） |
+| `DELETE /ideas/:id/comments/:commentId` | 作者或运营删除评论 |
 | `POST /ideas` / `GET /ideas/:id` / `DELETE /ideas/:id` | 投稿 / 详情 / 制作前本人撤稿 |
 | `GET /ideas/:id/updates` | 团队处理记录；剧透展开使用 `?reveal=true` |
 | `PUT /ideas/:id/like` / `/rating` / `/permissions` | 支持 / 评分 / 本人授权署名 |
